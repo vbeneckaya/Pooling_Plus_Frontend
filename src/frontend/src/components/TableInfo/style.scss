@@ -1,0 +1,41 @@
+.cell-sticky {
+    position: relative;
+    vertical-align: top;
+
+    &-value {
+        position: sticky;
+        top: 85px;
+    }
+}
+
+.table-header-cell {
+}
+
+.table-row-click {
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.wider {
+    position: relative;
+}
+
+.table-header-menu {
+    margin-bottom: 12px;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table-info {
+    border-bottom: 1px solid #ddd !important;
+    margin: 0!important;
+
+    td:hover {
+        cursor: pointer;
+    }
+}

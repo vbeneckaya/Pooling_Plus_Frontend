@@ -7,6 +7,11 @@ import store from './store/configureStore';
 
 import App from './containers/App';
 
+String.prototype.replaceAll = function(search, replacement) {
+    const target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 ReactDOM.render(
     <Provider store={store}>
         <Suspense fallback="loading">

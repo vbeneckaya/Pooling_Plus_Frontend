@@ -1,3 +1,149 @@
+body {
+    overflow: hidden;
+    min-width: 1028px !important;
+    font-size: 13px;
+}
+
 .margin-bottom-10 {
-    margin-bottom: 10px;
+    margin-bottom: 10px !important;
+}
+
+.leaflet-container {
+    height: 400px !important;
+    width: 800px !important;
+}
+
+.container {
+    padding: 55px 15px 0 15px;
+    position: relative;
+}
+
+.Toastify__toast {
+    position: relative;
+    min-height: 1em;
+    margin: 1em 0;
+    background: #f8f8f9;
+    padding: 0.7em 1em 0.7em 1.5em !important;
+    line-height: 1.4285em;
+    color: rgba(0, 0, 0, 0.87);
+    -webkit-transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
+        -webkit-box-shadow 0.1s ease;
+    transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
+        -webkit-box-shadow 0.1s ease;
+    transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
+    transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease,
+        -webkit-box-shadow 0.1s ease;
+    border-radius: 0.28571429rem !important;
+    -webkit-box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
+    box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
+}
+
+.Toastify__toast--info {
+    -webkit-box-shadow: 0 0 0 1px #a9d5de inset, 0 0 0 0 transparent !important;
+    box-shadow: 0 0 0 1px #a9d5de inset, 0 0 0 0 transparent !important;
+    background-color: #f8ffff !important;
+    color: #276f86 !important;
+}
+
+.Toastify__toast--error {
+    -webkit-box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent !important;
+    box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent !important;
+    background-color: #fff6f6 !important;
+    color: #9f3a38 !important;
+}
+
+.Toastify__toast--warning {
+    -webkit-box-shadow: 0 0 0 1px #c9ba9b inset, 0 0 0 0 transparent !important;
+    box-shadow: 0 0 0 1px #c9ba9b inset, 0 0 0 0 transparent !important;
+    background-color: #fffaf3 !important;
+    color: #573a08 !important;
+}
+
+.Toastify__close-button {
+    color: #1b1c1d !important;
+}
+
+.ui.fullscreen.modal,
+.ui.fullscreen.scrolling.modal {
+    left: 2.5% !important;
+}
+
+.card-modal {
+    min-height: 94vh;
+}
+
+.card-modal {
+    .content {
+        padding-bottom: 85px !important;
+        border-bottom-left-radius: 0.28571429rem;
+        border-bottom-right-radius: 0.28571429rem;
+    }
+    .actions {
+        min-height: 65px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    .ui.negative.message {
+        position: absolute;
+        bottom: 64px;
+        width: 100%;
+    }
+}
+
+.sub_modal {
+    min-height: 81vh;
+}
+
+.ui.dimmer {
+    justify-content: center !important;
+}
+
+.leaflet-container {
+    height: 75vh;
+    width: 100%;
+}
+
+@media only screen and (min-width: 1500px) {
+    .ui.wider.container {
+        width: calc(1400px) !important;
+    }
+}
+
+.container-margin-top-bottom {
+    margin-bottom: 70px;
+    position: relative;
+}
+
+.card-columns {
+    padding: 8px 0;
+    display: flex!important;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.shippers-table {
+    .ui.celled.table tr td:first-child,
+    .ui.celled.table tr th:first-child {
+        border-left: 1px solid rgba(34, 36, 38, 0.1) !important;
+    }
+}
+
+.ui.form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.table-loader {
+    margin-top: 45px!important;
+}
+
+.ui.checkbox label {
+    font-weight: normal!important;
+}
+
+.ui.multiple.dropdown>.label {
+    font-size: .85714286rem!important;
 }

@@ -1,12 +1,30 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { isAuthSelector } from '../ducks/login';
 
-class PrivateRoute extends Component {
-    render() {
-        const { component: Component, ...rest } = this.props;
+function PrivateRoute({ component: Component, ...rest }) {
+    const isAuth = useSelector(state => isAuthSelector(state));
 
-        return <Route {...rest} render={props => <Component {...props} />} />;
-    }
+    console.log('isAuth', isAuth);
+
+    return (
+        <Route
+            {...rest}
+            render={props =>
+                isAuth ? (
+                    <Component {...props} />
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: '/login',
+                            state: { from: props.location },
+                        }}
+                    />
+                )
+            }
+        />
+    );
 }
 
 export default PrivateRoute;

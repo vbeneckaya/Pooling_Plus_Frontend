@@ -1,0 +1,95 @@
+.facet-input {
+    position: relative;
+}
+
+.facet-sortable {
+    padding-right: 20px !important;
+}
+
+.facet-sortable .sort-button {
+    background: transparent !important;
+}
+
+.column-status-facet {
+    min-width: 200px !important;
+    width: 200px !important;
+    font-weight: bold;
+}
+
+.small-column {
+    max-width: 50px !important;
+    min-width: 50px !important;
+    padding-left: 15px !important;
+    position: sticky;
+    left: 0;
+    top: 1px;
+}
+
+.sort-button {
+    height: 16px !important;
+    min-height: 10px !important;
+    width: 19px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+    font-size: 18px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.sort-button .icon {
+    display: block;
+    margin: 0 !important;
+    color: #ccc !important;
+}
+
+.sort-button:not(.sort-button-active):hover .icon {
+    color: rgb(155, 155, 155) !important;
+}
+
+.sort-button-active .icon {
+    color: rgb(100, 100, 100) !important;
+}
+
+.sort-button-up {
+    position: absolute;
+    top: 2px;
+    right: 1px;
+    padding-top: 3px !important;
+    padding-bottom: 2px !important;
+}
+
+.sort-button-down {
+    display: block;
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    padding-bottom: 4px !important;
+}
+
+.sort-button-down > i.icon {
+    margin-top: -4px !important;
+}
+
+.label-in-popup {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.select-facet-values {
+    max-height: 60vh;
+    overflow-x: hidden;
+    margin-top: 10px;
+    min-width: 220px;
+    font-size: 12px !important;
+
+    .field {
+        margin-bottom: 7px !important;
+    }
+
+    label {
+        font-size: 13px !important;
+    }
+}

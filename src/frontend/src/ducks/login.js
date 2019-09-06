@@ -1,8 +1,9 @@
 import { all, takeEvery, delay, put } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import loginPage from '../mocks/loginPage';
-import {postman} from "../utils/postman";
-import { push } from 'connected-react-router'
+import { postman } from '../utils/postman';
+import { push } from 'connected-react-router';
+import { getUserProfile } from './profile';
 
 //*  TYPES  *//
 
@@ -19,6 +20,7 @@ const LOGIN_ERROR = 'LOGIN_ERROR';
 const initial = {
     page: {},
     error: '',
+    isAuth: false,
     page_progress: false,
     login_progress: false,
 };
@@ -48,18 +50,21 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 login_progress: true,
+                isAuth: false,
                 error: '',
             };
         case LOGIN_SUCCESS:
             return {
                 ...state,
                 login_progress: false,
+                isAuth: true,
                 error: '',
             };
         case LOGIN_ERROR:
             return {
                 ...state,
                 login_progress: false,
+                isAuth: false,
                 error: payload,
             };
         default:
@@ -90,6 +95,7 @@ const getKey = (state, key) => key;
 export const loginPageSelector = createSelector(stateSelector, state => state.page);
 export const progressSelector = createSelector([stateSelector, getKey], (state, key) => state[key]);
 export const errorSelector = createSelector(stateSelector, state => state.error);
+export const isAuthSelector = createSelector(stateSelector, state => state.isAuth);
 
 //*  SAGA  *//
 
@@ -113,12 +119,12 @@ function* loginSaga({ payload }) {
     try {
         yield delay(1000);
         const { api, form } = payload;
-        const result = {}// yield postman[api.type](api.url, form);
+        const result = {}; // yield postman[api.type](api.url, form);
         yield put({
             type: LOGIN_SUCCESS,
-            payload: result,
         });
-        yield put(push('/'))
+        yield put(push('/'));
+        yield put(getUserProfile(result.id));
     } catch (e) {
         yield put({
             type: LOGIN_ERROR,

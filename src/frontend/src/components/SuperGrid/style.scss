@@ -1,0 +1,233 @@
+.scroll-grid-container {
+    display: grid;
+    overflow: auto;
+    height: calc(100vh - 165px);
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.grid_small {
+    height: calc(100vh - 420px);
+}
+
+.grid-table {
+    position: relative;
+    border-collapse: collapse;
+    border: none !important;
+}
+
+.active.content {
+    display: table-row !important;
+}
+
+.ui.grid {
+    margin-bottom: 1px;
+}
+
+.grid-action-btn {
+    white-space: nowrap;
+}
+
+/*.ui.table {
+    thead {
+        th {
+            border-bottom: none !important;
+        }
+    }
+}*/
+
+.sticky-header {
+    border-top: none !important;
+
+    th {
+        min-width: 100px;
+        position: sticky !important;
+        position: -webkit-sticky !important;
+        top: 0;
+        z-index: 1;
+        border-bottom: 1px solid #ddd !important;
+        font-size: 12.5px !important;
+        background-attachment: local !important;
+    }
+
+    .actions-column {
+        right: 0;
+        min-width: 150px;
+        width: 150px;
+    }
+
+    .actions-column:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -15px;
+        width: 15px;
+        background: linear-gradient(
+            to right,
+            rgba(249, 250, 251, 0) 0%,
+            rgba(249, 250, 251, 1) 100%
+        );
+    }
+    .small-column {
+        z-index: 2 !important;
+    }
+
+    th:not(.small-column) {
+        padding-left: 0 !important;
+        .input {
+            width: 100%;
+            input[type='text'] {
+                padding-left: 10px !important;
+                padding-right: 5px !important;
+            }
+        }
+    }
+}
+
+.sticky-header th:not(.small-column) .input input,
+.sticky-header th:not(.small-column) .input .label {
+    border-color: #ccc;
+}
+
+.grid-header-panel {
+    .create-button {
+        height: 33px;
+        min-width: 150px;
+        white-space: nowrap;
+        margin-right: 10px;
+        font-size: unset;
+    }
+
+    .grid-right-elements {
+        text-align: right;
+        white-space: nowrap;
+
+        .orange {
+            opacity: 0.7;
+        }
+    }
+}
+
+.records-counter {
+    margin-top: 8px;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.grid-row > td > div {
+    max-height: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;
+    width: inherit;
+}
+
+.grid-row td {
+    cursor: pointer;
+    background-color: #fbfdff;
+}
+
+.grid-row .checkbox,
+.grid-row .checkbox input.hidden + label {
+    cursor: default;
+}
+
+.grid-row:hover td {
+    background-color: #deecff;
+}
+
+.grid-row td,
+.grid-row th {
+    min-width: 100px;
+    border-top: 1px solid #ddd !important;
+}
+
+.grid-row th {
+    min-width: 150px;
+    width: 150px;
+    position: -webkit-sticky; /* for Safari */
+    position: sticky;
+    right: 0;
+    background: #f9fafb;
+    padding: 5px 15px;
+    border-left: 1px solid #ddd !important;
+}
+
+.grid-row th button {
+    margin: 0 0 3px 0 !important;
+    width: 100%;
+}
+
+.grid-row .ui.fitted.checkbox {
+    margin-top: 4.5px;
+}
+
+.grid-footer-panel {
+    padding-top: 1rem !important;
+    white-space: nowrap;
+    width: 100%!important;
+
+    .grid-right-elements {
+        text-align: right;
+    }
+
+    .grid-right-elements label {
+        font-size: 13px;
+    }
+
+    .column {
+        width: max-content !important;
+    }
+}
+
+.filter-popup > div {
+    text-align: center;
+    margin-bottom: 10px !important;
+}
+
+.from-popup {
+    filter: none !important;
+}
+
+.label-margin {
+    margin: 3px !important;
+}
+
+.cell-edit {
+    white-space: nowrap;
+    width: 20%;
+    .button {
+        margin-left: 8px;
+    }
+}
+
+$orange: #fcd8c1;
+$olive: #ebf1c0;
+$teal: #b5eae7;
+
+.color-info {
+    &-orange {
+        background-color: $orange!important;
+    }
+    &-olive {
+        background-color: $olive!important;
+    }
+    &-teal {
+        background-color: $teal!important;
+    }
+}
+
+.grid-row {
+    &.olive td {
+        background-color: $olive;
+    }
+    &.orange td {
+        background-color: $orange;
+    }
+    &.teal td {
+        background-color: $teal;
+    }
+}
