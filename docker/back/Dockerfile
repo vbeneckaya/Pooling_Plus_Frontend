@@ -21,7 +21,6 @@ WORKDIR /app
 
 RUN mkdir logs && chmod -R 777 /app
 
-USER 1001
 
 COPY --from=build /app/build .
 ENTRYPOINT ping 8.8.8.8
