@@ -84,7 +84,8 @@ namespace Application.Services.Identity
                 }, 
                 Dictionaries = new List<UserConfigurationDictionaryItem>
                 {
-                    new UserConfigurationDictionaryItem{Name = "Users", 
+                    new UserConfigurationDictionaryItem{
+                        Name = "Users", 
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn("Name", FiledType.Text),
