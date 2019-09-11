@@ -37,18 +37,18 @@ deploy-frontend-dev:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/tealsy/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
+    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
  # environment:
  #   name: 
 
-deploy-frontend-prod:    
-  variables:
-    SSH_USER: server
-    SSH_HOST: 10.10.5.10
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/tealsy/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
+#deploy-frontend-prod:    
+#  variables:
+#    SSH_USER: server
+#    SSH_HOST: 10.10.5.10
+#    SSH_OPT:   -o StrictHostKeyChecking=no
+#    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+#  stage: deploy
+#  script:
+#    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
  # environment:
  #   name:
