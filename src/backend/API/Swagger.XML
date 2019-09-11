@@ -14,7 +14,7 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
-        <member name="M:API.Controllers.DictonaryController`3.Search(Domain.Shared.SearchForm)">
+        <member name="M:API.Controllers.DictonaryController`3.Search(Infrastructure.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>

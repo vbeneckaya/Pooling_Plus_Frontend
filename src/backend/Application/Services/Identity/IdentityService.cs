@@ -8,8 +8,8 @@ using DAL.Queries;
 using Domain.Enums;
 using Domain.Services.Identity;
 using Domain.Services.UserIdProvider;
-using Domain.Shared;
 using Infrastructure.Extensions;
+using Infrastructure.Shared;
 using Infrastructure.Signing;
 using Microsoft.IdentityModel.Tokens;
 
