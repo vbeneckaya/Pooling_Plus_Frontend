@@ -25,5 +25,5 @@ USER 1001
 
 COPY --from=build /app/build .
 
-
-ENTRYPOINT dotnet Api.dll --urls http://0.0.0.0:5000
+RUN ls -la 
+ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
