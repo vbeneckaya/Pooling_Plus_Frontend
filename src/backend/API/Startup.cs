@@ -2,10 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Services.Identity;
+using Application.Services.Orders;
+using Application.Services.Roles;
+using Application.Services.Translations;
+using Application.Services.Transportations;
+using Application.Services.UserIdProvider;
+using Application.Services.Users;
+using DAL;
+using Domain.Services.Identity;
+using Domain.Services.Orders;
+using Domain.Services.Roles;
+using Domain.Services.Translations;
+using Domain.Services.Transportations;
+using Domain.Services.UserIdProvider;
+using Domain.Services.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,6 +53,27 @@ namespace aspnetcoreapp
                 });
                 c.IncludeXmlComments(GetXmlCommentsPath());
             });
+            
+            services.Add(new ServiceDescriptor(typeof(AppDbContext), typeof(AppDbContext),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IIdentityService), typeof(IdentityService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IUserIdProvider), typeof(UserIdProvider),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IRolesService), typeof(RolesService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(ITransportationsService), typeof(TransportationsService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService),  ServiceLifetime.Scoped) );
+            
+            services.AddHttpContextAccessor();
+            var connectionString = Configuration.GetConnectionString("DefaultDatabase");
+            
+            new AppDbContext().Migrate(connectionString);
+            
+            services.AddEntityFrameworkNpgsql()
+                .AddDbContext<AppDbContext>(options=>
+                {
+                    options.UseNpgsql(connectionString);
+                })
+                .BuildServiceProvider();
         }
 
         private static string GetXmlCommentsPath()
@@ -54,10 +91,10 @@ namespace aspnetcoreapp
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
 
             app.UseSwagger();

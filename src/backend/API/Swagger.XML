@@ -4,14 +4,29 @@
         <name>API</name>
     </assembly>
     <members>
-        <member name="M:aspnetcoreapp.Controllers.GridController.Columns">
+        <member name="M:API.Controllers.IdentityController.Configuration">
             <summary>
-            Список доступных пользователю колонок
+            Получение конфигурации гридов и справочников
             </summary>
         </member>
-        <member name="M:Web.Controllers.API.UsersController.GetList(Application.Shared.SearchForm)">
+        <member name="M:API.Controllers.IdentityController.Login(Domain.Services.Identity.IdentityModel)">
             <summary>
-            Список доступных пользователю колонок
+            Авторизация, получение токена для логина и пароля
+            </summary>
+        </member>
+        <member name="M:API.Controllers.DictonaryController`3.Search(Domain.Shared.SearchForm)">
+            <summary>
+            Поиск по вхождению с пагинацией
+            </summary>
+        </member>
+        <member name="M:API.Controllers.DictonaryController`3.GetById(System.Guid)">
+            <summary>
+            Данные по id
+            </summary>
+        </member>
+        <member name="M:API.Controllers.DictonaryController`3.SaveOrCreate(`2)">
+            <summary>
+            Сохранить или изменить
             </summary>
         </member>
     </members>
