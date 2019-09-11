@@ -11,7 +11,8 @@ WORKDIR /app
 COPY /src/backend/ .
 RUN mkdir build
 
-RUN dotnet build API/ && cp -R * /app/build/  
+RUN dotnet build API/
+RUN cp -R /src/backend/ /app/build/ 
  #-c Release -o /app/build 
 #RUN cd /app/build && ls -la
 
