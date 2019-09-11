@@ -14,7 +14,7 @@ COPY --from=builder /app/build /usr/share/nginx/html
 RUN chgrp -R root /var/cache/nginx /var/run /var/log/nginx /run && \
     chmod -R 777 /var /run
 
-COPY ./nginx/default /etc/nginx/conf.d/default.conf
+COPY ./docker/front/nginx/default /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 
