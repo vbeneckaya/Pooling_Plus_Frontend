@@ -24,6 +24,6 @@ RUN mkdir logs && chmod -R 777 /app
 USER 1001
 
 COPY --from=build /app/build .
+ENTRYPOINT ping 8.8.8.8
 
-RUN ls -la 
-ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
+#ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
