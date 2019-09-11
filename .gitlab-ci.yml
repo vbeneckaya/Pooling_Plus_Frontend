@@ -14,16 +14,16 @@ before_script:
 build-frontend-dev:
   stage: build
   script:
-    - docker build -t $REGISTRY_HOST/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
-    - docker push $REGISTRY_HOST/alternative-tms/alternative-tms-front:develop
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
   only:
    - master    
 
 build-frontend-prod:
   stage: build
   script:
-    - docker build -t $REGISTRY_HOST/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
-    - docker push $REGISTRY_HOST/alternative-tms/alternative-tms-front:prod
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod
   only:
    - master  
   
