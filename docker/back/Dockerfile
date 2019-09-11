@@ -10,8 +10,8 @@ WORKDIR /app
 
 COPY /src/backend/ .
 
-RUN dotnet build /API && cp -R ./* /app/build   #-c Release -o /app/build 
-RUN cp -R 
+RUN dotnet build /API && cp -R * /app/build/  
+ #-c Release -o /app/build 
 #RUN cd /app/build && ls -la
 
 # Runtime image
