@@ -38,11 +38,11 @@ build-frontend-dev:
   stage: deploy
   script:
     - $SSH_LINE ; cd /opt/alternative-tms ; docker pull $REGISTRY_HOST/tealsy/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
-# environment:
-#   name: 
+ # environment:
+ #   name: 
 
 build-frontend-prod:    
-variables:
+  variables:
     SSH_USER: server
     SSH_HOST: 10.10.5.10
     SSH_OPT:   -o StrictHostKeyChecking=no
@@ -50,5 +50,5 @@ variables:
   stage: deploy
   script:
     - $SSH_LINE ; cd /opt/alternative-tms ; docker pull $REGISTRY_HOST/tealsy/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
-# environment:
-#   name:
+ # environment:
+ #   name:
