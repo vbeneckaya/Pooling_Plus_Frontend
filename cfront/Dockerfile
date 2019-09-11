@@ -2,6 +2,8 @@ FROM node:10-slim as builder
 RUN mkdir /app
 WORKDIR /app
 COPY . .
+
+RUN  cd src/frontend
 RUN npm install
 RUN npm run build
 
