@@ -12,6 +12,8 @@ const GET_DICTIONARY_CARD_REQUEST = 'GET_DICTIONARY_CARD_REQUEST';
 const GET_DICTIONARY_CARD_SUCCESS = 'GET_DICTIONARY_CARD_SUCCESS';
 const GET_DICTIONARY_CARD_ERROR = 'GET_DICTIONARY_CARD_ERROR';
 
+const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -56,6 +58,11 @@ export default (state = initial, { type, payload }) => {
                 card: {},
                 progress: false,
             };
+        case CLEAR_DICTIONARY_INFO:
+            return {
+                ...state,
+                ...initial
+            };
         default:
             return state;
     }
@@ -75,6 +82,12 @@ export const getCardRequest = payload => {
         type: GET_DICTIONARY_CARD_REQUEST,
         payload,
     };
+};
+
+export const clearDictionaryInfo = () => {
+    return {
+        type: CLEAR_DICTIONARY_INFO
+    }
 };
 
 //*  SELECTORS *//

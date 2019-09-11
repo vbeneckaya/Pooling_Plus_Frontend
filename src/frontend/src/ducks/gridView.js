@@ -19,7 +19,7 @@ const GET_GRID_CARD_REQUEST = 'GET_GRID_CARD_REQUEST';
 const GET_GRID_CARD_SUCCESS = 'GET_GRID_CARD_SUCCESS';
 const GET_GRID_CARD_ERROR = 'GET_GRID_CARD_ERROR';
 
-const CLEAR_ROUTE_INFO = 'CLEAR_ROUTE_INFO';
+const CLEAR_GRID_INFO = 'CLEAR_GRID_INFO';
 
 //*  INITIAL STATE  *//
 
@@ -66,7 +66,7 @@ export default (state = initial, { type, payload }) => {
                 card: {},
                 progress: false,
             };
-        case CLEAR_ROUTE_INFO:
+        case CLEAR_GRID_INFO:
             return {
                 ...state,
                 ...initial,
@@ -98,6 +98,12 @@ export const getCardRequest = payload => {
         type: GET_GRID_CARD_REQUEST,
         payload,
     };
+};
+
+export const clearGridInfo = () => {
+    return {
+        type: CLEAR_GRID_INFO
+    }
 };
 
 //*  SELECTORS *//

@@ -3,14 +3,28 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import TableInfo from '../../components/TableInfo';
-import { columnsSelector, getListRequest } from '../../ducks/dictionaryView';
+import {
+    columnsSelector,
+    getListRequest,
+    listSelector,
+    progressSelector,
+    totalCountSelector
+} from '../../ducks/dictionaryView';
 
-const List = ({ columns, loadList }) => {
+const List = ({ match = {}, columns, loadList, progress, totalCount, list }) => {
+
+    const { params = {} } = match;
+    const { name = '' } = params;
+
     return (
         <TableInfo
             headerRow={columns}
+            name={name}
             className="wider container-margin-top-bottom"
             loadList={loadList}
+            loading={progress}
+            totalCount={totalCount}
+            list={list}
         />
     );
 };
@@ -22,6 +36,9 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         columns: columnsSelector(state, name),
+        progress: progressSelector(state),
+        totalCount: totalCountSelector(state),
+        list: listSelector(state)
     };
 };
 
