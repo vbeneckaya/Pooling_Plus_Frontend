@@ -12,7 +12,7 @@ COPY /src/backend/ .
 RUN mkdir build
 
 RUN dotnet build API/
-RUN cp -R /src/backend/ /app/build/ 
+COPY . /app/build/ 
  #-c Release -o /app/build 
 #RUN cd /app/build && ls -la
 
