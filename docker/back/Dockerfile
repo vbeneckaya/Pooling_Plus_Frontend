@@ -20,8 +20,8 @@ EXPOSE 8080
 WORKDIR /app
 
 RUN mkdir logs && chmod -R 777 /app
-
+RUN apt-get update && apt install iputils-ping -y
 
 COPY --from=build /app/build .
-
-ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
+ENTRYPOINT ping 8.8.8.8
+#ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
