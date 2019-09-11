@@ -6,17 +6,12 @@
         {
         }
 
-        public TokenModel(string token, string name, string role)
+        public TokenModel(string token)
         {
             AccessToken = token;
-            UserName = name;
-            UserRole = role;
         }
 
         public string AccessToken { get; set; }
 
-        public string UserName { get; set; }
-
-        public string UserRole { get; set; }
     }
 }

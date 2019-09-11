@@ -7,6 +7,9 @@ namespace Domain.Services.Identity
     {
         public IEnumerable<UserConfigurationGridItem> Grids { get; set; }
         public IEnumerable<UserConfigurationDictionaryItem> Dictionaries { get; set; }
+        public string UserName { get; set; }
+
+        public string UserRole { get; set; }
     }
 
     public class UserConfigurationGridItem
