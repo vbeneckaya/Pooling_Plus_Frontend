@@ -78,7 +78,7 @@ namespace aspnetcoreapp
 
         private static string GetXmlCommentsPath()
         {
-            return String.Format(@"{0}\Swagger.XML", AppDomain.CurrentDomain.BaseDirectory);
+            return String.Format(@"{0}Swagger.XML", AppDomain.CurrentDomain.BaseDirectory);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
