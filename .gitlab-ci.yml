@@ -41,7 +41,7 @@ build-frontend-dev:
 # environment:
 #   name: 
 
-build-frontend-prod    
+build-frontend-prod:    
 variables:
     SSH_USER: server
     SSH_HOST: 10.10.5.10
