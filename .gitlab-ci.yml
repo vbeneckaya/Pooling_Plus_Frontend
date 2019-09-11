@@ -29,7 +29,7 @@ build-frontend-prod:
   only:
    - master  
   
-build-frontend-dev:
+deploy-frontend-dev:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.10
@@ -41,7 +41,7 @@ build-frontend-dev:
  # environment:
  #   name: 
 
-build-frontend-prod:    
+deploy-frontend-prod:    
   variables:
     SSH_USER: server
     SSH_HOST: 10.10.5.10
