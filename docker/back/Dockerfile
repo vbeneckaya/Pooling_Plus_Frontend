@@ -10,8 +10,8 @@ WORKDIR /app
 
 COPY /src/backend/ .
 
-RUN cd API/ && dotnet build -c Release -o /app/build
-RUN cd /app/build && ls -la
+RUN dotnet build API/ -c Release -o /app/build
+#RUN cd /app/build && ls -la
 
 # Runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
@@ -20,10 +20,8 @@ EXPOSE 8080
 WORKDIR /app
 
 RUN mkdir logs && chmod -R 777 /app
-
-USER 1001
+RUN apt-get update && apt install iputils-ping -y
 
 COPY --from=build /app/build .
-
-
-ENTRYPOINT dotnet Api.dll --urls http://0.0.0.0:5000
+ENTRYPOINT ping 8.8.8.8
+#ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
