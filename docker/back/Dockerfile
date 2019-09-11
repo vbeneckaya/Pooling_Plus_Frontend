@@ -25,5 +25,6 @@ USER 1001
 
 COPY --from=build /app/build .
 
+RUN  chmod -R 777 /app
 RUN ls -la 
 ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
