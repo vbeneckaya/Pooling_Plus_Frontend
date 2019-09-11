@@ -14,17 +14,17 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
-        <member name="M:API.Controllers.DictonaryController`3.Search(Infrastructure.Shared.SearchForm)">
+        <member name="M:API.Controllers.Shared.DictonaryController`3.Search(Infrastructure.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.DictonaryController`3.GetById(System.Guid)">
+        <member name="M:API.Controllers.Shared.DictonaryController`3.GetById(System.Guid)">
             <summary>
             Данные по id
             </summary>
         </member>
-        <member name="M:API.Controllers.DictonaryController`3.SaveOrCreate(`2)">
+        <member name="M:API.Controllers.Shared.DictonaryController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
             </summary>

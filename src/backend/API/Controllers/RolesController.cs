@@ -1,3 +1,4 @@
+using API.Controllers.Shared;
 using Domain.Persistables;
 using Domain.Services.Roles;
 using Microsoft.AspNetCore.Mvc;

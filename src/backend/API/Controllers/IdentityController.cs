@@ -1,6 +1,3 @@
-using System.Linq;
-using DAL;
-using Domain.Persistables;
 using Domain.Services.Identity;
 using Infrastructure.Shared;
 using Microsoft.AspNetCore.Mvc;

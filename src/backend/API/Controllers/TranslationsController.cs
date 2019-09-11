@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using API.Controllers.Shared;
 using Domain.Persistables;
 using Domain.Services.Translations;
 using Microsoft.AspNetCore.Mvc;
