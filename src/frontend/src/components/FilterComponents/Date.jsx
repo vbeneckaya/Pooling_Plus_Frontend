@@ -2,8 +2,11 @@ import React from 'react';
 import { Button, Form, Icon, Input, Popup } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import { dateToString, parseDate } from '../../utils/dateTimeFormater';
+import { useTranslation } from 'react-i18next';
 
 const Facet = ({ name, text, value, onChange, sort, setSort }) => {
+    const { t } = useTranslation();
+
     const getStringItem = i => {
         const parts = (value || '').split('-');
         return parts[i] || null;
@@ -38,7 +41,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             name={name}
             autoComplete="off"
             value={value || ''}
-            placeholder={text}
+            placeholder={t(name)}
             label={{ basic: true, content: '' }}
             labelPosition="right"
             onChange={onChange}
@@ -47,7 +50,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     const content = (
         <Form className="filter-popup">
-            <div>{text}</div>
+            <div>{t(name)}</div>
             <Form.Group>
                 <Form.Field width={8}>
                     <DatePicker

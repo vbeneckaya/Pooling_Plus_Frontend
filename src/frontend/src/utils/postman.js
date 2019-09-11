@@ -1,5 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
+import { toast } from 'react-toastify';
 
 export const postman = axios.create({
     baseURL: '',
@@ -11,6 +12,10 @@ postman.interceptors.response.use(
         return resp.data;
     },
     error => {
+        const { data = {} } = error.response;
+        const { error: errorText = '', message = '' } = data;
+        toast.error(JSON.stringify(errorText) || message || 'Ошибка!');
+
         return Promise.reject(error);
     },
 );

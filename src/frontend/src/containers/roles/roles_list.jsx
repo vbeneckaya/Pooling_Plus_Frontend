@@ -1,28 +1,28 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import TableInfo from '../../components/TableInfo';
 
-import {rolesColumns} from '../../constants/rolesColumns';
+import { rolesColumns } from '../../constants/rolesColumns';
 import {
     getRolesRequest,
     progressSelector,
     rolesListSelector,
     totalCountSelector,
 } from '../../ducks/roles';
-import {Button, Icon} from 'semantic-ui-react';
+import { Button, Icon } from 'semantic-ui-react';
 import RoleCard from './role_card';
 
 const newModal = load => (
     <RoleCard title="Создание роли" id={null} loadList={load}>
         <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus"/> Создать роль
+            <Icon name="plus" /> Создать роль
         </Button>
     </RoleCard>
 );
 
 export class RolesList extends Component {
-    handleToggleIsActive = (event, {itemID, checked}) => {
+    handleToggleIsActive = (event, { itemID, checked }) => {
         console.log('toggle', itemID, checked);
     };
 
@@ -30,14 +30,14 @@ export class RolesList extends Component {
         return [
             <RoleCard id={row.id} title={`Редактировать роль ${row.name}`} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
-                    <Icon name="edit"/> Редактировать
+                    <Icon name="edit" /> Редактировать
                 </Button>
             </RoleCard>,
         ];
     };
 
     render() {
-        const {list, loadList, totalCount, loading} = this.props;
+        const { list, loadList, totalCount, loading } = this.props;
         console.log('list', list);
 
         return (

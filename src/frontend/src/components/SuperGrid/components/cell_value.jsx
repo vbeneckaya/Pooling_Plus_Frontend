@@ -7,7 +7,7 @@ import {
     NUMBER_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
-} from '../../../utils/gridColumnsHelper';
+} from '../../../constants/columnsType';
 import { formatDate } from '../../../utils/dateTimeFormater';
 import { numbersFormat } from '../../../utils/numbersFormat';
 import { Icon, Label, Checkbox } from 'semantic-ui-react';
@@ -43,10 +43,12 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) =
 
     if (type === DATE_TIME_TYPE) {
         const dateString = formatDate(new Date(value), 'dd.MM.YYYY HH:mm').toString();
-        return <div
-            key={`value_${id}`}
-            dangerouslySetInnerHTML={{ __html: dateString.replaceAll(' ', '&nbsp;') }}
-        />;
+        return (
+            <div
+                key={`value_${id}`}
+                dangerouslySetInnerHTML={{ __html: dateString.replaceAll(' ', '&nbsp;') }}
+            />
+        );
     }
 
     if (type === STATE_TYPE) {

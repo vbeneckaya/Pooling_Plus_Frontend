@@ -37,7 +37,7 @@ class Result extends Component {
             stateColors,
             loadList,
             disabledCheck,
-            isFixing
+            isFixing,
         } = this.props;
 
         const columnStyle = column => ({

@@ -1,9 +1,12 @@
 import React from 'react';
 import { Button, Icon, Input, Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
 import './style.scss';
 
 const Facet = ({ name, text, value, onChange, sort, setSort }) => {
+    const { t } = useTranslation();
+
     const input = (
         <Input
             fluid
@@ -12,14 +15,14 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             autoComplete="off"
             label={{ basic: true, content: '' }}
             labelPosition="right"
-            placeholder={text}
+            placeholder={t(name)}
             onChange={onChange}
         />
     );
 
     return (
         <div className="facet-input">
-            <Popup trigger={input} content={text} className="from-popup" on="focus" />
+            <Popup trigger={input} content={t(name)} className="from-popup" on="focus" />
             <Button
                 className={`sort-button sort-button-up ${
                     sort === 'asc' ? 'sort-button-active' : ''

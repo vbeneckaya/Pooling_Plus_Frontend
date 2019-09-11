@@ -92,6 +92,7 @@
 }
 
 .grid-header-panel {
+    margin-bottom: 0 !important;
     .create-button {
         height: 33px;
         min-width: 150px;
@@ -168,7 +169,7 @@
 .grid-footer-panel {
     padding-top: 1rem !important;
     white-space: nowrap;
-    width: 100%!important;
+    width: 100% !important;
 
     .grid-right-elements {
         text-align: right;
@@ -210,13 +211,13 @@ $teal: #b5eae7;
 
 .color-info {
     &-orange {
-        background-color: $orange!important;
+        background-color: $orange !important;
     }
     &-olive {
-        background-color: $olive!important;
+        background-color: $olive !important;
     }
     &-teal {
-        background-color: $teal!important;
+        background-color: $teal !important;
     }
 }
 

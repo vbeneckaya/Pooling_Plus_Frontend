@@ -2,7 +2,7 @@ import { all, put, takeEvery, delay } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import { toast } from 'react-toastify';
-import users from "../mocks/users";
+import users from '../mocks/users';
 
 const TYPE_API = 'users';
 
@@ -34,7 +34,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: true,
-                error: ''
+                error: '',
             };
         case GET_USERS_LIST_SUCCESS:
             return {
@@ -42,20 +42,20 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 error: '',
                 list: payload.isConcat ? [...state.list, ...payload.users] : payload.users,
-                totalCount: payload.total_count
+                totalCount: payload.total_count,
             };
         case GET_USER_CARD_SUCCESS:
             return {
                 ...state,
                 progress: false,
-                card: payload
+                card: payload,
             };
         case GET_USERS_LIST_ERROR:
         case GET_USER_CARD_ERROR:
             return {
                 ...state,
                 progress: false,
-                error: payload
+                error: payload,
             };
         default:
             return state;
@@ -74,18 +74,29 @@ export const getUsersRequest = payload => {
 export const getUserCardRequest = payload => {
     return {
         type: GET_USER_CARD_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
-
 
 //*  SELECTORS *//
 
 const stateSelector = state => state.users;
-export const usersListSelector = createSelector(stateSelector, state => state.list);
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
-export const userCardSelector = createSelector(stateSelector, state => state.card);
+export const usersListSelector = createSelector(
+    stateSelector,
+    state => state.list,
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
+export const totalCountSelector = createSelector(
+    stateSelector,
+    state => state.totalCount,
+);
+export const userCardSelector = createSelector(
+    stateSelector,
+    state => state.card,
+);
 
 //*  SAGA  *//
 
@@ -99,7 +110,7 @@ function* getUsersListSaga({ payload }) {
             type: GET_USERS_LIST_SUCCESS,
             payload: {
                 ...result,
-                isConcat
+                isConcat,
             },
         });
     } catch (error) {
@@ -128,7 +139,6 @@ function* getUserCardSaga({ payload }) {
         toast.error('Ошибка!');
     }
 }
-
 
 export function* saga() {
     yield all([

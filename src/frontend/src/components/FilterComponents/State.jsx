@@ -1,7 +1,10 @@
 import React from 'react';
 import { Button, Popup, Checkbox, Icon, Form } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
-const Facet = ({ value, onChange, stateColors, sort, setSort, name }) => {
+const Facet = ({ value, onChange, stateColors = [], sort, setSort, name }) => {
+    const { t } = useTranslation();
+
     let values = value ? value.split('|') : [];
 
     const toggle = (e, { value }) => {
@@ -19,7 +22,7 @@ const Facet = ({ value, onChange, stateColors, sort, setSort, name }) => {
                 let label = (
                     <label>
                         <Icon color={x.color} inverted={x.inverted} name="circle" />
-                        {x.text}
+                        {t(x.name)}
                     </label>
                 );
                 return (

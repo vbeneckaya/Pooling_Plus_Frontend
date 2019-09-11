@@ -81,10 +81,22 @@ export const getRoleCardRequest = payload => {
 //*  SELECTORS *//
 
 const stateSelector = state => state.roles;
-export const rolesListSelector = createSelector(stateSelector, state => state.list);
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
-export const roleCardSelector = createSelector(stateSelector, state => state.card)
+export const rolesListSelector = createSelector(
+    stateSelector,
+    state => state.list,
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
+export const totalCountSelector = createSelector(
+    stateSelector,
+    state => state.totalCount,
+);
+export const roleCardSelector = createSelector(
+    stateSelector,
+    state => state.card,
+);
 
 //*  SAGA  *//
 
@@ -109,7 +121,6 @@ function* getRolesListSaga({ payload }) {
         toast.error('Ошибка!');
     }
 }
-
 
 function* getRoleCardSaga({ payload }) {
     try {

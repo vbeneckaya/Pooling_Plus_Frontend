@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Input, Loader, Popup } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
-/*import { lookupProgressSelector, lookupSelector } from '../../ducks/lookup';*/
+import { withTranslation } from 'react-i18next';
 
 class Facet extends React.Component {
     state = {};
@@ -27,44 +27,27 @@ class Facet extends React.Component {
             onChange,
             sort,
             setSort,
-            valuesList,
-            isClearable,
+            valuesList = [],
             loading,
+            t,
         } = this.props;
-        // const visibleCount = 20;
+
         let values = value ? value.split('|') : [];
 
         let items = valuesList.filter(item => item.name) || [];
-        /*items =
-            items.length > visibleCount
-                ? items.sort(
-                      (a, b) =>
-                          b.isActive -
-                          a.isActive -
-                          values.includes(a.value) +
-                          (a.value < b.value) * 2,
-                  )
-                : items.sort((a, b) => b.isActive - a.isActive + (a.value < b.value) * 2);*/
+
         items = items.map(x => {
             return {
                 value: x.name,
-                name: x.name,
+                name: t(x.name),
                 isActive: x.isActive,
             };
         });
-        /*if (isClearable)
-            items.unshift({
-                value: 'null',
-                name: 'Не заполнено',
-                isActive: true,
-            });*/
 
         if (this.state.filter)
             items = items.filter(
                 x => values.includes(x.value) || x.name.toLowerCase().includes(this.state.filter),
             );
-
-        // items = items.slice(0, values.length + 20);
 
         const toggle = (e, { value }) => {
             if (values.some(x => x === value)) {
@@ -77,7 +60,7 @@ class Facet extends React.Component {
 
         let content = (
             <Form>
-                <label className="label-in-popup">{text}</label>
+                <label className="label-in-popup">{t(name)}</label>
                 <div>
                     <Input
                         fluid
@@ -123,7 +106,9 @@ class Facet extends React.Component {
                             onKeyPress={e => {
                                 e.preventDefault();
                             }}
-                            placeholder={values.length > 0 ? values.length + ' ' + 'выбрано' : text}
+                            placeholder={
+                                values.length > 0 ? values.length + ' ' + 'выбрано' : t(name)
+                            }
                         />
                     }
                     content={content}
@@ -161,9 +146,9 @@ class Facet extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      /*  valuesList: lookupSelector(state),
+        /*  valuesList: lookupSelector(state),
         loading: lookupProgressSelector(state),*/
     };
 };
 
-export default connect(mapStateToProps)(Facet);
+export default withTranslation()(connect(mapStateToProps)(Facet));

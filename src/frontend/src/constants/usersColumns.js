@@ -1,17 +1,17 @@
-import {ACTIVE_TYPE, ENUM_TYPE} from "../utils/gridColumnsHelper";
+import { ACTIVE_TYPE, ENUM_TYPE } from '../constants/columnsType';
 
 export const usersColumns = [
     {
         key: 'login',
-        text: 'Логин'
+        text: 'Логин',
     },
     {
         key: 'name',
-        text: 'ФИО'
+        text: 'ФИО',
     },
     {
         key: 'email',
-        text: 'Email'
+        text: 'Email',
     },
     {
         key: 'role',
@@ -20,21 +20,21 @@ export const usersColumns = [
     {
         key: 'shippers',
         text: 'Поставщики',
-        type: ENUM_TYPE
+        type: ENUM_TYPE,
     },
     {
         key: 'regions',
         text: 'Регионы',
-        type: ENUM_TYPE
+        type: ENUM_TYPE,
     },
     {
         key: 'psg',
         text: 'ПСГ',
-        type: ENUM_TYPE
+        type: ENUM_TYPE,
     },
     {
         key: 'is_active',
         text: 'Активность',
-        type: ACTIVE_TYPE
-    }
+        type: ACTIVE_TYPE,
+    },
 ];

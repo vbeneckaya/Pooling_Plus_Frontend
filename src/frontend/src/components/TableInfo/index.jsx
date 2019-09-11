@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import {Button, Container, Dimmer, Grid, Loader, Table} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Button, Container, Dimmer, Grid, Loader, Table } from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
-import {debounce} from 'throttle-debounce';
-import {PAGE_SIZE} from '../../constants/settings';
+import { debounce } from 'throttle-debounce';
+import { PAGE_SIZE } from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
 import CellValue from '../SuperGrid/components/cell_value';
+import { withTranslation } from 'react-i18next';
 
 class TableInfo extends Component {
     state = {
@@ -36,7 +37,7 @@ class TableInfo extends Component {
 
     load = isConcat => {
         const { loadList } = this.props;
-
+        console.log('!!!!!', loadList);
         loadList(this.mapData(isConcat));
     };
 
@@ -61,11 +62,12 @@ class TableInfo extends Component {
 
     headerRowComponent = (
         <Table.Row>
-            {this.props.headerRow.map(row => (
-                <Table.HeaderCell className="table-header-cell" key={row.key}>
-                    {row.text}
-                </Table.HeaderCell>
-            ))}
+            {this.props.headerRow &&
+                this.props.headerRow.map(row => (
+                    <Table.HeaderCell className="table-header-cell" key={row.key}>
+                        {this.props.t(row.key)}
+                    </Table.HeaderCell>
+                ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>
     );
@@ -156,11 +158,15 @@ class TableInfo extends Component {
                                           {isShowActions ? (
                                               <Table.Cell textAlign="center">
                                                   {actions &&
-                                                      actions(row, this.load).map((action, index) => (
-                                                          <React.Fragment key={`action_${index}`}>
-                                                              {action}
-                                                          </React.Fragment>
-                                                      ))}
+                                                      actions(row, this.load).map(
+                                                          (action, index) => (
+                                                              <React.Fragment
+                                                                  key={`action_${index}`}
+                                                              >
+                                                                  {action}
+                                                              </React.Fragment>
+                                                          ),
+                                                      )}
                                               </Table.Cell>
                                           ) : null}
                                       </Table.Row>
@@ -177,4 +183,4 @@ TableInfo.defaultProps = {
     loadList: () => {},
 };
 
-export default TableInfo;
+export default withTranslation()(TableInfo);

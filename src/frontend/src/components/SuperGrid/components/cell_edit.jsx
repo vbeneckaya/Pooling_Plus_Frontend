@@ -5,12 +5,9 @@ const CellEdit = ({ value, onChange, name }) => {
     let [isEdit, setIsEdit] = useState(false);
     let [val, setVal] = useState(value);
 
-    useEffect(
-        () => {
-            setVal(value);
-        },
-        [value],
-    );
+    useEffect(() => {
+        setVal(value);
+    }, [value]);
 
     const handleChange = () => {
         setIsEdit(!isEdit);

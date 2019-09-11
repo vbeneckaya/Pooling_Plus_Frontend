@@ -10,7 +10,7 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import { Button, Confirm, Grid } from 'semantic-ui-react';
+import { Button, Confirm, Grid, Dimmer, Loader } from 'semantic-ui-react';
 
 class SuperGrid extends Component {
     constructor(props) {
@@ -43,7 +43,11 @@ class SuperGrid extends Component {
         const { selectedRows } = this.state;
         const newSelectedRow = new Set(selectedRows);
 
-        if (selectedRows.size && prevProps.rows !== this.props.rows) {
+        if (
+            selectedRows.size &&
+            selectedRows.size !== this.props.totalCount &&
+            prevProps.rows !== this.props.rows
+        ) {
             const rowsIds = this.props.rows.map(item => item.id);
 
             for (let item of selectedRows) {
@@ -58,7 +62,7 @@ class SuperGrid extends Component {
 
     mapData = (isConcat, isReload) => {
         const { filters, page, sort, fullText } = this.state;
-        const { extParams, defaultFilter } = this.props;
+        const { extParams, defaultFilter, name } = this.props;
 
         let params = {
             filter: {
@@ -72,6 +76,7 @@ class SuperGrid extends Component {
                 sort,
             },
             ...extParams,
+            name,
             isConcat,
         };
 
@@ -223,9 +228,9 @@ class SuperGrid extends Component {
         const { filters, sort, fullText, selectedRows, extSelectedRow } = this.state;
         const {
             totalCount: count = 0,
-            isFixing,
             columns,
             rows,
+            progress,
             modalCard,
             catalogsFromGrid,
             actions,
@@ -237,7 +242,6 @@ class SuperGrid extends Component {
             createButton,
             extGrid,
             collapsed,
-            content,
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
@@ -248,7 +252,10 @@ class SuperGrid extends Component {
 
         return (
             <>
-                {/*<HeaderSearchGrid
+                <Dimmer active={progress} inverted className="table-loader">
+                      <Loader size="huge">Loading</Loader> 
+                </Dimmer>
+                <HeaderSearchGrid
                     createButton={createButton}
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
@@ -315,7 +322,7 @@ class SuperGrid extends Component {
                                 />
                             </Grid.Column>
                         ) : null}
-                        {(selectedRows.size || extSelectedRow.size) && groupActions
+                        {selectedRows.size && groupActions
                             ? groupActions(collapsed ? extSelectedRow.size : selectedRows.size).map(
                                   action => (
                                       <Grid.Column key={action.name}>
@@ -355,7 +362,7 @@ class SuperGrid extends Component {
                     onCancel={closeConfirmation}
                     onConfirm={confirmation.onConfirm}
                     content={confirmation.content}
-                />*/}
+                />
             </>
         );
     }
@@ -364,6 +371,11 @@ class SuperGrid extends Component {
 SuperGrid.propTypes = {
     totalCount: PropTypes.number,
     columns: PropTypes.array.isRequired,
+    rows: PropTypes.array.isRequired,
+    progress: PropTypes.bool,
+    loadList: PropTypes.func,
+    autoUpdateStart: PropTypes.func,
+    autoUpdateStop: PropTypes.func,
 };
 SuperGrid.defaultProps = {
     loadList: () => {},

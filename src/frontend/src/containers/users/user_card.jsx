@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import {Button, Dimmer, Form, Grid, Input, Loader, Modal} from 'semantic-ui-react';
-import {getUserCardRequest, progressSelector, userCardSelector} from '../../ducks/users';
+import { Button, Dimmer, Form, Grid, Input, Loader, Modal } from 'semantic-ui-react';
+import { getUserCardRequest, progressSelector, userCardSelector } from '../../ducks/users';
 
 class UserCard extends Component {
     constructor(props) {
@@ -46,14 +46,11 @@ class UserCard extends Component {
         const { getUser, id, getShippersList, getDelivery } = this.props;
 
         getUser(id);
-        getShippersList();
-        getDelivery({ name: 'rc' });
-        getDelivery({ name: 'psg' });
         this.setState({ modalOpen: true });
     };
 
     handleClose = () => {
-        const {loadList} = this.props;
+        const { loadList } = this.props;
 
         this.setState({ modalOpen: false });
         loadList();
@@ -70,12 +67,8 @@ class UserCard extends Component {
 
     render() {
         const { modalOpen, form } = this.state;
-        const { login, name, role, email, is_active} = form;
-        const {
-            children,
-            title,
-            loading,
-        } = this.props;
+        const { login, name, role, email, is_active } = form;
+        const { children, title, loading } = this.props;
 
         return (
             <Modal
@@ -145,7 +138,7 @@ const mapDispatchToProps = dispatch => {
     return {
         getUser: params => {
             dispatch(getUserCardRequest(params));
-        }
+        },
     };
 };
 

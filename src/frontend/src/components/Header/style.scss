@@ -7,13 +7,14 @@
     margin-right: 2em;
 }
 
-.ui.secondary.menu .dropdown.item > .menu, .ui.text.menu .dropdown.item > .menu {
-    border-radius: 0!important;
-    margin-top: 0!important;
+.ui.secondary.menu .dropdown.item > .menu,
+.ui.text.menu .dropdown.item > .menu {
+    border-radius: 0 !important;
+    margin-top: 0 !important;
 }
 
 .ui.secondary.pointing.menu .item .active.item {
-    border-color: transparent!important;
+    border-color: transparent !important;
 }
 
 .ui.secondary.pointing.menu .active.item.dropdown {
@@ -25,5 +26,5 @@
 }
 
 .ui.secondary.menu .header.item {
-    padding: 0.5em 1.5em !important
+    padding: 0.5em 1.5em !important;
 }

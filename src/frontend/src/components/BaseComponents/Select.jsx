@@ -12,7 +12,17 @@ class Select extends Component {
     };
 
     render() {
-        const { value, onChange, valuesList = [], placeholder = '', disabled, label, multiple, loading, clearable } = this.props;
+        const {
+            value,
+            onChange,
+            valuesList = [],
+            placeholder = '',
+            disabled,
+            label,
+            multiple,
+            loading,
+            clearable,
+        } = this.props;
 
         let items = valuesList.map((x, index) => ({
             key: `${x.value}_${index}`,

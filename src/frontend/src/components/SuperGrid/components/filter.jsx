@@ -13,7 +13,7 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
-} from '../../../utils/gridColumnsHelper';
+} from '../../../constants/columnsType';
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
@@ -59,6 +59,7 @@ class Filter extends Component {
             checkAllDisabled,
             setSelectedAll,
         } = this.props;
+
         const columnStyle = column => ({
             maxWidth: column.width || 100 + 'px',
             minWidth: column.width || 100 + 'px',

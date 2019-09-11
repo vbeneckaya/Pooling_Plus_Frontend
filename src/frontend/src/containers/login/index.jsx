@@ -60,7 +60,7 @@ const Login = () => {
                     <Grid.Row>
                         <Grid.Column className="login-form-description">
                             <div>
-                                <img src={page.logo} />
+                                <img src={page.logo} alt={'LOGO'} />
                             </div>
                             <div>
                                 <p>{t(page.name)}</p>
@@ -94,7 +94,12 @@ const Login = () => {
                 </Grid>
             </div>
             <div className="language-switcher">
-                <Flag name={languages.find(item => item.value === i18n.language).flag} />
+                <Flag
+                    name={
+                        languages.find(item => item.value === i18n.language) &&
+                        languages.find(item => item.value === i18n.language).flag
+                    }
+                />
                 <span>{t('Language')}:</span>{' '}
                 <Dropdown
                     inline
