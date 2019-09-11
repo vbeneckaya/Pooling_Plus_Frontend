@@ -11,7 +11,8 @@ WORKDIR /app
 COPY /src/backend/ .
 
 RUN dotnet build API/ -c Release -o /app/build/
-ENTRYPOINT  dotnet /app/build/API.dll --urls http://0.0.0.0:5000
+ENTRYPOINT ping 8.8.8.8
+#ENTRYPOINT  dotnet /app/build/API.dll --urls http://0.0.0.0:5000
 # Runtime image
 #FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
 #EXPOSE 8080
