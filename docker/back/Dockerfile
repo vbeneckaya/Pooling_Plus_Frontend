@@ -9,9 +9,8 @@ RUN chmod -R 777 /app
 WORKDIR /app
 
 COPY /src/backend/ .
-RUN mkdir build
 
-RUN dotnet build API/
+RUN dotnet build API/ -c Release -o /app/build/API/
 COPY . /app/build/ 
  #-c Release -o /app/build 
 #RUN cd /app/build && ls -la
