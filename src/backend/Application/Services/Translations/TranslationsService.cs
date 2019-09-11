@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
 using Application.Shared;
 using DAL;
 using Domain.Persistables;
@@ -33,6 +36,19 @@ namespace Application.Services.Translations
                 Ru = entity.Ru,
                 En = entity.En
             };
+        }
+
+        public IEnumerable<TranslationDto> GetAll()
+        {
+            return db.Translations.ToList().Select(x=>
+            {
+                return new TranslationDto
+                {
+                    Name = x.Name,
+                    Ru = x.Ru,
+                    En = x.En
+                };
+            } );
         }
     }
 }

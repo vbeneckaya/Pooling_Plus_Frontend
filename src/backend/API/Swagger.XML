@@ -29,5 +29,10 @@
             Сохранить или изменить
             </summary>
         </member>
+        <member name="M:API.Controllers.TranslationsController.GetForLangType(System.String)">
+            <summary>
+            Получение переводов для языка
+            </summary>
+        </member>
     </members>
 </doc>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Domain.Services;
 using Domain.Services.Users;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ namespace API.Controllers
 {
     public abstract class DictonaryController<TService, TEntity, TDto> : Controller where TService: IDictonaryService<TEntity, TDto>
     {
-        private readonly TService service;
+        protected readonly TService service;
 
         public DictonaryController(TService service)
         {
