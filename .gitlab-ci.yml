@@ -14,18 +14,16 @@ before_script:
 build-frontend-dev:
   stage: build
   script:
-    - docker build -t alternative-tms-front:develop -f ./docker/front/Dockerfile .
-    - docker tag alternative-tms-front $REGISTRY_HOST/alternative-tms/alternative-tms-front:develop
-    - docker push $REGISTRY_HOST/tealsy/alternative-tms-front:develop
+    - docker build -t $REGISTRY_HOST/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
+    - docker push $REGISTRY_HOST/alternative-tms/alternative-tms-front:develop
   only:
    - master    
 
 build-frontend-prod:
   stage: build
   script:
-    - docker build -t alternative-tms-front:prod -f ./docker/front/Dockerfile .
-    - docker tag alternative-tms-front $REGISTRY_HOST/alternative-tms/alternative-tms-front:prod
-    - docker push $REGISTRY_HOST/tealsy/alternative-tms-front:prod
+    - docker build -t $REGISTRY_HOST/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
+    - docker push $REGISTRY_HOST/alternative-tms/alternative-tms-front:prod
   only:
    - master  
   
