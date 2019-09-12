@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,6 +36,12 @@ namespace DAL
                 }              
             }
           
+        }
+
+        public void DropDb()
+        {
+            var commandText = "DROP SCHEMA public CASCADE;CREATE SCHEMA public;";
+            Database.ExecuteSqlCommand(commandText);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Application.Services.Identity;
 using Application.Services.Orders;
 using Application.Services.Roles;
@@ -56,23 +57,29 @@ namespace API
             services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(ITransportationsService), typeof(TransportationsService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService),  ServiceLifetime.Scoped) );
+            /*end of add service implementation*/
             
             services.AddHttpContextAccessor();
             var connectionString = Configuration.GetConnectionString("DefaultDatabase");
-            
-            new AppDbContext().Migrate(connectionString);
-            
-            services.AddEntityFrameworkNpgsql()
+
+
+            var buildServiceProvider = services.AddEntityFrameworkNpgsql()
                 .AddDbContext<AppDbContext>(options=>
                 {
                     options.UseNpgsql(connectionString);
                 })
                 .BuildServiceProvider();
+            
+            var appDbContext = buildServiceProvider.GetService<AppDbContext>();
+
+            appDbContext.DropDb();
+            appDbContext.SaveChanges();
+            appDbContext.Migrate(connectionString);
         }
 
         private static string GetXmlCommentsPath()
         {
-            return String.Format(@"{0}Swagger.XML", AppDomain.CurrentDomain.BaseDirectory);
+            return Path.Combine(AppContext.BaseDirectory, "Swagger.XML");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
