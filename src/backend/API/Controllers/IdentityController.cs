@@ -1,8 +1,5 @@
-using System.Linq;
-using DAL;
-using Domain.Persistables;
 using Domain.Services.Identity;
-using Domain.Shared;
+using Infrastructure.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

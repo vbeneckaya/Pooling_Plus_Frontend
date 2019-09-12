@@ -1,8 +1,8 @@
-namespace Domain.Shared
+namespace Infrastructure.Shared
 {
     public class PagingForm
     {
-        public int Page { get; set; }
-        public bool LoadPrevious { get; set; } = false;
+        public int Skip { get; set; }
+        public int Take { get; set; }
     }
 }

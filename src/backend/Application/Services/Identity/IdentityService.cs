@@ -8,8 +8,8 @@ using DAL.Queries;
 using Domain.Enums;
 using Domain.Services.Identity;
 using Domain.Services.UserIdProvider;
-using Domain.Shared;
 using Infrastructure.Extensions;
+using Infrastructure.Shared;
 using Infrastructure.Signing;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,14 +51,17 @@ namespace Application.Services.Identity
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningOptions.SignKey)), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            return new VerificationResultWith<TokenModel>{Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt, identity.Name, identity.FindFirst(ClaimsIdentity.DefaultRoleClaimType).Value)};
+            return new VerificationResultWith<TokenModel>{Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
         }
 
         public UserConfiguration GetConfiguration()
         {
             var currentUserId = userIdProvider.GetCurrentUserId();
             UserConfiguration userConfiguration = new UserConfiguration
-            {   Grids = new List<UserConfigurationGridItem>
+            {   
+                UserName = "UserName",
+                UserRole = "Administrator",
+                Grids = new List<UserConfigurationGridItem>
                 {
                     new UserConfigurationGridItem
                     {

@@ -5,7 +5,7 @@ using DAL;
 using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services;
-using Domain.Shared;
+using Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared
@@ -17,8 +17,6 @@ namespace Application.Shared
         public abstract TDto MapFromEntityToDto(TEntity entity);
 
         protected AppDbContext db ;
-        
-        private readonly int pageSize = 20;
 
         protected DictonaryServiceBase(AppDbContext appDbContext)
         {
@@ -46,8 +44,8 @@ namespace Application.Shared
                         prop.GetValue(customer, null) == form.Search));
             }
 
-            var entities = query.Skip(pageSize * form.Page)
-                .Take(pageSize).ToList();
+            var entities = query.Skip(form.Skip)
+                .Take(form.Take).ToList();
 
             return entities.Select(entity => MapFromEntityToDto(entity));
         }

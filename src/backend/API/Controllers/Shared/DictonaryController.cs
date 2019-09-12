@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Domain.Services.Users;
-using Domain.Shared;
+using Domain.Services;
+using Infrastructure.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers.Shared
 {
     public abstract class DictonaryController<TService, TEntity, TDto> : Controller where TService: IDictonaryService<TEntity, TDto>
     {
-        private readonly TService service;
+        protected readonly TService service;
 
         public DictonaryController(TService service)
         {

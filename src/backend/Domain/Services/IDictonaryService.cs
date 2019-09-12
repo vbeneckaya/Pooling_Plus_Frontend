@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Domain.Shared;
+using Infrastructure.Shared;
 
-namespace Domain.Services.Users
+namespace Domain.Services
 {
     public interface IDictonaryService<TEntity, TDto> : IService
     {
