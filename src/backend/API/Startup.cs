@@ -1,20 +1,26 @@
-﻿using System;
+using System;
 using System.IO;
 using Application.Services.Identity;
-using Application.Services.Orders;
 using Application.Services.Roles;
 using Application.Services.Translations;
-using Application.Services.Transportations;
 using Application.Services.UserIdProvider;
 using Application.Services.Users;
+using Application.Services.Tariffs;
+using Application.Services.Articles;
+using Application.Services.Orders;
+using Application.Services.Transportations;
+/*end of using application service*/
 using DAL;
 using Domain.Services.Identity;
-using Domain.Services.Orders;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
-using Domain.Services.Transportations;
 using Domain.Services.UserIdProvider;
 using Domain.Services.Users;
+using Domain.Services.Tariffs;
+using Domain.Services.Articles;
+using Domain.Services.Orders;
+using Domain.Services.Transportations;
+/*end of using domain service*/
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -54,9 +60,13 @@ namespace API
             services.Add(new ServiceDescriptor(typeof(IUserIdProvider), typeof(UserIdProvider),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IRolesService), typeof(RolesService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService),  ServiceLifetime.Scoped) );
+            
+            
+            services.Add(new ServiceDescriptor(typeof(ITariffsService), typeof(TariffsService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IArticlesService), typeof(ArticlesService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(ITransportationsService), typeof(TransportationsService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService),  ServiceLifetime.Scoped) );
             /*end of add service implementation*/
             
             services.AddHttpContextAccessor();
@@ -85,17 +95,9 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
-            }
 
-            //app.UseHttpsRedirection();
             app.UseMvc();
 
             app.UseSwagger();

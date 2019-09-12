@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using Infrastructure.Extensions;
 using ThinkingHome.Migrator.Framework;
@@ -43,42 +43,55 @@ namespace DAL.Migrations
                 );
             Database.AddIndex("translations_pk", true, "Translations", "Id");
             
+            Database.AddTable("Tariffs",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
+                /*end of fields Tariffs*/
+            );
+            Database.AddIndex("tariffs_pk", true, "Tariffs", "Id");
+
+            Database.AddTable("Articles",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
+                /*end of fields Articles*/
+            );
+            Database.AddIndex("articles_pk", true, "Articles", "Id");
+
+            Database.AddTable("Orders",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
+                /*end of fields Orders*/
+            );
+            Database.AddIndex("orders_pk", true, "Orders", "Id");
+
+            Database.AddTable("Transportations",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
+                /*end of fields Transportations*/
+            );
+            Database.AddIndex("transportations_pk", true, "Transportations", "Id");
+
+            /*end of add tables*/
+            
             AddTranslation("UserNotFound", "User not found", "Пользователь не найден или не активен");
             AddTranslation("UserIncorrectData", "The username or password you entered is incorrect", "Неверное имя пользователя или пароль");
             AddTranslation("Users", "Users", "Пользователи");
             AddTranslation("Roles", "Roles", "Роли");
-            AddTranslation("Orders", "Orders", "Заказы");
-            AddTranslation("Transportations", "Transportations", "Перевозки");
-            AddTranslation("Name", "Name", "Имя");
             AddTranslation("IsActive", "IsActive", "Активен");
             AddTranslation("Administrator", "Administrator", "Администратор");
             AddTranslation("TransportCoordinator", "Transport coordinator", "Транспортный координатор");
             AddTranslation("TransportCompanyEmployee", "Transport company employee", "Представитель транспортной компании");
             AddTranslation("Incoming", "Incoming", "Входящий номер");
+            AddTranslation("SystemName", "SystemName", "Artlogic TMS");
+            AddTranslation("SystemDescription", "SystemDescription", "Самая лучшая в мире TMS");
+            AddTranslation("TransportCoordinator", "TransportCoordinator", "Транспортный координатор");
+            AddTranslation("TransportCompanyEmployee", "TransportCompanyEmployee", "Сотрудник транспортной компании");
+            AddTranslation("Tariff", "Tariff", "Тариф");
+            AddTranslation("Tariffs", "Tariffs", "Тарифы");
+            AddTranslation("Articles", "Articles", "Артикул");
+            AddTranslation("Tariffs", "Tariffs", "Артикулы");
+            AddTranslation("Order", "Order", "Заказ");
+            AddTranslation("Transportation", "Transportation", "Перевозка");
+            AddTranslation("Orders", "Orders", "Заказы");
+            AddTranslation("Transportations", "Transportations", "Перевозки");
+            /*end of add translates*/
             
-            Database.AddTable("Orders",
-                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
-                new Column("Incoming", DbType.String.WithSize(100))
-            );
-            Database.AddIndex("orders_pk", true, "Orders", "Id");
-            
-            AddOrder("56454");
-            AddOrder("45745");
-            AddOrder("19278");
-
-            Database.AddTable("Transportations",
-                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
-                new Column("From", DbType.String.WithSize(100)),
-                new Column("To", DbType.String.WithSize(100))
-            );
-            Database.AddIndex("transportations_pk", true, "Transportations", "Id");
-            
-            AddTransportation("Москва", "Саратов");
-            AddTransportation("Москва", "Саратов");
-            AddTransportation("Москва", "Саратов");
-            AddTransportation("Москва", "Саратов");
-
-            /*end of add tables*/
         }
 
         private void AddTransportation(string from, string to)

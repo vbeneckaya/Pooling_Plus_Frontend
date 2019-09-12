@@ -1,6 +1,6 @@
-namespace Domain.Services.Orders
+namespace Domain.Services.Articles
 {
-    public class OrderDto : IDto
+    public class ArticleDto : IDto
     {
         public string Id { get; set; }
         /*end of fields*/

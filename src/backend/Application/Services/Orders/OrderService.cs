@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : DictonaryServiceBase<Order, OrderDto>, IOrdersService
+    public class OrdersService : GridServiceBase<Order, OrderDto>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext) : base(appDbContext)
         {
@@ -22,7 +22,7 @@ namespace Application.Services.Orders
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.Incoming = dto.Incoming;
+            /*end of fields*/
         }
 
         public override OrderDto MapFromEntityToDto(Order entity)
@@ -30,7 +30,7 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
-                Incoming= entity.Incoming,
+                /*end of fields*/
             };
         }
     }
