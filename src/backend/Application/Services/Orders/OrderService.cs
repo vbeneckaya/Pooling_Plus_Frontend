@@ -22,7 +22,8 @@ namespace Application.Services.Orders
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            /*end of fields*/
+            entity.IncomingNumber = dto.IncomingNumber;
+            /*end of map dto to entity fields*/
         }
 
         public override OrderDto MapFromEntityToDto(Order entity)
@@ -30,7 +31,8 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
-                /*end of fields*/
+                IncomingNumber = entity.IncomingNumber,
+                /*end of map entity to dto fields*/
             };
         }
     }

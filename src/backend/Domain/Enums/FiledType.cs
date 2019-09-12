@@ -3,12 +3,15 @@ namespace Domain.Enums
     public enum FiledType
     {
         Text,
+        BigText,
         DateTime,
         Date,
         Time,
         FromDictionary,
         FromState,
         Bool,
-        Enum
+        Enum,
+        Number,
+        Float
     }
 }

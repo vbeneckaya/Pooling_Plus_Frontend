@@ -42,28 +42,31 @@ namespace DAL.Migrations
                 new Column("Ru", DbType.String.WithSize(100))
                 );
             Database.AddIndex("translations_pk", true, "Translations", "Id");
-            
+
+
+            /*start of add tables*/
             Database.AddTable("Tariffs",
+                /*general fields for Tariffs*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
-                /*end of fields Tariffs*/
             );
             Database.AddIndex("tariffs_pk", true, "Tariffs", "Id");
 
             Database.AddTable("Articles",
+                /*general fields for Articles*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
-                /*end of fields Articles*/
             );
             Database.AddIndex("articles_pk", true, "Articles", "Id");
 
             Database.AddTable("Orders",
+                new Column("IncomingNumber", DbType.String),
+                /*general fields for Orders*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
-                /*end of fields Orders*/
             );
             Database.AddIndex("orders_pk", true, "Orders", "Id");
 
             Database.AddTable("Transportations",
+                /*general fields for Transportations*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
-                /*end of fields Transportations*/
             );
             Database.AddIndex("transportations_pk", true, "Transportations", "Id");
 
@@ -74,10 +77,11 @@ namespace DAL.Migrations
             AddTranslation("Users", "Users", "Пользователи");
             AddTranslation("Roles", "Roles", "Роли");
             AddTranslation("IsActive", "IsActive", "Активен");
-            AddTranslation("Administrator", "Administrator", "Администратор");
-            AddTranslation("Incoming", "Incoming", "Входящий номер");
+
+            /*start of add translates*/
             AddTranslation("SystemName", "SystemName", "Artlogic TMS");
             AddTranslation("SystemDescription", "SystemDescription", "Самая лучшая в мире TMS");
+            AddTranslation("Administrator", "Administrator", "Администратор");
             AddTranslation("TransportCoordinator", "TransportCoordinator", "Транспортный координатор");
             AddTranslation("TransportCompanyEmployee", "TransportCompanyEmployee", "Сотрудник транспортной компании");
             AddTranslation("Tariff", "Tariff", "Тариф");
@@ -85,8 +89,9 @@ namespace DAL.Migrations
             AddTranslation("Articles", "Articles", "Артикул");
             AddTranslation("Tariffs", "Tariffs", "Артикулы");
             AddTranslation("Order", "Order", "Заказ");
-            AddTranslation("Transportation", "Transportation", "Перевозка");
             AddTranslation("Orders", "Orders", "Заказы");
+            AddTranslation("IncomingNumber", "IncomingNumber", "Номер клиента");
+            AddTranslation("Transportation", "Transportation", "Перевозка");
             AddTranslation("Transportations", "Transportations", "Перевозки");
             /*end of add translates*/
             

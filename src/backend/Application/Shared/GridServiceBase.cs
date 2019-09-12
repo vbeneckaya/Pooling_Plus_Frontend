@@ -39,9 +39,9 @@ namespace Application.Shared
             {
                 var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
                     prop.PropertyType == form.Search.GetType());
-                query = query.Where(customer =>
-                    stringProperties.Any(prop =>
-                        prop.GetValue(customer, null) == form.Search));
+         
+                //TODO Вернуть полнотекстовый поиск
+                query = query.Where(entity =>  entity.Id.ToString() == form.Search);
             }
 
             var entities = query.Skip(form.Skip)

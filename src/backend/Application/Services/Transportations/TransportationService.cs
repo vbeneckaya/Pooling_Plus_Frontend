@@ -22,7 +22,7 @@ namespace Application.Services.Transportations
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            /*end of fields*/
+            /*end of map dto to entity fields*/
         }
 
         public override TransportationDto MapFromEntityToDto(Transportation entity)
@@ -30,7 +30,7 @@ namespace Application.Services.Transportations
             return new TransportationDto
             {
                 Id = entity.Id.ToString(),
-                /*end of fields*/
+                /*end of map entity to dto fields*/
             };
         }
     }
