@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("Translations")]
-    public class TranslationsController : DictonaryController<ITranslationsService, Translation, TranslationDto>
+    [Route("Translation")]
+    public class TranslationController : Controller
     {
-        public TranslationsController(ITranslationsService translationsService) : base(translationsService)
+        public ITranslationsService service { get; }
+
+        public TranslationController(ITranslationsService service)
         {
+            this.service = service;
         }
         
          /// <summary>
@@ -24,7 +27,7 @@ namespace API.Controllers
             var result = "{\n";
             foreach (var translationDto in translationDtos)
             {
-                var value = langType == "En" ? translationDto.En : translationDto.Ru;
+                var value = langType == "en" ? translationDto.En : translationDto.Ru;
                 result += "\""+translationDto.Name+"\": \""+value+"\"" + (translationDto.Name != translationDtos.Last().Name ? ",\n" : "\n");
             }
             result += "}";
