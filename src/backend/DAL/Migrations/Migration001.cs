@@ -75,8 +75,6 @@ namespace DAL.Migrations
             AddTranslation("Roles", "Roles", "Роли");
             AddTranslation("IsActive", "IsActive", "Активен");
             AddTranslation("Administrator", "Administrator", "Администратор");
-            AddTranslation("TransportCoordinator", "Transport coordinator", "Транспортный координатор");
-            AddTranslation("TransportCompanyEmployee", "Transport company employee", "Представитель транспортной компании");
             AddTranslation("Incoming", "Incoming", "Входящий номер");
             AddTranslation("SystemName", "SystemName", "Artlogic TMS");
             AddTranslation("SystemDescription", "SystemDescription", "Самая лучшая в мире TMS");

@@ -8,33 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Translations
 {
-    public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
+    public class TranslationsService : ITranslationsService
     {
-        public TranslationsService(AppDbContext appDbContext) : base(appDbContext)
-        {
-        }
+        private readonly AppDbContext db;
 
-        public override DbSet<Translation> UseDbSet(AppDbContext dbContext)
+        public TranslationsService(AppDbContext db)
         {
-            return dbContext.Translations;
-        }
-
-        public override void MapFromDtoToEntity(Translation entity, TranslationDto dto)
-        {
-            entity.Name = dto.Name;
-            entity.Ru = dto.Ru;
-            entity.En = dto.En;
-        }
-
-        public override TranslationDto MapFromEntityToDto(Translation entity)
-        {
-            return new TranslationDto
-            {
-                Id = entity.Id.ToString(),
-                Name = entity.Name,
-                Ru = entity.Ru,
-                En = entity.En
-            };
+            this.db = db;
         }
 
         public IEnumerable<TranslationDto> GetAll()

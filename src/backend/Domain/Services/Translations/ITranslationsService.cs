@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Domain.Persistables;
 
 namespace Domain.Services.Translations
 {
-    public interface ITranslationsService : IDictonaryService<Translation, TranslationDto>
+    public interface ITranslationsService : IService
     {
         IEnumerable<TranslationDto> GetAll();
     }
