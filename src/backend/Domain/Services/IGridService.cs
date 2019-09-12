@@ -4,7 +4,7 @@ using Infrastructure.Shared;
 
 namespace Domain.Services
 {
-    public interface IDictonaryService<TEntity, TDto> : IService
+    public interface IGridService<TEntity, TDto> : IService
     {
         IEnumerable<TDto> Search(SearchForm form);
         ValidateResult SaveOrCreate(TDto entityFrom);
