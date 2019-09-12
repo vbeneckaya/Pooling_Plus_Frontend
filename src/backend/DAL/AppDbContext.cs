@@ -21,6 +21,7 @@ namespace DAL
         public DbSet<Translation> Translations { get; set; }
         public DbSet<Transportation> Transportations { get; set; }
         public DbSet<Order> Orders { get; set; }
+        /*end of add DbSets*/
         
         public void Migrate(string connectionString)
         {

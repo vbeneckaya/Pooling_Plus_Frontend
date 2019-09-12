@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using Infrastructure.Extensions;
 using ThinkingHome.Migrator.Framework;
@@ -77,6 +77,8 @@ namespace DAL.Migrations
             AddTransportation("Москва", "Саратов");
             AddTransportation("Москва", "Саратов");
             AddTransportation("Москва", "Саратов");
+
+            /*end of add tables*/
         }
 
         private void AddTransportation(string from, string to)
