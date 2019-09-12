@@ -12,7 +12,7 @@ import {
     userNameSelector,
 } from '../../ducks/profile';
 import useReactRouter from 'use-react-router';
-import { isAuthSelector } from '../../ducks/login';
+import {isAuthSelector, logoutRequest} from '../../ducks/login';
 import './style.scss';
 import { DICTIONARY_LINK, GRID_LINK, ROLES_LINK, USERS_LINK } from '../../router/links';
 
@@ -32,7 +32,9 @@ const Header = () => {
         }
     };
 
-    const logOut = () => {};
+    const logOut = () => {
+        dispatch(logoutRequest());
+    };
 
     useEffect(getProfile, []);
 
@@ -71,7 +73,7 @@ const Header = () => {
                             active={activeItem.includes('roles')}
                             name="roles"
                         >
-                            {t('roles')}
+                            {t('Roles')}
                         </Menu.Item>
                         <Menu.Item
                             className="large"
@@ -81,7 +83,7 @@ const Header = () => {
                             active={activeItem.includes('users')}
                             name="users"
                         >
-                            {t('users')}
+                            {t('Users')}
                         </Menu.Item>
                         {dictionaries && (
                             <Menu.Menu>

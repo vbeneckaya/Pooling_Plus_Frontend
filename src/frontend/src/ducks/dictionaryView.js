@@ -100,7 +100,7 @@ const dictionaryName = (state, name) => name;
 export const columnsSelector = createSelector(
     [stateProfile, dictionaryName],
     (state, name) => {
-        const dictionary = state.dictionaries.find(item => item.name === name);
+        const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
         return dictionary ? dictionary.columns : [];
     },
 );
@@ -129,9 +129,9 @@ export function* getListSaga({ payload }) {
 
         yield delay(1000);
 
-        const result = yield postman.post(`${name}/search`, filter);
+        const result = yield postman.post(`/${name}/search`, filter);
 
-        yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { ...result, isConcat } });
+        yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { items: result, isConcat } });
     } catch (error) {
         yield put({ type: GET_DICTIONARY_LIST_ERROR, payload: error });
     }

@@ -2,39 +2,19 @@ import { ACTIVE_TYPE, ENUM_TYPE } from '../constants/columnsType';
 
 export const usersColumns = [
     {
-        key: 'login',
-        text: 'Логин',
+        name: 'login'
     },
     {
-        key: 'name',
-        text: 'ФИО',
+        name: 'name',
     },
     {
-        key: 'email',
-        text: 'Email',
+        name: 'email',
     },
     {
-        key: 'role',
-        text: 'Роль',
+        name: 'role',
     },
     {
-        key: 'shippers',
-        text: 'Поставщики',
-        type: ENUM_TYPE,
-    },
-    {
-        key: 'regions',
-        text: 'Регионы',
-        type: ENUM_TYPE,
-    },
-    {
-        key: 'psg',
-        text: 'ПСГ',
-        type: ENUM_TYPE,
-    },
-    {
-        key: 'is_active',
-        text: 'Активность',
+        name: 'is_active',
         type: ACTIVE_TYPE,
     },
 ];

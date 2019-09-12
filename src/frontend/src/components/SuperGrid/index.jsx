@@ -12,6 +12,14 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Button, Confirm, Grid, Dimmer, Loader } from 'semantic-ui-react';
 
+const initState = (storageFilterItem, storageSortItem) => ({
+    page: 1,
+    filters: storageFilterItem ? JSON.parse(localStorage.getItem(storageFilterItem)) || {} : {},
+    sort: storageSortItem ? JSON.parse(localStorage.getItem(storageSortItem)) || {} : {},
+    fullText: '',
+    selectedRows: new Set(),
+});
+
 class SuperGrid extends Component {
     constructor(props) {
         super(props);
@@ -19,18 +27,12 @@ class SuperGrid extends Component {
         const { storageFilterItem, storageSortItem } = props;
 
         this.state = {
-            page: 1,
-            filters: storageFilterItem
-                ? JSON.parse(localStorage.getItem(storageFilterItem)) || {}
-                : {},
-            sort: storageSortItem ? JSON.parse(localStorage.getItem(storageSortItem)) || {} : {},
-            fullText: '',
-            selectedRows: new Set(),
-            backLights: [],
+            ...initState(storageFilterItem, storageSortItem),
         };
     }
 
     componentDidMount() {
+        console.log('YYYY');
         this.props.autoUpdateStart(this.mapData());
     }
 
@@ -57,6 +59,26 @@ class SuperGrid extends Component {
             }
 
             this.setSelected(newSelectedRow);
+        }
+
+        if (this.props.name !== prevProps.name) {
+            console.log('!!!!', 1111);
+            const {
+                autoUpdateStop,
+                clearStore,
+                storageFilterItem,
+                storageSortItem,
+                autoUpdateStart,
+            } = this.props;
+
+            autoUpdateStop();
+            clearStore();
+            this.setState(
+                {
+                    ...initState(storageFilterItem, storageSortItem),
+                },
+                autoUpdateStart(this.mapData()),
+            );
         }
     }
 
@@ -177,8 +199,6 @@ class SuperGrid extends Component {
     changeFullTextFilter = (e, { value }) => {
         this.setState({ fullText: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
     };
-
-    backLightsFilterChange = () => {};
 
     clearFilters = () => {
         const { storageFilterItem } = this.props;

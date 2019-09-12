@@ -77,14 +77,14 @@ class Result extends Component {
                                 {columns &&
                                     columns.map(column => (
                                         <Table.Cell
-                                            key={`cell_${row.id}_${column.key}_${i}`}
+                                            key={`cell_${row.id}_${column.name}_${i}`}
                                             style={columnStyle(column)}
                                         >
                                             {
                                                 <CellValue
                                                     type={column.type}
-                                                    id={`${row.id}_${column.key}_${i}`}
-                                                    value={row[column.key]}
+                                                    id={`${row.id}_${column.name}_${i}`}
+                                                    value={row[column.name.toLowerCase()]}
                                                     stateColors={stateColors}
                                                 />
                                             }

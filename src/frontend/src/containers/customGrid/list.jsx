@@ -20,7 +20,6 @@ class List extends Component {
     render() {
         const {
             columns = [],
-            getList,
             autoUpdate,
             stopUpdate,
             list,
@@ -37,7 +36,6 @@ class List extends Component {
                     columns={columns}
                     rows={list}
                     name={name}
-                    loadList={getList}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -50,9 +48,6 @@ class List extends Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getList: params => {
-            dispatch(getListRequest(params));
-        },
         autoUpdate: params => {
             dispatch(autoUpdateStart(params));
         },

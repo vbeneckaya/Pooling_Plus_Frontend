@@ -45,7 +45,7 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
                 totalCount: payload.total_count,
-                list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
+                list: payload.isConcat ? [...state.list, ...payload] : payload.items,
             };
         case GET_GRID_LIST_ERROR:
             return {
@@ -145,9 +145,9 @@ export function* getListSaga({ payload }) {
 
         yield delay(1000);
 
-        const result = yield postman.post(`${name}/search`, filter);
+        const result = yield postman.post(`/${name}/search`, filter);
 
-        yield put({ type: GET_GRID_LIST_SUCCESS, payload: { ...result, isConcat } });
+        yield put({ type: GET_GRID_LIST_SUCCESS, payload: { items: result, isConcat } });
     } catch (error) {
         yield put({ type: GET_GRID_LIST_ERROR, payload: error });
     }

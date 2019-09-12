@@ -41,7 +41,7 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
                 error: '',
-                list: payload.isConcat ? [...state.list, ...payload.roles] : payload.roles,
+                list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
                 totalCount: payload.total_count,
             };
         case GET_ROLE_CARD_SUCCESS:
@@ -102,14 +102,13 @@ export const roleCardSelector = createSelector(
 
 function* getRolesListSaga({ payload }) {
     try {
-        yield delay(2000);
         const { filter = {}, isConcat } = payload;
-        const result = roles;
+        const result = yield postman.post('/roles/search', filter);
 
         yield put({
             type: GET_ROLES_LIST_SUCCESS,
             payload: {
-                ...result,
+                items: result,
                 isConcat,
             },
         });

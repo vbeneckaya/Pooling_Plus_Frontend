@@ -64,8 +64,8 @@ class TableInfo extends Component {
         <Table.Row>
             {this.props.headerRow &&
                 this.props.headerRow.map(row => (
-                    <Table.HeaderCell className="table-header-cell" key={row.key}>
-                        {this.props.t(row.key)}
+                    <Table.HeaderCell className="table-header-cell" key={row.name}>
+                        {this.props.t(row.name)}
                     </Table.HeaderCell>
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
@@ -145,13 +145,13 @@ class TableInfo extends Component {
                                       <Table.Row key={row.id}>
                                           {headerRow.map((column, index) => (
                                               <Table.Cell
-                                                  key={`cell_${row.id}_${column.key}_${index}`}
+                                                  key={`cell_${row.id}_${column.name}_${index}`}
                                               >
                                                   <CellValue
                                                       type={column.type}
-                                                      id={`${row.id}_${column.key}_${index}`}
+                                                      id={`${row.id}_${column.name}_${index}`}
                                                       toggleIsActive={toggleIsActive}
-                                                      value={row[column.key]}
+                                                      value={row[column.name.toLowerCase()]}
                                                   />
                                               </Table.Cell>
                                           ))}

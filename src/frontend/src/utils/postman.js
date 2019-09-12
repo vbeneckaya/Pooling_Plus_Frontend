@@ -14,7 +14,8 @@ postman.interceptors.response.use(
     error => {
         const { data = {} } = error.response;
         const { error: errorText = '', message = '' } = data;
-        toast.error(JSON.stringify(errorText) || message || 'Ошибка!');
+        console.log('data', errorText);
+        errorText && toast.error(JSON.stringify(errorText) || message || 'Ошибка!');
 
         return Promise.reject(error);
     },

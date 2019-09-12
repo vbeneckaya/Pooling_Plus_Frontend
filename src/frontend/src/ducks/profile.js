@@ -65,7 +65,7 @@ export const userNameSelector = createSelector(
 );
 export const roleSelector = createSelector(
     stateSelector,
-    state => state.role,
+    state => state.userRole,
 );
 export const homePageSelector = createSelector(
     stateSelector,

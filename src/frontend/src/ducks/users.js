@@ -41,7 +41,7 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
                 error: '',
-                list: payload.isConcat ? [...state.list, ...payload.users] : payload.users,
+                list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
                 totalCount: payload.total_count,
             };
         case GET_USER_CARD_SUCCESS:
@@ -102,14 +102,13 @@ export const userCardSelector = createSelector(
 
 function* getUsersListSaga({ payload }) {
     try {
-        yield delay(2000);
         const { filter = {}, isConcat } = payload;
-        const result = users;
+        const result = yield postman.post('/users/search', filter);
 
         yield put({
             type: GET_USERS_LIST_SUCCESS,
             payload: {
-                ...result,
+                items: result,
                 isConcat,
             },
         });

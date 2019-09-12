@@ -2,21 +2,17 @@ import { ACTIVE_TYPE, ENUM_TYPE } from '../constants/columnsType';
 
 export const rolesColumns = [
     {
-        key: 'name',
-        text: 'Наименование',
+        name: 'name',
     },
     {
-        key: 'users',
-        text: 'Пользователей',
+        name: 'users',
     },
     {
-        key: 'permissions',
-        text: 'Разрешения',
+        name: 'permissions',
         type: ENUM_TYPE,
     },
     {
-        key: 'is_active',
-        text: 'Активен',
+        name: 'is_active',
         type: ACTIVE_TYPE,
     },
 ];

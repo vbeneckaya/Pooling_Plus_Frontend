@@ -15,6 +15,8 @@ const LOGIN_REQUEST = 'LOGIN_REQUEST';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_ERROR = 'LOGIN_ERROR';
 
+const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
+
 setAccessToken && setAccessToken(localStorage.getItem('accessToken'));
 
 //*  INITIAL STATE  *//
@@ -69,6 +71,11 @@ export default (state = initial, { type, payload }) => {
                 isAuth: false,
                 error: payload,
             };
+        case LOGOUT_REQUEST:
+            return {
+                ...state,
+                isAuth: false
+            };
         default:
             return state;
     }
@@ -88,6 +95,13 @@ export const loginRequest = payload => {
         type: LOGIN_REQUEST,
         payload,
     };
+};
+
+export const logoutRequest = () => {
+    localStorage.removeItem('accessToken');
+    return {
+        type: LOGOUT_REQUEST
+    }
 };
 
 //*  SELECTORS *//
