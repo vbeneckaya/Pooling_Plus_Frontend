@@ -8,6 +8,7 @@ namespace Domain.Enums
         Time,
         FromDictionary,
         FromState,
-        Bool
+        Bool,
+        Enum
     }
 }
