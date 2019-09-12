@@ -26,14 +26,14 @@ const getTypeFacet = {
 const Control = props => {
     let params = {
         ...props.column,
-        name: props.column.key,
-        value: props.filters[props.column.key],
+        name: props.column.name,
+        value: props.filters[props.column.name],
         setSort: props.setSort,
         onChange: props.setFilter,
         stateColors: props.stateColors,
     };
 
-    if (props.sort && props.sort.name === props.column.key)
+    if (props.sort && props.sort.name === props.column.name)
         params = {
             ...params,
             sort: props.sort.desc ? 'desc' : 'asc',
@@ -78,9 +78,9 @@ class Filter extends Component {
                 {columns &&
                     columns.map((x, i) => (
                         <Table.HeaderCell
-                            key={'th' + x.key + i}
+                            key={'th' + x.name + i}
                             style={columnStyle(x)}
-                            className={`column-facet column-${x.key
+                            className={`column-facet column-${x.name
                                 .toLowerCase()
                                 .replace(' ', '-')}-facet`}
                         >

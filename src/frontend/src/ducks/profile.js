@@ -76,8 +76,7 @@ export const homePageSelector = createSelector(
 
 function* getUserProfileSaga({ payload }) {
     try {
-        yield delay(1000);
-        const result = profile;
+        const result = yield postman.get('/identity/configuration');
         yield put({
             type: GET_USER_PROFILE_SUCCESS,
             payload: result,

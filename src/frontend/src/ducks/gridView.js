@@ -116,7 +116,7 @@ const gridName = (state, name) => name;
 export const columnsGridSelector = createSelector(
     [stateProfile, gridName],
     (state, name) => {
-        const grid = state.grids.find(item => item.name === name);
+        const grid = state.grids && state.grids.find(item => item.name === name);
         return grid ? grid.columns : [];
     },
 );

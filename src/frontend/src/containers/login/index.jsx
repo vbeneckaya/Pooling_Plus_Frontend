@@ -17,7 +17,7 @@ import './style.scss';
 const Login = () => {
     const { t, i18n } = useTranslation();
     const dispatch = useDispatch();
-    const page = useSelector(state => loginPageSelector(state));
+    const page = useSelector(state => loginPageSelector(state)) || {};
     const error = useSelector(state => errorSelector(state));
     const loginProgress = useSelector(state => progressSelector(state, 'login_progress'));
     const pageLoadingProgress = useSelector(state => progressSelector(state, 'page_progress'));
@@ -59,9 +59,9 @@ const Login = () => {
                 <Grid className="login-form-wrapper">
                     <Grid.Row>
                         <Grid.Column className="login-form-description">
-                            <div>
+                            {/*<div>
                                 <img src={page.logo} alt={'LOGO'} />
-                            </div>
+                            </div>*/}
                             <div>
                                 <p>{t(page.name)}</p>
                                 <p>
@@ -87,7 +87,7 @@ const Login = () => {
                                 <Button floated="right" api={login_btn.api} loading={loginProgress}>
                                     {t(login_btn.name)}
                                 </Button>
-                                <div className="error">{error}</div>
+                                <div className="error">{t(error)}</div>
                             </Form>
                         </Grid.Column>
                     </Grid.Row>
@@ -100,7 +100,7 @@ const Login = () => {
                         languages.find(item => item.value === i18n.language).flag
                     }
                 />
-                <span>{t('Language')}:</span>{' '}
+                <span>{t('language')}:</span>{' '}
                 <Dropdown
                     inline
                     options={languages}

@@ -1,7 +1,7 @@
 import { all, takeEvery, delay, put } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import loginPage from '../mocks/loginPage';
-import { postman } from '../utils/postman';
+import {postman, setAccessToken} from '../utils/postman';
 import { push } from 'connected-react-router';
 import { getUserProfile } from './profile';
 
@@ -15,12 +15,14 @@ const LOGIN_REQUEST = 'LOGIN_REQUEST';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_ERROR = 'LOGIN_ERROR';
 
+setAccessToken && setAccessToken(localStorage.getItem('accessToken'));
+
 //*  INITIAL STATE  *//
 
 const initial = {
     page: {},
     error: '',
-    isAuth: false,
+    isAuth: Boolean(localStorage.getItem('accessToken')),
     page_progress: false,
     login_progress: false,
 };
@@ -131,16 +133,18 @@ function* loginSaga({ payload }) {
     try {
         yield delay(1000);
         const { api, form } = payload;
-        const result = {}; // yield postman[api.type](api.url, form);
+        const result = yield postman.post('/identity/login', form);
         yield put({
             type: LOGIN_SUCCESS,
         });
+        localStorage.setItem('accessToken', result.accessToken);
+        setAccessToken(result.accessToken);
         yield put(push('/'));
-        yield put(getUserProfile(result.id));
-    } catch (e) {
+        yield put(getUserProfile());
+    } catch ({response}) {
         yield put({
             type: LOGIN_ERROR,
-            payload: 'Ошибка!',
+            payload: response.data,
         });
     }
 }

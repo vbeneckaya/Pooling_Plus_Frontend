@@ -15,7 +15,7 @@ i18n.use(LanguageDetector)
         ns: ['translations'],
         defaultNS: 'translations',
         backend: {
-            loadPath: './locales/{{lng}}/{{ns}}.json',
+            loadPath: './translations/search',
         },
         keySeparator: false, // we use content as keys
         react: {
