@@ -16,6 +16,12 @@ const GET_USER_CARD_REQUEST = 'GET_USER_CARD_REQUEST';
 const GET_USER_CARD_SUCCESS = 'GET_USER_CARD_SUCCESS';
 const GET_USER_CARD_ERROR = 'GET_USER_CARD_ERROR';
 
+const CREATE_USER_REQUEST = 'CREATE_USER_REQUEST';
+const CREATE_USER_SUCCESS = 'CREATE_USER_SUCCESS';
+const CREATE_USER_ERROR = 'CREATE_USER_ERROR';
+
+const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -31,6 +37,7 @@ export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_USERS_LIST_REQUEST:
         case GET_USER_CARD_REQUEST:
+        case CREATE_USER_REQUEST:
             return {
                 ...state,
                 progress: true,
@@ -50,12 +57,23 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 card: payload,
             };
+        case CREATE_USER_SUCCESS:
+            return {
+                ...state,
+                progress: false
+            };
         case GET_USERS_LIST_ERROR:
         case GET_USER_CARD_ERROR:
+        case CREATE_USER_ERROR:
             return {
                 ...state,
                 progress: false,
                 error: payload,
+            };
+        case CLEAR_USERS_INFO:
+            return {
+                ...state,
+                ...initial
             };
         default:
             return state;
@@ -76,6 +94,19 @@ export const getUserCardRequest = payload => {
         type: GET_USER_CARD_REQUEST,
         payload,
     };
+};
+
+export const createUserRequest = payload => {
+    return {
+        type: CREATE_USER_REQUEST,
+        payload
+    }
+};
+
+export const clearUsersInfo = () => {
+    return {
+        type: CLEAR_USERS_INFO
+    }
 };
 
 //*  SELECTORS *//
@@ -117,14 +148,12 @@ function* getUsersListSaga({ payload }) {
             type: GET_USERS_LIST_ERROR,
             payload: error,
         });
-        toast.error('Ошибка!');
     }
 }
 
 function* getUserCardSaga({ payload }) {
     try {
-        yield delay(2000);
-        const result = users.users.find(item => item.id === payload);
+        const result = yield postman.get(`/users/getById/${payload}`);
 
         yield put({
             type: GET_USER_CARD_SUCCESS,
@@ -135,7 +164,23 @@ function* getUserCardSaga({ payload }) {
             type: GET_USER_CARD_ERROR,
             payload: error,
         });
-        toast.error('Ошибка!');
+    }
+}
+
+function* createUserSaga({ payload }) {
+    try {
+        const { params, callbackFunc } = payload;
+
+        const result = yield postman.post('/users/saveOrCreate', params);
+
+        yield put({
+            type: CREATE_USER_SUCCESS,
+        });
+        callbackFunc();
+    }catch (error) {
+        yield put({
+            type: CREATE_USER_ERROR
+        })
     }
 }
 
@@ -143,5 +188,6 @@ export function* saga() {
     yield all([
         takeEvery(GET_USERS_LIST_REQUEST, getUsersListSaga),
         takeEvery(GET_USER_CARD_REQUEST, getUserCardSaga),
+        takeEvery(CREATE_USER_REQUEST, createUserSaga),
     ]);
 }

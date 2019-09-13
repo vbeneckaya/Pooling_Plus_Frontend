@@ -12,6 +12,15 @@ import {
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
 
+
+const newModal = load => (
+    <UserCard title="Создание роли" id={null} loadList={load}>
+        <Button size="small" color="blue" className="grid-action-btn">
+            <Icon name="plus" /> Создать пользователя
+        </Button>
+    </UserCard>
+);
+
 export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
         console.log('taggle', itemID, checked);
@@ -42,6 +51,7 @@ export class UsersList extends Component {
                 actions={this.getActions}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
+                newModal={newModal}
                 loadList={loadList}
             />
         );

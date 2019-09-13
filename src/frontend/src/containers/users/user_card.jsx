@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { Button, Dimmer, Form, Grid, Input, Loader, Modal } from 'semantic-ui-react';
-import { getUserCardRequest, progressSelector, userCardSelector } from '../../ducks/users';
+import {
+    clearUsersInfo,
+    createUserRequest,
+    getUserCardRequest,
+    progressSelector,
+    userCardSelector,
+} from '../../ducks/users';
 
 class UserCard extends Component {
     constructor(props) {
@@ -15,10 +21,7 @@ class UserCard extends Component {
                 name: '',
                 role: '',
                 email: '',
-                shippers: null,
                 is_active: null,
-                regions: null,
-                psg: null,
             },
         };
     }
@@ -33,26 +36,25 @@ class UserCard extends Component {
                     name: user.name,
                     role: user.role,
                     email: user.email,
-                    shippers: user.shippers,
                     is_active: user.is_active,
-                    regions: user.regions,
-                    psg: user.psg,
                 },
             });
         }
     }
 
     handleOpen = () => {
-        const { getUser, id, getShippersList, getDelivery } = this.props;
+        const { getUser, id } = this.props;
 
         getUser(id);
         this.setState({ modalOpen: true });
     };
 
     handleClose = () => {
-        const { loadList } = this.props;
+        const { loadList, clear } = this.props;
 
         this.setState({ modalOpen: false });
+
+        clear();
         loadList();
     };
 
@@ -63,6 +65,28 @@ class UserCard extends Component {
                 [name]: value,
             },
         }));
+    };
+
+    mapProps = () => {
+        const { form } = this.state;
+        const { id } = this.props;
+
+        let params = { ...form };
+
+        if (id) {
+            params = {
+                ...params,
+                id,
+            };
+        }
+
+        return params;
+    };
+
+    handleCreate = () => {
+        const { createUser } = this.props;
+
+        createUser({ params: this.mapProps(), callbackFunc: this.handleClose });
     };
 
     render() {
@@ -91,19 +115,35 @@ class UserCard extends Component {
                                 <Grid.Column>
                                     <Form.Field>
                                         <label>Логин</label>
-                                        <Input name="login" value={login} disabled />
+                                        <Input
+                                            name="login"
+                                            value={login}
+                                            onChange={this.handleChange}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
                                         <label>ФИО</label>
-                                        <Input name="name" value={name} disabled />
+                                        <Input
+                                            name="name"
+                                            value={name}
+                                            onChange={this.handleChange}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
                                         <label>Email</label>
-                                        <Input name="email" value={email} disabled />
+                                        <Input
+                                            name="email"
+                                            value={email}
+                                            onChange={this.handleChange}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
                                         <label>Роль</label>
-                                        <Input name="role" value={role} disabled />
+                                        <Input
+                                            name="role"
+                                            value={role}
+                                            onChange={this.handleChange}
+                                        />
                                     </Form.Field>
                                     <Form.Field>
                                         <Form.Checkbox
@@ -120,7 +160,9 @@ class UserCard extends Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.handleClose}>Отменить</Button>
-                    <Button color="blue">Сохранить</Button>
+                    <Button color="blue" onClick={this.handleCreate}>
+                        Сохранить
+                    </Button>
                 </Modal.Actions>
             </Modal>
         );
@@ -138,6 +180,12 @@ const mapDispatchToProps = dispatch => {
     return {
         getUser: params => {
             dispatch(getUserCardRequest(params));
+        },
+        createUser: params => {
+            dispatch(createUserRequest(params));
+        },
+        clear: () => {
+            dispatch(clearUsersInfo());
         },
     };
 };

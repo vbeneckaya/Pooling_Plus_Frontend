@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { Button, Form, Input, Modal, Dimmer, Loader } from 'semantic-ui-react';
-import { getRoleCardRequest, progressSelector, roleCardSelector } from '../../ducks/roles';
+import {
+    clearRolesInfo,
+    createRoleRequest,
+    getRoleCardRequest,
+    progressSelector,
+    roleCardSelector
+} from '../../ducks/roles';
 
 class RoleCard extends Component {
     constructor(props) {
@@ -41,11 +47,13 @@ class RoleCard extends Component {
     };
 
     handleClose = () => {
-        const { loadList } = this.props;
+        const { loadList, clear } = this.props;
 
         this.setState({
             modalOpen: false,
         });
+
+        clear();
 
         loadList();
     };
@@ -67,6 +75,28 @@ class RoleCard extends Component {
         selectedPermissions[selectedPermissions.has(value) ? 'delete' : 'add'](value);
 
         this.handleChange(null, { name: 'permissions', value: Array.from(selectedPermissions) });
+    };
+
+    mapData = () => {
+        const { form } = this.state;
+        const { id } = this.props;
+
+        let params = {...form};
+
+        if (id) {
+            params = {
+                ...params,
+                id
+            }
+        }
+
+        return params;
+    };
+
+    handleCreate = () => {
+        const { createRole } = this.props;
+
+        createRole({params: this.mapData(), callbackFunc: this.handleClose});
     };
 
     render() {
@@ -111,7 +141,9 @@ class RoleCard extends Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={this.handleClose}>Отменить</Button>
-                    <Button color="blue">Сохранить</Button>
+                    <Button color="blue" onClick={this.handleCreate}>
+                        Сохранить
+                    </Button>
                 </Modal.Actions>
             </Modal>
         );
@@ -130,6 +162,12 @@ const mapDispatchToProps = dispatch => {
         getRole: params => {
             dispatch(getRoleCardRequest(params));
         },
+        createRole: params => {
+            dispatch(createRoleRequest(params));
+        },
+        clear: () => {
+            dispatch(clearRolesInfo())
+        }
     };
 };
 

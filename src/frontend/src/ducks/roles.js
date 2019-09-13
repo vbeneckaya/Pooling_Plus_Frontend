@@ -16,6 +16,12 @@ const GET_ROLE_CARD_REQUEST = 'GET_ROLE_CARD_REQUEST';
 const GET_ROLE_CARD_SUCCESS = 'GET_ROLE_CARD_SUCCESS';
 const GET_ROLE_CARD_ERROR = 'GET_ROLE_CARD_ERROR';
 
+const CREATE_ROLE_REQUEST = 'CREATE_ROLE_REQUEST';
+const CREATE_ROLE_SUCCESS = 'CREATE_ROLE_SUCCESS';
+const CREATE_ROLE_ERROR = 'CREATE_ROLE_ERROR';
+
+const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -31,6 +37,7 @@ export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_ROLES_LIST_REQUEST:
         case GET_ROLE_CARD_REQUEST:
+        case CREATE_ROLE_REQUEST:
             return {
                 ...state,
                 progress: true,
@@ -50,12 +57,23 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 card: payload,
             };
+        case CREATE_ROLE_SUCCESS:
+            return {
+                ...state,
+                progress: false,
+            };
         case GET_ROLES_LIST_ERROR:
         case GET_ROLE_CARD_ERROR:
+        case CREATE_ROLE_ERROR:
             return {
                 ...state,
                 progress: false,
                 error: payload,
+            };
+        case CLEAR_ROLES_INFO:
+            return {
+                ...state,
+                ...initial,
             };
         default:
             return state;
@@ -75,6 +93,19 @@ export const getRoleCardRequest = payload => {
     return {
         type: GET_ROLE_CARD_REQUEST,
         payload,
+    };
+};
+
+export const createRoleRequest = payload => {
+    return {
+        type: CREATE_ROLE_REQUEST,
+        payload,
+    };
+};
+
+export const clearRolesInfo = () => {
+    return {
+        type: CLEAR_ROLES_INFO,
     };
 };
 
@@ -117,14 +148,12 @@ function* getRolesListSaga({ payload }) {
             type: GET_ROLES_LIST_ERROR,
             payload: error,
         });
-        toast.error('Ошибка!');
     }
 }
 
 function* getRoleCardSaga({ payload }) {
     try {
-        yield delay(2000);
-        const result = roles.roles.find(item => item.id === payload);
+        const result = yield postman.get(`/roles/getById/${payload}`);
 
         yield put({
             type: GET_ROLE_CARD_SUCCESS,
@@ -135,7 +164,23 @@ function* getRoleCardSaga({ payload }) {
             type: GET_ROLE_CARD_ERROR,
             payload: error,
         });
-        toast.error('Ошибка!');
+    }
+}
+
+function* createRoleSaga({ payload }) {
+    try {
+        const { params, callbackFunc } = payload;
+
+        const result = yield postman.post('/roles/saveOrCreate', params);
+
+        yield put({
+            type: CREATE_ROLE_SUCCESS,
+        });
+        callbackFunc();
+    } catch (error) {
+        yield put({
+            type: CREATE_ROLE_ERROR,
+        });
     }
 }
 
@@ -143,5 +188,6 @@ export function* saga() {
     yield all([
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
         takeEvery(GET_ROLE_CARD_REQUEST, getRoleCardSaga),
+        takeEvery(CREATE_ROLE_REQUEST, createRoleSaga),
     ]);
 }
