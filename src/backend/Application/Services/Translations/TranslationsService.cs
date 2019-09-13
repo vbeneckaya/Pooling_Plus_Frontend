@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Application.Shared;
 using DAL;
-using Domain.Persistables;
 using Domain.Services.Translations;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Translations
 {

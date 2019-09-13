@@ -4,9 +4,14 @@
         <name>API</name>
     </assembly>
     <members>
-        <member name="M:API.Controllers.IdentityController.Configuration">
+        <member name="M:API.Controllers.AppConfigurationController.Configuration">
             <summary>
             Получение конфигурации гридов и справочников
+            </summary>
+        </member>
+        <member name="M:API.Controllers.IdentityController.Configuration">
+            <summary>
+            Получение информации о пользователе
             </summary>
         </member>
         <member name="M:API.Controllers.IdentityController.Login(Domain.Services.Identity.IdentityModel)">

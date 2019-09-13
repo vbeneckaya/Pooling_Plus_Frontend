@@ -13,10 +13,10 @@ namespace API.Controllers
             this.identityService = identityService;
         }
         /// <summary>
-        /// Получение конфигурации гридов и справочников
+        /// Получение информации о пользователе
         /// </summary>
-        [HttpGet("identity/configuration")] 
-        public UserConfiguration Configuration()
+        [HttpGet("identity/userInfo")] 
+        public UserInfo Configuration()
         {
             return identityService.GetConfiguration();
         }

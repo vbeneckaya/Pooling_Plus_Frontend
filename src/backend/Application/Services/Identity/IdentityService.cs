@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Application.Services.Orders;
 using DAL;
 using DAL.Queries;
-using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.Identity;
-using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
 using Infrastructure.Extensions;
 using Infrastructure.Shared;
@@ -57,60 +54,21 @@ namespace Application.Services.Identity
             return new VerificationResultWith<TokenModel>{Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
         }
 
-        public UserConfiguration GetConfiguration()
+        public UserInfo GetConfiguration()
         {
             var currentUserId = userIdProvider.GetCurrentUserId();
             User user = null;
             if (currentUserId.HasValue) 
                 user = db.Users.GetById(currentUserId.Value);
 
-            UserConfiguration userConfiguration = new UserConfiguration
+            //TODO Получать имя пользователя и роль
+            UserInfo userInfo = new UserInfo
             {   
                 UserName = "Иван Иванов",//user?.Name,
                 UserRole = "Administrator",//db.Roles.GetById(user.RoleId).Name,
-                Grids = new List<UserConfigurationGridItem>
-                {
-                    new UserConfigurationGridItem
-                    {
-                        Name = GetName<OrdersService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("Incoming", FiledType.Text)
-                        }
-                    },
-                    new UserConfigurationGridItem
-                    {
-                        Name = "Transportations", 
-                        CanCreateByForm = false, 
-                        CanImportFromExcel = false,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("From", FiledType.Text),
-                            new UserConfigurationGridColumn("To", FiledType.Text)
-                        }
-                    },
-                }, 
-                Dictionaries = new List<UserConfigurationDictionaryItem>
-                {
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = "Tariff",
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("Name", FiledType.Text),
-                        }
-                    },
-                }
             };
 
-            return userConfiguration;
-        }
-
-        private string GetName<T>()
-        {
-            return typeof(T).Name.Replace("Service", "");
+            return userInfo;
         }
 
         private ClaimsIdentity GetIdentity(string userName, string password)

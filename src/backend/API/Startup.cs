@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Application.Services.AppConfiguration;
 using Application.Services.Identity;
 using Application.Services.Roles;
 using Application.Services.Translations;
@@ -11,6 +12,7 @@ using Application.Services.Orders;
 using Application.Services.Transportations;
 /*end of using application service*/
 using DAL;
+using Domain.Services.AppConfiguration;
 using Domain.Services.Identity;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
@@ -56,6 +58,7 @@ namespace API
             });
             
             services.Add(new ServiceDescriptor(typeof(AppDbContext), typeof(AppDbContext),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(IAppConfigurationService), typeof(AppConfigurationService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IIdentityService), typeof(IdentityService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IUserIdProvider), typeof(UserIdProvider),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService),  ServiceLifetime.Scoped) );
