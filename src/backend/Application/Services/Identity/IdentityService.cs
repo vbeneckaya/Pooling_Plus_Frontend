@@ -87,33 +87,12 @@ namespace Application.Services.Identity
                 }, 
                 Dictionaries = new List<UserConfigurationDictionaryItem>
                 {
-                    new UserConfigurationDictionaryItem{
-                        Name = "Users", 
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("Name", FiledType.Text),
-                            new UserConfigurationGridColumn("Email", FiledType.Text),
-                            new UserConfigurationGridColumn("Role", FiledType.Text),
-                            new UserConfigurationGridColumn("IsActive", FiledType.Bool),
-                        }
-                        
-                    },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = "Roles",
+                        Name = "Tariff",
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn("Name", FiledType.Text),
-                        }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = "Translations",
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("Name", FiledType.Text),
-                            new UserConfigurationGridColumn("Ru", FiledType.Text),
-                            new UserConfigurationGridColumn("En", FiledType.Text),
                         }
                     },
                 }

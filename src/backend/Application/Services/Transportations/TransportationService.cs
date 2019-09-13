@@ -1,3 +1,4 @@
+using System;
 using Application.Shared;
 using DAL;
 using Domain.Persistables;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Transportations
 {
-    public class TransportationsService :  DictonaryServiceBase<Transportation, TransportationDto>, ITransportationsService
+    public class TransportationsService : GridServiceBase<Transportation, TransportationDto>, ITransportationsService
     {
         public TransportationsService(AppDbContext appDbContext) : base(appDbContext)
         {
@@ -14,18 +15,22 @@ namespace Application.Services.Transportations
 
         public override DbSet<Transportation> UseDbSet(AppDbContext dbContext)
         {
-            return db.Transportations;
+            return dbContext.Transportations;
         }
 
         public override void MapFromDtoToEntity(Transportation entity, TransportationDto dto)
         {
+            if(!string.IsNullOrEmpty(dto.Id))
+                entity.Id = Guid.Parse(dto.Id);
+            /*end of map dto to entity fields*/
         }
 
         public override TransportationDto MapFromEntityToDto(Transportation entity)
         {
             return new TransportationDto
             {
-                Id = entity.Id.ToString()
+                Id = entity.Id.ToString(),
+                /*end of map entity to dto fields*/
             };
         }
     }

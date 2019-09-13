@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,6 +21,9 @@ namespace DAL
         public DbSet<Translation> Translations { get; set; }
         public DbSet<Transportation> Transportations { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Tariff> Tariffs { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        /*end of add DbSets*/
         
         public void Migrate(string connectionString)
         {
@@ -35,6 +38,12 @@ namespace DAL
                 }              
             }
           
+        }
+
+        public void DropDb()
+        {
+            var commandText = "DROP SCHEMA public CASCADE;CREATE SCHEMA public;";
+            Database.ExecuteSqlCommand(commandText);
         }
     }
 }

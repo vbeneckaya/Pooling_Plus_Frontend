@@ -5,6 +5,7 @@ namespace Domain.Persistables
     public class Order : IPersistable
     {
         public Guid Id { get; set; }
-        public string Incoming { get; set; }
+        public string IncomingNumber { get; set; }
+        /*end of fields*/
     }
 }

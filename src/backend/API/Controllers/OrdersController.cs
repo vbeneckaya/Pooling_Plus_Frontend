@@ -1,4 +1,4 @@
-﻿using API.Controllers.Shared;
+using API.Controllers.Shared;
 using Domain.Persistables;
 using Domain.Services.Orders;
 using Microsoft.AspNetCore.Mvc;
