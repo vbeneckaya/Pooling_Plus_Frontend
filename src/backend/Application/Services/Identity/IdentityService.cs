@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application.Services.Orders;
 using DAL;
 using DAL.Queries;
 using Domain.Enums;
+using Domain.Persistables;
 using Domain.Services.Identity;
+using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
 using Infrastructure.Extensions;
 using Infrastructure.Shared;
@@ -57,15 +60,19 @@ namespace Application.Services.Identity
         public UserConfiguration GetConfiguration()
         {
             var currentUserId = userIdProvider.GetCurrentUserId();
+            User user = null;
+            if (currentUserId.HasValue) 
+                user = db.Users.GetById(currentUserId.Value);
+
             UserConfiguration userConfiguration = new UserConfiguration
             {   
-                UserName = "UserName",
-                UserRole = "Administrator",
+                UserName = user?.Name,
+                UserRole = db.Roles.GetById(user.RoleId).Name,
                 Grids = new List<UserConfigurationGridItem>
                 {
                     new UserConfigurationGridItem
                     {
-                        Name = "Orders", 
+                        Name = GetName<OrdersService>(), 
                         CanCreateByForm = true, 
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
@@ -97,15 +104,13 @@ namespace Application.Services.Identity
                     },
                 }
             };
-            if (currentUserId != null)
-            {
-                var user = db.Users.GetById(currentUserId.Value);
-                if (user != null)
-                {
-                    //TODO Строить исходя из Роли
-                }
-            }
+
             return userConfiguration;
+        }
+
+        private string GetName<T>()
+        {
+            return nameof(T).Replace("Service", "");
         }
 
         private ClaimsIdentity GetIdentity(string userName, string password)

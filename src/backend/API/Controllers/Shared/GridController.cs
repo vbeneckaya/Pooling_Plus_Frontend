@@ -33,6 +33,25 @@ namespace API.Controllers.Shared
             var user = service.Get(id);
             return user;
         }
+        
+        /// <summary>
+        /// Список возможных экшенов
+        /// </summary>
+        [HttpPost("getActions")]
+        public IEnumerable<ActionDto> GetActions([FromBody]IEnumerable<string> ids)
+        {
+            return new List<ActionDto>
+            {
+                new ActionDto
+                {
+                    Ids = ids,
+                    Name = "Test",
+                    Color = "blue"
+                }
+            };
+        }
+        
+        
         /// <summary>
         /// Сохранить или изменить
         /// </summary>
@@ -41,5 +60,12 @@ namespace API.Controllers.Shared
         {
             return service.SaveOrCreate(form);
         }
+    }
+
+    public class ActionDto
+    {
+        public string Name { get; set; }
+        public string Color { get; set; }
+        public IEnumerable<string> Ids { get; set; }
     }
 }

@@ -39,6 +39,11 @@
             Данные по id
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`3.GetActions(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Список возможных экшенов
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
