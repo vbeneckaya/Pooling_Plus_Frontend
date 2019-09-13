@@ -2,6 +2,7 @@ import { all, takeEvery, delay, put } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import profile from '../mocks/profile';
+import {ROLES_LINK, USERS_LINK} from "../router/links";
 
 //*  TYPES  *//
 const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -67,6 +68,28 @@ export const roleSelector = createSelector(
     stateSelector,
     state => state.userRole,
 );
+
+export const rolesAndUsersMenu = createSelector(stateSelector, state => {
+    console.log(state);
+    let menu = [];
+
+    if (state.editRoles) {
+        menu.push({
+            name: 'roles',
+            link: ROLES_LINK
+        })
+    }
+
+    if (state.editUsers) {
+        menu.push({
+            name: 'users',
+            link: USERS_LINK
+        })
+    }
+
+    return menu;
+});
+
 export const homePageSelector = createSelector(
     stateSelector,
     state => (state.grids && state.grids.length ? state.grids[0].name : ''),

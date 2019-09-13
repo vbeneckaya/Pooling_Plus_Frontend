@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
     dictionariesMenuSelector,
     getUserProfile,
-    gridsMenuSelector,
+    gridsMenuSelector, rolesAndUsersMenu,
     roleSelector,
     userNameSelector,
 } from '../../ducks/profile';
@@ -20,6 +20,7 @@ const Header = () => {
     const dispatch = useDispatch();
     const grids = useSelector(state => gridsMenuSelector(state));
     const dictionaries = useSelector(state => dictionariesMenuSelector(state));
+    const usersAndRoles = useSelector(state => rolesAndUsersMenu(state));
     const userName = useSelector(state => userNameSelector(state));
     const userRole = useSelector(state => roleSelector(state));
     const isAuth = useSelector(state => isAuthSelector(state));
@@ -38,8 +39,6 @@ const Header = () => {
 
     useEffect(getProfile, []);
 
-    console.log('location', location);
-
     let [activeItem, setActiveItem] = useState(location.pathname);
 
     useEffect(() => {
@@ -51,7 +50,7 @@ const Header = () => {
             {isAuth ? (
                 <header>
                     <Menu pointing secondary fixed="top">
-                        <Menu.Item>LOGO</Menu.Item>
+                        {/*<Menu.Item>LOGO</Menu.Item>*/}
                         {grids &&
                             grids.map(item => (
                                 <Menu.Item
@@ -65,26 +64,20 @@ const Header = () => {
                                     {t(item)}
                                 </Menu.Item>
                             ))}
-                        <Menu.Item
-                            className="large"
-                            key="roles"
-                            as={Link}
-                            to={ROLES_LINK}
-                            active={activeItem.includes('roles')}
-                            name="roles"
-                        >
-                            {t('Roles')}
-                        </Menu.Item>
-                        <Menu.Item
-                            className="large"
-                            key="users"
-                            as={Link}
-                            to={USERS_LINK}
-                            active={activeItem.includes('users')}
-                            name="users"
-                        >
-                            {t('Users')}
-                        </Menu.Item>
+                        {
+                            usersAndRoles.map(item => (
+                                <Menu.Item
+                                    className="large"
+                                    key={item.name}
+                                    as={Link}
+                                    to={item.link}
+                                    active={activeItem.includes(item.name)}
+                                    name="roles"
+                                >
+                                    {t(item.name)}
+                                </Menu.Item>
+                            ))
+                        }
                         {dictionaries && (
                             <Menu.Menu>
                                 <Dropdown

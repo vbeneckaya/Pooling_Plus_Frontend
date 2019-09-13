@@ -65,7 +65,7 @@ const Login = () => {
                             <div>
                                 <p>{t(page.name)}</p>
                                 <p>
-                                    {t(page.support_name)}: <a>{page.phoneNumber}</a>
+                                    {t(page.support_name)}
                                 </p>
                             </div>
                         </Grid.Column>
@@ -100,7 +100,7 @@ const Login = () => {
                         languages.find(item => item.value === i18n.language).flag
                     }
                 />
-                <span>{t('language')}:</span>{' '}
+                {' '}
                 <Dropdown
                     inline
                     options={languages}
