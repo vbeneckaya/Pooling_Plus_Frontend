@@ -66,8 +66,8 @@ namespace Application.Services.Identity
 
             UserConfiguration userConfiguration = new UserConfiguration
             {   
-                UserName = user?.Name,
-                UserRole = db.Roles.GetById(user.RoleId).Name,
+                UserName = "Иван Иванов",//user?.Name,
+                UserRole = "Administrator",//db.Roles.GetById(user.RoleId).Name,
                 Grids = new List<UserConfigurationGridItem>
                 {
                     new UserConfigurationGridItem

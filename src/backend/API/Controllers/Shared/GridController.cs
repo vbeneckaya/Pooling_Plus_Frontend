@@ -51,6 +51,23 @@ namespace API.Controllers.Shared
             };
         }
         
+        /// <summary>
+        /// Выполнить действие
+        /// </summary>
+        [HttpPost("invokeAction/{name}")]
+        public IEnumerable<ActionDto> InvokeAction(string name, [FromBody]IEnumerable<string> ids)
+        {
+            return new List<ActionDto>
+            {
+                new ActionDto
+                {
+                    Ids = ids,
+                    Name = "Test",
+                    Color = "blue"
+                }
+            };
+        }
+        
         
         /// <summary>
         /// Сохранить или изменить
