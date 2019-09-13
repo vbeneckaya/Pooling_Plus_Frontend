@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY /src/backend/ .
 
-RUN dotnet build API/ -c Release -o /app/build/
+RUN dotnet publish --no-restore API/ -c Release -o /app/build/
 ENTRYPOINT ping 8.8.8.8
 #ENTRYPOINT  dotnet /app/build/API.dll --urls http://0.0.0.0:5000
 # Runtime image
