@@ -76,10 +76,11 @@ export const homePageSelector = createSelector(
 
 function* getUserProfileSaga({ payload }) {
     try {
-        const result = yield postman.get('/identity/configuration');
+        const userInfo = yield postman.get('/identity/userInfo');
+        const config = yield postman.get('/appConfiguration');
         yield put({
             type: GET_USER_PROFILE_SUCCESS,
-            payload: result,
+            payload: {...userInfo, ...config},
         });
     } catch (e) {
         yield put({
