@@ -44,6 +44,11 @@
             Список возможных экшенов
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`3.InvokeAction(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Выполнить действие
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить

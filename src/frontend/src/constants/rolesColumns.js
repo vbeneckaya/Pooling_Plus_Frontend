@@ -12,7 +12,7 @@ export const rolesColumns = [
         type: ENUM_TYPE,
     },
     {
-        name: 'is_active',
+        name: 'isActive',
         type: ACTIVE_TYPE,
     },
 ];

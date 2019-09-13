@@ -112,10 +112,22 @@ export const clearRolesInfo = () => {
 //*  SELECTORS *//
 
 const stateSelector = state => state.roles;
+
 export const rolesListSelector = createSelector(
     stateSelector,
     state => state.list,
 );
+
+export const rolesFromUserSelector = createSelector(stateSelector, state => {
+    console.log('list', state);
+    return state.list && state.list.map(item => ({
+        name: item.name,
+        value: item.id,
+        isActive: true
+    }))
+});
+
+
 export const progressSelector = createSelector(
     stateSelector,
     state => state.progress,

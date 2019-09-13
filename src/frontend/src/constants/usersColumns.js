@@ -14,7 +14,7 @@ export const usersColumns = [
         name: 'role',
     },
     {
-        name: 'is_active',
+        name: 'isActive',
         type: ACTIVE_TYPE,
     },
 ];

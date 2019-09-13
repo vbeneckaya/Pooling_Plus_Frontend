@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { Button, Dimmer, Form, Grid, Input, Loader, Modal } from 'semantic-ui-react';
+import { Button, Dimmer, Form, Grid, Input, Label, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUsersInfo,
     createUserRequest,
@@ -9,6 +9,12 @@ import {
     progressSelector,
     userCardSelector,
 } from '../../ducks/users';
+import {
+    getRolesRequest,
+    rolesFromUserSelector,
+    progressSelector as rolesProgressSelector,
+} from '../../ducks/roles';
+import Select from "../../components/BaseComponents/Select";
 
 class UserCard extends Component {
     constructor(props) {
@@ -17,11 +23,11 @@ class UserCard extends Component {
         this.state = {
             modalOpen: false,
             form: {
-                login: '',
-                name: '',
-                role: '',
-                email: '',
-                is_active: null,
+                login: null,
+                name: null,
+                roleId: null,
+                email: null,
+                isActive: true,
             },
         };
     }
@@ -34,18 +40,25 @@ class UserCard extends Component {
                 form: {
                     login: user.login,
                     name: user.name,
-                    role: user.role,
+                    roleId: user.roleId,
                     email: user.email,
-                    is_active: user.is_active,
+                    password: user.password,
+                    isActive: user.isActive,
                 },
             });
         }
     }
 
     handleOpen = () => {
-        const { getUser, id } = this.props;
+        const { getUser, id, getRoles } = this.props;
 
-        getUser(id);
+        id && getUser(id);
+        getRoles({
+            filter: {
+                skip: 0,
+                take: 20,
+            },
+        });
         this.setState({ modalOpen: true });
     };
 
@@ -91,8 +104,10 @@ class UserCard extends Component {
 
     render() {
         const { modalOpen, form } = this.state;
-        const { login, name, role, email, is_active } = form;
-        const { children, title, loading } = this.props;
+        const { login, name, roleId, email, isActive } = form;
+        const { children, title, loading, id, rolesLoading, roles } = this.props;
+
+        console.log('roles', roles);
 
         return (
             <Modal
@@ -139,17 +154,38 @@ class UserCard extends Component {
                                     </Form.Field>
                                     <Form.Field>
                                         <label>Роль</label>
-                                        <Input
-                                            name="role"
-                                            value={role}
+                                        <Select
+                                            fluid
+                                            search
+                                            selection
+                                            loading={rolesLoading}
+                                            name="roleId"
+                                            value={roleId}
+                                            valuesList={roles}
                                             onChange={this.handleChange}
                                         />
                                     </Form.Field>
                                     <Form.Field>
+                                          <label>Пароль</label> 
+                                        <Input
+                                            type="password"
+                                            name="password"
+                                            onChange={this.handleChange}
+                                        />
+                                         {' '}
+                                        {id ? (
+                                            <Label pointing>
+                                                Оставьте поле пустым, если не хотите менять пароль
+                                            </Label>
+                                        ) : null}
+                                         
+                                    </Form.Field>
+
+                                    <Form.Field>
                                         <Form.Checkbox
                                             label="Активен"
-                                            name="is_active"
-                                            checked={is_active}
+                                            name="isActive"
+                                            checked={isActive}
                                             onChange={this.handleChange}
                                         />
                                     </Form.Field>
@@ -173,6 +209,8 @@ const mapStateToProps = state => {
     return {
         user: userCardSelector(state),
         loading: progressSelector(state),
+        roles: rolesFromUserSelector(state),
+        rolesLoading: rolesProgressSelector(state),
     };
 };
 
@@ -180,6 +218,9 @@ const mapDispatchToProps = dispatch => {
     return {
         getUser: params => {
             dispatch(getUserCardRequest(params));
+        },
+        getRoles: params => {
+            dispatch(getRolesRequest(params));
         },
         createUser: params => {
             dispatch(createUserRequest(params));

@@ -151,7 +151,7 @@ class TableInfo extends Component {
                                                       type={column.type}
                                                       id={`${row.id}_${column.name}_${index}`}
                                                       toggleIsActive={toggleIsActive}
-                                                      value={row[column.name.toLowerCase()]}
+                                                      value={row[column.name]}
                                                   />
                                               </Table.Cell>
                                           ))}

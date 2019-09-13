@@ -28,6 +28,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) =
     }
 
     if (type === ACTIVE_TYPE) {
+        console.log('isActive', value)
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 
