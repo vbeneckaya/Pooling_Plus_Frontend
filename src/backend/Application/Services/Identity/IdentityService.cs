@@ -110,7 +110,7 @@ namespace Application.Services.Identity
 
         private string GetName<T>()
         {
-            return nameof(T).Replace("Service", "");
+            return typeof(T).Name.Replace("Service", "");
         }
 
         private ClaimsIdentity GetIdentity(string userName, string password)
