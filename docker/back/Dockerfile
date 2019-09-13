@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY /src/backend/API .
 
-RUN dotnet publish -c Release -o /app/build/
+RUN dotnet build -c Release -o /app/build/
 
 #Runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
