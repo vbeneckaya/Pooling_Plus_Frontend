@@ -24,7 +24,7 @@ WORKDIR /app
 #RUN apt-get update && apt install iputils-ping -y
 
 COPY --from=build /app/build .
-
+RUN ls -la
 #ENTRYPOINT ping 8.8.8.8
 
 ENTRYPOINT  dotnet API.dll --urls http://0.0.0.0:5000
