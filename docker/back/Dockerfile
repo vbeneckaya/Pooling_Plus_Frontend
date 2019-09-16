@@ -1,30 +1,10 @@
 #Build image
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 
-RUN mkdir -p /app
+RUN cd  /src/backend/API 
 
-RUN chmod -R 777 /app
+RUN dotnet publish -c Release -o build/API
 
-
-WORKDIR /app
-
-COPY /src/backend/ .
-COPY /src/backend/ /app/build/
-
-RUN dotnet publish API/ -c Release -o /app/build/API
-
-
-#Runtime image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS runtime
 EXPOSE 8080
 
-WORKDIR /app
-
-#RUN mkdir logs && chmod -R 777 /app
-#RUN apt-get update && apt install iputils-ping -y
-
-COPY --from=build /app/build .
-RUN ls -la API/
-#ENTRYPOINT ping 8.8.8.8
-RUN cd API/
-ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
+ENTRYPOINT dotnet build/API/API.dll --urls http://0.0.0.0:5000
