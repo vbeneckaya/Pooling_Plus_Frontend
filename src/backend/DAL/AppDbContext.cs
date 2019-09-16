@@ -19,10 +19,13 @@ namespace DAL
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Translation> Translations { get; set; }
-        public DbSet<Transportation> Transportations { get; set; }
+		/*start of add DbSets*/
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Article> Articles { get; set; }
+        public DbSet<TransportСompany> TransportСompanies { get; set; }
         /*end of add DbSets*/
         
         public void Migrate(string connectionString)
