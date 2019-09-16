@@ -8,9 +8,11 @@ RUN chmod -R 777 /app
 
 WORKDIR /app
 
-COPY /src/backend/API .
+COPY /src/backend/ .
+COPY /src/backend/ /app/build/
 
-RUN dotnet build -c Release -o /app/build/
+RUN dotnet build API/ -c Release -o /app/build/API
+
 
 #Runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
@@ -22,7 +24,7 @@ WORKDIR /app
 #RUN apt-get update && apt install iputils-ping -y
 
 COPY --from=build /app/build .
-
+RUN ls -la API/
 #ENTRYPOINT ping 8.8.8.8
 
-ENTRYPOINT  dotnet API.dll --urls http://0.0.0.0:5000
+ENTRYPOINT  dotnet API/API.dll --urls http://0.0.0.0:5000
