@@ -15,7 +15,7 @@ RUN dotnet build API/ -c Release -o /app/build/API
 
 
 #Runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS runtime
 EXPOSE 8080
 
 WORKDIR /app
