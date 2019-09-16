@@ -8,9 +8,9 @@ RUN chmod -R 777 /app
 
 WORKDIR /app
 
-COPY /src/backend/API .
+COPY /src/backend/ .
 
-RUN dotnet build -c Release -o /app/build/
+RUN dotnet build API/ -c Release -o /app/build/
 
 #Runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
