@@ -1,6 +1,7 @@
 #Build image
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2
-
+RUN ls -la
+RUN pwd
 RUN cd  src/backend/API 
 
 RUN dotnet publish -c Release -o build/API
