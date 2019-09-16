@@ -1,5 +1,5 @@
 #Build image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2
 
 RUN cd  src/backend/API 
 
