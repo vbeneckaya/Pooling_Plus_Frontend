@@ -11,7 +11,7 @@ WORKDIR /app
 COPY /src/backend/ .
 COPY /src/backend/ /app/build/
 
-RUN dotnet build API/ -c Release -o /app/build/API
+RUN dotnet publish API/ -c Release -o /app/build/API
 
 
 #Runtime image
@@ -27,4 +27,4 @@ COPY --from=build /app/build .
 RUN ls -la API/
 #ENTRYPOINT ping 8.8.8.8
 RUN cd API/
-ENTRYPOINT  dotnet API.dll --urls http://0.0.0.0:5000
+ENTRYPOINT dotnet API.dll --urls http://0.0.0.0:5000
