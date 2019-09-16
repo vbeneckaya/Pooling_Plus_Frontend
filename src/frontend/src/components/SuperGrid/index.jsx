@@ -20,6 +20,10 @@ const initState = (storageFilterItem, storageSortItem) => ({
     selectedRows: new Set(),
 });
 
+const CreateButton = ({button, ...res}) => {
+    return React.cloneElement(button, res);
+};
+
 class SuperGrid extends Component {
     constructor(props) {
         super(props);
@@ -32,7 +36,6 @@ class SuperGrid extends Component {
     }
 
     componentDidMount() {
-        console.log('YYYY');
         this.props.autoUpdateStart(this.mapData());
     }
 
@@ -268,6 +271,7 @@ class SuperGrid extends Component {
             isUnloadInExcel,
             loadingReport,
             colorInfo,
+            autoUpdateStop
         } = this.props;
 
         return (
@@ -276,7 +280,7 @@ class SuperGrid extends Component {
                       <Loader size="huge">Loading</Loader> 
                 </Dimmer>
                 <HeaderSearchGrid
-                    createButton={createButton}
+                    createButton={createButton && <CreateButton button={createButton} loadList={this.loadList} stopUpdate={autoUpdateStop}/>}
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}

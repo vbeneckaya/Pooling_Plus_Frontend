@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import SuperGrid from '../../components/SuperGrid';
 import {
     autoUpdateStart,
-    autoUpdateStop,
+    autoUpdateStop, canCreateByFormSelector,
     columnsGridSelector,
     getListRequest,
     listSelector,
@@ -11,11 +11,27 @@ import {
     totalCountSelector,
 } from '../../ducks/gridView';
 import { withRouter } from 'react-router-dom';
+import Card from "./card";
+import {Button} from "semantic-ui-react";
+import { withTranslation } from 'react-i18next';
+import {actionsSelector, getActionsRequest} from "../../ducks/gridActions";
+
+const CreateButton = ({t, ...res}) => (
+    <Card title={t("create_form_title")} {...res} >
+        <Button color="blue" className="create-button">
+            {t("create_btn")}
+        </Button>
+    </Card>
+);
 
 class List extends Component {
     constructor(props) {
         super(props);
     }
+
+    getGroupActions = () => {
+
+    };
 
     render() {
         const {
@@ -26,9 +42,14 @@ class List extends Component {
             totalCount,
             progress,
             match = {},
+            t,
+            isCreateBtn,
+            getActions
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
+
+        console.log('isCreateBtn', isCreateBtn);
 
         return (
             <div className="container">
@@ -40,6 +61,11 @@ class List extends Component {
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
                     progress={progress}
+                    storageSortItem={`${name}Sort`}
+                    storageFilterItem={`${name}Filters`}
+                    getActions={getActions}
+                    groupActions={this.getGroupActions}
+                    createButton={isCreateBtn ? <CreateButton t={t} /> : null }
                 />
             </div>
         );
@@ -54,6 +80,9 @@ function mapDispatchToProps(dispatch) {
         stopUpdate: params => {
             dispatch(autoUpdateStop(params));
         },
+        getActions: params => {
+            dispatch(getActionsRequest(params))
+        }
     };
 }
 
@@ -67,12 +96,14 @@ function mapStateToProps(state, ownProps) {
         list: listSelector(state),
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
+        isCreateBtn: canCreateByFormSelector(state, name),
+        actions: actionsSelector(state)
     };
 }
 
-export default withRouter(
+export default withTranslation()(withRouter(
     connect(
         mapStateToProps,
         mapDispatchToProps,
-    )(List),
+    )(List)),
 );

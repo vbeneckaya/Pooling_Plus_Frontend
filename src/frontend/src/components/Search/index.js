@@ -1,9 +1,10 @@
 import React from 'react';
 import { Input } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 
 import './style.scss';
 
-export default class Search extends React.Component {
+class Search extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -22,7 +23,7 @@ export default class Search extends React.Component {
     };
 
     render() {
-        const { value, isAuto } = this.props;
+        const { value, isAuto, t } = this.props;
 
         return (
             <Input
@@ -30,9 +31,11 @@ export default class Search extends React.Component {
                 className="search-input"
                 onKeyDown={this.handleKeyPress}
                 onChange={this.change}
-                placeholder={'Искать по всем полям'}
+                placeholder={t('search_all_fields')}
                 value={isAuto ? value : this.state.value}
             />
         );
     }
 }
+
+export default withTranslation()(Search);

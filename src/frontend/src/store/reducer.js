@@ -6,6 +6,7 @@ import { default as login } from '../ducks/login';
 import { default as roles } from '../ducks/roles';
 import { default as gridView } from '../ducks/gridView';
 import { default as dictionaryView } from '../ducks/dictionaryView';
+import { default as gridActions } from '../ducks/gridActions';
 import { default as users } from '../ducks/users';
 
 export default history =>
@@ -16,5 +17,6 @@ export default history =>
         users,
         gridView,
         dictionaryView,
+        gridActions,
         router: connectRouter(history),
     });
