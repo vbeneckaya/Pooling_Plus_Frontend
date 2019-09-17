@@ -20,7 +20,7 @@ const initState = (storageFilterItem, storageSortItem) => ({
     selectedRows: new Set(),
 });
 
-const CreateButton = ({button, ...res}) => {
+const CreateButton = ({ button, ...res }) => {
     return React.cloneElement(button, res);
 };
 
@@ -271,8 +271,10 @@ class SuperGrid extends Component {
             isUnloadInExcel,
             loadingReport,
             colorInfo,
-            autoUpdateStop
+            autoUpdateStop,
         } = this.props;
+
+        console.log('ff', selectedRows, groupActions);
 
         return (
             <>
@@ -280,7 +282,15 @@ class SuperGrid extends Component {
                       <Loader size="huge">Loading</Loader> 
                 </Dimmer>
                 <HeaderSearchGrid
-                    createButton={createButton && <CreateButton button={createButton} loadList={this.loadList} stopUpdate={autoUpdateStop}/>}
+                    createButton={
+                        createButton && (
+                            <CreateButton
+                                button={createButton}
+                                loadList={this.loadList}
+                                stopUpdate={autoUpdateStop}
+                            />
+                        )
+                    }
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
@@ -346,37 +356,32 @@ class SuperGrid extends Component {
                                 />
                             </Grid.Column>
                         ) : null}
-                        {selectedRows.size && groupActions
-                            ? groupActions(collapsed ? extSelectedRow.size : selectedRows.size).map(
-                                  action => (
-                                      <Grid.Column key={action.name}>
+                        <Grid.Column>
+                            {!selectedRows.size && groupActions
+                                ? groupActions().map(action => (
+                                      <span key={action.name}>
                                           <Button
                                               color={action.color}
-                                              content={action.buttonName}
+                                              content={action.name}
                                               loading={action.loading}
                                               disabled={action.loading}
                                               icon={action.icon}
+                                              size="mini"
                                               onClick={() =>
-                                                  action.action(
-                                                      Array.from(
-                                                          collapsed ? extSelectedRow : selectedRows,
-                                                      ),
-                                                      () => {
-                                                          this.setState(
-                                                              {
-                                                                  selectedRows: new Set(),
-                                                                  extSelectedRow: new Set(),
-                                                              },
-                                                              () => this.loadList(false, true),
-                                                          );
-                                                      },
-                                                  )
+                                                  action.action(action.ids, () => {
+                                                      this.setState(
+                                                          {
+                                                              selectedRows: new Set(),
+                                                          },
+                                                          () => this.loadList(false, true),
+                                                      );
+                                                  })
                                               }
                                           />
-                                      </Grid.Column>
-                                  ),
-                              )
-                            : null}
+                                      </span>
+                                  ))
+                                : null}
+                        </Grid.Column>
                         <Grid.Column floated="right">{colorInfo}</Grid.Column>
                     </Grid.Row>
                 </Grid>
