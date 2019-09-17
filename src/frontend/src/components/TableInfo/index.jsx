@@ -18,6 +18,14 @@ class TableInfo extends Component {
         this.load();
     }
 
+    componentDidUpdate(prevProps) {
+
+        if (this.props.name !== prevProps.name) {
+            console.log('!!!!', this.props.name, this.props.headerRow);
+            this.load();
+        }
+    }
+
     mapData = isConcat => {
         const { filter, page } = this.state;
         const { name } = this.props;
@@ -37,7 +45,6 @@ class TableInfo extends Component {
 
     load = isConcat => {
         const { loadList } = this.props;
-        console.log('!!!!!', loadList);
         loadList(this.mapData(isConcat));
     };
 
@@ -60,7 +67,7 @@ class TableInfo extends Component {
 
     debounceSetFilterApiAndLoadList = debounce(300, this.load);
 
-    headerRowComponent = (
+    headerRowComponent = () => (
         <Table.Row>
             {this.props.headerRow &&
                 this.props.headerRow.map(row => (
@@ -85,6 +92,7 @@ class TableInfo extends Component {
             groupActions,
             toggleIsActive,
             newModal,
+            t
         } = this.props;
 
         const { filter } = this.state;
@@ -95,7 +103,7 @@ class TableInfo extends Component {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <div className="table-header-menu">
-                    <h2>{title}</h2>
+                    <h2>{t(title)}</h2>
                     <Grid>
                         <Grid.Row>
                             <Grid.Column width={7}>
@@ -135,7 +143,7 @@ class TableInfo extends Component {
                         className="grid-table table-info"
                         onBottomVisible={this.nextPage}
                         context={this.container}
-                        headerRow={this.headerRowComponent}
+                        headerRow={this.headerRowComponent()}
                     >
                         <Table.Body>
                             {customRowComponent

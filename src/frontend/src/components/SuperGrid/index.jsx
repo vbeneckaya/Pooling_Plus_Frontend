@@ -174,7 +174,7 @@ class SuperGrid extends Component {
     setSelected = item => {
         this.setState({
             selectedRows: item,
-        });
+        }, () => {this.props.getActions(item)});
     };
 
     setSelectedAll = () => {
@@ -357,7 +357,7 @@ class SuperGrid extends Component {
                             </Grid.Column>
                         ) : null}
                         <Grid.Column>
-                            {!selectedRows.size && groupActions
+                            {selectedRows.size && groupActions
                                 ? groupActions().map(action => (
                                       <span key={action.name}>
                                           <Button

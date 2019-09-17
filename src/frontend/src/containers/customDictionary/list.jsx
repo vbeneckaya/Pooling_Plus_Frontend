@@ -24,6 +24,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list }) => 
             loadList={loadList}
             loading={progress}
             totalCount={totalCount}
+            title={name}
             list={list}
         />
     );
@@ -33,6 +34,8 @@ const mapStateToProps = (state, ownProps) => {
     const { match = {} } = ownProps;
     const { params = {} } = match;
     const { name = '' } = params;
+
+    console.log('name', name);
 
     return {
         columns: columnsSelector(state, name),
