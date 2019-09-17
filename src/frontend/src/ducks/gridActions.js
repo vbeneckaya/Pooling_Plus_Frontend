@@ -15,18 +15,7 @@ const INVOKE_ACTION_ERROR = 'INVOKE_ACTION_ERROR';
 //*  INITIAL STATE  *//
 
 const initial = {
-    actions: [
-        {
-            name: 'Test',
-            color: 'blue',
-            ids: ['string'],
-        },
-        {
-            name: 'Test2',
-            color: 'olive',
-            ids: ['string'],
-        },
-    ],
+    actions: [],
 };
 
 //*  REDUCER  *//
@@ -85,7 +74,10 @@ const stateSelector = state => state.gridActions;
 
 export const actionsSelector = createSelector(
     stateSelector,
-    state => state.actions,
+    state => state.actions.map(item => ({
+        ...item,
+        ids: item.ids || []
+    })),
 );
 
 //*  SAGA  *//
@@ -106,15 +98,16 @@ function* getActionsSaga({ payload }) {
 
 function* invokeActionSaga({ payload }) {
     try {
-        const {ids, callbackFunc, name, actionName} = payload;
+        const {ids, callbackSuccess, name, actionName} = payload;
         const result = yield postman.post(`/${name}/invokeAction/${actionName}`, ids);
         yield put({
             type: INVOKE_ACTION_SUCCESS
         });
-        callbackFunc();
+        callbackSuccess();
     } catch (e) {
         yield put({
-            type: INVOKE_ACTION_ERROR
+            type: INVOKE_ACTION_ERROR,
+            payload: e
         })
     }
 }
