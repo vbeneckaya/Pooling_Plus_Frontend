@@ -242,7 +242,7 @@ namespace DAL.Migrations
             AddTranslation("roles", "Roles", "Роли");
             AddTranslation("create_btn", "Create", "Создать");
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
-            AddTranslation("reset_filters", "Search all fields", "Искать по всем полям");
+            AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
 
             /*start of add translates*/
             AddTranslation("login_welcome", "login_welcome", "TMS Beiersdorf");

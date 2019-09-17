@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("Orders")]
+    [Route("api/orders")]
     public class OrdersController : GridController<IOrdersService, Order, OrderDto> 
     {
         public OrdersController(IOrdersService ordersService) : base(ordersService)

@@ -54,7 +54,7 @@ namespace Application.Services.Identity
             return new VerificationResultWith<TokenModel>{Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
         }
 
-        public UserInfo GetConfiguration()
+        public UserInfo GetUserInfo()
         {
             var currentUserId = userIdProvider.GetCurrentUserId();
             User user = null;
@@ -62,7 +62,7 @@ namespace Application.Services.Identity
                 user = db.Users.GetById(currentUserId.Value);
 
             //TODO Получать имя пользователя и роль
-            UserInfo userInfo = new UserInfo
+            var userInfo = new UserInfo
             {   
                 UserName = "Иван Иванов",//user?.Name,
                 UserRole = "Administrator",//db.Roles.GetById(user.RoleId).Name,

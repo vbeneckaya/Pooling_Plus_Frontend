@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("Articles")]
+    [Route("api/articles")]
     public class ArticlesController : DictonaryController<IArticlesService, Article, ArticleDto> 
     {
         public ArticlesController(IArticlesService articlesService) : base(articlesService)

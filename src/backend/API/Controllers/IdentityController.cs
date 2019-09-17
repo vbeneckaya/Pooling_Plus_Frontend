@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Route("api/identity")]
     public class IdentityController : Controller
     {
         private readonly IIdentityService identityService;
@@ -15,16 +16,16 @@ namespace API.Controllers
         /// <summary>
         /// Получение информации о пользователе
         /// </summary>
-        [HttpGet("identity/userInfo")] 
-        public UserInfo Configuration()
+        [HttpGet("userInfo")] 
+        public UserInfo UserInfo()
         {
-            return identityService.GetConfiguration();
+            return identityService.GetUserInfo();
         }
         
         /// <summary>
         /// Авторизация, получение токена для логина и пароля
         /// </summary>
-        [HttpPost("identity/login")]
+        [HttpPost("login")]
         public IActionResult Login([FromBody]IdentityModel model)
         {
             var identity = identityService.GetToken(model);

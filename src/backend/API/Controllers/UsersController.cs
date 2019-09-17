@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("users")]
+    [Route("api/users")]
     public class UsersController : DictonaryController<IUsersService, User, UserDto>
     {
         public UsersController(IUsersService usersService) : base(usersService)

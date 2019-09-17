@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Route("api")]
     public class AppConfigurationController : Controller
     {
         private readonly IAppConfigurationService appConfigurationService;

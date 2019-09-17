@@ -1,9 +1,9 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import qs from 'qs';
 import { toast } from 'react-toastify';
 
 export const postman = axios.create({
-    baseURL: '',
+    baseURL: '/api',
     paramsSerializer: params => qs.stringify(params, { indices: false }),
 });
 

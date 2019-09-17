@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("Roles")]
+    [Route("api/roles")]
     public class RolesController : DictonaryController<IRolesService, Role, RoleDto>
     {
         public RolesController(IRolesService rolesService) : base(rolesService)

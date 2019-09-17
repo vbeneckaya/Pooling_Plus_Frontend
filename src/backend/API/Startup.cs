@@ -109,7 +109,12 @@ namespace API
             if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
 
-            app.UseMvc();
+            app.UseMvc((routes) =>
+            {
+                routes.MapRoute(
+                    name: "DefaultApi",
+                    template: "api/{controller}/{action}");
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

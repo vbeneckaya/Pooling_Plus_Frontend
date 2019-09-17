@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("Translation")]
+    [Route("api/translation")]
     public class TranslationController : Controller
     {
         public ITranslationsService service { get; }

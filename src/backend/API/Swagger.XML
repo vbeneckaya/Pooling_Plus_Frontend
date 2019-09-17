@@ -9,7 +9,7 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
-        <member name="M:API.Controllers.IdentityController.Configuration">
+        <member name="M:API.Controllers.IdentityController.UserInfo">
             <summary>
             Получение информации о пользователе
             </summary>

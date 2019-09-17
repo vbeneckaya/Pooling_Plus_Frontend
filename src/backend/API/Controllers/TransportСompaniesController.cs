@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("TransportСompanies")]
+    [Route("api/transportСompanies")]
     public class TransportСompaniesController : DictonaryController<ITransportСompaniesService, TransportСompany, TransportСompanyDto> 
     {
         public TransportСompaniesController(ITransportСompaniesService transportСompaniesService) : base(transportСompaniesService)
