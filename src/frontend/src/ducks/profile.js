@@ -1,11 +1,11 @@
-import { all, takeEvery, delay, put } from 'redux-saga/effects';
-import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
-import profile from '../mocks/profile';
-import {ROLES_LINK, USERS_LINK} from "../router/links";
+import {all, put, takeEvery} from 'redux-saga/effects';
+import {createSelector} from 'reselect';
+import {postman} from '../utils/postman';
+import {push as historyPush} from 'connected-react-router';
+import {ROLES_LINK, USERS_LINK} from '../router/links';
 
 //*  TYPES  *//
-const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
+export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
 const GET_USER_PROFILE_SUCCESS = 'GET_USER_PROFILE_SUCCESS';
 const GET_USER_PROFILE_ERROR = 'GET_USER_PROFILE_ERROR';
 
@@ -60,14 +60,8 @@ export const dictionariesMenuSelector = createSelector(
     stateSelector,
     state => state.dictionaries && state.dictionaries.map(dictionary => dictionary.name),
 );
-export const userNameSelector = createSelector(
-    stateSelector,
-    state => state.userName,
-);
-export const roleSelector = createSelector(
-    stateSelector,
-    state => state.userRole,
-);
+export const userNameSelector = createSelector(stateSelector, state => state.userName);
+export const roleSelector = createSelector(stateSelector, state => state.userRole);
 
 export const rolesAndUsersMenu = createSelector(stateSelector, state => {
     console.log(state);
@@ -76,15 +70,15 @@ export const rolesAndUsersMenu = createSelector(stateSelector, state => {
     if (state.editRoles) {
         menu.push({
             name: 'roles',
-            link: ROLES_LINK
-        })
+            link: ROLES_LINK,
+        });
     }
 
     if (state.editUsers) {
         menu.push({
             name: 'users',
-            link: USERS_LINK
-        })
+            link: USERS_LINK,
+        });
     }
 
     return menu;
@@ -97,14 +91,20 @@ export const homePageSelector = createSelector(
 
 //*  SAGA  *//
 
-function* getUserProfileSaga({ payload }) {
+function* getUserProfileSaga({ payload = {} }) {
     try {
         const userInfo = yield postman.get('/identity/userInfo');
         const config = yield postman.get('/appConfiguration');
+        const { url } = payload;
+
         yield put({
             type: GET_USER_PROFILE_SUCCESS,
-            payload: {...userInfo, ...config},
+            payload: { ...userInfo, ...config },
         });
+        if (url) {
+            console.log('!!!!!!!!!!!!!!!!!!!', url);
+            yield put(historyPush(url));
+        }
     } catch (e) {
         yield put({
             type: GET_USER_PROFILE_ERROR,

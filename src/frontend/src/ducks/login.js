@@ -1,9 +1,9 @@
 import { all, takeEvery, delay, put } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import loginPage from '../mocks/loginPage';
-import {postman, setAccessToken} from '../utils/postman';
-import { push } from 'connected-react-router';
-import { getUserProfile } from './profile';
+import { postman, setAccessToken } from '../utils/postman';
+
+import { GET_USER_PROFILE_REQUEST, getUserProfile } from './profile';
 
 //*  TYPES  *//
 
@@ -74,7 +74,7 @@ export default (state = initial, { type, payload }) => {
         case LOGOUT_REQUEST:
             return {
                 ...state,
-                isAuth: false
+                isAuth: false,
             };
         default:
             return state;
@@ -100,30 +100,18 @@ export const loginRequest = payload => {
 export const logoutRequest = () => {
     localStorage.removeItem('accessToken');
     return {
-        type: LOGOUT_REQUEST
-    }
+        type: LOGOUT_REQUEST,
+    };
 };
 
 //*  SELECTORS *//
 
 const stateSelector = state => state.login;
 const getKey = (state, key) => key;
-export const loginPageSelector = createSelector(
-    stateSelector,
-    state => state.page,
-);
-export const progressSelector = createSelector(
-    [stateSelector, getKey],
-    (state, key) => state[key],
-);
-export const errorSelector = createSelector(
-    stateSelector,
-    state => state.error,
-);
-export const isAuthSelector = createSelector(
-    stateSelector,
-    state => state.isAuth,
-);
+export const loginPageSelector = createSelector(stateSelector, state => state.page);
+export const progressSelector = createSelector([stateSelector, getKey], (state, key) => state[key]);
+export const errorSelector = createSelector(stateSelector, state => state.error);
+export const isAuthSelector = createSelector(stateSelector, state => state.isAuth);
 
 //*  SAGA  *//
 
@@ -148,14 +136,16 @@ function* loginSaga({ payload }) {
         yield delay(1000);
         const { api, form } = payload;
         const result = yield postman.post('/identity/login', form);
+        localStorage.setItem('accessToken', result.accessToken);
+        setAccessToken(result.accessToken);
         yield put({
             type: LOGIN_SUCCESS,
         });
-        localStorage.setItem('accessToken', result.accessToken);
-        setAccessToken(result.accessToken);
-        yield put(push('/'));
-        yield put(getUserProfile());
-    } catch ({response}) {
+        yield put({
+            type: GET_USER_PROFILE_REQUEST,
+            payload: {url: '/'},
+        });
+    } catch ({ response }) {
         yield put({
             type: LOGIN_ERROR,
             payload: response.data,

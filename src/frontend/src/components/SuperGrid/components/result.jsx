@@ -84,7 +84,7 @@ class Result extends Component {
                                                 <CellValue
                                                     type={column.type}
                                                     id={`${row.id}_${column.name}_${i}`}
-                                                    value={row[column.name.toLowerCase()]}
+                                                    value={row[column.name]}
                                                     stateColors={stateColors}
                                                 />
                                             }

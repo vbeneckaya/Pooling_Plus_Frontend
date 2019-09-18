@@ -174,7 +174,7 @@ class SuperGrid extends Component {
     setSelected = item => {
         this.setState({
             selectedRows: item,
-        }, () => {this.props.getActions({name: this.props.name, ids: item})});
+        }, () => {this.props.getActions({name: this.props.name, ids: Array.from(item)})});
     };
 
     setSelectedAll = () => {

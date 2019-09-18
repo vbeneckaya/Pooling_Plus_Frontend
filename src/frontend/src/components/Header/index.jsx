@@ -29,7 +29,7 @@ const Header = () => {
     const { location } = useReactRouter();
 
     const getProfile = () => {
-        if (!userName) {
+        if (!userName && isAuth) {
             dispatch(getUserProfile());
         }
     };
