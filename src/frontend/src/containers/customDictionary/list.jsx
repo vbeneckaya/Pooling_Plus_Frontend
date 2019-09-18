@@ -4,14 +4,26 @@ import { withRouter } from 'react-router-dom';
 
 import TableInfo from '../../components/TableInfo';
 import {
+    canCreateByFormSelector,
     columnsSelector,
     getListRequest,
     listSelector,
     progressSelector,
     totalCountSelector
 } from '../../ducks/dictionaryView';
+import {Button, Icon} from "semantic-ui-react";
+import Card from "./card";
 
-const List = ({ match = {}, columns, loadList, progress, totalCount, list }) => {
+
+const newModal = (t, load, name) => (
+    <Card title={t('create')} id={null} loadList={load} name={name}>
+        <Button size="small" color="blue" className="grid-action-btn">
+            <Icon name="plus" /> {t('create_btn')}
+        </Button>
+    </Card>
+);
+
+const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCreateBtn }) => {
 
     const { params = {} } = match;
     const { name = '' } = params;
@@ -26,6 +38,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list }) => 
             totalCount={totalCount}
             title={name}
             list={list}
+            newModal={isCreateBtn ? newModal : null}
         />
     );
 };
@@ -41,7 +54,8 @@ const mapStateToProps = (state, ownProps) => {
         columns: columnsSelector(state, name),
         progress: progressSelector(state),
         totalCount: totalCountSelector(state),
-        list: listSelector(state)
+        list: listSelector(state),
+        isCreateBtn: canCreateByFormSelector(state, name)
     };
 };
 

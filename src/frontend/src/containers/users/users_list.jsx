@@ -9,11 +9,12 @@ import {
     totalCountSelector,
     usersListSelector,
 } from '../../ducks/users';
+import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
 
 
-const newModal = load => (
+const newModal = (t, load) => (
     <UserCard title="Создание роли" id={null} loadList={load}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> Создать пользователя
@@ -37,7 +38,7 @@ export class UsersList extends Component {
     };
 
     render() {
-        const { list, loadList, totalCount, loading } = this.props;
+        const { list, loadList, totalCount, loading, t } = this.props;
         console.log('list', loadList);
 
         return (
@@ -74,7 +75,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(
+export default withTranslation()(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(UsersList);
+)(UsersList));

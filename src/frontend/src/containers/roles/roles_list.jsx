@@ -13,7 +13,7 @@ import {
 import { Button, Icon } from 'semantic-ui-react';
 import RoleCard from './role_card';
 
-const newModal = load => (
+const newModal = (t, load) => (
     <RoleCard title="Создание роли" id={null} loadList={load}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> Создать роль

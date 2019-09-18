@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Checkbox, Table } from 'semantic-ui-react';
-import CellValue from './cell_value';
+import CellValue from '../../../components/ColumnsValue';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {

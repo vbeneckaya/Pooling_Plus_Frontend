@@ -1,16 +1,9 @@
 import React from 'react';
 
-import {
-    ACTIVE_TYPE,
-    DATE_TIME_TYPE,
-    ENUM_TYPE,
-    NUMBER_TYPE,
-    STATE_TYPE,
-    TEXT_TYPE,
-} from '../../../constants/columnsType';
-import { formatDate } from '../../../utils/dateTimeFormater';
-import { numbersFormat } from '../../../utils/numbersFormat';
-import { Icon, Label, Checkbox } from 'semantic-ui-react';
+import {ACTIVE_TYPE, DATE_TIME_TYPE, ENUM_TYPE, NUMBER_TYPE, STATE_TYPE,} from '../../constants/columnsType';
+import {formatDate} from '../../utils/dateTimeFormater';
+import {numbersFormat} from '../../utils/numbersFormat';
+import {Checkbox, Icon, Label} from 'semantic-ui-react';
 
 const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) => {
     if (type === ENUM_TYPE) {
@@ -28,7 +21,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) =
     }
 
     if (type === ACTIVE_TYPE) {
-        console.log('isActive', value)
+        console.log('isActive', value);
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 

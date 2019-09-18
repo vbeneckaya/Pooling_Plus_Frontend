@@ -147,3 +147,31 @@ body {
 .ui.multiple.dropdown > .label {
     font-size: 0.85714286rem !important;
 }
+
+.dictionary-edit {
+    display: -webkit-flex;
+    -webkit-flex-wrap: wrap;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0 -15px;
+
+    .field:not(.wide){
+        width:25% !important;
+    }
+
+    .field.wide{
+        width:100% !important;
+    }
+
+    .field{
+        margin-bottom: 15px!important;
+        padding: 0 15px !important;
+    }
+
+    .field input[type=text]{
+        width:100% !important;
+    }
+}
+

@@ -101,6 +101,8 @@ export const columnsSelector = createSelector(
     [stateProfile, dictionaryName],
     (state, name) => {
         const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+        console.log('ss', dictionary);
+        console.log('name', name);
         return dictionary ? dictionary.columns : [];
     },
 );
@@ -120,6 +122,11 @@ export const cardSelector = createSelector(
     stateSelector,
     state => state.card,
 );
+
+export const canCreateByFormSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.canCreateByForm : false
+});
 
 //*  SAGA  *//
 

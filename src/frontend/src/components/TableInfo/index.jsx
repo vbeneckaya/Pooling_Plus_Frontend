@@ -5,7 +5,7 @@ import { debounce } from 'throttle-debounce';
 import { PAGE_SIZE } from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import CellValue from '../SuperGrid/components/cell_value';
+import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
 
 class TableInfo extends Component {
@@ -26,15 +26,15 @@ class TableInfo extends Component {
         }
     }
 
-    mapData = isConcat => {
+    mapData = (isConcat, isReload) => {
         const { filter, page } = this.state;
         const { name } = this.props;
 
         const params = {
             filter: {
                 search: filter,
-                take: PAGE_SIZE,
-                skip: (page - 1) * PAGE_SIZE,
+                take: isReload ? page * PAGE_SIZE : PAGE_SIZE,
+                skip: isReload ? 0 : (page - 1) * PAGE_SIZE,
             },
             isConcat,
             name,
@@ -43,9 +43,9 @@ class TableInfo extends Component {
         return params;
     };
 
-    load = isConcat => {
+    load = (isConcat, isReload) => {
         const { loadList } = this.props;
-        loadList(this.mapData(isConcat));
+        loadList(this.mapData(isConcat, isReload));
     };
 
     nextPage = () => {
@@ -92,7 +92,8 @@ class TableInfo extends Component {
             groupActions,
             toggleIsActive,
             newModal,
-            t
+            t,
+            name
         } = this.props;
 
         const { filter } = this.state;
@@ -114,7 +115,7 @@ class TableInfo extends Component {
                                 />
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
-                                {newModal ? newModal(this.load) : null}
+                                {newModal ? newModal(t, this.load, name) : null}
                                 {groupActions &&
                                     groupActions().map(action => {
                                         return (
