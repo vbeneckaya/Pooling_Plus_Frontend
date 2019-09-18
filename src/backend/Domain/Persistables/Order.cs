@@ -5,6 +5,7 @@ namespace Domain.Persistables
     public class Order : IPersistable
     {
         public Guid Id { get; set; }
+        public string Status { get; set; }
         public string SalesOrderNumber { get; set; }
         public string OrderDate { get; set; }
         public string TypeOfOrder { get; set; }
@@ -46,7 +47,6 @@ namespace Domain.Persistables
         public string ActualReturnDate { get; set; }
         public string MajorAdoptionNumber { get; set; }
         public string Avization { get; set; }
-        public string Status { get; set; }
         public string OrderItems { get; set; }
         public string OrderCreationDate { get; set; }
         /*end of fields*/

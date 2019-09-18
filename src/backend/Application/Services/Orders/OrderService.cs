@@ -22,6 +22,7 @@ namespace Application.Services.Orders
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
+            entity.Status = dto.Status;
             entity.SalesOrderNumber = dto.SalesOrderNumber;
             entity.OrderDate = dto.OrderDate;
             entity.TypeOfOrder = dto.TypeOfOrder;
@@ -63,7 +64,6 @@ namespace Application.Services.Orders
             entity.ActualReturnDate = dto.ActualReturnDate;
             entity.MajorAdoptionNumber = dto.MajorAdoptionNumber;
             entity.Avization = dto.Avization;
-            entity.Status = dto.Status;
             entity.OrderItems = dto.OrderItems;
             entity.OrderCreationDate = dto.OrderCreationDate;
             /*end of map dto to entity fields*/
@@ -74,6 +74,7 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
+                Status = entity.Status,
                 SalesOrderNumber = entity.SalesOrderNumber,
                 OrderDate = entity.OrderDate,
                 TypeOfOrder = entity.TypeOfOrder,
@@ -115,7 +116,6 @@ namespace Application.Services.Orders
                 ActualReturnDate = entity.ActualReturnDate,
                 MajorAdoptionNumber = entity.MajorAdoptionNumber,
                 Avization = entity.Avization,
-                Status = entity.Status,
                 OrderItems = entity.OrderItems,
                 OrderCreationDate = entity.OrderCreationDate,
                 /*end of map entity to dto fields*/

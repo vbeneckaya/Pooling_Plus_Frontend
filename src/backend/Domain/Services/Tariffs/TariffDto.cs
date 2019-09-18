@@ -25,7 +25,7 @@ namespace Domain.Services.Tariffs
         public string LTLRate14 { get; set; }
         public string BetLTL15 { get; set; }
         public string LTLRate16 { get; set; }
-        public string LTLRate17 { get; set; }
+        public string BetLTL17 { get; set; }
         public string BetLTL18 { get; set; }
         public string LTLRate19 { get; set; }
         public string LTLRate20 { get; set; }
