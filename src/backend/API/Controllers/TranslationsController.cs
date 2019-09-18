@@ -1,21 +1,31 @@
 using System.Linq;
 using System.Text;
+using API.Controllers.Shared;
+using Domain.Persistables;
 using Domain.Services.Translations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Route("api/translations")]
+    public class TranslationsController : DictonaryController<ITranslationsService, Translation, TranslationDto>
+    {
+        public TranslationsController(ITranslationsService service) : base(service)
+        {
+        }
+    }
+    
     [Route("api/translation")]
     public class TranslationController : Controller
     {
-        public ITranslationsService service { get; }
+        private readonly ITranslationsService service;
 
         public TranslationController(ITranslationsService service)
         {
             this.service = service;
         }
-        
-         /// <summary>
+
+        /// <summary>
         /// Получение переводов для языка
         /// </summary>
         [HttpGet("GetForLangType/{langType}")]        
@@ -32,5 +42,5 @@ namespace API.Controllers
             
             return File(Encoding.UTF8.GetBytes(result), "application/octet-stream");
         }
-    }
+    }    
 }

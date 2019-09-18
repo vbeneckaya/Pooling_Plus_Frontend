@@ -8,6 +8,11 @@ namespace Infrastructure.Extensions
 {
     public static class Extensions
     {
+        public static string ToLowerfirstLetter(this string input)
+        {
+            return Char.ToLowerInvariant(input[0]) + input.Substring(1);
+        }
+        
         public static string GetHash(this string text)
         {
             return Convert.ToBase64String(new SHA256Managed().ComputeHash(Encoding.UTF8.GetBytes(text)));

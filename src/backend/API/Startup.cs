@@ -70,7 +70,7 @@ namespace API
             services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IRolesService), typeof(RolesService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService),  ServiceLifetime.Scoped) );
-            
+
             /*start of add service implementation*/
             services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IShippingsService), typeof(ShippingsService),  ServiceLifetime.Scoped) );

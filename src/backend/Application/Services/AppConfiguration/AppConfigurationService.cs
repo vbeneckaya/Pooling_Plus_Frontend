@@ -5,6 +5,7 @@ using Application.Services.Shippings;
 using Application.Services.Tariffs;
 using Application.Services.Warehouses;
 using Application.Services.Articles;
+using Application.Services.Translations;
 using Application.Services.TransportCompanies;
 /*end of using application service*/
 using Domain.Enums;
@@ -179,6 +180,20 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn("address", FiledType.Text),
                             new UserConfigurationGridColumn("leadtimeDays", FiledType.Text),
                             new UserConfigurationGridColumn("customerWarehouse", FiledType.Text),
+                            /*end of add field for Warehouses*/
+                        }
+                    },                    
+                    new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<TranslationsService>(), 
+                        CanCreateByForm = true, 
+                        CanImportFromExcel = true,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            /*start of add field for Warehouses*/
+                            new UserConfigurationGridColumn("name", FiledType.Text),
+                            new UserConfigurationGridColumn("ru", FiledType.Text),
+                            new UserConfigurationGridColumn("en", FiledType.Text),
                             /*end of add field for Warehouses*/
                         }
                     },

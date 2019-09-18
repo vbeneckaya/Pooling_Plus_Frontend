@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Domain.Services;
+using Infrastructure;
 using Infrastructure.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,15 +42,7 @@ namespace API.Controllers.Shared
         [HttpPost("getActions")]
         public IEnumerable<ActionDto> GetActions([FromBody]IEnumerable<string> ids)
         {
-            return new List<ActionDto>
-            {
-                new ActionDto
-                {
-                    Ids = ids,
-                    Name = "Test",
-                    Color = "blue"
-                }
-            };
+            return service.GetActions(ids.Select(Guid.Parse));
         }
         
         /// <summary>
@@ -77,12 +71,5 @@ namespace API.Controllers.Shared
         {
             return service.SaveOrCreate(form);
         }
-    }
-
-    public class ActionDto
-    {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public IEnumerable<string> Ids { get; set; }
     }
 }

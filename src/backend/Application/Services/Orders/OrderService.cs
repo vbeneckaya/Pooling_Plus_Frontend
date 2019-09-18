@@ -1,21 +1,37 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Application.Actions.Orders;
 using Application.Shared;
 using DAL;
+using DAL.Queries;
+using Domain;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Orders;
+using Domain.Services.UserIdProvider;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
 {
     public class OrdersService : GridServiceBase<Order, OrderDto>, IOrdersService
     {
-        public OrdersService(AppDbContext appDbContext) : base(appDbContext)
+        public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
         }
 
         public override DbSet<Order> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Orders;
+        }
+
+        public override IEnumerable<IAppAction<Order>> Actions()
+        {
+            return new List<IAppAction<Order>>
+            {
+                new CreateShipping()
+            };
         }
 
         public override void MapFromDtoToEntity(Order entity, OrderDto dto)

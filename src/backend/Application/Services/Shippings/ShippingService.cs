@@ -1,21 +1,29 @@
 using System;
+using System.Collections.Generic;
 using Application.Shared;
 using DAL;
+using Domain;
 using Domain.Persistables;
 using Domain.Services.Shippings;
+using Domain.Services.UserIdProvider;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
     public class ShippingsService : GridServiceBase<Shipping, ShippingDto>, IShippingsService
     {
-        public ShippingsService(AppDbContext appDbContext) : base(appDbContext)
+        public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
         }
 
         public override DbSet<Shipping> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Shippings;
+        }
+
+        public override IEnumerable<IAppAction<Shipping>> Actions()
+        {
+            return new List<IAppAction<Shipping>>();
         }
 
         public override void MapFromDtoToEntity(Shipping entity, ShippingDto dto)
