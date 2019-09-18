@@ -5,7 +5,7 @@ using Application.Services.Shippings;
 using Application.Services.Tariffs;
 using Application.Services.Warehouses;
 using Application.Services.Articles;
-using Application.Services.TransportСompanies;
+using Application.Services.TransportCompanies;
 /*end of using application service*/
 using Domain.Enums;
 using Domain.Services.AppConfiguration;
@@ -13,7 +13,7 @@ using Domain.Services.AppConfiguration;
 namespace Application.Services.AppConfiguration
 {
     
-    public class AppConfigurationService : IAppConfigurationService 
+    public class AppConfigurationService : AppConfigurationServiceBase ,IAppConfigurationService 
     {
         
         public AppConfigurationService()
@@ -233,26 +233,21 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<TransportСompaniesService>(), 
+                        Name = GetName<TransportCompaniesService>(), 
                         CanCreateByForm = true, 
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
-                            /*start of add field for TransportСompanies*/
+                            /*start of add field for TransportCompanies*/
                             new UserConfigurationGridColumn("title", FiledType.Text),
                             new UserConfigurationGridColumn("contractNumber", FiledType.Text),
                             new UserConfigurationGridColumn("dateOfPowerOfAttorney", FiledType.Text),
-                            /*end of add field for TransportСompanies*/
+                            /*end of add field for TransportCompanies*/
                         }
                     },
                     /*end of add dictionaries*/
                 }                
             };
         }
-
-        private string GetName<T>()
-        {
-            return typeof(T).Name.Replace("Service", "");
-        }
-    }     
+    }
 }

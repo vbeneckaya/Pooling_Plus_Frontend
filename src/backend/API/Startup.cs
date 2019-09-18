@@ -12,7 +12,7 @@ using Application.Services.Shippings;
 using Application.Services.Tariffs;
 using Application.Services.Warehouses;
 using Application.Services.Articles;
-using Application.Services.TransportСompanies;
+using Application.Services.TransportCompanies;
 /*end of using application service*/
 using DAL;
 using Domain.Services.AppConfiguration;
@@ -27,7 +27,7 @@ using Domain.Services.Shippings;
 using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
-using Domain.Services.TransportСompanies;
+using Domain.Services.TransportCompanies;
 /*end of using domain service*/
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -77,7 +77,7 @@ namespace API
             services.Add(new ServiceDescriptor(typeof(ITariffsService), typeof(TariffsService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IWarehousesService), typeof(WarehousesService),  ServiceLifetime.Scoped) );
             services.Add(new ServiceDescriptor(typeof(IArticlesService), typeof(ArticlesService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(ITransportСompaniesService), typeof(TransportСompaniesService),  ServiceLifetime.Scoped) );
+            services.Add(new ServiceDescriptor(typeof(ITransportCompaniesService), typeof(TransportCompaniesService),  ServiceLifetime.Scoped) );
             /*end of add service implementation*/
             
             services.AddHttpContextAccessor();

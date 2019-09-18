@@ -217,14 +217,14 @@ namespace DAL.Migrations
             );
             Database.AddIndex("articles_pk", true, "Articles", "Id");
 
-            Database.AddTable("TransportСompanies",
+            Database.AddTable("TransportCompanies",
                 new Column("Title", DbType.String),
                 new Column("ContractNumber", DbType.String),
                 new Column("DateOfPowerOfAttorney", DbType.String),
-                /*general fields for TransportСompanies*/
+                /*general fields for TransportCompanies*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
-            Database.AddIndex("transportСompanies_pk", true, "TransportСompanies", "Id");
+            Database.AddIndex("transportCompanies_pk", true, "TransportCompanies", "Id");
 
             /*end of add tables*/
             
@@ -400,8 +400,7 @@ namespace DAL.Migrations
             AddTranslation("palletHeightMm", "PalletHeightMm", "Высота паллеты, мм");
             AddTranslation("grossPalletWeightG", "GrossPalletWeightG", "Вес паллеты брутто, г");
             AddTranslation("netWeightPalletsG", "NetWeightPalletsG", "Вес паллеты нетто, г");
-            AddTranslation("transportСompany", "TransportСompany", "Транспортная компания");
-            AddTranslation("transportСompanies", "TransportСompanies", "Транспортные компании");
+            AddTranslation("transportCompanies", "TransportCompanies", "Транспортные компании");
             AddTranslation("title", "Title", "Название");
             AddTranslation("contractNumber", "ContractNumber", "Номер договора");
             AddTranslation("dateOfPowerOfAttorney", "DateOfPowerOfAttorney", "Дата доверенности");

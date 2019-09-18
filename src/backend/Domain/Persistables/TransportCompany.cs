@@ -1,8 +1,10 @@
-namespace Domain.Services.TransportСompanies
+using System;
+
+namespace Domain.Persistables
 {
-    public class TransportСompanyDto : IDto
+    public class TransportCompany : IPersistable
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; }
         public string ContractNumber { get; set; }
         public string DateOfPowerOfAttorney { get; set; }
