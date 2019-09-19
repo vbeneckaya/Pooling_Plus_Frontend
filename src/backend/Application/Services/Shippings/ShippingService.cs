@@ -21,10 +21,16 @@ namespace Application.Services.Shippings
             return dbContext.Shippings;
         }
 
-        public override IEnumerable<IAppAction<Shipping>> Actions()
+        public override IEnumerable<IAction<Shipping>> Actions()
         {
-            return new List<IAppAction<Shipping>>();
+            return new List<IAction<Shipping>>();
         }
+
+        public override IEnumerable<IAction<IEnumerable<Shipping>>> GroupActions()
+        {
+            return new List<IAction<IEnumerable<Shipping>>>();
+        }
+
 
         public override void MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {

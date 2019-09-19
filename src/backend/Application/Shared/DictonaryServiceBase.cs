@@ -5,7 +5,7 @@ using DAL;
 using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services;
-using Infrastructure.Shared;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared

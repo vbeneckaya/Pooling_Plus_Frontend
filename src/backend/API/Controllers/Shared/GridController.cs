@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services;
-using Infrastructure;
-using Infrastructure.Shared;
+using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Shared
@@ -49,17 +48,9 @@ namespace API.Controllers.Shared
         /// Выполнить действие
         /// </summary>
         [HttpPost("invokeAction/{name}")]
-        public IEnumerable<ActionDto> InvokeAction(string name, [FromBody]IEnumerable<string> ids)
+        AppActionResult InvokeAction(string name, [FromBody]IEnumerable<string> ids)
         {
-            return new List<ActionDto>
-            {
-                new ActionDto
-                {
-                    Ids = ids,
-                    Name = "Test",
-                    Color = "blue"
-                }
-            };
+            return service.InvokeAction(name, ids.Select(Guid.Parse));
         }
         
         

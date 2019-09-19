@@ -4,18 +4,21 @@ using Domain.Persistables;
 
 namespace Application.Actions.Orders
 {
-    public class CreateShipping : AppAction<Order>
+    public class CreateShipping : IAppAction<Order>
     {
-        public CreateShipping() : base(AppColor.Orange)
+        public CreateShipping()
         {
+            Color = AppColor.Blue;
         }
 
-        public override bool Run(User user, Order entity)
+        public AppColor Color { get; set; }
+
+        public bool Run(User user, Order entity)
         {
             return true;
         }
 
-        public override bool IsAvalible(Role role, Order entity)
+        public bool IsAvalible(Role role, Order entity)
         {
             return true;
         }

@@ -10,7 +10,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
-using Infrastructure.Extensions;
+using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
@@ -26,11 +26,19 @@ namespace Application.Services.Orders
             return dbContext.Orders;
         }
 
-        public override IEnumerable<IAppAction<Order>> Actions()
+        public override IEnumerable<IAction<Order>> Actions()
         {
-            return new List<IAppAction<Order>>
+            return new List<IAction<Order>>
             {
                 new CreateShipping()
+            };
+        }
+
+        public override IEnumerable<IAction<IEnumerable<Order>>> GroupActions()
+        {
+            return new List<IAction<IEnumerable<Order>>>
+            {
+                new UnionOrders()
             };
         }
 

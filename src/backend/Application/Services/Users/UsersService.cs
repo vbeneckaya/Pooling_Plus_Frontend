@@ -4,7 +4,7 @@ using Application.Shared;
 using DAL;
 using Domain.Persistables;
 using Domain.Services.Users;
-using Infrastructure.Extensions;
+using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Users

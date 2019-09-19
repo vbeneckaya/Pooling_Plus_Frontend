@@ -7,8 +7,8 @@ using Domain;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.UserIdProvider;
-using Infrastructure.Extensions;
-using Infrastructure.Shared;
+using Domain.Extensions;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared
@@ -16,7 +16,8 @@ namespace Application.Shared
     public abstract class GridServiceBase<TEntity, TDto> where TEntity : class, IPersistable, new() where TDto: IDto
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
-        public abstract IEnumerable<IAppAction<TEntity>> Actions();
+        public abstract IEnumerable<IAction<TEntity>> Actions();
+        public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
 
@@ -90,19 +91,41 @@ namespace Application.Shared
         
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
         {
+            if (ids == null) 
+                throw new ArgumentNullException(nameof(ids));
+            
             var dbSet = UseDbSet(db);
             var currentUser = userIdProvider.GetCurrentUser();
             var role = db.Roles.GetById(currentUser.RoleId);
-            var actions = Actions();
 
             var result = new List<ActionDto>();
-            foreach (var id in ids)
+
+            if (ids.Count() == 1)
             {
+                var id = ids.First();
+
                 var entity = dbSet.GetById(id);
+                var actions = Actions();
+
+                return actions.Where(x => x.IsAvalible(role, entity))
+                    .Select(action => new ActionDto
+                {
+                    Color = action.Color.ToString().ToLowerfirstLetter(),
+                    Name = action.GetType().Name.ToLowerfirstLetter(),
+                    Ids = new List<string>
+                    {
+                        id.ToString()
+                    }
+                });
+            }
+            else
+            {
+                var actions = GroupActions();
+                var entities = ids.Select(id => dbSet.GetById(id));
 
                 foreach (var action in actions)
                 {
-                    if (action.IsAvalible(role, entity))
+                    if (action.IsAvalible(role, entities))
                     {
                         var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
                         if (actionDto == null)
@@ -111,21 +134,41 @@ namespace Application.Shared
                             {
                                 Color = action.Color.ToString().ToLowerfirstLetter(),
                                 Name = action.GetType().Name.ToLowerfirstLetter(),
-                                Ids = new List<string>
-                                {
-                                    id.ToString()
-                                }
+                                Ids = ids.Select(x=>x.ToString())
                             });                        
                         }
-
-                        var newIds = actionDto.Ids.ToList();
-                        newIds.Add(id.ToString());
-                        actionDto.Ids = newIds;
-                    }
+                    }                    
                 }
             }
-            
+
             return result;
-        }        
+        }
+
+        public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
+        {
+            var action = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            if(action == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = $"Action {name} not found"
+                };
+
+            var currentUser = userIdProvider.GetCurrentUser();
+            var role = db.Roles.GetById(currentUser.RoleId);
+            var dbSet = UseDbSet(db);
+            foreach (var id in ids)
+            {
+                var entity = dbSet.GetById(id);
+                if (action.IsAvalible(role, entity)) 
+                    action.Run(currentUser, entity);
+            }
+            
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = "Done"
+            };
+        }
     }
 }
