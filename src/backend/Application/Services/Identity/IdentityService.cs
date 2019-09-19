@@ -57,17 +57,20 @@ namespace Application.Services.Identity
         {
             var currentUserId = userIdProvider.GetCurrentUserId();
             User user = null;
-            if (currentUserId.HasValue) 
+            if (currentUserId.HasValue)
+            {
                 user = db.Users.GetById(currentUserId.Value);
 
-            //TODO Получать имя пользователя и роль
-            var userInfo = new UserInfo
-            {   
-                UserName = "Иван Иванов",//user?.Name,
-                UserRole = "Administrator",//db.Roles.GetById(user.RoleId).Name,
-            };
+                //TODO Получать имя пользователя и роль
+                return new UserInfo
+                {   
+                    UserName = user?.Name,
+                    UserRole = db.Roles.GetById(user.RoleId).Name,
+                };
+                
+            }
 
-            return userInfo;
+            return null;
         }
 
         private ClaimsIdentity GetIdentity(string userName, string password)
