@@ -90,12 +90,20 @@ namespace Application.Shared
         
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
         {
+            if (ids == null) 
+                throw new ArgumentNullException(nameof(ids));
+            
             var dbSet = UseDbSet(db);
             var currentUser = userIdProvider.GetCurrentUser();
             var role = db.Roles.GetById(currentUser.RoleId);
             var actions = Actions();
 
             var result = new List<ActionDto>();
+
+            if (ids.Count() == 1)
+            {
+                //actions.Where()
+            }
             foreach (var id in ids)
             {
                 var entity = dbSet.GetById(id);
@@ -117,15 +125,44 @@ namespace Application.Shared
                                 }
                             });                        
                         }
-
-                        var newIds = actionDto.Ids.ToList();
-                        newIds.Add(id.ToString());
-                        actionDto.Ids = newIds;
+                        else
+                        {
+                            var newIds = actionDto.Ids.ToList();
+                            newIds.Add(id.ToString());
+                            actionDto.Ids = newIds;
+                        }
                     }
                 }
             }
             
             return result;
-        }        
+        }
+
+        public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
+        {
+            var action = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            if(action == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = $"Action {name} not found"
+                };
+
+            var currentUser = userIdProvider.GetCurrentUser();
+            var role = db.Roles.GetById(currentUser.RoleId);
+            var dbSet = UseDbSet(db);
+            foreach (var id in ids)
+            {
+                var entity = dbSet.GetById(id);
+                if (action.IsAvalible(role, entity)) 
+                    action.Run(currentUser, entity);
+            }
+            
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = "Done"
+            };
+        }
     }
 }

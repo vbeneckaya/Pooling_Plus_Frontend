@@ -11,5 +11,6 @@ namespace Domain.Services
         TDto Get(Guid id);
         
         IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
+        AppActionResult InvokeAction(string actionName, IEnumerable<Guid> ids);
     }
 }

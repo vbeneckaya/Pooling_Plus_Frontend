@@ -9,6 +9,11 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
+        <member name="M:API.Controllers.AppConfigurationController.GetFormFor(System.String,System.Guid)">
+            <summary>
+            Получение конфигурации гридов и справочников
+            </summary>
+        </member>
         <member name="M:API.Controllers.IdentityController.UserInfo">
             <summary>
             Получение информации о пользователе
