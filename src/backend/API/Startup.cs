@@ -10,6 +10,10 @@ using Swashbuckle.AspNetCore.Swagger;
 using Infrastructure.Installers;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+using Application.Services.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API
 {
@@ -25,6 +29,22 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = SigningOptions.SignIssuer,
+                        ValidAudience = SigningOptions.SignAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningOptions.SignKey)),
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });            
+            
             string version = GetMajorVersion();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -36,20 +56,6 @@ namespace API
                     Title = "Artlogic TMS API",
                     Description = "API for Artlogic TMS"
                 });
-
-                var security = new Dictionary<string, IEnumerable<string>>
-                {
-                    {"Bearer", new string[] { }},
-                };
-
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
-                    Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey",
-                });
-                c.AddSecurityRequirement(security);
 
                 c.IncludeXmlComments(GetXmlCommentsPath());
             });
@@ -70,6 +76,7 @@ namespace API
             if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
 
+            app.UseAuthentication();
             app.UseMvc((routes) =>
             {
                 routes.MapRoute(
