@@ -30,7 +30,7 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new CreateShipping()
+                new CreateShipping(db)
             };
         }
 
@@ -38,7 +38,7 @@ namespace Application.Services.Orders
         {
             return new List<IAction<IEnumerable<Order>>>
             {
-                new UnionOrders()
+                new UnionOrders(db)
             };
         }
 

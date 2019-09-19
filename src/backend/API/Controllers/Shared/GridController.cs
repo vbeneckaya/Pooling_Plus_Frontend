@@ -48,7 +48,7 @@ namespace API.Controllers.Shared
         /// Выполнить действие
         /// </summary>
         [HttpPost("invokeAction/{name}")]
-        AppActionResult InvokeAction(string name, [FromBody]IEnumerable<string> ids)
+        public AppActionResult InvokeAction(string name, [FromBody]IEnumerable<string> ids)
         {
             return service.InvokeAction(name, ids.Select(Guid.Parse));
         }

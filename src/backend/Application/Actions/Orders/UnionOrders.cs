@@ -1,24 +1,39 @@
 using System.Collections.Generic;
+using DAL;
 using Domain;
 using Domain.Enums;
 using Domain.Persistables;
+using Domain.Services;
 
 namespace Application.Actions.Orders
 {
     public class UnionOrders : IGroupAppAction<Order>
     {
-        public UnionOrders()
+        private readonly AppDbContext db;
+
+        public UnionOrders(AppDbContext db)
         {
+            this.db = db;
             Color = AppColor.Orange;
         }
         
         public AppColor Color { get; set; }
-        public bool Run(User user, IEnumerable<Order> target)
+        public AppActionResult Run(User user, IEnumerable<Order> target)
         {
-            return true;
+            var shipping = new Shipping
+            {
+                Status = "from union"
+            };
+            db.Shippings.Add(shipping);
+            db.SaveChanges();
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = $"create shipping{shipping.Id}"
+            };
         }
 
-        public bool IsAvalible(Role role, IEnumerable<Order> target)
+        public bool IsAvailable(Role role, IEnumerable<Order> target)
         {
             return true;
         }
