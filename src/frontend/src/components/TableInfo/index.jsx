@@ -8,6 +8,13 @@ import './style.scss';
 import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
 
+const ModalComponent = ({ element, props, children }) => {
+    if (!element) {
+        return <>{children}</>;
+    }
+    return React.cloneElement(element, props, children);
+};
+
 class TableInfo extends Component {
     state = {
         page: 1,
@@ -19,7 +26,6 @@ class TableInfo extends Component {
     }
 
     componentDidUpdate(prevProps) {
-
         if (this.props.name !== prevProps.name) {
             console.log('!!!!', this.props.name, this.props.headerRow);
             this.load();
@@ -93,7 +99,8 @@ class TableInfo extends Component {
             toggleIsActive,
             newModal,
             t,
-            name
+            name,
+            modalCard
         } = this.props;
 
         const { filter } = this.state;
@@ -151,34 +158,40 @@ class TableInfo extends Component {
                                 ? customRowComponent
                                 : list &&
                                   list.map(row => (
-                                      <Table.Row key={row.id}>
-                                          {headerRow.map((column, index) => (
-                                              <Table.Cell
-                                                  key={`cell_${row.id}_${column.name}_${index}`}
-                                              >
-                                                  <CellValue
-                                                      type={column.type}
-                                                      id={`${row.id}_${column.name}_${index}`}
-                                                      toggleIsActive={toggleIsActive}
-                                                      value={row[column.name]}
-                                                  />
-                                              </Table.Cell>
-                                          ))}
-                                          {isShowActions ? (
-                                              <Table.Cell textAlign="center">
-                                                  {actions &&
-                                                      actions(row, this.load).map(
-                                                          (action, index) => (
-                                                              <React.Fragment
-                                                                  key={`action_${index}`}
-                                                              >
-                                                                  {action}
-                                                              </React.Fragment>
-                                                          ),
-                                                      )}
-                                              </Table.Cell>
-                                          ) : null}
-                                      </Table.Row>
+                                      <ModalComponent
+                                          element={modalCard}
+                                          props={{ id: row.id, loadList: this.load, name }}
+                                          key={`modal_${row.id}`}
+                                      >
+                                          <Table.Row key={row.id}>
+                                              {headerRow.map((column, index) => (
+                                                  <Table.Cell
+                                                      key={`cell_${row.id}_${column.name}_${index}`}
+                                                  >
+                                                      <CellValue
+                                                          type={column.type}
+                                                          id={`${row.id}_${column.name}_${index}`}
+                                                          toggleIsActive={toggleIsActive}
+                                                          value={row[column.name]}
+                                                      />
+                                                  </Table.Cell>
+                                              ))}
+                                              {isShowActions ? (
+                                                  <Table.Cell textAlign="center">
+                                                      {actions &&
+                                                          actions(row, this.load).map(
+                                                              (action, index) => (
+                                                                  <React.Fragment
+                                                                      key={`action_${index}`}
+                                                                  >
+                                                                      {action}
+                                                                  </React.Fragment>
+                                                              ),
+                                                          )}
+                                                  </Table.Cell>
+                                              ) : null}
+                                          </Table.Row>
+                                      </ModalComponent>
                                   ))}
                         </Table.Body>
                     </InfiniteScrollTable>

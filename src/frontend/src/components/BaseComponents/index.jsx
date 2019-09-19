@@ -10,6 +10,8 @@ const FormField = props => {
     let params = {
         ...props.column,
         name: props.column.name,
+        value: props.value,
+        onChange: props.onChange
     };
 
     return React.cloneElement(getTypeFacet[props.column.type], params);

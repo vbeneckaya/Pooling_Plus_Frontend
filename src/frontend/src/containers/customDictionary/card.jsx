@@ -1,15 +1,43 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
-import {columnsSelector} from "../../ducks/dictionaryView";
-import FormField from "../../components/BaseComponents";
+import {
+    cardSelector,
+    clearDictionaryInfo,
+    columnsSelector,
+    getCardRequest,
+    saveDictionaryCardRequest
+} from '../../ducks/dictionaryView';
+import FormField from '../../components/BaseComponents';
+
+const initialState = {
+    modalOpen: false,
+    form: {},
+};
 
 class Card extends Component {
     state = {
-        modalOpen: false,
+        ...initialState
     };
 
-    loadCard = () => {};
+    componentDidUpdate(prevProps) {
+        if (prevProps.card !== this.props.card) {
+            const {user = {}} = this.props;
+
+            this.setState({
+                form: {
+                    ...this.props.card
+                },
+            });
+        }
+    };
+
+    loadCard = () => {
+        console.log('this.props', this.props);
+        const { id , getCard, name } = this.props;
+
+        id && getCard({id, name});
+    };
 
     onOpen = () => {
         this.loadCard();
@@ -19,22 +47,50 @@ class Card extends Component {
     };
 
     onClose = () => {
-        console.log('tt', this.props)
-        const { loadList } = this.props;
+        const { loadList, clear } = this.props;
 
         this.setState({
-            modalOpen: false,
+            ...initialState
         });
+        clear();
         loadList(false, true);
     };
 
-    handleSave = () => {};
+    handleChange = (event, { name, value }) => {
+        this.setState(prevState => ({
+            form: {
+                ...prevState.form,
+                [name]: value,
+            },
+        }));
+    };
+
+    handleSave = () => {
+        const { id, save, name } = this.props;
+        const { form } = this.state;
+
+        let params = {
+            ...form,
+        };
+
+        if (id) {
+            params = {
+                ...params,
+                id,
+            };
+        }
+
+        save({
+            params,
+            name,
+            callbackSuccess: this.onClose,
+        });
+    };
 
     render() {
         const { title, loading, children, progress, columns } = this.props;
-        const { modalOpen } = this.state;
-
-        console.log('columns', columns);
+        const { modalOpen, form } = this.state;
+        console.log('form', form);
 
         return (
             <Modal
@@ -45,7 +101,6 @@ class Card extends Component {
                 onOpen={this.onOpen}
                 onClose={this.onClose}
                 closeIcon
-                size="fullscreen"
             >
                 <Modal.Header>{title}</Modal.Header>
                 <Modal.Content scrolling>
@@ -54,22 +109,24 @@ class Card extends Component {
                     </Dimmer>
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
-                            {
-                                columns.map(column => {
-                                    return(
-                                        <FormField column={column} />
-                                    )
-                                })
-                            }
+                            {columns.map(column => {
+                                return (
+                                    <FormField
+                                        column={column}
+                                        value={form[column.name]}
+                                        onChange={this.handleChange}
+                                    />
+                                );
+                            })}
                         </div>
                     </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        Сохранить
-                    </Button>
                     <Button color="grey" onClick={this.onClose}>
                         Отмена
+                    </Button>
+                    <Button color="blue" loading={progress} onClick={this.handleSave}>
+                        Сохранить
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -78,16 +135,29 @@ class Card extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    const {name} = ownProps;
-    console.log('__', ownProps);
+    const { name } = ownProps;
 
     return {
         columns: columnsSelector(state, name),
-    }
+        card: cardSelector(state),
+    };
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {}
+const mapDispatchToProps = dispatch => {
+    return {
+        getCard: params => {
+            dispatch(getCardRequest(params))
+        },
+        save: params => {
+            dispatch(saveDictionaryCardRequest(params));
+        },
+        clear: () => {
+            dispatch(clearDictionaryInfo())
+        }
+    };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Card);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(Card);

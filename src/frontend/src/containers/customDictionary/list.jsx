@@ -39,6 +39,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCre
             title={name}
             list={list}
             newModal={isCreateBtn ? newModal : null}
+            modalCard={<Card title={'edit'} />}
         />
     );
 };

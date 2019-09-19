@@ -12,6 +12,10 @@ const GET_DICTIONARY_CARD_REQUEST = 'GET_DICTIONARY_CARD_REQUEST';
 const GET_DICTIONARY_CARD_SUCCESS = 'GET_DICTIONARY_CARD_SUCCESS';
 const GET_DICTIONARY_CARD_ERROR = 'GET_DICTIONARY_CARD_ERROR';
 
+const SAVE_DICTIONARY_CARD_REQUEST = 'SAVE_DICTIONARY_CARD_REQUEST';
+const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
+const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
+
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
 
 //*  INITIAL STATE  *//
@@ -29,6 +33,7 @@ export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_DICTIONARY_LIST_REQUEST:
         case GET_DICTIONARY_CARD_REQUEST:
+        case SAVE_DICTIONARY_CARD_REQUEST:
             return {
                 ...state,
                 progress: true,
@@ -63,6 +68,12 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 ...initial
             };
+        case SAVE_DICTIONARY_CARD_SUCCESS:
+        case SAVE_DICTIONARY_CARD_ERROR:
+            return {
+                ...state,
+                progress: false
+            };
         default:
             return state;
     }
@@ -82,6 +93,13 @@ export const getCardRequest = payload => {
         type: GET_DICTIONARY_CARD_REQUEST,
         payload,
     };
+};
+
+export const saveDictionaryCardRequest = payload => {
+    return {
+        type: SAVE_DICTIONARY_CARD_REQUEST,
+        payload
+    }
 };
 
 export const clearDictionaryInfo = () => {
@@ -147,10 +165,28 @@ export function* getListSaga({ payload }) {
 function* getCardSaga({ payload }) {
     try {
         const { name, id } = payload;
-        const result = yield postman.get(`${name}/${id}`);
-        yield put({ type: GET_DICTIONARY_CARD_SUCCESS, payload: result.card });
+        const result = yield postman.get(`${name}/getById/${id}`);
+        yield put({ type: GET_DICTIONARY_CARD_SUCCESS, payload: result });
     } catch (error) {
         yield put({ type: GET_DICTIONARY_CARD_ERROR });
+    }
+}
+
+function* saveDictionaryCardSaga ({ payload }) {
+    try {
+        const {params, name, callbackSuccess} = payload;
+        const result = yield postman.post(`/${name}/saveOrCreate`, params);
+
+        yield put({
+            type: SAVE_DICTIONARY_CARD_SUCCESS
+        });
+
+        callbackSuccess && callbackSuccess();
+    } catch (e) {
+        yield put({
+            type: SAVE_DICTIONARY_CARD_ERROR,
+            payload: e
+        })
     }
 }
 
@@ -158,5 +194,6 @@ export function* saga() {
     yield all([
         takeEvery(GET_DICTIONARY_LIST_REQUEST, getListSaga),
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
+        takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga)
     ]);
 }
