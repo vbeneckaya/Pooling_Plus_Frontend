@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Infrastructure.Extensions
+namespace Domain.Extensions
 {
     public static class Extensions
     {

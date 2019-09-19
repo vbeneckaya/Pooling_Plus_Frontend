@@ -1,4 +1,4 @@
-﻿using Infrastructure.Shared;
+﻿using Domain.Shared;
 
 namespace Domain.Services.Identity
 {

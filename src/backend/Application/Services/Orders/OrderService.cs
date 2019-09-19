@@ -10,7 +10,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
-using Infrastructure.Extensions;
+using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders

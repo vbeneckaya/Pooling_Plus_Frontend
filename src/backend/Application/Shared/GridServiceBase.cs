@@ -7,8 +7,8 @@ using Domain;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.UserIdProvider;
-using Infrastructure.Extensions;
-using Infrastructure.Shared;
+using Domain.Extensions;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared

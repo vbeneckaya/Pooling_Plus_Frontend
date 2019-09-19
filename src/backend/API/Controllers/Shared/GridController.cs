@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services;
-using Infrastructure;
-using Infrastructure.Shared;
+using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Shared

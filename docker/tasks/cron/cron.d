@@ -1,0 +1,1 @@
+*/5 * * * * dotnet /app/build/Tasks.dll run ImportMatMas -p FtpHost="213.189.208.101";FtpLogin="devtest";FtpPassword="123"

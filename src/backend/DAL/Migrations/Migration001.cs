@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using Infrastructure.Extensions;
+using Domain.Extensions;
 using ThinkingHome.Migrator.Framework;
 using ThinkingHome.Migrator.Framework.Extensions;
 

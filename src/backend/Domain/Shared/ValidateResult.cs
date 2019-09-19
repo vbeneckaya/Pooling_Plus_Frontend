@@ -1,4 +1,4 @@
-namespace Infrastructure.Shared
+namespace Domain.Shared
 {
     public class ValidateResult
     {

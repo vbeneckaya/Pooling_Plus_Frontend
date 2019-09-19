@@ -19,7 +19,7 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictonaryController`3.Search(Infrastructure.Shared.SearchForm)">
+        <member name="M:API.Controllers.Shared.DictonaryController`3.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
@@ -34,7 +34,7 @@
             Сохранить или изменить
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.Search(Infrastructure.Shared.SearchForm)">
+        <member name="M:API.Controllers.Shared.GridController`3.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>

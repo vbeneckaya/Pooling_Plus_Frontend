@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Signing
+﻿namespace Application.Services.Identity
 {
     public static class SigningOptions
     {

@@ -1,5 +1,5 @@
 using Domain.Services.Identity;
-using Infrastructure.Shared;
+using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

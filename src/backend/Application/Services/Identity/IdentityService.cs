@@ -8,9 +8,8 @@ using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services.Identity;
 using Domain.Services.UserIdProvider;
-using Infrastructure.Extensions;
-using Infrastructure.Shared;
-using Infrastructure.Signing;
+using Domain.Extensions;
+using Domain.Shared;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services.Identity
