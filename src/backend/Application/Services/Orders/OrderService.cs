@@ -26,11 +26,19 @@ namespace Application.Services.Orders
             return dbContext.Orders;
         }
 
-        public override IEnumerable<IAppAction<Order>> Actions()
+        public override IEnumerable<IAction<Order>> Actions()
         {
-            return new List<IAppAction<Order>>
+            return new List<IAction<Order>>
             {
                 new CreateShipping()
+            };
+        }
+
+        public override IEnumerable<IAction<IEnumerable<Order>>> GroupActions()
+        {
+            return new List<IAction<IEnumerable<Order>>>
+            {
+                new UnionOrders()
             };
         }
 

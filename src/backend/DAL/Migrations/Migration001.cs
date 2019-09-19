@@ -245,7 +245,12 @@ namespace DAL.Migrations
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
             AddTranslation("exit", "Exit", "Выйти");
             AddTranslation("translations", "Translations", "Формулировки");
-
+            
+            /*start of add translates for action*/
+            AddTranslation("createShipping", "Create shipping", "Создать перевозку");
+            AddTranslation("unionOrders", "Union orders", "Объеденить в перевозку");
+            /*start of add translates for action*/
+            
             /*start of add translates*/
             AddTranslation("login_welcome", "login_welcome", "TMS Beiersdorf");
             AddTranslation("login_support", "login_support", "TMS для компании Beiersdorf");

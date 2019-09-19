@@ -4,22 +4,18 @@ using Domain.Persistables;
 
 namespace Domain
 {
-    public interface IAppAction<T> : IAction
+    public interface IAppAction<T> : IAction<T>
+    {
+    }
+    public interface IGroupAppAction<T> : IAction<IEnumerable<T>>
+    {
+    }
+
+    public interface IAction<T>
     {
         AppColor Color { get; set; }
 
-        bool Run(User user, T entity);
-        bool IsAvalible(Role role, T entity);
-    }
-    public interface IGroupAppAction<T> : IAction
-    {
-        AppColor Color { get; set; }
-
-        bool Run(User user, IEnumerable<T> entity);
-        bool IsAvalible(Role role, IEnumerable<T> entity);
-    }
-
-    public interface IAction
-    {
+        bool Run(User user, T target);
+        bool IsAvalible(Role role, T target);
     }
 }
