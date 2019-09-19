@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 import {
@@ -16,7 +17,7 @@ import Card from "./card";
 
 
 const newModal = (t, load, name) => (
-    <Card title={t('create')} id={null} loadList={load} name={name}>
+    <Card title={t('createCard', {name: t(name)})} id={null} loadList={load} name={name}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> {t('create_btn')}
         </Button>
@@ -27,6 +28,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCre
 
     const { params = {} } = match;
     const { name = '' } = params;
+    const { t } = useTranslation();
 
     return (
         <TableInfo
@@ -39,7 +41,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCre
             title={name}
             list={list}
             newModal={isCreateBtn ? newModal : null}
-            modalCard={<Card title={'edit'} />}
+            modalCard={<Card title={t('editCard', {name: t(name)})} />}
         />
     );
 };

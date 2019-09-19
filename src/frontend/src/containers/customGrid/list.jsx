@@ -10,7 +10,7 @@ import {
     listSelector,
     progressSelector,
     totalCountSelector,
-} from '../../ducks/gridView';
+} from '../../ducks/gridList';
 import { withRouter } from 'react-router-dom';
 import Card from './card';
 import { Button } from 'semantic-ui-react';

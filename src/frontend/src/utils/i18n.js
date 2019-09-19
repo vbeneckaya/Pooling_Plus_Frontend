@@ -9,7 +9,7 @@ i18n.use(LanguageDetector)
     .init({
         // we init with resources
         fallbackLng: 'en',
-        debug: false,
+        debug: true,
 
         // have a common namespace used around the full app
         ns: ['translations'],
@@ -20,6 +20,7 @@ i18n.use(LanguageDetector)
         keySeparator: false, // we use content as keys
         react: {
             wait: true,
+            defaultTransParent: 'div' // a valid react element - required before react 16
         },
     });
 

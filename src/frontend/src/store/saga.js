@@ -2,16 +2,18 @@ import { all } from 'redux-saga/effects';
 import { saga as profileSaga } from '../ducks/profile';
 import { saga as loginSaga } from '../ducks/login';
 import { saga as rolesSaga } from '../ducks/roles';
-import { saga as gridViewSaga } from '../ducks/gridView';
+import { saga as gridListSaga } from '../ducks/gridList';
 import { saga as dictionaryViewSaga } from '../ducks/dictionaryView';
 import { saga as gridActionsSaga } from '../ducks/gridActions';
+import { saga as gridCardSaga } from '../ducks/gridCard';
 import { saga as usersSaga } from '../ducks/users';
 
 export default function* rootSaga() {
     yield all([
+        gridCardSaga(),
         gridActionsSaga(),
         dictionaryViewSaga(),
-        gridViewSaga(),
+        gridListSaga(),
         profileSaga(),
         loginSaga(),
         rolesSaga(),

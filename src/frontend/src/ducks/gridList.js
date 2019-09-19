@@ -15,17 +15,12 @@ const GET_GRID_LIST_ERROR = 'GET_GRID_LIST_ERROR';
 const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
 const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
 
-const GET_GRID_CARD_REQUEST = 'GET_GRID_CARD_REQUEST';
-const GET_GRID_CARD_SUCCESS = 'GET_GRID_CARD_SUCCESS';
-const GET_GRID_CARD_ERROR = 'GET_GRID_CARD_ERROR';
-
 const CLEAR_GRID_INFO = 'CLEAR_GRID_INFO';
 
 //*  INITIAL STATE  *//
 
 const initial = {
-    list: [],
-    card: {},
+    data: [],
     totalCount: 0,
     progress: false,
 };
@@ -35,7 +30,6 @@ const initial = {
 export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_GRID_LIST_REQUEST:
-        case GET_GRID_CARD_REQUEST:
             return {
                 ...state,
                 progress: true,
@@ -45,25 +39,13 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
                 totalCount: payload.total_count,
-                list: payload.isConcat ? [...state.list, ...payload] : payload.items,
+                data: payload.isConcat ? [...state.list, ...payload] : payload.items,
             };
         case GET_GRID_LIST_ERROR:
             return {
                 ...state,
-                list: [],
+                data: [],
                 totalCount: 0,
-                progress: false,
-            };
-        case GET_GRID_CARD_SUCCESS:
-            return {
-                ...state,
-                progress: false,
-                card: payload,
-            };
-        case GET_GRID_CARD_ERROR:
-            return {
-                ...state,
-                card: {},
                 progress: false,
             };
         case CLEAR_GRID_INFO:
@@ -93,13 +75,6 @@ export const autoUpdateStop = () => {
     return { type: GRID_AUTO_UPDATE_STOP };
 };
 
-export const getCardRequest = payload => {
-    return {
-        type: GET_GRID_CARD_REQUEST,
-        payload,
-    };
-};
-
 export const clearGridInfo = () => {
     return {
         type: CLEAR_GRID_INFO
@@ -108,7 +83,7 @@ export const clearGridInfo = () => {
 
 //*  SELECTORS *//
 
-const stateSelector = state => state.gridView;
+const stateSelector = state => state.gridList;
 const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const gridName = (state, name) => name;
@@ -130,7 +105,7 @@ export const totalCountSelector = createSelector(
 );
 export const listSelector = createSelector(
     stateSelector,
-    state => state.list,
+    state => state.data,
 );
 
 export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
@@ -138,11 +113,6 @@ export const canCreateByFormSelector = createSelector([stateProfile, gridName], 
     console.log('grid', grid, name, state.grids);
     return grid ? grid.canCreateByForm : false
 });
-
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
 
 //*  SAGA  *//
 
@@ -202,21 +172,10 @@ export const backgroundSyncListSaga = function*() {
     }
 };
 
-function* getCardSaga({ payload }) {
-    try {
-        const { name, id } = payload;
-        const result = yield postman.get(`${name}/${id}`);
-        yield put({ type: GET_GRID_CARD_SUCCESS, payload: result.card });
-    } catch (error) {
-        yield put({ type: GET_GRID_CARD_ERROR });
-    }
-}
-
 export function* saga() {
     yield all([
         takeEvery(GET_GRID_LIST_REQUEST, getListSaga),
         takeEvery(GRID_AUTO_UPDATE_START, autoUpdateStartSaga),
         takeEvery(GRID_AUTO_UPDATE_STOP, autoUpdateStopSaga),
-        takeEvery(GET_GRID_CARD_REQUEST, getCardSaga),
     ]);
 }
