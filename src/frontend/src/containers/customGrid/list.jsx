@@ -18,7 +18,7 @@ import { withTranslation } from 'react-i18next';
 import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
 
 const CreateButton = ({ t, ...res }) => (
-    <Card title={t('create_form_title')} {...res}>
+    <Card {...res}>
         <Button color="blue" className="create-button">
             {t('create_btn')}
         </Button>
