@@ -19,7 +19,8 @@ namespace DAL
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Translation> Translations { get; set; }
-		/*start of add DbSets*/
+        public DbSet<Injection> Injections { get; set; }
+        /*start of add DbSets*/
         public DbSet<Order> Orders { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }

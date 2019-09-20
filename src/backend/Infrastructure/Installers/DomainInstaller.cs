@@ -12,6 +12,7 @@ using Application.Services.Identity;
 using Application.Services.Roles;
 using Application.Services.Translations;
 using Application.Services.UserIdProvider;
+using Application.Services.Injections;
 using DAL;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Identity;
@@ -26,6 +27,7 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
+using Domain.Services.Injections;
 /*end of using domain service*/
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +46,7 @@ namespace Infrastructure.Installers
             services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService), ServiceLifetime.Scoped));
             services.Add(new ServiceDescriptor(typeof(IRolesService), typeof(RolesService), ServiceLifetime.Scoped));
             services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService), ServiceLifetime.Scoped));
+            services.Add(new ServiceDescriptor(typeof(IInjectionsService), typeof(InjectionsService), ServiceLifetime.Scoped));
 
             /*start of add service implementation*/
             services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
