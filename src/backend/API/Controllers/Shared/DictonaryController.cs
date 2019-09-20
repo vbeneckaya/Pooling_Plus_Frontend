@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace API.Controllers.Shared
 {
@@ -19,27 +20,53 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public IEnumerable<TDto> Search([FromBody]SearchForm form)
+        public IActionResult Search([FromBody]SearchForm form)
         {
-            return service.Search(form);
+            try
+            {
+                IEnumerable<TDto> result = service.Search(form);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Search {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
         /// Данные по id
         /// </summary>
         [HttpGet("getById/{id}")]
-        public TDto GetById(Guid id)
+        public IActionResult GetById(Guid id)
         {
-            var user = service.Get(id);
-            return user;
+            try
+            {
+                TDto user = service.Get(id);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Get {typeof(TEntity).Name} by {id}");
+                return StatusCode(500, ex.Message);
+            }
         }
         /// <summary>
         /// Сохранить или изменить
         /// </summary>
         [HttpPost("saveOrCreate")]
-        public ValidateResult SaveOrCreate([FromBody] TDto form)
+        public IActionResult SaveOrCreate([FromBody] TDto form)
         {
-            return service.SaveOrCreate(form);
+            try
+            {
+                ValidateResult result = service.SaveOrCreate(form);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Save or create {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

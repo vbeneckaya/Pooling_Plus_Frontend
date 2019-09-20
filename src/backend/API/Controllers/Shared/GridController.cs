@@ -4,6 +4,7 @@ using System.Linq;
 using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace API.Controllers.Shared
 {
@@ -20,37 +21,72 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public IEnumerable<TDto> Search([FromBody]SearchForm form)
+        public IActionResult Search([FromBody]SearchForm form)
         {
-            return service.Search(form);
+            try
+            {
+                IEnumerable<TDto> result = service.Search(form);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Search {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
 
         /// <summary>
         /// Данные по id
         /// </summary>
         [HttpGet("getById/{id}")]
-        public TDto GetById(Guid id)
+        public IActionResult GetById(Guid id)
         {
-            var user = service.Get(id);
-            return user;
+            try
+            {
+                TDto user = service.Get(id);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Get {typeof(TEntity).Name} by {id}");
+                return StatusCode(500, ex.Message);
+            }
         }
         
         /// <summary>
         /// Список возможных экшенов
         /// </summary>
         [HttpPost("getActions")]
-        public IEnumerable<ActionDto> GetActions([FromBody]IEnumerable<string> ids)
+        public IActionResult GetActions([FromBody]IEnumerable<string> ids)
         {
-            return service.GetActions(ids.Select(Guid.Parse));
+            try
+            {
+                IEnumerable<ActionDto> result = service.GetActions(ids.Select(Guid.Parse));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Get actions for {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
         
         /// <summary>
         /// Выполнить действие
         /// </summary>
         [HttpPost("invokeAction/{name}")]
-        public AppActionResult InvokeAction(string name, [FromBody]IEnumerable<string> ids)
+        public IActionResult InvokeAction(string name, [FromBody]IEnumerable<string> ids)
         {
-            return service.InvokeAction(name, ids.Select(Guid.Parse));
+            try
+            {
+                AppActionResult result = service.InvokeAction(name, ids.Select(Guid.Parse));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
         
         
@@ -58,9 +94,18 @@ namespace API.Controllers.Shared
         /// Сохранить или изменить
         /// </summary>
         [HttpPost("saveOrCreate")]
-        public ValidateResult SaveOrCreate([FromBody] TDto form)
+        public IActionResult SaveOrCreate([FromBody] TDto form)
         {
-            return service.SaveOrCreate(form);
+            try
+            {
+                ValidateResult result = service.SaveOrCreate(form);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Save or create {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
