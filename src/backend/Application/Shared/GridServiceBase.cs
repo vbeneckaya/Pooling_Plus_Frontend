@@ -107,7 +107,7 @@ namespace Application.Shared
                 var entity = dbSet.GetById(id);
                 var actions = Actions();
 
-                return actions.Where(x => x.IsAvalible(role, entity))
+                return actions.Where(x => x.IsAvailable(role, entity))
                     .Select(action => new ActionDto
                 {
                     Color = action.Color.ToString().ToLowerfirstLetter(),
@@ -125,7 +125,7 @@ namespace Application.Shared
 
                 foreach (var action in actions)
                 {
-                    if (action.IsAvalible(role, entities))
+                    if (action.IsAvailable(role, entities))
                     {
                         var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
                         if (actionDto == null)
@@ -144,9 +144,10 @@ namespace Application.Shared
             return result;
         }
 
-        public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
+        public AppActionResult InvokeAction(string name, Guid id)
         {
             var action = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            
             if(action == null)
                 return new AppActionResult
                 {
@@ -157,12 +158,9 @@ namespace Application.Shared
             var currentUser = userIdProvider.GetCurrentUser();
             var role = db.Roles.GetById(currentUser.RoleId);
             var dbSet = UseDbSet(db);
-            foreach (var id in ids)
-            {
-                var entity = dbSet.GetById(id);
-                if (action.IsAvalible(role, entity)) 
-                    action.Run(currentUser, entity);
-            }
+            var entity = dbSet.GetById(id);
+            if (action.IsAvailable(role, entity)) 
+                action.Run(currentUser, entity);
             
             return new AppActionResult
             {
@@ -170,5 +168,32 @@ namespace Application.Shared
                 Message = "Done"
             };
         }
+        
+        public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
+        {
+            var action = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            
+            if(action == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = $"Action {name} not found"
+                };
+
+            var currentUser = userIdProvider.GetCurrentUser();
+            var role = db.Roles.GetById(currentUser.RoleId);
+            var dbSet = UseDbSet(db);
+
+            var entities = ids.Select(dbSet.GetById);
+            
+            if (action.IsAvailable(role, entities)) 
+                action.Run(currentUser, entities);
+
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = "Done"
+            };
+        }        
     }
 }
