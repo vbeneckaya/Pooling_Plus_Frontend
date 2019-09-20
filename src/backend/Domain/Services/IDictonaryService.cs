@@ -11,10 +11,4 @@ namespace Domain.Services
         ValidateResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);
     }
-    
-    public class SearchResult<T>
-    {
-        public int TotalCount { get; set; }
-        public IEnumerable<T> Items { get; set; }
-    }
 }

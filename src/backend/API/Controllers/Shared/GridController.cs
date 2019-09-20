@@ -25,7 +25,7 @@ namespace API.Controllers.Shared
         {
             try
             {
-                IEnumerable<TDto> result = service.Search(form);
+                var result = service.Search(form);
                 return Ok(result);
             }
             catch (Exception ex)

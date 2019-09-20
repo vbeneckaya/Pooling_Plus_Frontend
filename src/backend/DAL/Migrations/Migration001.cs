@@ -176,7 +176,10 @@ namespace DAL.Migrations
             Database.AddTable("Warehouses",
                 new Column("TheNameOfTheWarehouse", DbType.String),
                 new Column("SoldToNumber", DbType.String),
+                new Column("Region", DbType.String),
+                new Column("City", DbType.String),
                 new Column("Address", DbType.String),
+                new Column("TypeOfEquipment", DbType.String),
                 new Column("LeadtimeDays", DbType.String),
                 new Column("CustomerWarehouse", DbType.String),
                 /*general fields for Warehouses*/
@@ -262,6 +265,9 @@ namespace DAL.Migrations
             AddTranslation("permissions", "permissions", "Разрешения");
             AddTranslation("name", "Name", "Наименование");
             AddTranslation("userName", "User name", "ФИО");
+            AddTranslation("createCard", "Create", "Создание");
+            AddTranslation("editCard", "Edit", "Редактирование");
+            AddTranslation("totalCount", "{{count}} records", "{{count}} записей");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
