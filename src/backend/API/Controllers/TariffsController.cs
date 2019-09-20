@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/tariffs")]
-    public class TariffsController : DictonaryController<ITariffsService, Tariff, TariffDto> 
+    public class TariffsController : DictionaryController<ITariffsService, Tariff, TariffDto> 
     {
         public TariffsController(ITariffsService tariffsService) : base(tariffsService)
         {

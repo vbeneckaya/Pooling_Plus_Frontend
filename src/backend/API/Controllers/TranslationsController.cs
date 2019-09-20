@@ -10,7 +10,7 @@ using Serilog;
 namespace API.Controllers
 {
     [Route("api/translations")]
-    public class TranslationsController : DictonaryController<ITranslationsService, Translation, TranslationDto>
+    public class TranslationsController : DictionaryController<ITranslationsService, Translation, TranslationDto>
     {
         public TranslationsController(ITranslationsService service) : base(service)
         {

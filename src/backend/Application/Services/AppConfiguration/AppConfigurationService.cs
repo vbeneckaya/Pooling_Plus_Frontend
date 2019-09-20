@@ -10,6 +10,7 @@ using Application.Services.TransportCompanies;
 /*end of using application service*/
 using Domain.Enums;
 using Domain.Services.AppConfiguration;
+using Domain.Services.Orders;
 
 namespace Application.Services.AppConfiguration
 {
@@ -37,8 +38,9 @@ namespace Application.Services.AppConfiguration
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
+                            
                             /*start of add field for Orders*/
-                            new UserConfigurationGridColumn("status", FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.Status), FiledType.Text),
                             new UserConfigurationGridColumn("salesOrderNumber", FiledType.Text),
                             new UserConfigurationGridColumn("orderDate", FiledType.Text),
                             new UserConfigurationGridColumn("typeOfOrder", FiledType.Text),
@@ -118,6 +120,18 @@ namespace Application.Services.AppConfiguration
                 }, 
                 Dictionaries = new List<UserConfigurationDictionaryItem>
                 {
+                    new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<TranslationsService>(), 
+                        CanCreateByForm = true, 
+                        CanImportFromExcel = true,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn("name", FiledType.Text),
+                            new UserConfigurationGridColumn("ru", FiledType.Text),
+                            new UserConfigurationGridColumn("en", FiledType.Text),
+                        }
+                    },
                     /*start of add dictionaries*/
                     new UserConfigurationDictionaryItem
                     {
@@ -183,20 +197,6 @@ namespace Application.Services.AppConfiguration
                             /*end of add field for Warehouses*/
                         }
                     },                    
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<TranslationsService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            /*start of add field for Warehouses*/
-                            new UserConfigurationGridColumn("name", FiledType.Text),
-                            new UserConfigurationGridColumn("ru", FiledType.Text),
-                            new UserConfigurationGridColumn("en", FiledType.Text),
-                            /*end of add field for Warehouses*/
-                        }
-                    },
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<ArticlesService>(), 

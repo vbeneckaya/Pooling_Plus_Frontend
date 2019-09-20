@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Extensions;
 
 namespace Domain.Services.AppConfiguration
 {
@@ -6,7 +7,7 @@ namespace Domain.Services.AppConfiguration
     {
         public UserConfigurationGridColumn(string name, FiledType type)
         {
-            Name = name;
+            Name = name.ToLowerfirstLetter();
             Type = type.ToString();
         }
 
