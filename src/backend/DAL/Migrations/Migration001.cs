@@ -243,7 +243,7 @@ namespace DAL.Migrations
             AddTranslation("UserIncorrectData", "The username or password you entered is incorrect", "Неверное имя пользователя или пароль");
             AddTranslation("Users", "Users", "Пользователи");
             AddTranslation("Roles", "Roles", "Роли");
-            AddTranslation("IsActive", "IsActive", "Активен");
+            AddTranslation("isActive", "IsActive", "Активен");
 
             AddTranslation("login_btn", "Login", "Войти");
             AddTranslation("password", "password", "Пароль");
@@ -259,6 +259,9 @@ namespace DAL.Migrations
             AddTranslation("Administrator", "Administrator", "Администратор");
             AddTranslation("TransportCoordinator", "Transport Coordinator", "Транспортный координатор");
             AddTranslation("TransportCompanyEmployee", "Transport Company Employee", "Сотрудник транспортной компании");
+            AddTranslation("permissions", "permissions", "Разрешения");
+            AddTranslation("name", "Name", "Наименование");
+            AddTranslation("userName", "User name", "ФИО");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");

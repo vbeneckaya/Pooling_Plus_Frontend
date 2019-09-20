@@ -29,7 +29,7 @@ namespace Application.Services.Users
             {
                 Email = entity.Email,
                 Id = entity.Id.ToString(),
-                Name = entity.Name,
+                UserName = entity.Name,
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
                 RoleId = entity.RoleId.ToString(),
                 FieldsConfig = entity.FieldsConfig,
@@ -43,7 +43,7 @@ namespace Application.Services.Users
                 entity.Id = Guid.Parse(dto.Id);
             
             entity.Email = dto.Email;
-            entity.Name = dto.Name;
+            entity.Name = dto.UserName;
             entity.RoleId = Guid.Parse(dto.RoleId);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
