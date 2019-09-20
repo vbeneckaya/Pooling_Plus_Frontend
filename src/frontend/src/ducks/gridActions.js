@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 
 //*  TYPES  *//
 
@@ -103,6 +104,7 @@ function* invokeActionSaga({ payload }) {
         yield put({
             type: INVOKE_ACTION_SUCCESS
         });
+        toast.info(result.message);
         callbackSuccess();
     } catch (e) {
         yield put({
