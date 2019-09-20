@@ -264,7 +264,6 @@ class SuperGrid extends Component {
             groupActions,
             createButton,
             extGrid,
-            collapsed,
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
@@ -272,6 +271,7 @@ class SuperGrid extends Component {
             loadingReport,
             colorInfo,
             autoUpdateStop,
+            name
         } = this.props;
 
         console.log('ff', selectedRows, groupActions);
@@ -288,6 +288,7 @@ class SuperGrid extends Component {
                                 button={createButton}
                                 loadList={this.loadList}
                                 stopUpdate={autoUpdateStop}
+                                name={name}
                             />
                         )
                     }
