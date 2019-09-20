@@ -22,6 +22,15 @@ namespace Application.Services.Warehouses
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
+            
+            entity.Address = dto.Address;
+            entity.City = dto.City;
+            entity.Region = dto.Region;
+            entity.CustomerWarehouse = dto.CustomerWarehouse;
+            entity.LeadtimeDays = dto.LeadtimeDays;
+            entity.SoldToNumber = dto.SoldToNumber;
+            entity.TypeOfEquipment = dto.TypeOfEquipment;
+            entity.TheNameOfTheWarehouse = dto.TheNameOfTheWarehouse;
             /*end of fields*/
         }
 
@@ -30,6 +39,14 @@ namespace Application.Services.Warehouses
             return new WarehouseDto
             {
                 Id = entity.Id.ToString(),
+                Address = entity.Address,
+                City = entity.City,
+                Region = entity.Region,
+                CustomerWarehouse = entity.CustomerWarehouse,
+                LeadtimeDays = entity.LeadtimeDays,
+                SoldToNumber = entity.SoldToNumber,
+                TypeOfEquipment = entity.TypeOfEquipment,
+                TheNameOfTheWarehouse = entity.TheNameOfTheWarehouse,
                 /*end of fields*/
             };
         }

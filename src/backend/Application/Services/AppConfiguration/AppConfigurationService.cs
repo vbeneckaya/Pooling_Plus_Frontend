@@ -191,7 +191,10 @@ namespace Application.Services.AppConfiguration
                             /*start of add field for Warehouses*/
                             new UserConfigurationGridColumn("theNameOfTheWarehouse", FiledType.Text),
                             new UserConfigurationGridColumn("soldToNumber", FiledType.Text),
+                            new UserConfigurationGridColumn("region", FiledType.Text),
+                            new UserConfigurationGridColumn("city", FiledType.Text),
                             new UserConfigurationGridColumn("address", FiledType.Text),
+                            new UserConfigurationGridColumn("typeOfEquipment", FiledType.Text),
                             new UserConfigurationGridColumn("leadtimeDays", FiledType.Text),
                             new UserConfigurationGridColumn("customerWarehouse", FiledType.Text),
                             /*end of add field for Warehouses*/
