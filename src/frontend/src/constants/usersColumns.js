@@ -5,7 +5,7 @@ export const usersColumns = [
         name: 'email',
     },
     {
-        name: 'name',
+        name: 'userName',
     },
     {
         name: 'role',
