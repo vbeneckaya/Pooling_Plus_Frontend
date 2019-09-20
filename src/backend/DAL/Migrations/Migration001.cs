@@ -131,6 +131,8 @@ namespace DAL.Migrations
             Database.AddTable("Tariffs",
                 new Column("CityOfShipment", DbType.String),
                 new Column("DeliveryCity", DbType.String),
+                new Column("BillingMethod", DbType.String),
+                new Column("TransportCompany", DbType.String),
                 new Column("VehicleType", DbType.String),
                 new Column("FTLBet", DbType.String),
                 new Column("LTLRate1", DbType.String),
@@ -253,7 +255,10 @@ namespace DAL.Migrations
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
             AddTranslation("exit", "Exit", "Выйти");
-            AddTranslation("translations", "Translations", "Локализация");
+            AddTranslation("translations", "Translations", "Локализация");            
+            AddTranslation("Administrator", "Administrator", "Администратор");
+            AddTranslation("TransportCoordinator", "Transport Coordinator", "Транспортный координатор");
+            AddTranslation("TransportCompanyEmployee", "Transport Company Employee", "Сотрудник транспортной компании");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
