@@ -1,11 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {ACTIVE_TYPE, DATE_TIME_TYPE, ENUM_TYPE, NUMBER_TYPE, STATE_TYPE,} from '../../constants/columnTypes';
 import {formatDate} from '../../utils/dateTimeFormater';
 import {numbersFormat} from '../../utils/numbersFormat';
 import {Checkbox, Icon, Label} from 'semantic-ui-react';
 
-const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) => {
+const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate }) => {
+    const { t } = useTranslation();
+
     if (type === ENUM_TYPE) {
         return (
             <>
@@ -56,8 +59,8 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive }) =
             </div>
         );
     }
-
-    return value
+console.log('iaa', isTranslate);
+    return isTranslate ? t(value) : value
         .toString()
         .split(';')
         .map(z => (
