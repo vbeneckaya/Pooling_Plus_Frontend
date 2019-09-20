@@ -131,6 +131,8 @@ namespace DAL.Migrations
             Database.AddTable("Tariffs",
                 new Column("CityOfShipment", DbType.String),
                 new Column("DeliveryCity", DbType.String),
+                new Column("BillingMethod", DbType.String),
+                new Column("TransportCompany", DbType.String),
                 new Column("VehicleType", DbType.String),
                 new Column("FTLBet", DbType.String),
                 new Column("LTLRate1", DbType.String),
@@ -174,7 +176,10 @@ namespace DAL.Migrations
             Database.AddTable("Warehouses",
                 new Column("TheNameOfTheWarehouse", DbType.String),
                 new Column("SoldToNumber", DbType.String),
+                new Column("Region", DbType.String),
+                new Column("City", DbType.String),
                 new Column("Address", DbType.String),
+                new Column("TypeOfEquipment", DbType.String),
                 new Column("LeadtimeDays", DbType.String),
                 new Column("CustomerWarehouse", DbType.String),
                 /*general fields for Warehouses*/
@@ -241,7 +246,7 @@ namespace DAL.Migrations
             AddTranslation("UserIncorrectData", "The username or password you entered is incorrect", "Неверное имя пользователя или пароль");
             AddTranslation("Users", "Users", "Пользователи");
             AddTranslation("Roles", "Roles", "Роли");
-            AddTranslation("IsActive", "IsActive", "Активен");
+            AddTranslation("isActive", "IsActive", "Активен");
 
             AddTranslation("login_btn", "Login", "Войти");
             AddTranslation("password", "password", "Пароль");
@@ -253,7 +258,16 @@ namespace DAL.Migrations
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
             AddTranslation("exit", "Exit", "Выйти");
-            AddTranslation("translations", "Translations", "Локализация");
+            AddTranslation("translations", "Translations", "Локализация");            
+            AddTranslation("Administrator", "Administrator", "Администратор");
+            AddTranslation("TransportCoordinator", "Transport Coordinator", "Транспортный координатор");
+            AddTranslation("TransportCompanyEmployee", "Transport Company Employee", "Сотрудник транспортной компании");
+            AddTranslation("permissions", "permissions", "Разрешения");
+            AddTranslation("name", "Name", "Наименование");
+            AddTranslation("userName", "User name", "ФИО");
+            AddTranslation("createCard", "Create", "Создание");
+            AddTranslation("editCard", "Edit", "Редактирование");
+            AddTranslation("totalCount", "{{count}} records", "{{count}} записей");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");

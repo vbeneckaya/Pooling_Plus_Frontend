@@ -22,6 +22,10 @@ namespace Application.Services.TransportCompanies
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
+            
+            entity.Title = dto.Title;
+            entity.ContractNumber = dto.ContractNumber;
+            entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
             /*end of fields*/
         }
 
@@ -30,6 +34,9 @@ namespace Application.Services.TransportCompanies
             return new TransportCompanyDto
             {
                 Id = entity.Id.ToString(),
+                Title = entity.Title,
+                ContractNumber = entity.ContractNumber,
+                DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
                 /*end of fields*/
             };
         }
