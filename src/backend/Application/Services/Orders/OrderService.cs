@@ -32,7 +32,9 @@ namespace Application.Services.Orders
             {
                 new CreateShipping(db),
                 new Cancel(db),
-                new RemoveFromShipping(db)
+                new RemoveFromShipping(db),
+                new Archive(db),
+                new RecordFactOfLoss(db)
             };
         }
 
