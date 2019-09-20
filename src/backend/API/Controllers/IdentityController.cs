@@ -1,6 +1,8 @@
 using Domain.Services.Identity;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
 
 namespace API.Controllers
 {
@@ -17,9 +19,18 @@ namespace API.Controllers
         /// Получение информации о пользователе
         /// </summary>
         [HttpGet("userInfo")] 
-        public UserInfo UserInfo()
+        public IActionResult UserInfo()
         {
-            return identityService.GetUserInfo();
+            try
+            {
+                UserInfo result = identityService.GetUserInfo();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to Get user info");
+                return StatusCode(500, ex.Message);
+            }
         }
         
         /// <summary>
@@ -28,21 +39,29 @@ namespace API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody]IdentityModel model)
         {
-            var identity = identityService.GetToken(model);
-
-            switch (identity.Result)
+            try
             {
-                case VerificationResult.Ok:
-                    return Ok(identity.Data);
+                var identity = identityService.GetToken(model);
 
-                case VerificationResult.Forbidden:
-                    return BadRequest("UserNotFound");
+                switch (identity.Result)
+                {
+                    case VerificationResult.Ok:
+                        return Ok(identity.Data);
 
-                case VerificationResult.WrongCredentials:
-                    return BadRequest("UserIncorrectData");
+                    case VerificationResult.Forbidden:
+                        return BadRequest("UserNotFound");
 
-                default:
-                    return StatusCode(500);
+                    case VerificationResult.WrongCredentials:
+                        return BadRequest("UserIncorrectData");
+
+                    default:
+                        return StatusCode(500);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to Login");
+                return StatusCode(500, ex.Message);
             }
         }
     }

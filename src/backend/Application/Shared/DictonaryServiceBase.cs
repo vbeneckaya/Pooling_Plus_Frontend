@@ -29,7 +29,7 @@ namespace Application.Shared
             return MapFromEntityToDto(dbSet.GetById(id));
         }
 
-        public IEnumerable<TDto> Search(SearchForm form)
+        public SearchResult<TDto> Search(SearchForm form)
         {
             var dbSet = UseDbSet(db);
             var query = dbSet.AsQueryable();
@@ -44,12 +44,30 @@ namespace Application.Shared
                         prop.GetValue(customer, null) == form.Search));
             }
 
+            var totalCount = query.Count();
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();
 
-            return entities.Select(entity => MapFromEntityToDto(entity));
+            var a = new SearchResult<TDto>
+            {
+                TotalCount = totalCount,
+                Items = entities.Select(entity => MapFromEntityToDto(entity))
+            };
+            return a;
         }
 
+        public IEnumerable<ValidateResult> Import(IEnumerable<TDto> entitiesFrom)
+        {
+            var result = new List<ValidateResult>();
+            
+            foreach (var dto in entitiesFrom) 
+                result.Add(SaveOrCreate(dto));
+
+            return result;
+        }
+        
+        
+        
         public ValidateResult SaveOrCreate(TDto entityFrom)
         {
             var dbSet = UseDbSet(db);

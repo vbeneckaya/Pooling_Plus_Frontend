@@ -24,17 +24,36 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictonaryController`3.Search(Domain.Shared.SearchForm)">
+        <member name="T:API.Controllers.Shared.DictionaryController`3">
+            <summary>
+            Словарь
+            </summary>
+            <typeparam name="TService"></typeparam>
+            <typeparam name="TEntity"></typeparam>
+            <typeparam name="TDto"></typeparam>
+        </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.#ctor(`0)">
+            <summary>
+            Словарь
+            </summary>
+            <param name="service"></param>
+        </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictonaryController`3.GetById(System.Guid)">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.GetById(System.Guid)">
             <summary>
             Данные по id
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictonaryController`3.SaveOrCreate(`2)">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.Import(System.Collections.Generic.IEnumerable{`2})">
+            <summary>
+            Импортировать
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
             </summary>

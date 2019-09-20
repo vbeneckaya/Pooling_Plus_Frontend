@@ -6,8 +6,15 @@ namespace Domain.Services
 {
     public interface IDictonaryService<TEntity, TDto> : IService
     {
-        IEnumerable<TDto> Search(SearchForm form);
+        SearchResult<TDto> Search(SearchForm form);
+        IEnumerable<ValidateResult> Import(IEnumerable<TDto> entityFrom);
         ValidateResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);
+    }
+    
+    public class SearchResult<T>
+    {
+        public int TotalCount { get; set; }
+        public IEnumerable<T> Items { get; set; }
     }
 }

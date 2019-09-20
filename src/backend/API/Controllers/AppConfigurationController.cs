@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Domain.Extensions;
 using Domain.Services.AppConfiguration;
+using Domain.Services.Orders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -67,8 +69,8 @@ namespace API.Controllers
                         {
                             new AppFormViewRow(new List<IAppFormViewRowField>
                             {
-                                new AppFormTextField("clientNumber",true),
-                                new AppFormStateField("status", true, "orderStatus"),
+                                new AppFormTextField(nameof(OrderDto.SalesOrderNumber).ToLowerfirstLetter(),true),
+                                new AppFormStateField(nameof(OrderDto.Status).ToLowerfirstLetter(), true, "orderStatus"),
                                 new AppFormDateField("createAt", true),
                                 new AppFormSelectField("orderType", true, "orderType"),
                             }),

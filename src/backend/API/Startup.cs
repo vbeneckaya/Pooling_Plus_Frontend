@@ -14,6 +14,8 @@ using System.Text;
 using Application.Services.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Infrastructure.Logging;
 
 namespace API
 {
@@ -22,6 +24,7 @@ namespace API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Log.Logger = LoggerFactory.CreateLogger(Configuration, "API");
         }
 
         public IConfiguration Configuration { get; }

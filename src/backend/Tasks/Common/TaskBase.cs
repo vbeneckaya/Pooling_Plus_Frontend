@@ -1,7 +1,9 @@
 ﻿using Infrastructure.Installers;
+using Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -53,6 +55,7 @@ namespace Tasks
             }
             catch (Exception ex)
             {
+                Log.Error(ex, $"Failed to run {TaskName}");
                 if (TestContext.CurrentContext.WorkerId != null)
                     Assert.Fail(ex.Message);
             }
@@ -77,6 +80,7 @@ namespace Tasks
 
         protected virtual void CreateLogger()
         {
+            Log.Logger = LoggerFactory.CreateLogger(Configuration, "Tasks");
         }
 
         private object CreateProperties(Type propertiesType, string parameters)
