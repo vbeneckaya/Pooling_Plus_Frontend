@@ -253,7 +253,7 @@ namespace DAL.Migrations
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
             AddTranslation("exit", "Exit", "Выйти");
-            AddTranslation("translations", "Translations", "Формулировки");
+            AddTranslation("translations", "Translations", "Локализация");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
