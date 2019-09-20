@@ -165,13 +165,14 @@ namespace Application.Shared
             var role = db.Roles.GetById(currentUser.RoleId);
             var dbSet = UseDbSet(db);
             var entity = dbSet.GetById(id);
+            var message = "";
             if (action.IsAvailable(role, entity)) 
-                action.Run(currentUser, entity);
+                message += action.Run(currentUser, entity);
             
             return new AppActionResult
             {
                 IsError = false,
-                Message = "Done"
+                Message = message
             };
         }
         

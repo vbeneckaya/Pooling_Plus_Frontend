@@ -30,7 +30,9 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new CreateShipping(db)
+                new CreateShipping(db),
+                new Cancel(db),
+                new RemoveFromShipping(db)
             };
         }
 

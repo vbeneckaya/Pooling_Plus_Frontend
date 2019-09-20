@@ -7,11 +7,11 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
-    public class CreateShipping : IAppAction<Order>
+    public class RemoveFromShipping : IAppAction<Order>
     {
         private readonly AppDbContext db;
 
-        public CreateShipping(AppDbContext db)
+        public RemoveFromShipping(AppDbContext db)
         {
             this.db = db;
             Color = AppColor.Blue;
@@ -21,28 +21,21 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
-            var shipping = new Shipping
-            {
-                Status = "Создана",
-                Id = Guid.NewGuid()
-            };
-            db.Shippings.Add(shipping);
-
-            order.Status = "В перевозке";
-            order.ShippingId = shipping.Id;
+            order.Status = "Создан";
+            order.ShippingId = null;
             
             db.SaveChanges();
             
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {shipping.Id}"
+                Message = $"Заказ убран из перевозки {order.Id}"
             };
         }
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == "Создан" && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == "В перевозке" && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

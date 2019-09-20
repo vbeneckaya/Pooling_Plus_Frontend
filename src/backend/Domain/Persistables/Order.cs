@@ -49,6 +49,8 @@ namespace Domain.Persistables
         public string Avization { get; set; }
         public string OrderItems { get; set; }
         public string OrderCreationDate { get; set; }
+        
+        public Guid? ShippingId { get; set; }
         /*end of fields*/
     }
 }

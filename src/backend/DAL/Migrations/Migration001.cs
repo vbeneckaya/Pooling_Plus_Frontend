@@ -90,6 +90,7 @@ namespace DAL.Migrations
                 new Column("Avization", DbType.String),
                 new Column("OrderItems", DbType.String),
                 new Column("OrderCreationDate", DbType.String),
+                new Column("ShippingId", DbType.Guid, ColumnProperty.Null),
                 /*general fields for Orders*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
@@ -272,6 +273,8 @@ namespace DAL.Migrations
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
             AddTranslation("unionOrders", "Union orders", "Объеденить в перевозку");
+            AddTranslation("cancel", "Cancel", "Отменить");
+            AddTranslation("removeFromShipping", "Remove From Shipping", "Убрать из перевозки");
             /*start of add translates for action*/
             
             /*start of add translates*/
