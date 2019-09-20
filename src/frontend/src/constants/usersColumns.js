@@ -1,4 +1,4 @@
-import { ACTIVE_TYPE, ENUM_TYPE } from '../constants/columnsType';
+import { ACTIVE_TYPE, ENUM_TYPE } from './columnTypes';
 
 export const usersColumns = [
     {

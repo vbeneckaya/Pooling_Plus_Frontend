@@ -49,7 +49,7 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 error: '',
                 list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
-                totalCount: payload.total_count,
+                totalCount: payload.totalCount,
             };
         case GET_USER_CARD_SUCCESS:
             return {
@@ -139,7 +139,7 @@ function* getUsersListSaga({ payload }) {
         yield put({
             type: GET_USERS_LIST_SUCCESS,
             payload: {
-                items: result,
+                ...result,
                 isConcat,
             },
         });

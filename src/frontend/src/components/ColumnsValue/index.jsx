@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {ACTIVE_TYPE, DATE_TIME_TYPE, ENUM_TYPE, NUMBER_TYPE, STATE_TYPE,} from '../../constants/columnsType';
+import {ACTIVE_TYPE, DATE_TIME_TYPE, ENUM_TYPE, NUMBER_TYPE, STATE_TYPE,} from '../../constants/columnTypes';
 import {formatDate} from '../../utils/dateTimeFormater';
 import {numbersFormat} from '../../utils/numbersFormat';
 import {Checkbox, Icon, Label} from 'semantic-ui-react';

@@ -156,7 +156,7 @@ function* openGridCardSaga({ payload }) {
 function* createDraftSaga({ payload }) {
     try {
         const { name } = payload;
-        const result = yield postman.post(`/${name}/saveOrCreate`);
+        const result = yield postman.post(`/${name}/saveOrCreate`, {});
 
         yield put({
             type: CREATE_DRAFT_SUCCESS,

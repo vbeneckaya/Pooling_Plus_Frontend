@@ -1,5 +1,5 @@
 import React from 'react';
-import {TEXT_TYPE} from "../../constants/columnsType";
+import {TEXT_TYPE} from "../../constants/columnTypes";
 import Text from "./Text";
 
 const getTypeFacet = {

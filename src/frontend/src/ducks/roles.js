@@ -49,7 +49,7 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 error: '',
                 list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
-                totalCount: payload.total_count,
+                totalCount: payload.totalCount,
             };
         case GET_ROLE_CARD_SUCCESS:
             return {
@@ -151,7 +151,7 @@ function* getRolesListSaga({ payload }) {
         yield put({
             type: GET_ROLES_LIST_SUCCESS,
             payload: {
-                items: result,
+                ...result,
                 isConcat,
             },
         });

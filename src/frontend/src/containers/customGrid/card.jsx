@@ -4,6 +4,7 @@ import { withTranslation } from 'react-i18next';
 
 import { Button, Dimmer, Loader, Modal, Tab } from 'semantic-ui-react';
 import { openGridCardRequest, tabsSelector, titleCardSelector } from '../../ducks/gridCard';
+import TabCard from "./components/tab";
 
 class Card extends Component {
     state = {
@@ -43,7 +44,7 @@ class Card extends Component {
 
         console.log('tabs', tabs);
 
-        return tabs.map(tab => ({ menuItem: t(tab), render: () => <Tab.Pane>Tab 1 Content</Tab.Pane> }))
+        return tabs.map(tab => ({ menuItem: t(tab), render: () => <Tab.Pane><TabCard name={tab} /></Tab.Pane> }))
     };
 
     render() {

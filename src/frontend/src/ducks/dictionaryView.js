@@ -43,7 +43,7 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
                 progress: false,
-                totalCount: payload.total_count,
+                totalCount: payload.totalCount,
             };
         case GET_DICTIONARY_LIST_ERROR:
             return {
@@ -156,7 +156,7 @@ export function* getListSaga({ payload }) {
 
         const result = yield postman.post(`/${name}/search`, filter);
 
-        yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { items: result, isConcat } });
+        yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { ...result, isConcat } });
     } catch (error) {
         yield put({ type: GET_DICTIONARY_LIST_ERROR, payload: error });
     }

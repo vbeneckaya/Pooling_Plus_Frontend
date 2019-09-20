@@ -4,7 +4,7 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
-} from '../constants/columnsType';
+} from '../constants/columnTypes';
 
 export default {
     userName: 'Иванов Иван Иванович',

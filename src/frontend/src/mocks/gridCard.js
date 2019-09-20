@@ -1,4 +1,4 @@
-import {TEXT_TYPE} from "../constants/columnsType";
+import {TEXT_TYPE} from "../constants/columnTypes";
 
 export const TABLE_TAB_TYPE = 'table';
 export const ROW_TAB_TYPE = 'row';
