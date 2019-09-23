@@ -11,7 +11,7 @@ namespace Domain.Services.Orders
         public string CustomerName { get; set; }
         public string SoldTo { get; set; }
         public string ShippingDate { get; set; }
-        public string DaysOnTheRoad { get; set; }
+        public int DaysOnTheRoad { get; set; }
         public string DeliveryDate { get; set; }
         public string BDFInvoiceNumber { get; set; }
         public string InvoiceNumber { get; set; }

@@ -54,7 +54,7 @@ namespace DAL.Migrations
                 new Column("CustomerName", DbType.String),
                 new Column("SoldTo", DbType.String),
                 new Column("ShippingDate", DbType.String),
-                new Column("DaysOnTheRoad", DbType.String),
+                new Column("DaysOnTheRoad", DbType.Int32),
                 new Column("DeliveryDate", DbType.String),
                 new Column("BDFInvoiceNumber", DbType.String),
                 new Column("InvoiceNumber", DbType.String),

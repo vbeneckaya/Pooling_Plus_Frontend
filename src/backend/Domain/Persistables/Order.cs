@@ -47,7 +47,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дней в пути
         /// </summary>
-        public string DaysOnTheRoad { get; set; }
+        public int DaysOnTheRoad { get; set; }
         /// <summary>
         /// Дата доставки
         /// </summary>

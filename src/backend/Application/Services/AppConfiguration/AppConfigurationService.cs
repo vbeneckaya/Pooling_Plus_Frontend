@@ -55,7 +55,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.CustomerName), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.SoldTo), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingDate), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.DaysOnTheRoad), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.DaysOnTheRoad), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryDate), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.BDFInvoiceNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.InvoiceNumber), FiledType.Text),
