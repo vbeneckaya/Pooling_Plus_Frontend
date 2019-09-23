@@ -18,6 +18,7 @@ using Domain.Services.Identity;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserIdProvider;
+using Domain.Services.Users;
 /*start of using domain service*/
 using Domain.Services.Orders;
 using Domain.Services.Shippings;
@@ -25,7 +26,6 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
-using Domain.Services.Users;
 /*end of using domain service*/
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

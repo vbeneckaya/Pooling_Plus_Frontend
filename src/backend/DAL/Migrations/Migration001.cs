@@ -344,7 +344,7 @@ namespace DAL.Migrations
             AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Зафиксировать факт пропажи");
             AddTranslation("unionOrders", "unionOrders", "Объеденить");
             AddTranslation("shipping", "Shipping", "Перевозка");
-            AddTranslation("shippings", "Shippings", "Перевозка");
+            AddTranslation("shippings", "Shippings", "Перевозки");
             AddTranslation("transportationNumber", "TransportationNumber", "Номер перевозки");
             AddTranslation("deliveryMethod", "DeliveryMethod", "Способ доставки");
             AddTranslation("thermalMode", "ThermalMode", "Терморежим");
@@ -377,6 +377,8 @@ namespace DAL.Migrations
             AddTranslation("created", "created", "Создана");
             AddTranslation("confirmed", "confirmed", "Подтверждена");
             AddTranslation("completed", "completed", "Завершена");
+            AddTranslation("tariff", "Tariff", "Тариф");
+            AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("cityOfShipment", "CityOfShipment", "Город отгрузки");

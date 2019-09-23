@@ -2,9 +2,15 @@ using System;
 using Domain.Enums;
 
 namespace Domain.Persistables
-{
+{   
+    /// <summary>
+    /// Перевозка
+    /// </summary>
     public class Shipping : IPersistable
     {
+        /// <summary>
+        /// Db primary key
+        /// </summary>    
         public Guid Id { get; set; }
         public string TransportationNumber { get; set; }
         public string DeliveryMethod { get; set; }
