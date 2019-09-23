@@ -5,6 +5,7 @@ using Application.Shared;
 using DAL;
 using Domain;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
@@ -102,7 +103,7 @@ namespace Application.Services.Shippings
                 Invoice = entity.Invoice,
                 ActualReturnDate = entity.ActualReturnDate,
                 InvoiceNumber = entity.InvoiceNumber,
-                Status = entity.Status.ToString(),
+                Status = entity.Status.ToString().ToLowerfirstLetter(),
                 DeliveryStatus = entity.DeliveryStatus,
                 AmountConfirmedByShipper = entity.AmountConfirmedByShipper,
                 AmountConfirmedByTC = entity.AmountConfirmedByTC,

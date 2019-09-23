@@ -2,6 +2,7 @@ using System;
 using Application.Shared;
 using DAL;
 using Domain.Persistables;
+using Domain.Extensions;
 using Domain.Services.Tariffs;
 using Microsoft.EntityFrameworkCore;
 
