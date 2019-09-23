@@ -54,11 +54,14 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<OrdersService>(), 
                         CanCreateByForm = true, 
+                        CanViewAdditionSummary = true,
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
                             new UserConfigurationGridColumn(nameof(OrderDto.SalesOrderNumber), FiledType.Text),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState)),
+
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.TypeOfOrder), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
@@ -107,11 +110,13 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationGridItem
                     {
                         Name = GetName<ShippingsService>(), 
-                        CanCreateByForm = true, 
+                        CanCreateByForm = false, 
+                        CanViewAdditionSummary = false,
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(OrderState)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TransportationNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.DeliveryMethod), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ThermalMode), FiledType.Text),
@@ -135,7 +140,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(ShippingDto.Invoice), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ActualReturnDate), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.InvoiceNumber), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(ShippingDto.Status), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.DeliveryStatus), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.AmountConfirmedByShipper), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.AmountConfirmedByTC), FiledType.Text),

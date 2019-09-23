@@ -1,5 +1,17 @@
 namespace Domain.Enums
 {
+    public enum DeliveryStatus
+    {
+        sadfsdf
+        
+    }
+
+    public enum ShippingState
+    {
+        qweqwe,
+        qweqwe1
+    }
+
     public enum OrderState
     { 
         Draft,

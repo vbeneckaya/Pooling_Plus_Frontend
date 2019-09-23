@@ -6,6 +6,7 @@ namespace Domain.Services.AppConfiguration
     {
         public string Name { get; set; }
         public bool CanCreateByForm { get; set; }
+        public bool CanViewAdditionSummary { get; set; }
         public bool CanImportFromExcel { get; set; }
         public IEnumerable<UserConfigurationGridColumn> Columns { get; set; }
     }

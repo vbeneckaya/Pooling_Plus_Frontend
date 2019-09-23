@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared
 {
-    public abstract class DictonaryServiceBase<TEntity, TDto> where TEntity : class, IPersistable, new() where TDto: IDto
+    public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
-        public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
-        public abstract TDto MapFromEntityToDto(TEntity entity);
+        public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
+        public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected AppDbContext db ;
 
@@ -23,13 +23,13 @@ namespace Application.Shared
             db = appDbContext;
         }
 
-        public TDto Get(Guid id)
+        public TListDto Get(Guid id)
         {
             var dbSet = UseDbSet(db);
             return MapFromEntityToDto(dbSet.GetById(id));
         }
 
-        public SearchResult<TDto> Search(SearchForm form)
+        public SearchResult<TListDto> Search(SearchForm form)
         {
             var dbSet = UseDbSet(db);
             var query = dbSet.AsQueryable();
@@ -48,7 +48,7 @@ namespace Application.Shared
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();
 
-            var a = new SearchResult<TDto>
+            var a = new SearchResult<TListDto>
             {
                 TotalCount = totalCount,
                 Items = entities.Select(entity => MapFromEntityToDto(entity))
@@ -56,7 +56,7 @@ namespace Application.Shared
             return a;
         }
 
-        public IEnumerable<ValidateResult> Import(IEnumerable<TDto> entitiesFrom)
+        public IEnumerable<ValidateResult> Import(IEnumerable<TListDto> entitiesFrom)
         {
             var result = new List<ValidateResult>();
             
@@ -68,7 +68,7 @@ namespace Application.Shared
         
         
         
-        public ValidateResult SaveOrCreate(TDto entityFrom)
+        public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
             var dbSet = UseDbSet(db);
             if (!string.IsNullOrEmpty(entityFrom.Id))

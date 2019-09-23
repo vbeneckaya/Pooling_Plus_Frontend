@@ -11,10 +11,10 @@ namespace Domain.Services.Articles
         public string Status { get; set; }
         public string Ean { get; set; }
         public string UnitLengthGoodsMm { get; set; }
-        public string WidthUnitsGoodsMm { get; set; }
+        public int WidthUnitsGoodsMm { get; set; }
         public string UnitHeightGoodsMm { get; set; }
         public string WeightUnitsGrossProductG { get; set; }
-        public string WeightUnitsNetGoodsG { get; set; }
+        public int WeightUnitsNetGoodsG { get; set; }
         public string EANShrink { get; set; }
         public string PiecesInShrink { get; set; }
         public string LengthShrinkMm { get; set; }
