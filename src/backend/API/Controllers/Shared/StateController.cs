@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,8 +21,8 @@ namespace API.Controllers
             {
                 result.Add(new StateDto
                 {
-                    Name = value.ToString(),
-                    Color = AppColor.Blue.ToString()                    
+                    Name = value.ToString().ToLowerfirstLetter(),
+                    Color = value.GetColor().ToString().ToLowerfirstLetter()                    
                 });
             }
 

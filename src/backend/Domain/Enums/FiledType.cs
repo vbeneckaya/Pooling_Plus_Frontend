@@ -4,14 +4,11 @@ namespace Domain.Enums
     {
         Text,
         State,
-        BigText,
+        Number,
+        Select,
+        Boolean,
         DateTime,
         Date,
         Time,
-        FromDictionary,
-        Bool,
-        Enum,
-        Number,
-        Float
     }
 }

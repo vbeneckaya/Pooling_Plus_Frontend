@@ -9,6 +9,11 @@ namespace Domain.Extensions
 {
     public static class Extensions
     {
+        public static string ToUpperfirstLetter(this string input)
+        {
+            return Char.ToUpperInvariant(input[0]) + input.Substring(1);
+        }
+        
         public static string ToLowerfirstLetter(this string input)
         {
             return Char.ToLowerInvariant(input[0]) + input.Substring(1);
@@ -49,7 +54,7 @@ namespace Domain.Extensions
             return description;
         }
         
-        public static AppColor GetColor<T>(this T e) where T : IConvertible
+        public static AppColor GetColor<T>(this T e)
         {
             AppColor description = AppColor.Black;
 
@@ -60,7 +65,7 @@ namespace Domain.Extensions
 
                 foreach (int val in values)
                 {
-                    if (val == e.ToInt32(CultureInfo.InvariantCulture))
+                    if (val == ((IConvertible) e).ToInt32(CultureInfo.InvariantCulture))
                     {
                         var memInfo = type.GetMember(type.GetEnumName(val));
                         var attributes = memInfo[0].GetCustomAttributes(typeof(StateColorAttribute), false);

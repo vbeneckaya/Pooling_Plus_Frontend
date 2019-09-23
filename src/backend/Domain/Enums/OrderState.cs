@@ -10,12 +10,12 @@ namespace Domain.Enums
         /// <summary>
         /// Не подтверждён
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Grey)]
         Draft,
         /// <summary>
         /// Отменён
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Brown)]
         Canceled,
         /// <summary>
         /// Создан
@@ -25,27 +25,27 @@ namespace Domain.Enums
         /// <summary>
         /// В перевозке
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Orange)]
         InShipping,
         /// <summary>
         /// Доставлен
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Green)]
         Delivered,
         /// <summary>
         /// В архиве
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Teal)]
         Archive,
         /// <summary>
         /// Полный возврат
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Olive)]
         FullReturn,
         /// <summary>
         /// Потерян
         /// </summary>
-        [StateColor(AppColor.Blue)]
+        [StateColor(AppColor.Red)]
         Lost,
         /*end of fields*/
     }

@@ -189,7 +189,7 @@ namespace Domain.Persistables
         /// </summary>
         public string OrderCreationDate { get; set; }
         /// <summary>
-        /// Перевозка
+        /// ##comment##
         /// </summary>
         public Guid? ShippingId { get; set; }
         /*end of fields*/
