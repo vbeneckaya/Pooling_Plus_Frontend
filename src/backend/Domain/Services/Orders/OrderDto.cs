@@ -47,6 +47,7 @@ namespace Domain.Services.Orders
         public string Avization { get; set; }
         public string OrderItems { get; set; }
         public string OrderCreationDate { get; set; }
+        public string ShippingId { get; set; }
         /*end of fields*/
     }
 }

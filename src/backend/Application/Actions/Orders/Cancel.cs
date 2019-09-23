@@ -20,7 +20,7 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = "Отменён";
+            order.Status = OrderState.Canceled;
             
             db.SaveChanges();
             
@@ -33,7 +33,7 @@ namespace Application.Actions.Orders
 
         public bool IsAvailable(Role role, Order order)
         {
-            return (order.Status == "Создан" || order.Status == "Не проверен") && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return (order.Status == OrderState.Created || order.Status == OrderState.Draft) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

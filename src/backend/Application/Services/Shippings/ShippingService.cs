@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Application.Actions.Shippings;
 using Application.Shared;
 using DAL;
+using DAL.Queries;
 using Domain;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
+using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
@@ -23,14 +28,19 @@ namespace Application.Services.Shippings
 
         public override IEnumerable<IAction<Shipping>> Actions()
         {
-            return new List<IAction<Shipping>>();
+            return new List<IAction<Shipping>>
+            {
+                /*end of add single actions*/
+            };
         }
 
         public override IEnumerable<IAction<IEnumerable<Shipping>>> GroupActions()
         {
-            return new List<IAction<IEnumerable<Shipping>>>();
+            return new List<IAction<IEnumerable<Shipping>>>
+            {
+                /*end of add group actions*/
+            };
         }
-
 
         public override void MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {

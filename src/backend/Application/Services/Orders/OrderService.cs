@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Application.Actions.Orders;
 using Application.Shared;
 using DAL;
-using DAL.Queries;
 using Domain;
+using Domain.Enums;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
-using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
@@ -34,7 +31,8 @@ namespace Application.Services.Orders
                 new Cancel(db),
                 new RemoveFromShipping(db),
                 new Archive(db),
-                new RecordFactOfLoss(db)
+                new RecordFactOfLoss(db),
+                /*end of add single actions*/
             };
         }
 
@@ -42,7 +40,8 @@ namespace Application.Services.Orders
         {
             return new List<IAction<IEnumerable<Order>>>
             {
-                new UnionOrders(db)
+                new UnionOrders(db),
+                /*end of add group actions*/
             };
         }
 
@@ -50,7 +49,8 @@ namespace Application.Services.Orders
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.Status = dto.Status;
+            if(!string.IsNullOrEmpty(dto.Status))
+                entity.Status = Enum.Parse<OrderState>(dto.Status);
             entity.SalesOrderNumber = dto.SalesOrderNumber;
             entity.OrderDate = dto.OrderDate;
             entity.TypeOfOrder = dto.TypeOfOrder;
@@ -94,6 +94,8 @@ namespace Application.Services.Orders
             entity.Avization = dto.Avization;
             entity.OrderItems = dto.OrderItems;
             entity.OrderCreationDate = dto.OrderCreationDate;
+            if(!string.IsNullOrEmpty(dto.ShippingId))
+                entity.ShippingId = Guid.Parse(dto.ShippingId);
             /*end of map dto to entity fields*/
         }
 
@@ -102,7 +104,7 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
-                Status = entity.Status,
+                Status = entity.Status.ToString(),
                 SalesOrderNumber = entity.SalesOrderNumber,
                 OrderDate = entity.OrderDate,
                 TypeOfOrder = entity.TypeOfOrder,
@@ -146,6 +148,7 @@ namespace Application.Services.Orders
                 Avization = entity.Avization,
                 OrderItems = entity.OrderItems,
                 OrderCreationDate = entity.OrderCreationDate,
+                ShippingId = entity.ShippingId.ToString(),
                 /*end of map entity to dto fields*/
             };
         }

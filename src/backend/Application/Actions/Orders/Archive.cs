@@ -11,8 +11,7 @@ namespace Application.Actions.Orders
     {
         private readonly AppDbContext db;
 
-        public 
-            Archive(AppDbContext db)
+        public Archive(AppDbContext db)
         {
             this.db = db;
             Color = AppColor.Blue;
@@ -22,7 +21,7 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = "В архиве";
+            order.Status = OrderState.Archive;
             db.SaveChanges();
             
             return new AppActionResult
@@ -34,7 +33,7 @@ namespace Application.Actions.Orders
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == "Доставлен" && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Delivered && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

@@ -22,11 +22,10 @@ namespace Application.Services.TransportCompanies
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            
             entity.Title = dto.Title;
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
-            /*end of fields*/
+            /*end of map dto to entity fields*/
         }
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
@@ -37,7 +36,7 @@ namespace Application.Services.TransportCompanies
                 Title = entity.Title,
                 ContractNumber = entity.ContractNumber,
                 DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
-                /*end of fields*/
+                /*end of map entity to dto fields*/
             };
         }
     }

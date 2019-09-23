@@ -22,16 +22,15 @@ namespace Application.Services.Warehouses
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            
-            entity.Address = dto.Address;
-            entity.City = dto.City;
-            entity.Region = dto.Region;
-            entity.CustomerWarehouse = dto.CustomerWarehouse;
-            entity.LeadtimeDays = dto.LeadtimeDays;
-            entity.SoldToNumber = dto.SoldToNumber;
-            entity.TypeOfEquipment = dto.TypeOfEquipment;
             entity.TheNameOfTheWarehouse = dto.TheNameOfTheWarehouse;
-            /*end of fields*/
+            entity.SoldToNumber = dto.SoldToNumber;
+            entity.Region = dto.Region;
+            entity.City = dto.City;
+            entity.Address = dto.Address;
+            entity.TypeOfEquipment = dto.TypeOfEquipment;
+            entity.LeadtimeDays = dto.LeadtimeDays;
+            entity.CustomerWarehouse = dto.CustomerWarehouse;
+            /*end of map dto to entity fields*/
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -39,15 +38,15 @@ namespace Application.Services.Warehouses
             return new WarehouseDto
             {
                 Id = entity.Id.ToString(),
-                Address = entity.Address,
-                City = entity.City,
-                Region = entity.Region,
-                CustomerWarehouse = entity.CustomerWarehouse,
-                LeadtimeDays = entity.LeadtimeDays,
-                SoldToNumber = entity.SoldToNumber,
-                TypeOfEquipment = entity.TypeOfEquipment,
                 TheNameOfTheWarehouse = entity.TheNameOfTheWarehouse,
-                /*end of fields*/
+                SoldToNumber = entity.SoldToNumber,
+                Region = entity.Region,
+                City = entity.City,
+                Address = entity.Address,
+                TypeOfEquipment = entity.TypeOfEquipment,
+                LeadtimeDays = entity.LeadtimeDays,
+                CustomerWarehouse = entity.CustomerWarehouse,
+                /*end of map entity to dto fields*/
             };
         }
     }

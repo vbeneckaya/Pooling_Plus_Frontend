@@ -21,7 +21,7 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = "Потерян";
+            order.Status = OrderState.Lost;
             db.SaveChanges();
             
             return new AppActionResult
@@ -33,7 +33,7 @@ namespace Application.Actions.Orders
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == "В перевозке" && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.InShipping && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

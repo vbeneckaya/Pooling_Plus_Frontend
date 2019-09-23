@@ -21,7 +21,7 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = "Создан";
+            order.Status = OrderState.Created;
             order.ShippingId = null;
             
             db.SaveChanges();
@@ -35,7 +35,7 @@ namespace Application.Actions.Orders
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == "В перевозке" && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.InShipping && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

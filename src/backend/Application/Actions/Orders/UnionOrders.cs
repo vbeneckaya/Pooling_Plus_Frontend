@@ -29,7 +29,7 @@ namespace Application.Actions.Orders
 
             foreach (var order in orders)
             {
-                order.Status = "В перевозке";
+                order.Status = OrderState.InShipping;
                 order.ShippingId = shipping.Id;
             }
             db.SaveChanges();
@@ -42,7 +42,7 @@ namespace Application.Actions.Orders
 
         public bool IsAvailable(Role role, IEnumerable<Order> target)
         {
-            return target.All(entity => entity.Status == "Создан" && (role.Name == "Administrator" || role.Name == "TransportCoordinator"));
+            return target.All(entity => entity.Status == OrderState.Created && (role.Name == "Administrator" || role.Name == "TransportCoordinator"));
         }
     }
 }

@@ -46,7 +46,7 @@ namespace DAL.Migrations
 
             /*start of add tables*/
             Database.AddTable("Orders",
-                new Column("Status", DbType.String),
+                new Column("Status", DbType.Int64, ColumnProperty.Null),
                 new Column("SalesOrderNumber", DbType.String),
                 new Column("OrderDate", DbType.String),
                 new Column("TypeOfOrder", DbType.String),
@@ -194,6 +194,7 @@ namespace DAL.Migrations
                 new Column("Nart", DbType.String),
                 new Column("CountryOfOrigin", DbType.String),
                 new Column("ShelfLife", DbType.String),
+                new Column("Status", DbType.String),
                 new Column("Ean", DbType.String),
                 new Column("UnitLengthGoodsMm", DbType.String),
                 new Column("WidthUnitsGoodsMm", DbType.String),
@@ -326,6 +327,13 @@ namespace DAL.Migrations
             AddTranslation("avization", "Avization", "Авизация");
             AddTranslation("orderItems", "OrderItems", "Позиции в заказе");
             AddTranslation("orderCreationDate", "OrderCreationDate", "Дата создания заказа");
+            AddTranslation("shippingId", "ShippingId", "Перевозка");
+            AddTranslation("createShipping", "createShipping", "Создать перевозку");
+            AddTranslation("cancel", "cancel", "Отменить");
+            AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
+            AddTranslation("archive", "archive", "Архивировать");
+            AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Зафиксировать факт пропажи");
+            AddTranslation("unionOrders", "unionOrders", "Объеденить");
             AddTranslation("shipping", "Shipping", "Перевозка");
             AddTranslation("shippings", "Shippings", "Перевозка");
             AddTranslation("transportationNumber", "TransportationNumber", "Номер перевозки");
@@ -333,6 +341,12 @@ namespace DAL.Migrations
             AddTranslation("thermalMode", "ThermalMode", "Терморежим");
             AddTranslation("billingMethod", "BillingMethod", "Способ тарификации");
             AddTranslation("transportCompany", "TransportCompany", "Транспортная компания");
+            AddTranslation("preliminaryNumberOfPallets", "PreliminaryNumberOfPallets", "Предварительное кол-во паллет");
+            AddTranslation("actualNumberOfPallets", "ActualNumberOfPallets", "Фактическое кол-во паллет");
+            AddTranslation("confirmedNumberOfPallets", "ConfirmedNumberOfPallets", "Подтвержденное кол-во паллет");
+            AddTranslation("plannedArrivalTimeSlotBDFWarehouse", "PlannedArrivalTimeSlotBDFWarehouse", "Плановое прибытие/тайм-слот (склад БДФ)");
+            AddTranslation("arrivalTimeForLoadingBDFWarehouse", "ArrivalTimeForLoadingBDFWarehouse", "Время прибытия на загрузку  (склад БДФ)");
+            AddTranslation("departureTimeFromTheBDFWarehouse", "DepartureTimeFromTheBDFWarehouse", "Время убытия со склада БДФ");
             AddTranslation("deliveryInvoiceNumber", "DeliveryInvoiceNumber", "Номер счета за доставку");
             AddTranslation("commentsReasonsForDeviationFromTheSchedule", "CommentsReasonsForDeviationFromTheSchedule", "Комментарии (причины отклонения от графика)");
             AddTranslation("transportationCostWithoutVAT", "TransportationCostWithoutVAT", "Стоимость перевозки, без НДС");
@@ -344,6 +358,8 @@ namespace DAL.Migrations
             AddTranslation("waybillTransportSection", "WaybillTransportSection", "Товарно-Транспортная накладная +Транспортный раздел");
             AddTranslation("invoice", "Invoice", "Счет-фактура");
             AddTranslation("actualReturnDate", "ActualReturnDate", "Фактическая дата возврата документов");
+            AddTranslation("invoiceNumber", "InvoiceNumber", "Номер счет-фактуры");
+            AddTranslation("status", "Status", "Статус");
             AddTranslation("deliveryStatus", "DeliveryStatus", "Статус доставки");
             AddTranslation("amountConfirmedByShipper", "AmountConfirmedByShipper", "Сумма подтверждена грузоотправителем");
             AddTranslation("amountConfirmedByTC", "AmountConfirmedByTC", "Сумма подтверждена ТК");
@@ -351,6 +367,8 @@ namespace DAL.Migrations
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("cityOfShipment", "CityOfShipment", "Город отгрузки");
             AddTranslation("deliveryCity", "DeliveryCity", "Город доставки");
+            AddTranslation("billingMethod", "BillingMethod", "Способ тарификации");
+            AddTranslation("transportCompany", "TransportCompany", "Транспортная компания");
             AddTranslation("vehicleType", "VehicleType", "Тип ТС");
             AddTranslation("fTLBet", "FTLBet", "Ставка FTL");
             AddTranslation("lTLRate1", "LTLRate1", "Ставка LTL 1");
@@ -390,7 +408,10 @@ namespace DAL.Migrations
             AddTranslation("warehouses", "Warehouses", "Склады");
             AddTranslation("theNameOfTheWarehouse", "TheNameOfTheWarehouse", "Наименование склада");
             AddTranslation("soldToNumber", "SoldToNumber", "SoldTo number");
+            AddTranslation("region", "Region", "Регион");
+            AddTranslation("city", "City", "Город");
             AddTranslation("address", "Address", "Адрес");
+            AddTranslation("typeOfEquipment", "TypeOfEquipment", "Тип комплектации");
             AddTranslation("leadtimeDays", "LeadtimeDays", "Leadtime, дней");
             AddTranslation("customerWarehouse", "CustomerWarehouse", "Склад клиента");
             AddTranslation("article", "Article", "Артикул");
@@ -400,6 +421,7 @@ namespace DAL.Migrations
             AddTranslation("nart", "Nart", "NART");
             AddTranslation("countryOfOrigin", "CountryOfOrigin", "Страна происхождения");
             AddTranslation("shelfLife", "ShelfLife", "Срок годности");
+            AddTranslation("status", "Status", "Статус");
             AddTranslation("ean", "Ean", "EAN");
             AddTranslation("unitLengthGoodsMm", "UnitLengthGoodsMm", "Длина ед. товара, мм");
             AddTranslation("widthUnitsGoodsMm", "WidthUnitsGoodsMm", "Ширина ед. товара, мм");
@@ -433,6 +455,7 @@ namespace DAL.Migrations
             AddTranslation("palletHeightMm", "PalletHeightMm", "Высота паллеты, мм");
             AddTranslation("grossPalletWeightG", "GrossPalletWeightG", "Вес паллеты брутто, г");
             AddTranslation("netWeightPalletsG", "NetWeightPalletsG", "Вес паллеты нетто, г");
+            AddTranslation("transportCompany", "TransportCompany", "Транспортная компания");
             AddTranslation("transportCompanies", "TransportCompanies", "Транспортные компании");
             AddTranslation("title", "Title", "Название");
             AddTranslation("contractNumber", "ContractNumber", "Номер договора");
