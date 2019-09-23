@@ -24,11 +24,6 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
-        <member name="M:API.Controllers.StateController`1.GetAll">
-            <summary>
-            Все доступные статусы с цветами
-            </summary>
-        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь
@@ -86,6 +81,11 @@
         <member name="M:API.Controllers.Shared.GridController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
+            </summary>
+        </member>
+        <member name="M:API.Controllers.StateController`1.GetAll">
+            <summary>
+            Все доступные статусы с цветами
             </summary>
         </member>
         <member name="M:API.Controllers.TranslationController.GetForLangType(System.String)">
