@@ -67,7 +67,7 @@ namespace Application.Services.Shippings
             entity.ActualReturnDate = dto.ActualReturnDate;
             entity.InvoiceNumber = dto.InvoiceNumber;
             if(!string.IsNullOrEmpty(dto.Status))
-                entity.Status = Enum.Parse<ShippingState>(dto.Status);
+                entity.Status =  MapFromStateDto<ShippingState>(dto.Status);
             entity.DeliveryStatus = dto.DeliveryStatus;
             entity.AmountConfirmedByShipper = dto.AmountConfirmedByShipper;
             entity.AmountConfirmedByTC = dto.AmountConfirmedByTC;
