@@ -25,6 +25,7 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
+using Domain.Services.Users;
 /*end of using domain service*/
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
