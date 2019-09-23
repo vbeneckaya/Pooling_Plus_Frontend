@@ -17,18 +17,6 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
-using Domain.Services.Orders;
-using Domain.Services.Shippings;
-using Domain.Services.Tariffs;
-using Domain.Services.Warehouses;
-using Domain.Services.Articles;
-using Domain.Services.TransportCompanies;
-using Domain.Services.Orders;
-using Domain.Services.Shippings;
-using Domain.Services.Tariffs;
-using Domain.Services.Warehouses;
-using Domain.Services.Articles;
-using Domain.Services.TransportCompanies;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -53,15 +41,13 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationGridItem
                     {
                         Name = GetName<OrdersService>(), 
-                        CanCreateByForm = true, 
-                        CanViewAdditionSummary = true,
+                        CanCreateByForm = true,
+                        CanViewAdditionSummary = true,                        
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
                             new UserConfigurationGridColumn(nameof(OrderDto.SalesOrderNumber), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState)),
-
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.TypeOfOrder), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
@@ -110,13 +96,12 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationGridItem
                     {
                         Name = GetName<ShippingsService>(), 
-                        CanCreateByForm = false, 
-                        CanViewAdditionSummary = false,
+                        CanCreateByForm = true,
+                        CanViewAdditionSummary = true,                        
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(OrderState)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TransportationNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.DeliveryMethod), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ThermalMode), FiledType.Text),

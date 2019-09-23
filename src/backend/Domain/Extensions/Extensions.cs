@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using Domain.Enums;
 
 namespace Domain.Extensions
 {
@@ -38,6 +39,36 @@ namespace Domain.Extensions
                             // we're only getting the first description we find
                             // others will be ignored
                             description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return description;
+        }
+        
+        public static AppColor GetColor<T>(this T e) where T : IConvertible
+        {
+            AppColor description = AppColor.Black;
+
+            if (e is Enum)
+            {
+                Type type = e.GetType();
+                Array values = Enum.GetValues(type);
+
+                foreach (int val in values)
+                {
+                    if (val == e.ToInt32(CultureInfo.InvariantCulture))
+                    {
+                        var memInfo = type.GetMember(type.GetEnumName(val));
+                        var attributes = memInfo[0].GetCustomAttributes(typeof(StateColorAttribute), false);
+                        if (attributes.Length > 0)
+                        {
+                            // we're only getting the first description we find
+                            // others will be ignored
+                            description = ((StateColorAttribute)attributes[0]).Color;
                         }
 
                         break;

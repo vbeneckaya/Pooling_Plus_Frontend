@@ -23,7 +23,7 @@ namespace Application.Actions.Orders
         {
             var shipping = new Shipping
             {
-                Status = "Создана",
+                Status = ShippingState.Created,
                 Id = Guid.NewGuid()
             };
             db.Shippings.Add(shipping);

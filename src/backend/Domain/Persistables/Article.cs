@@ -1,49 +1,173 @@
 using System;
+using Domain.Enums;
 
 namespace Domain.Persistables
-{
+{   
+    /// <summary>
+    /// Артикул
+    /// </summary>
     public class Article : IPersistable
     {
+        /// <summary>
+        /// Db primary key
+        /// </summary>    
         public Guid Id { get; set; }
+        /// <summary>
+        /// SPGR
+        /// </summary>
         public string SPGR { get; set; }
+        /// <summary>
+        /// Описание
+        /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// NART
+        /// </summary>
         public string Nart { get; set; }
+        /// <summary>
+        /// Страна происхождения
+        /// </summary>
         public string CountryOfOrigin { get; set; }
-        public string ShelfLife { get; set; }
+        /// <summary>
+        /// Срок годности, дней
+        /// </summary>
+        public int ShelfLife { get; set; }
+        /// <summary>
+        /// Статус
+        /// </summary>
         public string Status { get; set; }
+        /// <summary>
+        /// EAN
+        /// </summary>
         public string Ean { get; set; }
-        public string UnitLengthGoodsMm { get; set; }
+        /// <summary>
+        /// Длина ед. товара, мм
+        /// </summary>
+        public int UnitLengthGoodsMm { get; set; }
+        /// <summary>
+        /// Ширина ед. товара, мм
+        /// </summary>
         public int WidthUnitsGoodsMm { get; set; }
-        public string UnitHeightGoodsMm { get; set; }
-        public string WeightUnitsGrossProductG { get; set; }
+        /// <summary>
+        /// Высота ед. товара, мм
+        /// </summary>
+        public int UnitHeightGoodsMm { get; set; }
+        /// <summary>
+        /// Вес ед. товара брутто, г
+        /// </summary>
+        public int WeightUnitsGrossProductG { get; set; }
+        /// <summary>
+        /// Вес ед. товара нетто, г
+        /// </summary>
         public int WeightUnitsNetGoodsG { get; set; }
-        public string EANShrink { get; set; }
-        public string PiecesInShrink { get; set; }
-        public string LengthShrinkMm { get; set; }
-        public string WidthShrinkMm { get; set; }
-        public string HeightShrinkMm { get; set; }
-        public string GrossShrinkWeightG { get; set; }
-        public string NetWeightShrinkG { get; set; }
+        /// <summary>
+        /// EAN, shrink
+        /// </summary>
+        public int EANShrink { get; set; }
+        /// <summary>
+        /// Штук в shrink
+        /// </summary>
+        public int PiecesInShrink { get; set; }
+        /// <summary>
+        /// Длина shrink, мм
+        /// </summary>
+        public int LengthShrinkMm { get; set; }
+        /// <summary>
+        /// Ширина shrink, мм
+        /// </summary>
+        public int WidthShrinkMm { get; set; }
+        /// <summary>
+        /// Высота shrink, мм
+        /// </summary>
+        public int HeightShrinkMm { get; set; }
+        /// <summary>
+        /// Вес shrink брутто, г
+        /// </summary>
+        public int GrossShrinkWeightG { get; set; }
+        /// <summary>
+        /// Вес shrink нетто, г
+        /// </summary>
+        public int NetWeightShrinkG { get; set; }
+        /// <summary>
+        /// EAN, короб
+        /// </summary>
         public string EANBox { get; set; }
-        public string PiecesInABox { get; set; }
-        public string BoxLengthMm { get; set; }
-        public string WidthOfABoxMm { get; set; }
-        public string BoxHeightMm { get; set; }
-        public string GrossBoxWeightG { get; set; }
-        public string NetBoxWeightG { get; set; }
-        public string PiecesInALayer { get; set; }
-        public string LayerLengthMm { get; set; }
-        public string LayerWidthMm { get; set; }
-        public string LayerHeightMm { get; set; }
-        public string GrossLayerWeightMm { get; set; }
-        public string NetWeightMm { get; set; }
-        public string EANPallet { get; set; }
-        public string PiecesOnAPallet { get; set; }
-        public string PalletLengthMm { get; set; }
-        public string WidthOfPalletsMm { get; set; }
-        public string PalletHeightMm { get; set; }
-        public string GrossPalletWeightG { get; set; }
-        public string NetWeightPalletsG { get; set; }
+        /// <summary>
+        /// Штук в коробе
+        /// </summary>
+        public int PiecesInABox { get; set; }
+        /// <summary>
+        /// Длина короба, мм
+        /// </summary>
+        public int BoxLengthMm { get; set; }
+        /// <summary>
+        /// Ширина короба, мм
+        /// </summary>
+        public int WidthOfABoxMm { get; set; }
+        /// <summary>
+        /// Высота короба, мм
+        /// </summary>
+        public int BoxHeightMm { get; set; }
+        /// <summary>
+        /// Вес короба брутто, г
+        /// </summary>
+        public int GrossBoxWeightG { get; set; }
+        /// <summary>
+        /// Вес короба нетто, г
+        /// </summary>
+        public int NetBoxWeightG { get; set; }
+        /// <summary>
+        /// Штук в слое
+        /// </summary>
+        public int PiecesInALayer { get; set; }
+        /// <summary>
+        /// Длина слоя, мм
+        /// </summary>
+        public int LayerLengthMm { get; set; }
+        /// <summary>
+        /// Ширина слоя, мм
+        /// </summary>
+        public int LayerWidthMm { get; set; }
+        /// <summary>
+        /// Высота слоя, мм
+        /// </summary>
+        public int LayerHeightMm { get; set; }
+        /// <summary>
+        /// Вес слоя брутто, мм
+        /// </summary>
+        public int GrossLayerWeightMm { get; set; }
+        /// <summary>
+        /// Вес слоя нетто, мм
+        /// </summary>
+        public int NetWeightMm { get; set; }
+        /// <summary>
+        /// EAN, паллета
+        /// </summary>
+        public int EANPallet { get; set; }
+        /// <summary>
+        /// Штук на паллете
+        /// </summary>
+        public int PiecesOnAPallet { get; set; }
+        /// <summary>
+        /// Длина паллеты, мм
+        /// </summary>
+        public int PalletLengthMm { get; set; }
+        /// <summary>
+        /// Ширина паллеты, мм
+        /// </summary>
+        public int WidthOfPalletsMm { get; set; }
+        /// <summary>
+        /// Высота паллеты, мм
+        /// </summary>
+        public int PalletHeightMm { get; set; }
+        /// <summary>
+        /// Вес паллеты брутто, г
+        /// </summary>
+        public int GrossPalletWeightG { get; set; }
+        /// <summary>
+        /// Вес паллеты нетто, г
+        /// </summary>
+        public int NetWeightPalletsG { get; set; }
         /*end of fields*/
     }
 }

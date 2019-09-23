@@ -120,7 +120,7 @@ namespace DAL.Migrations
                 new Column("Invoice", DbType.String),
                 new Column("ActualReturnDate", DbType.String),
                 new Column("InvoiceNumber", DbType.String),
-                new Column("Status", DbType.String),
+                new Column("Status", DbType.Int64, ColumnProperty.Null),
                 new Column("DeliveryStatus", DbType.String),
                 new Column("AmountConfirmedByShipper", DbType.String),
                 new Column("AmountConfirmedByTC", DbType.String),
@@ -193,41 +193,41 @@ namespace DAL.Migrations
                 new Column("Description", DbType.String),
                 new Column("Nart", DbType.String),
                 new Column("CountryOfOrigin", DbType.String),
-                new Column("ShelfLife", DbType.String),
+                new Column("ShelfLife", DbType.Int32),
                 new Column("Status", DbType.String),
                 new Column("Ean", DbType.String),
-                new Column("UnitLengthGoodsMm", DbType.String),
+                new Column("UnitLengthGoodsMm", DbType.Int32),
                 new Column("WidthUnitsGoodsMm", DbType.Int32),
-                new Column("UnitHeightGoodsMm", DbType.String),
-                new Column("WeightUnitsGrossProductG", DbType.String),
+                new Column("UnitHeightGoodsMm", DbType.Int32),
+                new Column("WeightUnitsGrossProductG", DbType.Int32),
                 new Column("WeightUnitsNetGoodsG", DbType.Int32),
-                new Column("EANShrink", DbType.String),
-                new Column("PiecesInShrink", DbType.String),
-                new Column("LengthShrinkMm", DbType.String),
-                new Column("WidthShrinkMm", DbType.String),
-                new Column("HeightShrinkMm", DbType.String),
-                new Column("GrossShrinkWeightG", DbType.String),
-                new Column("NetWeightShrinkG", DbType.String),
+                new Column("EANShrink", DbType.Int32),
+                new Column("PiecesInShrink", DbType.Int32),
+                new Column("LengthShrinkMm", DbType.Int32),
+                new Column("WidthShrinkMm", DbType.Int32),
+                new Column("HeightShrinkMm", DbType.Int32),
+                new Column("GrossShrinkWeightG", DbType.Int32),
+                new Column("NetWeightShrinkG", DbType.Int32),
                 new Column("EANBox", DbType.String),
-                new Column("PiecesInABox", DbType.String),
-                new Column("BoxLengthMm", DbType.String),
-                new Column("WidthOfABoxMm", DbType.String),
-                new Column("BoxHeightMm", DbType.String),
-                new Column("GrossBoxWeightG", DbType.String),
-                new Column("NetBoxWeightG", DbType.String),
-                new Column("PiecesInALayer", DbType.String),
-                new Column("LayerLengthMm", DbType.String),
-                new Column("LayerWidthMm", DbType.String),
-                new Column("LayerHeightMm", DbType.String),
-                new Column("GrossLayerWeightMm", DbType.String),
-                new Column("NetWeightMm", DbType.String),
-                new Column("EANPallet", DbType.String),
-                new Column("PiecesOnAPallet", DbType.String),
-                new Column("PalletLengthMm", DbType.String),
-                new Column("WidthOfPalletsMm", DbType.String),
-                new Column("PalletHeightMm", DbType.String),
-                new Column("GrossPalletWeightG", DbType.String),
-                new Column("NetWeightPalletsG", DbType.String),
+                new Column("PiecesInABox", DbType.Int32),
+                new Column("BoxLengthMm", DbType.Int32),
+                new Column("WidthOfABoxMm", DbType.Int32),
+                new Column("BoxHeightMm", DbType.Int32),
+                new Column("GrossBoxWeightG", DbType.Int32),
+                new Column("NetBoxWeightG", DbType.Int32),
+                new Column("PiecesInALayer", DbType.Int32),
+                new Column("LayerLengthMm", DbType.Int32),
+                new Column("LayerWidthMm", DbType.Int32),
+                new Column("LayerHeightMm", DbType.Int32),
+                new Column("GrossLayerWeightMm", DbType.Int32),
+                new Column("NetWeightMm", DbType.Int32),
+                new Column("EANPallet", DbType.Int32),
+                new Column("PiecesOnAPallet", DbType.Int32),
+                new Column("PalletLengthMm", DbType.Int32),
+                new Column("WidthOfPalletsMm", DbType.Int32),
+                new Column("PalletHeightMm", DbType.Int32),
+                new Column("GrossPalletWeightG", DbType.Int32),
+                new Column("NetWeightPalletsG", DbType.Int32),
                 /*general fields for Articles*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
@@ -328,14 +328,23 @@ namespace DAL.Migrations
             AddTranslation("orderItems", "OrderItems", "Позиции в заказе");
             AddTranslation("orderCreationDate", "OrderCreationDate", "Дата создания заказа");
             AddTranslation("shippingId", "ShippingId", "Перевозка");
+            AddTranslation("orderState", "orderState", "Статус заказа");
+            AddTranslation("draft", "draft", "Не подтверждён");
+            AddTranslation("canceled", "canceled", "Отменён");
+            AddTranslation("created", "created", "Создан");
+            AddTranslation("inShipping", "inShipping", "В перевозке");
+            AddTranslation("delivered", "delivered", "Доставлен");
+            AddTranslation("archive", "archive", "В архиве");
+            AddTranslation("fullReturn", "fullReturn", "Полный возврат");
+            AddTranslation("lost", "lost", "Потерян");
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
             AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
-            AddTranslation("archive", "archive", "Архивировать");
+            AddTranslation("archive", "archive", "В архив");
             AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Зафиксировать факт пропажи");
             AddTranslation("unionOrders", "unionOrders", "Объеденить");
             AddTranslation("shipping", "Shipping", "Перевозка");
-            AddTranslation("shippings", "Shippings", "Перевозка");
+            AddTranslation("shippings", "Shippings", "Перевозки");
             AddTranslation("transportationNumber", "TransportationNumber", "Номер перевозки");
             AddTranslation("deliveryMethod", "DeliveryMethod", "Способ доставки");
             AddTranslation("thermalMode", "ThermalMode", "Терморежим");
@@ -363,6 +372,13 @@ namespace DAL.Migrations
             AddTranslation("deliveryStatus", "DeliveryStatus", "Статус доставки");
             AddTranslation("amountConfirmedByShipper", "AmountConfirmedByShipper", "Сумма подтверждена грузоотправителем");
             AddTranslation("amountConfirmedByTC", "AmountConfirmedByTC", "Сумма подтверждена ТК");
+            AddTranslation("shippingState", "shippingState", "Статус перевозки");
+            AddTranslation("canceled", "canceled", "Отменена");
+            AddTranslation("created", "created", "Создана");
+            AddTranslation("confirmed", "confirmed", "Подтверждена");
+            AddTranslation("completed", "completed", "Завершена");
+            AddTranslation("tariff", "Tariff", "Тариф");
+            AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("cityOfShipment", "CityOfShipment", "Город отгрузки");
@@ -420,7 +436,7 @@ namespace DAL.Migrations
             AddTranslation("description", "Description", "Описание");
             AddTranslation("nart", "Nart", "NART");
             AddTranslation("countryOfOrigin", "CountryOfOrigin", "Страна происхождения");
-            AddTranslation("shelfLife", "ShelfLife", "Срок годности");
+            AddTranslation("shelfLife", "ShelfLife", "Срок годности, дней");
             AddTranslation("status", "Status", "Статус");
             AddTranslation("ean", "Ean", "EAN");
             AddTranslation("unitLengthGoodsMm", "UnitLengthGoodsMm", "Длина ед. товара, мм");
