@@ -205,6 +205,11 @@ namespace Application.Shared
                 IsError = false,
                 Message = "Done"
             };
-        }        
+        }    
+        
+        protected T MapFromStateDto<T>(string dtoStatus) where T : struct
+        {
+            return Enum.Parse<T>(dtoStatus);
+        }
     }
 }

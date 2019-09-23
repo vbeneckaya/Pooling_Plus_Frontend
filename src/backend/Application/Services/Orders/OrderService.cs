@@ -5,7 +5,6 @@ using Application.Shared;
 using DAL;
 using Domain;
 using Domain.Enums;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
@@ -50,8 +49,8 @@ namespace Application.Services.Orders
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            if (!string.IsNullOrEmpty(dto.Status))
-                entity.Status = Enum.Parse<OrderState>(dto.Status.ToUpperfirstLetter());
+            if(!string.IsNullOrEmpty(dto.Status))
+                entity.Status =  MapFromStateDto<OrderState>(dto.Status);
             entity.SalesOrderNumber = dto.SalesOrderNumber;
             entity.OrderDate = dto.OrderDate;
             entity.TypeOfOrder = dto.TypeOfOrder;
@@ -105,7 +104,7 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
-                Status = entity.Status.ToString().ToLowerfirstLetter(),
+                Status = entity.Status.ToString(),
                 SalesOrderNumber = entity.SalesOrderNumber,
                 OrderDate = entity.OrderDate,
                 TypeOfOrder = entity.TypeOfOrder,
