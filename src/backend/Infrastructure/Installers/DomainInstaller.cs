@@ -1,4 +1,5 @@
 using Application.Services.AppConfiguration;
+/*start of using application service*/
 using Application.Services.Orders;
 using Application.Services.Shippings;
 using Application.Services.Tariffs;
@@ -11,7 +12,6 @@ using Application.Services.Identity;
 using Application.Services.Roles;
 using Application.Services.Translations;
 using Application.Services.UserIdProvider;
-/*end of using application service*/
 using DAL;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Identity;
@@ -25,7 +25,6 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
-using Domain.Services.Users;
 /*end of using domain service*/
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

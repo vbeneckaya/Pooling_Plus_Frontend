@@ -1,26 +1,25 @@
+using Domain.Extensions;
+
 namespace Domain.Enums
 {
-    public enum DeliveryStatus
-    {
-        sadfsdf
-        
-    }
-
-    public enum ShippingState
-    {
-        qweqwe,
-        qweqwe1
-    }
-
     public enum OrderState
-    { 
+    {
+        [StateColor(AppColor.Blue)]
         Draft,
+        [StateColor(AppColor.Blue)]
         Canceled,
+        [StateColor(AppColor.Blue)]
         Created,
+        [StateColor(AppColor.Blue)]
         InShipping,
+        [StateColor(AppColor.Blue)]
         Delivered,
+        [StateColor(AppColor.Blue)]
         Archive,
+        [StateColor(AppColor.Blue)]
         FullReturn,
-        Lost
+        [StateColor(AppColor.Blue)]
+        Lost,
+        /*end of fields*/
     }
 }

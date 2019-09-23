@@ -120,7 +120,7 @@ namespace DAL.Migrations
                 new Column("Invoice", DbType.String),
                 new Column("ActualReturnDate", DbType.String),
                 new Column("InvoiceNumber", DbType.String),
-                new Column("Status", DbType.String),
+                new Column("Status", DbType.Int64, ColumnProperty.Null),
                 new Column("DeliveryStatus", DbType.String),
                 new Column("AmountConfirmedByShipper", DbType.String),
                 new Column("AmountConfirmedByTC", DbType.String),
@@ -328,10 +328,19 @@ namespace DAL.Migrations
             AddTranslation("orderItems", "OrderItems", "Позиции в заказе");
             AddTranslation("orderCreationDate", "OrderCreationDate", "Дата создания заказа");
             AddTranslation("shippingId", "ShippingId", "Перевозка");
+            AddTranslation("orderState", "orderState", "Статус заказа");
+            AddTranslation("draft", "draft", "Не подтверждён");
+            AddTranslation("canceled", "canceled", "Отменён");
+            AddTranslation("created", "created", "Создан");
+            AddTranslation("inShipping", "inShipping", "В перевозке");
+            AddTranslation("delivered", "delivered", "Доставлен");
+            AddTranslation("archive", "archive", "В архиве");
+            AddTranslation("fullReturn", "fullReturn", "Полный возврат");
+            AddTranslation("lost", "lost", "Потерян");
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
             AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
-            AddTranslation("archive", "archive", "Архивировать");
+            AddTranslation("archive", "archive", "В архив");
             AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Зафиксировать факт пропажи");
             AddTranslation("unionOrders", "unionOrders", "Объеденить");
             AddTranslation("shipping", "Shipping", "Перевозка");
@@ -363,6 +372,11 @@ namespace DAL.Migrations
             AddTranslation("deliveryStatus", "DeliveryStatus", "Статус доставки");
             AddTranslation("amountConfirmedByShipper", "AmountConfirmedByShipper", "Сумма подтверждена грузоотправителем");
             AddTranslation("amountConfirmedByTC", "AmountConfirmedByTC", "Сумма подтверждена ТК");
+            AddTranslation("shippingState", "shippingState", "Статус перевозки");
+            AddTranslation("canceled", "canceled", "Отменена");
+            AddTranslation("created", "created", "Создана");
+            AddTranslation("confirmed", "confirmed", "Подтверждена");
+            AddTranslation("completed", "completed", "Завершена");
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("cityOfShipment", "CityOfShipment", "Город отгрузки");

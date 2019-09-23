@@ -1,4 +1,5 @@
 using System;
+using Domain.Enums;
 
 namespace Domain.Persistables
 {
@@ -28,7 +29,7 @@ namespace Domain.Persistables
         public string Invoice { get; set; }
         public string ActualReturnDate { get; set; }
         public string InvoiceNumber { get; set; }
-        public string Status { get; set; }
+        public ShippingState Status { get; set; }
         public string DeliveryStatus { get; set; }
         public string AmountConfirmedByShipper { get; set; }
         public string AmountConfirmedByTC { get; set; }

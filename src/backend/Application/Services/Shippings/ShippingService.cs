@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Application.Actions.Shippings;
 using Application.Shared;
 using DAL;
-using DAL.Queries;
 using Domain;
+using Domain.Enums;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
-using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
@@ -69,7 +66,8 @@ namespace Application.Services.Shippings
             entity.Invoice = dto.Invoice;
             entity.ActualReturnDate = dto.ActualReturnDate;
             entity.InvoiceNumber = dto.InvoiceNumber;
-            entity.Status = dto.Status;
+            if(!string.IsNullOrEmpty(dto.Status))
+                entity.Status = Enum.Parse<ShippingState>(dto.Status);
             entity.DeliveryStatus = dto.DeliveryStatus;
             entity.AmountConfirmedByShipper = dto.AmountConfirmedByShipper;
             entity.AmountConfirmedByTC = dto.AmountConfirmedByTC;
@@ -104,7 +102,7 @@ namespace Application.Services.Shippings
                 Invoice = entity.Invoice,
                 ActualReturnDate = entity.ActualReturnDate,
                 InvoiceNumber = entity.InvoiceNumber,
-                Status = entity.Status,
+                Status = entity.Status.ToString(),
                 DeliveryStatus = entity.DeliveryStatus,
                 AmountConfirmedByShipper = entity.AmountConfirmedByShipper,
                 AmountConfirmedByTC = entity.AmountConfirmedByTC,
