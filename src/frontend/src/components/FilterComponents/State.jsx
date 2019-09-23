@@ -21,15 +21,15 @@ const Facet = ({ value, onChange, stateColors = [], sort, setSort, name }) => {
             {stateColors.map(x => {
                 let label = (
                     <label>
-                        <Icon color={x.color} inverted={x.inverted} name="circle" />
+                        <Icon color={x.color.toLowerCase()} inverted={x.inverted} name="circle" />
                         {t(x.name)}
                     </label>
                 );
                 return (
-                    <Form.Field key={x.value}>
+                    <Form.Field key={x.name}>
                         <Checkbox
-                            value={x.value}
-                            checked={values.includes(x.value)}
+                            value={x.name}
+                            checked={values.includes(x.name)}
                             onChange={toggle}
                             label={label}
                         />

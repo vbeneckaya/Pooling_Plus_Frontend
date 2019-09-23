@@ -42,8 +42,6 @@ class Card extends Component {
     getPanes = () => {
         const { tabs = [], t } = this.props;
 
-        console.log('tabs', tabs);
-
         return tabs.map(tab => ({ menuItem: t(tab), render: () => <Tab.Pane><TabCard name={tab} /></Tab.Pane> }))
     };
 
@@ -63,7 +61,7 @@ class Card extends Component {
                 size="fullscreen"
             >
                 <Modal.Header>{t(title, { number: '11' })}</Modal.Header>
-                <Modal.Content>
+                <Modal.Content scrolling>
                     <Dimmer active={loading} inverted>
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>

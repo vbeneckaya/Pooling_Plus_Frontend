@@ -12,6 +12,10 @@ const GET_GRID_LIST_REQUEST = 'GET_GRID_LIST_REQUEST';
 const GET_GRID_LIST_SUCCESS = 'GET_GRID_LIST_SUCCESS';
 const GET_GRID_LIST_ERROR = 'GET_GRID_LIST_ERROR';
 
+const GET_STATE_COLORS_REQUEST = 'GET_STATE_COLORS_REQUEST';
+const GET_STATE_COLORS_SUCCESS = 'GET_STATE_COLORS_SUCCESS';
+const GET_STATE_COLORS_ERROR = 'GET_STATE_COLORS_ERROR';
+
 const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
 const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
 
@@ -22,7 +26,9 @@ const CLEAR_GRID_INFO = 'CLEAR_GRID_INFO';
 const initial = {
     data: [],
     totalCount: 0,
+    stateColors: [],
     progress: false,
+    stateColorsProgress: false
 };
 
 //*  REDUCER  *//
@@ -48,6 +54,23 @@ export default (state = initial, { type, payload }) => {
                 totalCount: 0,
                 progress: false,
             };
+        case GET_STATE_COLORS_REQUEST:
+            return {
+                ...state,
+                stateColorsProgress: true
+            };
+        case GET_STATE_COLORS_SUCCESS:
+            return {
+                ...state,
+                stateColors: payload,
+                stateColorsProgress: false
+            };
+        case GET_STATE_COLORS_ERROR:
+            return {
+                ...state,
+                stateColors: [],
+                stateColorsProgress: false
+            };
         case CLEAR_GRID_INFO:
             return {
                 ...state,
@@ -65,6 +88,13 @@ export const getListRequest = payload => {
         type: GET_GRID_LIST_REQUEST,
         payload,
     };
+};
+
+export const getStateColorsRequest = payload => {
+    return {
+        type: GET_STATE_COLORS_REQUEST,
+        payload
+    }
 };
 
 export const autoUpdateStart = payload => {
@@ -107,6 +137,8 @@ export const listSelector = createSelector(
     stateSelector,
     state => state.data,
 );
+
+export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
 
 export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
     const grid = state.grids && state.grids.find(item => item.name === name);
@@ -172,10 +204,27 @@ export const backgroundSyncListSaga = function*() {
     }
 };
 
+function* getStateColorsSaga ({payload}) {
+    try {
+        const result = yield postman.post(`${payload}/search`);
+
+        yield put({
+            type: GET_STATE_COLORS_SUCCESS,
+            payload: result
+        })
+    } catch (e) {
+        yield put({
+            type: GET_STATE_COLORS_ERROR,
+            payload: e
+        })
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_GRID_LIST_REQUEST, getListSaga),
         takeEvery(GRID_AUTO_UPDATE_START, autoUpdateStartSaga),
         takeEvery(GRID_AUTO_UPDATE_STOP, autoUpdateStopSaga),
+        takeEvery(GET_STATE_COLORS_REQUEST, getStateColorsSaga),
     ]);
 }

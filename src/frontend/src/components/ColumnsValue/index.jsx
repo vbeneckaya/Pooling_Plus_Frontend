@@ -49,13 +49,13 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
     }
 
     if (type === STATE_TYPE) {
-        const state = stateColors.find(x => x.text === value.name);
+        const state = stateColors.find(x => x.name === value);
         const color = state ? state.color : 'grey';
 
         return (
             <div>
-                <Icon color={color} name="circle" />
-                {value.name}
+                <Icon color={color.toLowerCase()} name="circle" />
+                {t(value)}
             </div>
         );
     }

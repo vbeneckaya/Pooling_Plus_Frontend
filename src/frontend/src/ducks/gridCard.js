@@ -128,6 +128,14 @@ export const tabsSelector = createSelector(configSelector, state => {
     return tabs ? tabs.map(item => item.name) : [];
 });
 
+export const tabViewSelector = createSelector([configSelector, (state, name) => name], (state, name) => {
+    const tab = state.tabs.find(tab => tab.name === name) || {};
+
+    console.log('tab', tab);
+
+    return tab.views
+});
+
 export const cardSelector = createSelector(
     stateSelector,
     state => state.card,

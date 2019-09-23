@@ -1,6 +1,6 @@
 import React from 'react';
 import { ROW_TAB_TYPE } from '../../constants/formTypes';
-import RowForm from './Rows';
+import RowForm from './Row';
 
 const getTypeForm = {
     [ROW_TAB_TYPE]: <RowForm />,

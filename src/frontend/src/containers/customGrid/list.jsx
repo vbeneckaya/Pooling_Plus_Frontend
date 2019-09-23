@@ -7,8 +7,10 @@ import {
     canCreateByFormSelector,
     columnsGridSelector,
     getListRequest,
+    getStateColorsRequest,
     listSelector,
     progressSelector,
+    stateColorsSelector,
     totalCountSelector,
 } from '../../ducks/gridList';
 import { withRouter } from 'react-router-dom';
@@ -16,6 +18,7 @@ import Card from './card';
 import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
 import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
+import { STATE_TYPE } from '../../constants/columnTypes';
 
 const CreateButton = ({ t, ...res }) => (
     <Card {...res}>
@@ -34,6 +37,14 @@ class List extends Component {
         };
     }
 
+    componentDidMount() {
+        const { getStateColors, columns } = this.props;
+        const stateColumn = columns.find(column => column.type === STATE_TYPE) || {};
+        const { source } = stateColumn;
+
+        getStateColors(source);
+    }
+
     getGroupActions = () => {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
@@ -43,17 +54,22 @@ class List extends Component {
             ...item,
             name: `${t(item.name)} ${item.ids.length > 1 ? `(${item.ids.length})` : ''}`,
             action: (rows, clearSelectedRows) => {
-                this.showConfirmation(`${t('Are you sure to complete')} "${t(item.name)}" ${rows.length> 1 ? `${t('for')} ` + rows.length : ''}?`, () => {
-                    this.closeConfirmation();
-                    invokeAction({
-                        ids: rows,
-                        name,
-                        actionName: item.name,
-                        callbackSuccess: () => {
-                            clearSelectedRows();
-                        },
-                    });
-                });
+                this.showConfirmation(
+                    `${t('Are you sure to complete')} "${t(item.name)}" ${
+                        rows.length > 1 ? `${t('for')} ` + rows.length : ''
+                    }?`,
+                    () => {
+                        this.closeConfirmation();
+                        invokeAction({
+                            ids: rows,
+                            name,
+                            actionName: item.name,
+                            callbackSuccess: () => {
+                                clearSelectedRows();
+                            },
+                        });
+                    },
+                );
             },
         }));
     };
@@ -78,6 +94,7 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
+            stateColors,
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -102,6 +119,7 @@ class List extends Component {
                     createButton={isCreateBtn ? <CreateButton t={t} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
+                    stateColors={stateColors}
                 />
             </div>
         );
@@ -122,6 +140,9 @@ function mapDispatchToProps(dispatch) {
         invokeAction: params => {
             dispatch(invokeActionRequest(params));
         },
+        getStateColors: params => {
+            dispatch(getStateColorsRequest(params));
+        },
     };
 }
 
@@ -137,6 +158,7 @@ function mapStateToProps(state, ownProps) {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
+        stateColors: stateColorsSelector(state, name),
     };
 }
 
