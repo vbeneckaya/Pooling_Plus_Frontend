@@ -44,6 +44,9 @@ namespace Application.Shared
                         prop.GetValue(customer, null) == form.Search));
             }
 
+            if (form.Take == 0)
+                form.Take = 1000;
+            
             var totalCount = query.Count();
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();

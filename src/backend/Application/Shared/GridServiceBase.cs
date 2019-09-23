@@ -51,6 +51,10 @@ namespace Application.Shared
                 query = query.Where(entity =>  entity.Id.ToString() == form.Search);
             }
 
+            if (form.Take == 0)
+                form.Take = 1000;
+
+            
             var totalCount = query.Count();
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();
