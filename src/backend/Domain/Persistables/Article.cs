@@ -29,9 +29,9 @@ namespace Domain.Persistables
         /// </summary>
         public string CountryOfOrigin { get; set; }
         /// <summary>
-        /// Срок годности
+        /// Срок годности, дней
         /// </summary>
-        public string ShelfLife { get; set; }
+        public int ShelfLife { get; set; }
         /// <summary>
         /// Статус
         /// </summary>
@@ -43,7 +43,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Длина ед. товара, мм
         /// </summary>
-        public string UnitLengthGoodsMm { get; set; }
+        public int UnitLengthGoodsMm { get; set; }
         /// <summary>
         /// Ширина ед. товара, мм
         /// </summary>
@@ -51,11 +51,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Высота ед. товара, мм
         /// </summary>
-        public string UnitHeightGoodsMm { get; set; }
+        public int UnitHeightGoodsMm { get; set; }
         /// <summary>
         /// Вес ед. товара брутто, г
         /// </summary>
-        public string WeightUnitsGrossProductG { get; set; }
+        public int WeightUnitsGrossProductG { get; set; }
         /// <summary>
         /// Вес ед. товара нетто, г
         /// </summary>
@@ -63,31 +63,31 @@ namespace Domain.Persistables
         /// <summary>
         /// EAN, shrink
         /// </summary>
-        public string EANShrink { get; set; }
+        public int EANShrink { get; set; }
         /// <summary>
         /// Штук в shrink
         /// </summary>
-        public string PiecesInShrink { get; set; }
+        public int PiecesInShrink { get; set; }
         /// <summary>
         /// Длина shrink, мм
         /// </summary>
-        public string LengthShrinkMm { get; set; }
+        public int LengthShrinkMm { get; set; }
         /// <summary>
         /// Ширина shrink, мм
         /// </summary>
-        public string WidthShrinkMm { get; set; }
+        public int WidthShrinkMm { get; set; }
         /// <summary>
         /// Высота shrink, мм
         /// </summary>
-        public string HeightShrinkMm { get; set; }
+        public int HeightShrinkMm { get; set; }
         /// <summary>
         /// Вес shrink брутто, г
         /// </summary>
-        public string GrossShrinkWeightG { get; set; }
+        public int GrossShrinkWeightG { get; set; }
         /// <summary>
         /// Вес shrink нетто, г
         /// </summary>
-        public string NetWeightShrinkG { get; set; }
+        public int NetWeightShrinkG { get; set; }
         /// <summary>
         /// EAN, короб
         /// </summary>
@@ -95,79 +95,79 @@ namespace Domain.Persistables
         /// <summary>
         /// Штук в коробе
         /// </summary>
-        public string PiecesInABox { get; set; }
+        public int PiecesInABox { get; set; }
         /// <summary>
         /// Длина короба, мм
         /// </summary>
-        public string BoxLengthMm { get; set; }
+        public int BoxLengthMm { get; set; }
         /// <summary>
         /// Ширина короба, мм
         /// </summary>
-        public string WidthOfABoxMm { get; set; }
+        public int WidthOfABoxMm { get; set; }
         /// <summary>
         /// Высота короба, мм
         /// </summary>
-        public string BoxHeightMm { get; set; }
+        public int BoxHeightMm { get; set; }
         /// <summary>
         /// Вес короба брутто, г
         /// </summary>
-        public string GrossBoxWeightG { get; set; }
+        public int GrossBoxWeightG { get; set; }
         /// <summary>
         /// Вес короба нетто, г
         /// </summary>
-        public string NetBoxWeightG { get; set; }
+        public int NetBoxWeightG { get; set; }
         /// <summary>
         /// Штук в слое
         /// </summary>
-        public string PiecesInALayer { get; set; }
+        public int PiecesInALayer { get; set; }
         /// <summary>
         /// Длина слоя, мм
         /// </summary>
-        public string LayerLengthMm { get; set; }
+        public int LayerLengthMm { get; set; }
         /// <summary>
         /// Ширина слоя, мм
         /// </summary>
-        public string LayerWidthMm { get; set; }
+        public int LayerWidthMm { get; set; }
         /// <summary>
         /// Высота слоя, мм
         /// </summary>
-        public string LayerHeightMm { get; set; }
+        public int LayerHeightMm { get; set; }
         /// <summary>
         /// Вес слоя брутто, мм
         /// </summary>
-        public string GrossLayerWeightMm { get; set; }
+        public int GrossLayerWeightMm { get; set; }
         /// <summary>
         /// Вес слоя нетто, мм
         /// </summary>
-        public string NetWeightMm { get; set; }
+        public int NetWeightMm { get; set; }
         /// <summary>
         /// EAN, паллета
         /// </summary>
-        public string EANPallet { get; set; }
+        public int EANPallet { get; set; }
         /// <summary>
         /// Штук на паллете
         /// </summary>
-        public string PiecesOnAPallet { get; set; }
+        public int PiecesOnAPallet { get; set; }
         /// <summary>
         /// Длина паллеты, мм
         /// </summary>
-        public string PalletLengthMm { get; set; }
+        public int PalletLengthMm { get; set; }
         /// <summary>
         /// Ширина паллеты, мм
         /// </summary>
-        public string WidthOfPalletsMm { get; set; }
+        public int WidthOfPalletsMm { get; set; }
         /// <summary>
         /// Высота паллеты, мм
         /// </summary>
-        public string PalletHeightMm { get; set; }
+        public int PalletHeightMm { get; set; }
         /// <summary>
         /// Вес паллеты брутто, г
         /// </summary>
-        public string GrossPalletWeightG { get; set; }
+        public int GrossPalletWeightG { get; set; }
         /// <summary>
         /// Вес паллеты нетто, г
         /// </summary>
-        public string NetWeightPalletsG { get; set; }
+        public int NetWeightPalletsG { get; set; }
         /*end of fields*/
     }
 }
