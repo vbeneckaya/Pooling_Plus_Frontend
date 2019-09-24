@@ -13,10 +13,10 @@
 Изменить в файле "src/backend/API/appsettings.json" ConnectionStrings->DefaultDatabase
 
 **На каком порту запуститься бекенд?**
-на http://localhost:5000
+На http://localhost:5000 (при запуске через Visual Studio может отличаться, см. настройки проекта API)
 
 **Как проверить работоспособность бекенда?**
-открыть http://localhost:5000/swagger/index.html должно отображаться данные об API
+Открыть http://localhost:5000/swagger/index.html должно отображаться данные об API
 
 
 **В какой момент выполняются миграции?**
@@ -28,7 +28,7 @@
 
 
 **Как задаётся порт для фронта?**
-?????
+Изменить в файле "src/frontend/package.json" опцию "scripts"/"start" (номер порта указан после "PORT=")
 
 **Как задаётся базовый url для апи на фронте?**
-?????
+Изменить в файле "src/frontend/package.json" опцию "proxy" (указывается только хост/IP и порт)
