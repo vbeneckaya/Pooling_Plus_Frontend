@@ -142,7 +142,6 @@ export const stateColorsSelector = createSelector(stateSelector, state => state.
 
 export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
     const grid = state.grids && state.grids.find(item => item.name === name);
-    console.log('grid', grid, name, state.grids);
     return grid ? grid.canCreateByForm : false
 });
 

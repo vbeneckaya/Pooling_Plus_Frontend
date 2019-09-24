@@ -37,12 +37,29 @@ class List extends Component {
         };
     }
 
-    componentDidMount() {
+    getStateColors = () => {
         const { getStateColors, columns } = this.props;
         const stateColumn = columns.find(column => column.type === STATE_TYPE) || {};
         const { source } = stateColumn;
 
         getStateColors(source);
+    };
+
+    componentDidMount() {
+        this.getStateColors();
+    }
+
+    componentDidUpdate(prevProps) {
+        const {match} = this.props;
+        const {match: extMatch} = prevProps;
+
+        const { params = {} } = match;
+        const { params: extParams = {} } = extMatch;
+        const { name = '' } = params;
+        const { name: extName = '' } = extParams;
+        if (name !== extName) {
+            this.getStateColors();
+        }
     }
 
     getGroupActions = () => {
@@ -99,8 +116,6 @@ class List extends Component {
         const { params = {} } = match;
         const { name = '' } = params;
         const { confirmation } = this.state;
-
-        console.log('isCreateBtn', isCreateBtn);
 
         return (
             <div className="container">

@@ -131,8 +131,6 @@ export const tabsSelector = createSelector(configSelector, state => {
 export const tabViewSelector = createSelector([configSelector, (state, name) => name], (state, name) => {
     const tab = state.tabs.find(tab => tab.name === name) || {};
 
-    console.log('tab', tab);
-
     return tab.views
 });
 
@@ -180,7 +178,6 @@ function* createDraftSaga({ payload }) {
 
 function* getCardConfigSaga({ payload }) {
     try {
-        console.log('payload', payload);
         const { name, id } = payload;
         const result = yield postman.get(`/getFormFor/${name}/${id}`);
 

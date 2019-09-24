@@ -64,7 +64,6 @@ export const userNameSelector = createSelector(stateSelector, state => state.use
 export const roleSelector = createSelector(stateSelector, state => state.userRole);
 
 export const rolesAndUsersMenu = createSelector(stateSelector, state => {
-    console.log(state);
     let menu = [];
 
     if (state.editRoles) {
@@ -102,7 +101,6 @@ function* getUserProfileSaga({ payload = {} }) {
             payload: { ...userInfo, ...config },
         });
         if (url) {
-            console.log('!!!!!!!!!!!!!!!!!!!', url);
             yield put(historyPush(url));
         }
     } catch (e) {

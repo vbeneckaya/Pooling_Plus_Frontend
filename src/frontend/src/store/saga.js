@@ -6,10 +6,12 @@ import { saga as gridListSaga } from '../ducks/gridList';
 import { saga as dictionaryViewSaga } from '../ducks/dictionaryView';
 import { saga as gridActionsSaga } from '../ducks/gridActions';
 import { saga as gridCardSaga } from '../ducks/gridCard';
+import { saga as lookupSaga } from '../ducks/lookup';
 import { saga as usersSaga } from '../ducks/users';
 
 export default function* rootSaga() {
     yield all([
+        lookupSaga(),
         gridCardSaga(),
         gridActionsSaga(),
         dictionaryViewSaga(),

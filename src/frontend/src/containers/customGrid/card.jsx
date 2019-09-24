@@ -12,7 +12,6 @@ class Card extends Component {
     };
 
     loadCard = () => {
-        console.log('loadcard', this.props);
         const { openCard, name } = this.props;
 
         openCard({

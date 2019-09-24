@@ -33,7 +33,6 @@ class Card extends Component {
     };
 
     loadCard = () => {
-        console.log('this.props', this.props);
         const { id , getCard, name } = this.props;
 
         id && getCard({id, name});
@@ -90,7 +89,6 @@ class Card extends Component {
     render() {
         const { title, loading, children, progress, columns } = this.props;
         const { modalOpen, form } = this.state;
-        console.log('form', form);
 
         return (
             <Modal

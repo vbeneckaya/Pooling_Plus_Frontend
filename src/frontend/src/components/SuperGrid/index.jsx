@@ -65,7 +65,6 @@ class SuperGrid extends Component {
         }
 
         if (this.props.name !== prevProps.name) {
-            console.log('!!!!', 1111);
             const {
                 autoUpdateStop,
                 clearStore,
@@ -233,13 +232,6 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
-    getLookup = name => {
-        const { getLookupList } = this.props;
-        const { filters } = this.state;
-
-        getLookupList({ filter: filters, field: name });
-    };
-
     handleUnloadInExcel = () => {
         const { getReport } = this.props;
         const { filters: filter } = this.state;
@@ -273,8 +265,6 @@ class SuperGrid extends Component {
             autoUpdateStop,
             name
         } = this.props;
-
-        console.log('ff', selectedRows, groupActions);
 
         return (
             <>
@@ -320,7 +310,6 @@ class SuperGrid extends Component {
                                 isShowActions={isShowActions}
                                 sort={sort}
                                 checkAllDisabled={checkAllDisabled || onlyOneCheck}
-                                getLookup={this.getLookup}
                                 setFilter={this.setFilter}
                                 setSort={this.setSort}
                                 setSelectedAll={this.setSelectedAll}

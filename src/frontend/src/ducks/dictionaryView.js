@@ -119,8 +119,6 @@ export const columnsSelector = createSelector(
     [stateProfile, dictionaryName],
     (state, name) => {
         const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
-        console.log('ss', dictionary);
-        console.log('name', name);
         return dictionary ? dictionary.columns : [];
     },
 );

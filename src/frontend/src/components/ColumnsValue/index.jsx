@@ -24,7 +24,6 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
     }
 
     if (type === ACTIVE_TYPE) {
-        console.log('isActive', value);
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 
@@ -59,7 +58,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
             </div>
         );
     }
-console.log('iaa', isTranslate);
+
     return isTranslate ? t(value) : value
         .toString()
         .split(';')

@@ -6,8 +6,6 @@ import { isAuthSelector } from '../ducks/login';
 function PrivateRoute({ component: Component, ...rest }) {
     const isAuth = useSelector(state => isAuthSelector(state));
 
-    console.log('isAuth', rest);
-
     return (
         <Route
             {...rest}

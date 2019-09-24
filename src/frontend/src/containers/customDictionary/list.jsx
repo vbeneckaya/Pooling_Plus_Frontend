@@ -51,8 +51,6 @@ const mapStateToProps = (state, ownProps) => {
     const { params = {} } = match;
     const { name = '' } = params;
 
-    console.log('name', name);
-
     return {
         columns: columnsSelector(state, name),
         progress: progressSelector(state),

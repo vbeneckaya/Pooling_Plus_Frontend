@@ -23,7 +23,6 @@ const newModal = (t, load) => (
 
 export class RolesList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
-        console.log('toggle', itemID, checked);
     };
 
     getActions = (row, load) => {
@@ -38,7 +37,6 @@ export class RolesList extends Component {
 
     render() {
         const { list, loadList, totalCount, loading } = this.props;
-        console.log('list', list);
 
         return (
             <TableInfo

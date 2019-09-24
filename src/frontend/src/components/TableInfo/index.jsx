@@ -27,7 +27,6 @@ class TableInfo extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.name !== prevProps.name) {
-            console.log('!!!!', this.props.name, this.props.headerRow);
             this.load();
         }
     }

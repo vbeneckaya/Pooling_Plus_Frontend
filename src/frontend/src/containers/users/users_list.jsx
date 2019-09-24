@@ -24,7 +24,6 @@ const newModal = (t, load) => (
 
 export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
-        console.log('taggle', itemID, checked);
     };
 
     getActions = (row, load) => {
@@ -39,7 +38,6 @@ export class UsersList extends Component {
 
     render() {
         const { list, loadList, totalCount, loading, t } = this.props;
-        console.log('list', loadList);
 
         return (
             <TableInfo

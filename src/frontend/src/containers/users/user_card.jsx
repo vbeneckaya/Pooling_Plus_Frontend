@@ -103,8 +103,6 @@ class UserCard extends Component {
         const {login, name, roleId, email, isActive} = form;
         const {children, title, loading, id, rolesLoading, roles} = this.props;
 
-        console.log('roles', roles);
-
         return (
             <Modal
                 trigger={children}

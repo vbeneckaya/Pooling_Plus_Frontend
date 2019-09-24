@@ -119,7 +119,6 @@ export const rolesListSelector = createSelector(
 );
 
 export const rolesFromUserSelector = createSelector(stateSelector, state => {
-    console.log('list', state);
     return state.list && state.list.map(item => ({
         name: item.name,
         value: item.id,
