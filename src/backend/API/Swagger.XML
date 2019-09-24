@@ -63,6 +63,11 @@
             Поиск по вхождению с пагинацией
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`3.Import(System.Collections.Generic.IEnumerable{`2})">
+            <summary>
+            Импортировать
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`3.GetById(System.Guid)">
             <summary>
             Данные по id

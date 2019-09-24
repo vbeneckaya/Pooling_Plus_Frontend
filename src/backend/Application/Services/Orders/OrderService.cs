@@ -33,6 +33,7 @@ namespace Application.Services.Orders
                 new RemoveFromShipping(db),
                 new Archive(db),
                 new RecordFactOfLoss(db),
+                new SaveOrder(db)
                 /*end of add single actions*/
             };
         }
@@ -97,6 +98,7 @@ namespace Application.Services.Orders
             entity.OrderCreationDate = dto.OrderCreationDate;
             if(!string.IsNullOrEmpty(dto.ShippingId))
                 entity.ShippingId = Guid.Parse(dto.ShippingId);
+            entity.Positions = dto.Positions;
             /*end of map dto to entity fields*/
         }
 
@@ -150,6 +152,7 @@ namespace Application.Services.Orders
                 OrderItems = entity.OrderItems,
                 OrderCreationDate = entity.OrderCreationDate,
                 ShippingId = entity.ShippingId.ToString(),
+                Positions = entity.Positions.ToString(),
                 /*end of map entity to dto fields*/
             };
         }
