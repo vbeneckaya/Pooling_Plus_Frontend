@@ -9,6 +9,7 @@ using Application.Services.Articles;
 using Application.Services.TransportCompanies;
 /*end of using application service*/
 using Domain.Enums;
+using Domain.Persistables;
 using Domain.Services.AppConfiguration;
 /*start of using domain service*/
 using Domain.Services.Orders;
@@ -91,7 +92,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.Avization), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderItems), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.ShippingId), FiledType.Select),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingId), FiledType.Select, nameof(Shipping)),
                             /*end of add field for Orders*/
                         }
                     },
@@ -104,6 +105,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TransportationNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.DeliveryMethod), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ThermalMode), FiledType.Text),
@@ -127,7 +129,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(ShippingDto.Invoice), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ActualReturnDate), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.InvoiceNumber), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.DeliveryStatus), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.AmountConfirmedByShipper), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.AmountConfirmedByTC), FiledType.Text),

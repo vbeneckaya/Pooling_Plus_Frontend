@@ -171,7 +171,7 @@ namespace Application.Shared
             var entity = dbSet.GetById(id);
             var message = "";
             if (action.IsAvailable(role, entity)) 
-                message += action.Run(currentUser, entity);
+                message += action.Run(currentUser, entity).Message;
             
             return new AppActionResult
             {
@@ -182,6 +182,9 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
+            if (ids.Count() == 1)
+                return InvokeAction(name, ids.First());
+
             var action = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
             
             if(action == null)
@@ -198,7 +201,7 @@ namespace Application.Shared
             var entities = ids.Select(dbSet.GetById);
             
             if (action.IsAvailable(role, entities)) 
-                action.Run(currentUser, entities);
+                return action.Run(currentUser, entities);
 
             return new AppActionResult
             {
@@ -211,5 +214,15 @@ namespace Application.Shared
         {
             return Enum.Parse<T>(dtoStatus);
         }
+        
+        public IEnumerable<ValidateResult> Import(IEnumerable<TDto> entitiesFrom)
+        {
+            var result = new List<ValidateResult>();
+            
+            foreach (var dto in entitiesFrom) 
+                result.Add(SaveOrCreate(dto));
+
+            return result;
+        }        
     }
 }

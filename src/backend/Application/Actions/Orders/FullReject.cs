@@ -6,34 +6,34 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
-    public class Cancel : IAppAction<Order>
+    //Полный возврат
+    public class FullReject : IAppAction<Order>
     {
         private readonly AppDbContext db;
 
-        public Cancel(AppDbContext db)
+        public FullReject(AppDbContext db)
         {
             this.db = db;
-            Color = AppColor.Red;
+            Color = AppColor.Orange;
         }
 
         public AppColor Color { get; set; }
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = OrderState.Canceled;
-            
+            order.Status = OrderState.FullReturn;
             db.SaveChanges();
             
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.Id} отменён "
+                Message = $"Полный повзрат по заказу {order.SalesOrderNumber}"
             };
         }
 
         public bool IsAvailable(Role role, Order order)
         {
-            return (order.Status == OrderState.Created || order.Status == OrderState.Draft) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Shipped && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

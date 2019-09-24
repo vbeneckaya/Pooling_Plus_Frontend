@@ -23,7 +23,7 @@ namespace Application.Actions.Orders
         {
             var shipping = new Shipping
             {
-                Status = ShippingState.Created
+                Status = ShippingState.ShippingCreated
             };
             db.Shippings.Add(shipping);
 

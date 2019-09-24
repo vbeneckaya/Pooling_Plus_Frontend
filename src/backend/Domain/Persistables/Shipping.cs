@@ -15,7 +15,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Номер перевозки
         /// </summary>
-        public string TransportationNumber { get; set; }
+        public int TransportationNumber { get; set; }
         /// <summary>
         /// Способ доставки
         /// </summary>

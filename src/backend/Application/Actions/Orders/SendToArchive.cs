@@ -7,36 +7,33 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
-    public class RecordFactOfLoss : IAppAction<Order>
+    public class SendToArchive : IAppAction<Order>
     {
         private readonly AppDbContext db;
 
-        public RecordFactOfLoss(AppDbContext db)
+        public SendToArchive(AppDbContext db)
         {
             this.db = db;
-            Color = AppColor.Red;
+            Color = AppColor.Blue;
         }
 
         public AppColor Color { get; set; }
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = OrderState.Lost;
+            order.Status = OrderState.Archive;
             db.SaveChanges();
             
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.SalesOrderNumber} потерян"
+                Message = $"Созданна перевозка {order.SalesOrderNumber}"
             };
         }
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == OrderState.Shipped && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Delivered && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
-    
-    
-    //Заказ доставлен
 }

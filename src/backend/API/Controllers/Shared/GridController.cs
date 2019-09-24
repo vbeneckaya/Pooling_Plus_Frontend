@@ -34,6 +34,15 @@ namespace API.Controllers.Shared
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        /// <summary>
+        /// Импортировать
+        /// </summary>
+        [HttpPost("import")]
+        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TDto> form)
+        {
+            return service.Import(form);
+        }
 
         /// <summary>
         /// Данные по id

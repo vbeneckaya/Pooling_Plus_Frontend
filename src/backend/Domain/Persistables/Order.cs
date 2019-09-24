@@ -65,7 +65,7 @@ namespace Domain.Persistables
         /// </summary>
         public string NumberOfArticles { get; set; }
         /// <summary>
-        /// Кол-во коробок
+        /// Предварительное Кол-во коробок
         /// </summary>
         public string TheNumberOfBoxes { get; set; }
         /// <summary>
@@ -189,9 +189,13 @@ namespace Domain.Persistables
         /// </summary>
         public string OrderCreationDate { get; set; }
         /// <summary>
-        /// ##comment##
+        /// Перевозка
         /// </summary>
         public Guid? ShippingId { get; set; }
+        /// <summary>
+        /// ##comment##
+        /// </summary>
+        public string Positions { get; set; }
         /*end of fields*/
     }
 }
