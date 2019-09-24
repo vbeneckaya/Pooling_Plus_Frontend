@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DAL;
 using Domain;
@@ -76,9 +77,12 @@ namespace Application.Actions.Orders
                     IsError = true,
                     Message = $"Не заполнено дней в пути у склада"
                 };
+            DateTime deliveryDate;
             
-            order.ShippingDate = DateTime.Parse(order.DeliveryDate).AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays)).ToShortDateString();
-
+            DateTime.TryParseExact(order.DeliveryDate, "dd.mm.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                out deliveryDate);
+            
+            order.ShippingDate = deliveryDate.AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays)).ToShortDateString();
             order.DaysOnTheRoad = int.Parse(soldToWarehouse.LeadtimeDays);
 
             order.ShippingAddress = fromWarehouse.Address;
