@@ -17,6 +17,7 @@ namespace DAL.Migrations
             Database.AddIndex("roles_pk", true, "Roles", "Id");
             
             var administratorRoleId = AddRole("Administrator");
+            var customerServiceRoleId = AddRole("CustomerService");
             var transportСoordinatorId = AddRole("TransportCoordinator");
             var transportCompanyEmployee = AddRole("TransportCompanyEmployee");
 
@@ -32,6 +33,7 @@ namespace DAL.Migrations
             Database.AddIndex("users_pk", true, "Users", "Id");
             
             AddUser("Иван Иванов", administratorRoleId, "admin@admin.ru", "123".GetHash());
+            AddUser("Андрей Городецкий", customerServiceRoleId, "andry@tms.ru", "123".GetHash());
             AddUser("Максим Координатович", transportСoordinatorId, "max@tms.ru", "123".GetHash());
             AddUser("Сергей Газельев", transportCompanyEmployee, "gazelev@tms.ru", "123".GetHash());
             
@@ -98,6 +100,7 @@ namespace DAL.Migrations
                 new Column("OrderItems", DbType.String),
                 new Column("OrderCreationDate", DbType.String),
                 new Column("ShippingId", DbType.Guid, ColumnProperty.Null),
+                new Column("Positions", DbType.String),
                 /*general fields for Orders*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
@@ -283,6 +286,7 @@ namespace DAL.Migrations
             AddTranslation("unionOrders", "Union orders", "Объеденить в перевозку");
             AddTranslation("cancel", "Cancel", "Отменить");
             AddTranslation("removeFromShipping", "Remove From Shipping", "Убрать из перевозки");
+            AddTranslation("saveOrder", "SaveOrder", "Сохранить");
             /*start of add translates for action*/
             
             /*start of add translates*/

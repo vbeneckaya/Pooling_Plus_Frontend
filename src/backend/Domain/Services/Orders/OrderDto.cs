@@ -48,6 +48,9 @@ namespace Domain.Services.Orders
         public string OrderItems { get; set; }
         public string OrderCreationDate { get; set; }
         public string ShippingId { get; set; }
+
+        public string Positions { get; set; }
+
         /*end of fields*/
     }
 }
