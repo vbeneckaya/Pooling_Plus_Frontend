@@ -5,6 +5,7 @@ using Application.Shared;
 using DAL;
 using Domain;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
@@ -104,7 +105,7 @@ namespace Application.Services.Orders
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
-                Status = entity.Status.ToString(),
+                Status = entity.Status.ToString().ToLowerfirstLetter(),
                 SalesOrderNumber = entity.SalesOrderNumber,
                 OrderDate = entity.OrderDate,
                 TypeOfOrder = entity.TypeOfOrder,
