@@ -39,22 +39,22 @@ namespace Infrastructure.Installers
     {
         public static void AddDomain(this IServiceCollection services, IConfiguration configuration, bool migrateDb)
         {
-            services.Add(new ServiceDescriptor(typeof(AppDbContext), typeof(AppDbContext), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IAppConfigurationService), typeof(AppConfigurationService), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IIdentityService), typeof(IdentityService), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IUserIdProvider), typeof(UserIdProvider), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IUsersService), typeof(UsersService), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IRolesService), typeof(RolesService), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(ITranslationsService), typeof(TranslationsService), ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(typeof(IInjectionsService), typeof(InjectionsService), ServiceLifetime.Scoped));
+            services.AddScoped<AppDbContext, AppDbContext>();
+            services.AddScoped<IAppConfigurationService, AppConfigurationService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IUserIdProvider, UserIdProvider>();
+            services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRolesService, RolesService>();
+            services.AddScoped<ITranslationsService, TranslationsService>();
+            services.AddScoped<IInjectionsService, InjectionsService>();
 
             /*start of add service implementation*/
-            services.Add(new ServiceDescriptor(typeof(IOrdersService), typeof(OrdersService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(IShippingsService), typeof(ShippingsService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(ITariffsService), typeof(TariffsService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(IWarehousesService), typeof(WarehousesService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(IArticlesService), typeof(ArticlesService),  ServiceLifetime.Scoped) );
-            services.Add(new ServiceDescriptor(typeof(ITransportCompaniesService), typeof(TransportCompaniesService),  ServiceLifetime.Scoped) );
+            services.AddScoped<IOrdersService, OrdersService>();
+            services.AddScoped<IShippingsService, ShippingsService>();
+            services.AddScoped<ITariffsService, TariffsService>();
+            services.AddScoped<IWarehousesService, WarehousesService>();
+            services.AddScoped<IArticlesService, ArticlesService>();
+            services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
             /*end of add service implementation*/
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");

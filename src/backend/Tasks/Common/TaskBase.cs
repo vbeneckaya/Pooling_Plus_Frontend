@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Serilog;
+using Serilog.Context;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -36,32 +37,35 @@ namespace Tasks
                 throw new TaskRunException($"Попытка повторного выполнения уже выполненной задачи {TaskName}", this);
             }
 
-            var stopwatch = Stopwatch.StartNew();
-
-            try
+            using (LogContext.PushProperty("TaskName", TaskName))
             {
-                var propertiesType = typeof(PropertiesBase);
-                var methodInfo = GetType()
-                    .GetMethod(ExecuteMethodName, BindingFlags.Instance | BindingFlags.Public);
-                var executeParameters = methodInfo.GetParameters()
-                    .Select(pi => propertiesType.IsAssignableFrom(pi.ParameterType)
-                                ? CreateProperties(pi.ParameterType, parameters)
-                                : ServiceProvider.GetService(pi.ParameterType))
-                    .ToArray();
+                var stopwatch = Stopwatch.StartNew();
 
-                methodInfo.Invoke(this, executeParameters);
+                try
+                {
+                    var propertiesType = typeof(PropertiesBase);
+                    var methodInfo = GetType()
+                        .GetMethod(ExecuteMethodName, BindingFlags.Instance | BindingFlags.Public);
+                    var executeParameters = methodInfo.GetParameters()
+                        .Select(pi => propertiesType.IsAssignableFrom(pi.ParameterType)
+                                    ? CreateProperties(pi.ParameterType, parameters)
+                                    : ServiceProvider.GetService(pi.ParameterType))
+                        .ToArray();
 
-                IsCompleted = true;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"Failed to run {TaskName}");
-                if (TestContext.CurrentContext.WorkerId != null)
-                    Assert.Fail(ex.Message);
-            }
-            finally
-            {
-                stopwatch.Stop();
+                    methodInfo.Invoke(this, executeParameters);
+
+                    IsCompleted = true;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"Failed to run {TaskName}");
+                    if (TestContext.CurrentContext.WorkerId != null)
+                        Assert.Fail(ex.Message);
+                }
+                finally
+                {
+                    stopwatch.Stop();
+                }
             }
         }
 

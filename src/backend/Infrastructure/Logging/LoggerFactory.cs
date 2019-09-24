@@ -57,7 +57,7 @@ namespace Infrastructure.Logging
                 }
 
                 string uri = $"http://{credentials}{host}:{port}/";
-                string indexFormat = $"tmsl-{projectName}-{envName}-{{0:yyyy.MM.dd}}".ToLower();
+                string indexFormat = $"tmsl-{envName}-{projectName}-{{0:yyyy.MM.dd}}".ToLower();
 
                 loggerConfiguration = loggerConfiguration.WriteTo.Elasticsearch(uri, indexFormat: indexFormat, restrictedToMinimumLevel: LogEventLevel.Information);
             }

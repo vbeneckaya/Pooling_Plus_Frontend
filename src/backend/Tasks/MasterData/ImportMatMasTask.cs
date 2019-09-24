@@ -12,6 +12,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web;
 using System.Xml;
 
 namespace Tasks.MasterData
@@ -20,18 +22,47 @@ namespace Tasks.MasterData
     public class ImportMatMasTask : TaskBase
     {
         private const string InjectionType = "MatMasProducts";
-        private const int ViewPortHours = 24;
 
         public void Execute(ImportMatMasProperties props)
         {
+            if (string.IsNullOrEmpty(props.ConnectionString))
+            {
+                throw new Exception("ConnectionString является обязательным параметром");
+            }
+
+            if (string.IsNullOrEmpty(props.Folder))
+            {
+                props.Folder = "/";
+            }
+
+            if (string.IsNullOrEmpty(props.FileNamePattern))
+            {
+                props.FileNamePattern = @"^.*MATMAS.*\.xml$";
+            }
+
+            if (string.IsNullOrEmpty(props.ViewHours))
+            {
+                props.ViewHours = "24";
+            }
+
+            int viewHours;
+            if (!int.TryParse(props.ViewHours, out viewHours))
+            {
+                throw new Exception("Параметр ViewHours должен быть целым числом");
+            }
+
             try
             {
+                Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
                 IInjectionsService injectionsService = ServiceProvider.GetService<IInjectionsService>();
+
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
                 {
-                    DateTime barrierTime = DateTime.UtcNow.AddHours(-ViewPortHours);
-                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(InjectionType, ViewPortHours);
+                    sftpClient.Connect();
+
+                    DateTime barrierTime = DateTime.UtcNow.AddHours(-viewHours);
+                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(InjectionType, viewHours);
                     HashSet<string> processedFileNames = new HashSet<string>(processedInjections.Select(i => i.FileName));
 
                     var files = sftpClient.ListDirectory(props.Folder);
@@ -40,10 +71,14 @@ namespace Tasks.MasterData
 
                     foreach (SftpFile file in files)
                     {
-                        string filePath = file.FullName;
+                        if (!fileNameRe.IsMatch(file.Name))
+                        {
+                            continue;
+                        }
+
                         if (!processedFileNames.Contains(file.Name))
                         {
-                            Log.Information("Find new file {filePath}", filePath);
+                            Log.Information("Найден новый файл: {FullName}.", file.FullName);
 
                             InjectionDto injection = new InjectionDto
                             {
@@ -54,13 +89,13 @@ namespace Tasks.MasterData
 
                             try
                             {
-                                string content = sftpClient.ReadAllText(filePath);
-                                bool isSuccess = ProcessProductsFile(filePath, content);
+                                string content = sftpClient.ReadAllText(file.FullName);
+                                bool isSuccess = ProcessProductsFile(file.Name, content);
                                 injection.Status = isSuccess ? InjectionStatus.Success : InjectionStatus.Failed;
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(ex, "Failed to process file {filePath}", filePath);
+                                Log.Error(ex, "Не удалось обработать файл {Name}.", file.Name);
                                 injection.Status = InjectionStatus.Failed;
                             }
 
@@ -71,7 +106,7 @@ namespace Tasks.MasterData
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to process MatMas injections");
+                Log.Error(ex, "Ошибка при обработке MatMas инжекции.");
                 throw ex;
             }
         }
@@ -80,9 +115,10 @@ namespace Tasks.MasterData
         {
             Uri connection = new Uri(connectionString);
             string[] authParts = connection.UserInfo.Split(':');
-            string login = authParts.Length == 2 ? authParts[0] : null;
-            string password = authParts.Length == 2 ? authParts[1] : null;
-            ConnectionInfo result = new ConnectionInfo(connection.Host, connection.Port, login, new PasswordAuthenticationMethod(login, password));
+            string login = authParts.Length == 2 ? HttpUtility.UrlDecode(authParts[0]) : null;
+            string password = authParts.Length == 2 ? HttpUtility.UrlDecode(authParts[1]) : null;
+            int port = connection.Port > 0 ? connection.Port : 22;
+            ConnectionInfo result = new ConnectionInfo(connection.Host, port, login, new PasswordAuthenticationMethod(login, password));
             return result;
         }
 
@@ -127,10 +163,10 @@ namespace Tasks.MasterData
             {
                 ++entryInd;
 
-                string nart = pRoot.SelectSingleNode("MATNR")?.InnerText;
+                string nart = pRoot.SelectSingleNode("MATNR")?.InnerText?.TrimStart('0');
                 if (string.IsNullOrEmpty(nart))
                 {
-                    Log.Warning("Empty NART in entry #{entryInd} of file {fileName}, skipped.", entryInd, fileName);
+                    Log.Warning("Пустое значение NART в записи #{entryInd} файла {fileName}, запись пропущена.", entryInd, fileName);
                     continue;
                 }
 
@@ -140,11 +176,11 @@ namespace Tasks.MasterData
                 {
                     // Не нашли - создаем новую
                     product = new ArticleDto();
-                    Log.Information("Find new product with NART = {nart} in file {fileName}", nart, fileName);
+                    Log.Information("Найден новый продукт NART = {nart} в файле {fileName}.", nart, fileName);
                 }
                 else
                 {
-                    Log.Information("Find update for product {Id} (NART = {nart}) in file {fileName}", product.Id, nart, fileName);
+                    Log.Information("Обновлен продукт {Id} (NART = {nart}) данными из файла {fileName}.", product.Id, nart, fileName);
                 }
 
                 // Получение единиц измерения по каждому полю или группе смежных полей
@@ -167,7 +203,7 @@ namespace Tasks.MasterData
                 product.SPGR = pRoot.SelectSingleNode("PRDHA")?.InnerText?.ExtractSPGR();
                 product.Description = pRoot.SelectSingleNode("E1MAKTM[SPRAS_ISO='RU']/MAKTX")?.InnerText
                                    ?? pRoot.SelectSingleNode("E1MAKTM[SPRAS_ISO='EN']/MAKTX")?.InnerText;
-                product.Nart = pRoot.SelectSingleNode("MATNR")?.InnerText;
+                product.Nart = nart;
                 product.CountryOfOrigin = pRoot.SelectSingleNode("E1MARCM/HERKL")?.InnerText;
                 product.ShelfLife = pRoot.ParseInt("MHDHB", entryInd);
                 //product.Status = pRoot.SelectSingleNode("E1MARCM/MMSTA")?.InnerText;
@@ -220,7 +256,7 @@ namespace Tasks.MasterData
                 {
                     product.Status = "Неактивный";
                     resultLookup[product.Nart] = product;
-                    Log.Information("Deactivate obsolete product {Id} (NART = {Nart}) based on file {fileName}", product.Id, product.Nart, fileName);
+                    Log.Information("Деактивирован устаревший продукт {Id} (NART = {Nart}) на основании файла {fileName}.", product.Id, product.Nart, fileName);
                 }
             }
 
@@ -239,7 +275,7 @@ namespace Tasks.MasterData
             rawValue = rawValue.Trim();
             if (rawValue.Length < 5)
             {
-                Log.Warning("Length of SPGR should equal 5 but {rawValue} found.", rawValue);
+                Log.Warning("Длина поля SPGR должна быть равна 5, но обнаружено значение: {rawValue}.", rawValue);
                 return rawValue;
             }
             else
@@ -260,11 +296,11 @@ namespace Tasks.MasterData
                         return values[i];
                     }
                 }
-                Log.Warning("Unkown value {actualKey} in element {xPath} of entry #{entryInd}.", actualKey, xPath, entryInd);
+                Log.Warning("Неизвестное значение {actualKey} элемента {xPath} записи #{entryInd}.", actualKey, xPath, entryInd);
             }
             else
             {
-                Log.Warning("Element {xPath} not found in entry #{entryInd}.", xPath, entryInd);
+                Log.Warning("Элемент {xPath} не найден в записи #{entryInd}.", xPath, entryInd);
             }
             return defaultValue;
         }
@@ -281,7 +317,7 @@ namespace Tasks.MasterData
                 }
                 else
                 {
-                    Log.Warning("Invalid number {value} in element {xPath} of entry #{entryInd}.", value, xPath, entryInd);
+                    Log.Warning("Некорректное значение {value} элемента {xPath} записи #{entryInd}, ожидалось число.", value, xPath, entryInd);
                 }
             }
             return null;
@@ -299,7 +335,7 @@ namespace Tasks.MasterData
                 }
                 else
                 {
-                    Log.Warning("Invalid number {value} in element {xPath} of entry #{entryInd}.", value, xPath, entryInd);
+                    Log.Warning("Некорректное значение {value} элемента {xPath} записи #{entryInd}, ожидалось целое число.", value, xPath, entryInd);
                 }
             }
             return null;

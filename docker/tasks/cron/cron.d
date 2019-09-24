@@ -1,1 +1,1 @@
-*/5 * * * * dotnet /app/build/Tasks.dll run ImportMatMas -p FtpHost="213.189.208.101";FtpLogin="devtest";FtpPassword="123"
+*/5 * * * * dotnet /app/build/Tasks.dll run ImportMatMas -p ConnectionString="sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/";Folder="/Test/OUT";ViewHours=168
