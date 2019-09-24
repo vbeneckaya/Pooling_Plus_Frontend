@@ -49,6 +49,7 @@ namespace Application.Actions.Orders
             var soldToWarehouse = db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
             var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
             
+            
             if(soldToWarehouse == null)
                 return new AppActionResult
                 {
@@ -76,7 +77,7 @@ namespace Application.Actions.Orders
                     Message = $"Не заполнено дней в пути у склада"
                 };
             
-            order.ShippingDate = DateTime.Parse(order.DeliveryDate).AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays)).ToString();
+            order.ShippingDate = DateTime.Parse(order.DeliveryDate).AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays)).ToShortDateString();
 
             order.DaysOnTheRoad = int.Parse(soldToWarehouse.LeadtimeDays);
 
@@ -106,7 +107,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.Id} создан"
+                Message = $"Заказ {order.SalesOrderNumber} создан"
             };
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -21,10 +22,14 @@ namespace Application.Actions.Orders
 
         public AppActionResult Run(User user, Order order)
         {
+            var currentNumber = !db.Shippings.Any() ? 0 : db.Shippings.Max(x => x.TransportationNumber);
+            
             var shipping = new Shipping
             {
-                Status = ShippingState.Created,
-                Id = Guid.NewGuid()
+                Status = ShippingState.ShippingCreated,
+                Id = Guid.NewGuid(),
+                TransportationNumber = currentNumber + 1,
+                DeliveryMethod = "Доставка"
             };
             db.Shippings.Add(shipping);
 
@@ -36,7 +41,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {shipping.Id}"
+                Message = $"Созданна перевозка {shipping.TransportationNumber}"
             };
         }
 

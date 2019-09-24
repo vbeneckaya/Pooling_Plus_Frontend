@@ -3,7 +3,7 @@ namespace Domain.Services.Shippings
     public class ShippingDto : IDto
     {
         public string Id { get; set; }
-        public string TransportationNumber { get; set; }
+        public int TransportationNumber { get; set; }
         public string DeliveryMethod { get; set; }
         public string ThermalMode { get; set; }
         public string BillingMethod { get; set; }

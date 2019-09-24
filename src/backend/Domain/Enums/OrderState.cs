@@ -25,8 +25,13 @@ namespace Domain.Enums
         /// <summary>
         /// В перевозке
         /// </summary>
-        [StateColor(AppColor.Orange)]
+        [StateColor(AppColor.Purple)]
         InShipping,
+        /// <summary>
+        /// Отгружен
+        /// </summary>
+        [StateColor(AppColor.Orange)]
+        Shipped,
         /// <summary>
         /// Доставлен
         /// </summary>

@@ -10,23 +10,23 @@ namespace Domain.Enums
         /// <summary>
         /// Отменена
         /// </summary>
-        [StateColor(AppColor.Blue)]
-        Canceled,
+        [StateColor(AppColor.Red)]
+        ShippingCanceled,
         /// <summary>
         /// Создана
         /// </summary>
         [StateColor(AppColor.Blue)]
-        Created,
+        ShippingCreated,
         /// <summary>
         /// Подтверждена
         /// </summary>
-        [StateColor(AppColor.Blue)]
-        Confirmed,
+        [StateColor(AppColor.Purple)]
+        ShippingConfirmed,
         /// <summary>
         /// Завершена
         /// </summary>
-        [StateColor(AppColor.Blue)]
-        Completed,
+        [StateColor(AppColor.Green)]
+        ShippingCompleted,
         /*end of fields*/
     }
 }

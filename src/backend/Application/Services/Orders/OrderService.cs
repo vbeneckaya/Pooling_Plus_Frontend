@@ -30,11 +30,14 @@ namespace Application.Services.Orders
             {
                 new Actions.Orders.Exception(db),
                 new CreateShipping(db),
-                new Cancel(db),
+                new CancelOrder(db),
                 new RemoveFromShipping(db),
-                new Archive(db),
+                new SendToArchive(db),
                 new RecordFactOfLoss(db),
-                new SaveOrder(db)
+                new SaveOrder(db),
+                new OrderShipped(db),
+                new OrderDelivered(db),
+                new FullReject(db),
                 /*end of add single actions*/
             };
         }
@@ -44,6 +47,9 @@ namespace Application.Services.Orders
             return new List<IAction<IEnumerable<Order>>>
             {
                 new UnionOrders(db),
+                new CancelOrders(db),
+                new SaveOrders(db),
+                new CreateShippingForeach(db),
                 /*end of add group actions*/
             };
         }
@@ -153,7 +159,7 @@ namespace Application.Services.Orders
                 OrderItems = entity.OrderItems,
                 OrderCreationDate = entity.OrderCreationDate,
                 ShippingId = entity.ShippingId.ToString(),
-                Positions = entity.Positions.ToString(),
+                Positions = entity.Positions,
                 /*end of map entity to dto fields*/
             };
         }

@@ -28,6 +28,7 @@ namespace Application.Services.Shippings
         {
             return new List<IAction<Shipping>>
             {
+                new CancelShipping(db),
                 /*end of add single actions*/
             };
         }
