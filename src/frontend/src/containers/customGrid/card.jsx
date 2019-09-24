@@ -2,20 +2,35 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
-import { Button, Dimmer, Loader, Modal, Tab } from 'semantic-ui-react';
-import { openGridCardRequest, tabsSelector, titleCardSelector } from '../../ducks/gridCard';
-import TabCard from "./components/tab";
+import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
+import { cardSelector, openGridCardRequest, progressSelector } from '../../ducks/gridCard';
+import OrderModal from '../../components/Modals/orderModal';
+import ShippingModal from "../../components/Modals/shippingModal";
+
+const getModal = {
+    orders: <OrderModal />,
+    shippings: <ShippingModal />,
+};
 
 class Card extends Component {
     state = {
         modalOpen: false,
+        form: {},
     };
 
     loadCard = () => {
-        const { openCard, name } = this.props;
+        const { openCard, name, id } = this.props;
+
+        console.log('___id', id);
 
         openCard({
             name,
+            id,
+            callbackSuccess: (card) => {
+                this.setState({
+                    form: card,
+                });
+            }
         });
     };
 
@@ -36,17 +51,20 @@ class Card extends Component {
         loadList(false, true);
     };
 
-    handleSave = () => {};
-
-    getPanes = () => {
-        const { tabs = [], t } = this.props;
-
-        return tabs.map(tab => ({ menuItem: t(tab), render: () => <Tab.Pane><TabCard name={tab} /></Tab.Pane> }))
+    onChangeForm = (e, { name, value }) => {
+        this.setState(prevState => ({
+            form: {
+                ...prevState.form,
+                [name]: value,
+            },
+        }));
     };
 
+    handleSave = () => {};
+
     render() {
-        const { title, loading, children, progress, tabs, t } = this.props;
-        const { modalOpen } = this.state;
+        const { title, loading, children, progress, name, t } = this.props;
+        const { modalOpen, form } = this.state;
 
         return (
             <Modal
@@ -59,21 +77,25 @@ class Card extends Component {
                 closeIcon
                 size="fullscreen"
             >
-                <Modal.Header>{t(title, { number: '11' })}</Modal.Header>
+                <Modal.Header>{t(title)}</Modal.Header>
                 <Modal.Content scrolling>
                     <Dimmer active={loading} inverted>
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
                     <Modal.Description>
-                        <Tab panes={this.getPanes()} />
+                        {React.cloneElement(getModal[name], {
+                            ...this.props,
+                            form,
+                            onChangeForm: this.onChangeForm,
+                        })}
                     </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        Сохранить
-                    </Button>
                     <Button color="grey" onClick={this.onClose}>
                         Отмена
+                    </Button>
+                    <Button color="blue" loading={progress} onClick={this.handleSave}>
+                        Сохранить
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -83,8 +105,8 @@ class Card extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        title: titleCardSelector(state),
-        tabs: tabsSelector(state),
+        card: cardSelector(state),
+        loading: progressSelector(state),
     };
 };
 

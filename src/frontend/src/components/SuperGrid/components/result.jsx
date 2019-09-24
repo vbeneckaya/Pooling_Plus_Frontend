@@ -37,7 +37,6 @@ class Result extends Component {
             stateColors,
             loadList,
             disabledCheck,
-            isFixing,
         } = this.props;
 
         const columnStyle = column => ({
@@ -51,7 +50,7 @@ class Result extends Component {
                     rows.map((row, i) => (
                         <ModalComponent
                             element={modalCard}
-                            props={{ ...row, loadList, isFixing }}
+                            props={{ ...row, loadList, title: `edit` }}
                             key={`modal_${row.id}`}
                         >
                             <Table.Row

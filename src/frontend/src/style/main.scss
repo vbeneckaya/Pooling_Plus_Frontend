@@ -68,14 +68,16 @@ body {
     left: 2.5% !important;
 }
 
-.card-modal {
-    /*min-height: 94vh;*/
-    min-height: 100%;
+.scrolling.content {
+    max-height: 76vh!important;
+    overflow: auto;
+    padding-bottom: 0!important;
 }
 
 .card-modal {
+    min-height: 92vh;
     .content {
-        padding-bottom: 85px !important;
+        padding-bottom: 15px !important;
         border-bottom-left-radius: 0.28571429rem;
         border-bottom-right-radius: 0.28571429rem;
     }
@@ -174,5 +176,10 @@ body {
     .field input[type=text]{
         width:100% !important;
     }
+}
+
+.tabs-card {
+    height: 64vh;
+    overflow: auto;
 }
 

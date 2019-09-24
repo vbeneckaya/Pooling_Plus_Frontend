@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, call } from 'redux-saga/effects';
+import { all, takeEvery, put, call, select } from 'redux-saga/effects';
 import { newExpression } from '@babel/types';
 
 //*  TYPES  *//
@@ -50,7 +50,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: false,
-                data: { id: payload },
+                data: { id: payload.id },
             };
         case GET_CARD_CONFIG_SUCCESS:
             return {
@@ -70,6 +70,9 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: true,
+                data: {
+                    id: payload.id
+                }
             };
         case OPEN_GRID_CARD_SUCCESS:
         case OPEN_GRID_CARD_ERROR:
@@ -118,38 +121,34 @@ const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const configSelector = createSelector(stateSelector, state => state.config);
+const idSelector = createSelector(stateSelector, state => state.data.id);
 
-export const titleCardSelector = createSelector(configSelector, state => state.title);
-
-export const tabsSelector = createSelector(configSelector, state => {
-    const tabs = state.tabs;
-
-    return tabs ? tabs.map(item => item.name) : [];
-});
-
-export const tabViewSelector = createSelector([configSelector, (state, name) => name], (state, name) => {
-    const tab = state.tabs.find(tab => tab.name === name) || {};
-
-    return tab.views
-});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 export const cardSelector = createSelector(
     stateSelector,
-    state => state.card,
+    state => state.data,
 );
 
 //*  SAGA  *//
 
 function* openGridCardSaga({ payload }) {
     try {
-        const { name } = payload;
+        const { name, id: idRow, callbackSuccess } = payload;
 
-        yield call(createDraftSaga, { payload: { name } });
+        if (!idRow) {
+            yield call(createDraftSaga, { payload: { name } });
+        }
 
-        yield call(getCardConfigSaga, { payload: { name, id: '1' } });
+        const id = yield select(idSelector);
 
-        yield call(getCardSaga, { payload: { name, id: '1' } });
+        // yield call(getCardConfigSaga, { payload: { name, id } });
+
+        yield call(getCardSaga, { payload: { name, id } });
+
+        const card = yield select(cardSelector);
+
+        callbackSuccess(card)
 
     } catch (error) {
         yield put({
@@ -196,8 +195,8 @@ function* getCardConfigSaga({ payload }) {
 function* getCardSaga({ payload }) {
     try {
         const { name, id } = payload;
-        const result = yield postman.get(`${name}/${id}`);
-        yield put({ type: GET_GRID_CARD_SUCCESS, payload: result.card });
+        const result = yield postman.get(`${name}/getById/${id}`);
+        yield put({ type: GET_GRID_CARD_SUCCESS, payload: result });
     } catch (error) {
         yield put({ type: GET_GRID_CARD_ERROR });
     }

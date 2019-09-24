@@ -33,6 +33,7 @@
 
 .selected_dates {
     display: flex;
+
     &_text {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -52,6 +53,7 @@
             background-color: #db2828;
             transform: rotate(45deg);
         }
+
         &:after {
             position: absolute;
             left: 12px;
@@ -73,5 +75,29 @@
 }
 
 .label-disabled {
-    color: rgba(95, 95, 95, 0.87)!important;
+    color: rgba(95, 95, 95, 0.87) !important;
+}
+
+.react-datepicker-popper {
+    z-index: 3 !important;
+}
+
+.react-datepicker-wrapper {
+    display: block !important;
+}
+
+ .react-datepicker__input-container {
+     width: 100% !important;
+ }
+
+.react-datepicker__close-icon {
+
+    &:after {
+        padding: 0!important;
+        color: black!important;
+        background: transparent!important;
+        font-size: 17px !important;
+        font-weight: bold !important;
+    }
+
 }

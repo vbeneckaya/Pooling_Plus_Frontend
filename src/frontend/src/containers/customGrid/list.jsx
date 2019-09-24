@@ -117,6 +117,8 @@ class List extends Component {
         const { name = '' } = params;
         const { confirmation } = this.state;
 
+        console.log('isCreateBtn', isCreateBtn);
+
         return (
             <div className="container">
                 <SuperGrid
@@ -131,7 +133,8 @@ class List extends Component {
                     storageFilterItem={`${name}Filters`}
                     getActions={getActions}
                     groupActions={this.getGroupActions}
-                    createButton={isCreateBtn ? <CreateButton t={t} /> : null}
+                    modalCard={<Card stopUpdate={stopUpdate} name={name} />}
+                    createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
                     stateColors={stateColors}
