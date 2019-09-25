@@ -15,7 +15,7 @@ namespace DAL.Migrations
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String.WithSize(100)));
             Database.AddIndex("roles_pk", true, "Roles", "Id");
-            
+
             var administratorRoleId = AddRole("Administrator");
             var customerServiceRoleId = AddRole("CustomerService");
             var transportСoordinatorId = AddRole("TransportCoordinator");
@@ -29,14 +29,14 @@ namespace DAL.Migrations
                 new Column("IsActive", DbType.Boolean),
                 new Column("FieldsConfig", DbType.String.WithSize(300)),
                 new Column("PasswordHash", DbType.String.WithSize(300)));
-            
+
             Database.AddIndex("users_pk", true, "Users", "Id");
-            
+
             AddUser("Иван Иванов", administratorRoleId, "admin@admin.ru", "123".GetHash());
             AddUser("Андрей Городецкий", customerServiceRoleId, "andry@tms.ru", "123".GetHash());
             AddUser("Максим Координатович", transportСoordinatorId, "max@tms.ru", "123".GetHash());
             AddUser("Сергей Газельев", transportCompanyEmployee, "gazelev@tms.ru", "123".GetHash());
-            
+
             Database.AddTable("Translations",
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String.WithSize(100)),
@@ -249,11 +249,22 @@ namespace DAL.Migrations
                 new Column("DateOfPowerOfAttorney", DbType.String),
                 /*general fields for TransportCompanies*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
-            );
+                );
             Database.AddIndex("transportCompanies_pk", true, "TransportCompanies", "Id");
 
+            Database.AddTable("FileStorage",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("Name", DbType.String, ColumnProperty.NotNull),
+                new Column("Data", DbType.Binary, ColumnProperty.NotNull));
+            Database.AddIndex("fileStorage_pk", true, "FileStorage", "Id");
+
+            Database.AddTable("DocumentTypes",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("Name", DbType.String, ColumnProperty.NotNull));
+            Database.AddIndex("documentTypes_pk", true, "DocumentTypes", "Id");
+
             /*end of add tables*/
-            
+
             AddTranslation("UserNotFound", "User not found", "Пользователь не найден или не активен");
             AddTranslation("UserIncorrectData", "The username or password you entered is incorrect", "Неверное имя пользователя или пароль");
             AddTranslation("Users", "Users", "Пользователи");
@@ -270,7 +281,7 @@ namespace DAL.Migrations
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
             AddTranslation("exit", "Exit", "Выйти");
-            AddTranslation("translations", "Translations", "Локализация");            
+            AddTranslation("translations", "Translations", "Локализация");
             AddTranslation("Administrator", "Administrator", "Администратор");
             AddTranslation("TransportCoordinator", "Transport Coordinator", "Транспортный координатор");
             AddTranslation("TransportCompanyEmployee", "Transport Company Employee", "Сотрудник транспортной компании");
@@ -296,7 +307,7 @@ namespace DAL.Migrations
             AddTranslation("prepare", "prepare", "Предварительное");
             AddTranslation("plan", "plan", "Фактическое");
             AddTranslation("fact", "fact", "Подтверждённое");
-            
+
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
             AddTranslation("unionOrders", "Union orders", "Объединить в перевозку");
@@ -312,7 +323,7 @@ namespace DAL.Migrations
             AddTranslation("sendToArchive", "sendToArchive", "Перевести в архив");
             AddTranslation("testGenerateException", "TestGenerateException", "Сгенерировать ошибку в системе");
             /*start of add translates for action*/
-            
+
             /*start of add translates*/
             AddTranslation("login_welcome", "login_welcome", "TMS Beiersdorf");
             AddTranslation("login_support", "login_support", "TMS для компании Beiersdorf");
@@ -364,7 +375,7 @@ namespace DAL.Migrations
             AddTranslation("orderCreationDate", "OrderCreationDate", "Дата создания заказа");
             AddTranslation("shippingId", "ShippingId", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
-            
+
             AddTranslation("draft", "Draft", "Не проверен");
             AddTranslation("canceled", "Canceled", "Отменён");
             AddTranslation("created", "Created", "Создан");
@@ -377,8 +388,8 @@ namespace DAL.Migrations
 
             AddTranslation("shippingCanceled", "Canceled", "Отменена");
             AddTranslation("shippingCreated", "Created", "Создана");
-            
-            
+
+
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
             AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
@@ -414,7 +425,7 @@ namespace DAL.Migrations
             AddTranslation("amountConfirmedByTC", "AmountConfirmedByTC", "Сумма подтверждена ТК");
             AddTranslation("shippingState", "ShippingState", "Статус перевозки");
             AddTranslation("shippingConfirmed", "Confirmed", "Подтверждена");
-            AddTranslation("shippingCompleted", "Completed", "Завершена");            
+            AddTranslation("shippingCompleted", "Completed", "Завершена");
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("tariff", "Tariff", "Тариф");
@@ -515,41 +526,41 @@ namespace DAL.Migrations
             AddTranslation("contractNumber", "ContractNumber", "Номер договора");
             AddTranslation("dateOfPowerOfAttorney", "DateOfPowerOfAttorney", "Дата доверенности");
             /*end of add translates*/
-            
+
         }
 
         private void AddTransportation(string from, string to)
         {
-            Database.Insert("Transportations", new string[] {"Id", "From", "To"},
-                    new string[] {(Guid.NewGuid()).ToString(), from, to});
+            Database.Insert("Transportations", new string[] { "Id", "From", "To" },
+                    new string[] { (Guid.NewGuid()).ToString(), from, to });
         }
 
         private void AddOrder(string incoming)
         {
-            Database.Insert("Orders", new string[] {"Id", "Incoming"},
-                    new string[] {(Guid.NewGuid()).ToString(), incoming});
+            Database.Insert("Orders", new string[] { "Id", "Incoming" },
+                    new string[] { (Guid.NewGuid()).ToString(), incoming });
         }
 
         private string AddTranslation(string name, string en, string ru)
         {
             var id = (Guid.NewGuid()).ToString();
-            Database.Insert("Translations", new string[] {"Id", "Name", "En", "Ru"},
-                new string[] {id, name, en, ru});
+            Database.Insert("Translations", new string[] { "Id", "Name", "En", "Ru" },
+                new string[] { id, name, en, ru });
             return id;
         }
 
         private string AddRole(string name)
         {
             var id = (Guid.NewGuid()).ToString();
-            Database.Insert("Roles", new string[] {"Id", "Name"},
-                new string[] {id, name});
+            Database.Insert("Roles", new string[] { "Id", "Name" },
+                new string[] { id, name });
             return id;
         }
 
         private void AddUser(string name, string roleid, string email, string passwordhash)
         {
-            Database.Insert("Users", new string[] {"Id", "Name", "RoleId", "Email", "IsActive", "FieldsConfig", "PasswordHash"},
-                new string[] {(Guid.NewGuid()).ToString(), name, roleid, email, "true", "", passwordhash});
+            Database.Insert("Users", new string[] { "Id", "Name", "RoleId", "Email", "IsActive", "FieldsConfig", "PasswordHash" },
+                new string[] { (Guid.NewGuid()).ToString(), name, roleid, email, "true", "", passwordhash });
         }
     }
 }

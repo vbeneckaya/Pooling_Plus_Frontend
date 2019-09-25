@@ -18,6 +18,8 @@ using Domain.Services.Tariffs;
 using Domain.Services.Warehouses;
 using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
+using Application.Services.DocumentTypes;
+using Domain.Services.DocumentTypes;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -283,6 +285,16 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(TransportCompanyDto.ContractNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(TransportCompanyDto.DateOfPowerOfAttorney), FiledType.Text),
                             /*end of add field for TransportCompanies*/
+                        }
+                    },
+                    new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<DocumentTypesService>(),
+                        CanCreateByForm = true,
+                        CanImportFromExcel = true,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(DocumentTypeDto.Name), FiledType.Text)
                         }
                     },
                     /*end of add dictionaries*/

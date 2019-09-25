@@ -32,6 +32,10 @@ using Domain.Services.Injections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Domain.Services.Files;
+using Application.Services.Files;
+using Domain.Services.DocumentTypes;
+using Application.Services.DocumentTypes;
 
 namespace Infrastructure.Installers
 {
@@ -55,6 +59,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
+            services.AddScoped<IFilesService, FilesService>();
+            services.AddScoped<IDocumentTypesService, DocumentTypesService>();
             /*end of add service implementation*/
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");

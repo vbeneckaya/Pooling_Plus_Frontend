@@ -1,16 +1,22 @@
-using System;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared
 {
-    public class DbSetAndContext<TEntity> : IDisposable where TEntity : class
+    public abstract class DbSetAndContext<TEntity> where TEntity : class
     {
-        public DbSet<TEntity> DbSet { get; set; }
-        public AppDbContext Context { get; set; }
-        public void Dispose()
+        public DbSetAndContext(AppDbContext context)
         {
-            Context.Dispose();
+            Context = context;
+        }
+
+        protected AppDbContext Context { get; }
+        protected DbSet<TEntity> DbSet
+        {
+            get
+            {
+                return Context.Set<TEntity>();
+            }
         }
     }
 }
