@@ -1,4 +1,5 @@
-﻿using Infrastructure.Installers;
+﻿using Domain.Services.UserIdProvider;
+using Infrastructure.Installers;
 using Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Tasks.Services;
 
 namespace Tasks
 {
@@ -78,6 +80,8 @@ namespace Tasks
             IServiceCollection services = new ServiceCollection();
 
             services.AddDomain(Configuration, false);
+
+            services.AddScoped<IUserIdProvider, TasksUserIdProvider>();
 
             ServiceProvider = services.BuildServiceProvider();
         }

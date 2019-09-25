@@ -42,7 +42,6 @@ namespace Infrastructure.Installers
             services.AddScoped<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IUserIdProvider, UserIdProvider>();
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<ITranslationsService, TranslationsService>();

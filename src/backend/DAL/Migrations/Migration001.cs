@@ -106,6 +106,15 @@ namespace DAL.Migrations
             );
             Database.AddIndex("orders_pk", true, "Orders", "Id");
 
+            Database.AddTable("OrderItems",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("OrderId", DbType.Guid),
+                new Column("Nart", DbType.String),
+                new Column("Quantity", DbType.Int32)
+            );
+            Database.AddIndex("OrderItems_pk", true, "OrderItems", "Id");
+            Database.AddIndex("OrderItems_order_fk", false, "OrderItems", "OrderId");
+
             Database.AddTable("Shippings",
                 new Column("TransportationNumber", DbType.Int32),
                 new Column("DeliveryMethod", DbType.String),

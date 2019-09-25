@@ -22,6 +22,7 @@ namespace DAL
         public DbSet<Injection> Injections { get; set; }
         /*start of add DbSets*/
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }

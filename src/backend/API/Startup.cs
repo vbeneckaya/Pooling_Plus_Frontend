@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Infrastructure.Logging;
+using Domain.Services.UserIdProvider;
+using Application.Services.UserIdProvider;
 
 namespace API
 {
@@ -66,6 +68,8 @@ namespace API
             services.AddHttpContextAccessor();
 
             services.AddDomain(Configuration, true);
+
+            services.AddScoped<IUserIdProvider, UserIdProvider>();
         }
 
         private static string GetXmlCommentsPath()

@@ -21,6 +21,8 @@ namespace Application.Shared
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
 
+        protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
+
         protected AppDbContext db;
         private readonly IUserIdProvider userIdProvider;
         
@@ -92,6 +94,7 @@ namespace Application.Shared
             };
             MapFromDtoToEntity(entity, entityFrom);
             dbSet.Add(entity);
+            ApplyAfterSaveActions(entity, entityFrom);
             db.SaveChanges();
             return new ValidateResult
             {
