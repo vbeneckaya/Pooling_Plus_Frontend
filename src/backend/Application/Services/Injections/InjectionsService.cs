@@ -38,10 +38,9 @@ namespace Application.Services.Injections
             return dbContext.Injections;
         }
 
-        public IEnumerable<InjectionDto> GetLast(string type, int hours)
+        public IEnumerable<InjectionDto> GetByTaskName(string taskName)
         {
-            DateTime barrier = DateTime.UtcNow.AddHours(-hours);
-            var resultEntries = db.Injections.Where(i => i.Type == type && i.ProcessTimeUtc >= barrier);
+            var resultEntries = db.Injections.Where(i => i.Type == taskName);
             var resultDtos = resultEntries.Select(MapFromEntityToDto).ToArray();
             return resultDtos;
         }

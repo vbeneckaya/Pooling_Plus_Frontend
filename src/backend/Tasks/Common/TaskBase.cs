@@ -106,6 +106,11 @@ namespace Tasks
                 parametersList = new List<string> { consoleParameters };
             }
 
+            if (!parametersList.Any())
+            {
+                parametersList.Add(null);
+            }
+
             return parametersList;
         }
 

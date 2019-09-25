@@ -59,7 +59,7 @@ namespace Tasks.Orders
                     sftpClient.Connect();
 
                     DateTime barrierTime = DateTime.UtcNow.AddHours(-viewHours);
-                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(TaskName, viewHours);
+                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetByTaskName(TaskName);
                     HashSet<string> processedFileNames = new HashSet<string>(processedInjections.Select(i => i.FileName));
 
                     var files = sftpClient.ListDirectory(props.Folder);
