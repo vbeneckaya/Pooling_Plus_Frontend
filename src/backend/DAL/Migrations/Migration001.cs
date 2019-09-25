@@ -280,6 +280,22 @@ namespace DAL.Migrations
             AddTranslation("createCard", "Create", "Создание");
             AddTranslation("editCard", "Edit", "Редактирование");
             AddTranslation("totalCount", "{{count}} records", "{{count}} записей");
+            AddTranslation("Are you sure to complete", "Are you sure to complete", "Выполнить действие");
+            AddTranslation("for", "for", "для");
+            AddTranslation("edit", "Edit", "Редактирование");
+            AddTranslation("information", "Information", "Информация");
+            AddTranslation("position", "position", "Позиции");
+            AddTranslation("returns", "returns", "Возвраты");
+            AddTranslation("route", "route", "Маршрут");
+            AddTranslation("addressFrom", "addressFrom", "Адрес от");
+            AddTranslation("addressTo", "addressTo", "Адрес от");
+            AddTranslation("palletsCount", "palletsCount", "Количество паллет");
+            AddTranslation("boxesCount", "boxesCount", "Количество коробок");
+            AddTranslation("documents", "documents", "Документы");
+            AddTranslation("history", "history", "История");
+            AddTranslation("prepare", "prepare", "Предварительное");
+            AddTranslation("plan", "plan", "Фактическое");
+            AddTranslation("fact", "fact", "Подтверждённое");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
