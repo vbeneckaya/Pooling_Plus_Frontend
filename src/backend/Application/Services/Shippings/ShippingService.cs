@@ -29,6 +29,8 @@ namespace Application.Services.Shippings
             return new List<IAction<Shipping>>
             {
                 new CancelShipping(db),
+                new SendShippingToTk(db),
+                new CancelRequestShipping(db),
                 /*end of add single actions*/
             };
         }

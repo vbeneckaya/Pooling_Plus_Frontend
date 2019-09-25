@@ -8,29 +8,33 @@ using Domain.Services;
 namespace Application.Actions.Shippings
 {
     /// <summary>
-    /// Отменить перевозку
+    /// Отменить заявку
     /// </summary>
-    public class CancelShipping : IAppAction<Shipping>
+    public class CancelRequestShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
         public AppColor Color { get; set; }
 
-        public CancelShipping(AppDbContext db)
+        public CancelRequestShipping(AppDbContext db)
         {
             this.db = db;
             Color = AppColor.Red;
         }
         public AppActionResult Run(User user, Shipping shipping)
         {
-            shipping.Status = ShippingState.ShippingCanceled;
+            shipping.Status = ShippingState.ShippingCreated;
 
             var orders = db.Orders.Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
-            
+            foreach (var order in orders)
+            {
+                order.ShippingId = null;
+                order.ShippingId = null;
+            }
             db.SaveChanges();
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Перевозка {shipping.TransportationNumber} отменена"
+                Message = $"Перевозка {shipping.TransportationNumber} отменена. Заказы"
             };
         }
 

@@ -329,6 +329,9 @@ namespace DAL.Migrations
             AddTranslation("fullReject", "OrderShipped", "Полный возврат");
             AddTranslation("sendToArchive", "sendToArchive", "Перевести в архив");
             AddTranslation("testGenerateException", "TestGenerateException", "Сгенерировать ошибку в системе");
+            AddTranslation("cancelShipping", "CancelShipping", "Отменить перевозку");
+            AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
+            AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
             /*start of add translates for action*/
             
             /*start of add translates*/
@@ -393,8 +396,16 @@ namespace DAL.Migrations
             AddTranslation("fullReturn", "FullReturn", "Полный возврат");
             AddTranslation("lost", "Lost", "Потерян");
 
-            AddTranslation("shippingCanceled", "Canceled", "Отменена");
             AddTranslation("shippingCreated", "Created", "Создана");
+            AddTranslation("shippingCanceled", "Canceled", "Отменена");
+            AddTranslation("shippingRequestSent", "ShippingRequestSent", "Заявка отправлена");
+            AddTranslation("shippingConfirmed", "ShippingConfirmed", "Подтверждена");
+            AddTranslation("shippingRejectedByTc", "ShippingRejectedByTc", "Отклонена ТК");
+            AddTranslation("shippingCompleted", "ShippingCompleted", "Завершена");
+            AddTranslation("shippingCompleted", "ShippingCompleted", "Завершена");
+            AddTranslation("shippingBillSend", "ShippingBillSend", "Счёт выставлен");
+            AddTranslation("shippingArhive", "ShippingArhive", "В архиве");
+            AddTranslation("shippingProblem", "ShippingProblem", "Срыв поставки");
             
             
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
