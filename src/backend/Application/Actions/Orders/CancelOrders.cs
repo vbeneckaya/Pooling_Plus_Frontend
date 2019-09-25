@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Отменить заказы
+    /// </summary>
     public class CancelOrders : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;

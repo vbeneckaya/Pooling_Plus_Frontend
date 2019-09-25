@@ -7,6 +7,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Заказ потерян
+    /// </summary>
     public class RecordFactOfLoss : IAppAction<Order>
     {
         private readonly AppDbContext db;
@@ -36,7 +39,4 @@ namespace Application.Actions.Orders
             return order.Status == OrderState.Shipped && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
-    
-    
-    //Заказ доставлен
 }

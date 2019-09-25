@@ -6,6 +6,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Заказ отгружен
+    /// </summary>
     public class OrderDelivered : IAppAction<Order>
     {
         private readonly AppDbContext db;

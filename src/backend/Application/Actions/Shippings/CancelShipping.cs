@@ -6,6 +6,9 @@ using Domain.Services;
 
 namespace Application.Actions.Shippings
 {
+    /// <summary>
+    /// Отменить перевозку
+    /// </summary>
     public class CancelShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;

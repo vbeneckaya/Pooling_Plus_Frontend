@@ -8,6 +8,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Создать перевозку
+    /// </summary>
     public class CreateShipping : IAppAction<Order>
     {
         private readonly AppDbContext db;

@@ -310,6 +310,7 @@ namespace DAL.Migrations
             AddTranslation("orderDelivered", "orderDelivered", "Заказ доставлен");
             AddTranslation("fullReject", "OrderShipped", "Полный возврат");
             AddTranslation("sendToArchive", "sendToArchive", "Перевести в архив");
+            AddTranslation("testGenerateException", "TestGenerateException", "Сгенерировать ошибку в системе");
             /*start of add translates for action*/
             
             /*start of add translates*/

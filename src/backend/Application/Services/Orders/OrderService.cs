@@ -28,7 +28,7 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new Actions.Orders.Exception(db),
+                new TestGenerateException(db),
                 new CreateShipping(db),
                 new CancelOrder(db),
                 new RemoveFromShipping(db),

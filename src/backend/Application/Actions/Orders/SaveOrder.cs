@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Сохранить
+    /// </summary>
     public class SaveOrder : IAppAction<Order>
     {
         private readonly AppDbContext db;

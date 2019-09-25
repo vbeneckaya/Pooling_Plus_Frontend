@@ -6,7 +6,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
-    //Полный возврат
+    /// <summary>
+    /// Полный возврат
+    /// </summary>
     public class FullReject : IAppAction<Order>
     {
         private readonly AppDbContext db;
