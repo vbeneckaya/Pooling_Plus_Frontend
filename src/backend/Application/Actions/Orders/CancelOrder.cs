@@ -6,6 +6,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Отменить заказ
+    /// </summary>
     public class CancelOrder : IAppAction<Order>
     {
         private readonly AppDbContext db;

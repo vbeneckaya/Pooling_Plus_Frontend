@@ -6,9 +6,12 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
-    public class Exception : IAppAction<Order>
+    /// <summary>
+    /// Сгенерировать ошибку в системе
+    /// </summary>
+    public class TestGenerateException : IAppAction<Order>
     {
-        public Exception(AppDbContext _)
+        public TestGenerateException(AppDbContext _)
         {
             Color = AppColor.Red;
         }

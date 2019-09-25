@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Создать перевозку для каждого заказа
+    /// </summary>
     public class CreateShippingForeach : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;

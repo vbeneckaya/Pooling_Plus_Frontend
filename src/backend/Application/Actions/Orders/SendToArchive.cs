@@ -7,6 +7,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// В архив
+    /// </summary>
     public class SendToArchive : IAppAction<Order>
     {
         private readonly AppDbContext db;

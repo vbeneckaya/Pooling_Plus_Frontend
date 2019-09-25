@@ -8,6 +8,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Объеденить заказы
+    /// </summary>
     public class UnionOrders : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;

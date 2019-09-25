@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Application.Actions.Orders;
 using Application.Shared;
 using DAL;
@@ -28,7 +29,7 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new Actions.Orders.Exception(db),
+                new TestGenerateException(db),
                 new CreateShipping(db),
                 new CancelOrder(db),
                 new RemoveFromShipping(db),
@@ -56,10 +57,10 @@ namespace Application.Services.Orders
 
         public override void MapFromDtoToEntity(Order entity, OrderDto dto)
         {
-            if(!string.IsNullOrEmpty(dto.Id))
+            if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            if(!string.IsNullOrEmpty(dto.Status))
-                entity.Status =  MapFromStateDto<OrderState>(dto.Status);
+            if (!string.IsNullOrEmpty(dto.Status))
+                entity.Status = MapFromStateDto<OrderState>(dto.Status);
             entity.SalesOrderNumber = dto.SalesOrderNumber;
             entity.OrderDate = dto.OrderDate;
             entity.TypeOfOrder = dto.TypeOfOrder;
@@ -103,7 +104,7 @@ namespace Application.Services.Orders
             entity.Avization = dto.Avization;
             entity.OrderItems = dto.OrderItems;
             entity.OrderCreationDate = dto.OrderCreationDate;
-            if(!string.IsNullOrEmpty(dto.ShippingId))
+            if (!string.IsNullOrEmpty(dto.ShippingId))
                 entity.ShippingId = Guid.Parse(dto.ShippingId);
             entity.Positions = dto.Positions;
             /*end of map dto to entity fields*/
@@ -111,6 +112,7 @@ namespace Application.Services.Orders
 
         public override OrderDto MapFromEntityToDto(Order entity)
         {
+            List<OrderItemDto> items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
@@ -161,6 +163,54 @@ namespace Application.Services.Orders
                 ShippingId = entity.ShippingId.ToString(),
                 Positions = entity.Positions,
                 /*end of map entity to dto fields*/
+                Items = items
+            };
+        }
+
+        protected override void ApplyAfterSaveActions(Order entity, OrderDto dto)
+        {
+            HashSet<Guid> updatedItems = new HashSet<Guid>();
+            List<OrderItem> entityItems = db.OrderItems.Where(i => i.OrderId == entity.Id).ToList();
+            Dictionary<string, OrderItem> entityItemsDict = entityItems.ToDictionary(i => i.Id.ToString());
+            foreach (OrderItemDto itemDto in dto.Items)
+            {
+                OrderItem item;
+                if (string.IsNullOrEmpty(itemDto.Id) || !entityItemsDict.TryGetValue(itemDto.Id, out item))
+                {
+                    item = new OrderItem
+                    {
+                        OrderId = entity.Id
+                    };
+                    MapFromItemDtoToEntity(item, itemDto);
+                    db.OrderItems.Add(item);
+                }
+                else
+                {
+                    updatedItems.Add(item.Id);
+                    MapFromItemDtoToEntity(item, itemDto);
+                    db.OrderItems.Update(item);
+                }
+            }
+
+            var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
+            db.OrderItems.RemoveRange(itemsToRemove);
+        }
+
+        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Id))
+                entity.Id = Guid.Parse(dto.Id);
+            entity.Nart = dto.Nart;
+            entity.Quantity = dto.Quantity;
+        }
+
+        private OrderItemDto MapFromItemEntityToDto(OrderItem entity)
+        {
+            return new OrderItemDto
+            {
+                Id = entity.Id.ToString(),
+                Nart = entity.Nart,
+                Quantity = entity.Quantity
             };
         }
     }

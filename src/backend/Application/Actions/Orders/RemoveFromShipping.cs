@@ -9,6 +9,9 @@ using Domain.Services;
 
 namespace Application.Actions.Orders
 {
+    /// <summary>
+    /// Убрать из перевозки
+    /// </summary>
     public class RemoveFromShipping : IAppAction<Order>
     {
         private readonly AppDbContext db;

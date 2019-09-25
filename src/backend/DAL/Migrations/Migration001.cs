@@ -53,6 +53,15 @@ namespace DAL.Migrations
                 new Column("ProcessTimeUtc", DbType.DateTime));
             Database.AddIndex("injections_pk", true, "Injections", "Id");
 
+            Database.AddTable("TaskProperties",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("TaskName", DbType.String.WithSize(100)),
+                new Column("Properties", DbType.String.WithSize(1000)));
+            Database.AddIndex("TaskProperties_pk", true, "TaskProperties", "Id");
+
+            AddTaskProperties("ImportProducts", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
+            AddTaskProperties("ImportOrder", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
+
             /*start of add tables*/
             Database.AddTable("Orders",
                 new Column("Status", DbType.Int64, ColumnProperty.Null),
@@ -105,6 +114,15 @@ namespace DAL.Migrations
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
             Database.AddIndex("orders_pk", true, "Orders", "Id");
+
+            Database.AddTable("OrderItems",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("OrderId", DbType.Guid),
+                new Column("Nart", DbType.String),
+                new Column("Quantity", DbType.Int32)
+            );
+            Database.AddIndex("OrderItems_pk", true, "OrderItems", "Id");
+            Database.AddIndex("OrderItems_order_fk", false, "OrderItems", "OrderId");
 
             Database.AddTable("Shippings",
                 new Column("TransportationNumber", DbType.Int32),
@@ -280,6 +298,22 @@ namespace DAL.Migrations
             AddTranslation("createCard", "Create", "Создание");
             AddTranslation("editCard", "Edit", "Редактирование");
             AddTranslation("totalCount", "{{count}} records", "{{count}} записей");
+            AddTranslation("Are you sure to complete", "Are you sure to complete", "Выполнить действие");
+            AddTranslation("for", "for", "для");
+            AddTranslation("edit", "Edit", "Редактирование");
+            AddTranslation("information", "Information", "Информация");
+            AddTranslation("position", "position", "Позиции");
+            AddTranslation("returns", "returns", "Возвраты");
+            AddTranslation("route", "route", "Маршрут");
+            AddTranslation("addressFrom", "addressFrom", "Адрес от");
+            AddTranslation("addressTo", "addressTo", "Адрес от");
+            AddTranslation("palletsCount", "palletsCount", "Количество паллет");
+            AddTranslation("boxesCount", "boxesCount", "Количество коробок");
+            AddTranslation("documents", "documents", "Документы");
+            AddTranslation("history", "history", "История");
+            AddTranslation("prepare", "prepare", "Предварительное");
+            AddTranslation("plan", "plan", "Фактическое");
+            AddTranslation("fact", "fact", "Подтверждённое");
             
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -294,6 +328,10 @@ namespace DAL.Migrations
             AddTranslation("orderDelivered", "orderDelivered", "Заказ доставлен");
             AddTranslation("fullReject", "OrderShipped", "Полный возврат");
             AddTranslation("sendToArchive", "sendToArchive", "Перевести в архив");
+            AddTranslation("testGenerateException", "TestGenerateException", "Сгенерировать ошибку в системе");
+            AddTranslation("cancelShipping", "CancelShipping", "Отменить перевозку");
+            AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
+            AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
             /*start of add translates for action*/
             
             /*start of add translates*/
@@ -358,8 +396,16 @@ namespace DAL.Migrations
             AddTranslation("fullReturn", "FullReturn", "Полный возврат");
             AddTranslation("lost", "Lost", "Потерян");
 
-            AddTranslation("shippingCanceled", "Canceled", "Отменена");
             AddTranslation("shippingCreated", "Created", "Создана");
+            AddTranslation("shippingCanceled", "Canceled", "Отменена");
+            AddTranslation("shippingRequestSent", "ShippingRequestSent", "Заявка отправлена");
+            AddTranslation("shippingConfirmed", "ShippingConfirmed", "Подтверждена");
+            AddTranslation("shippingRejectedByTc", "ShippingRejectedByTc", "Отклонена ТК");
+            AddTranslation("shippingCompleted", "ShippingCompleted", "Завершена");
+            AddTranslation("shippingCompleted", "ShippingCompleted", "Завершена");
+            AddTranslation("shippingBillSend", "ShippingBillSend", "Счёт выставлен");
+            AddTranslation("shippingArhive", "ShippingArhive", "В архиве");
+            AddTranslation("shippingProblem", "ShippingProblem", "Срыв поставки");
             
             
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
@@ -533,6 +579,12 @@ namespace DAL.Migrations
         {
             Database.Insert("Users", new string[] {"Id", "Name", "RoleId", "Email", "IsActive", "FieldsConfig", "PasswordHash"},
                 new string[] {(Guid.NewGuid()).ToString(), name, roleid, email, "true", "", passwordhash});
+        }
+
+        private void AddTaskProperties(string taskName, string properties)
+        {
+            Database.Insert("TaskProperties", new string[] { "Id", "TaskName", "Properties" },
+                new string[] { (Guid.NewGuid()).ToString(), taskName, properties });
         }
     }
 }
