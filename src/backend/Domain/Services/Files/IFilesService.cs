@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Services.Files
 {
-    public interface IFilesService
+    public interface IFilesService : IService
     {
         Task<ValidateResult> UploadAsync(IFormFile formFile);
     }

@@ -31,6 +31,7 @@ namespace DAL
         public DbSet<TransportCompany> TransportCompanies { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<FileStorage> FileStorage { get; set; }
+        public DbSet<Document> Documents { get; set; }
         /*end of add DbSets*/
         
         public void Migrate(string connectionString)

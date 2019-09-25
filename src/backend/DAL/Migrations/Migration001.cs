@@ -281,6 +281,16 @@ namespace DAL.Migrations
                 new Column("Name", DbType.String, ColumnProperty.NotNull));
             Database.AddIndex("documentTypes_pk", true, "DocumentTypes", "Id");
 
+            Database.AddTable("Documents",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("Name", DbType.String, ColumnProperty.NotNull),
+                new Column("FileId", DbType.Guid, ColumnProperty.NotNull),
+                new Column("TypeId", DbType.Guid, ColumnProperty.NotNull));
+            Database.AddIndex("documents_pk", true, "Documents", "Id");
+            Database.AddForeignKey("documents_fileStorage_fk", "Documents", "FileId", "FileStorage", "Id");
+            Database.AddForeignKey("documents_documentTypes_fk", "Documents", "TypeId", "DocumentTypes", "Id");
+
+
             /*end of add tables*/
 
             AddTranslation("UserNotFound", "User not found", "Пользователь не найден или не активен");
