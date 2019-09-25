@@ -9,21 +9,19 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
+using Tasks.Helpers;
 
 namespace Tasks.MasterData
 {
     [Description("Импорт инжекций MatMas на сихронизацию мастер-данных по продуктам")]
-    public class ImportMatMasTask : TaskBase
+    public class ImportProductsTask : TaskBase
     {
-        private const string InjectionType = "MatMasProducts";
-
-        public void Execute(ImportMatMasProperties props)
+        public void Execute(ImportProductsProperties props)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -62,7 +60,7 @@ namespace Tasks.MasterData
                     sftpClient.Connect();
 
                     DateTime barrierTime = DateTime.UtcNow.AddHours(-viewHours);
-                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(InjectionType, viewHours);
+                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetByTaskName(TaskName);
                     HashSet<string> processedFileNames = new HashSet<string>(processedInjections.Select(i => i.FileName));
 
                     var files = sftpClient.ListDirectory(props.Folder);
@@ -82,7 +80,7 @@ namespace Tasks.MasterData
 
                             InjectionDto injection = new InjectionDto
                             {
-                                Type = InjectionType,
+                                Type = TaskName,
                                 FileName = file.Name,
                                 ProcessTimeUtc = DateTime.UtcNow
                             };
@@ -106,7 +104,7 @@ namespace Tasks.MasterData
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Ошибка при обработке MatMas инжекции.");
+                Log.Error(ex, $"Ошибка при обработке {TaskName} инжекции.");
                 throw ex;
             }
         }
@@ -185,18 +183,18 @@ namespace Tasks.MasterData
 
                 // Получение единиц измерения по каждому полю или группе смежных полей
 
-                int weightNetUowCoeff = pRoot.ParseUom("GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
-                int weightPieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
-                int weightShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
-                int weightBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
-                int weightLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
-                int weightPalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/GEWEI", entryInd, new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1);
+                int weightNetUowCoeff = pRoot.ParseUom("GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                int weightPieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                int weightShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                int weightBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                int weightLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                int weightPalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
 
-                int sizePieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/MEABM", entryInd, new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1);
-                int sizeShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/MEABM", entryInd, new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1);
-                int sizeBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/MEABM", entryInd, new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1);
-                int sizeLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/MEABM", entryInd, new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1);
-                int sizePalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/MEABM", entryInd, new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1);
+                int sizePieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
+                int sizeShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
+                int sizeBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
+                int sizeLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
+                int sizePalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
 
                 // Непосредственно заполнение полей
 
@@ -261,89 +259,6 @@ namespace Tasks.MasterData
             }
 
             return resultLookup.Values;
-        }
-    }
-
-    internal static class Extensions
-    {
-        public static string ExtractSPGR(this string rawValue)
-        {
-            if (string.IsNullOrEmpty(rawValue))
-            {
-                return null;
-            }
-            rawValue = rawValue.Trim();
-            if (rawValue.Length < 5)
-            {
-                Log.Warning("Длина поля SPGR должна быть равна 5, но обнаружено значение: {rawValue}.", rawValue);
-                return rawValue;
-            }
-            else
-            {
-                return rawValue.Substring(rawValue.Length - 5);
-            }
-        }
-
-        public static int ParseUom(this XmlNode node, string xPath, int entryInd, string[] keys, int[] values, int defaultValue)
-        {
-            string actualKey = node.SelectSingleNode(xPath)?.InnerText?.ToUpper();
-            if (!string.IsNullOrEmpty(actualKey))
-            {
-                for (int i = 0; i < keys.Length; i++)
-                {
-                    if (keys[i].ToUpper() == actualKey)
-                    {
-                        return values[i];
-                    }
-                }
-                Log.Warning("Неизвестное значение {actualKey} элемента {xPath} записи #{entryInd}.", actualKey, xPath, entryInd);
-            }
-            else
-            {
-                Log.Warning("Элемент {xPath} не найден в записи #{entryInd}.", xPath, entryInd);
-            }
-            return defaultValue;
-        }
-
-        public static decimal? ParseDecimal(this XmlNode node, string xPath, int entryInd)
-        {
-            string value = node.SelectSingleNode(xPath)?.InnerText;
-            if (!string.IsNullOrEmpty(value))
-            {
-                decimal result;
-                if (decimal.TryParse(value.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    Log.Warning("Некорректное значение {value} элемента {xPath} записи #{entryInd}, ожидалось число.", value, xPath, entryInd);
-                }
-            }
-            return null;
-        }
-
-        public static int? ParseInt(this XmlNode node, string xPath, int entryInd)
-        {
-            string value = node.SelectSingleNode(xPath)?.InnerText;
-            if (!string.IsNullOrEmpty(value))
-            {
-                int result;
-                if (int.TryParse(value.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out result))
-                {
-                    return result;
-                }
-                else
-                {
-                    Log.Warning("Некорректное значение {value} элемента {xPath} записи #{entryInd}, ожидалось целое число.", value, xPath, entryInd);
-                }
-            }
-            return null;
-        }
-
-        public static int? ApplyUowCoeff(this decimal? value, int coeff)
-        {
-            return value == null ? (int?)null : (int)(value * coeff);
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Domain.Services.Injections
 {
     public interface IInjectionsService : IDictonaryService<Injection, InjectionDto>
     {
-        IEnumerable<InjectionDto> GetLast(string type, int hours);
+        IEnumerable<InjectionDto> GetByTaskName(string taskName);
     }
 }

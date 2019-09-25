@@ -1,1 +1,2 @@
-*/5 * * * * dotnet /app/build/Tasks.dll run ImportMatMas -p ConnectionString="sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/";Folder="/Test/OUT";ViewHours=168
+*/5 * * * * dotnet /app/build/Tasks.dll run ImportProducts
+*/5 * * * * dotnet /app/build/Tasks.dll run ImportOrder

@@ -1,6 +1,6 @@
-﻿namespace Tasks.MasterData
+﻿namespace Tasks
 {
-    public class ImportMatMasProperties : PropertiesBase
+    public class FtpBaseProperties : PropertiesBase
     {
         public string ConnectionString { get; set; }
 

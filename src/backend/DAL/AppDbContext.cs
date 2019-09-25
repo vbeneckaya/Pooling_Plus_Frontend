@@ -20,8 +20,10 @@ namespace DAL
         public DbSet<Role> Roles { get; set; }
         public DbSet<Translation> Translations { get; set; }
         public DbSet<Injection> Injections { get; set; }
+        public DbSet<TaskProperty> TaskProperties { get; set; }
         /*start of add DbSets*/
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }

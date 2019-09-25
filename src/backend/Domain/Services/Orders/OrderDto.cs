@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Domain.Services.Orders
 {
     public class OrderDto : IDto
@@ -52,5 +54,7 @@ namespace Domain.Services.Orders
         public string Positions { get; set; }
 
         /*end of fields*/
+
+        public List<OrderItemDto> Items { get; set; }
     }
 }
