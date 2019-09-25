@@ -11,15 +11,15 @@ using Application.Services.Users;
 using Application.Services.Identity;
 using Application.Services.Roles;
 using Application.Services.Translations;
-using Application.Services.UserIdProvider;
 using Application.Services.Injections;
+using Application.Services.TaskProperties;
 using DAL;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Identity;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
-using Domain.Services.UserIdProvider;
 using Domain.Services.Users;
+using Domain.Services.TaskProperties;
 /*start of using domain service*/
 using Domain.Services.Orders;
 using Domain.Services.Shippings;
@@ -46,6 +46,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<ITranslationsService, TranslationsService>();
             services.AddScoped<IInjectionsService, InjectionsService>();
+            services.AddScoped<ITaskPropertiesService, TaskPropertiesService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();

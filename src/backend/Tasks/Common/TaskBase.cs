@@ -1,4 +1,5 @@
-﻿using Domain.Services.UserIdProvider;
+﻿using Domain.Services.TaskProperties;
+using Domain.Services.UserIdProvider;
 using Infrastructure.Installers;
 using Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 using Serilog;
 using Serilog.Context;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,7 +34,7 @@ namespace Tasks
 
         [Test]
         [TestCase((string)null)]
-        public void Run(string parameters = null)
+        public void Run(string consoleParameters = null)
         {
             if (IsCompleted)
             {
@@ -43,31 +45,30 @@ namespace Tasks
             {
                 var stopwatch = Stopwatch.StartNew();
 
-                try
+                List<string> parametersList = LoadTaskParameters(consoleParameters);
+                foreach (string parameters in parametersList)
                 {
-                    var propertiesType = typeof(PropertiesBase);
-                    var methodInfo = GetType()
-                        .GetMethod(ExecuteMethodName, BindingFlags.Instance | BindingFlags.Public);
-                    var executeParameters = methodInfo.GetParameters()
-                        .Select(pi => propertiesType.IsAssignableFrom(pi.ParameterType)
-                                    ? CreateProperties(pi.ParameterType, parameters)
-                                    : ServiceProvider.GetService(pi.ParameterType))
-                        .ToArray();
+                    try
+                    {
+                        var propertiesType = typeof(PropertiesBase);
+                        var methodInfo = GetType()
+                            .GetMethod(ExecuteMethodName, BindingFlags.Instance | BindingFlags.Public);
+                        var executeParameters = methodInfo.GetParameters()
+                            .Select(pi => propertiesType.IsAssignableFrom(pi.ParameterType)
+                                        ? CreateProperties(pi.ParameterType, parameters)
+                                        : ServiceProvider.GetService(pi.ParameterType))
+                            .ToArray();
 
-                    methodInfo.Invoke(this, executeParameters);
+                        methodInfo.Invoke(this, executeParameters);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Failed to run {TaskName} with parameters {parameters}", TaskName, parameters);
+                    }
+                }
 
-                    IsCompleted = true;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, $"Failed to run {TaskName}");
-                    if (TestContext.CurrentContext.WorkerId != null)
-                        Assert.Fail(ex.Message);
-                }
-                finally
-                {
-                    stopwatch.Stop();
-                }
+                IsCompleted = true;
+                stopwatch.Stop();
             }
         }
 
@@ -89,6 +90,23 @@ namespace Tasks
         protected virtual void CreateLogger()
         {
             Log.Logger = LoggerFactory.CreateLogger(Configuration, "Tasks");
+        }
+
+        private List<string> LoadTaskParameters(string consoleParameters)
+        {
+            List<string> parametersList;
+            if (string.IsNullOrEmpty(consoleParameters))
+            {
+                ITaskPropertiesService propertiesService = ServiceProvider.GetService<ITaskPropertiesService>();
+                var propertiesEntries = propertiesService.GetByTaskName(TaskName);
+                parametersList = propertiesEntries.Select(p => p.Properties).ToList();
+            }
+            else
+            {
+                parametersList = new List<string> { consoleParameters };
+            }
+
+            return parametersList;
         }
 
         private object CreateProperties(Type propertiesType, string parameters)

@@ -19,11 +19,9 @@ using Tasks.Helpers;
 namespace Tasks.MasterData
 {
     [Description("Импорт инжекций MatMas на сихронизацию мастер-данных по продуктам")]
-    public class ImportMatMasTask : TaskBase
+    public class ImportProductsTask : TaskBase
     {
-        private const string InjectionType = "MatMasProducts";
-
-        public void Execute(ImportMatMasProperties props)
+        public void Execute(ImportProductsProperties props)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -62,7 +60,7 @@ namespace Tasks.MasterData
                     sftpClient.Connect();
 
                     DateTime barrierTime = DateTime.UtcNow.AddHours(-viewHours);
-                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(InjectionType, viewHours);
+                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(TaskName, viewHours);
                     HashSet<string> processedFileNames = new HashSet<string>(processedInjections.Select(i => i.FileName));
 
                     var files = sftpClient.ListDirectory(props.Folder);
@@ -82,7 +80,7 @@ namespace Tasks.MasterData
 
                             InjectionDto injection = new InjectionDto
                             {
-                                Type = InjectionType,
+                                Type = TaskName,
                                 FileName = file.Name,
                                 ProcessTimeUtc = DateTime.UtcNow
                             };
@@ -106,7 +104,7 @@ namespace Tasks.MasterData
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Ошибка при обработке {InjectionType} инжекции.");
+                Log.Error(ex, $"Ошибка при обработке {TaskName} инжекции.");
                 throw ex;
             }
         }

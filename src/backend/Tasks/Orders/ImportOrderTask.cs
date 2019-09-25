@@ -20,8 +20,6 @@ namespace Tasks.Orders
     [Description("Импорт инжекций на создание нового заказа")]
     public class ImportOrderTask : TaskBase
     {
-        private const string InjectionType = "CreateOrder";
-
         public void Execute(ImportOrderProperties props)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
@@ -61,7 +59,7 @@ namespace Tasks.Orders
                     sftpClient.Connect();
 
                     DateTime barrierTime = DateTime.UtcNow.AddHours(-viewHours);
-                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(InjectionType, viewHours);
+                    IEnumerable<InjectionDto> processedInjections = injectionsService.GetLast(TaskName, viewHours);
                     HashSet<string> processedFileNames = new HashSet<string>(processedInjections.Select(i => i.FileName));
 
                     var files = sftpClient.ListDirectory(props.Folder);
@@ -81,7 +79,7 @@ namespace Tasks.Orders
 
                             InjectionDto injection = new InjectionDto
                             {
-                                Type = InjectionType,
+                                Type = TaskName,
                                 FileName = file.Name,
                                 ProcessTimeUtc = DateTime.UtcNow
                             };
@@ -105,7 +103,7 @@ namespace Tasks.Orders
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Ошибка при обработке {InjectionType} инжекции.");
+                Log.Error(ex, $"Ошибка при обработке {TaskName} инжекции.");
                 throw ex;
             }
         }

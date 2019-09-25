@@ -53,6 +53,15 @@ namespace DAL.Migrations
                 new Column("ProcessTimeUtc", DbType.DateTime));
             Database.AddIndex("injections_pk", true, "Injections", "Id");
 
+            Database.AddTable("TaskProperties",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("TaskName", DbType.String.WithSize(100)),
+                new Column("Properties", DbType.String.WithSize(1000)));
+            Database.AddIndex("TaskProperties_pk", true, "TaskProperties", "Id");
+
+            AddTaskProperties("ImportProducts", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
+            AddTaskProperties("ImportOrder", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
+
             /*start of add tables*/
             Database.AddTable("Orders",
                 new Column("Status", DbType.Int64, ColumnProperty.Null),
@@ -559,6 +568,12 @@ namespace DAL.Migrations
         {
             Database.Insert("Users", new string[] {"Id", "Name", "RoleId", "Email", "IsActive", "FieldsConfig", "PasswordHash"},
                 new string[] {(Guid.NewGuid()).ToString(), name, roleid, email, "true", "", passwordhash});
+        }
+
+        private void AddTaskProperties(string taskName, string properties)
+        {
+            Database.Insert("TaskProperties", new string[] { "Id", "TaskName", "Properties" },
+                new string[] { (Guid.NewGuid()).ToString(), taskName, properties });
         }
     }
 }
