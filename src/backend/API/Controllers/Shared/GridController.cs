@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Domain.Services;
 using Domain.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -81,7 +80,19 @@ namespace API.Controllers.Shared
         {
             var file = HttpContext.Request.Form.Files.ElementAt(0);
             return service.ImportFromExcel(file.OpenReadStream());            
-        }        
+        }      
+        
+        
+        //GET api/download/12345abc
+        [HttpGet("exportToExcel")]
+        public IActionResult ExportToExcel() {
+            Stream stream = System.IO.File.Open("e:/work_repo/alternative-tms/RunAllWitchWatch.ps1", FileMode.Open);
+
+            if(stream == null)
+                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
+
+            return File(stream, "application/octet-stream", "Экспорт 26-09-19.excel"); // returns a FileStreamResult
+        }  
         
         /// <summary>
         /// Список возможных экшенов
