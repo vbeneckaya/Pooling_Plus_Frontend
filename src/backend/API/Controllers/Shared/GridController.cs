@@ -8,7 +8,7 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto> : Controller where TService : IGridService<TEntity, TDto>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto> : Controller where TService : IGridService<TEntity, TDto, TFormDto>
     {
         protected readonly TService service;
 
@@ -48,7 +48,7 @@ namespace API.Controllers.Shared
         /// Импортировать
         /// </summary>
         [HttpPost("import")]
-        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TDto> form)
+        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TFormDto> form)
         {
             return service.Import(form);
         }
@@ -112,7 +112,7 @@ namespace API.Controllers.Shared
         /// Сохранить или изменить
         /// </summary>
         [HttpPost("saveOrCreate")]
-        public IActionResult SaveOrCreate([FromBody] TDto form)
+        public IActionResult SaveOrCreate([FromBody] TFormDto form)
         {
             try
             {

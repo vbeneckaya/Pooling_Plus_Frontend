@@ -9,7 +9,8 @@ using System.Collections.Generic;
 
 namespace Application.Shared
 {
-    public abstract class GridWithDocumentsBase<TEntity, TDto> : GridServiceBase<TEntity, TDto>, IGridWithDocuments<TEntity, TDto> where TEntity : class, IPersistable, IWithDocumentsPersistable, new() where TDto : IDto
+    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto> : GridServiceBase<TEntity, TDto, TFormDto>, IGridWithDocuments<TEntity, TDto, TFormDto> 
+        where TEntity : class, IPersistable, IWithDocumentsPersistable, new() where TDto : IDto where TFormDto : IDto
     {
         protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider) { }
 

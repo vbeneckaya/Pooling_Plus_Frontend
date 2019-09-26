@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Application.Actions.Orders;
 using Application.Shared;
+using AutoMapper;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -15,10 +16,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridServiceBase<Order, OrderDto>, IOrdersService
+    public class OrdersService : GridServiceBase<Order, OrderDto, OrderFormDto>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
 
         public override DbSet<Order> UseDbSet(AppDbContext dbContext)
@@ -111,9 +113,14 @@ namespace Application.Services.Orders
             /*end of map dto to entity fields*/
         }
 
+        public override void MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
+        {
+            MapFromDtoToEntity(entity, dto);
+            SaveItems(entity, dto);
+        }
+
         public override OrderDto MapFromEntityToDto(Order entity)
         {
-            List<OrderItemDto> items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
             return new OrderDto
             {
                 Id = entity.Id.ToString(),
@@ -162,10 +169,19 @@ namespace Application.Services.Orders
                 OrderItems = entity.OrderItems,
                 OrderCreationDate = entity.OrderCreationDate,
                 ShippingId = entity.ShippingId.ToString(),
-                Positions = entity.Positions,
+                Positions = entity.Positions
                 /*end of map entity to dto fields*/
-                Items = items
             };
+        }
+
+        public override OrderFormDto MapFromEntityToFormDto(Order entity)
+        {
+            OrderDto baseDto = MapFromEntityToDto(entity);
+
+            OrderFormDto formDto = _mapper.Map<OrderFormDto>(baseDto);
+            formDto.Items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
+
+            return formDto;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Order entity)
@@ -177,7 +193,7 @@ namespace Application.Services.Orders
             };
         }
 
-        protected override void ApplyAfterSaveActions(Order entity, OrderDto dto)
+        private void SaveItems(Order entity, OrderFormDto dto)
         {
             HashSet<Guid> updatedItems = new HashSet<Guid>();
             List<OrderItem> entityItems = db.OrderItems.Where(i => i.OrderId == entity.Id).ToList();
@@ -223,5 +239,16 @@ namespace Application.Services.Orders
                 Quantity = entity.Quantity
             };
         }
+
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<OrderDto, OrderFormDto>();
+            });
+            return result;
+        }
+
+        private readonly IMapper _mapper;
     }
 }

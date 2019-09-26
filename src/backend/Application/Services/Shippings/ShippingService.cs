@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridServiceBase<Shipping, ShippingDto>, IShippingsService
+    public class ShippingsService : GridServiceBase<Shipping, ShippingDto, ShippingDto>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -88,6 +88,11 @@ namespace Application.Services.Shippings
             /*end of map dto to entity fields*/
         }
 
+        public override void MapFromFormDtoToEntity(Shipping entity, ShippingDto dto)
+        {
+            MapFromDtoToEntity(entity, dto);
+        }
+
         public override ShippingDto MapFromEntityToDto(Shipping entity)
         {
             return new ShippingDto
@@ -122,6 +127,11 @@ namespace Application.Services.Shippings
                 AmountConfirmedByTC = entity.AmountConfirmedByTC,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        public override ShippingDto MapFromEntityToFormDto(Shipping entity)
+        {
+            return MapFromEntityToDto(entity);
         }
     }
 }
