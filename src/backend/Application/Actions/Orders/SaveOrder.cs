@@ -43,7 +43,7 @@ namespace Application.Actions.Orders
                     Message = $"Отсутствует SoldTo"
                 };
 
-            if(string.IsNullOrEmpty(order.DeliveryDate))
+            if(order.DeliveryDate == null)
                 return new AppActionResult
                 {
                     IsError = true,
@@ -80,12 +80,8 @@ namespace Application.Actions.Orders
                     IsError = true,
                     Message = $"Не заполнено дней в пути у склада"
                 };
-            DateTime deliveryDate;
             
-            DateTime.TryParseExact(order.DeliveryDate, "dd.mm.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                out deliveryDate);
-            
-            order.ShippingDate = deliveryDate.AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays)).ToShortDateString();
+            order.ShippingDate = order.DeliveryDate?.AddDays(0 - int.Parse(soldToWarehouse.LeadtimeDays));
             order.DaysOnTheRoad = int.Parse(soldToWarehouse.LeadtimeDays);
 
             order.ShippingAddress = fromWarehouse.Address;
@@ -106,7 +102,7 @@ namespace Application.Actions.Orders
 
             var orderPositions = JsonConvert.DeserializeObject<List<OrderPosition>>(order.Positions);
              
-            order.NumberOfArticles = orderPositions.Count.ToString();
+            order.NumberOfArticles = orderPositions.Count;
             order.OrderCreationDate = DateTime.Now.Date.ToShortDateString();
             
             db.SaveChanges();

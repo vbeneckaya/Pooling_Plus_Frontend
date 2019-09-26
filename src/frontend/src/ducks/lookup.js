@@ -59,8 +59,8 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 
 function* getLookupSaga ({ payload }) {
     try {
-        const {name, params} = payload;
-        const result = yield postman.post(`/dictionary/${name}/search`, params);
+        const {name} = payload;
+        const result = yield postman.get(`/${name}/forSelect`);
 
         yield put({
             type: GET_LOOKUP_SUCCESS,

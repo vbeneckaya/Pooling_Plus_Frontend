@@ -7,6 +7,7 @@ namespace Domain.Services
     public interface IDictonaryService<TEntity, TDto> : IService
     {
         SearchResult<TDto> Search(SearchForm form);
+        IEnumerable<LookUpDto> ForSelect();
         IEnumerable<ValidateResult> Import(IEnumerable<TDto> entityFrom);
         ValidateResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);

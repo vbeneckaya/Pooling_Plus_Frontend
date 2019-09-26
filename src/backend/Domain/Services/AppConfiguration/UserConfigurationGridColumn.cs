@@ -22,7 +22,7 @@ namespace Domain.Services.AppConfiguration
 
         public UserConfigurationGridColumnWhitchSource(string name, FiledType type, string source) : base(name, type)
         {
-            Source = source.ToLowerfirstLetter();
+            Source = source.Replace("Service", "").ToLowerfirstLetter();
         }
     }
 }

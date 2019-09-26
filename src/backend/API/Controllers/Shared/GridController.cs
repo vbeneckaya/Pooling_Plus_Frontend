@@ -36,6 +36,15 @@ namespace API.Controllers.Shared
         }
         
         /// <summary>
+        /// Получение данных для выпадающего списка в 
+        /// </summary>
+        [HttpGet("forSelect")]
+        public IEnumerable<LookUpDto> ForSelect()
+        {
+            return service.ForSelect();
+        }
+        
+        /// <summary>
         /// Импортировать
         /// </summary>
         [HttpPost("import")]

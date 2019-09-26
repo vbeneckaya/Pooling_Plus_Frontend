@@ -10,6 +10,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Orders
@@ -164,6 +165,15 @@ namespace Application.Services.Orders
                 Positions = entity.Positions,
                 /*end of map entity to dto fields*/
                 Items = items
+            };
+        }
+
+        public override LookUpDto MapFromEntityToLookupDto(Order entity)
+        {
+            return new LookUpDto
+            {
+                Value = entity.Id.ToString(),
+                Name = entity.SalesOrderNumber
             };
         }
 

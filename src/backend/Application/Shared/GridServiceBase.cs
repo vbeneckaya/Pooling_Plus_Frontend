@@ -20,6 +20,7 @@ namespace Application.Shared
         public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
+        public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
@@ -36,6 +37,12 @@ namespace Application.Shared
         {
             var dbSet = UseDbSet(db);
             return MapFromEntityToDto(dbSet.GetById(id));
+        }
+        
+        public IEnumerable<LookUpDto> ForSelect()
+        {
+            var dbSet = UseDbSet(db);
+            return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
         public SearchResult<TDto> Search(SearchForm form)
@@ -94,7 +101,7 @@ namespace Application.Shared
             };
             MapFromDtoToEntity(entity, entityFrom);
             dbSet.Add(entity);
-            ApplyAfterSaveActions(entity, entityFrom);
+            //ApplyAfterSaveActions(entity, entityFrom);
             db.SaveChanges();
             return new ValidateResult
             {

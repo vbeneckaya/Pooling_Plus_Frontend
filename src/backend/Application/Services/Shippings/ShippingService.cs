@@ -9,6 +9,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
@@ -32,6 +33,15 @@ namespace Application.Services.Shippings
                 new SendShippingToTk(db),
                 new CancelRequestShipping(db),
                 /*end of add single actions*/
+            };
+        }
+        
+        public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
+        {
+            return new LookUpDto
+            {
+                Value = entity.Id.ToString(),
+                Name = entity.TransportationNumber.ToString()
             };
         }
 
