@@ -32,7 +32,7 @@ const Select = ({
 
     return (
         <Form.Field>
-            <label>{t(name)}</label>
+            {name ? <label>{t(name)}</label> : null }
             <Dropdown
                 placeholder={placeholder}
                 fluid
