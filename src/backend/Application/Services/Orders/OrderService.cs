@@ -32,13 +32,11 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new TestGenerateException(db),
                 new CreateShipping(db),
                 new CancelOrder(db),
                 new RemoveFromShipping(db),
                 new SendToArchive(db),
                 new RecordFactOfLoss(db),
-                new SaveOrder(db),
                 new OrderShipped(db),
                 new OrderDelivered(db),
                 new FullReject(db),
@@ -52,7 +50,6 @@ namespace Application.Services.Orders
             {
                 new UnionOrders(db),
                 new CancelOrders(db),
-                new SaveOrders(db),
                 new CreateShippingForeach(db),
                 /*end of add group actions*/
             };
@@ -60,57 +57,71 @@ namespace Application.Services.Orders
 
         public override void MapFromDtoToEntity(Order entity, OrderDto dto)
         {
+            var setter = new FieldSetter<Order>(entity);
+
             if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
+                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
             if (!string.IsNullOrEmpty(dto.Status))
-                entity.Status = MapFromStateDto<OrderState>(dto.Status);
-            entity.SalesOrderNumber = dto.SalesOrderNumber;
-            entity.OrderDate = dto.OrderDate;
-            entity.TypeOfOrder = dto.TypeOfOrder;
-            entity.Payer = dto.Payer;
-            entity.CustomerName = dto.CustomerName;
-            entity.SoldTo = dto.SoldTo;
-            entity.ShippingDate = dto.ShippingDate;
-            entity.DaysOnTheRoad = dto.DaysOnTheRoad;
-            entity.DeliveryDate = dto.DeliveryDate;
-            entity.BDFInvoiceNumber = dto.BDFInvoiceNumber;
-            entity.InvoiceNumber = dto.InvoiceNumber;
-            entity.NumberOfArticles = dto.NumberOfArticles;
-            entity.TheNumberOfBoxes = dto.TheNumberOfBoxes;
-            entity.PreliminaryNumberOfPallets = dto.PreliminaryNumberOfPallets;
-            entity.ActualNumberOfPallets = dto.ActualNumberOfPallets;
-            entity.ConfirmedBoxes = dto.ConfirmedBoxes;
-            entity.ConfirmedNumberOfPallets = dto.ConfirmedNumberOfPallets;
-            entity.WeightKg = dto.WeightKg;
-            entity.OrderAmountExcludingVAT = dto.OrderAmountExcludingVAT;
-            entity.TTNAmountExcludingVAT = dto.TTNAmountExcludingVAT;
-            entity.Region = dto.Region;
-            entity.City = dto.City;
-            entity.ShippingAddress = dto.ShippingAddress;
-            entity.DeliveryAddress = dto.DeliveryAddress;
-            entity.CustomerAvizTime = dto.CustomerAvizTime;
-            entity.OrderComments = dto.OrderComments;
-            entity.TypeOfEquipment = dto.TypeOfEquipment;
-            entity.PlannedArrivalTimeSlotBDFWarehouse = dto.PlannedArrivalTimeSlotBDFWarehouse;
-            entity.ArrivalTimeForLoadingBDFWarehouse = dto.ArrivalTimeForLoadingBDFWarehouse;
-            entity.DepartureTimeFromTheBDFWarehouse = dto.DepartureTimeFromTheBDFWarehouse;
-            entity.ActualDateOfArrivalAtTheConsignee = dto.ActualDateOfArrivalAtTheConsignee;
-            entity.ArrivalTimeToConsignee = dto.ArrivalTimeToConsignee;
-            entity.DateOfDepartureFromTheConsignee = dto.DateOfDepartureFromTheConsignee;
-            entity.DepartureTimeFromConsignee = dto.DepartureTimeFromConsignee;
-            entity.TheNumberOfHoursOfDowntime = dto.TheNumberOfHoursOfDowntime;
-            entity.ReturnInformation = dto.ReturnInformation;
-            entity.ReturnShippingAccountNo = dto.ReturnShippingAccountNo;
-            entity.PlannedReturnDate = dto.PlannedReturnDate;
-            entity.ActualReturnDate = dto.ActualReturnDate;
-            entity.MajorAdoptionNumber = dto.MajorAdoptionNumber;
-            entity.Avization = dto.Avization;
-            entity.OrderItems = dto.OrderItems;
-            entity.OrderCreationDate = dto.OrderCreationDate;
+                setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status));
+            setter.UpdateField(e => e.SalesOrderNumber, dto.SalesOrderNumber, AfterSalesOrderNumberChanged);
+            setter.UpdateField(e => e.OrderDate, dto.OrderDate);
+            setter.UpdateField(e => e.TypeOfOrder, dto.TypeOfOrder);
+            setter.UpdateField(e => e.Payer, dto.Payer);
+            setter.UpdateField(e => e.CustomerName, dto.CustomerName);
+            setter.UpdateField(e => e.SoldTo, dto.SoldTo, AfterSoldToChanged);
+            setter.UpdateField(e => e.ShippingDate, dto.ShippingDate);
+            setter.UpdateField(e => e.DaysOnTheRoad, dto.DaysOnTheRoad);
+            setter.UpdateField(e => e.DeliveryDate, dto.DeliveryDate);
+            setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
+            setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
+            setter.UpdateField(e => e.NumberOfArticles, dto.NumberOfArticles);
+            setter.UpdateField(e => e.TheNumberOfBoxes, dto.TheNumberOfBoxes);
+            setter.UpdateField(e => e.PreliminaryNumberOfPallets, dto.PreliminaryNumberOfPallets);
+            setter.UpdateField(e => e.ActualNumberOfPallets, dto.ActualNumberOfPallets);
+            setter.UpdateField(e => e.ConfirmedBoxes, dto.ConfirmedBoxes);
+            setter.UpdateField(e => e.ConfirmedNumberOfPallets, dto.ConfirmedNumberOfPallets);
+            setter.UpdateField(e => e.WeightKg, dto.WeightKg);
+            setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
+            setter.UpdateField(e => e.TTNAmountExcludingVAT, dto.TTNAmountExcludingVAT);
+            setter.UpdateField(e => e.Region, dto.Region);
+            setter.UpdateField(e => e.City, dto.City);
+            setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
+            setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
+            setter.UpdateField(e => e.CustomerAvizTime, dto.CustomerAvizTime);
+            setter.UpdateField(e => e.OrderComments, dto.OrderComments);
+            setter.UpdateField(e => e.TypeOfEquipment, dto.TypeOfEquipment);
+            setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
+            setter.UpdateField(e => e.ArrivalTimeForLoadingBDFWarehouse, dto.ArrivalTimeForLoadingBDFWarehouse);
+            setter.UpdateField(e => e.DepartureTimeFromTheBDFWarehouse, dto.DepartureTimeFromTheBDFWarehouse);
+            setter.UpdateField(e => e.ActualDateOfArrivalAtTheConsignee, dto.ActualDateOfArrivalAtTheConsignee);
+            setter.UpdateField(e => e.ArrivalTimeToConsignee, dto.ArrivalTimeToConsignee);
+            setter.UpdateField(e => e.DateOfDepartureFromTheConsignee, dto.DateOfDepartureFromTheConsignee);
+            setter.UpdateField(e => e.DepartureTimeFromConsignee, dto.DepartureTimeFromConsignee);
+            setter.UpdateField(e => e.TheNumberOfHoursOfDowntime, dto.TheNumberOfHoursOfDowntime);
+            setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
+            setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
+            setter.UpdateField(e => e.PlannedReturnDate, dto.PlannedReturnDate);
+            setter.UpdateField(e => e.ActualReturnDate, dto.ActualReturnDate);
+            setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
+            setter.UpdateField(e => e.Avization, dto.Avization);
+            setter.UpdateField(e => e.OrderItems, dto.OrderItems);
+            setter.UpdateField(e => e.OrderCreationDate, dto.OrderCreationDate);
             if (!string.IsNullOrEmpty(dto.ShippingId))
-                entity.ShippingId = Guid.Parse(dto.ShippingId);
-            entity.Positions = dto.Positions;
+                setter.UpdateField(e => e.ShippingId, Guid.Parse(dto.ShippingId));
+            setter.UpdateField(e => e.Positions, dto.Positions);
             /*end of map dto to entity fields*/
+
+            if (string.IsNullOrEmpty(dto.Id))
+            {
+                InitializeNewOrder(entity);
+            }
+
+            setter.ApplyAfterActions();
+
+            if (setter.HasChanges)
+            {
+                CheckRequiredFields(entity);
+            }
         }
 
         public override void MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
@@ -121,67 +132,14 @@ namespace Application.Services.Orders
 
         public override OrderDto MapFromEntityToDto(Order entity)
         {
-            return new OrderDto
-            {
-                Id = entity.Id.ToString(),
-                Status = entity.Status.ToString().ToLowerfirstLetter(),
-                SalesOrderNumber = entity.SalesOrderNumber,
-                OrderDate = entity.OrderDate,
-                TypeOfOrder = entity.TypeOfOrder,
-                Payer = entity.Payer,
-                CustomerName = entity.CustomerName,
-                SoldTo = entity.SoldTo,
-                ShippingDate = entity.ShippingDate,
-                DaysOnTheRoad = entity.DaysOnTheRoad,
-                DeliveryDate = entity.DeliveryDate,
-                BDFInvoiceNumber = entity.BDFInvoiceNumber,
-                InvoiceNumber = entity.InvoiceNumber,
-                NumberOfArticles = entity.NumberOfArticles,
-                TheNumberOfBoxes = entity.TheNumberOfBoxes,
-                PreliminaryNumberOfPallets = entity.PreliminaryNumberOfPallets,
-                ActualNumberOfPallets = entity.ActualNumberOfPallets,
-                ConfirmedBoxes = entity.ConfirmedBoxes,
-                ConfirmedNumberOfPallets = entity.ConfirmedNumberOfPallets,
-                WeightKg = entity.WeightKg,
-                OrderAmountExcludingVAT = entity.OrderAmountExcludingVAT,
-                TTNAmountExcludingVAT = entity.TTNAmountExcludingVAT,
-                Region = entity.Region,
-                City = entity.City,
-                ShippingAddress = entity.ShippingAddress,
-                DeliveryAddress = entity.DeliveryAddress,
-                CustomerAvizTime = entity.CustomerAvizTime,
-                OrderComments = entity.OrderComments,
-                TypeOfEquipment = entity.TypeOfEquipment,
-                PlannedArrivalTimeSlotBDFWarehouse = entity.PlannedArrivalTimeSlotBDFWarehouse,
-                ArrivalTimeForLoadingBDFWarehouse = entity.ArrivalTimeForLoadingBDFWarehouse,
-                DepartureTimeFromTheBDFWarehouse = entity.DepartureTimeFromTheBDFWarehouse,
-                ActualDateOfArrivalAtTheConsignee = entity.ActualDateOfArrivalAtTheConsignee,
-                ArrivalTimeToConsignee = entity.ArrivalTimeToConsignee,
-                DateOfDepartureFromTheConsignee = entity.DateOfDepartureFromTheConsignee,
-                DepartureTimeFromConsignee = entity.DepartureTimeFromConsignee,
-                TheNumberOfHoursOfDowntime = entity.TheNumberOfHoursOfDowntime,
-                ReturnInformation = entity.ReturnInformation,
-                ReturnShippingAccountNo = entity.ReturnShippingAccountNo,
-                PlannedReturnDate = entity.PlannedReturnDate,
-                ActualReturnDate = entity.ActualReturnDate,
-                MajorAdoptionNumber = entity.MajorAdoptionNumber,
-                Avization = entity.Avization,
-                OrderItems = entity.OrderItems,
-                OrderCreationDate = entity.OrderCreationDate,
-                ShippingId = entity.ShippingId.ToString(),
-                Positions = entity.Positions
-                /*end of map entity to dto fields*/
-            };
+            return _mapper.Map<OrderDto>(entity);
         }
 
         public override OrderFormDto MapFromEntityToFormDto(Order entity)
         {
-            OrderDto baseDto = MapFromEntityToDto(entity);
-
-            OrderFormDto formDto = _mapper.Map<OrderFormDto>(baseDto);
-            formDto.Items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
-
-            return formDto;
+            OrderFormDto result = _mapper.Map<OrderFormDto>(entity);
+            result.Items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
+            return result;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Order entity)
@@ -191,6 +149,72 @@ namespace Application.Services.Orders
                 Value = entity.Id.ToString(),
                 Name = entity.SalesOrderNumber
             };
+        }
+
+        private void AfterSalesOrderNumberChanged(Order order)
+        {
+            if (order.SalesOrderNumber.StartsWith("1"))
+                order.TypeOfOrder = "OR";
+            else if (order.SalesOrderNumber.StartsWith("2"))
+                order.TypeOfOrder = "FD";
+        }
+
+        private void AfterSoldToChanged(Order order)
+        {
+            if (!string.IsNullOrEmpty(order.SoldTo))
+            {
+                var soldToWarehouse = db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
+                if (soldToWarehouse != null)
+                {
+                    order.CustomerName = soldToWarehouse.TheNameOfTheWarehouse;
+
+                    //TODO Сделать флаг для склада, в зависимости от него брать или нет Тип комплектации из склада
+                    if (!new List<string> { "Атак", "Ашан", "Перекресток" }.Contains(order.CustomerName))
+                        order.TypeOfEquipment = soldToWarehouse.TypeOfEquipment;
+
+                    if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
+                    {
+                        int leadTimeDays = int.Parse(soldToWarehouse.LeadtimeDays);
+                        order.ShippingDate = order.DeliveryDate?.AddDays(0 - leadTimeDays);
+                        order.DaysOnTheRoad = leadTimeDays;
+                    }
+
+                    order.DeliveryAddress = soldToWarehouse.Address;
+                }
+            }
+        }
+
+        private void CheckRequiredFields(Order order)
+        {
+            if (order.Status == OrderState.Draft)
+            {
+                bool hasRequiredFields =
+                       !string.IsNullOrEmpty(order.SoldTo)
+                    && !string.IsNullOrEmpty(order.ShippingAddress)
+                    && !string.IsNullOrEmpty(order.DeliveryAddress)
+                    && !string.IsNullOrEmpty(order.Payer)
+                    && order.ShippingDate.HasValue
+                    && order.DeliveryDate.HasValue;
+                if (hasRequiredFields)
+                {
+                    order.Status = OrderState.Created;
+                }
+            }
+        }
+
+        private void InitializeNewOrder(Order order)
+        {
+            if (string.IsNullOrEmpty(order.ShippingAddress))
+            {
+                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
+                if (fromWarehouse != null)
+                {
+                    order.ShippingAddress = fromWarehouse.Address;
+                }
+            }
+
+            order.Status = OrderState.Draft;
+            order.OrderCreationDate = DateTime.Now.Date.ToShortDateString();
         }
 
         private void SaveItems(Order entity, OrderFormDto dto)
@@ -220,6 +244,8 @@ namespace Application.Services.Orders
 
             var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
             db.OrderItems.RemoveRange(itemsToRemove);
+
+            entity.NumberOfArticles = dto.Items.Count;
         }
 
         private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)
@@ -245,6 +271,14 @@ namespace Application.Services.Orders
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
+
+                cfg.CreateMap<Order, OrderDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()));
+
+                cfg.CreateMap<Order, OrderFormDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()));
             });
             return result;
         }
