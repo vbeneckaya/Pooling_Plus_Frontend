@@ -33,7 +33,7 @@ namespace Application.Shared
             {
                 Name = dto.Name,
                 FileId = Guid.Parse(dto.FileId),
-                TypeId = Guid.Parse(dto.FileId)
+                TypeId = Guid.Parse(dto.TypeId)
             };
             entity.Documents.Add(document);
 

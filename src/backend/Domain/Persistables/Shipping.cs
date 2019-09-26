@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Domain.Enums;
 
 namespace Domain.Persistables
@@ -6,7 +7,7 @@ namespace Domain.Persistables
     /// <summary>
     /// Перевозка
     /// </summary>
-    public class Shipping : IPersistable
+    public class Shipping : IPersistable, IWithDocumentsPersistable
     {
         /// <summary>
         /// Db primary key
@@ -120,6 +121,11 @@ namespace Domain.Persistables
         /// Сумма подтверждена ТК
         /// </summary>
         public string AmountConfirmedByTC { get; set; }
+
+        /// <summary>
+        /// Документы
+        /// </summary>
+        public ICollection<Document> Documents { get; set; }
         /*end of fields*/
     }
 }

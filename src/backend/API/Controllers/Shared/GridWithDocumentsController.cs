@@ -30,7 +30,7 @@ namespace API.Controllers.Shared
 
         [Route("{id}/documents")]
         [HttpPost]
-        public IActionResult CreateDocument(Guid id, DocumentDto dto)
+        public IActionResult CreateDocument(Guid id, [FromBody] DocumentDto dto)
         {
             try
             {

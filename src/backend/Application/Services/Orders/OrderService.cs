@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Application.Actions.Orders;
 using Application.Shared;
 using DAL;
@@ -12,10 +9,13 @@ using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridServiceBase<Order, OrderDto>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {

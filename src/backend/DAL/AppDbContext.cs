@@ -16,6 +16,7 @@ namespace DAL
         {
             
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Translation> Translations { get; set; }
@@ -53,6 +54,11 @@ namespace DAL
         {
             var commandText = "DROP SCHEMA public CASCADE;CREATE SCHEMA public;";
             Database.ExecuteSqlCommand(commandText);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
