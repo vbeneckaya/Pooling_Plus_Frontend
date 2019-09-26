@@ -7,7 +7,7 @@ import {
     canCreateByFormSelector, canImportFromExcelSelector,
     columnsGridSelector,
     getListRequest,
-    getStateColorsRequest,
+    getStateColorsRequest, importFromExcelRequest,
     listSelector,
     progressSelector,
     stateColorsSelector,
@@ -99,6 +99,17 @@ class List extends Component {
         this.setState({ confirmation: { open: false } });
     };
 
+    handleImportFromExcel = (form) => {
+        const { match, importFromExcel } = this.props;
+        const { params = {} } = match;
+        const { name = '' } = params;
+        importFromExcel({
+            name,
+            form
+        })
+
+    };
+
     render() {
         const {
             columns = [],
@@ -134,6 +145,7 @@ class List extends Component {
                     storageFilterItem={`${name}Filters`}
                     getActions={getActions}
                     isImportBtn={isImportBtn}
+                    importFromExcel={this.handleImportFromExcel}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
@@ -163,6 +175,9 @@ function mapDispatchToProps(dispatch) {
         getStateColors: params => {
             dispatch(getStateColorsRequest(params));
         },
+        importFromExcel: params => {
+            dispatch(importFromExcelRequest(params))
+        }
     };
 }
 
