@@ -8,7 +8,8 @@ using System.Collections.Generic;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridWithDocumentsController<TService, TEntity, TDto> : GridController<TService, TEntity, TDto> where TService : IGridWithDocuments<TEntity, TDto> where TEntity : IWithDocumentsPersistable, IPersistable
+    public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto> : GridController<TService, TEntity, TDto, TFormDto> 
+        where TService : IGridWithDocuments<TEntity, TDto, TFormDto> where TEntity : IWithDocumentsPersistable, IPersistable
     {
         public GridWithDocumentsController(TService service) : base(service) { }
 

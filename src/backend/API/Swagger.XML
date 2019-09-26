@@ -68,42 +68,42 @@
             Сохранить или изменить
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.Search(Domain.Shared.SearchForm)">
+        <member name="M:API.Controllers.Shared.GridController`4.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.ForSelect">
+        <member name="M:API.Controllers.Shared.GridController`4.ForSelect">
             <summary>
             Получение данных для выпадающего списка в 
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.Import(System.Collections.Generic.IEnumerable{`2})">
+        <member name="M:API.Controllers.Shared.GridController`4.Import(System.Collections.Generic.IEnumerable{`3})">
             <summary>
             Импортировать
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.GetById(System.Guid)">
+        <member name="M:API.Controllers.Shared.GridController`4.GetById(System.Guid)">
             <summary>
             Данные по id
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.ImportFromExcel(Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:API.Controllers.Shared.GridController`4.ImportFromExcel">
             <summary>
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.GetActions(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:API.Controllers.Shared.GridController`4.GetActions(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Список возможных экшенов
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.InvokeAction(System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:API.Controllers.Shared.GridController`4.InvokeAction(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Выполнить действие
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`3.SaveOrCreate(`2)">
+        <member name="M:API.Controllers.Shared.GridController`4.SaveOrCreate(`3)">
             <summary>
             Сохранить или изменить
             </summary>

@@ -14,13 +14,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto> where TEntity : class, IPersistable, new() where TDto: IDto
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto> where TEntity : class, IPersistable, new() where TDto : IDto where TFormDto : IDto
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
         public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
+        public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
+        public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
@@ -39,7 +41,13 @@ namespace Application.Shared
             var dbSet = UseDbSet(db);
             return MapFromEntityToDto(dbSet.GetById(id));
         }
-        
+
+        public TFormDto GetForm(Guid id)
+        {
+            var dbSet = UseDbSet(db);
+            return MapFromEntityToFormDto(dbSet.GetById(id));
+        }
+
         public IEnumerable<LookUpDto> ForSelect()
         {
             var dbSet = UseDbSet(db);
@@ -77,7 +85,7 @@ namespace Application.Shared
             return a;
         }
 
-        public ValidateResult SaveOrCreate(TDto entityFrom)
+        public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var dbSet = UseDbSet(db);
             if (!string.IsNullOrEmpty(entityFrom.Id))
@@ -85,8 +93,7 @@ namespace Application.Shared
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
                 if (entityFromDb != null)
                 {
-                    MapFromDtoToEntity(entityFromDb, entityFrom);
-                    
+                    MapFromFormDtoToEntity(entityFromDb, entityFrom);
                     dbSet.Update(entityFromDb);
                     
                     db.SaveChanges();
@@ -96,13 +103,14 @@ namespace Application.Shared
                     };
                 }
             }
+
             var entity = new TEntity
             {
                 Id = Guid.NewGuid()
             };
-            MapFromDtoToEntity(entity, entityFrom);
+            MapFromFormDtoToEntity(entity, entityFrom);
             dbSet.Add(entity);
-            //ApplyAfterSaveActions(entity, entityFrom);
+
             db.SaveChanges();
             return new ValidateResult
             {
@@ -121,7 +129,7 @@ namespace Application.Shared
             return new ValidateResult
             {
                 Id = "23423",
-                Error = $"Тут ответ{fileStream.Length}"
+                Error = $"Тут ответ {fileStream.Length}"
             };
         }
         
@@ -241,7 +249,7 @@ namespace Application.Shared
             return Enum.Parse<T>(dtoStatus);
         }
         
-        public IEnumerable<ValidateResult> Import(IEnumerable<TDto> entitiesFrom)
+        public IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entitiesFrom)
         {
             var result = new List<ValidateResult>();
             
