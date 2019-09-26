@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {

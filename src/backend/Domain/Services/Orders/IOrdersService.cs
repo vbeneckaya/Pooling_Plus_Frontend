@@ -2,7 +2,7 @@ using Domain.Persistables;
 
 namespace Domain.Services.Orders
 {
-    public interface IOrdersService : IGridWithDocuments<Order, OrderDto>
+    public interface IOrdersService : IGridWithDocuments<Order, OrderDto, OrderFormDto>
     {
     }
 }
