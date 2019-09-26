@@ -12,5 +12,16 @@ namespace Domain.Persistables
 
         public Guid TypeId { get; set; }
         public DocumentType Type { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Document document &&
+                   Id.Equals(document.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
+        }
     }
 }
