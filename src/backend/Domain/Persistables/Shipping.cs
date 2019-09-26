@@ -16,7 +16,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Номер перевозки
         /// </summary>
-        public int TransportationNumber { get; set; }
+        public int? TransportationNumber { get; set; }
         /// <summary>
         /// Способ доставки
         /// </summary>
@@ -108,7 +108,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Статус
         /// </summary>
-        public ShippingState Status { get; set; }
+        public ShippingState? Status { get; set; }
         /// <summary>
         /// Статус доставки
         /// </summary>
