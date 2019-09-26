@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/shippings")]
-    public class ShippingsController : GridController<IShippingsService, Shipping, ShippingDto, ShippingDto> 
+    public class ShippingsController : GridWithDocumentsController<IShippingsService, Shipping, ShippingDto, ShippingDto> 
     {
         public ShippingsController(IShippingsService shippingsService) : base(shippingsService)
         {

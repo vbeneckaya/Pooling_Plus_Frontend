@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridServiceBase<Shipping, ShippingDto, ShippingDto>, IShippingsService
+    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingDto>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
