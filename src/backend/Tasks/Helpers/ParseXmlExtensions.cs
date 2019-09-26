@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using System;
 using System.Globalization;
 using System.Xml;
 
@@ -24,7 +25,7 @@ namespace Tasks.Helpers
             }
         }
 
-        public static int ParseUom(this XmlNode node, string xPath, string[] keys, int[] values, int defaultValue, int? entryInd = null)
+        public static decimal ParseUom(this XmlNode node, string xPath, string[] keys, decimal[] values, decimal defaultValue, int? entryInd = null)
         {
             string actualKey = node.SelectSingleNode(xPath)?.InnerText?.ToUpper();
             if (!string.IsNullOrEmpty(actualKey))
@@ -71,6 +72,32 @@ namespace Tasks.Helpers
             return null;
         }
 
+        public static DateTime? ParseDateTime(this XmlNode node, string xPath, int? entryInd = null)
+        {
+            string value = node.SelectSingleNode(xPath)?.InnerText;
+            if (!string.IsNullOrEmpty(value))
+            {
+                DateTime result;
+                if (DateTime.TryParseExact(value, DateTimeFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                {
+                    return result;
+                }
+                else if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                {
+                    return result;
+                }
+                else if (entryInd.HasValue)
+                {
+                    Log.Warning("Некорректное значение {value} элемента {xPath} записи #{entryInd}, ожидалась дата/время.", value, xPath, entryInd);
+                }
+                else
+                {
+                    Log.Warning("Некорректное значение {value} элемента {xPath}, ожидалась дата/время.", value, xPath);
+                }
+            }
+            return null;
+        }
+
         public static int? ParseInt(this XmlNode node, string xPath, int? entryInd = null)
         {
             string value = node.SelectSingleNode(xPath)?.InnerText;
@@ -93,9 +120,20 @@ namespace Tasks.Helpers
             return null;
         }
 
-        public static int? ApplyUowCoeff(this decimal? value, int coeff)
+        public static int? ApplyUowCoeff(this decimal? value, decimal coeff)
         {
             return value == null ? (int?)null : (int)(value * coeff);
         }
+
+        public static decimal? ApplyDecimalUowCoeff(this decimal? value, decimal coeff)
+        {
+            return value == null ? (decimal?)null : (decimal)(value * coeff);
+        }
+
+        private static string[] DateTimeFormats = new[]
+        {
+            "yyyyMMddTHHmmss", "dd.MM.yyyy HH:mm", "MM/dd/yyyy hh:mm tt",
+            "yyyyMMdd", "dd.MM.yyyy", "MM/dd/yyyy"
+        };
     }
 }

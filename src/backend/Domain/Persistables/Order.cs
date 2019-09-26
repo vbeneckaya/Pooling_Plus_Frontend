@@ -23,7 +23,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата заказа
         /// </summary>
-        public string OrderDate { get; set; }
+        public DateTime? OrderDate { get; set; }
         /// <summary>
         /// Тип заказа
         /// </summary>
@@ -43,15 +43,15 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата отгрузки
         /// </summary>
-        public string ShippingDate { get; set; }
+        public DateTime? ShippingDate { get; set; }
         /// <summary>
         /// Дней в пути
         /// </summary>
-        public int DaysOnTheRoad { get; set; }
+        public int? DaysOnTheRoad { get; set; }
         /// <summary>
         /// Дата доставки
         /// </summary>
-        public string DeliveryDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         /// <summary>
         /// Номер накладной BDF
         /// </summary>
@@ -63,39 +63,39 @@ namespace Domain.Persistables
         /// <summary>
         /// Кол-во арт.
         /// </summary>
-        public string NumberOfArticles { get; set; }
+        public int? NumberOfArticles { get; set; }
         /// <summary>
         /// Предварительное Кол-во коробок
         /// </summary>
-        public string TheNumberOfBoxes { get; set; }
+        public int? TheNumberOfBoxes { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
-        public string PreliminaryNumberOfPallets { get; set; }
+        public int? PreliminaryNumberOfPallets { get; set; }
         /// <summary>
         /// Фактическое кол-во паллет
         /// </summary>
-        public string ActualNumberOfPallets { get; set; }
+        public int? ActualNumberOfPallets { get; set; }
         /// <summary>
         /// Подтвержденное кол-во коробок
         /// </summary>
-        public string ConfirmedBoxes { get; set; }
+        public int? ConfirmedBoxes { get; set; }
         /// <summary>
         /// Подтвержденное кол-во паллет
         /// </summary>
-        public string ConfirmedNumberOfPallets { get; set; }
+        public int? ConfirmedNumberOfPallets { get; set; }
         /// <summary>
         /// Вес, кг
         /// </summary>
-        public string WeightKg { get; set; }
+        public decimal? WeightKg { get; set; }
         /// <summary>
         /// Сумма заказа, без НДС
         /// </summary>
-        public string OrderAmountExcludingVAT { get; set; }
+        public decimal? OrderAmountExcludingVAT { get; set; }
         /// <summary>
         /// Сумма по ТТН, без НДС
         /// </summary>
-        public string TTNAmountExcludingVAT { get; set; }
+        public decimal? TTNAmountExcludingVAT { get; set; }
         /// <summary>
         /// Регион
         /// </summary>

@@ -183,18 +183,18 @@ namespace Tasks.MasterData
 
                 // Получение единиц измерения по каждому полю или группе смежных полей
 
-                int weightNetUowCoeff = pRoot.ParseUom("GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
-                int weightPieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
-                int weightShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
-                int weightBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
-                int weightLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
-                int weightPalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1, 1000 }, 1, entryInd);
+                decimal weightNetUowCoeff = pRoot.ParseUom("GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal weightPieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal weightShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal weightBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal weightLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal weightPalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/GEWEI", new[] { "GRM", "KGM" }, new[] { 1M, 1000M }, 1, entryInd);
 
-                int sizePieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
-                int sizeShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
-                int sizeBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
-                int sizeLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
-                int sizePalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/MEABM", new[] { "MMT", "MTR" }, new[] { 1, 1000 }, 1, entryInd);
+                decimal sizePieceUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PCE']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal sizeShrinkUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#2R']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal sizeBoxUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='CT']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal sizeLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
+                decimal sizePalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
 
                 // Непосредственно заполнение полей
 
