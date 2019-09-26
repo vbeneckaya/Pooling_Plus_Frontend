@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DAL;
 using DAL.Queries;
@@ -72,6 +73,21 @@ namespace Application.Shared
                 result.Add(SaveOrCreate(dto));
 
             return result;
+        }
+        
+        public ValidateResult ImportFromExcel(Stream fileStream)
+        {
+            var dbSet = UseDbSet(db);
+            var result = new List<ValidateResult>();
+            var entities = dbSet.ToList();
+            //foreach (var entity in entities) 
+                //result.Add(SaveOrCreate(entity));
+
+            return new ValidateResult
+            {
+                Id = "23423",
+                Error = $"Тут ответ{fileStream.Length}"
+            };
         }
         
         
