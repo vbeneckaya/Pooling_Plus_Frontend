@@ -67,7 +67,7 @@ const Login = () => {
                                 <img src={page.logo} alt={'LOGO'} />
                             </div>*/}
                                     <div>
-                                        <p>{t(page.name)}</p>
+                                        <p className="login-form-description-company">{t(page.name)}</p>
                                         <p>{t(page.support_name)}</p>
                                     </div>
                                 </Grid.Column>

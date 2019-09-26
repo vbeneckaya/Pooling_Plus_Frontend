@@ -206,3 +206,20 @@ body {
     height: 52vh;
     overflow: auto;
 }
+
+.representation {
+    display: inline-flex;
+    align-items: center;
+    width: 50%;
+
+    label {
+        font-weight: bold;
+        padding-right: 8px;
+    }
+
+    .field {
+        width: 100%;
+        margin-right: 8px;
+    }
+
+}

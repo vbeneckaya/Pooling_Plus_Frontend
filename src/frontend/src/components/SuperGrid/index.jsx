@@ -263,7 +263,8 @@ class SuperGrid extends Component {
             loadingReport,
             colorInfo,
             autoUpdateStop,
-            name
+            name,
+            isImportBtn
         } = this.props;
 
         return (
@@ -282,6 +283,7 @@ class SuperGrid extends Component {
                             />
                         )
                     }
+                    isImportBtn={isImportBtn}
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
