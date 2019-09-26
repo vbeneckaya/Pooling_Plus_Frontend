@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Domain.Services.Orders
@@ -7,25 +8,25 @@ namespace Domain.Services.Orders
         public string Id { get; set; }
         public string Status { get; set; }
         public string SalesOrderNumber { get; set; }
-        public string OrderDate { get; set; }
+        public DateTime? OrderDate { get; set; }
         public string TypeOfOrder { get; set; }
         public string Payer { get; set; }
         public string CustomerName { get; set; }
         public string SoldTo { get; set; }
-        public string ShippingDate { get; set; }
-        public int DaysOnTheRoad { get; set; }
-        public string DeliveryDate { get; set; }
+        public DateTime? ShippingDate { get; set; }
+        public int? DaysOnTheRoad { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string BDFInvoiceNumber { get; set; }
         public string InvoiceNumber { get; set; }
-        public string NumberOfArticles { get; set; }
-        public string TheNumberOfBoxes { get; set; }
-        public string PreliminaryNumberOfPallets { get; set; }
-        public string ActualNumberOfPallets { get; set; }
-        public string ConfirmedBoxes { get; set; }
-        public string ConfirmedNumberOfPallets { get; set; }
-        public string WeightKg { get; set; }
-        public string OrderAmountExcludingVAT { get; set; }
-        public string TTNAmountExcludingVAT { get; set; }
+        public int? NumberOfArticles { get; set; }
+        public int? TheNumberOfBoxes { get; set; }
+        public int? PreliminaryNumberOfPallets { get; set; }
+        public int? ActualNumberOfPallets { get; set; }
+        public int? ConfirmedBoxes { get; set; }
+        public int? ConfirmedNumberOfPallets { get; set; }
+        public decimal? WeightKg { get; set; }
+        public decimal? OrderAmountExcludingVAT { get; set; }
+        public decimal? TTNAmountExcludingVAT { get; set; }
         public string Region { get; set; }
         public string City { get; set; }
         public string ShippingAddress { get; set; }
