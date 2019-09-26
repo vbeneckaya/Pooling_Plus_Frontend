@@ -88,7 +88,7 @@
             Данные по id
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.ImportFromExcel(Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:API.Controllers.Shared.GridController`4.ImportFromExcel">
             <summary>
             Импортировать из excel
             </summary>

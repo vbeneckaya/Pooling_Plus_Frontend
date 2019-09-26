@@ -68,7 +68,7 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel")]
-        public ValidateResult ImportFromExcel(IFormFile file)
+        public ValidateResult ImportFromExcel([FromForm]IFormFile file)
         {
             using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
             {

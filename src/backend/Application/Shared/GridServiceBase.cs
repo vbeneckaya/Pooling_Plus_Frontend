@@ -129,7 +129,7 @@ namespace Application.Shared
             return new ValidateResult
             {
                 Id = "23423",
-                Error = $"Тут ответ{fileStream.Length}"
+                Error = $"Тут ответ {fileStream.Length}"
             };
         }
         

@@ -76,15 +76,11 @@ namespace API.Controllers.Shared
         /// <summary>
         /// Импортировать из excel
         /// </summary>
-        [HttpPost("importFromExcel")]
-        public ValidateResult ImportFromExcel(IFormFile file)
+        [HttpPost("importFromExcel"), DisableRequestSizeLimit]
+        public ValidateResult ImportFromExcel()
         {
-            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
-            {
-                file.CopyTo(stream);
-                return service.ImportFromExcel(stream);
-            }
-            
+            var file = HttpContext.Request.Form.Files.ElementAt(0);
+            return service.ImportFromExcel(file.OpenReadStream());            
         }        
         
         /// <summary>
