@@ -55,10 +55,5 @@ namespace DAL
             var commandText = "DROP SCHEMA public CASCADE;CREATE SCHEMA public;";
             Database.ExecuteSqlCommand(commandText);
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
     }
 }

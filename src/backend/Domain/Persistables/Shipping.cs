@@ -121,11 +121,6 @@ namespace Domain.Persistables
         /// Сумма подтверждена ТК
         /// </summary>
         public string AmountConfirmedByTC { get; set; }
-
-        /// <summary>
-        /// Документы
-        /// </summary>
-        public ICollection<Document> Documents { get; set; }
         /*end of fields*/
     }
 }

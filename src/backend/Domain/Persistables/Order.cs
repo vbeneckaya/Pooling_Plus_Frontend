@@ -197,11 +197,6 @@ namespace Domain.Persistables
         /// ##comment##
         /// </summary>
         public string Positions { get; set; }
-
-        /// <summary>
-        /// Документы
-        /// </summary>
-        public ICollection<Document> Documents { get; set; }
         /*end of fields*/
     }
 }
