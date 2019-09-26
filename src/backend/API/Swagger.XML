@@ -43,6 +43,11 @@
             Поиск по вхождению с пагинацией
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка в 
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.DictionaryController`3.GetById(System.Guid)">
             <summary>
             Данные по id
@@ -61,6 +66,11 @@
         <member name="M:API.Controllers.Shared.GridController`3.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.GridController`3.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка в 
             </summary>
         </member>
         <member name="M:API.Controllers.Shared.GridController`3.Import(System.Collections.Generic.IEnumerable{`2})">

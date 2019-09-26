@@ -1,5 +1,11 @@
 namespace Domain.Shared
 {
+    public class LookUpDto
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+    }
+
     public class ValidateResult
     {
         public ValidateResult() { }

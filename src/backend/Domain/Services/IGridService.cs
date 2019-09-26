@@ -7,6 +7,7 @@ namespace Domain.Services
     public interface IGridService<TEntity, TDto> : IService
     {
         SearchResult<TDto> Search(SearchForm form);
+        IEnumerable<LookUpDto> ForSelect();
         ValidateResult SaveOrCreate(TDto entityFrom);
         IEnumerable<ValidateResult> Import(IEnumerable<TDto> entityFrom);
         TDto Get(Guid id);

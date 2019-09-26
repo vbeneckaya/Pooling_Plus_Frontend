@@ -29,6 +29,11 @@ namespace Application.Shared
             return MapFromEntityToDto(dbSet.GetById(id));
         }
 
+        public IEnumerable<LookUpDto> ForSelect()
+        {
+            return new List<LookUpDto>();
+        }
+
         public SearchResult<TListDto> Search(SearchForm form)
         {
             var dbSet = UseDbSet(db);
