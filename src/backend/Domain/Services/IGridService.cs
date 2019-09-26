@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Domain.Shared;
 
 namespace Domain.Services
@@ -10,6 +11,7 @@ namespace Domain.Services
         IEnumerable<LookUpDto> ForSelect();
         ValidateResult SaveOrCreate(TFormDto entityFrom);
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
+        ValidateResult ImportFromExcel(Stream fileStream);
         TDto Get(Guid id);
         TFormDto GetForm(Guid id);
 

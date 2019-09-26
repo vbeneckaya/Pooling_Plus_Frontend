@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Domain.Services;
 using Domain.Shared;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -70,6 +72,20 @@ namespace API.Controllers.Shared
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        /// <summary>
+        /// Импортировать из excel
+        /// </summary>
+        [HttpPost("importFromExcel")]
+        public ValidateResult ImportFromExcel(IFormFile file)
+        {
+            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+            {
+                file.CopyTo(stream);
+                return service.ImportFromExcel(stream);
+            }
+            
+        }        
         
         /// <summary>
         /// Список возможных экшенов

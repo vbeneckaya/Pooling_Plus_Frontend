@@ -16,6 +16,10 @@ const GET_STATE_COLORS_REQUEST = 'GET_STATE_COLORS_REQUEST';
 const GET_STATE_COLORS_SUCCESS = 'GET_STATE_COLORS_SUCCESS';
 const GET_STATE_COLORS_ERROR = 'GET_STATE_COLORS_ERROR';
 
+const GRID_IMPORT_FROM_EXCEL_REQUEST = 'GRID_IMPORT_FROM_EXCEL_REQUEST';
+const GRID_IMPORT_FROM_EXCEL_SUCCESS = 'GRID_IMPORT_FROM_EXCEL_SUCCESS';
+const GRID_IMPORT_FROM_EXCEL_ERROR = 'GRID_IMPORT_FROM_EXCEL_ERROR';
+
 const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
 const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
 
@@ -28,7 +32,8 @@ const initial = {
     totalCount: 0,
     stateColors: [],
     progress: false,
-    stateColorsProgress: false
+    stateColorsProgress: false,
+    importProgress: false,
 };
 
 //*  REDUCER  *//
@@ -57,19 +62,30 @@ export default (state = initial, { type, payload }) => {
         case GET_STATE_COLORS_REQUEST:
             return {
                 ...state,
-                stateColorsProgress: true
+                stateColorsProgress: true,
             };
         case GET_STATE_COLORS_SUCCESS:
             return {
                 ...state,
                 stateColors: payload,
-                stateColorsProgress: false
+                stateColorsProgress: false,
             };
         case GET_STATE_COLORS_ERROR:
             return {
                 ...state,
                 stateColors: [],
-                stateColorsProgress: false
+                stateColorsProgress: false,
+            };
+        case GRID_IMPORT_FROM_EXCEL_REQUEST:
+            return {
+                ...state,
+                importProgress: true,
+            };
+        case GRID_IMPORT_FROM_EXCEL_SUCCESS:
+        case GRID_IMPORT_FROM_EXCEL_ERROR:
+            return {
+                ...state,
+                importProgress: false,
             };
         case CLEAR_GRID_INFO:
             return {
@@ -93,8 +109,8 @@ export const getListRequest = payload => {
 export const getStateColorsRequest = payload => {
     return {
         type: GET_STATE_COLORS_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 export const autoUpdateStart = payload => {
@@ -105,10 +121,17 @@ export const autoUpdateStop = () => {
     return { type: GRID_AUTO_UPDATE_STOP };
 };
 
+export const importFromExcelRequest = payload => {
+    return {
+        type: GRID_IMPORT_FROM_EXCEL_REQUEST,
+        payload,
+    };
+};
+
 export const clearGridInfo = () => {
     return {
-        type: CLEAR_GRID_INFO
-    }
+        type: CLEAR_GRID_INFO,
+    };
 };
 
 //*  SELECTORS *//
@@ -138,17 +161,31 @@ export const listSelector = createSelector(
     state => state.data,
 );
 
-export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
+export const stateColorsSelector = createSelector(
+    stateSelector,
+    state => state.stateColors,
+);
 
-export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
-    const grid = state.grids && state.grids.find(item => item.name === name);
-    return grid ? grid.canCreateByForm : false
-});
+export const canCreateByFormSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.canCreateByForm : false;
+    },
+);
 
-export const canImportFromExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
-    const grid = state.grids && state.grids.find(item => item.name === name);
-    return grid ? grid.canImportFromExcel : false
-});
+export const canImportFromExcelSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.canImportFromExcel : false;
+    },
+);
+
+export const importProgressSelector = createSelector(
+    stateSelector,
+    state => state.importProgress,
+);
 
 //*  SAGA  *//
 
@@ -208,18 +245,35 @@ export const backgroundSyncListSaga = function*() {
     }
 };
 
-function* getStateColorsSaga ({payload}) {
+function* getStateColorsSaga({ payload }) {
     try {
         const result = yield postman.post(`${payload}/search`);
 
         yield put({
             type: GET_STATE_COLORS_SUCCESS,
-            payload: result
-        })
+            payload: result,
+        });
     } catch (e) {
         yield put({
             type: GET_STATE_COLORS_ERROR,
-            payload: e
+            payload: e,
+        });
+    }
+}
+
+function* importFromExcelSaga({ payload }) {
+    try {
+        const {form, name} = payload;
+        const result = yield postman.post(`${name}/importFromExcel`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        yield put({
+            type: GRID_IMPORT_FROM_EXCEL_SUCCESS
+        })
+    } catch (e) {
+        yield put({
+            type: GRID_IMPORT_FROM_EXCEL_ERROR
         })
     }
 }
@@ -230,5 +284,6 @@ export function* saga() {
         takeEvery(GRID_AUTO_UPDATE_START, autoUpdateStartSaga),
         takeEvery(GRID_AUTO_UPDATE_STOP, autoUpdateStopSaga),
         takeEvery(GET_STATE_COLORS_REQUEST, getStateColorsSaga),
+        takeEvery(GRID_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
     ]);
 }
