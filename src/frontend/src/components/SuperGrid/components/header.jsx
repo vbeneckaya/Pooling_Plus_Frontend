@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Grid } from 'semantic-ui-react';
+import {Button, Form, Grid, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
+import Select from "../../BaseComponents/Select";
 
 const Header = ({
     createButton,
@@ -10,9 +11,17 @@ const Header = ({
     counter,
     clearFilter,
     disabledClearFilter,
+    isImportBtn,
 }) => {
-
     const { t } = useTranslation();
+
+    const importExcel = () => {
+
+    };
+
+    const settings = () => {
+
+    };
 
     return (
         <Grid className="grid-header-panel">
@@ -20,14 +29,40 @@ const Header = ({
                 <Grid.Column width={10}>
                     {createButton}
                     <Search value={searchValue} onChange={searchOnChange} isAuto />
-                    <span className="records-counter">
-                        {t('totalCount', {count: counter})}
-                    </span>
+                    <span className="records-counter">{t('totalCount', { count: counter })}</span>
                 </Grid.Column>
                 <Grid.Column width={6} className="grid-right-elements">
-                    <Button color="orange" onClick={clearFilter} disabled={disabledClearFilter}>
-                        {t('reset_filters')}
-                    </Button>
+                    <div className="representation">
+                        <label>{t('representation')}</label>
+                        <Select/>
+                        <Button
+                            icon="cogs"
+                            onClick={settings}
+                        />
+                    </div>
+                    <Popup
+                        content={t('reset_filters')}
+                        position='bottom right'
+                        trigger={
+                            <Button
+                                icon="times"
+                                onClick={clearFilter}
+                                disabled={disabledClearFilter}
+                            />
+                        }
+                    />
+                    {
+                        isImportBtn &&  <Popup
+                            content={t('importFromExcel')}
+                            position='bottom right'
+                            trigger={
+                                <Button
+                                    icon="file excel"
+                                    onClick={importExcel}
+                                />
+                            }
+                        />
+                    }
                 </Grid.Column>
             </Grid.Row>
         </Grid>

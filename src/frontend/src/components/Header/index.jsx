@@ -106,13 +106,15 @@ const Header = () => {
                                 </Dropdown>
                             </Menu.Menu>
                         )}
-                        <Menu.Menu position="right">
-                            <Dropdown text={`${userName} (${t(userRole)})`} item>
-                                <Dropdown.Menu>
-                                    <Dropdown.Item onClick={logOut}>{t('exit')}</Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Menu.Menu>
+                        {userName && userRole ? (
+                            <Menu.Menu position="right">
+                                <Dropdown text={`${userName} (${t(userRole)})`} item>
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={logOut}>{t('exit')}</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Menu.Menu>
+                        ) : null}
                     </Menu>
                 </header>
             ) : null}

@@ -23,14 +23,22 @@
 .login-form-description {
     width: 277px !important;
     border-right: 1px solid #e0e1e2;
-    padding-left: 33px !important;
-    padding-top: 59px !important;
-}
+    // padding-left: 33px !important;
+    // padding-top: 59px !important;
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
 
-.login-form-description img {
-    position: absolute;
-    left: 0;
-    top: -16px;
+    &-company {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    img {
+        position: absolute;
+        left: 0;
+        top: -16px;
+    }
 }
 
 .login-form-input-wrapper {

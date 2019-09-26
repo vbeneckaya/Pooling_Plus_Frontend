@@ -11,6 +11,15 @@ export const parseDate = dateString => {
     }
 };
 
+export const parseDateTime = dateString => {
+    if (!dateString) return null;
+    let reg = /(\d{2}).(\d{2}).(\d{4}) (\d{2}):(\d{2})/;
+    let dateArray = reg.exec(dateString);
+    if (!dateArray) return null;
+    let d = new Date(+dateArray[3], +dateArray[2] - 1, +dateArray[1], +dateArray[4], +dateArray[5]);
+    return isNaN(d.getTime()) ? null : d;
+};
+
 export const dateToString = (date, dateFormat = 'dd.MM.YYYY') => {
     return format(date, dateFormat);
 };

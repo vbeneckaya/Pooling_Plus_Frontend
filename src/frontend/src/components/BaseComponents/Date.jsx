@@ -32,7 +32,7 @@ const Date = ({ value, name, onChange, isDisabled, noLabel, required, placeholde
                 className={getClassNames()}
                 isClearable={!(isDisabled || false)}
                 selected={parseDate((value || '').substring(0, 10))}
-                locale={localStorage.getItem('currentCulture')}
+                locale={localStorage.getItem('i18nextLng')}
                 dateFormat="dd.MM.yyyy"
                 onChange={(date, e) => {
                     onChange(e, { name: name, value: date ? formatDate(date) : null });

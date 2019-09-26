@@ -145,6 +145,11 @@ export const canCreateByFormSelector = createSelector([stateProfile, gridName], 
     return grid ? grid.canCreateByForm : false
 });
 
+export const canImportFromExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canImportFromExcel : false
+});
+
 //*  SAGA  *//
 
 export function* getListSaga({ payload }) {

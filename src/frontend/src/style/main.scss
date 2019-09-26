@@ -69,18 +69,20 @@ body {
 }
 
 .scrolling.content {
-    max-height: 76vh!important;
+    max-height: 76vh !important;
     overflow: auto;
-    padding-bottom: 0!important;
+    padding-bottom: 0 !important;
 }
 
 .card-modal {
     min-height: 92vh;
+
     .content {
         padding-bottom: 15px !important;
         border-bottom-left-radius: 0.28571429rem;
         border-bottom-right-radius: 0.28571429rem;
     }
+
     .actions {
         min-height: 65px;
         position: absolute;
@@ -160,26 +162,64 @@ body {
     justify-content: flex-start;
     padding: 0 -15px;
 
-    .field:not(.wide){
+    .field:not(.wide) {
         width: 33.3% !important;
     }
 
-    .field.wide{
-        width:100% !important;
+    .field.wide {
+        width: 100% !important;
     }
 
-    .field{
-        margin-bottom: 15px!important;
+    .field {
+        margin-bottom: 15px !important;
         padding: 0 15px !important;
     }
 
-    .field input[type=text]{
-        width:100% !important;
+    .field input[type='text'] {
+        width: 100% !important;
     }
 }
 
 .tabs-card {
     height: 64vh;
     overflow: auto;
+
+    .ui.grid > .row > .column {
+        display: flex;
+        align-items: flex-end;
+
+        .field {
+            width: 100%;
+        }
+    }
+
+    .ui.segment {
+        margin: 0 !important;
+    }
+
+    .all-tabs > .ui.menu.tabular {
+        white-space: nowrap;
+    }
 }
 
+.ext-tabs-card {
+    height: 52vh;
+    overflow: auto;
+}
+
+.representation {
+    display: inline-flex;
+    align-items: center;
+    width: 50%;
+
+    label {
+        font-weight: bold;
+        padding-right: 8px;
+    }
+
+    .field {
+        width: 100%;
+        margin-right: 8px;
+    }
+
+}

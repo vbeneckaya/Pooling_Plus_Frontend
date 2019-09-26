@@ -4,7 +4,7 @@ import SuperGrid from '../../components/SuperGrid';
 import {
     autoUpdateStart,
     autoUpdateStop,
-    canCreateByFormSelector,
+    canCreateByFormSelector, canImportFromExcelSelector,
     columnsGridSelector,
     getListRequest,
     getStateColorsRequest,
@@ -112,6 +112,7 @@ class List extends Component {
             isCreateBtn,
             getActions,
             stateColors,
+            isImportBtn
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -132,6 +133,7 @@ class List extends Component {
                     storageSortItem={`${name}Sort`}
                     storageFilterItem={`${name}Filters`}
                     getActions={getActions}
+                    isImportBtn={isImportBtn}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
@@ -175,6 +177,7 @@ function mapStateToProps(state, ownProps) {
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
+        isImportBtn: canImportFromExcelSelector(state, name),
         actions: actionsSelector(state),
         stateColors: stateColorsSelector(state, name),
     };
