@@ -45,7 +45,7 @@ class Facet extends React.Component {
 
         items = items.map(x => {
             return {
-                value: x.name,
+                value: x.value,
                 name: t(x.name),
                 isActive: x.isActive,
             };

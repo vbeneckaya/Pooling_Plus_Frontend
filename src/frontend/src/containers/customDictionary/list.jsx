@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 import {
-    canCreateByFormSelector,
+    canCreateByFormSelector, canImportFromExcelSelector,
     columnsSelector,
     getListRequest,
     listSelector,
@@ -24,7 +24,7 @@ const newModal = (t, load, name) => (
     </Card>
 );
 
-const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCreateBtn }) => {
+const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCreateBtn, isImportBtn }) => {
 
     const { params = {} } = match;
     const { name = '' } = params;
@@ -40,6 +40,7 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCre
             totalCount={totalCount}
             title={name}
             list={list}
+            isImportBtn={isImportBtn}
             newModal={isCreateBtn ? newModal : null}
             modalCard={<Card title={t('editCard', {name: t(name)})} />}
         />
@@ -56,7 +57,8 @@ const mapStateToProps = (state, ownProps) => {
         progress: progressSelector(state),
         totalCount: totalCountSelector(state),
         list: listSelector(state),
-        isCreateBtn: canCreateByFormSelector(state, name)
+        isCreateBtn: canCreateByFormSelector(state, name),
+        isImportBtn: canImportFromExcelSelector(state, name)
     };
 };
 

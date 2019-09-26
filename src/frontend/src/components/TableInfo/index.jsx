@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Container, Dimmer, Grid, Loader, Table } from 'semantic-ui-react';
+import {Button, Container, Dimmer, Grid, Icon, Loader, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import { debounce } from 'throttle-debounce';
 import { PAGE_SIZE } from '../../constants/settings';
@@ -84,6 +84,10 @@ class TableInfo extends Component {
         </Table.Row>
     );
 
+    importFromExcel = () => {
+
+    };
+
     render() {
         const {
             headerRow,
@@ -99,7 +103,8 @@ class TableInfo extends Component {
             newModal,
             t,
             name,
-            modalCard
+            modalCard,
+            isImportBtn
         } = this.props;
 
         const { filter } = this.state;
@@ -121,6 +126,11 @@ class TableInfo extends Component {
                                 />
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
+                                {
+                                    isImportBtn
+                                    ? <Button color="green" onClick={this.importFromExcel}><Icon name="file excel" />{t('importFromExcel')}</Button>
+                                        : null
+                                }
                                 {newModal ? newModal(t, this.load, name) : null}
                                 {groupActions &&
                                     groupActions().map(action => {

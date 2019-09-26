@@ -144,6 +144,11 @@ export const canCreateByFormSelector = createSelector([stateProfile, dictionaryN
     return dictionary ? dictionary.canCreateByForm : false
 });
 
+export const canImportFromExcelSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.canImportFromExcel : false
+});
+
 //*  SAGA  *//
 
 export function* getListSaga({ payload }) {
