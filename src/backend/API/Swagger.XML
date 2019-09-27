@@ -139,6 +139,47 @@
             Сохранить или изменить
             </summary>
         </member>
+        <member name="T:API.Controllers.Shared.GridWithDocumentsController`4">
+            <summary>
+            Грид поддерживающий работу с документами
+            </summary>
+            <typeparam name="TService"></typeparam>
+            <typeparam name="TEntity"></typeparam>
+            <typeparam name="TDto"></typeparam>
+            <typeparam name="TFormDto"></typeparam>
+        </member>
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.GetDocuments(System.Guid)">
+            <summary>
+            Получить документы
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.CreateDocument(System.Guid,Domain.Services.Documents.DocumentDto)">
+            <summary>
+            Создать документ
+            </summary>
+            <param name="id"></param>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.UpdateDocument(System.Guid,System.Guid,Domain.Services.Documents.DocumentDto)">
+            <summary>
+            Обновление документа
+            </summary>
+            <param name="id"></param>
+            <param name="documentId"></param>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.DeleteDocument(System.Guid,System.Guid)">
+            <summary>
+            Удалить документ
+            </summary>
+            <param name="id"></param>
+            <param name="documentId"></param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.StateController`1.GetAll">
             <summary>
             Все доступные статусы с цветами
