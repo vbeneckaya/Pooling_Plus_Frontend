@@ -5,30 +5,47 @@ import { useTranslation } from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 import {
-    canCreateByFormSelector, canImportFromExcelSelector,
+    canCreateByFormSelector,
+    canImportFromExcelSelector,
     columnsSelector,
     getListRequest,
+    importFromExcelRequest,
     listSelector,
     progressSelector,
-    totalCountSelector
+    totalCountSelector,
 } from '../../ducks/dictionaryView';
-import {Button, Icon} from "semantic-ui-react";
-import Card from "./card";
-
+import { Button, Icon } from 'semantic-ui-react';
+import Card from './card';
 
 const newModal = (t, load, name) => (
-    <Card title={t('createCard', {name: t(name)})} id={null} loadList={load} name={name}>
+    <Card title={t('createCard', { name: t(name) })} id={null} loadList={load} name={name}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> {t('create_btn')}
         </Button>
     </Card>
 );
 
-const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCreateBtn, isImportBtn }) => {
-
+const List = ({
+    match = {},
+    columns,
+    loadList,
+    progress,
+    totalCount,
+    list,
+    isCreateBtn,
+    isImportBtn,
+    importFromExcel,
+}) => {
     const { params = {} } = match;
     const { name = '' } = params;
     const { t } = useTranslation();
+
+    const handleImportFromExcel = form => {
+        importFromExcel({
+            form,
+            name,
+        });
+    };
 
     return (
         <TableInfo
@@ -41,8 +58,9 @@ const List = ({ match = {}, columns, loadList, progress, totalCount, list, isCre
             title={name}
             list={list}
             isImportBtn={isImportBtn}
+            importFromExcel={handleImportFromExcel}
             newModal={isCreateBtn ? newModal : null}
-            modalCard={<Card title={t('editCard', {name: t(name)})} />}
+            modalCard={<Card title={t('editCard', { name: t(name) })} />}
         />
     );
 };
@@ -58,7 +76,7 @@ const mapStateToProps = (state, ownProps) => {
         totalCount: totalCountSelector(state),
         list: listSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
-        isImportBtn: canImportFromExcelSelector(state, name)
+        isImportBtn: canImportFromExcelSelector(state, name),
     };
 };
 
@@ -66,6 +84,9 @@ const mapDispatchToProps = dispatch => {
     return {
         loadList: params => {
             dispatch(getListRequest(params));
+        },
+        importFromExcel: params => {
+            dispatch(importFromExcelRequest(params));
         },
     };
 };

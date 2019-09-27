@@ -13,10 +13,13 @@ const Header = ({
     disabledClearFilter,
     isImportBtn,
     importFromExcel,
+    exportToExcel,
 }) => {
     const { t } = useTranslation();
 
     const fileUploader = useRef(null);
+
+    const exportExcel = () => {exportToExcel()};
 
     const importExcel = () => {
         fileUploader && fileUploader.current.click();
@@ -69,7 +72,14 @@ const Header = ({
                         <Popup
                             content={t('importFromExcel')}
                             position="bottom right"
-                            trigger={<Button icon="file excel" onClick={importExcel} />}
+                            trigger={<Button icon="upload" onClick={importExcel} />}
+                        />
+                    )}
+                    {true && ( // todo
+                        <Popup
+                            content={t('exportToExcel')}
+                            position="bottom right"
+                            trigger={<Button icon="download" onClick={exportExcel} />}
                         />
                     )}
                 </Grid.Column>

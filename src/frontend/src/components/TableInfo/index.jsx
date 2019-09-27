@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Button, Container, Dimmer, Grid, Icon, Loader, Table} from 'semantic-ui-react';
+import { Button, Container, Dimmer, Grid, Icon, Loader, Table } from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import { debounce } from 'throttle-debounce';
 import { PAGE_SIZE } from '../../constants/settings';
@@ -85,7 +85,17 @@ class TableInfo extends Component {
     );
 
     importFromExcel = () => {
+        this.fileUploader && this.fileUploader.click();
+    };
 
+    onFilePicked = e => {
+        const file = e.target.files[0];
+
+        const data = new FormData();
+        data.append('FileName', file.name);
+        data.append('FileContent', new Blob([file], { type: file.type }));
+        data.append('FileContentType', file.type);
+        this.props.importFromExcel(data);
     };
 
     render() {
@@ -104,7 +114,7 @@ class TableInfo extends Component {
             t,
             name,
             modalCard,
-            isImportBtn
+            isImportBtn,
         } = this.props;
 
         const { filter } = this.state;
@@ -126,11 +136,21 @@ class TableInfo extends Component {
                                 />
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
-                                {
-                                    isImportBtn
-                                    ? <Button color="green" onClick={this.importFromExcel}><Icon name="file excel" />{t('importFromExcel')}</Button>
-                                        : null
-                                }
+                                <input
+                                    type="file"
+                                    ref={instance => {
+                                        this.fileUploader = instance;
+                                    }}
+                                    style={{ display: 'none' }}
+                                    onChange={this.onFilePicked}
+                                />
+
+                                {isImportBtn ? (
+                                    <Button color="green" onClick={this.importFromExcel}>
+                                        <Icon name="upload" />
+                                        {t('importFromExcel')}
+                                    </Button>
+                                ) : null}
                                 {newModal ? newModal(t, this.load, name) : null}
                                 {groupActions &&
                                     groupActions().map(action => {

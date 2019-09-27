@@ -1,7 +1,8 @@
-import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
-import { IS_AUTO_UPDATE } from '../constants/settings';
+import {createSelector} from 'reselect';
+import {postman} from '../utils/postman';
+import {all, takeEvery, put, cancelled, delay, fork, cancel} from 'redux-saga/effects';
+import {IS_AUTO_UPDATE} from '../constants/settings';
+import {formatDate} from "../utils/dateTimeFormater";
 
 let task = null;
 let filters = {};
@@ -20,6 +21,10 @@ const GRID_IMPORT_FROM_EXCEL_REQUEST = 'GRID_IMPORT_FROM_EXCEL_REQUEST';
 const GRID_IMPORT_FROM_EXCEL_SUCCESS = 'GRID_IMPORT_FROM_EXCEL_SUCCESS';
 const GRID_IMPORT_FROM_EXCEL_ERROR = 'GRID_IMPORT_FROM_EXCEL_ERROR';
 
+const GRID_EXPORT_TO_EXCEL_REQUEST = 'GRID_EXPORT_TO_EXCEL_REQUEST';
+const GRID_EXPORT_TO_EXCEL_SUCCESS = 'GRID_EXPORT_TO_EXCEL_SUCCESS';
+const GRID_EXPORT_TO_EXCEL_ERROR = 'GRID_EXPORT_TO_EXCEL_ERROR';
+
 const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
 const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
 
@@ -34,11 +39,12 @@ const initial = {
     progress: false,
     stateColorsProgress: false,
     importProgress: false,
+    exportProgress: false
 };
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload }) => {
+export default (state = initial, {type, payload}) => {
     switch (type) {
         case GET_GRID_LIST_REQUEST:
             return {
@@ -87,6 +93,17 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 importProgress: false,
             };
+        case GRID_EXPORT_TO_EXCEL_REQUEST:
+            return {
+                ...state,
+                exportProgress: true,
+            };
+        case GRID_EXPORT_TO_EXCEL_SUCCESS:
+        case GRID_EXPORT_TO_EXCEL_ERROR:
+            return {
+                ...state,
+                importProgress: false,
+            };
         case CLEAR_GRID_INFO:
             return {
                 ...state,
@@ -114,11 +131,11 @@ export const getStateColorsRequest = payload => {
 };
 
 export const autoUpdateStart = payload => {
-    return { type: GRID_AUTO_UPDATE_START, payload };
+    return {type: GRID_AUTO_UPDATE_START, payload};
 };
 
 export const autoUpdateStop = () => {
-    return { type: GRID_AUTO_UPDATE_STOP };
+    return {type: GRID_AUTO_UPDATE_STOP};
 };
 
 export const importFromExcelRequest = payload => {
@@ -126,6 +143,13 @@ export const importFromExcelRequest = payload => {
         type: GRID_IMPORT_FROM_EXCEL_REQUEST,
         payload,
     };
+};
+
+export const exportToExcelRequest = payload => {
+    return {
+        type: GRID_EXPORT_TO_EXCEL_REQUEST,
+        payload
+    }
 };
 
 export const clearGridInfo = () => {
@@ -187,26 +211,31 @@ export const importProgressSelector = createSelector(
     state => state.importProgress,
 );
 
+export const exportProgressSelector = createSelector(
+    stateSelector,
+    state => state.exportProgress,
+);
+
 //*  SAGA  *//
 
-export function* getListSaga({ payload }) {
+export function* getListSaga({payload}) {
     try {
-        const { filter = {}, name, isConcat } = payload;
+        const {filter = {}, name, isConcat} = payload;
 
         yield delay(1000);
 
         const result = yield postman.post(`/${name}/search`, filter);
 
-        yield put({ type: GET_GRID_LIST_SUCCESS, payload: { ...result, isConcat } });
+        yield put({type: GET_GRID_LIST_SUCCESS, payload: {...result, isConcat}});
     } catch (error) {
-        yield put({ type: GET_GRID_LIST_ERROR, payload: error });
+        yield put({type: GET_GRID_LIST_ERROR, payload: error});
     }
 }
 
-export function* autoUpdateStartSaga({ payload }) {
+export function* autoUpdateStartSaga({payload}) {
     if (IS_AUTO_UPDATE) {
         if (!task) {
-            filters = { ...payload };
+            filters = {...payload};
             task = yield fork(backgroundSyncListSaga);
 
             filters = {
@@ -232,7 +261,7 @@ export function* autoUpdateStopSaga() {
     }
 }
 
-export const backgroundSyncListSaga = function*() {
+export const backgroundSyncListSaga = function* () {
     try {
         while (true) {
             yield put(getListRequest(filters));
@@ -245,7 +274,7 @@ export const backgroundSyncListSaga = function*() {
     }
 };
 
-function* getStateColorsSaga({ payload }) {
+function* getStateColorsSaga({payload}) {
     try {
         const result = yield postman.post(`${payload}/search`);
 
@@ -261,11 +290,11 @@ function* getStateColorsSaga({ payload }) {
     }
 }
 
-function* importFromExcelSaga({ payload }) {
+function* importFromExcelSaga({payload}) {
     try {
         const {form, name} = payload;
         const result = yield postman.post(`${name}/importFromExcel`, form, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {'Content-Type': 'multipart/form-data'},
         });
 
         yield put({
@@ -278,6 +307,24 @@ function* importFromExcelSaga({ payload }) {
     }
 }
 
+function* exportToExcelSaga({payload}) {
+    try {
+        const {name} = payload;
+        const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
+        const result = yield postman.post(`/${name}/exportToExcel`, null,{responseType: 'blob'},);
+        console.log('result', result);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([result], {type: result.type}));
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        yield put({type: GRID_EXPORT_TO_EXCEL_SUCCESS,});
+    } catch (error) {
+        yield put({type: GRID_EXPORT_TO_EXCEL_ERROR,});
+    }
+}
+
+
 export function* saga() {
     yield all([
         takeEvery(GET_GRID_LIST_REQUEST, getListSaga),
@@ -285,5 +332,6 @@ export function* saga() {
         takeEvery(GRID_AUTO_UPDATE_STOP, autoUpdateStopSaga),
         takeEvery(GET_STATE_COLORS_REQUEST, getStateColorsSaga),
         takeEvery(GRID_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
+        takeEvery(GRID_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
     ]);
 }

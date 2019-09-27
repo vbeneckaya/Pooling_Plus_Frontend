@@ -12,6 +12,10 @@ const GET_DICTIONARY_CARD_REQUEST = 'GET_DICTIONARY_CARD_REQUEST';
 const GET_DICTIONARY_CARD_SUCCESS = 'GET_DICTIONARY_CARD_SUCCESS';
 const GET_DICTIONARY_CARD_ERROR = 'GET_DICTIONARY_CARD_ERROR';
 
+const DICTIONARY_IMPORT_FROM_EXCEL_REQUEST = 'DICTIONARY_IMPORT_FROM_EXCEL_REQUEST';
+const DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS = 'DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS';
+const DICTIONARY_IMPORT_FROM_EXCEL_ERROR = 'DICTIONARY_IMPORT_FROM_EXCEL_ERROR';
+
 const SAVE_DICTIONARY_CARD_REQUEST = 'SAVE_DICTIONARY_CARD_REQUEST';
 const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
@@ -25,6 +29,7 @@ const initial = {
     card: {},
     totalCount: 0,
     progress: false,
+    importProgress: true
 };
 
 //*  REDUCER  *//
@@ -105,6 +110,13 @@ export const saveDictionaryCardRequest = payload => {
 export const clearDictionaryInfo = () => {
     return {
         type: CLEAR_DICTIONARY_INFO
+    }
+};
+
+export const importFromExcelRequest = payload => {
+    return {
+        type: DICTIONARY_IMPORT_FROM_EXCEL_REQUEST,
+        payload
     }
 };
 
@@ -193,10 +205,28 @@ function* saveDictionaryCardSaga ({ payload }) {
     }
 }
 
+function* importFromExcelSaga({ payload }) {
+    try {
+        const {form, name} = payload;
+        const result = yield postman.post(`${name}/importFromExcel`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        yield put({
+            type: DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS
+        })
+    } catch (e) {
+        yield put({
+            type: DICTIONARY_IMPORT_FROM_EXCEL_ERROR
+        })
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_DICTIONARY_LIST_REQUEST, getListSaga),
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
-        takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga)
+        takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
+        takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
     ]);
 }

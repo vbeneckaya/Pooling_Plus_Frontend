@@ -5,7 +5,7 @@ import {
     autoUpdateStart,
     autoUpdateStop,
     canCreateByFormSelector, canImportFromExcelSelector,
-    columnsGridSelector,
+    columnsGridSelector, exportToExcelRequest,
     getListRequest,
     getStateColorsRequest, importFromExcelRequest,
     listSelector,
@@ -110,6 +110,16 @@ class List extends Component {
 
     };
 
+    handleExportToExcel = () => {
+        const { match, exportToExcel } = this.props;
+        const { params = {} } = match;
+        const { name = '' } = params;
+        exportToExcel({
+            name,
+        })
+
+    };
+
     render() {
         const {
             columns = [],
@@ -146,6 +156,7 @@ class List extends Component {
                     getActions={getActions}
                     isImportBtn={isImportBtn}
                     importFromExcel={this.handleImportFromExcel}
+                    exportToExcel={this.handleExportToExcel}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
@@ -177,6 +188,9 @@ function mapDispatchToProps(dispatch) {
         },
         importFromExcel: params => {
             dispatch(importFromExcelRequest(params))
+        },
+        exportToExcel: params => {
+            dispatch(exportToExcelRequest(params))
         }
     };
 }
