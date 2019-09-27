@@ -52,7 +52,7 @@ namespace Application.Services.AppConfiguration
                             /*start of add field for Orders*/
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState)),
                             new UserConfigurationGridColumn(nameof(OrderDto.SalesOrderNumber), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.TypeOfOrder), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.CustomerName), FiledType.Text),

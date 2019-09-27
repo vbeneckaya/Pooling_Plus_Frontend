@@ -67,7 +67,7 @@ namespace API
             
             services.AddHttpContextAccessor();
 
-            services.AddDomain(Configuration, false);
+            services.AddDomain(Configuration, true);
 
             services.AddScoped<IUserIdProvider, UserIdProvider>();
         }
