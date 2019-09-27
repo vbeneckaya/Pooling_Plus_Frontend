@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -8,7 +7,7 @@ namespace Application.Shared
 {
     public class FieldSetter<TEntity>
     {
-        public bool UpdateField<T>(Expression<Func<TEntity, T>> property, T newValue, params Action<TEntity>[] afterActions)
+        public bool UpdateField<T>(Expression<Func<TEntity, T>> property, T newValue, params Action<TEntity, T, T>[] afterActions)
         {
             T oldValue = property.Compile()(_entity);
             if (!Equals(oldValue, newValue))
@@ -22,9 +21,12 @@ namespace Application.Shared
                         propertyInfo.SetValue(_entity, newValue);
                         if (afterActions != null)
                         {
-                            _afterActions.AddRange(afterActions);
+                            foreach (Action<TEntity, T, T> action in afterActions)
+                            {
+                                _afterActions.Add(() => action(_entity, oldValue, newValue));
+                            }
                         }
-                        _hasChanges = true;
+                        HasChanges = true;
                         return true;
                     }
                 }
@@ -34,21 +36,20 @@ namespace Application.Shared
 
         public void ApplyAfterActions()
         {
-            foreach (var action in _afterActions.Distinct())
+            foreach (var action in _afterActions)
             {
-                action(_entity);
+                action();
             }
         }
 
-        public bool HasChanges => _hasChanges;
+        public bool HasChanges { get; private set; } = false;
 
         public FieldSetter(TEntity entity)
         {
             _entity = entity;
         }
 
-        private bool _hasChanges = false;
         private readonly TEntity _entity;
-        private readonly List<Action<TEntity>> _afterActions = new List<Action<TEntity>>();
+        private readonly List<Action> _afterActions = new List<Action>();
     }
 }

@@ -151,7 +151,7 @@ namespace Application.Services.Orders
             };
         }
 
-        private void AfterSalesOrderNumberChanged(Order order)
+        private void AfterSalesOrderNumberChanged(Order order, string oldValue, string newValue)
         {
             if (order.SalesOrderNumber.StartsWith("1"))
                 order.TypeOfOrder = "OR";
@@ -159,7 +159,7 @@ namespace Application.Services.Orders
                 order.TypeOfOrder = "FD";
         }
 
-        private void AfterSoldToChanged(Order order)
+        private void AfterSoldToChanged(Order order, string oldValue, string newValue)
         {
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
