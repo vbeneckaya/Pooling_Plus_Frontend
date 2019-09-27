@@ -14,6 +14,32 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
+        <member name="T:API.Controllers.FilesController">
+            <summary>
+            Файлы
+            </summary>
+        </member>
+        <member name="M:API.Controllers.FilesController.Upload(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Загрузка файла
+            </summary>
+            <param name="formFile">Файл</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.FilesController.Get(System.Guid)">
+            <summary>
+            Получить файл на просмотр
+            </summary>
+            <param name="id">Идентификатор файла</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.FilesController.Download(System.Guid)">
+            <summary>
+            Скачать файл
+            </summary>
+            <param name="id">Идентификатор файла</param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.IdentityController.UserInfo">
             <summary>
             Получение информации о пользователе
