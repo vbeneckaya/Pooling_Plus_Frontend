@@ -211,6 +211,7 @@ namespace DAL.Migrations
                 new Column("TypeOfEquipment", DbType.String),
                 new Column("LeadtimeDays", DbType.String),
                 new Column("CustomerWarehouse", DbType.String),
+                new Column("UseTypeOfEquipment", DbType.String),
                 /*general fields for Warehouses*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
@@ -517,6 +518,7 @@ namespace DAL.Migrations
             AddTranslation("typeOfEquipment", "TypeOfEquipment", "Тип комплектации");
             AddTranslation("leadtimeDays", "LeadtimeDays", "Leadtime, дней");
             AddTranslation("customerWarehouse", "CustomerWarehouse", "Склад клиента");
+            AddTranslation("useTypeOfEquipment", "UseTypeOfEquipment", "Использование типа комплектации");
             AddTranslation("article", "Article", "Артикул");
             AddTranslation("articles", "Articles", "Артикулы");
             AddTranslation("sPGR", "SPGR", "SPGR");

@@ -153,10 +153,10 @@ namespace Application.Services.Orders
 
         private void AfterSalesOrderNumberChanged(Order order, string oldValue, string newValue)
         {
-            if (order.SalesOrderNumber.StartsWith("1"))
-                order.TypeOfOrder = "OR";
-            else if (order.SalesOrderNumber.StartsWith("2"))
+            if (order.SalesOrderNumber.StartsWith("2"))
                 order.TypeOfOrder = "FD";
+            else 
+                order.TypeOfOrder = "OR";
         }
 
         private void AfterSoldToChanged(Order order, string oldValue, string newValue)
@@ -168,18 +168,20 @@ namespace Application.Services.Orders
                 {
                     order.CustomerName = soldToWarehouse.TheNameOfTheWarehouse;
 
-                    //TODO Сделать флаг для склада, в зависимости от него брать или нет Тип комплектации из склада
-                    if (!new List<string> { "Атак", "Ашан", "Перекресток" }.Contains(order.CustomerName))
+                    if (soldToWarehouse.UseTypeOfEquipment == "Да")
                         order.TypeOfEquipment = soldToWarehouse.TypeOfEquipment;
 
                     if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
                     {
                         int leadTimeDays = int.Parse(soldToWarehouse.LeadtimeDays);
-                        order.ShippingDate = order.DeliveryDate?.AddDays(0 - leadTimeDays);
                         order.DaysOnTheRoad = leadTimeDays;
                     }
 
+                    order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.DaysOnTheRoad ?? 0);
+
                     order.DeliveryAddress = soldToWarehouse.Address;
+                    order.City = soldToWarehouse.City;
+                    order.Region = soldToWarehouse.Region;
                 }
             }
         }
