@@ -44,15 +44,6 @@ namespace API.Controllers.Shared
         {
             return service.ForSelect();
         }
-        
-        /// <summary>
-        /// Импортировать
-        /// </summary>
-        [HttpPost("import")]
-        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TFormDto> form)
-        {
-            return service.Import(form);
-        }
 
         /// <summary>
         /// Данные по id
@@ -73,25 +64,41 @@ namespace API.Controllers.Shared
         }
         
         /// <summary>
+        /// Импортировать
+        /// </summary>
+        [HttpPost("import")]
+        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TFormDto> form)
+        {
+            return service.Import(form);
+        }
+        
+        /// <summary>
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel"), DisableRequestSizeLimit]
-        public ValidateResult ImportFromExcel()
+        public IEnumerable<ValidateResult> ImportFromExcel()
         {
             var file = HttpContext.Request.Form.Files.ElementAt(0);
             return service.ImportFromExcel(file.OpenReadStream());            
         }      
         
         
-        //GET api/download/12345abc
-        [HttpGet("exportToExcel")]
+        /// <summary>
+        /// Экспортировать в excel
+        /// </summary>
+        [HttpGet("exportToExcel"), DisableRequestSizeLimit]
         public IActionResult ExportToExcel() {
-            Stream stream = System.IO.File.Open("e:/work_repo/alternative-tms/RunAllWitchWatch.ps1", FileMode.Open);
-
-            if(stream == null)
-                return NotFound(); // returns a NotFoundResult with Status404NotFound response.
-
-            return File(stream, "application/octet-stream", "Экспорт 26-09-19.excel"); // returns a FileStreamResult
+            
+            var memoryStream = service.ExportToExcel();
+            return File(memoryStream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
+            
+            //var memoryStream = new MemoryStream();
+    
+            //var stream = service.ExportToExcel();
+            //stream.CopyTo(memoryStream);
+            
+            //return new FileContentResult(memoryStream.ToArray(), "application/octet-stream");
+            //return File(stream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
         }  
         
         /// <summary>

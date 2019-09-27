@@ -11,10 +11,11 @@ using Domain.Services.UserIdProvider;
 using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto> where TEntity : class, IPersistable, new() where TDto : IDto where TFormDto : IDto
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto> where TEntity : class, IPersistable, new() where TDto : IDto, new() where TFormDto : IDto, new()
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
@@ -117,22 +118,7 @@ namespace Application.Shared
                 Id = entity.Id.ToString()
             };
         }
-        
-        public ValidateResult ImportFromExcel(Stream fileStream)
-        {
-            var dbSet = UseDbSet(db);
-            var result = new List<ValidateResult>();
-            var entities = dbSet.ToList();
-            //foreach (var entity in entities) 
-            //result.Add(SaveOrCreate(entity));
 
-            return new ValidateResult
-            {
-                Id = "23423",
-                Error = $"Тут ответ {fileStream.Length}"
-            };
-        }
-        
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
         {
             if (ids == null) 
@@ -246,7 +232,9 @@ namespace Application.Shared
         
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
-            return Enum.Parse<T>(dtoStatus);
+            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperfirstLetter());
+            
+            return mapFromStateDto;
         }
         
         public IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entitiesFrom)
@@ -258,5 +246,26 @@ namespace Application.Shared
 
             return result;
         }        
+        
+        public IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream)
+        {
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var dtos = workSheet.ConvertSheetToObjects<TFormDto>();
+            
+            return Import(dtos);
+        }
+        
+        public Stream ExportToExcel()
+        {
+            var excel = new ExcelPackage();
+            var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+            var dbSet = UseDbSet(db);
+            var entities = dbSet.ToList();
+            var dtos = entities.Select(MapFromEntityToDto);
+            workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
+            
+            return new MemoryStream(excel.GetAsByteArray());
+        }
     }
 }

@@ -78,19 +78,24 @@
             Получение данных для выпадающего списка в 
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.Import(System.Collections.Generic.IEnumerable{`3})">
-            <summary>
-            Импортировать
-            </summary>
-        </member>
         <member name="M:API.Controllers.Shared.GridController`4.GetById(System.Guid)">
             <summary>
             Данные по id
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`4.Import(System.Collections.Generic.IEnumerable{`3})">
+            <summary>
+            Импортировать
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`4.ImportFromExcel">
             <summary>
             Импортировать из excel
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.GridController`4.ExportToExcel">
+            <summary>
+            Экспортировать в excel
             </summary>
         </member>
         <member name="M:API.Controllers.Shared.GridController`4.GetActions(System.Collections.Generic.IEnumerable{System.String})">

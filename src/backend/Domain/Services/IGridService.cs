@@ -10,12 +10,13 @@ namespace Domain.Services
         SearchResult<TDto> Search(SearchForm form);
         IEnumerable<LookUpDto> ForSelect();
         ValidateResult SaveOrCreate(TFormDto entityFrom);
-        IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
-        ValidateResult ImportFromExcel(Stream fileStream);
         TDto Get(Guid id);
         TFormDto GetForm(Guid id);
 
         IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
         AppActionResult InvokeAction(string actionName, IEnumerable<Guid> ids);
+        IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
+        IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream);
+        Stream ExportToExcel();
     }
 }

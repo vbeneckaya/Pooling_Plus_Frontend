@@ -118,7 +118,7 @@ namespace Domain.Extensions
 
         public static bool TryParseDateTime(this string dateString, out DateTime result) =>
             DateTime.TryParseExact(dateString,
-                "dd.MM.yyyy HH:mm",
+                "dd.MM.yyyy HH:mm:ss",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out result);
