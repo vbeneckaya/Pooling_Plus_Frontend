@@ -4,7 +4,9 @@ using Domain.Persistables;
 using Domain.Services.Files;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Application.Services.Files
@@ -12,9 +14,21 @@ namespace Application.Services.Files
     public class FilesService : DbSetAndContext<FileStorage>, IFilesService
     {
         private const long minFileSize = 0;
-        private const long maxFileSize = 31457280;
+        private const long maxFileSize = 10485760;
 
         public FilesService(AppDbContext context) : base(context) { }
+
+        public FileDto Get(Guid id)
+        {
+            FileStorage file = DbSet
+                .First(x => x.Id == id);
+
+            return new FileDto
+            {
+                Name = file.Name,
+                Data = file.Data
+            };
+        }
 
         public async Task<ValidateResult> UploadAsync(IFormFile formFile)
         {

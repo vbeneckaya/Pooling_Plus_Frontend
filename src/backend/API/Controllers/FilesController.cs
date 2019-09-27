@@ -2,6 +2,7 @@
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using Serilog;
 using System;
 using System.Threading.Tasks;
@@ -31,6 +32,23 @@ namespace API.Controllers
             catch (Exception e)
             {
                 Log.Error(e, "Failed to upload file");
+                return StatusCode(500);
+            }
+        }
+
+        [Route("{id}")]
+        [HttpGet]
+        public IActionResult Get(Guid id)
+        {
+            try
+            {
+                FileDto dto = filesService.Get(id);
+
+                return File(dto.Data, MimeTypes.GetMimeType(dto.Name));
+            }
+            catch(Exception e)
+            {
+                Log.Error(e, $"Failed to Get file {id}");
                 return StatusCode(500);
             }
         }
