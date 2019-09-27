@@ -2,7 +2,7 @@ using Domain.Persistables;
 
 namespace Domain.Services.Shippings
 {
-    public interface IShippingsService : IGridService<Shipping, ShippingDto>
+    public interface IShippingsService : IGridWithDocuments<Shipping, ShippingDto, ShippingDto>
     {
     }
 }

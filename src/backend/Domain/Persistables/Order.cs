@@ -1,12 +1,13 @@
-using System;
 using Domain.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace Domain.Persistables
-{   
+{
     /// <summary>
     /// Заказ
     /// </summary>
-    public class Order : IPersistable
+    public class Order : IWithDocumentsPersistable, IPersistable
     {
         /// <summary>
         /// Db primary key

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Domain.Services;
 using Domain.Shared;
@@ -8,7 +9,7 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto> : Controller where TService : IGridService<TEntity, TDto>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto> : Controller where TService : IGridService<TEntity, TDto, TFormDto>
     {
         protected readonly TService service;
 
@@ -43,15 +44,6 @@ namespace API.Controllers.Shared
         {
             return service.ForSelect();
         }
-        
-        /// <summary>
-        /// Импортировать
-        /// </summary>
-        [HttpPost("import")]
-        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TDto> form)
-        {
-            return service.Import(form);
-        }
 
         /// <summary>
         /// Данные по id
@@ -70,6 +62,44 @@ namespace API.Controllers.Shared
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        /// <summary>
+        /// Импортировать
+        /// </summary>
+        [HttpPost("import")]
+        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TFormDto> form)
+        {
+            return service.Import(form);
+        }
+        
+        /// <summary>
+        /// Импортировать из excel
+        /// </summary>
+        [HttpPost("importFromExcel"), DisableRequestSizeLimit]
+        public IEnumerable<ValidateResult> ImportFromExcel()
+        {
+            var file = HttpContext.Request.Form.Files.ElementAt(0);
+            return service.ImportFromExcel(file.OpenReadStream());            
+        }      
+        
+        
+        /// <summary>
+        /// Экспортировать в excel
+        /// </summary>
+        [HttpGet("exportToExcel"), DisableRequestSizeLimit]
+        public IActionResult ExportToExcel() {
+            
+            var memoryStream = service.ExportToExcel();
+            return File(memoryStream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
+            
+            //var memoryStream = new MemoryStream();
+    
+            //var stream = service.ExportToExcel();
+            //stream.CopyTo(memoryStream);
+            
+            //return new FileContentResult(memoryStream.ToArray(), "application/octet-stream");
+            //return File(stream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
+        }  
         
         /// <summary>
         /// Список возможных экшенов
@@ -112,7 +142,7 @@ namespace API.Controllers.Shared
         /// Сохранить или изменить
         /// </summary>
         [HttpPost("saveOrCreate")]
-        public IActionResult SaveOrCreate([FromBody] TDto form)
+        public IActionResult SaveOrCreate([FromBody] TFormDto form)
         {
             try
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DAL;
 using DAL.Queries;
@@ -10,16 +11,19 @@ using Domain.Services.UserIdProvider;
 using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto> where TEntity : class, IPersistable, new() where TDto: IDto
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto> where TEntity : class, IPersistable, new() where TDto : IDto, new() where TFormDto : IDto, new()
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
         public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
+        public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
+        public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
@@ -38,7 +42,13 @@ namespace Application.Shared
             var dbSet = UseDbSet(db);
             return MapFromEntityToDto(dbSet.GetById(id));
         }
-        
+
+        public TFormDto GetForm(Guid id)
+        {
+            var dbSet = UseDbSet(db);
+            return MapFromEntityToFormDto(dbSet.GetById(id));
+        }
+
         public IEnumerable<LookUpDto> ForSelect()
         {
             var dbSet = UseDbSet(db);
@@ -76,7 +86,7 @@ namespace Application.Shared
             return a;
         }
 
-        public ValidateResult SaveOrCreate(TDto entityFrom)
+        public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var dbSet = UseDbSet(db);
             if (!string.IsNullOrEmpty(entityFrom.Id))
@@ -84,8 +94,7 @@ namespace Application.Shared
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
                 if (entityFromDb != null)
                 {
-                    MapFromDtoToEntity(entityFromDb, entityFrom);
-                    
+                    MapFromFormDtoToEntity(entityFromDb, entityFrom);
                     dbSet.Update(entityFromDb);
                     
                     db.SaveChanges();
@@ -95,20 +104,21 @@ namespace Application.Shared
                     };
                 }
             }
+
             var entity = new TEntity
             {
                 Id = Guid.NewGuid()
             };
-            MapFromDtoToEntity(entity, entityFrom);
+            MapFromFormDtoToEntity(entity, entityFrom);
             dbSet.Add(entity);
-            //ApplyAfterSaveActions(entity, entityFrom);
+
             db.SaveChanges();
             return new ValidateResult
             {
                 Id = entity.Id.ToString()
             };
         }
-        
+
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
         {
             if (ids == null) 
@@ -222,10 +232,12 @@ namespace Application.Shared
         
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
-            return Enum.Parse<T>(dtoStatus);
+            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperfirstLetter());
+            
+            return mapFromStateDto;
         }
         
-        public IEnumerable<ValidateResult> Import(IEnumerable<TDto> entitiesFrom)
+        public IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entitiesFrom)
         {
             var result = new List<ValidateResult>();
             
@@ -234,5 +246,26 @@ namespace Application.Shared
 
             return result;
         }        
+        
+        public IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream)
+        {
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var dtos = workSheet.ConvertSheetToObjects<TFormDto>();
+            
+            return Import(dtos);
+        }
+        
+        public Stream ExportToExcel()
+        {
+            var excel = new ExcelPackage();
+            var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+            var dbSet = UseDbSet(db);
+            var entities = dbSet.ToList();
+            var dtos = entities.Select(MapFromEntityToDto);
+            workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
+            
+            return new MemoryStream(excel.GetAsByteArray());
+        }
     }
 }

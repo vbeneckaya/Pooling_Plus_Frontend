@@ -16,6 +16,7 @@ namespace DAL
         {
             
         }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Translation> Translations { get; set; }

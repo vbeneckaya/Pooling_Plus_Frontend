@@ -130,7 +130,7 @@ namespace Tasks.Orders
                 doc.Load(reader);
             }
 
-            OrderDto dto = new OrderDto();
+            OrderFormDto dto = new OrderFormDto();
 
             decimal weightUomCoeff = doc.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "KGM" }, new[] { 0.001M, 1M }, 1);
 

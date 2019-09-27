@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Domain.Services;
 using Domain.Shared;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Shared
@@ -60,6 +62,20 @@ namespace API.Controllers.Shared
         public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TDto> form)
         {
             return _service.Import(form);
+        }
+
+        /// <summary>
+        /// Импортировать из excel
+        /// </summary>
+        [HttpPost("importFromExcel")]
+        public ValidateResult ImportFromExcel([FromForm]IFormFile file)
+        {
+            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+            {
+                file.CopyTo(stream);
+                return _service.ImportFromExcel(stream);
+            }
+            
         }
 
         /// <summary>
