@@ -11,6 +11,7 @@ namespace Domain.Services.Warehouses
         public string TypeOfEquipment { get; set; }
         public string LeadtimeDays { get; set; }
         public string CustomerWarehouse { get; set; }
+        public string UseTypeOfEquipment { get; set; }
         /*end of fields*/
     }
 }

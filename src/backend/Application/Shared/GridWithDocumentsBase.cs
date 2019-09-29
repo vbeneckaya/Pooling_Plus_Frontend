@@ -6,7 +6,6 @@ using Domain.Services.UserIdProvider;
 using Domain.Shared;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Application.Shared
@@ -53,6 +52,44 @@ namespace Application.Shared
             {
                 Id = document.Id.ToString()
             };
+        }
+
+        public ValidateResult UpdateDocument(Guid id, Guid documentId, DocumentDto dto)
+        {
+            TEntity entity = UseDbSet(db).FirstOrDefault(x => x.Id == id);
+            if (entity == null)
+            {
+                return new ValidateResult("notFound");
+            }
+
+            bool tryParseFileId = Guid.TryParse(dto.FileId, out Guid fileId);
+            FileStorage file = db.FileStorage.FirstOrDefault(x => x.Id == fileId);
+            if (!tryParseFileId || file == null)
+            {
+                return new ValidateResult("notFound");
+            }
+
+            bool tryParseTypeId = Guid.TryParse(dto.TypeId, out Guid typeId);
+            DocumentType type = db.DocumentTypes.FirstOrDefault(x => x.Id == typeId);
+            if (!tryParseTypeId || type == null)
+            {
+                return new ValidateResult("notFound");
+            }
+
+            Document document = db.Documents.FirstOrDefault(x => x.Id == id);
+            if (document == null)
+            {
+                return new ValidateResult("notFound");
+            }
+
+            document.Name = dto.Name;
+            document.FileId = fileId;
+            document.TypeId = typeId;
+
+            db.Documents.Update(document);
+            db.SaveChanges();
+
+            return new ValidateResult();
         }
 
         public IEnumerable<DocumentDto> GetDocuments(Guid id)

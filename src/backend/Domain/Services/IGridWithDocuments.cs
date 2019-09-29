@@ -10,6 +10,7 @@ namespace Domain.Services
     {
         IEnumerable<DocumentDto> GetDocuments(Guid id);
         ValidateResult CreateDocument(Guid id, DocumentDto dto);
+        ValidateResult UpdateDocument(Guid id, Guid documentId, DocumentDto dto);
         ValidateResult DeleteDocument(Guid id, Guid documentId);
     }
 }

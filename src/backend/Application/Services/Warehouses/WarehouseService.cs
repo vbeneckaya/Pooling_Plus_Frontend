@@ -31,6 +31,7 @@ namespace Application.Services.Warehouses
             entity.TypeOfEquipment = dto.TypeOfEquipment;
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
+            entity.UseTypeOfEquipment = dto.UseTypeOfEquipment;
             /*end of map dto to entity fields*/
         }
 
@@ -47,6 +48,7 @@ namespace Application.Services.Warehouses
                 TypeOfEquipment = entity.TypeOfEquipment,
                 LeadtimeDays = entity.LeadtimeDays,
                 CustomerWarehouse = entity.CustomerWarehouse,
+                UseTypeOfEquipment = entity.UseTypeOfEquipment,
                 /*end of map entity to dto fields*/
             };
         }

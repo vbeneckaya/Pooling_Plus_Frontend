@@ -44,6 +44,10 @@ namespace Domain.Persistables
         /// Склад клиента
         /// </summary>
         public string CustomerWarehouse { get; set; }
+        /// <summary>
+        /// Использование типа комплектации
+        /// </summary>
+        public string UseTypeOfEquipment { get; set; }
         /*end of fields*/
     }
 }
