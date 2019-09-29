@@ -3,6 +3,7 @@ import {postman} from '../utils/postman';
 import {all, takeEvery, put, cancelled, delay, fork, cancel} from 'redux-saga/effects';
 import {IS_AUTO_UPDATE} from '../constants/settings';
 import {formatDate} from "../utils/dateTimeFormater";
+import { toast } from 'react-toastify';
 
 let task = null;
 let filters = {};
@@ -102,7 +103,7 @@ export default (state = initial, {type, payload}) => {
         case GRID_EXPORT_TO_EXCEL_ERROR:
             return {
                 ...state,
-                importProgress: false,
+                exportProgress: false,
             };
         case CLEAR_GRID_INFO:
             return {
@@ -292,14 +293,18 @@ function* getStateColorsSaga({payload}) {
 
 function* importFromExcelSaga({payload}) {
     try {
-        const {form, name} = payload;
+        const {form, name, callbackSuccess} = payload;
         const result = yield postman.post(`${name}/importFromExcel`, form, {
             headers: {'Content-Type': 'multipart/form-data'},
         });
 
         yield put({
             type: GRID_IMPORT_FROM_EXCEL_SUCCESS
-        })
+        });
+
+        // toast.info(result.message);
+
+        callbackSuccess();
     } catch (e) {
         yield put({
             type: GRID_IMPORT_FROM_EXCEL_ERROR
@@ -311,7 +316,7 @@ function* exportToExcelSaga({payload}) {
     try {
         const {name} = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
-        const result = yield postman.post(`/${name}/exportToExcel`, null,{responseType: 'blob'},);
+        const result = yield postman.get(`/${name}/exportToExcel`,{responseType: 'blob'},);
         console.log('result', result);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], {type: result.type}));

@@ -115,9 +115,12 @@ class TableInfo extends Component {
             name,
             modalCard,
             isImportBtn,
+            importLoader
         } = this.props;
 
         const { filter } = this.state;
+
+        console.log('importProgress', importLoader);
 
         return (
             <Container className={className}>
@@ -146,7 +149,7 @@ class TableInfo extends Component {
                                 />
 
                                 {isImportBtn ? (
-                                    <Button color="green" onClick={this.importFromExcel}>
+                                    <Button color="green" loading={importLoader} onClick={this.importFromExcel}>
                                         <Icon name="upload" />
                                         {t('importFromExcel')}
                                     </Button>

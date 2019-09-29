@@ -10,6 +10,7 @@ import {
     columnsSelector,
     getListRequest,
     importFromExcelRequest,
+    importProgressSelector,
     listSelector,
     progressSelector,
     totalCountSelector,
@@ -35,6 +36,7 @@ const List = ({
     isCreateBtn,
     isImportBtn,
     importFromExcel,
+    importLoader,
 }) => {
     const { params = {} } = match;
     const { name = '' } = params;
@@ -44,6 +46,7 @@ const List = ({
         importFromExcel({
             form,
             name,
+            callbackSuccess: () => this.loadList(),
         });
     };
 
@@ -59,6 +62,7 @@ const List = ({
             list={list}
             isImportBtn={isImportBtn}
             importFromExcel={handleImportFromExcel}
+            importLoader={importLoader}
             newModal={isCreateBtn ? newModal : null}
             modalCard={<Card title={t('editCard', { name: t(name) })} />}
         />
@@ -77,6 +81,7 @@ const mapStateToProps = (state, ownProps) => {
         list: listSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         isImportBtn: canImportFromExcelSelector(state, name),
+        importLoader: importProgressSelector(state),
     };
 };
 

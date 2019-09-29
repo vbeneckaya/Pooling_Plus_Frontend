@@ -17,14 +17,16 @@ const LOGIN_ERROR = 'LOGIN_ERROR';
 
 const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 
-setAccessToken && setAccessToken(localStorage.getItem('accessToken'));
+export const ACCESS_TOKEN = 'accessToken'
+
+setAccessToken && setAccessToken(localStorage.getItem(ACCESS_TOKEN));
 
 //*  INITIAL STATE  *//
 
 const initial = {
     page: {},
     error: '',
-    isAuth: Boolean(localStorage.getItem('accessToken')),
+    isAuth: Boolean(localStorage.getItem(ACCESS_TOKEN)),
     page_progress: false,
     login_progress: false,
 };
@@ -98,7 +100,7 @@ export const loginRequest = payload => {
 };
 
 export const logoutRequest = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem(ACCESS_TOKEN);
     return {
         type: LOGOUT_REQUEST,
     };
@@ -136,7 +138,7 @@ function* loginSaga({ payload }) {
         yield delay(1000);
         const { api, form } = payload;
         const result = yield postman.post('/identity/login', form);
-        localStorage.setItem('accessToken', result.accessToken);
+        localStorage.setItem(ACCESS_TOKEN, result.accessToken);
         setAccessToken(result.accessToken);
         yield put({
             type: LOGIN_SUCCESS,

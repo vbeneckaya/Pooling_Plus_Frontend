@@ -29,7 +29,7 @@ const initial = {
     card: {},
     totalCount: 0,
     progress: false,
-    importProgress: true
+    importProgress: false
 };
 
 //*  REDUCER  *//
@@ -78,6 +78,17 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: false
+            };
+        case DICTIONARY_IMPORT_FROM_EXCEL_REQUEST:
+            return {
+                ...state,
+                importProgress: true
+            };
+        case DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS:
+        case DICTIONARY_IMPORT_FROM_EXCEL_ERROR:
+            return {
+                ...state,
+                importProgress: false
             };
         default:
             return state;
@@ -160,6 +171,8 @@ export const canImportFromExcelSelector = createSelector([stateProfile, dictiona
     const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
     return dictionary ? dictionary.canImportFromExcel : false
 });
+
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
 //*  SAGA  *//
 

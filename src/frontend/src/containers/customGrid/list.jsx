@@ -99,27 +99,6 @@ class List extends Component {
         this.setState({ confirmation: { open: false } });
     };
 
-    handleImportFromExcel = (form) => {
-        const { match, importFromExcel } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
-        importFromExcel({
-            name,
-            form
-        })
-
-    };
-
-    handleExportToExcel = () => {
-        const { match, exportToExcel } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
-        exportToExcel({
-            name,
-        })
-
-    };
-
     render() {
         const {
             columns = [],
@@ -133,13 +112,10 @@ class List extends Component {
             isCreateBtn,
             getActions,
             stateColors,
-            isImportBtn
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
         const { confirmation } = this.state;
-
-        console.log('isCreateBtn', isCreateBtn);
 
         return (
             <div className="container">
@@ -154,9 +130,6 @@ class List extends Component {
                     storageSortItem={`${name}Sort`}
                     storageFilterItem={`${name}Filters`}
                     getActions={getActions}
-                    isImportBtn={isImportBtn}
-                    importFromExcel={this.handleImportFromExcel}
-                    exportToExcel={this.handleExportToExcel}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
@@ -186,12 +159,6 @@ function mapDispatchToProps(dispatch) {
         getStateColors: params => {
             dispatch(getStateColorsRequest(params));
         },
-        importFromExcel: params => {
-            dispatch(importFromExcelRequest(params))
-        },
-        exportToExcel: params => {
-            dispatch(exportToExcelRequest(params))
-        }
     };
 }
 
@@ -206,7 +173,6 @@ function mapStateToProps(state, ownProps) {
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
-        isImportBtn: canImportFromExcelSelector(state, name),
         actions: actionsSelector(state),
         stateColors: stateColorsSelector(state, name),
     };

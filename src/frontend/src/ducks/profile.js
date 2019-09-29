@@ -3,6 +3,7 @@ import {createSelector} from 'reselect';
 import {postman} from '../utils/postman';
 import {push as historyPush} from 'connected-react-router';
 import {ROLES_LINK, USERS_LINK} from '../router/links';
+import {logoutRequest} from "./login";
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -108,6 +109,8 @@ function* getUserProfileSaga({ payload = {} }) {
             type: GET_USER_PROFILE_ERROR,
             payload: e,
         });
+
+        yield put(logoutRequest()) // todo
     }
 }
 

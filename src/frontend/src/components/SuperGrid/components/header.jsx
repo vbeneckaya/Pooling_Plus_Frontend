@@ -2,7 +2,14 @@ import React, { useRef } from 'react';
 import { Button, Form, Grid, Popup } from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 import Select from '../../BaseComponents/Select';
+import {
+    canImportFromExcelSelector, exportProgressSelector,
+    exportToExcelRequest,
+    importFromExcelRequest,
+    importProgressSelector
+} from "../../../ducks/gridList";
 
 const Header = ({
     createButton,
@@ -11,15 +18,24 @@ const Header = ({
     counter,
     clearFilter,
     disabledClearFilter,
-    isImportBtn,
-    importFromExcel,
-    exportToExcel,
+    loadList,
+    name,
 }) => {
     const { t } = useTranslation();
 
+    const dispatch = useDispatch();
+
     const fileUploader = useRef(null);
 
-    const exportExcel = () => {exportToExcel()};
+    const isImportBtn = useSelector(state => canImportFromExcelSelector(state, name));
+
+    const importLoader = useSelector(state => importProgressSelector(state));
+    const exportLoader = useSelector(state => exportProgressSelector(state));
+
+    const exportExcel = () => {
+
+        dispatch(exportToExcelRequest({name}))
+    };
 
     const importExcel = () => {
         fileUploader && fileUploader.current.click();
@@ -32,7 +48,12 @@ const Header = ({
         data.append('FileName', file.name);
         data.append('FileContent', new Blob([file], { type: file.type }));
         data.append('FileContentType', file.type);
-        importFromExcel(data);
+
+        dispatch(importFromExcelRequest({
+            name,
+            form: data,
+            callbackSuccess: () => loadList()
+        }))
     };
 
     const settings = () => {};
@@ -50,7 +71,7 @@ const Header = ({
                         type="file"
                         ref={fileUploader}
                         style={{ display: 'none' }}
-                        onChange={onFilePicked}
+                        onInput={onFilePicked}
                     />
                     <div className="representation">
                         <label>{t('representation')}</label>
@@ -72,14 +93,14 @@ const Header = ({
                         <Popup
                             content={t('importFromExcel')}
                             position="bottom right"
-                            trigger={<Button icon="upload" onClick={importExcel} />}
+                            trigger={<Button icon="upload" loading={importLoader} onClick={importExcel} />}
                         />
                     )}
                     {true && ( // todo
                         <Popup
                             content={t('exportToExcel')}
                             position="bottom right"
-                            trigger={<Button icon="download" onClick={exportExcel} />}
+                            trigger={<Button icon="download" loading={exportLoader} onClick={exportExcel} />}
                         />
                     )}
                 </Grid.Column>

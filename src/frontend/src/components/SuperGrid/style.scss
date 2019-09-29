@@ -102,12 +102,29 @@
     }
 
     .grid-right-elements {
-        text-align: right;
-        white-space: nowrap;
+        display: flex!important;
+        justify-content: flex-end;
 
         .orange {
             opacity: 0.7;
         }
+    }
+
+    .representation {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+
+        label {
+            font-weight: bold;
+            padding-right: 8px;
+        }
+
+        .field {
+            margin-right: 8px;
+            flex-grow: 1;
+        }
+
     }
 }
 

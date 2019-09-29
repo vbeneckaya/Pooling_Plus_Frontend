@@ -240,7 +240,7 @@ class SuperGrid extends Component {
     };
 
     render() {
-        const { filters, sort, fullText, selectedRows, extSelectedRow } = this.state;
+        const { filters, sort, fullText, selectedRows } = this.state;
         const {
             totalCount: count = 0,
             columns,
@@ -264,9 +264,6 @@ class SuperGrid extends Component {
             colorInfo,
             autoUpdateStop,
             name,
-            isImportBtn,
-            importFromExcel,
-            exportToExcel
         } = this.props;
 
         return (
@@ -285,9 +282,8 @@ class SuperGrid extends Component {
                             />
                         )
                     }
-                    isImportBtn={isImportBtn}
-                    importFromExcel={importFromExcel}
-                    exportToExcel={exportToExcel}
+                    name={name}
+                    loadList={this.loadList}
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
