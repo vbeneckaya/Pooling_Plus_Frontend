@@ -30,14 +30,19 @@ namespace Application.Services.UserIdProvider
 
         public User GetCurrentUser()
         {
-            return db.Users.GetById(EnsureCurrentUserId());
+            User user = db.Users.GetById(EnsureCurrentUserId());
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            return user;
         }
         
         public Guid EnsureCurrentUserId()
         {
             var userId = GetCurrentUserId();
             if (userId == null)
-                throw new NullReferenceException("Невозможно определить текущего пользователя");
+                throw new UnauthorizedAccessException("Невозможно определить текущего пользователя");
 
             return userId.Value;
         }

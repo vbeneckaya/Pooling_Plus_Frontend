@@ -26,6 +26,10 @@ namespace API.Controllers
                 UserInfo result = identityService.GetUserInfo();
                 return Ok(result);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to Get user info");

@@ -36,6 +36,10 @@ namespace API.Controllers.Shared
 
                 return Ok(documents);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception e)
             {
                 Log.Error(e, $"Failed to Get document");
@@ -58,6 +62,10 @@ namespace API.Controllers.Shared
                 ValidateResult result = service.CreateDocument(id, dto);
 
                 return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception e)
             {
@@ -83,6 +91,10 @@ namespace API.Controllers.Shared
 
                 return Ok(result);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception e)
             {
                 Log.Error(e, $"Failed to Update document {documentId}");
@@ -105,6 +117,10 @@ namespace API.Controllers.Shared
                 ValidateResult result = service.DeleteDocument(id, documentId);
 
                 return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception e)
             {

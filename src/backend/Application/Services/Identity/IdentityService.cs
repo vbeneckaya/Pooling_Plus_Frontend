@@ -55,22 +55,14 @@ namespace Application.Services.Identity
 
         public UserInfo GetUserInfo()
         {
-            var currentUserId = userIdProvider.GetCurrentUserId();
-            User user = null;
-            if (currentUserId.HasValue)
-            {
-                user = db.Users.GetById(currentUserId.Value);
+            User user = userIdProvider.GetCurrentUser();
 
-                //TODO Получать имя пользователя и роль
-                return new UserInfo
-                {   
-                    UserName = user?.Name,
-                    UserRole = db.Roles.GetById(user.RoleId).Name,
-                };
-                
-            }
-
-            return null;
+            //TODO Получать имя пользователя и роль
+            return new UserInfo
+            {   
+                UserName = user.Name,
+                UserRole = db.Roles.GetById(user.RoleId).Name,
+            };
         }
 
         private ClaimsIdentity GetIdentity(string userName, string password)

@@ -29,6 +29,10 @@ namespace API.Controllers.Shared
                 var result = service.Search(form);
                 return Ok(result);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, $"Failed to Search {typeof(TEntity).Name}");
@@ -55,6 +59,10 @@ namespace API.Controllers.Shared
             {
                 TDto user = service.Get(id);
                 return Ok(user);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception ex)
             {
@@ -112,6 +120,10 @@ namespace API.Controllers.Shared
                 IEnumerable<ActionDto> result = service.GetActions(ids.Select(Guid.Parse));
                 return Ok(result);
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, $"Failed to Get actions for {typeof(TEntity).Name}");
@@ -129,6 +141,10 @@ namespace API.Controllers.Shared
             {
                 AppActionResult result = service.InvokeAction(name, ids.Select(Guid.Parse));
                 return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (Exception ex)
             {
@@ -148,6 +164,10 @@ namespace API.Controllers.Shared
             {
                 ValidateResult result = service.SaveOrCreate(form);
                 return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(); 
             }
             catch (Exception ex)
             {
