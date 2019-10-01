@@ -1,44 +1,54 @@
-import React, { Component } from 'react';
-import {withTranslation} from 'react-i18next';
+import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Modal, Form, Button, Icon, Input } from 'semantic-ui-react';
 import Webcam from 'react-webcam';
+import {uploadFileRequest} from "../../ducks/documents";
+import {toast} from "react-toastify";
 
-class DocWithEditor extends Component {
-    state = {
-        modalOpen: false,
-        mode: 'webcam',
-        imageSrc: '',
+const DocWithEditor = ({ children, onChange }) => {
+    let [modalOpen, setModalOpen] = useState(false);
+    let [mode, setMode] = useState('webcam');
+    let [imageSrc, setImageSrc] = useState('');
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const webcam = useRef(null);
+
+    const handleOpen = () => {
+        setModalOpen(true);
     };
 
-    setRef = webcam => {
-        this.webcam = webcam;
+    const handleClose = () => {
+        setModalOpen(false);
     };
 
-    handleOpen = () => {
-        this.setState({ modalOpen: true });
+    const takePhoto = () => {
+        const imageSrc = webcam && webcam.current.getScreenshot();
+        setMode('image');
+        setImageSrc(imageSrc);
     };
 
-    handleClose = () => {
-        this.setState({ modalOpen: false });
+    const rephoto = () => {
+        setMode('webcam');
+        setImageSrc('');
     };
 
-    takePhoto = () => {
-        const imageSrc = this.webcam.getScreenshot();
-        this.setState({
-            mode: 'image',
-            imageSrc: imageSrc,
-        });
-    };
+    const save = () => {
+        let form = new FormData();
+        if (imageSrc) {
+            form.append('formFile', imageSrc);
 
-    rephoto = () => {
-        debugger;
-        this.setState({
-            mode: 'webcam',
-            imageSrc: '',
-        });
-    };
-
-    save = () => {
+            dispatch(
+                uploadFileRequest({
+                    form,
+                    fileName: "WebCamPhoto.jpg",
+                    callbackSuccess: (id) => {
+                        onChange(id, "WebCamPhoto.jpg");
+                    },
+                }),
+            );
+        }
         // callApi("files/uploadBase64File", {
         //     base64: this.state.imageSrc,
         //     fileName: "WebCamPhoto.jpg"
@@ -51,55 +61,49 @@ class DocWithEditor extends Component {
         //         });
         //     });
     };
-
-    render() {
-        const { okButtonText, titleText, document, t } = this.props;
-        return (
-            <Modal
-                trigger={this.props.children}
-                onOpen={this.handleOpen}
-                open={this.state.modalOpen}
-                closeOnEscape
-                closeOnDimmerClick={false}
-                onClose={this.handleClose}
-            >
-                <Modal.Header>{t('Create a Photo')}</Modal.Header>
-                <Modal.Content>
-                    {this.state.mode === 'image' ? (
-                        <img src={this.state.imageSrc} />
-                    ) : (
-                        <Webcam ref={this.setRef} />
-                    )}
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button color="red" onClick={this.handleClose}>
-                        <Icon name="ban" />{t('CancelButton')}
+    return (
+        <Modal
+            trigger={children}
+            onOpen={handleOpen}
+            open={modalOpen}
+            closeOnEscape
+            closeOnDimmerClick={false}
+            onClose={handleClose}
+        >
+            <Modal.Header>{t('Create a Photo')}</Modal.Header>
+            <Modal.Content>
+                {mode === 'image' ? <img src={imageSrc} /> : <Webcam ref={webcam} />}
+            </Modal.Content>
+            <Modal.Actions>
+                <Button color="red" onClick={handleClose}>
+                    <Icon name="ban" />
+                    {t('CancelButton')}
+                </Button>
+                {mode === 'webcam' ? (
+                    <Button color="green" onClick={takePhoto}>
+                        <Icon name="photo" />
+                        {t('PhotoButton')}
                     </Button>
-                    {this.state.mode === 'webcam' ? (
-                        <Button color="green" onClick={this.takePhoto}>
-                            <Icon name="photo" />{t('PhotoButton')}
-                        </Button>
-                    ) : (
-                        ''
-                    )}
-                    {this.state.mode === 'image' ? (
-                        <Button color="orange" onClick={this.rephoto}>
-                            <Icon name="photo" /> Rephoto
-                        </Button>
-                    ) : (
-                        ''
-                    )}
-                    {this.state.mode === 'image' ? (
-                        <Button color="green" onClick={this.save}>
-                            <Icon name="save" /> Take it
-                        </Button>
-                    ) : (
-                        ''
-                    )}
-                </Modal.Actions>
-            </Modal>
-        );
-    }
-}
+                ) : (
+                    ''
+                )}
+                {mode === 'image' ? (
+                    <Button color="orange" onClick={rephoto}>
+                        <Icon name="photo" /> Rephoto
+                    </Button>
+                ) : (
+                    ''
+                )}
+                {mode === 'image' ? (
+                    <Button color="green" onClick={save}>
+                        <Icon name="save" /> Take it
+                    </Button>
+                ) : (
+                    ''
+                )}
+            </Modal.Actions>
+        </Modal>
+    );
+};
 
-export default withTranslation()(DocWithEditor);
+export default DocWithEditor;

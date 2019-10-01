@@ -82,27 +82,6 @@ const DocWithEditor = ({
         }
     };
 
-    const handleEdit = () => {
-        if (document && document.fileId) {
-            dispatch(
-                editDocumentRequest({
-                    gridName,
-                    cardId,
-                    document: {
-                        id: document.id,
-                        name: document.name,
-                        fileId: document.fileId,
-                        typeId: document.typeId,
-                    },
-                    id: document.id,
-                    callbackSuccess: () => {
-                        handleClose();
-                    },
-                }),
-            );
-        }
-    };
-
     const handleDownload = () => {
         dispatch(downloadDocumentRequest({id: document.fileId}))
     };
