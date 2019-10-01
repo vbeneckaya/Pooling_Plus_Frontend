@@ -15,7 +15,7 @@ const Information = ({ form, onChange }) => {
     return (
         <Form>
             <Grid>
-                <Grid.Row columns={5}>
+                <Grid.Row columns={4}>
                     <Grid.Column>
                         <Text
                             name="orderNumber"
@@ -24,34 +24,31 @@ const Information = ({ form, onChange }) => {
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <State name="status" value={form['status']} onChange={onChange} />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Date name="createAt" value={form['createAt']} onChange={onChange} />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Select name="orderType" value={form['orderType']} onChange={onChange} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={5}>
-                    <Grid.Column>
                         <Text name="payer" value={form['payer']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Text name="client" value={form['client']} isDisabled onChange={onChange} />
+                        <Text name="clientName" value={form['clientName']} isDisabled onChange={onChange} />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Select
+                            name="pickingType"
+                            value={form['pickingType']}
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row columns={4}>
+                    <Grid.Column>
+                        <Date name="orderCreationDate" value={form['orderCreationDate']} onChange={onChange} />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Select name="orderType" value={form['orderType']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
                         <Text name="soldTo" value={form['soldTo']} isDisabled onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Select
-                            name="complectationType"
-                            value={form['complectationType']}
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Select name="termType" value={form['termType']} onChange={onChange} />
+                        <Select name="temperature" value={form['temperature']} onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -65,6 +62,7 @@ const Information = ({ form, onChange }) => {
                                             <TextArea
                                                 name="addressFrom"
                                                 value={form['addressFrom']}
+                                                rows={2}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -72,6 +70,7 @@ const Information = ({ form, onChange }) => {
                                             <TextArea
                                                 name="addressTo"
                                                 value={form['addressTo']}
+                                                rows={2}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -81,86 +80,60 @@ const Information = ({ form, onChange }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={3}>
+                <Grid.Row columns={3} stretched>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('palletsCountGroup')}</label>
                             <Segment>
-                                <Grid>
-                                    <Grid.Row columns={3}>
-                                        <Grid.Column>
-                                            <Text
-                                                name="prepare"
-                                                value={form['prepare']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Text
-                                                name="plan"
-                                                value={form['plan']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Text
-                                                name="fact"
-                                                value={form['fact']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
+                                <Text
+                                    name="prepare"
+                                    value={form['prepare']}
+                                    onChange={onChange}
+                                />
+                                <Text
+                                    name="plan"
+                                    value={form['plan']}
+                                    onChange={onChange}
+                                />
+                                <Text
+                                    name="fact"
+                                    value={form['fact']}
+                                    onChange={onChange}
+                                />
                             </Segment>
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('boxesCountGroup')}</label>
-                            <Segment>
-                                <Grid>
-                                    <Grid.Row columns={2}>
-                                        <Grid.Column>
-                                            <Text
-                                                name="prepare"
-                                                value={form['prepare']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Text
-                                                name="fact"
-                                                value={form['fact']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
+                            <Segment style={{height: "calc(100% - 22px)"}}>
+                                <Text
+                                    name="prepare"
+                                    value={form['prepare']}
+                                    onChange={onChange}
+                                />
+                                <Text
+                                    name="fact"
+                                    value={form['fact']}
+                                    onChange={onChange}
+                                />
                             </Segment>
                         </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('weigth')}</label>
-                            <Segment>
-                                <Grid>
-                                    <Grid.Row columns={2}>
-                                        <Grid.Column>
-                                            <Text
-                                                name="prepare"
-                                                value={form['prepare']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Text
-                                                name="fact"
-                                                value={form['fact']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
+                            <Segment style={{height: "calc(100% - 22px)"}}>
+                                <Text
+                                    name="prepare"
+                                    value={form['prepare']}
+                                    onChange={onChange}
+                                />
+                                <Text
+                                    name="fact"
+                                    value={form['fact']}
+                                    onChange={onChange}
+                                />
                             </Segment>
                         </Form.Field>
                     </Grid.Column>

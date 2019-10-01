@@ -329,10 +329,12 @@ namespace DAL.Migrations
             AddTranslation("position", "position", "Позиции");
             AddTranslation("returns", "returns", "Возвраты");
             AddTranslation("route", "route", "Маршрут");
+            AddTranslation("temperature", "temperature", "Терморежим");
             AddTranslation("addressFrom", "addressFrom", "Адрес от");
-            AddTranslation("addressTo", "addressTo", "Адрес от");
+            AddTranslation("addressTo", "addressTo", "Адрес до");
             AddTranslation("palletsCountGroup", "Pallets count", "Количество паллет");
             AddTranslation("boxesCountGroup", "Boxes count", "Количество коробок");
+            AddTranslation("weigth", "weigth", "Вес, кг");
             AddTranslation("documents", "documents", "Документы");
             AddTranslation("history", "history", "История");
             AddTranslation("prepare", "prepare", "Предварительное");
@@ -442,6 +444,7 @@ namespace DAL.Migrations
 
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
+            AddTranslation("addButton", "Add", "Добавить");
             AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
             AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Заказ потерян");
             AddTranslation("shipping", "Shipping", "Перевозка");

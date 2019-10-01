@@ -120,6 +120,10 @@ body {
 .container-margin-top-bottom {
     margin-bottom: 70px;
     position: relative;
+
+    &_top15 {
+        margin-top: 15px;
+    }
 }
 
 .card-columns {
@@ -186,7 +190,7 @@ body {
 
     .ui.grid > .row > .column {
         display: flex;
-        align-items: flex-end;
+        // align-items: flex-end;
 
         .field {
             width: 100%;
@@ -205,4 +209,13 @@ body {
 .ext-tabs-card {
     height: 52vh;
     overflow: auto;
+}
+
+.add-right-elements {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    button {
+        height: 33px;
+    }
 }

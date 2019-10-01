@@ -24,7 +24,7 @@ const OrderModal = ({ form, onChangeForm, name, id }) => {
             menuItem: t('position'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Position />
+                    <Position form={form} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
         },

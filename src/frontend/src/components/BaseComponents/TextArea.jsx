@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, TextArea } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
-const BigText = ({ value, name, onChange, isDisabled, noLabel, className }) => {
+const BigText = ({ value, name, onChange, isDisabled, noLabel, className, rows }) => {
     const { t } = useTranslation();
 
     return (
@@ -15,6 +15,7 @@ const BigText = ({ value, name, onChange, isDisabled, noLabel, className }) => {
                 autoHeight
                 disabled={isDisabled || false}
                 name={name}
+                rows={rows}
                 value={value || ''}
                 onChange={onChange}
             />

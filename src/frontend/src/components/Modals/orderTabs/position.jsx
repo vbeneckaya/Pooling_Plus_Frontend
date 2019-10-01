@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table } from 'semantic-ui-react';
+import {Button, Form, Grid, Table} from 'semantic-ui-react';
 import TableInfo from '../../TableInfo';
+import Text from '../../BaseComponents/Text';
 
 const columns = [
     {
@@ -36,29 +37,51 @@ const columns = [
     },
 ];
 
-const Position = ({ rows = [] }) => {
+const Position = ({ rows = [], form, onChange }) => {
     const { t } = useTranslation();
     return (
-        <Table className="wider container-margin-top-bottom">
-            <Table.Header>
-                <Table.Row>
-                    {columns.map(column => (
-                        <Table.HeaderCell key={column.name}>{t(column.name)}</Table.HeaderCell>
-                    ))}
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                {rows.map((row, index) => (
-                    <Table.Row key={row.id}>
-                        {columns.map(column => (
-                            <Table.Cell key={`cell_${row.id}_${column.name}_${index}`}>
-                                  {row[column.name]} 
-                            </Table.Cell>
-                        ))}
-                    </Table.Row>
-                ))}
-            </Table.Body>
-        </Table>
+        <>
+            <Grid>
+                <Grid.Row>
+                    <Grid.Column width={10}>
+                        <Form>
+                            <Text
+                                name="orderAmountExcludingVAT"
+                                value={form['orderAmountExcludingVAT']}
+                                onChange={onChange}
+                            />
+                        </Form>
+                    </Grid.Column>
+                    <Grid.Column width={6} className="add-right-elements">
+                        <Button>{t('addButton')}</Button>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Table className="wider container-margin-top-bottom">
+                        <Table.Header>
+                            <Table.Row>
+                                {columns.map(column => (
+                                    <Table.HeaderCell key={column.name}>
+                                        {t(column.name)}
+                                    </Table.HeaderCell>
+                                ))}
+                            </Table.Row>
+                        </Table.Header>
+                        <Table.Body>
+                            {rows.map((row, index) => (
+                                <Table.Row key={row.id}>
+                                    {columns.map(column => (
+                                        <Table.Cell key={`cell_${row.id}_${column.name}_${index}`}>
+                                            {row[column.name]}
+                                        </Table.Cell>
+                                    ))}
+                                </Table.Row>
+                            ))}
+                        </Table.Body>
+                    </Table>
+                </Grid.Row>
+            </Grid>
+        </>
     );
 };
 
