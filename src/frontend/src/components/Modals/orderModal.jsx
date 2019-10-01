@@ -5,7 +5,7 @@ import { Tab } from 'semantic-ui-react';
 import Information from './orderTabs/information';
 import Position from './orderTabs/position';
 import Returns from './orderTabs/returns';
-import Documents from './orderTabs/documents';
+import Documents from './shared/documents';
 import History from './orderTabs/history';
 
 const OrderModal = ({ form, onChangeForm, name, id }) => {
