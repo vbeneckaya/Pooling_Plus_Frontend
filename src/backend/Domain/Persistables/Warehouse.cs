@@ -15,7 +15,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Наименование склада
         /// </summary>
-        public string TheNameOfTheWarehouse { get; set; }
+        public string WarehouseName { get; set; }
         /// <summary>
         /// SoldTo number
         /// </summary>

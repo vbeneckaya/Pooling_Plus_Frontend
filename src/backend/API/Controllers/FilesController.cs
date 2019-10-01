@@ -1,4 +1,5 @@
-﻿using Domain.Services.Files;
+﻿using API.Models;
+using Domain.Services.Files;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,28 @@ namespace API.Controllers
             try
             {
                 ValidateResult result = await filesService.UploadAsync(formFile);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to upload file");
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// Загрузка файла в base64 кодировке
+        /// </summary>
+        /// <param name="dto">Файл</param>
+        /// <returns></returns>
+        [Route("base64")]
+        [HttpPost]
+        public async Task<IActionResult> Upload([FromBody]FileBase64Dto dto)
+        {
+            try
+            {
+                ValidateResult result = await filesService.UploadAsync(dto.Name, dto.Body);
 
                 return Ok(result);
             }

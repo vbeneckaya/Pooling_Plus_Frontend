@@ -206,7 +206,7 @@ namespace DAL.Migrations
             Database.AddIndex("tariffs_pk", true, "Tariffs", "Id");
 
             Database.AddTable("Warehouses",
-                new Column("TheNameOfTheWarehouse", DbType.String),
+                new Column("WarehouseName", DbType.String),
                 new Column("SoldToNumber", DbType.String),
                 new Column("Region", DbType.String),
                 new Column("City", DbType.String),
@@ -521,7 +521,7 @@ namespace DAL.Migrations
             AddTranslation("lTLBid33", "LTLBid33", "Ставка LTL 33");
             AddTranslation("warehouse", "Warehouse", "Склад");
             AddTranslation("warehouses", "Warehouses", "Склады");
-            AddTranslation("theNameOfTheWarehouse", "TheNameOfTheWarehouse", "Наименование склада");
+            AddTranslation("warehouseName", "Warehouse name", "Наименование склада");
             AddTranslation("soldToNumber", "SoldToNumber", "SoldTo number");
             AddTranslation("region", "Region", "Регион");
             AddTranslation("city", "City", "Город");
@@ -529,7 +529,7 @@ namespace DAL.Migrations
             AddTranslation("pickingType", "PickingType", "Тип комплектации");
             AddTranslation("leadtimeDays", "LeadtimeDays", "Leadtime, дней");
             AddTranslation("customerWarehouse", "CustomerWarehouse", "Склад клиента");
-            AddTranslation("usePickingType", "UsePickingType", "Использование типа комплектации");
+            AddTranslation("usePickingType", "Fill order picking type", "Определение типа комплектации");
             AddTranslation("article", "Article", "Артикул");
             AddTranslation("articles", "Articles", "Артикулы");
             AddTranslation("sPGR", "SPGR", "SPGR");

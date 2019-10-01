@@ -212,7 +212,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Warehouses*/
-                            new UserConfigurationGridColumn(nameof(WarehouseDto.TheNameOfTheWarehouse), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(WarehouseDto.WarehouseName), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.SoldToNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.Region), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.City), FiledType.Text),
@@ -220,6 +220,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(WarehouseDto.PickingType), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.LeadtimeDays), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.CustomerWarehouse), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(WarehouseDto.UsePickingType), FiledType.Text),
                             /*end of add field for Warehouses*/
                         }
                     },

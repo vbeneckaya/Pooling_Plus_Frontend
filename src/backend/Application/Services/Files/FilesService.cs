@@ -30,6 +30,28 @@ namespace Application.Services.Files
             };
         }
 
+        public async Task<ValidateResult> UploadAsync(string fileName, string body)
+        {
+            var file = new FileStorage
+            {
+                Name = fileName,
+                Data = Convert.FromBase64String(body)
+            };
+
+            ValidateResult validateResult = Validation(file);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
+            Create(file);
+
+            return new ValidateResult
+            {
+                Id = file.Id.ToString()
+            };
+        }
+
         public async Task<ValidateResult> UploadAsync(IFormFile formFile)
         {
             ValidateResult validateResult = Validation(formFile);
@@ -77,6 +99,26 @@ namespace Application.Services.Files
             }
 
             if (file.Length > maxFileSize)
+            {
+                return new ValidateResult("maxFileSize");
+            }
+
+            return new ValidateResult();
+        }
+
+        private ValidateResult Validation(FileStorage file)
+        {
+            if (file?.Data == null)
+            {
+                return new ValidateResult("nullFile");
+            }
+
+            if (file.Data.Length < minFileSize)
+            {
+                return new ValidateResult("minFileSize");
+            }
+
+            if (file.Data.Length > maxFileSize)
             {
                 return new ValidateResult("maxFileSize");
             }

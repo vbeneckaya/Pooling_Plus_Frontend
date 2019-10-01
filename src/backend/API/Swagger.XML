@@ -26,6 +26,13 @@
             <param name="formFile">Файл</param>
             <returns></returns>
         </member>
+        <member name="M:API.Controllers.FilesController.Upload(API.Models.FileBase64Dto)">
+            <summary>
+            Загрузка файла в base64 кодировке
+            </summary>
+            <param name="dto">Файл</param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.FilesController.Get(System.Guid)">
             <summary>
             Получить файл на просмотр
