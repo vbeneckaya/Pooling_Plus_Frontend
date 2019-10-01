@@ -12,6 +12,7 @@ using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using System.Globalization;
 
 namespace Application.Shared
 {
@@ -266,6 +267,62 @@ namespace Application.Shared
             workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
             
             return new MemoryStream(excel.GetAsByteArray());
+        }
+
+        protected DateTime? ParseDateTime(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+            if (DateTime.TryParseExact(value, new[] { "yyyyMMddTHHmmss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "MM/dd/yyyy HH:mm", "MM/dd/yyyy" }, 
+                                       CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime exactResult))
+            {
+                return exactResult;
+            }
+            if (DateTime.TryParse(value, out DateTime result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        protected TimeSpan? ParseTime(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+            if (TimeSpan.TryParseExact(value, new[] { @"hh\:mm\:ss", @"hh\:mm" },
+                                       CultureInfo.InvariantCulture, TimeSpanStyles.None, out TimeSpan exactResult))
+            {
+                return exactResult;
+            }
+            if (TimeSpan.TryParse(value, out TimeSpan result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        protected decimal? ParseDecimal(string value)
+        {
+            if (!string.IsNullOrEmpty(value) 
+                && decimal.TryParse(value.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out decimal result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        protected int? ParseInt(string value)
+        {
+            if (!string.IsNullOrEmpty(value) 
+                && int.TryParse(value.Replace(',', '.'), NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
+            {
+                return result;
+            }
+            return null;
         }
     }
 }
