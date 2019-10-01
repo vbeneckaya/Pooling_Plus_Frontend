@@ -9,6 +9,7 @@ import { default as dictionaryView } from '../ducks/dictionaryView';
 import { default as gridActions } from '../ducks/gridActions';
 import { default as gridCard } from '../ducks/gridCard';
 import { default as lookup } from '../ducks/lookup';
+import { default as documents } from '../ducks/documents';
 import { default as users } from '../ducks/users';
 
 export default history =>
@@ -22,5 +23,6 @@ export default history =>
         gridActions,
         gridCard,
         lookup,
-        router: connectRouter(history),
+        documents,
+router: connectRouter(history),
     });
