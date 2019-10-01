@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import {withTranslation} from 'react-i18next';
 import { Modal, Form, Button, Icon, Input } from 'semantic-ui-react';
 import Webcam from 'react-webcam';
 
-export default class DocWithEditor extends Component {
+class DocWithEditor extends Component {
     state = {
         modalOpen: false,
         mode: 'webcam',
@@ -62,7 +63,7 @@ export default class DocWithEditor extends Component {
                 closeOnDimmerClick={false}
                 onClose={this.handleClose}
             >
-                <Modal.Header>Create a Photo</Modal.Header>
+                <Modal.Header>{t('Create a Photo')}</Modal.Header>
                 <Modal.Content>
                     {this.state.mode === 'image' ? (
                         <img src={this.state.imageSrc} />
@@ -72,11 +73,11 @@ export default class DocWithEditor extends Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button color="red" onClick={this.handleClose}>
-                        <Icon name="ban" /> Cancel
+                        <Icon name="ban" />{t('CancelButton')}
                     </Button>
                     {this.state.mode === 'webcam' ? (
                         <Button color="green" onClick={this.takePhoto}>
-                            <Icon name="photo" /> Photo
+                            <Icon name="photo" />{t('PhotoButton')}
                         </Button>
                     ) : (
                         ''
@@ -100,3 +101,5 @@ export default class DocWithEditor extends Component {
         );
     }
 }
+
+export default withTranslation()(DocWithEditor);
