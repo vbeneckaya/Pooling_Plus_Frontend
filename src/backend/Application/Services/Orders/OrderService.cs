@@ -168,7 +168,7 @@ namespace Application.Services.Orders
                 var soldToWarehouse = db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    order.ClientName = soldToWarehouse.TheNameOfTheWarehouse;
+                    order.ClientName = soldToWarehouse.WarehouseName;
 
                     if (soldToWarehouse.UsePickingType == "��")
                         order.PickingType = soldToWarehouse.PickingType;

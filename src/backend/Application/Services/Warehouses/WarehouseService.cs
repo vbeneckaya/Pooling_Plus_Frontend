@@ -23,7 +23,7 @@ namespace Application.Services.Warehouses
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.TheNameOfTheWarehouse = dto.TheNameOfTheWarehouse;
+            entity.WarehouseName = dto.WarehouseName;
             entity.SoldToNumber = dto.SoldToNumber;
             entity.Region = dto.Region;
             entity.City = dto.City;
@@ -40,7 +40,7 @@ namespace Application.Services.Warehouses
             return new WarehouseDto
             {
                 Id = entity.Id.ToString(),
-                TheNameOfTheWarehouse = entity.TheNameOfTheWarehouse,
+                WarehouseName = entity.WarehouseName,
                 SoldToNumber = entity.SoldToNumber,
                 Region = entity.Region,
                 City = entity.City,
