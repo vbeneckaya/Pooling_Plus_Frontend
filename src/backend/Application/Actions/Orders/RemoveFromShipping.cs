@@ -41,7 +41,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ убран из перевозки {order.SalesOrderNumber}"
+                Message = $"Заказ убран из перевозки {order.OrderNumber}"
             };
         }
 

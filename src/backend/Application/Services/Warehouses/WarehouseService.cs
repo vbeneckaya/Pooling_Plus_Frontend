@@ -28,10 +28,10 @@ namespace Application.Services.Warehouses
             entity.Region = dto.Region;
             entity.City = dto.City;
             entity.Address = dto.Address;
-            entity.TypeOfEquipment = dto.TypeOfEquipment;
+            entity.PickingType = dto.PickingType;
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
-            entity.UseTypeOfEquipment = dto.UseTypeOfEquipment;
+            entity.UsePickingType = dto.UsePickingType;
             /*end of map dto to entity fields*/
         }
 
@@ -45,10 +45,10 @@ namespace Application.Services.Warehouses
                 Region = entity.Region,
                 City = entity.City,
                 Address = entity.Address,
-                TypeOfEquipment = entity.TypeOfEquipment,
+                PickingType = entity.PickingType,
                 LeadtimeDays = entity.LeadtimeDays,
                 CustomerWarehouse = entity.CustomerWarehouse,
-                UseTypeOfEquipment = entity.UseTypeOfEquipment,
+                UsePickingType = entity.UsePickingType,
                 /*end of map entity to dto fields*/
             };
         }

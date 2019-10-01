@@ -8,10 +8,10 @@ namespace Domain.Services.Warehouses
         public string Region { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
-        public string TypeOfEquipment { get; set; }
+        public string PickingType { get; set; }
         public string LeadtimeDays { get; set; }
         public string CustomerWarehouse { get; set; }
-        public string UseTypeOfEquipment { get; set; }
+        public string UsePickingType { get; set; }
         /*end of fields*/
     }
 }

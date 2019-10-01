@@ -69,7 +69,7 @@ namespace API.Controllers
                         {
                             new AppFormViewRow(new List<IAppFormViewRowField>
                             {
-                                new AppFormTextField(nameof(OrderDto.SalesOrderNumber).ToLowerfirstLetter(),true),
+                                new AppFormTextField(nameof(OrderDto.OrderNumber).ToLowerfirstLetter(),true),
                                 new AppFormStateField(nameof(OrderDto.Status).ToLowerfirstLetter(), true, "orderState"),
                                 new AppFormDateField("createAt", true),
                                 new AppFormSelectField("orderType", true, "orderType"),

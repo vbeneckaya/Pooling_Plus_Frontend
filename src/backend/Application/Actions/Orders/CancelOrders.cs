@@ -36,7 +36,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказы {orders.Select(x=>x.SalesOrderNumber).Join(", ")} отменёны"
+                Message = $"Заказы {orders.Select(x=>x.OrderNumber).Join(", ")} отменёны"
             };
         }
 

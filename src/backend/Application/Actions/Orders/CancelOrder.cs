@@ -30,7 +30,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.SalesOrderNumber} отменён"
+                Message = $"Заказ {order.OrderNumber} отменён"
             };
         }
 

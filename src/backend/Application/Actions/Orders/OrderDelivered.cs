@@ -29,7 +29,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.SalesOrderNumber} доставлен"
+                Message = $"Заказ {order.OrderNumber} доставлен"
             };
         }
 

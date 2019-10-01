@@ -16,11 +16,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Статус
         /// </summary>
-        public OrderState Status { get; set; }
+        public OrderState? Status { get; set; }
         /// <summary>
         /// Номер заказ клиента
         /// </summary>
-        public string SalesOrderNumber { get; set; }
+        public string OrderNumber { get; set; }
         /// <summary>
         /// Дата заказа
         /// </summary>
@@ -28,7 +28,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Тип заказа
         /// </summary>
-        public string TypeOfOrder { get; set; }
+        public OrderType? OrderType { get; set; }
         /// <summary>
         /// Плательщик
         /// </summary>
@@ -36,11 +36,19 @@ namespace Domain.Persistables
         /// <summary>
         /// Название клиента
         /// </summary>
-        public string CustomerName { get; set; }
+        public string ClientName { get; set; }
         /// <summary>
         /// Sold-to
         /// </summary>
         public string SoldTo { get; set; }
+        /// <summary>
+        /// Терморежим мин. °C
+        /// </summary>
+        public int? TemperatureMin { get; set; }
+        /// <summary>
+        /// Терморежим макс. °C
+        /// </summary>
+        public int? TemperatureMax { get; set; }
         /// <summary>
         /// Дата отгрузки
         /// </summary>
@@ -48,7 +56,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дней в пути
         /// </summary>
-        public int? DaysOnTheRoad { get; set; }
+        public int? TransitDays { get; set; }
         /// <summary>
         /// Дата доставки
         /// </summary>
@@ -64,31 +72,35 @@ namespace Domain.Persistables
         /// <summary>
         /// Кол-во арт.
         /// </summary>
-        public int? NumberOfArticles { get; set; }
+        public int? ArticlesCount { get; set; }
         /// <summary>
         /// Предварительное Кол-во коробок
         /// </summary>
-        public int? TheNumberOfBoxes { get; set; }
+        public int? BoxesCount { get; set; }
+        /// <summary>
+        /// Подтвержденное количество коробок
+        /// </summary>
+        public int? ConfirmedBoxesCount { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
-        public int? PreliminaryNumberOfPallets { get; set; }
+        public int? PalletsCount { get; set; }
+        /// <summary>
+        /// Подтвежденное кол-во паллет
+        /// </summary>
+        public int? ConfirmedPalletsCount { get; set; }
         /// <summary>
         /// Фактическое кол-во паллет
         /// </summary>
-        public int? ActualNumberOfPallets { get; set; }
+        public int? ActualPalletsCount { get; set; }
         /// <summary>
-        /// Подтвержденное кол-во коробок
-        /// </summary>
-        public int? ConfirmedBoxes { get; set; }
-        /// <summary>
-        /// Подтвержденное кол-во паллет
-        /// </summary>
-        public int? ConfirmedNumberOfPallets { get; set; }
-        /// <summary>
-        /// Вес, кг
+        /// Плановый вес, кг
         /// </summary>
         public decimal? WeightKg { get; set; }
+        /// <summary>
+        /// Фактический вес, кг
+        /// </summary>
+        public decimal? ActualWeightKg { get; set; }
         /// <summary>
         /// Сумма заказа, без НДС
         /// </summary>
@@ -96,7 +108,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Сумма по ТТН, без НДС
         /// </summary>
-        public decimal? TTNAmountExcludingVAT { get; set; }
+        public decimal? InvoiceAmountExcludingVAT { get; set; }
         /// <summary>
         /// Регион
         /// </summary>
@@ -116,7 +128,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Время авизации у клиента
         /// </summary>
-        public string CustomerAvizTime { get; set; }
+        public TimeSpan? ClientAvisationTime { get; set; }
         /// <summary>
         /// Комментарии по заказу
         /// </summary>
@@ -124,7 +136,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Тип комплектации
         /// </summary>
-        public string TypeOfEquipment { get; set; }
+        public string PickingType { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
@@ -132,31 +144,31 @@ namespace Domain.Persistables
         /// <summary>
         /// Время прибытия на загрузку  (склад БДФ)
         /// </summary>
-        public string ArrivalTimeForLoadingBDFWarehouse { get; set; }
+        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
         /// <summary>
         /// Время убытия со склада БДФ
         /// </summary>
-        public string DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
         /// <summary>
         /// Фактическая дата прибытия к грузополучателю
         /// </summary>
-        public string ActualDateOfArrivalAtTheConsignee { get; set; }
+        public DateTime? ActualDateOfArrivalAtTheConsignee { get; set; }
         /// <summary>
         /// Время прибытия к грузополучателю
         /// </summary>
-        public string ArrivalTimeToConsignee { get; set; }
+        public TimeSpan? ArrivalTimeToConsignee { get; set; }
         /// <summary>
         /// Дата убытия от грузополучателя
         /// </summary>
-        public string DateOfDepartureFromTheConsignee { get; set; }
+        public DateTime? DateOfDepartureFromTheConsignee { get; set; }
         /// <summary>
         /// Время убытия от грузополучателя
         /// </summary>
-        public string DepartureTimeFromConsignee { get; set; }
+        public TimeSpan? DepartureTimeFromConsignee { get; set; }
         /// <summary>
         /// Кол-во часов простоя машин
         /// </summary>
-        public string TheNumberOfHoursOfDowntime { get; set; }
+        public decimal? TrucksDowntime { get; set; }
         /// <summary>
         /// Информация по возвратам
         /// </summary>
@@ -168,11 +180,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Плановый срок возврата
         /// </summary>
-        public string PlannedReturnDate { get; set; }
+        public DateTime? PlannedReturnDate { get; set; }
         /// <summary>
         /// Фактический срок возврата
         /// </summary>
-        public string ActualReturnDate { get; set; }
+        public DateTime? ActualReturnDate { get; set; }
         /// <summary>
         /// Номер приемного акта Мейджор
         /// </summary>
@@ -188,7 +200,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата создания заказа
         /// </summary>
-        public string OrderCreationDate { get; set; }
+        public DateTime? OrderCreationDate { get; set; }
         /// <summary>
         /// Перевозка
         /// </summary>

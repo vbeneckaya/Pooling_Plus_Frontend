@@ -62,8 +62,8 @@ namespace Application.Services.Shippings
             entity.ThermalMode = dto.ThermalMode;
             entity.BillingMethod = dto.BillingMethod;
             entity.TransportCompany = dto.TransportCompany;
-            entity.PreliminaryNumberOfPallets = dto.PreliminaryNumberOfPallets;
-            entity.ActualNumberOfPallets = dto.ActualNumberOfPallets;
+            entity.PalletsCount = dto.PalletsCount;
+            entity.ActualPalletsCount = dto.ActualPalletsCount;
             entity.ConfirmedNumberOfPallets = dto.ConfirmedNumberOfPallets;
             entity.PlannedArrivalTimeSlotBDFWarehouse = dto.PlannedArrivalTimeSlotBDFWarehouse;
             entity.ArrivalTimeForLoadingBDFWarehouse = dto.ArrivalTimeForLoadingBDFWarehouse;
@@ -103,8 +103,8 @@ namespace Application.Services.Shippings
                 ThermalMode = entity.ThermalMode,
                 BillingMethod = entity.BillingMethod,
                 TransportCompany = entity.TransportCompany,
-                PreliminaryNumberOfPallets = entity.PreliminaryNumberOfPallets,
-                ActualNumberOfPallets = entity.ActualNumberOfPallets,
+                PalletsCount = entity.PalletsCount,
+                ActualPalletsCount = entity.ActualPalletsCount,
                 ConfirmedNumberOfPallets = entity.ConfirmedNumberOfPallets,
                 PlannedArrivalTimeSlotBDFWarehouse = entity.PlannedArrivalTimeSlotBDFWarehouse,
                 ArrivalTimeForLoadingBDFWarehouse = entity.ArrivalTimeForLoadingBDFWarehouse,

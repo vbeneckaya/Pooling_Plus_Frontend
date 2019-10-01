@@ -18,8 +18,8 @@ const Information = ({ form, onChange }) => {
                 <Grid.Row columns={5}>
                     <Grid.Column>
                         <Text
-                            name="salesOrderNumber"
-                            value={form['salesOrderNumber']}
+                            name="orderNumber"
+                            value={form['orderNumber']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -84,7 +84,7 @@ const Information = ({ form, onChange }) => {
                 <Grid.Row columns={3}>
                     <Grid.Column>
                         <Form.Field>
-                            <label>{t('palletsCount')}</label>
+                            <label>{t('palletsCountGroup')}</label>
                             <Segment>
                                 <Grid>
                                     <Grid.Row columns={3}>
@@ -116,7 +116,7 @@ const Information = ({ form, onChange }) => {
                     </Grid.Column>
                     <Grid.Column>
                         <Form.Field>
-                            <label>{t('boxesCount')}</label>
+                            <label>{t('boxesCountGroup')}</label>
                             <Segment>
                                 <Grid>
                                     <Grid.Row columns={2}>

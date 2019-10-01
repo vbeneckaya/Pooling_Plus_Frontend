@@ -1,3 +1,5 @@
+using System;
+
 namespace Domain.Services.Shippings
 {
     public class ShippingDto : IDto
@@ -8,12 +10,12 @@ namespace Domain.Services.Shippings
         public string ThermalMode { get; set; }
         public string BillingMethod { get; set; }
         public string TransportCompany { get; set; }
-        public string PreliminaryNumberOfPallets { get; set; }
-        public string ActualNumberOfPallets { get; set; }
+        public int? PalletsCount { get; set; }
+        public int? ActualPalletsCount { get; set; }
         public string ConfirmedNumberOfPallets { get; set; }
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
-        public string ArrivalTimeForLoadingBDFWarehouse { get; set; }
-        public string DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
+        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
         public string DeliveryInvoiceNumber { get; set; }
         public string CommentsReasonsForDeviationFromTheSchedule { get; set; }
         public string TransportationCostWithoutVAT { get; set; }

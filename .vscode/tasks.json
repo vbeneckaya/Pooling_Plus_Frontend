@@ -31,6 +31,16 @@
                 "cwd": "${workspaceFolder}/src/backend"
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "run backend",
+            "command": "dotnet watch run",
+            "type": "shell",
+            "group": "none",
+            "options": {
+                "cwd": "${workspaceFolder}/src/backend/API"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }

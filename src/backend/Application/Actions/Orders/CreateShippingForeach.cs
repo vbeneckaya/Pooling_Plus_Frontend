@@ -34,7 +34,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданы перевозки для заказов {orders.Select(x=>x.SalesOrderNumber).Join(", ")}"
+                Message = $"Созданы перевозки для заказов {orders.Select(x=>x.OrderNumber).Join(", ")}"
             };
         }
 

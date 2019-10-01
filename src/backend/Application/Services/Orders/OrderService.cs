@@ -61,35 +61,37 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
-            if (!string.IsNullOrEmpty(dto.Status))
-                setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status));
-            setter.UpdateField(e => e.SalesOrderNumber, dto.SalesOrderNumber, AfterSalesOrderNumberChanged);
+            setter.UpdateField(e => e.Status, string.IsNullOrEmpty(dto.Status) ? (OrderState?)null : MapFromStateDto<OrderState>(dto.Status));
+            setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, AfterOrderNumberChanged);
             setter.UpdateField(e => e.OrderDate, dto.OrderDate);
-            setter.UpdateField(e => e.TypeOfOrder, dto.TypeOfOrder);
+            setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
             setter.UpdateField(e => e.Payer, dto.Payer);
-            setter.UpdateField(e => e.CustomerName, dto.CustomerName);
+            setter.UpdateField(e => e.ClientName, dto.ClientName);
             setter.UpdateField(e => e.SoldTo, dto.SoldTo, AfterSoldToChanged);
+            setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
+            setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.ShippingDate, dto.ShippingDate);
-            setter.UpdateField(e => e.DaysOnTheRoad, dto.DaysOnTheRoad);
+            setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, dto.DeliveryDate);
             setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
             setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
-            setter.UpdateField(e => e.NumberOfArticles, dto.NumberOfArticles);
-            setter.UpdateField(e => e.TheNumberOfBoxes, dto.TheNumberOfBoxes);
-            setter.UpdateField(e => e.PreliminaryNumberOfPallets, dto.PreliminaryNumberOfPallets);
-            setter.UpdateField(e => e.ActualNumberOfPallets, dto.ActualNumberOfPallets);
-            setter.UpdateField(e => e.ConfirmedBoxes, dto.ConfirmedBoxes);
-            setter.UpdateField(e => e.ConfirmedNumberOfPallets, dto.ConfirmedNumberOfPallets);
+            setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
+            setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
+            setter.UpdateField(e => e.ConfirmedBoxesCount, dto.ConfirmedBoxesCount);
+            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount);
+            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount);
+            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount);
             setter.UpdateField(e => e.WeightKg, dto.WeightKg);
+            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg);
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
-            setter.UpdateField(e => e.TTNAmountExcludingVAT, dto.TTNAmountExcludingVAT);
+            setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
             setter.UpdateField(e => e.Region, dto.Region);
             setter.UpdateField(e => e.City, dto.City);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
-            setter.UpdateField(e => e.CustomerAvizTime, dto.CustomerAvizTime);
+            setter.UpdateField(e => e.ClientAvisationTime, dto.ClientAvisationTime);
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.TypeOfEquipment, dto.TypeOfEquipment);
+            setter.UpdateField(e => e.PickingType, dto.PickingType);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.ArrivalTimeForLoadingBDFWarehouse, dto.ArrivalTimeForLoadingBDFWarehouse);
             setter.UpdateField(e => e.DepartureTimeFromTheBDFWarehouse, dto.DepartureTimeFromTheBDFWarehouse);
@@ -97,7 +99,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ArrivalTimeToConsignee, dto.ArrivalTimeToConsignee);
             setter.UpdateField(e => e.DateOfDepartureFromTheConsignee, dto.DateOfDepartureFromTheConsignee);
             setter.UpdateField(e => e.DepartureTimeFromConsignee, dto.DepartureTimeFromConsignee);
-            setter.UpdateField(e => e.TheNumberOfHoursOfDowntime, dto.TheNumberOfHoursOfDowntime);
+            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime);
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
             setter.UpdateField(e => e.PlannedReturnDate, dto.PlannedReturnDate);
@@ -147,16 +149,16 @@ namespace Application.Services.Orders
             return new LookUpDto
             {
                 Value = entity.Id.ToString(),
-                Name = entity.SalesOrderNumber
+                Name = entity.OrderNumber
             };
         }
 
-        private void AfterSalesOrderNumberChanged(Order order, string oldValue, string newValue)
+        private void AfterOrderNumberChanged(Order order, string oldValue, string newValue)
         {
-            if (order.SalesOrderNumber.StartsWith("2"))
-                order.TypeOfOrder = "FD";
+            if (order.OrderNumber.StartsWith("2"))
+                order.OrderType = OrderType.FD;
             else 
-                order.TypeOfOrder = "OR";
+                order.OrderType = OrderType.OR;
         }
 
         private void AfterSoldToChanged(Order order, string oldValue, string newValue)
@@ -166,18 +168,18 @@ namespace Application.Services.Orders
                 var soldToWarehouse = db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    order.CustomerName = soldToWarehouse.TheNameOfTheWarehouse;
+                    order.ClientName = soldToWarehouse.TheNameOfTheWarehouse;
 
-                    if (soldToWarehouse.UseTypeOfEquipment == "Да")
-                        order.TypeOfEquipment = soldToWarehouse.TypeOfEquipment;
+                    if (soldToWarehouse.UsePickingType == "пїЅпїЅ")
+                        order.PickingType = soldToWarehouse.PickingType;
 
                     if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
                     {
                         int leadTimeDays = int.Parse(soldToWarehouse.LeadtimeDays);
-                        order.DaysOnTheRoad = leadTimeDays;
+                        order.TransitDays = leadTimeDays;
                     }
 
-                    order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.DaysOnTheRoad ?? 0);
+                    order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
 
                     order.DeliveryAddress = soldToWarehouse.Address;
                     order.City = soldToWarehouse.City;
@@ -208,7 +210,7 @@ namespace Application.Services.Orders
         {
             if (string.IsNullOrEmpty(order.ShippingAddress))
             {
-                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
+                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "пїЅпїЅпїЅ");
                 if (fromWarehouse != null)
                 {
                     order.ShippingAddress = fromWarehouse.Address;
@@ -216,7 +218,7 @@ namespace Application.Services.Orders
             }
 
             order.Status = OrderState.Draft;
-            order.OrderCreationDate = DateTime.Now.Date.ToShortDateString();
+            order.OrderCreationDate = DateTime.Today;
         }
 
         private void SaveItems(Order entity, OrderFormDto dto)
@@ -247,7 +249,7 @@ namespace Application.Services.Orders
             var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
             db.OrderItems.RemoveRange(itemsToRemove);
 
-            entity.NumberOfArticles = dto.Items.Count;
+            entity.ArticlesCount = dto.Items.Count;
         }
 
         private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)

@@ -36,11 +36,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
-        public string PreliminaryNumberOfPallets { get; set; }
+        public int? PalletsCount { get; set; }
         /// <summary>
         /// Фактическое кол-во паллет
         /// </summary>
-        public string ActualNumberOfPallets { get; set; }
+        public int? ActualPalletsCount { get; set; }
         /// <summary>
         /// Подтвержденное кол-во паллет
         /// </summary>
@@ -52,11 +52,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Время прибытия на загрузку  (склад БДФ)
         /// </summary>
-        public string ArrivalTimeForLoadingBDFWarehouse { get; set; }
+        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
         /// <summary>
         /// Время убытия со склада БДФ
         /// </summary>
-        public string DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
         /// <summary>
         /// Номер счета за доставку
         /// </summary>

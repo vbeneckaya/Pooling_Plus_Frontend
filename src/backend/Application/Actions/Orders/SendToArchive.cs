@@ -30,7 +30,7 @@ namespace Application.Actions.Orders
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {order.SalesOrderNumber}"
+                Message = $"Созданна перевозка {order.OrderNumber}"
             };
         }
 

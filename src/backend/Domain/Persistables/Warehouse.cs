@@ -35,7 +35,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Тип комплектации
         /// </summary>
-        public string TypeOfEquipment { get; set; }
+        public string PickingType { get; set; }
         /// <summary>
         /// Leadtime, дней
         /// </summary>
@@ -47,7 +47,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Использование типа комплектации
         /// </summary>
-        public string UseTypeOfEquipment { get; set; }
+        public string UsePickingType { get; set; }
         /*end of fields*/
     }
 }
