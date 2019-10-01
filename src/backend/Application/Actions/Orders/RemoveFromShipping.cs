@@ -27,7 +27,9 @@ namespace Application.Actions.Orders
         public AppActionResult Run(User user, Order order)
         {
             order.Status = OrderState.Created;
-            
+            order.ShippingStatus = VehicleState.VehicleEmpty;
+            order.DeliveryStatus = VehicleState.VehicleEmpty;
+
             var shipping = db.Shippings.GetById(order.ShippingId.Value);
             
             if (db.Orders.Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))

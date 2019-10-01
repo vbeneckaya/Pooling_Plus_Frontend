@@ -34,6 +34,8 @@ namespace Application.Actions.Orders
             {
                 order.Status = OrderState.InShipping;
                 order.ShippingId = shipping.Id;
+                order.ShippingStatus = VehicleState.VehicleWaiting;
+                order.DeliveryStatus = VehicleState.VehicleWaiting;
             }
             db.SaveChanges();
             return new AppActionResult

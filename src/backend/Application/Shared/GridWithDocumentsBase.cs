@@ -76,7 +76,7 @@ namespace Application.Shared
                 return new ValidateResult("notFound");
             }
 
-            Document document = db.Documents.FirstOrDefault(x => x.Id == id);
+            Document document = db.Documents.FirstOrDefault(x => x.Id == documentId);
             if (document == null)
             {
                 return new ValidateResult("notFound");

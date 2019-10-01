@@ -5,7 +5,13 @@ namespace Domain.Enums
     /// </summary>
     public enum OrderType
     {
+        /// <summary>
+        /// OR
+        /// </summary>
         OR,
+        /// <summary>
+        /// FD
+        /// </summary>
         FD
     }
 }
