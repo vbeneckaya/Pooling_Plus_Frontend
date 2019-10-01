@@ -46,7 +46,7 @@ namespace Application.Services.Identity
                 audience: SigningOptions.SignAudience,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.AddDays(7),
+                expires: now.AddHours(1),//.AddDays(7),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningOptions.SignKey)), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 

@@ -410,7 +410,7 @@ namespace DAL.Migrations
             AddTranslation("actualReturnDate", "Actual return days", "Фактический срок возврата");
             AddTranslation("majorAdoptionNumber", "Return act no. (Major)", "Номер приемного акта Мейджор");
             AddTranslation("orderCreationDate", "Order creation date", "Дата создания заказа в системе");
-            AddTranslation("shippingId", "ShippingId", "Перевозка");
+            AddTranslation("shippingId", "Shipping", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
 
             AddTranslation("vehicleEmpty", "Empty", "Не указан");
