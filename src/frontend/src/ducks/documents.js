@@ -169,9 +169,9 @@ export const documentsSelector = createSelector(stateSelector, state => state.do
 
 function* uploadFileSaga({ payload }) {
     try {
-        const { form, fileName, callbackSuccess } = payload;
-        const result = yield postman.post(`/files/upload`, form, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+        const { form, fileName, callbackSuccess ,isBase64 } = payload;
+        const result = yield postman.post(`/files/${isBase64 ? 'base64' : 'upload'}`, form, {
+            headers: { 'Content-Type': isBase64 ? 'application/json-patch+json' : 'multipart/form-data' },
         });
 
         yield put({

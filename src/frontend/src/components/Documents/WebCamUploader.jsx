@@ -35,14 +35,15 @@ const DocWithEditor = ({ children, onChange }) => {
     };
 
     const save = () => {
-        let form = new FormData();
         if (imageSrc) {
-            form.append('formFile', imageSrc);
-
             dispatch(
                 uploadFileRequest({
-                    form,
+                    form: {
+                        name: "WebCamPhoto.jpg",
+                        body: imageSrc.split(',')[1]
+                    },
                     fileName: "WebCamPhoto.jpg",
+                    isBase64: true,
                     callbackSuccess: (id) => {
                         onChange(id, "WebCamPhoto.jpg");
                     },
