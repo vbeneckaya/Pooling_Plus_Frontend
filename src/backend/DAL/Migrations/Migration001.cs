@@ -88,20 +88,20 @@ namespace DAL.Migrations
                 new Column("ActualWeightKg", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
                 new Column("OrderAmountExcludingVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
                 new Column("InvoiceAmountExcludingVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
-                new Column("Region", DbType.String),
-                new Column("City", DbType.String),
+                new Column("DeliveryRegion", DbType.String),
+                new Column("DeliveryCity", DbType.String),
                 new Column("ShippingAddress", DbType.String),
                 new Column("DeliveryAddress", DbType.String),
+                new Column("ShippingStatus", DbType.Int32, ColumnProperty.Null),
+                new Column("DeliveryStatus", DbType.Int32, ColumnProperty.Null),
                 new Column("ClientAvisationTime", DbType.Time, ColumnProperty.Null),
                 new Column("OrderComments", DbType.String),
                 new Column("PickingType", DbType.String),
                 new Column("PlannedArrivalTimeSlotBDFWarehouse", DbType.String),
-                new Column("ArrivalTimeForLoadingBDFWarehouse", DbType.DateTime, ColumnProperty.Null),
-                new Column("DepartureTimeFromTheBDFWarehouse", DbType.DateTime, ColumnProperty.Null),
-                new Column("ActualDateOfArrivalAtTheConsignee", DbType.Date, ColumnProperty.Null),
-                new Column("ArrivalTimeToConsignee", DbType.Time, ColumnProperty.Null),
-                new Column("DateOfDepartureFromTheConsignee", DbType.Date, ColumnProperty.Null),
-                new Column("DepartureTimeFromConsignee", DbType.Time, ColumnProperty.Null),
+                new Column("LoadingArrivalTime", DbType.DateTime, ColumnProperty.Null),
+                new Column("LoadingDepartureTime", DbType.DateTime, ColumnProperty.Null),
+                new Column("UnloadingArrivalTime", DbType.Date, ColumnProperty.Null),
+                new Column("UnloadingDepartureTime", DbType.Date, ColumnProperty.Null),
                 new Column("TrucksDowntime", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
                 new Column("ReturnInformation", DbType.String),
                 new Column("ReturnShippingAccountNo", DbType.String),
@@ -376,43 +376,47 @@ namespace DAL.Migrations
             AddTranslation("transitDays", "Days in transit", "Дней в пути");
             AddTranslation("deliveryDate", "Requested delivery date", "Дата доставки");
             AddTranslation("bDFInvoiceNumber", "Delivery No. BDF", "Номер накладной BDF");
-            AddTranslation("invoiceNumber", "InvoiceNumber", "Номер счет-фактуры");
             AddTranslation("articlesCount", "No. of materials", "Количество артикулов");
             AddTranslation("boxesCount", "Planned no. of boxes", "Предварительное количество коробок");
             AddTranslation("confirmedBoxesCount", "Confirmed no. of boxes", "Подтвержденное количество коробок");
             AddTranslation("palletsCount", "Planned no. of pallets", "Предварительное кол-во паллет");
             AddTranslation("confirmedPalletsCount", "Confirmed no. of pallets", "Подтвежденное количество паллет");
             AddTranslation("actualPalletsCount", "Actual no. of pallets", "Фактическое кол-во паллет");
-            AddTranslation("confirmedBoxesCount", "ConfirmedBoxesCount", "Подтвержденное кол-во коробок");
+            AddTranslation("confirmedBoxesCount", "Confirmed no. of boxes", "Подтвержденное кол-во коробок");
             AddTranslation("weightKg", "Planned weight, kg", "Плановый вес, кг");
             AddTranslation("actualWeightKg", "Actual weight, kg", "Фактический вес, кг");
             AddTranslation("orderAmountExcludingVAT", "Order value, excl. VAT, RUB", "Сумма заказа, без НДС");
             AddTranslation("invoiceAmountExcludingVAT", "Invoice value, excl. VAT", "Сумма по ТТН, без НДС");
-            AddTranslation("region", "Region", "Регион");
-            AddTranslation("city", "City", "Город");
+            AddTranslation("deliveryRegion", "Region", "Регион");
+            AddTranslation("deliveryity", "City", "Город");
             AddTranslation("shippingAddress", "Shipping WH address", "Адрес отгрузки");
             AddTranslation("deliveryAddress", "Delivery address", "Адрес доставки");
+            AddTranslation("shippingStatus", "Shipping status", "Статус отгрузки");
+            AddTranslation("deliveryStatus", "Delivery status", "Статус доставки");
             AddTranslation("clientAvisationTime", "Client's avisation time", "Время авизации у клиента");
             AddTranslation("orderComments", "Order comments", "Комментарии по заказу");
             AddTranslation("pickingType", "Picking type", "Тип комплектации");
             AddTranslation("plannedArrivalTimeSlotBDFWarehouse", "Planned arriving time/Time-slot at BDF WH", "Плановое прибытие/тайм-слот (склад БДФ)");
-            AddTranslation("arrivalTimeForLoadingBDFWarehouse", "Arrival time to BDF WH", "Время прибытия на загрузку  (склад БДФ)");
-            AddTranslation("departureTimeFromTheBDFWarehouse", "Departure time from BDF WH", "Время убытия со склада БДФ");
-            AddTranslation("actualDateOfArrivalAtTheConsignee", "Actual arrival date to client", "Фактическая дата прибытия к грузополучателю");
-            AddTranslation("arrivalTimeToConsignee", "Arrival time to client", "Время прибытия к грузополучателю");
-            AddTranslation("dateOfDepartureFromTheConsignee", "Actual departure date from client", "Дата убытия от грузополучателя");
-            AddTranslation("departureTimeFromConsignee", "Departure time from client", "Время убытия от грузополучателя");
+            AddTranslation("loadingArrivalTime", "Arrival time to BDF WH", "Время прибытия на загрузку  (склад БДФ)");
+            AddTranslation("loadingDepartureTime", "Departure time from BDF WH", "Время убытия со склада БДФ");
+            AddTranslation("unloadingArrivalDate", "Actual arrival date to client", "Фактическая дата прибытия к грузополучателю");
+            AddTranslation("unloadingArrivalTime", "Arrival time to client", "Время прибытия к грузополучателю");
+            AddTranslation("unloadingDepartureDate", "Actual departure date from client", "Дата убытия от грузополучателя");
+            AddTranslation("unloadingDepartureTime", "Departure time from client", "Время убытия от грузополучателя");
             AddTranslation("trucksDowntime", "Downtime", "Кол-во часов простоя машин");
             AddTranslation("returnInformation", "Returns info", "Информация по возвратам");
             AddTranslation("returnShippingAccountNo", "Invoice No. for return freight", "№ счета за перевозку возврата");
             AddTranslation("plannedReturnDate", "Planned return days", "Плановый срок возврата");
             AddTranslation("actualReturnDate", "Actual return days", "Фактический срок возврата");
             AddTranslation("majorAdoptionNumber", "Return act no. (Major)", "Номер приемного акта Мейджор");
-            AddTranslation("avization", "Avization", "Авизация");
-            AddTranslation("orderItems", "OrderItems", "Позиции в заказе");
             AddTranslation("orderCreationDate", "Order creation date", "Дата создания заказа в системе");
             AddTranslation("shippingId", "ShippingId", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
+
+            AddTranslation("vehicleEmpty", "Empty", "Не указан");
+            AddTranslation("vehicleWaiting", "Waiting vehicle", "Ожидает ТС");
+            AddTranslation("vehicleArrived", "Vehicle arrived", "ТС прибыло");
+            AddTranslation("vehicleDepartured", "Vehicle departured", "ТС убыло");
 
             AddTranslation("draft", "Draft", "Не проверен");
             AddTranslation("canceled", "Canceled", "Отменён");

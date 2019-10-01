@@ -1,6 +1,5 @@
 using Domain.Enums;
 using System;
-using System.Collections.Generic;
 
 namespace Domain.Persistables
 {
@@ -16,7 +15,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Статус
         /// </summary>
-        public OrderState? Status { get; set; }
+        public OrderState Status { get; set; }
         /// <summary>
         /// Номер заказ клиента
         /// </summary>
@@ -66,10 +65,6 @@ namespace Domain.Persistables
         /// </summary>
         public string BDFInvoiceNumber { get; set; }
         /// <summary>
-        /// Номер счет-фактуры
-        /// </summary>
-        public string InvoiceNumber { get; set; }
-        /// <summary>
         /// Кол-во арт.
         /// </summary>
         public int? ArticlesCount { get; set; }
@@ -112,11 +107,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Регион
         /// </summary>
-        public string Region { get; set; }
+        public string DeliveryRegion { get; set; }
         /// <summary>
         /// Город
         /// </summary>
-        public string City { get; set; }
+        public string DeliveryCity { get; set; }
         /// <summary>
         /// Адрес отгрузки
         /// </summary>
@@ -125,6 +120,14 @@ namespace Domain.Persistables
         /// Адрес доставки
         /// </summary>
         public string DeliveryAddress { get; set; }
+        /// <summary>
+        /// Статус отгрузки
+        /// </summary>
+        public VehicleState ShippingStatus { get; set; }
+        /// <summary>
+        /// Статус доставки
+        /// </summary>
+        public VehicleState DeliveryStatus { get; set; }
         /// <summary>
         /// Время авизации у клиента
         /// </summary>
@@ -144,27 +147,19 @@ namespace Domain.Persistables
         /// <summary>
         /// Время прибытия на загрузку  (склад БДФ)
         /// </summary>
-        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
+        public DateTime? LoadingArrivalTime { get; set; }
         /// <summary>
         /// Время убытия со склада БДФ
         /// </summary>
-        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? LoadingDepartureTime { get; set; }
         /// <summary>
         /// Фактическая дата прибытия к грузополучателю
         /// </summary>
-        public DateTime? ActualDateOfArrivalAtTheConsignee { get; set; }
-        /// <summary>
-        /// Время прибытия к грузополучателю
-        /// </summary>
-        public TimeSpan? ArrivalTimeToConsignee { get; set; }
+        public DateTime? UnloadingArrivalTime { get; set; }
         /// <summary>
         /// Дата убытия от грузополучателя
         /// </summary>
-        public DateTime? DateOfDepartureFromTheConsignee { get; set; }
-        /// <summary>
-        /// Время убытия от грузополучателя
-        /// </summary>
-        public TimeSpan? DepartureTimeFromConsignee { get; set; }
+        public DateTime? UnloadingDepartureTime { get; set; }
         /// <summary>
         /// Кол-во часов простоя машин
         /// </summary>
@@ -190,14 +185,6 @@ namespace Domain.Persistables
         /// </summary>
         public string MajorAdoptionNumber { get; set; }
         /// <summary>
-        /// Авизация
-        /// </summary>
-        public string Avization { get; set; }
-        /// <summary>
-        /// Позиции в заказе
-        /// </summary>
-        public string OrderItems { get; set; }
-        /// <summary>
         /// Дата создания заказа
         /// </summary>
         public DateTime? OrderCreationDate { get; set; }
@@ -205,10 +192,6 @@ namespace Domain.Persistables
         /// Перевозка
         /// </summary>
         public Guid? ShippingId { get; set; }
-        /// <summary>
-        /// ##comment##
-        /// </summary>
-        public string Positions { get; set; }
         /*end of fields*/
     }
 }

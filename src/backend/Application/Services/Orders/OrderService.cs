@@ -61,7 +61,12 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
-            setter.UpdateField(e => e.Status, string.IsNullOrEmpty(dto.Status) ? (OrderState?)null : MapFromStateDto<OrderState>(dto.Status));
+            if (!string.IsNullOrEmpty(dto.Status))
+                setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status));
+            if (!string.IsNullOrEmpty(dto.ShippingStatus))
+                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), AfterShippingStatusChanged);
+            if (!string.IsNullOrEmpty(dto.DeliveryStatus))
+                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), AfterDeliveryStatusChanged);
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, AfterOrderNumberChanged);
             setter.UpdateField(e => e.OrderDate, dto.OrderDate);
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
@@ -74,7 +79,6 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, dto.DeliveryDate);
             setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
-            setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
             setter.UpdateField(e => e.ConfirmedBoxesCount, dto.ConfirmedBoxesCount);
@@ -85,32 +89,27 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg);
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
-            setter.UpdateField(e => e.Region, dto.Region);
-            setter.UpdateField(e => e.City, dto.City);
+            setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
+            setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
             setter.UpdateField(e => e.ClientAvisationTime, dto.ClientAvisationTime);
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
             setter.UpdateField(e => e.PickingType, dto.PickingType);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.ArrivalTimeForLoadingBDFWarehouse, dto.ArrivalTimeForLoadingBDFWarehouse);
-            setter.UpdateField(e => e.DepartureTimeFromTheBDFWarehouse, dto.DepartureTimeFromTheBDFWarehouse);
-            setter.UpdateField(e => e.ActualDateOfArrivalAtTheConsignee, dto.ActualDateOfArrivalAtTheConsignee);
-            setter.UpdateField(e => e.ArrivalTimeToConsignee, dto.ArrivalTimeToConsignee);
-            setter.UpdateField(e => e.DateOfDepartureFromTheConsignee, dto.DateOfDepartureFromTheConsignee);
-            setter.UpdateField(e => e.DepartureTimeFromConsignee, dto.DepartureTimeFromConsignee);
+            setter.UpdateField(e => e.LoadingArrivalTime, dto.LoadingArrivalTime);
+            setter.UpdateField(e => e.LoadingDepartureTime, dto.LoadingDepartureTime);
+            setter.UpdateField(e => e.UnloadingArrivalTime, dto.UnloadingArrivalDate?.Add(dto.UnloadingArrivalTime ?? TimeSpan.Zero));
+            setter.UpdateField(e => e.UnloadingDepartureTime, dto.UnloadingDepartureDate?.Add(dto.UnloadingDepartureTime ?? TimeSpan.Zero));
             setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime);
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
             setter.UpdateField(e => e.PlannedReturnDate, dto.PlannedReturnDate);
             setter.UpdateField(e => e.ActualReturnDate, dto.ActualReturnDate);
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
-            setter.UpdateField(e => e.Avization, dto.Avization);
-            setter.UpdateField(e => e.OrderItems, dto.OrderItems);
             setter.UpdateField(e => e.OrderCreationDate, dto.OrderCreationDate);
             if (!string.IsNullOrEmpty(dto.ShippingId))
                 setter.UpdateField(e => e.ShippingId, Guid.Parse(dto.ShippingId));
-            setter.UpdateField(e => e.Positions, dto.Positions);
             /*end of map dto to entity fields*/
 
             if (string.IsNullOrEmpty(dto.Id))
@@ -182,10 +181,27 @@ namespace Application.Services.Orders
                     order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
 
                     order.DeliveryAddress = soldToWarehouse.Address;
-                    order.City = soldToWarehouse.City;
-                    order.Region = soldToWarehouse.Region;
+                    order.DeliveryCity = soldToWarehouse.City;
+                    order.DeliveryRegion = soldToWarehouse.Region;
                 }
             }
+        }
+
+        private void AfterShippingStatusChanged(Order order, VehicleState oldValue, VehicleState newValue)
+        {
+            if (oldValue == VehicleState.VehicleWaiting && newValue == VehicleState.VehicleArrived)
+            {
+                order.LoadingArrivalTime = DateTime.Now;
+            }
+            else if (oldValue == VehicleState.VehicleArrived && newValue == VehicleState.VehicleDepartured)
+            {
+                order.LoadingDepartureTime = DateTime.Now;
+            }
+        }
+
+        private void AfterDeliveryStatusChanged(Order order, VehicleState oldValue, VehicleState newValue)
+        {
+
         }
 
         private void CheckRequiredFields(Order order)
@@ -219,6 +235,8 @@ namespace Application.Services.Orders
 
             order.Status = OrderState.Draft;
             order.OrderCreationDate = DateTime.Today;
+            order.ShippingStatus = VehicleState.VehicleEmpty;
+            order.DeliveryStatus = VehicleState.VehicleEmpty;
         }
 
         private void SaveItems(Order entity, OrderFormDto dto)
@@ -278,11 +296,25 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()));
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType.ToString()))
+                    .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.UnloadingArrivalDate, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.Date))
+                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.TimeOfDay))
+                    .ForMember(t => t.UnloadingDepartureDate, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.Date))
+                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.TimeOfDay));
 
                 cfg.CreateMap<Order, OrderFormDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()));
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType.ToString()))
+                    .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerfirstLetter()))
+                    .ForMember(t => t.UnloadingArrivalDate, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.Date))
+                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.TimeOfDay))
+                    .ForMember(t => t.UnloadingDepartureDate, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.Date))
+                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.TimeOfDay));
             });
             return result;
         }
