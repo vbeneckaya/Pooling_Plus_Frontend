@@ -7,6 +7,11 @@ export const postman = axios.create({
     paramsSerializer: params => qs.stringify(params, { indices: false }),
 });
 
+
+export const downloader = axios.create({
+    baseURL: '/api',
+});
+
 postman.interceptors.response.use(
     resp => {
         return resp.data;
@@ -23,7 +28,9 @@ postman.interceptors.response.use(
 export const setAccessToken = token => {
     if (token !== null) {
         postman.defaults.headers.common.Authorization = `Bearer ${token}`;
+        downloader.defaults.headers.common.Authorization = `Bearer ${token}`;
     } else {
         delete postman.defaults.headers.common.Authorization;
+        delete downloader.defaults.headers.common.Authorization;
     }
 };

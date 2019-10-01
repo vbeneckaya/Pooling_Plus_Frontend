@@ -4,11 +4,11 @@ import {useTranslation} from 'react-i18next';
 import {Tab} from 'semantic-ui-react';
 import Information from "./shippingTabs/information";
 import Routes from "./shippingTabs/routes";
-import Documents from "./shippingTabs/documents";
+import Documents from "./shared/documents";
 import History from "./shippingTabs/history";
 import Accounts from "./shippingTabs/accounts";
 
-const ShippingModal = ({form, onChangeForm}) => {
+const ShippingModal = ({form, onChangeForm, name, id}) => {
     const { t } = useTranslation();
 
     const getPanes = [
@@ -26,7 +26,7 @@ const ShippingModal = ({form, onChangeForm}) => {
         },
         {
             menuItem: t('documents'),
-            render: () => <Tab.Pane className='tabs-card'><Documents/></Tab.Pane>,
+            render: () => <Tab.Pane className='tabs-card'><Documents gridName={name} cardId={id} /></Tab.Pane>,
         },
         {
             menuItem: t('history'),

@@ -438,8 +438,8 @@ namespace DAL.Migrations
             AddTranslation("shippingBillSend", "ShippingBillSend", "Счёт выставлен");
             AddTranslation("shippingArhive", "ShippingArhive", "В архиве");
             AddTranslation("shippingProblem", "ShippingProblem", "Срыв поставки");
-            
-            
+
+
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
             AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
@@ -576,6 +576,21 @@ namespace DAL.Migrations
             AddTranslation("title", "Title", "Название");
             AddTranslation("contractNumber", "ContractNumber", "Номер договора");
             AddTranslation("dateOfPowerOfAttorney", "DateOfPowerOfAttorney", "Дата доверенности");
+
+            AddTranslation("Delete document", "Delete document {{name}}?", "Удалить докуьуте {{name}}?");
+            AddTranslation("delete", "Delete", "Удалить");
+            AddTranslation("download", "Download", "Скачать");
+            AddTranslation("download", "Download", "Скачать");
+            AddTranslation("Document name", "Document name", "Название документа");
+            AddTranslation("Upload file", "Document name", "Загрузите файл");
+            AddTranslation("Type", "Type", "Тип");
+            AddTranslation("CancelButton", "Cancel", "Отменить");
+            AddTranslation("Add document", "Add document", "Добавить документ");
+            AddTranslation("Edit document", "Edit document", "Редактировать документ");
+            AddTranslation("SaveButton", "Save", "Сохранить");
+            AddTranslation("AddButton", "Add", "Добавить");
+            AddTranslation("Create a Photo", "Create a Photo", "Сделать фотографию");
+            AddTranslation("PhotoButton", "Photo", "Фото");
             /*end of add translates*/
 
         }
