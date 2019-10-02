@@ -144,8 +144,8 @@ const DocWithEditor = ({
     };
 
     return (
-        <DocView document={document}>
-            {document ? (
+        <DocView document={currentDocument}>
+            {currentDocument ? (
                 <div>
                     <Popup
                         content={t('delete')}
@@ -154,7 +154,7 @@ const DocWithEditor = ({
                             <Icon
                                 name="times"
                                 className="uploaded-image-delete-button"
-                                onClick={() => handleDelete(document)}
+                                onClick={() => handleDelete(currentDocument)}
                             />
                         }
                     />

@@ -1,6 +1,8 @@
 ﻿import axios from 'axios';
 import qs from 'qs';
 import { toast } from 'react-toastify';
+import store from "../store/configureStore";
+import {logoutRequest} from "../ducks/login";
 
 export const postman = axios.create({
     baseURL: '/api',
@@ -17,15 +19,20 @@ postman.interceptors.response.use(
         return resp.data;
     },
     error => {
-        const { data = {} } = error.response;
+        const { data = {}, status } = error.response;
         const { error: errorText = '', message = '' } = data;
+
         errorText && toast.error(JSON.stringify(errorText) || message || 'Ошибка!');
+
+        if (status === 401) {
+            store.dispatch(logoutRequest());
+        }
 
         return Promise.reject(error);
     },
 );
 
-export const setAccessToken = token => {
+export var setAccessToken = token => {
     if (token !== null) {
         postman.defaults.headers.common.Authorization = `Bearer ${token}`;
         downloader.defaults.headers.common.Authorization = `Bearer ${token}`;

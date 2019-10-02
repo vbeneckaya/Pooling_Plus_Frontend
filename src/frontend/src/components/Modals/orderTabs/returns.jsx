@@ -14,28 +14,26 @@ const Returns = ({ form, onChange }) => {
             <Grid>
                 <Grid.Row columns={3}>
                     <Grid.Column>
-                        <TextArea
-                            name="addressFrom"
-                            value={form['addressFrom']}
+                        <Text
+                            name="returnShippingAccountNo"
+                            value={form['returnShippingAccountNo']}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <Text name="addressFrom" value={form['addressFrom']} onChange={onChange} />
+                        <Text name="majorAdoptionNumber" value={form['majorAdoptionNumber']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Text name="addressFrom" value={form['addressFrom']} onChange={onChange} />
+                        <Text name="Расхождение(шт)" value={form['addressFrom']} onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={3}>
-                    <Grid.Column>
-                        <Date name="addressFrom" value={form['addressFrom']} onChange={onChange} />
+                <Grid.Row columns='equal' stretched>
+                    <Grid.Column width={5}>
+                        <Date name="plannedReturnDate" value={form['plannedReturnDate']} onChange={onChange} />
+                        <Date name="actualReturnDate" value={form['actualReturnDate']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Date name="addressFrom" value={form['addressFrom']} onChange={onChange} />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Number name="addressFrom" value={form['addressFrom']} onChange={onChange} />
+                        <TextArea name="returnInformation" value={form['returnInformation']} rows={5} onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
