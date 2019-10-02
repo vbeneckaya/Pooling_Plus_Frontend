@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
@@ -68,8 +69,9 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel")]
-        public ValidateResult ImportFromExcel([FromForm]IFormFile file)
+        public ValidateResult ImportFromExcel()
         {
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
             using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
             {
                 file.CopyTo(stream);

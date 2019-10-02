@@ -264,8 +264,13 @@ namespace Application.Shared
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
-            var dtos = workSheet.ConvertSheetToObjects<TFormDto>();
-            
+
+            var dtos = workSheet.ConvertSheetToObjects<TFormDto>(out string parseErrors);
+            if (!string.IsNullOrEmpty(parseErrors))
+            {
+                return new[] { new ValidateResult(parseErrors) };
+            }
+
             return Import(dtos);
         }
         

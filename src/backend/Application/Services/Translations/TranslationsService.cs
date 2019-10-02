@@ -34,6 +34,11 @@ namespace Application.Services.Translations
             return db.Translations;
         }
 
+        public override Translation FindByKey(TranslationDto dto)
+        {
+            return db.Translations.Where(x => x.Name == dto.Name).FirstOrDefault();
+        }
+
         public override void MapFromDtoToEntity(Translation entity, TranslationDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))

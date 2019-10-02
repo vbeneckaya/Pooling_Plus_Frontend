@@ -22,6 +22,11 @@ namespace Application.Services.Warehouses
             return dbContext.Warehouses;
         }
 
+        public override Warehouse FindByKey(WarehouseDto dto)
+        {
+            return db.Warehouses.Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
+        }
+
         public override void MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))

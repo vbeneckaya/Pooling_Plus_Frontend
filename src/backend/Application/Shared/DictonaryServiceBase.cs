@@ -2,16 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace Application.Shared
 {
-    public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto
+    public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
@@ -33,6 +35,19 @@ namespace Application.Shared
         public virtual IEnumerable<LookUpDto> ForSelect()
         {
             return new List<LookUpDto>();
+        }
+
+        public virtual TEntity FindByKey(TListDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
+            {
+                var dbSet = UseDbSet(db);
+                return dbSet.GetById(id);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public SearchResult<TListDto> Search(SearchForm form)
@@ -77,17 +92,28 @@ namespace Application.Shared
         
         public ValidateResult ImportFromExcel(Stream fileStream)
         {
-            var dbSet = UseDbSet(db);
-            var result = new List<ValidateResult>();
-            var entities = dbSet.ToList();
-            //foreach (var entity in entities) 
-                //result.Add(SaveOrCreate(entity));
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
-            return new ValidateResult
+            var dtos = workSheet.ConvertSheetToObjects<TListDto>(out string parseErrors);
+            if (!string.IsNullOrEmpty(parseErrors))
             {
-                Id = "23423",
-                Error = $"Тут ответ{fileStream.Length}"
-            };
+                return new ValidateResult(parseErrors);
+            }
+
+            int ind = 1;
+            StringBuilder errors = new StringBuilder();
+            var results = Import(dtos);
+            foreach (ValidateResult result in results)
+            {
+                ++ind;
+                if (result.IsError)
+                {
+                    errors.AppendLine($"Строка {ind}: {result.Error}.");
+                }
+            }
+
+            return new ValidateResult(errors.ToString());
         }
         
         

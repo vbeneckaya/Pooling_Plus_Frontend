@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Domain.Extensions;
 using OfficeOpenXml;
 
@@ -43,8 +44,9 @@ namespace Application.Shared
             }
         }
 
-        public static IEnumerable<T> ConvertSheetToObjects<T>(this ExcelWorksheet worksheet) where T : new()
+        public static IEnumerable<T> ConvertSheetToObjects<T>(this ExcelWorksheet worksheet, out string errors) where T : new()
         {
+            StringBuilder errorsBuilder = new StringBuilder();
 
             Func<CustomAttributeData, bool> columnOnly = y => y.AttributeType == typeof(Column);
 
@@ -64,42 +66,49 @@ namespace Application.Shared
                     var tnew = new T();
                     columns.ForEach(col =>
                     {
-                        //This is the real wrinkle to using reflection - Excel stores all numbers as double including int
-                        var val = worksheet.Cells[row, col.Column];
-                        //If it is numeric it is a double since that is how excel stores all numbers
-                        if (val.Value == null)
+                        try
                         {
-                            col.Property.SetValue(tnew, null);
-                            return;
+                            //This is the real wrinkle to using reflection - Excel stores all numbers as double including int
+                            var val = worksheet.Cells[row, col.Column];
+                            //If it is numeric it is a double since that is how excel stores all numbers
+                            if (val.Value == null)
+                            {
+                                col.Property.SetValue(tnew, null);
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(Int32))
+                            {
+                                col.Property.SetValue(tnew, val.GetValue<int>());
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(Int32?))
+                            {
+                                col.Property.SetValue(tnew, val.GetValue<int?>());
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(double))
+                            {
+                                col.Property.SetValue(tnew, val.GetValue<double>());
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(DateTime))
+                            {
+                                col.Property.SetValue(tnew, val.GetValue<DateTime>());
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(DateTime?))
+                            {
+                                var value1 = val.GetValue<DateTime?>();
+                                col.Property.SetValue(tnew, value1);
+                                return;
+                            }
+                            //Its a string
+                            col.Property.SetValue(tnew, val.GetValue<string>());
                         }
-                        if (col.Property.PropertyType == typeof(Int32))
+                        catch (Exception ex)
                         {
-                            col.Property.SetValue(tnew, val.GetValue<int>());
-                            return;
+                            errorsBuilder.Append($"Строка {row}: {ex.Message}.");
                         }
-                        if (col.Property.PropertyType == typeof(Int32?))
-                        {
-                            col.Property.SetValue(tnew, val.GetValue<int?>());
-                            return;
-                        }
-                        if (col.Property.PropertyType == typeof(double))
-                        {
-                            col.Property.SetValue(tnew, val.GetValue<double>());
-                            return;
-                        }
-                        if (col.Property.PropertyType == typeof(DateTime))
-                        {
-                            col.Property.SetValue(tnew, val.GetValue<DateTime>());
-                            return;
-                        }
-                        if (col.Property.PropertyType == typeof(DateTime?))
-                        {
-                            var value1 = val.GetValue<DateTime?>();
-                            col.Property.SetValue(tnew, value1);
-                            return;
-                        }
-                        //Its a string
-                        col.Property.SetValue(tnew, val.GetValue<string>());
                     });
 
                     return tnew;
@@ -107,6 +116,7 @@ namespace Application.Shared
 
 
             //Send it back
+            errors = errorsBuilder.ToString();
             return collection;
         }
 

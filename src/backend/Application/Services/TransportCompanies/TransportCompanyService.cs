@@ -5,6 +5,7 @@ using Domain.Persistables;
 using Domain.Extensions;
 using Domain.Services.TransportCompanies;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Application.Services.TransportCompanies
 {
@@ -17,6 +18,11 @@ namespace Application.Services.TransportCompanies
         public override DbSet<TransportCompany> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.TransportCompanies;
+        }
+
+        public override TransportCompany FindByKey(TransportCompanyDto dto)
+        {
+            return db.TransportCompanies.Where(x => x.Title == dto.Title).FirstOrDefault();
         }
 
         public override void MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)

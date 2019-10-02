@@ -96,7 +96,7 @@
             Импортировать
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictionaryController`3.ImportFromExcel(Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ImportFromExcel">
             <summary>
             Импортировать из excel
             </summary>
