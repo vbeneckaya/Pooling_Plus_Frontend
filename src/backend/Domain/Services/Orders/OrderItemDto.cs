@@ -4,6 +4,6 @@
     {
         public string Id { get; set; }
         public string Nart { get; set; }
-        public string Quantity { get; set; }
+        public int? Quantity { get; set; }
     }
 }

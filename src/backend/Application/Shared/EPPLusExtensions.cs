@@ -76,19 +76,24 @@ namespace Application.Shared
                                 col.Property.SetValue(tnew, null);
                                 return;
                             }
-                            if (col.Property.PropertyType == typeof(Int32))
+                            if (col.Property.PropertyType == typeof(int))
                             {
                                 col.Property.SetValue(tnew, val.GetValue<int>());
                                 return;
                             }
-                            if (col.Property.PropertyType == typeof(Int32?))
+                            if (col.Property.PropertyType == typeof(int?))
                             {
                                 col.Property.SetValue(tnew, val.GetValue<int?>());
                                 return;
                             }
-                            if (col.Property.PropertyType == typeof(double))
+                            if (col.Property.PropertyType == typeof(decimal))
                             {
-                                col.Property.SetValue(tnew, val.GetValue<double>());
+                                col.Property.SetValue(tnew, val.GetValue<decimal>());
+                                return;
+                            }
+                            if (col.Property.PropertyType == typeof(decimal?))
+                            {
+                                col.Property.SetValue(tnew, val.GetValue<decimal?>());
                                 return;
                             }
                             if (col.Property.PropertyType == typeof(DateTime))
@@ -129,7 +134,8 @@ namespace Application.Shared
                 typeof(int?),
                 typeof(DateTime),
                 typeof(DateTime?),
-                typeof(double),
+                typeof(decimal),
+                typeof(decimal?),
             };
 
             var columns = typeof(T)

@@ -136,14 +136,14 @@ namespace Tasks.Orders
             decimal weightUomCoeff = doc.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "KGM" }, new[] { 0.001M, 1M }, 1);
 
             dto.OrderNumber = doc.SelectSingleNode("//E1EDK02[QUALF='001']/BELNR")?.InnerText;
-            dto.OrderDate = doc.SelectSingleNode("//E1EDK02[QUALF='001']/DATUM")?.InnerText;
+            dto.OrderDate = doc.ParseDateTime("//E1EDK02[QUALF='001']/DATUM");
             dto.Payer = doc.SelectSingleNode("//E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
             dto.SoldTo = doc.SelectSingleNode("//E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
-            dto.WeightKg = doc.ParseDecimal("//E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff)?.ToString("F", CultureInfo.InvariantCulture);
-            dto.PalletsCount = doc.SelectSingleNode("//Y0126SD_ORDERS05_TMS_01/YYPAL_H")?.InnerText;
-            dto.BoxesCount = doc.SelectSingleNode("//Y0126SD_ORDERS05_TMS_01/YYCAR_H")?.InnerText;
-            dto.DeliveryDate = doc.SelectSingleNode("//E1EDK03[IDDAT='002']/DATUM")?.InnerText;
-            dto.OrderAmountExcludingVAT = doc.SelectSingleNode("//E1EDS01[SUMID='002']/SUMME")?.InnerText;
+            dto.WeightKg = doc.ParseDecimal("//E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
+            dto.PalletsCount = doc.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYPAL_H");
+            dto.BoxesCount = doc.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYCAR_H");
+            dto.DeliveryDate = doc.ParseDateTime("//E1EDK03[IDDAT='002']/DATUM");
+            dto.OrderAmountExcludingVAT = doc.ParseDecimal("//E1EDS01[SUMID='002']/SUMME");
 
             IEnumerable<string> missedRequiredFields = ValidateRequiredFields(dto);
             if (missedRequiredFields.Any())
@@ -161,7 +161,7 @@ namespace Tasks.Orders
                 ++entryInd;
                 OrderItemDto itemDto = new OrderItemDto();
 
-                itemDto.Quantity = itemRoot.SelectSingleNode("MENGE")?.InnerText;
+                itemDto.Quantity = itemRoot.ParseInt("MENGE");
                 itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
 
                 dto.Items.Add(itemDto);

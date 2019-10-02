@@ -92,7 +92,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.PlannedReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.MajorAdoptionNumber), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.DateTime),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderComments), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingId), FiledType.Select, nameof(ShippingsService)),
