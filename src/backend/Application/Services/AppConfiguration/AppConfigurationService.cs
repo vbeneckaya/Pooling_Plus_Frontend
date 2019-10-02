@@ -20,6 +20,7 @@ using Domain.Services.Articles;
 using Domain.Services.TransportCompanies;
 using Application.Services.DocumentTypes;
 using Domain.Services.DocumentTypes;
+using Application.Services.PickingTypes;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -55,9 +56,9 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderType), FiledType.Select, nameof(OrderType)),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.ClientName), FiledType.Text),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ClientName), FiledType.Select, nameof(WarehousesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.SoldTo), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.PickingType), FiledType.Text),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingType), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMax), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingDate), FiledType.DateTime),

@@ -36,6 +36,8 @@ using Domain.Services.Files;
 using Application.Services.Files;
 using Domain.Services.DocumentTypes;
 using Application.Services.DocumentTypes;
+using Application.Services.PickingTypes;
+using Domain.Services.PickingTypes;
 
 namespace Infrastructure.Installers
 {
@@ -61,6 +63,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
             services.AddScoped<IFilesService, FilesService>();
             services.AddScoped<IDocumentTypesService, DocumentTypesService>();
+            services.AddScoped<IPickingTypesService, PickingTypesService>();
             /*end of add service implementation*/
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");

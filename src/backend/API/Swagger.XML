@@ -57,6 +57,11 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.PickingTypesController.ForSelect">
+            <summary>
+            Все доступные статусы
+            </summary>
+        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь

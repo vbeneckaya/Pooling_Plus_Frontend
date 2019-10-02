@@ -30,7 +30,7 @@ namespace Application.Shared
             return MapFromEntityToDto(dbSet.GetById(id));
         }
 
-        public IEnumerable<LookUpDto> ForSelect()
+        public virtual IEnumerable<LookUpDto> ForSelect()
         {
             return new List<LookUpDto>();
         }
