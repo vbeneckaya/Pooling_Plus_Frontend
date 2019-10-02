@@ -1,4 +1,5 @@
-using Application.Actions.Orders;
+using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Orders.Handlers;
 using Application.Shared;
 using AutoMapper;
 using DAL;
@@ -55,7 +56,7 @@ namespace Application.Services.Orders
             };
         }
 
-        public override void MapFromDtoToEntity(Order entity, OrderDto dto)
+        public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             var setter = new FieldSetter<Order>(entity);
 
@@ -64,15 +65,15 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status));
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
-                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), AfterShippingStatusChanged);
+                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler());
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
-                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), AfterDeliveryStatusChanged);
-            setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, AfterOrderNumberChanged);
+                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus));
+            setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler());
             setter.UpdateField(e => e.OrderDate, ParseDateTime(dto.OrderDate));
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
             setter.UpdateField(e => e.Payer, dto.Payer);
             setter.UpdateField(e => e.ClientName, dto.ClientName);
-            setter.UpdateField(e => e.SoldTo, dto.SoldTo, AfterSoldToChanged);
+            setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(db));
             setter.UpdateField(e => e.TemperatureMin, ParseInt(dto.TemperatureMin));
             setter.UpdateField(e => e.TemperatureMax, ParseInt(dto.TemperatureMax));
             setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate));
@@ -97,10 +98,10 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
             setter.UpdateField(e => e.PickingType, dto.PickingType);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime));
-            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime));
-            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero));
-            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero));
+            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler());
+            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler());
+            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler());
+            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler());
             setter.UpdateField(e => e.TrucksDowntime, ParseDecimal(dto.TrucksDowntime));
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
@@ -123,12 +124,19 @@ namespace Application.Services.Orders
             {
                 CheckRequiredFields(entity);
             }
+
+            string errors = setter.ValidationErrors;
+            return new ValidateResult(errors, entity.Id.ToString());
         }
 
-        public override void MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
+        public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
         {
-            MapFromDtoToEntity(entity, dto);
-            SaveItems(entity, dto);
+            ValidateResult result = MapFromDtoToEntity(entity, dto);
+            if (!result.IsError)
+            {
+                SaveItems(entity, dto);
+            }
+            return result;
         }
 
         public override OrderDto MapFromEntityToDto(Order entity)
@@ -153,58 +161,6 @@ namespace Application.Services.Orders
             };
         }
 
-        private void AfterOrderNumberChanged(Order order, string oldValue, string newValue)
-        {
-            if (order.OrderNumber.StartsWith("2"))
-                order.OrderType = OrderType.FD;
-            else 
-                order.OrderType = OrderType.OR;
-        }
-
-        private void AfterSoldToChanged(Order order, string oldValue, string newValue)
-        {
-            if (!string.IsNullOrEmpty(order.SoldTo))
-            {
-                var soldToWarehouse = db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
-                if (soldToWarehouse != null)
-                {
-                    order.ClientName = soldToWarehouse.WarehouseName;
-
-                    if (soldToWarehouse.UsePickingType == "Да")
-                        order.PickingType = soldToWarehouse.PickingType;
-
-                    if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
-                    {
-                        int leadTimeDays = int.Parse(soldToWarehouse.LeadtimeDays);
-                        order.TransitDays = leadTimeDays;
-                    }
-
-                    order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
-
-                    order.DeliveryAddress = soldToWarehouse.Address;
-                    order.DeliveryCity = soldToWarehouse.City;
-                    order.DeliveryRegion = soldToWarehouse.Region;
-                }
-            }
-        }
-
-        private void AfterShippingStatusChanged(Order order, VehicleState oldValue, VehicleState newValue)
-        {
-            if (oldValue == VehicleState.VehicleWaiting && newValue == VehicleState.VehicleArrived)
-            {
-                order.LoadingArrivalTime = DateTime.Now;
-            }
-            else if (oldValue == VehicleState.VehicleArrived && newValue == VehicleState.VehicleDepartured)
-            {
-                order.LoadingDepartureTime = DateTime.Now;
-            }
-        }
-
-        private void AfterDeliveryStatusChanged(Order order, VehicleState oldValue, VehicleState newValue)
-        {
-
-        }
-
         private void CheckRequiredFields(Order order)
         {
             if (order.Status == OrderState.Draft)
@@ -227,7 +183,7 @@ namespace Application.Services.Orders
         {
             if (string.IsNullOrEmpty(order.ShippingAddress))
             {
-                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "���");
+                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
                 if (fromWarehouse != null)
                 {
                     order.ShippingAddress = fromWarehouse.Address;

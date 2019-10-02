@@ -5,7 +5,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 
-namespace Application.Actions.Shippings
+namespace Application.BusinessModels.Shippings.Actions
 {
     /// <summary>
     /// Отменить заявку

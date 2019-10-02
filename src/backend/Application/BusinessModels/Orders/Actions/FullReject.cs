@@ -4,7 +4,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 
-namespace Application.Actions.Orders
+namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
     /// Полный возврат

@@ -6,7 +6,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 
-namespace Application.Actions.Orders
+namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
     /// Объеденить заказы
@@ -35,7 +35,7 @@ namespace Application.Actions.Orders
                 order.Status = OrderState.InShipping;
                 order.ShippingId = shipping.Id;
                 order.ShippingStatus = VehicleState.VehicleWaiting;
-                order.DeliveryStatus = VehicleState.VehicleWaiting;
+                order.DeliveryStatus = VehicleState.VehicleEmpty;
             }
             db.SaveChanges();
             return new AppActionResult

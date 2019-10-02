@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Application.Actions.Shippings;
+using Application.BusinessModels.Shippings.Actions;
 using Application.Shared;
 using DAL;
 using Domain;
@@ -32,6 +32,7 @@ namespace Application.Services.Shippings
                 new CancelShipping(db),
                 new SendShippingToTk(db),
                 new CancelRequestShipping(db),
+                new ConfirmShipping(db),
                 /*end of add single actions*/
             };
         }
@@ -53,7 +54,7 @@ namespace Application.Services.Shippings
             };
         }
 
-        public override void MapFromDtoToEntity(Shipping entity, ShippingDto dto)
+        public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -86,11 +87,13 @@ namespace Application.Services.Shippings
             entity.AmountConfirmedByShipper = dto.AmountConfirmedByShipper;
             entity.AmountConfirmedByTC = dto.AmountConfirmedByTC;
             /*end of map dto to entity fields*/
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
-        public override void MapFromFormDtoToEntity(Shipping entity, ShippingDto dto)
+        public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingDto dto)
         {
-            MapFromDtoToEntity(entity, dto);
+            return MapFromDtoToEntity(entity, dto);
         }
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)

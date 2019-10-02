@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.BusinessModels.Shared.Handlers;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -7,7 +8,7 @@ namespace Application.Shared
 {
     public class FieldSetter<TEntity>
     {
-        public bool UpdateField<T>(Expression<Func<TEntity, T>> property, T newValue, params Action<TEntity, T, T>[] afterActions)
+        public bool UpdateField<T>(Expression<Func<TEntity, T>> property, T newValue, IFieldHandler<TEntity, T> fieldHandler = null)
         {
             T oldValue = property.Compile()(_entity);
             if (!Equals(oldValue, newValue))
@@ -18,13 +19,20 @@ namespace Application.Shared
                     var propertyInfo = propertyBody.Member as PropertyInfo;
                     if (propertyInfo != null)
                     {
-                        propertyInfo.SetValue(_entity, newValue);
-                        if (afterActions != null)
+                        if (fieldHandler != null)
                         {
-                            foreach (Action<TEntity, T, T> action in afterActions)
+                            string error = fieldHandler.ValidateChange(_entity, oldValue, newValue);
+                            if (!string.IsNullOrEmpty(error))
                             {
-                                _afterActions.Add(() => action(_entity, oldValue, newValue));
+                                _validationErrors.Add(error);
+                                return false;
                             }
+                        }
+
+                        propertyInfo.SetValue(_entity, newValue);
+                        if (fieldHandler != null)
+                        {
+                            _afterActions.Add(() => fieldHandler.AfterChange(_entity, oldValue, newValue));
                         }
                         HasChanges = true;
                         return true;
@@ -44,6 +52,8 @@ namespace Application.Shared
 
         public bool HasChanges { get; private set; } = false;
 
+        public string ValidationErrors => string.Join(". ", _validationErrors);
+
         public FieldSetter(TEntity entity)
         {
             _entity = entity;
@@ -51,5 +61,6 @@ namespace Application.Shared
 
         private readonly TEntity _entity;
         private readonly List<Action> _afterActions = new List<Action>();
+        private readonly List<string> _validationErrors = new List<string>();
     }
 }

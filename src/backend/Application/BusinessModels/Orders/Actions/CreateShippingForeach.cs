@@ -8,7 +8,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Application.Actions.Orders
+namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
     /// Создать перевозку для каждого заказа

@@ -4,38 +4,39 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 
-namespace Application.Actions.Orders
+namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
-    /// Заказ отгружен
+    /// Отменить заказ
     /// </summary>
-    public class OrderDelivered : IAppAction<Order>
+    public class CancelOrder : IAppAction<Order>
     {
         private readonly AppDbContext db;
 
-        public OrderDelivered(AppDbContext db)
+        public CancelOrder(AppDbContext db)
         {
             this.db = db;
-            Color = AppColor.Green;
+            Color = AppColor.Red;
         }
 
         public AppColor Color { get; set; }
 
         public AppActionResult Run(User user, Order order)
         {
-            order.Status = OrderState.Delivered;
+            order.Status = OrderState.Canceled;
+            
             db.SaveChanges();
             
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.OrderNumber} доставлен"
+                Message = $"Заказ {order.OrderNumber} отменён"
             };
         }
 
         public bool IsAvailable(Role role, Order order)
         {
-            return order.Status == OrderState.Shipped && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return (order.Status == OrderState.Created || order.Status == OrderState.Draft) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

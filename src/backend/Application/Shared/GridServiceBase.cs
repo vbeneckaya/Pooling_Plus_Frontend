@@ -21,8 +21,8 @@ namespace Application.Shared
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
         public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
-        public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
-        public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
+        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
+        public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
@@ -89,13 +89,19 @@ namespace Application.Shared
 
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
+            ValidateResult mapResult;
             var dbSet = UseDbSet(db);
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
                 if (entityFromDb != null)
                 {
-                    MapFromFormDtoToEntity(entityFromDb, entityFrom);
+                    mapResult = MapFromFormDtoToEntity(entityFromDb, entityFrom);
+                    if (mapResult.IsError)
+                    {
+                        return mapResult;
+                    }
+
                     dbSet.Update(entityFromDb);
                     
                     db.SaveChanges();
@@ -110,7 +116,13 @@ namespace Application.Shared
             {
                 Id = Guid.NewGuid()
             };
-            MapFromFormDtoToEntity(entity, entityFrom);
+
+            mapResult = MapFromFormDtoToEntity(entity, entityFrom);
+            if (mapResult.IsError)
+            {
+                return mapResult;
+            }
+
             dbSet.Add(entity);
 
             db.SaveChanges();
