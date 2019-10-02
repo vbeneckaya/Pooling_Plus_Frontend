@@ -187,9 +187,19 @@
             <param name="documentId"></param>
             <returns></returns>
         </member>
+        <member name="M:API.Controllers.EnumController`1.ForSelect">
+            <summary>
+            Все доступные статусы
+            </summary>
+        </member>
         <member name="M:API.Controllers.StateController`1.GetAll">
             <summary>
             Все доступные статусы с цветами
+            </summary>
+        </member>
+        <member name="M:API.Controllers.StateController`1.ForSelect">
+            <summary>
+            Все доступные статусы
             </summary>
         </member>
         <member name="M:API.Controllers.TranslationController.GetForLangType(System.String)">

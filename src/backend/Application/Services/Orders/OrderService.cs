@@ -170,7 +170,7 @@ namespace Application.Services.Orders
                 {
                     order.ClientName = soldToWarehouse.WarehouseName;
 
-                    if (soldToWarehouse.UsePickingType == "��")
+                    if (soldToWarehouse.UsePickingType == "Да")
                         order.PickingType = soldToWarehouse.PickingType;
 
                     if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))

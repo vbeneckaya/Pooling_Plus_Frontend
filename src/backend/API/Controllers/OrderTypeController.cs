@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/orderType")]
-    public class OrderTypeController : StateController<OrderType>
+    public class OrderTypeController : EnumController<OrderType>
     {
         
     }
