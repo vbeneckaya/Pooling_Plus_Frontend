@@ -133,7 +133,7 @@ namespace Tasks.Orders
 
             OrderFormDto dto = new OrderFormDto();
 
-            decimal weightUomCoeff = doc.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "KGM" }, new[] { 0.001M, 1M }, 1);
+            decimal weightUomCoeff = doc.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
             dto.OrderNumber = doc.SelectSingleNode("//E1EDK02[QUALF='001']/BELNR")?.InnerText;
             dto.OrderDate = doc.ParseDateTime("//E1EDK02[QUALF='001']/DATUM");
