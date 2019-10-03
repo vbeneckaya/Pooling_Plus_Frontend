@@ -13,18 +13,18 @@ const Accounts = ({ form = {}, onChange }) => {
                 <Grid.Row columns={2} stretched>
                     <Grid.Column>
                         <Text
-                            name="transportationCostWithoutVAT"
-                            value={form['transportationCostWithoutVAT']}
+                            name="deliveryCostWithoutVAT"
+                            value={form['deliveryCostWithoutVAT']}
                             onChange={onChange}
                         />
                         <Text
-                            name="additionalShippingCostsExcludingVAT"
-                            value={form['additionalShippingCostsExcludingVAT']}
+                            name="additionalCostsWithoutVAT"
+                            value={form['additionalCostsWithoutVAT']}
                             onChange={onChange}
                         />
                         <Text
-                            name="returnShippingCostExcludingVAT"
-                            value={form['returnShippingCostExcludingVAT']}
+                            name="returnCostWithoutVAT"
+                            value={form['returnCostWithoutVAT']}
                             onChange={onChange}
                         />
                         <Text
@@ -33,15 +33,16 @@ const Accounts = ({ form = {}, onChange }) => {
                             onChange={onChange}
                         />
                         <Text
-
+                            name="invoiceAmountWithoutVAT"
+                            value={form['invoiceAmountWithoutVAT']}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
                         <TextArea
-                            name="additionalShippingCostsComments"
+                            name="additionalCostsComments"
                             rows={5}
-                            value={form['additionalShippingCostsComments']}
+                            value={form['additionalCostsComments']}
                             onChange={onChange}
                         />
                         <Form.Field>
@@ -53,12 +54,12 @@ const Accounts = ({ form = {}, onChange }) => {
                                             <Checkbox
                                                 checked={form['amountConfirmedByShipper']}
                                                 label={t('Расходы подтверждены грузоотправителем')}
-                                                onChange={onChange}
+                                                onClick={(event) => onChange(event, {name: 'amountConfirmedByShipper', value: !form['amountConfirmedByShipper']})}
                                             />
                                             <Checkbox
                                                 checked={form['amountConfirmedByTC']}
                                                 label={t('Расходы подтверждены ТК')}
-                                                onChange={onChange}
+                                                onClick={(event) => onChange(event, {name: 'amountConfirmedByTC', value: !form['amountConfirmedByTC']})}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>

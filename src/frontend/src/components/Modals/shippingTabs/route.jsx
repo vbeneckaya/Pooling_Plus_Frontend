@@ -17,15 +17,15 @@ const Route = ({ name, form = {}, onChange }) => {
             <Grid>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <DateTime/>
+                        <Date/>
                     </Grid.Column>
                     <Grid.Column>
-                        <DateTime/>
+                        <State/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <State/>
+                        <DateTime/>
                     </Grid.Column>
                     <Grid.Column>
                         <DateTime/>
@@ -38,12 +38,12 @@ const Route = ({ name, form = {}, onChange }) => {
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={18}>
-                        <TextArea/>
+                        <TextArea name="deviationReasonsComments" value={form["deviationReasonsComments"]} onChange={onChange}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={8}>
-                        <Text/>
+                        <Text name="trucksDowntime" value={form["trucksDowntime"]} onChange={onChange}/>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
