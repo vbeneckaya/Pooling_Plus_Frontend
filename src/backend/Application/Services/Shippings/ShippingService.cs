@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Application.BusinessModels.Shippings.Actions;
+using Application.BusinessModels.Shippings.Handlers;
 using Application.Shared;
+using AutoMapper;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -18,6 +20,7 @@ namespace Application.Services.Shippings
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
 
         public override DbSet<Shipping> UseDbSet(AppDbContext dbContext)
@@ -56,54 +59,59 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
-            if(!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-            entity.ShippingNumber = dto.ShippingNumber;
+            var setter = new FieldSetter<Shipping>(entity);
+
+            if (!string.IsNullOrEmpty(dto.Id))
+                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
+            setter.UpdateField(e => e.ShippingNumber, dto.ShippingNumber);
             if (!string.IsNullOrEmpty(dto.DeliveryType))
-                entity.DeliveryType = MapFromStateDto<DeliveryType>(dto.DeliveryType);
-            entity.TemperatureMin = dto.TemperatureMin;
-            entity.TemperatureMax = dto.TemperatureMax;
+                setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType));
+            setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
+            setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             if (!string.IsNullOrEmpty(dto.TarifficationType))
-                entity.TarifficationType = MapFromStateDto<TarifficationType>(dto.TarifficationType);
-            entity.Carrier = dto.Carrier;
-            entity.VehicleType = dto.VehicleType;
-            entity.PalletsCount = dto.PalletsCount;
-            entity.ActualPalletsCount = dto.ActualPalletsCount;
-            entity.ConfirmedPalletsCount = dto.ConfirmedPalletsCount;
-            entity.WeightKg = dto.WeightKg;
-            entity.ActualWeightKg = dto.ActualWeightKg;
-            entity.PlannedArrivalTimeSlotBDFWarehouse = dto.PlannedArrivalTimeSlotBDFWarehouse;
-            entity.LoadingArrivalTime = ParseDateTime(dto.LoadingArrivalTime);
-            entity.LoadingDepartureTime = ParseDateTime(dto.LoadingDepartureTime);
-            entity.DeliveryInvoiceNumber = dto.DeliveryInvoiceNumber;
-            entity.DeviationReasonsComments = dto.DeviationReasonsComments;
-            entity.TotalDeliveryCost = dto.TotalDeliveryCost;
-            entity.OtherCosts = dto.OtherCosts;
-            entity.DeliveryCostWithoutVAT = dto.DeliveryCostWithoutVAT;
-            entity.ReturnCostWithoutVAT = dto.ReturnCostWithoutVAT;
-            entity.InvoiceAmountWithoutVAT = dto.InvoiceAmountWithoutVAT;
-            entity.AdditionalCostsWithoutVAT = dto.AdditionalCostsWithoutVAT;
-            entity.AdditionalCostsComments = dto.AdditionalCostsComments;
-            entity.TrucksDowntime = dto.TrucksDowntime;
-            entity.ReturnRate = dto.ReturnRate;
-            entity.AdditionalPointRate = dto.AdditionalPointRate;
-            entity.DowntimeRate = dto.DowntimeRate;
-            entity.BlankArrivalRate = dto.BlankArrivalRate;
-            entity.BlankArrival = dto.BlankArrival ?? false;
-            entity.Waybill = dto.Waybill ?? false;
-            entity.WaybillTorg12 = dto.WaybillTorg12 ?? false;
-            entity.TransportWaybill = dto.TransportWaybill ?? false;
-            entity.Invoice = dto.Invoice ?? false;
-            entity.DocumentsReturnDate = ParseDateTime(dto.DocumentsReturnDate);
-            entity.ActualDocumentsReturnDate = ParseDateTime(dto.ActualDocumentsReturnDate);
-            entity.InvoiceNumber = dto.InvoiceNumber;
-            if(!string.IsNullOrEmpty(dto.Status))
-                entity.Status =  MapFromStateDto<ShippingState>(dto.Status);
-            entity.CostsConfirmedByShipper = dto.CostsConfirmedByShipper ?? false;
-            entity.CostsConfirmedByCarrier = dto.CostsConfirmedByCarrier ?? false;
+                setter.UpdateField(e => e.TarifficationType, MapFromStateDto<TarifficationType>(dto.TarifficationType));
+            setter.UpdateField(e => e.Carrier, dto.Carrier);
+            setter.UpdateField(e => e.VehicleType, dto.VehicleType);
+            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
+            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
+            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
+            setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler());
+            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler());
+            setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
+            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime));
+            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime));
+            setter.UpdateField(e => e.DeliveryInvoiceNumber, dto.DeliveryInvoiceNumber);
+            setter.UpdateField(e => e.DeviationReasonsComments, dto.DeviationReasonsComments);
+            setter.UpdateField(e => e.TotalDeliveryCost, dto.TotalDeliveryCost, new TotalDeliveryCostHandler());
+            setter.UpdateField(e => e.OtherCosts, dto.OtherCosts);
+            setter.UpdateField(e => e.DeliveryCostWithoutVAT, dto.DeliveryCostWithoutVAT, new DeliveryCostWithoutVATHandler());
+            setter.UpdateField(e => e.ReturnCostWithoutVAT, dto.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler());
+            setter.UpdateField(e => e.InvoiceAmountWithoutVAT, dto.InvoiceAmountWithoutVAT);
+            setter.UpdateField(e => e.AdditionalCostsWithoutVAT, dto.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler());
+            setter.UpdateField(e => e.AdditionalCostsComments, dto.AdditionalCostsComments);
+            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler());
+            setter.UpdateField(e => e.ReturnRate, dto.ReturnRate);
+            setter.UpdateField(e => e.AdditionalPointRate, dto.AdditionalPointRate);
+            setter.UpdateField(e => e.DowntimeRate, dto.DowntimeRate);
+            setter.UpdateField(e => e.BlankArrivalRate, dto.BlankArrivalRate);
+            setter.UpdateField(e => e.BlankArrival, dto.BlankArrival ?? false);
+            setter.UpdateField(e => e.Waybill, dto.Waybill ?? false);
+            setter.UpdateField(e => e.WaybillTorg12, dto.WaybillTorg12 ?? false);
+            setter.UpdateField(e => e.TransportWaybill, dto.TransportWaybill ?? false);
+            setter.UpdateField(e => e.Invoice, dto.Invoice ?? false);
+            setter.UpdateField(e => e.DocumentsReturnDate, ParseDateTime(dto.DocumentsReturnDate));
+            setter.UpdateField(e => e.ActualDocumentsReturnDate, ParseDateTime(dto.ActualDocumentsReturnDate));
+            setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
+            if (!string.IsNullOrEmpty(dto.Status))
+                setter.UpdateField(e => e.Status,  MapFromStateDto<ShippingState>(dto.Status));
+            setter.UpdateField(e => e.CostsConfirmedByShipper, dto.CostsConfirmedByShipper ?? false);
+            setter.UpdateField(e => e.CostsConfirmedByCarrier, dto.CostsConfirmedByCarrier ?? false);
             /*end of map dto to entity fields*/
 
-            return new ValidateResult(null, entity.Id.ToString());
+            setter.ApplyAfterActions();
+
+            string errors = setter.ValidationErrors;
+            return new ValidateResult(errors, entity.Id.ToString());
         }
 
         public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingDto dto)
@@ -113,56 +121,31 @@ namespace Application.Services.Shippings
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)
         {
-            return new ShippingDto
-            {
-                Id = entity.Id.ToString(),
-                ShippingNumber = entity.ShippingNumber,
-                DeliveryType = entity.DeliveryType?.ToString()?.ToLowerfirstLetter(),
-                TemperatureMin = entity.TemperatureMin,
-                TemperatureMax = entity.TemperatureMax,
-                TarifficationType = entity.TarifficationType?.ToString()?.ToLowerfirstLetter(),
-                Carrier = entity.Carrier,
-                VehicleType = entity.VehicleType,
-                PalletsCount = entity.PalletsCount,
-                ActualPalletsCount = entity.ActualPalletsCount,
-                ConfirmedPalletsCount = entity.ConfirmedPalletsCount,
-                WeightKg = entity.WeightKg,
-                ActualWeightKg = entity.ActualWeightKg,
-                PlannedArrivalTimeSlotBDFWarehouse = entity.PlannedArrivalTimeSlotBDFWarehouse,
-                LoadingArrivalTime = entity.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
-                LoadingDepartureTime = entity.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
-                DeliveryInvoiceNumber = entity.DeliveryInvoiceNumber,
-                DeviationReasonsComments = entity.DeviationReasonsComments,
-                TotalDeliveryCost = entity.TotalDeliveryCost,
-                OtherCosts = entity.OtherCosts,
-                DeliveryCostWithoutVAT = entity.DeliveryCostWithoutVAT,
-                ReturnCostWithoutVAT = entity.ReturnCostWithoutVAT,
-                InvoiceAmountWithoutVAT = entity.InvoiceAmountWithoutVAT,
-                AdditionalCostsWithoutVAT = entity.AdditionalCostsWithoutVAT,
-                AdditionalCostsComments = entity.AdditionalCostsComments,
-                TrucksDowntime = entity.TrucksDowntime,
-                ReturnRate = entity.ReturnRate,
-                AdditionalPointRate = entity.AdditionalPointRate,
-                DowntimeRate = entity.DowntimeRate,
-                BlankArrivalRate = entity.BlankArrivalRate,
-                BlankArrival = entity.BlankArrival,
-                Waybill = entity.Waybill,
-                WaybillTorg12 = entity.WaybillTorg12,
-                TransportWaybill = entity.TransportWaybill,
-                Invoice = entity.Invoice,
-                DocumentsReturnDate = entity.DocumentsReturnDate?.ToString("dd.MM.yyyy"),
-                ActualDocumentsReturnDate = entity.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy"),
-                InvoiceNumber = entity.InvoiceNumber,
-                Status = entity.Status?.ToString()?.ToLowerfirstLetter(),
-                CostsConfirmedByShipper = entity.CostsConfirmedByShipper,
-                CostsConfirmedByCarrier = entity.CostsConfirmedByCarrier,
-                /*end of map entity to dto fields*/
-            };
+            return _mapper.Map<ShippingDto>(entity);
         }
 
         public override ShippingDto MapFromEntityToFormDto(Shipping entity)
         {
             return MapFromEntityToDto(entity);
         }
+
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Shipping, ShippingDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerfirstLetter()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()))
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
+            });
+            return result;
+        }
+
+        private readonly IMapper _mapper;
     }
 }

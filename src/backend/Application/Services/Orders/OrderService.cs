@@ -83,11 +83,11 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
             setter.UpdateField(e => e.ConfirmedBoxesCount, dto.ConfirmedBoxesCount);
-            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount);
-            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount);
-            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount);
-            setter.UpdateField(e => e.WeightKg, dto.WeightKg);
-            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg);
+            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(db));
+            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(db));
+            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(db));
+            setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(db));
+            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(db));
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
@@ -102,7 +102,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(db));
             setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler());
             setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler());
-            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime);
+            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler(db));
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
             setter.UpdateField(e => e.PlannedReturnDate, ParseDateTime(dto.PlannedReturnDate));

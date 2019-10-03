@@ -46,21 +46,41 @@ namespace Domain.Persistables
         /// </summary>
         public int? PalletsCount { get; set; }
         /// <summary>
+        /// Предварительное кол-во паллет введено вручную
+        /// </summary>
+        public bool ManualPalletsCount { get; set; }
+        /// <summary>
         /// Фактическое кол-во паллет
         /// </summary>
         public int? ActualPalletsCount { get; set; }
+        /// <summary>
+        /// Фактическое кол-во паллет введено вручную
+        /// </summary>
+        public bool ManualActualPalletsCount { get; set; }
         /// <summary>
         /// Подтвержденное кол-во паллет
         /// </summary>
         public int? ConfirmedPalletsCount { get; set; }
         /// <summary>
+        /// Подтвержденное кол-во паллет введено вручную
+        /// </summary>
+        public bool ManualConfirmedPalletsCount { get; set; }
+        /// <summary>
         /// Плановый вес, кг
         /// </summary>
         public decimal? WeightKg { get; set; }
         /// <summary>
+        /// Плановый вес введен вручную
+        /// </summary>
+        public bool ManualWeightKg { get; set; }
+        /// <summary>
         /// Фактический вес, кг
         /// </summary>
         public decimal? ActualWeightKg { get; set; }
+        /// <summary>
+        /// Фактический вес введен вручную
+        /// </summary>
+        public bool ManualActualWeightKg { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
@@ -85,6 +105,10 @@ namespace Domain.Persistables
         /// Общая стоимость перевозки
         /// </summary>
         public decimal? TotalDeliveryCost { get; set; }
+        /// <summary>
+        /// Общая стоимость перевозки введена вручную
+        /// </summary>
+        public bool ManualTotalDeliveryCost { get; set; }
         /// <summary>
         /// Прочее
         /// </summary>
@@ -113,6 +137,10 @@ namespace Domain.Persistables
         /// Кол-во часов простоя машин
         /// </summary>
         public decimal? TrucksDowntime { get; set; }
+        /// <summary>
+        /// Кол-во часов простоя машин введено вручную
+        /// </summary>
+        public bool ManualTrucksDowntime { get; set; }
         /// <summary>
         /// Ставка за возврат
         /// </summary>
