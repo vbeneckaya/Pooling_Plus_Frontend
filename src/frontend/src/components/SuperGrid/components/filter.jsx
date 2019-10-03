@@ -13,6 +13,7 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
+    BOOLEAN_TYPE, DATE_TYPE
 } from '../../../constants/columnTypes';
 
 const getTypeFacet = {
@@ -20,7 +21,9 @@ const getTypeFacet = {
     [NUMBER_TYPE]: <NumberFacet />,
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,
+    [DATE_TYPE]: <DateFacet />,
     [STATE_TYPE]: <StateFacet />,
+    [BOOLEAN_TYPE]: <SelectFacet/>
 };
 
 const Control = props => {
