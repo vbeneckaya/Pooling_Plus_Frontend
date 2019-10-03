@@ -1,6 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using DAL;
+using DAL.Queries;
 using Domain.Persistables;
 using System;
+using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
@@ -8,6 +11,18 @@ namespace Application.BusinessModels.Orders.Handlers
     {
         public void AfterChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
+            if (order.ShippingId.HasValue)
+            {
+                var distinctTimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId).Select(o => o.LoadingArrivalTime).ToList().Distinct().Count();
+                if (distinctTimes == 1)
+                {
+                    var shipping = _db.Shippings.GetById(order.ShippingId.Value);
+                    if (shipping != null)
+                    {
+                        shipping.LoadingArrivalTime = order.LoadingArrivalTime;
+                    }
+                }
+            }
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
@@ -21,5 +36,12 @@ namespace Application.BusinessModels.Orders.Handlers
                 return null;
             }
         }
+
+        public LoadingArrivalTimeHandler(AppDbContext db)
+        {
+            _db = db;
+        }
+
+        private readonly AppDbContext _db;
     }
 }

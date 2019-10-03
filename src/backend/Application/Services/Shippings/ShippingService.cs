@@ -117,10 +117,10 @@ namespace Application.Services.Shippings
             {
                 Id = entity.Id.ToString(),
                 ShippingNumber = entity.ShippingNumber,
-                DeliveryType = entity.DeliveryType.ToString().ToLowerfirstLetter(),
+                DeliveryType = entity.DeliveryType?.ToString()?.ToLowerfirstLetter(),
                 TemperatureMin = entity.TemperatureMin,
                 TemperatureMax = entity.TemperatureMax,
-                TarifficationType = entity.TarifficationType.ToString().ToLowerfirstLetter(),
+                TarifficationType = entity.TarifficationType?.ToString()?.ToLowerfirstLetter(),
                 Carrier = entity.Carrier,
                 VehicleType = entity.VehicleType,
                 PalletsCount = entity.PalletsCount,
@@ -153,7 +153,7 @@ namespace Application.Services.Shippings
                 DocumentsReturnDate = entity.DocumentsReturnDate?.ToString("dd.MM.yyyy"),
                 ActualDocumentsReturnDate = entity.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy"),
                 InvoiceNumber = entity.InvoiceNumber,
-                Status = entity.Status.ToString().ToLowerfirstLetter(),
+                Status = entity.Status?.ToString()?.ToLowerfirstLetter(),
                 CostsConfirmedByShipper = entity.CostsConfirmedByShipper,
                 CostsConfirmedByCarrier = entity.CostsConfirmedByCarrier,
                 /*end of map entity to dto fields*/
