@@ -18,7 +18,16 @@ build-frontend-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
   only:
-   - master    
+   - master   
+   
+build-frontend-tasks:
+  stage: build
+  script:
+    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/tasks/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
+  only:
+   - master   
 
 build-frontend-prod:
   stage: build
