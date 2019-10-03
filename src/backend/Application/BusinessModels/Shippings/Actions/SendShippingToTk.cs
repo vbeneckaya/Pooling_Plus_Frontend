@@ -26,7 +26,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Перевозка {shipping.TransportationNumber} отправлена в ТК"
+                Message = $"Перевозка {shipping.ShippingNumber} отправлена в ТК"
             };
         }
 

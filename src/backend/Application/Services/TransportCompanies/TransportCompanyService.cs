@@ -6,6 +6,8 @@ using Domain.Extensions;
 using Domain.Services.TransportCompanies;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Domain.Shared;
+using System.Collections.Generic;
 
 namespace Application.Services.TransportCompanies
 {
@@ -23,6 +25,19 @@ namespace Application.Services.TransportCompanies
         public override TransportCompany FindByKey(TransportCompanyDto dto)
         {
             return db.TransportCompanies.Where(x => x.Title == dto.Title).FirstOrDefault();
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var carriers = db.TransportCompanies.OrderBy(c => c.Title).ToList();
+            foreach (TransportCompany carrier in carriers)
+            {
+                yield return new LookUpDto
+                {
+                    Name = carrier.Title,
+                    Value = carrier.Id.ToString()
+                };
+            }
         }
 
         public override void MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)

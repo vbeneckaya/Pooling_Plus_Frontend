@@ -5,33 +5,46 @@ namespace Domain.Services.Shippings
     public class ShippingDto : IDto
     {
         public string Id { get; set; }
-        public int? TransportationNumber { get; set; }
-        public string DeliveryMethod { get; set; }
-        public string ThermalMode { get; set; }
-        public string BillingMethod { get; set; }
-        public string TransportCompany { get; set; }
+        public string ShippingNumber { get; set; }
+        public string DeliveryType { get; set; }
+        public int? TemperatureMin { get; set; }
+        public int? TemperatureMax { get; set; }
+        public string TarifficationType { get; set; }
+        public string Carrier { get; set; }
+        public string VehicleType { get; set; }
         public int? PalletsCount { get; set; }
         public int? ActualPalletsCount { get; set; }
-        public string ConfirmedNumberOfPallets { get; set; }
+        public int? ConfirmedPalletsCount { get; set; }
+        public decimal? WeightKg { get; set; }
+        public decimal? ActualWeightKg { get; set; }
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
-        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
-        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? LoadingArrivalTime { get; set; }
+        public DateTime? LoadingDepartureTime { get; set; }
         public string DeliveryInvoiceNumber { get; set; }
-        public string CommentsReasonsForDeviationFromTheSchedule { get; set; }
-        public string TransportationCostWithoutVAT { get; set; }
-        public string ReturnShippingCostExcludingVAT { get; set; }
-        public string AdditionalShippingCostsExcludingVAT { get; set; }
-        public string AdditionalShippingCostsComments { get; set; }
-        public string Waybill { get; set; }
-        public string WaybillTorg12 { get; set; }
-        public string WaybillTransportSection { get; set; }
-        public string Invoice { get; set; }
-        public string ActualReturnDate { get; set; }
+        public string DeviationReasonsComments { get; set; }
+        public decimal? TotalDeliveryCost { get; set; }
+        public decimal? OtherCosts { get; set; }
+        public decimal? DeliveryCostWithoutVAT { get; set; }
+        public decimal? ReturnCostWithoutVAT { get; set; }
+        public decimal? InvoiceAmountWithoutVAT { get; set; }
+        public decimal? AdditionalCostsWithoutVAT { get; set; }
+        public string AdditionalCostsComments { get; set; }
+        public decimal? TrucksDowntime { get; set; }
+        public decimal? ReturnRate { get; set; }
+        public decimal? AdditionalPointRate { get; set; }
+        public decimal? DowntimeRate { get; set; }
+        public decimal? BlankArrivalRate { get; set; }
+        public bool? BlankArrival { get; set; }
+        public bool? Waybill { get; set; }
+        public bool? WaybillTorg12 { get; set; }
+        public bool? TransportWaybill { get; set; }
+        public bool? Invoice { get; set; }
+        public DateTime? DocumentsReturnDate { get; set; }
+        public DateTime? ActualDocumentsReturnDate { get; set; }
         public string InvoiceNumber { get; set; }
         public string Status { get; set; }
-        public string DeliveryStatus { get; set; }
-        public string AmountConfirmedByShipper { get; set; }
-        public string AmountConfirmedByTC { get; set; }
+        public bool? CostsConfirmedByShipper { get; set; }
+        public bool? CostsConfirmedByCarrier { get; set; }
         /*end of fields*/
     }
 }

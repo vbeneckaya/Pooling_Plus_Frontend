@@ -16,23 +16,31 @@ namespace Domain.Persistables
         /// <summary>
         /// Номер перевозки
         /// </summary>
-        public int? TransportationNumber { get; set; }
+        public string ShippingNumber { get; set; }
         /// <summary>
         /// Способ доставки
         /// </summary>
-        public string DeliveryMethod { get; set; }
+        public DeliveryType? DeliveryType { get; set; }
         /// <summary>
-        /// Терморежим
+        /// Терморежим мин. °C
         /// </summary>
-        public string ThermalMode { get; set; }
+        public int? TemperatureMin { get; set; }
+        /// <summary>
+        /// Терморежим макс. °C
+        /// </summary>
+        public int? TemperatureMax { get; set; }
         /// <summary>
         /// Способ тарификации
         /// </summary>
-        public string BillingMethod { get; set; }
+        public TarifficationType? TarifficationType { get; set; }
         /// <summary>
         /// Транспортная компания
         /// </summary>
-        public string TransportCompany { get; set; }
+        public string Carrier { get; set; }
+        /// <summary>
+        /// Тип ТС
+        /// </summary>
+        public string VehicleType { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
@@ -44,7 +52,15 @@ namespace Domain.Persistables
         /// <summary>
         /// Подтвержденное кол-во паллет
         /// </summary>
-        public string ConfirmedNumberOfPallets { get; set; }
+        public int? ConfirmedPalletsCount { get; set; }
+        /// <summary>
+        /// Плановый вес, кг
+        /// </summary>
+        public decimal? WeightKg { get; set; }
+        /// <summary>
+        /// Фактический вес, кг
+        /// </summary>
+        public decimal? ActualWeightKg { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
@@ -52,11 +68,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Время прибытия на загрузку  (склад БДФ)
         /// </summary>
-        public DateTime? ArrivalTimeForLoadingBDFWarehouse { get; set; }
+        public DateTime? LoadingArrivalTime { get; set; }
         /// <summary>
         /// Время убытия со склада БДФ
         /// </summary>
-        public DateTime? DepartureTimeFromTheBDFWarehouse { get; set; }
+        public DateTime? LoadingDepartureTime { get; set; }
         /// <summary>
         /// Номер счета за доставку
         /// </summary>
@@ -64,43 +80,83 @@ namespace Domain.Persistables
         /// <summary>
         /// Комментарии (причины отклонения от графика)
         /// </summary>
-        public string CommentsReasonsForDeviationFromTheSchedule { get; set; }
+        public string DeviationReasonsComments { get; set; }
+        /// <summary>
+        /// Общая стоимость перевозки
+        /// </summary>
+        public decimal? TotalDeliveryCost { get; set; }
+        /// <summary>
+        /// Прочее
+        /// </summary>
+        public decimal? OtherCosts { get; set; }
         /// <summary>
         /// Стоимость перевозки, без НДС
         /// </summary>
-        public string TransportationCostWithoutVAT { get; set; }
+        public decimal? DeliveryCostWithoutVAT { get; set; }
         /// <summary>
         /// Стоимость перевозки возврата, без НДС
         /// </summary>
-        public string ReturnShippingCostExcludingVAT { get; set; }
+        public decimal? ReturnCostWithoutVAT { get; set; }
+        /// <summary>
+        /// Сумма по ТТН, без НДС
+        /// </summary>
+        public decimal? InvoiceAmountWithoutVAT { get; set; }
         /// <summary>
         /// Дополнительные расходы на доставку, без НДС
         /// </summary>
-        public string AdditionalShippingCostsExcludingVAT { get; set; }
+        public decimal? AdditionalCostsWithoutVAT { get; set; }
         /// <summary>
         /// Дополнительные расходы на доставку (комментарии)
         /// </summary>
-        public string AdditionalShippingCostsComments { get; set; }
+        public string AdditionalCostsComments { get; set; }
+        /// <summary>
+        /// Кол-во часов простоя машин
+        /// </summary>
+        public decimal? TrucksDowntime { get; set; }
+        /// <summary>
+        /// Ставка за возврат
+        /// </summary>
+        public decimal? ReturnRate { get; set; }
+        /// <summary>
+        /// Ставка за дополнительную точку
+        /// </summary>
+        public decimal? AdditionalPointRate { get; set; }
+        /// <summary>
+        /// Ставка за простой
+        /// </summary>
+        public decimal? DowntimeRate { get; set; }
+        /// <summary>
+        /// Ставка за холостую подачу
+        /// </summary>
+        public decimal? BlankArrivalRate { get; set; }
+        /// <summary>
+        /// Холостая подача
+        /// </summary>
+        public bool BlankArrival { get; set; }
         /// <summary>
         /// Транспортная накладная
         /// </summary>
-        public string Waybill { get; set; }
+        public bool Waybill { get; set; }
         /// <summary>
         /// Товарная накладная(Торг-12)
         /// </summary>
-        public string WaybillTorg12 { get; set; }
+        public bool WaybillTorg12 { get; set; }
         /// <summary>
         /// Товарно-Транспортная накладная +Транспортный раздел
         /// </summary>
-        public string WaybillTransportSection { get; set; }
+        public bool TransportWaybill { get; set; }
         /// <summary>
         /// Счет-фактура
         /// </summary>
-        public string Invoice { get; set; }
+        public bool Invoice { get; set; }
+        /// <summary>
+        /// Плановая дата возврата документов
+        /// </summary>
+        public DateTime? DocumentsReturnDate { get; set; }
         /// <summary>
         /// Фактическая дата возврата документов
         /// </summary>
-        public string ActualReturnDate { get; set; }
+        public DateTime? ActualDocumentsReturnDate { get; set; }
         /// <summary>
         /// Номер счет-фактуры
         /// </summary>
@@ -110,17 +166,13 @@ namespace Domain.Persistables
         /// </summary>
         public ShippingState? Status { get; set; }
         /// <summary>
-        /// Статус доставки
+        /// Расходы подтверждена грузоотправителем
         /// </summary>
-        public string DeliveryStatus { get; set; }
+        public bool CostsConfirmedByShipper { get; set; }
         /// <summary>
-        /// Сумма подтверждена грузоотправителем
+        /// Расходы подтверждена ТК
         /// </summary>
-        public string AmountConfirmedByShipper { get; set; }
-        /// <summary>
-        /// Сумма подтверждена ТК
-        /// </summary>
-        public string AmountConfirmedByTC { get; set; }
+        public bool CostsConfirmedByCarrier { get; set; }
         /*end of fields*/
     }
 }

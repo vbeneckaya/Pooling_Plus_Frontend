@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DAL;
@@ -24,9 +25,13 @@ namespace Application.BusinessModels.Orders.Actions
         public AppColor Color { get; set; }
         public AppActionResult Run(User user, IEnumerable<Order> orders)
         {
+            var shippingsCount = db.Shippings.Count();
             var shipping = new Shipping
             {
-                Status = ShippingState.ShippingCreated
+                Status = ShippingState.ShippingCreated,
+                Id = Guid.NewGuid(),
+                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
+                DeliveryType = DeliveryType.Delivery
             };
             db.Shippings.Add(shipping);
 
@@ -41,7 +46,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {shipping.Id}"
+                Message = $"Созданна перевозка {shipping.ShippingNumber}"
             };
         }
 

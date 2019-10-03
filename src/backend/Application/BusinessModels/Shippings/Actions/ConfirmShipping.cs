@@ -31,7 +31,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Перевозка {shipping.TransportationNumber} подтверждена"
+                Message = $"Перевозка {shipping.ShippingNumber} подтверждена"
             };
         }
 

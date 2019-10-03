@@ -128,33 +128,46 @@ namespace DAL.Migrations
             Database.AddIndex("OrderItems_order_fk", false, "OrderItems", "OrderId");
 
             Database.AddTable("Shippings",
-                new Column("TransportationNumber", DbType.Int32),
-                new Column("DeliveryMethod", DbType.String),
-                new Column("ThermalMode", DbType.String),
-                new Column("BillingMethod", DbType.String),
-                new Column("TransportCompany", DbType.String),
+                new Column("ShippingNumber", DbType.String),
+                new Column("DeliveryType", DbType.Int32, ColumnProperty.Null),
+                new Column("TemperatureMin", DbType.Int32, ColumnProperty.Null),
+                new Column("TemperatureMax", DbType.Int32, ColumnProperty.Null),
+                new Column("TarifficationType", DbType.Int32, ColumnProperty.Null),
+                new Column("Carrier", DbType.String),
+                new Column("VehicleType", DbType.String),
                 new Column("PalletsCount", DbType.Int32, ColumnProperty.Null),
                 new Column("ActualPalletsCount", DbType.Int32, ColumnProperty.Null),
-                new Column("ConfirmedNumberOfPallets", DbType.String),
+                new Column("ConfirmedPalletsCount", DbType.Int32, ColumnProperty.Null),
+                new Column("WeightKg", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("ActualWeightKg", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
                 new Column("PlannedArrivalTimeSlotBDFWarehouse", DbType.String),
-                new Column("ArrivalTimeForLoadingBDFWarehouse", DbType.DateTime, ColumnProperty.Null),
-                new Column("DepartureTimeFromTheBDFWarehouse", DbType.DateTime, ColumnProperty.Null),
+                new Column("LoadingArrivalTime", DbType.DateTime, ColumnProperty.Null),
+                new Column("LoadingDepartureTime", DbType.DateTime, ColumnProperty.Null),
                 new Column("DeliveryInvoiceNumber", DbType.String),
-                new Column("CommentsReasonsForDeviationFromTheSchedule", DbType.String),
-                new Column("TransportationCostWithoutVAT", DbType.String),
-                new Column("ReturnShippingCostExcludingVAT", DbType.String),
-                new Column("AdditionalShippingCostsExcludingVAT", DbType.String),
-                new Column("AdditionalShippingCostsComments", DbType.String),
-                new Column("Waybill", DbType.String),
-                new Column("WaybillTorg12", DbType.String),
-                new Column("WaybillTransportSection", DbType.String),
-                new Column("Invoice", DbType.String),
-                new Column("ActualReturnDate", DbType.String),
+                new Column("DeviationReasonsComments", DbType.String),
+                new Column("TotalDeliveryCost", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("OtherCosts", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("DeliveryCostWithoutVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("ReturnCostWithoutVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("InvoiceAmountWithoutVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("AdditionalCostsWithoutVAT", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("AdditionalCostsComments", DbType.String),
+                new Column("TrucksDowntime", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("ReturnRate", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("AdditionalPointRate", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("DowntimeRate", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("BlankArrivalRate", DbType.Decimal.WithSize(19, 5), ColumnProperty.Null),
+                new Column("BlankArrival", DbType.Boolean, defaultValue: false),
+                new Column("Waybill", DbType.Boolean, defaultValue: false),
+                new Column("WaybillTorg12", DbType.Boolean, defaultValue: false),
+                new Column("TransportWaybill", DbType.Boolean, defaultValue: false),
+                new Column("Invoice", DbType.Boolean, defaultValue: false),
+                new Column("DocumentsReturnDate", DbType.DateTime, ColumnProperty.Null),
+                new Column("ActualDocumentsReturnDate", DbType.DateTime, ColumnProperty.Null),
                 new Column("InvoiceNumber", DbType.String),
                 new Column("Status", DbType.Int64, ColumnProperty.Null),
-                new Column("DeliveryStatus", DbType.String),
-                new Column("AmountConfirmedByShipper", DbType.String),
-                new Column("AmountConfirmedByTC", DbType.String),
+                new Column("CostsConfirmedByShipper", DbType.Boolean, defaultValue: false),
+                new Column("CostsConfirmedByCarrier", DbType.Boolean, defaultValue: false),
                 /*general fields for Shippings*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );
@@ -441,6 +454,11 @@ namespace DAL.Migrations
             AddTranslation("shippingArhive", "ShippingArhive", "В архиве");
             AddTranslation("shippingProblem", "ShippingProblem", "Срыв поставки");
 
+            AddTranslation("delivery", "Delivery", "Доставка");
+            AddTranslation("selfDelivery", "Self delivery", "Самовывоз");
+
+            AddTranslation("ltl", "LTL", "LTL");
+            AddTranslation("ftl", "FTL", "FTL");
 
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
@@ -449,33 +467,46 @@ namespace DAL.Migrations
             AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Заказ потерян");
             AddTranslation("shipping", "Shipping", "Перевозка");
             AddTranslation("shippings", "Shippings", "Перевозки");
-            AddTranslation("transportationNumber", "TransportationNumber", "Номер перевозки");
-            AddTranslation("deliveryMethod", "DeliveryMethod", "Способ доставки");
-            AddTranslation("thermalMode", "ThermalMode", "Терморежим");
-            AddTranslation("billingMethod", "BillingMethod", "Способ тарификации");
-            AddTranslation("transportCompany", "TransportCompany", "Транспортная компания");
-            AddTranslation("palletsCount", "Planned no. of pallets", "Предварительное кол-во паллет");
-            AddTranslation("actualPalletsCount", "Actual no. of pallets", "Фактическое кол-во паллет");
-            AddTranslation("confirmedNumberOfPallets", "ConfirmedNumberOfPallets", "Подтвержденное кол-во паллет");
+            AddTranslation("shippingNumber", "Shipping number", "Номер перевозки");
+            AddTranslation("deliveryType", "Delivery type", "Способ доставки");
+            AddTranslation("temperatureMin", "Thermal Mode min °C", "Терморежим мин. °C");
+            AddTranslation("temperatureMax", "Thermal Mode max °C", "Терморежим макс. °C");
+            AddTranslation("tarifficationType", "Tariffication type", "Способ тарификации");
+            AddTranslation("carrier", "Carrier", "Транспортная компания");
+            AddTranslation("vehicleType", "Vehicle type", "Тип ТС");
+            AddTranslation("palletsCount", "Planned no. of pallets", "Предварительное количество паллет");
+            AddTranslation("actualPalletsCount", "Actual no. of pallets", "Фактическое количество паллет");
+            AddTranslation("confirmedPalletsCount", "Confirmed no. of pallets", "Подтвержденное количество паллет");
+            AddTranslation("weightKg", "Planned weight, kg", "Плановый вес, кг");
+            AddTranslation("actualWeightKg", "Actual weight, kg", "Фактический вес, кг");
             AddTranslation("plannedArrivalTimeSlotBDFWarehouse", "Planned arriving time/Time-slot at BDF WH", "Плановое прибытие/тайм-слот (склад БДФ)");
-            AddTranslation("arrivalTimeForLoadingBDFWarehouse", "Arrival time to BDF WH", "Время прибытия на загрузку  (склад БДФ)");
-            AddTranslation("departureTimeFromTheBDFWarehouse", "Departure time from BDF WH", "Время убытия со склада БДФ");
-            AddTranslation("deliveryInvoiceNumber", "DeliveryInvoiceNumber", "Номер счета за доставку");
-            AddTranslation("commentsReasonsForDeviationFromTheSchedule", "CommentsReasonsForDeviationFromTheSchedule", "Комментарии (причины отклонения от графика)");
-            AddTranslation("transportationCostWithoutVAT", "TransportationCostWithoutVAT", "Стоимость перевозки, без НДС");
-            AddTranslation("returnShippingCostExcludingVAT", "ReturnShippingCostExcludingVAT", "Стоимость перевозки возврата, без НДС");
-            AddTranslation("additionalShippingCostsExcludingVAT", "AdditionalShippingCostsExcludingVAT", "Дополнительные расходы на доставку, без НДС");
-            AddTranslation("additionalShippingCostsComments", "AdditionalShippingCostsComments", "Дополнительные расходы на доставку (комментарии)");
+            AddTranslation("loadingArrivalTime", "Arrival time to BDF WH", "Время прибытия на загрузку  (склад БДФ)");
+            AddTranslation("loadingDepartureTime", "Departure time from BDF WH", "Время убытия со склада БДФ");
+            AddTranslation("deliveryInvoiceNumber", "Delivery invoice number", "Номер счета за доставку");
+            AddTranslation("deviationReasonsComments", "Comments (deviation from schedule reasons)", "Комментарии (причины отклонения от графика)");
+            AddTranslation("totalDeliveryCost", "Total delivery cost", "Общая стоимость перевозки");
+            AddTranslation("otherCosts", "Other", "Прочее");
+            AddTranslation("deliveryCostWithoutVAT", "Delivery cost, excl. VAT", "Стоимость перевозки, без НДС");
+            AddTranslation("returnCostWithoutVAT", "Delivery return cost, excl. VAT", "Стоимость перевозки возврата, без НДС");
+            AddTranslation("invoiceAmountWithoutVAT", "Invoice value, excl. VAT", "Сумма по ТТН, без НДС");
+            AddTranslation("additionalCostsWithoutVAT", "Additional costs, excl. VAT", "Дополнительные расходы на доставку, без НДС");
+            AddTranslation("additionalCostsComments", "Additional costs comments", "Дополнительные расходы на доставку (комментарии)");
+            AddTranslation("trucksDowntime", "Downtime", "Кол-во часов простоя машин");
+            AddTranslation("returnRate", "Return rate", "Ставка за возврат");
+            AddTranslation("additionalPointRate", "Additional point rate", "Ставка за дополнительную точку");
+            AddTranslation("downtimeRate", "Downtime rate", "Ставка за простой");
+            AddTranslation("blankArrivalRate", "Blank arrival rate", "Ставка за холостую подачу");
+            AddTranslation("blankArrival", "Blank arrival", "Холостая подача");
             AddTranslation("waybill", "Waybill", "Транспортная накладная");
-            AddTranslation("waybillTorg12", "WaybillTorg12", "Товарная накладная(Торг-12)");
-            AddTranslation("waybillTransportSection", "WaybillTransportSection", "Товарно-Транспортная накладная +Транспортный раздел");
+            AddTranslation("waybillTorg12", "Waybill Torg-12", "Товарная накладная(Торг-12)");
+            AddTranslation("transportWaybill", "Waybill + Transport section", "Товарно-Транспортная накладная + Транспортный раздел");
             AddTranslation("invoice", "Invoice", "Счет-фактура");
-            AddTranslation("actualReturnDate", "Actual return days", "Фактическая дата возврата документов");
-            AddTranslation("invoiceNumber", "InvoiceNumber", "Номер счет-фактуры");
+            AddTranslation("documentsReturnDate", "Planning documents return date", "Плановая дата возврата документов");
+            AddTranslation("actualDocumentsReturnDate", "Actual documents return date", "Фактическая дата возврата документов");
+            AddTranslation("invoiceNumber", "Invoice number", "Номер счет-фактуры");
             AddTranslation("status", "Status", "Статус");
-            AddTranslation("deliveryStatus", "DeliveryStatus", "Статус доставки");
-            AddTranslation("amountConfirmedByShipper", "AmountConfirmedByShipper", "Сумма подтверждена грузоотправителем");
-            AddTranslation("amountConfirmedByTC", "AmountConfirmedByTC", "Сумма подтверждена ТК");
+            AddTranslation("costsConfirmedByShipper", "Costs confirmed by shipper", "Расходы подтверждены грузоотправителем");
+            AddTranslation("costsConfirmedByCarrier", "Costs confirmed by carrier", "Расходы подтверждены ТК");
             AddTranslation("shippingState", "ShippingState", "Статус перевозки");
             AddTranslation("shippingConfirmed", "Confirmed", "Подтверждена");
             AddTranslation("shippingCompleted", "Completed", "Завершена");
