@@ -18,8 +18,8 @@ namespace Domain.Services.Shippings
         public decimal? WeightKg { get; set; }
         public decimal? ActualWeightKg { get; set; }
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
-        public DateTime? LoadingArrivalTime { get; set; }
-        public DateTime? LoadingDepartureTime { get; set; }
+        public string LoadingArrivalTime { get; set; }
+        public string LoadingDepartureTime { get; set; }
         public string DeliveryInvoiceNumber { get; set; }
         public string DeviationReasonsComments { get; set; }
         public decimal? TotalDeliveryCost { get; set; }
@@ -39,8 +39,8 @@ namespace Domain.Services.Shippings
         public bool? WaybillTorg12 { get; set; }
         public bool? TransportWaybill { get; set; }
         public bool? Invoice { get; set; }
-        public DateTime? DocumentsReturnDate { get; set; }
-        public DateTime? ActualDocumentsReturnDate { get; set; }
+        public string DocumentsReturnDate { get; set; }
+        public string ActualDocumentsReturnDate { get; set; }
         public string InvoiceNumber { get; set; }
         public string Status { get; set; }
         public bool? CostsConfirmedByShipper { get; set; }

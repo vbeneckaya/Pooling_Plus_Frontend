@@ -73,8 +73,8 @@ namespace Application.Services.Shippings
             entity.WeightKg = dto.WeightKg;
             entity.ActualWeightKg = dto.ActualWeightKg;
             entity.PlannedArrivalTimeSlotBDFWarehouse = dto.PlannedArrivalTimeSlotBDFWarehouse;
-            entity.LoadingArrivalTime = dto.LoadingArrivalTime;
-            entity.LoadingDepartureTime = dto.LoadingDepartureTime;
+            entity.LoadingArrivalTime = ParseDateTime(dto.LoadingArrivalTime);
+            entity.LoadingDepartureTime = ParseDateTime(dto.LoadingDepartureTime);
             entity.DeliveryInvoiceNumber = dto.DeliveryInvoiceNumber;
             entity.DeviationReasonsComments = dto.DeviationReasonsComments;
             entity.TotalDeliveryCost = dto.TotalDeliveryCost;
@@ -94,8 +94,8 @@ namespace Application.Services.Shippings
             entity.WaybillTorg12 = dto.WaybillTorg12 ?? false;
             entity.TransportWaybill = dto.TransportWaybill ?? false;
             entity.Invoice = dto.Invoice ?? false;
-            entity.DocumentsReturnDate = dto.DocumentsReturnDate;
-            entity.ActualDocumentsReturnDate = dto.ActualDocumentsReturnDate;
+            entity.DocumentsReturnDate = ParseDateTime(dto.DocumentsReturnDate);
+            entity.ActualDocumentsReturnDate = ParseDateTime(dto.ActualDocumentsReturnDate);
             entity.InvoiceNumber = dto.InvoiceNumber;
             if(!string.IsNullOrEmpty(dto.Status))
                 entity.Status =  MapFromStateDto<ShippingState>(dto.Status);
@@ -129,8 +129,8 @@ namespace Application.Services.Shippings
                 WeightKg = entity.WeightKg,
                 ActualWeightKg = entity.ActualWeightKg,
                 PlannedArrivalTimeSlotBDFWarehouse = entity.PlannedArrivalTimeSlotBDFWarehouse,
-                LoadingArrivalTime = entity.LoadingArrivalTime,
-                LoadingDepartureTime = entity.LoadingDepartureTime,
+                LoadingArrivalTime = entity.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
+                LoadingDepartureTime = entity.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                 DeliveryInvoiceNumber = entity.DeliveryInvoiceNumber,
                 DeviationReasonsComments = entity.DeviationReasonsComments,
                 TotalDeliveryCost = entity.TotalDeliveryCost,
@@ -150,8 +150,8 @@ namespace Application.Services.Shippings
                 WaybillTorg12 = entity.WaybillTorg12,
                 TransportWaybill = entity.TransportWaybill,
                 Invoice = entity.Invoice,
-                DocumentsReturnDate = entity.DocumentsReturnDate,
-                ActualDocumentsReturnDate = entity.ActualDocumentsReturnDate,
+                DocumentsReturnDate = entity.DocumentsReturnDate?.ToString("dd.MM.yyyy"),
+                ActualDocumentsReturnDate = entity.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy"),
                 InvoiceNumber = entity.InvoiceNumber,
                 Status = entity.Status.ToString().ToLowerfirstLetter(),
                 CostsConfirmedByShipper = entity.CostsConfirmedByShipper,

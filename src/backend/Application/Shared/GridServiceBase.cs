@@ -303,5 +303,31 @@ namespace Application.Shared
             }
             return null;
         }
+
+        protected DateTime? ParseDateTime(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+            if (DateTime.TryParseExact(
+                    value, 
+                    new[] { 
+                        "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
+                        "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy",
+                        "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-dd"
+                    },
+                    CultureInfo.InvariantCulture, 
+                    DateTimeStyles.None, 
+                    out DateTime exactResult))
+            {
+                return exactResult;
+            }
+            if (DateTime.TryParse(value, out DateTime result))
+            {
+                return result;
+            }
+            return null;
+        }
     }
 }
