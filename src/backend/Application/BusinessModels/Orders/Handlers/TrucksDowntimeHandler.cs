@@ -15,7 +15,11 @@ namespace Application.BusinessModels.Orders.Handlers
                 var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                 if (shipping != null && !shipping.ManualTrucksDowntime)
                 {
-                    var downtimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId).Select(o => o.TrucksDowntime).ToList();
+                    var downtimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                             .Select(o => o.TrucksDowntime)
+                                             .ToList();
+                    downtimes.Add(newValue);
+
                     var shippingDowntime = downtimes.Any(x => x.HasValue) ? downtimes.Sum(x => x ?? 0) : (decimal?)null;
                     shipping.TrucksDowntime = shippingDowntime;
                 }

@@ -15,7 +15,11 @@ namespace Application.BusinessModels.Orders.Handlers
                 var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                 if (shipping != null && !shipping.ManualActualWeightKg)
                 {
-                    var actualWeights = _db.Orders.Where(o => o.ShippingId == order.ShippingId).Select(o => o.ActualWeightKg).ToList();
+                    var actualWeights = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                                  .Select(o => o.ActualWeightKg)
+                                                  .ToList();
+                    actualWeights.Add(newValue);
+
                     var shippingActualWeight = actualWeights.Any(x => x.HasValue) ? actualWeights.Sum(x => x ?? 0) : (decimal?)null;
                     shipping.ActualWeightKg = shippingActualWeight;
                 }

@@ -13,13 +13,18 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             if (order.ShippingId.HasValue)
             {
-                var distinctTimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId).Select(o => o.LoadingArrivalTime).ToList().Distinct().Count();
+                var arrivalTimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                             .Select(o => o.LoadingArrivalTime)
+                                             .ToList();
+                arrivalTimes.Add(newValue);
+
+                var distinctTimes = arrivalTimes.Distinct().Count();
                 if (distinctTimes == 1)
                 {
                     var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                     if (shipping != null)
                     {
-                        shipping.LoadingArrivalTime = order.LoadingArrivalTime;
+                        shipping.LoadingArrivalTime = newValue;
                     }
                 }
             }

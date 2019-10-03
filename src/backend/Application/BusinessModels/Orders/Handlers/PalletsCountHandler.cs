@@ -15,7 +15,11 @@ namespace Application.BusinessModels.Orders.Handlers
                 var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                 if (shipping != null && !shipping.ManualPalletsCount)
                 {
-                    var counts = _db.Orders.Where(o => o.ShippingId == order.ShippingId).Select(o => o.PalletsCount).ToList();
+                    var counts = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                           .Select(o => o.PalletsCount)
+                                           .ToList();
+                    counts.Add(newValue);
+
                     var shippingPalletsCount = counts.Any(x => x.HasValue) ? counts.Sum(x => x ?? 0) : (int?)null;
                     shipping.PalletsCount = shippingPalletsCount;
                 }
