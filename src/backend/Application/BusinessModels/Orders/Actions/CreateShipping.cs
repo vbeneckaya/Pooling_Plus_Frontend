@@ -25,14 +25,13 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(User user, Order order)
         {
-            var currentNumber = !db.Shippings.Any() ? 0 : db.Shippings.Max(x => x.TransportationNumber);
-            
+            var shippingsCount = db.Shippings.Count();
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
-                TransportationNumber = currentNumber + 1,
-                DeliveryMethod = "Доставка"
+                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
+                DeliveryType = DeliveryType.Delivery
             };
             db.Shippings.Add(shipping);
 
@@ -46,7 +45,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {shipping.TransportationNumber}"
+                Message = $"Созданна перевозка {shipping.ShippingNumber}"
             };
         }
 

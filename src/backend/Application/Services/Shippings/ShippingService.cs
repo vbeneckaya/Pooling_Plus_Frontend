@@ -42,7 +42,7 @@ namespace Application.Services.Shippings
             return new LookUpDto
             {
                 Value = entity.Id.ToString(),
-                Name = entity.TransportationNumber.ToString()
+                Name = entity.ShippingNumber
             };
         }
 
@@ -58,34 +58,49 @@ namespace Application.Services.Shippings
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.TransportationNumber = dto.TransportationNumber;
-            entity.DeliveryMethod = dto.DeliveryMethod;
-            entity.ThermalMode = dto.ThermalMode;
-            entity.BillingMethod = dto.BillingMethod;
-            entity.TransportCompany = dto.TransportCompany;
+            entity.ShippingNumber = dto.ShippingNumber;
+            if (!string.IsNullOrEmpty(dto.DeliveryType))
+                entity.DeliveryType = MapFromStateDto<DeliveryType>(dto.DeliveryType);
+            entity.TemperatureMin = dto.TemperatureMin;
+            entity.TemperatureMax = dto.TemperatureMax;
+            if (!string.IsNullOrEmpty(dto.TarifficationType))
+                entity.TarifficationType = MapFromStateDto<TarifficationType>(dto.TarifficationType);
+            entity.Carrier = dto.Carrier;
+            entity.VehicleType = dto.VehicleType;
             entity.PalletsCount = dto.PalletsCount;
             entity.ActualPalletsCount = dto.ActualPalletsCount;
-            entity.ConfirmedNumberOfPallets = dto.ConfirmedNumberOfPallets;
+            entity.ConfirmedPalletsCount = dto.ConfirmedPalletsCount;
+            entity.WeightKg = dto.WeightKg;
+            entity.ActualWeightKg = dto.ActualWeightKg;
             entity.PlannedArrivalTimeSlotBDFWarehouse = dto.PlannedArrivalTimeSlotBDFWarehouse;
-            entity.ArrivalTimeForLoadingBDFWarehouse = dto.ArrivalTimeForLoadingBDFWarehouse;
-            entity.DepartureTimeFromTheBDFWarehouse = dto.DepartureTimeFromTheBDFWarehouse;
+            entity.LoadingArrivalTime = dto.LoadingArrivalTime;
+            entity.LoadingDepartureTime = dto.LoadingDepartureTime;
             entity.DeliveryInvoiceNumber = dto.DeliveryInvoiceNumber;
-            entity.CommentsReasonsForDeviationFromTheSchedule = dto.CommentsReasonsForDeviationFromTheSchedule;
-            entity.TransportationCostWithoutVAT = dto.TransportationCostWithoutVAT;
-            entity.ReturnShippingCostExcludingVAT = dto.ReturnShippingCostExcludingVAT;
-            entity.AdditionalShippingCostsExcludingVAT = dto.AdditionalShippingCostsExcludingVAT;
-            entity.AdditionalShippingCostsComments = dto.AdditionalShippingCostsComments;
-            entity.Waybill = dto.Waybill;
-            entity.WaybillTorg12 = dto.WaybillTorg12;
-            entity.WaybillTransportSection = dto.WaybillTransportSection;
-            entity.Invoice = dto.Invoice;
-            entity.ActualReturnDate = dto.ActualReturnDate;
+            entity.DeviationReasonsComments = dto.DeviationReasonsComments;
+            entity.TotalDeliveryCost = dto.TotalDeliveryCost;
+            entity.OtherCosts = dto.OtherCosts;
+            entity.DeliveryCostWithoutVAT = dto.DeliveryCostWithoutVAT;
+            entity.ReturnCostWithoutVAT = dto.ReturnCostWithoutVAT;
+            entity.InvoiceAmountWithoutVAT = dto.InvoiceAmountWithoutVAT;
+            entity.AdditionalCostsWithoutVAT = dto.AdditionalCostsWithoutVAT;
+            entity.AdditionalCostsComments = dto.AdditionalCostsComments;
+            entity.TrucksDowntime = dto.TrucksDowntime;
+            entity.ReturnRate = dto.ReturnRate;
+            entity.AdditionalPointRate = dto.AdditionalPointRate;
+            entity.DowntimeRate = dto.DowntimeRate;
+            entity.BlankArrivalRate = dto.BlankArrivalRate;
+            entity.BlankArrival = dto.BlankArrival ?? false;
+            entity.Waybill = dto.Waybill ?? false;
+            entity.WaybillTorg12 = dto.WaybillTorg12 ?? false;
+            entity.TransportWaybill = dto.TransportWaybill ?? false;
+            entity.Invoice = dto.Invoice ?? false;
+            entity.DocumentsReturnDate = dto.DocumentsReturnDate;
+            entity.ActualDocumentsReturnDate = dto.ActualDocumentsReturnDate;
             entity.InvoiceNumber = dto.InvoiceNumber;
             if(!string.IsNullOrEmpty(dto.Status))
                 entity.Status =  MapFromStateDto<ShippingState>(dto.Status);
-            entity.DeliveryStatus = dto.DeliveryStatus;
-            entity.AmountConfirmedByShipper = dto.AmountConfirmedByShipper;
-            entity.AmountConfirmedByTC = dto.AmountConfirmedByTC;
+            entity.CostsConfirmedByShipper = dto.CostsConfirmedByShipper ?? false;
+            entity.CostsConfirmedByCarrier = dto.CostsConfirmedByCarrier ?? false;
             /*end of map dto to entity fields*/
 
             return new ValidateResult(null, entity.Id.ToString());
@@ -101,33 +116,46 @@ namespace Application.Services.Shippings
             return new ShippingDto
             {
                 Id = entity.Id.ToString(),
-                TransportationNumber = entity.TransportationNumber,
-                DeliveryMethod = entity.DeliveryMethod,
-                ThermalMode = entity.ThermalMode,
-                BillingMethod = entity.BillingMethod,
-                TransportCompany = entity.TransportCompany,
+                ShippingNumber = entity.ShippingNumber,
+                DeliveryType = entity.DeliveryType.ToString().ToLowerfirstLetter(),
+                TemperatureMin = entity.TemperatureMin,
+                TemperatureMax = entity.TemperatureMax,
+                TarifficationType = entity.TarifficationType.ToString().ToLowerfirstLetter(),
+                Carrier = entity.Carrier,
+                VehicleType = entity.VehicleType,
                 PalletsCount = entity.PalletsCount,
                 ActualPalletsCount = entity.ActualPalletsCount,
-                ConfirmedNumberOfPallets = entity.ConfirmedNumberOfPallets,
+                ConfirmedPalletsCount = entity.ConfirmedPalletsCount,
+                WeightKg = entity.WeightKg,
+                ActualWeightKg = entity.ActualWeightKg,
                 PlannedArrivalTimeSlotBDFWarehouse = entity.PlannedArrivalTimeSlotBDFWarehouse,
-                ArrivalTimeForLoadingBDFWarehouse = entity.ArrivalTimeForLoadingBDFWarehouse,
-                DepartureTimeFromTheBDFWarehouse = entity.DepartureTimeFromTheBDFWarehouse,
+                LoadingArrivalTime = entity.LoadingArrivalTime,
+                LoadingDepartureTime = entity.LoadingDepartureTime,
                 DeliveryInvoiceNumber = entity.DeliveryInvoiceNumber,
-                CommentsReasonsForDeviationFromTheSchedule = entity.CommentsReasonsForDeviationFromTheSchedule,
-                TransportationCostWithoutVAT = entity.TransportationCostWithoutVAT,
-                ReturnShippingCostExcludingVAT = entity.ReturnShippingCostExcludingVAT,
-                AdditionalShippingCostsExcludingVAT = entity.AdditionalShippingCostsExcludingVAT,
-                AdditionalShippingCostsComments = entity.AdditionalShippingCostsComments,
+                DeviationReasonsComments = entity.DeviationReasonsComments,
+                TotalDeliveryCost = entity.TotalDeliveryCost,
+                OtherCosts = entity.OtherCosts,
+                DeliveryCostWithoutVAT = entity.DeliveryCostWithoutVAT,
+                ReturnCostWithoutVAT = entity.ReturnCostWithoutVAT,
+                InvoiceAmountWithoutVAT = entity.InvoiceAmountWithoutVAT,
+                AdditionalCostsWithoutVAT = entity.AdditionalCostsWithoutVAT,
+                AdditionalCostsComments = entity.AdditionalCostsComments,
+                TrucksDowntime = entity.TrucksDowntime,
+                ReturnRate = entity.ReturnRate,
+                AdditionalPointRate = entity.AdditionalPointRate,
+                DowntimeRate = entity.DowntimeRate,
+                BlankArrivalRate = entity.BlankArrivalRate,
+                BlankArrival = entity.BlankArrival,
                 Waybill = entity.Waybill,
                 WaybillTorg12 = entity.WaybillTorg12,
-                WaybillTransportSection = entity.WaybillTransportSection,
+                TransportWaybill = entity.TransportWaybill,
                 Invoice = entity.Invoice,
-                ActualReturnDate = entity.ActualReturnDate,
+                DocumentsReturnDate = entity.DocumentsReturnDate,
+                ActualDocumentsReturnDate = entity.ActualDocumentsReturnDate,
                 InvoiceNumber = entity.InvoiceNumber,
                 Status = entity.Status.ToString().ToLowerfirstLetter(),
-                DeliveryStatus = entity.DeliveryStatus,
-                AmountConfirmedByShipper = entity.AmountConfirmedByShipper,
-                AmountConfirmedByTC = entity.AmountConfirmedByTC,
+                CostsConfirmedByShipper = entity.CostsConfirmedByShipper,
+                CostsConfirmedByCarrier = entity.CostsConfirmedByCarrier,
                 /*end of map entity to dto fields*/
             };
         }
