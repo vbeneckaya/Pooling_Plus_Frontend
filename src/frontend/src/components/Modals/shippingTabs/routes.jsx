@@ -53,7 +53,7 @@ const Routes = ({ form, onChange }) => {
             <Tab
                 className="all-tabs"
                 panes={pointsTabs}
-                menu={{ fluid: true, vertical: true }}
+                menu={{ vertical: true }}
                 menuPosition="left"
             />
         </div>

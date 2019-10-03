@@ -21,12 +21,17 @@ const GET_GRID_CARD_REQUEST = 'GET_GRID_CARD_REQUEST';
 const GET_GRID_CARD_SUCCESS = 'GET_GRID_CARD_SUCCESS';
 const GET_GRID_CARD_ERROR = 'GET_GRID_CARD_ERROR';
 
+const EDI_GRID_CARD_REQUEST = 'EDI_GRID_CARD_REQUEST';
+const EDIT_GRID_CARD_SUCCESS = 'EDIT_GRID_CARD_SUCCESS';
+const EDIT_GRID_CARD_ERROR = 'EDIT_GRID_CARD_ERROR';
+
 //*  INITIAL STATE  *//
 
 const initial = {
     config: {},
     data: {},
     progress: false,
+    editProgress: false
 };
 
 //*  REDUCER  *//
@@ -54,9 +59,9 @@ export default (state = initial, { type, payload }) => {
             };
         case GET_CARD_CONFIG_SUCCESS:
             return {
-              ...state,
-              progress: false,
-              config: payload
+                ...state,
+                progress: false,
+                config: payload,
             };
         case GET_GRID_CARD_ERROR:
         case CREATE_DRAFT_ERROR:
@@ -71,14 +76,29 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: true,
                 data: {
-                    id: payload.id
-                }
+                    id: payload.id,
+                },
             };
         case OPEN_GRID_CARD_SUCCESS:
         case OPEN_GRID_CARD_ERROR:
             return {
                 ...state,
                 progress: false,
+            };
+        case EDI_GRID_CARD_REQUEST:
+            return {
+                ...state,
+                editProgress: true
+            };
+        case EDIT_GRID_CARD_SUCCESS:
+            return {
+                ...state,
+                editProgress: false
+            };
+        case EDIT_GRID_CARD_ERROR:
+            return {
+                ...state,
+                editProgress: false
             };
         default:
             return state;
@@ -115,6 +135,13 @@ export const getCardConfigRequest = payload => {
     };
 };
 
+export const editCardRequest = payload => {
+    return {
+        type: EDI_GRID_CARD_REQUEST,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridCard;
@@ -125,10 +152,11 @@ const idSelector = createSelector(stateSelector, state => state.data.id);
 
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const cardSelector = createSelector(stateSelector, state => {
+    const {data = {}} = state;
+    Object.keys(data).forEach(item => console.log(typeof data[item]));
+    return state.data
+});
 
 //*  SAGA  *//
 
@@ -148,8 +176,7 @@ function* openGridCardSaga({ payload }) {
 
         const card = yield select(cardSelector);
 
-        callbackSuccess(card)
-
+        callbackSuccess(card);
     } catch (error) {
         yield put({
             type: OPEN_GRID_CARD_ERROR,
@@ -170,6 +197,25 @@ function* createDraftSaga({ payload }) {
     } catch (error) {
         yield put({
             type: CREATE_DRAFT_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* editCardSaga({ payload }) {
+    try {
+        const { name, params, callbackSuccess } = payload;
+        const result = yield postman.post(`/${name}/saveOrCreate`, params);
+
+        yield put({
+            type: EDIT_GRID_CARD_SUCCESS,
+            payload: result,
+        });
+
+        callbackSuccess && callbackSuccess();
+    } catch (error) {
+        yield put({
+            type: EDIT_GRID_CARD_ERROR,
             payload: error,
         });
     }
@@ -208,5 +254,6 @@ export function* saga() {
         takeEvery(CREATE_DRAFT_REQUEST, createDraftSaga),
         takeEvery(GET_CARD_CONFIG_REQUEST, getCardConfigSaga),
         takeEvery(GET_GRID_CARD_REQUEST, getCardSaga),
+        takeEvery(EDI_GRID_CARD_REQUEST, editCardSaga),
     ]);
 }

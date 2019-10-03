@@ -34,11 +34,11 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
     if (value === undefined || value === null) return '';
 
     if (type === NUMBER_TYPE) {
-        return numbersFormat(value);
+        return numbersFormat(parseFloat(value));
     }
 
     if (type === DATE_TIME_TYPE) {
-        const dateString = formatDate(new Date(value), 'dd.MM.YYYY HH:mm').toString();
+        const dateString = formatDate(Date.parse(value), 'dd.MM.YYYY HH:mm').toString();
         return (
             <div
                 key={`value_${id}`}

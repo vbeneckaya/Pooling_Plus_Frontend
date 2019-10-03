@@ -17,9 +17,7 @@ const LOGIN_ERROR = 'LOGIN_ERROR';
 
 const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 
-export const ACCESS_TOKEN = 'accessToken'
-
-setAccessToken && setAccessToken(localStorage.getItem(ACCESS_TOKEN));
+export const ACCESS_TOKEN = 'accessToken';
 
 //*  INITIAL STATE  *//
 

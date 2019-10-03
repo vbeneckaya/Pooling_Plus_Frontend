@@ -2,7 +2,7 @@
 import qs from 'qs';
 import { toast } from 'react-toastify';
 import store from "../store/configureStore";
-import {logoutRequest} from "../ducks/login";
+import {ACCESS_TOKEN, logoutRequest} from "../ducks/login";
 
 export const postman = axios.create({
     baseURL: '/api',
@@ -32,7 +32,7 @@ postman.interceptors.response.use(
     },
 );
 
-export var setAccessToken = token => {
+export let setAccessToken = token => {
     if (token !== null) {
         postman.defaults.headers.common.Authorization = `Bearer ${token}`;
         downloader.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -41,3 +41,5 @@ export var setAccessToken = token => {
         delete downloader.defaults.headers.common.Authorization;
     }
 };
+
+setAccessToken(localStorage.getItem(ACCESS_TOKEN));

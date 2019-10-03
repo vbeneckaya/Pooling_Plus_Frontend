@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
-import { cardSelector, openGridCardRequest, progressSelector } from '../../ducks/gridCard';
+import {cardSelector, editCardRequest, openGridCardRequest, progressSelector} from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from "../../components/Modals/shippingModal";
 
@@ -60,7 +60,20 @@ class Card extends Component {
         }));
     };
 
-    handleSave = () => {};
+    handleSave = () => {
+        const { editCard, name } = this.props;
+        const { form } = this.state;
+
+        console.log('form', form);
+
+        editCard({
+            name,
+            params: form,
+            callbackSuccess: () => {
+                this.onClose()
+            }
+        })
+    };
 
     render() {
         const { title, loading, children, progress, name, t } = this.props;
@@ -75,7 +88,7 @@ class Card extends Component {
                 onOpen={this.onOpen}
                 onClose={this.onClose}
                 closeIcon
-                size="fullscreen"
+                size="large"
             >
                 <Modal.Header>{t(title)}</Modal.Header>
                 <Modal.Content scrolling>
@@ -115,6 +128,9 @@ const mapDispatchToProps = dispatch => {
         openCard: params => {
             dispatch(openGridCardRequest(params));
         },
+        editCard: params => {
+            dispatch(editCardRequest(params))
+        }
     };
 };
 

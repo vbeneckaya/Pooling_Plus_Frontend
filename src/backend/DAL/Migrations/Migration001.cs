@@ -329,7 +329,9 @@ namespace DAL.Migrations
             AddTranslation("position", "position", "Позиции");
             AddTranslation("returns", "returns", "Возвраты");
             AddTranslation("route", "route", "Маршрут");
-            AddTranslation("temperature", "temperature", "Терморежим");
+            AddTranslation("accounts", "Accounts", "Счета");
+            AddTranslation("reconciliation of expenses", "Reconciliation of expenses", "Сверка расходов");
+            AddTranslation("temperature", "temperature", "Терморежим °С");
             AddTranslation("addressFrom", "addressFrom", "Адрес от");
             AddTranslation("addressTo", "addressTo", "Адрес до");
             AddTranslation("palletsCountGroup", "Pallets count", "Количество паллет");
@@ -340,6 +342,11 @@ namespace DAL.Migrations
             AddTranslation("prepare", "prepare", "Предварительное");
             AddTranslation("plan", "plan", "Фактическое");
             AddTranslation("fact", "fact", "Подтверждённое");
+            AddTranslation("planWeigth", "fact", "Плановый");
+            AddTranslation("factWeigth", "fact", "Подтвержденный");
+            AddTranslation("general info", "General info", "Общая информация");
+            AddTranslation("from", "From", "От");
+            AddTranslation("to", "To", "До");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");

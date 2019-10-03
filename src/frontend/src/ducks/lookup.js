@@ -6,6 +6,7 @@ import {postman} from '../utils/postman';
 
 const GET_LOOKUP_REQUEST = 'GET_LOOKUP_REQUEST';
 const GET_LOOKUP_SUCCESS = 'GET_LOOKUP_SUCCESS';
+const GET_EDIT_LOOKUP_SUCCESS = 'GET_EDIT_LOOKUP_SUCCESS';
 const GET_LOOKUP_ERROR = 'GET_LOOKUP_ERROR';
 
 //*  INITIAL STATE  *//
@@ -28,6 +29,12 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 list: payload,
+                progress: false
+            };
+        case GET_EDIT_LOOKUP_SUCCESS:
+            return {
+                ...state,
+                [payload.key]: payload.list,
                 progress: false
             };
         case GET_LOOKUP_ERROR:
@@ -55,17 +62,30 @@ const stateSelector = state => state.lookup;
 export const listSelector = createSelector(stateSelector, state => state.list) || [];
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
+export const valuesListSelector = createSelector([stateSelector, (state, key) => key], (state, key) => state[key]);
+
 //*  SAGA  *//
 
 function* getLookupSaga ({ payload }) {
     try {
-        const {name} = payload;
+        const {name, isForm} = payload;
         const result = yield postman.get(`/${name}/forSelect`);
 
-        yield put({
-            type: GET_LOOKUP_SUCCESS,
-            payload: result
-        })
+        if (isForm) {
+            yield put({
+                type: GET_EDIT_LOOKUP_SUCCESS,
+                payload: {
+                    key: name,
+                    list: result
+                }
+            })
+        } else {
+            yield put({
+                type: GET_LOOKUP_SUCCESS,
+                payload: result
+            })
+        }
+
     } catch (e) {
         yield put({
             type: GET_LOOKUP_ERROR,

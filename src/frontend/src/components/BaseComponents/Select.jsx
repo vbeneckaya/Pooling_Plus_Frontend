@@ -1,23 +1,37 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Button, Icon, Form, Dropdown } from 'semantic-ui-react';
 
 import './style.scss';
+import {getLookupRequest, valuesListSelector} from "../../ducks/lookup";
 
 const Select = ({
     value,
     onChange,
-    valuesList = [],
     placeholder = '',
     disabled,
     label,
     name,
+    text,
     multiple,
     loading,
     clearable,
+    source
 }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(getLookupRequest({
+            name: source,
+            isForm: true,
+        }))
+    }, []);
+
+    const valuesList = useSelector(state => valuesListSelector(state, source)) || [];
+
     const handleChange = (e, { value }) => {
         onChange(e, { value, name });
     };
@@ -26,13 +40,13 @@ const Select = ({
         key: `${x.value}_${index}`,
         value: x.value,
         text: x.name,
-        disabled: !x.isActive,
-        description: x.description,
+       /* disabled: !x.isActive,
+        description: x.description,*/
     }));
 
     return (
         <Form.Field>
-            {name ? <label>{t(name)}</label> : null }
+            {name ? <label>{t(text || name)}</label> : null}
             <Dropdown
                 placeholder={placeholder}
                 fluid

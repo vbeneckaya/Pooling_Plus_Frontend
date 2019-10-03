@@ -5,13 +5,13 @@ import DatePicker from 'react-datepicker';
 
 import {formatDate, parseDateTime} from "../../utils/dateTimeFormater";
 
-const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement="bottom-end", className }) => {
+const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement="bottom-end", className, text }) => {
     const { t } = useTranslation();
 
     return (
         <Form.Field className={noLabel ? 'no-label-datepicker' : undefined}>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
             ) : null}
             <DatePicker
                 locale={localStorage.getItem('i18nextLng')}

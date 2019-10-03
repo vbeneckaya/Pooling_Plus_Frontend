@@ -185,7 +185,7 @@ body {
 }
 
 .tabs-card {
-    height: 64vh;
+    height: 67vh;
     overflow: auto;
 
     .ui.grid > .row > .column {
@@ -204,6 +204,10 @@ body {
     .all-tabs > .ui.menu.tabular {
         white-space: nowrap;
     }
+
+    .ui.checkbox {
+        padding: 4px 0;
+    }
 }
 
 .ext-tabs-card {
@@ -217,5 +221,45 @@ body {
     align-items: flex-end;
     button {
         height: 33px;
+    }
+}
+
+.mini-column {
+    .field {
+        width: 50%!important;
+    }
+}
+
+.vertical-menu-card {
+    display: flex;
+
+    .ui.vertical.menu {
+        margin: 0 12px 0 0!important;
+        flex-grow: 0;
+      /*  width: max-content;*/
+        /*height: max-content;*/
+    }
+
+    .shipping-card-content {
+        width: 100%;
+    }
+}
+
+.all-tabs {
+    .ui.vertical.menu {
+        margin: 0 12px 0 0!important;
+    }
+}
+
+.temperature-fields {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    label {
+       font-size: .92857143em;
+    }
+
+    .field {
+        width: 30%!important;
     }
 }
