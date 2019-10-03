@@ -52,6 +52,8 @@ class Card extends Component {
     };
 
     onChangeForm = (e, { name, value }) => {
+
+        console.log('nn', name, value);
         this.setState(prevState => ({
             form: {
                 ...prevState.form,

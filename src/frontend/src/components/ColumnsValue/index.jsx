@@ -44,7 +44,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         return numbersFormat(parseFloat(value));
     }
 
-    if (type === DATE_TIME_TYPE) {
+   /* if (type === DATE_TIME_TYPE) {
         const dateString = formatDate(Date.parse(value), 'dd.MM.YYYY HH:mm').toString();
         return (
             <div
@@ -52,7 +52,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
                 dangerouslySetInnerHTML={{ __html: dateString.replaceAll(' ', '&nbsp;') }}
             />
         );
-    }
+    }*/
 
     if (type === STATE_TYPE) {
         const state = stateColors.find(x => x.name === value);

@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import {formatDate, parseDate} from "../../utils/dateTimeFormater";
 import { useTranslation } from 'react-i18next';
 
-const DateF = ({ value, name, onChange, isDisabled, noLabel, required, placeholder, className }) => {
+const Date = ({ value, name, onChange, isDisabled, noLabel, required, placeholder, className }) => {
     const getClassNames = () => {
         const classNames = [];
 
@@ -31,14 +31,14 @@ const DateF = ({ value, name, onChange, isDisabled, noLabel, required, placehold
                 placeholderText={placeholder}
                 className={getClassNames()}
                 isClearable={!(isDisabled || false)}
-                selected={value ? Date.parse(value) : null}
+                selected={parseDate((value || '').substring(0, 10))}
                 locale={localStorage.getItem('i18nextLng')}
                 dateFormat="dd.MM.yyyy"
                 onChange={(date, e) => {
-                    onChange(e, { name: name, value: date ? date.toISOString() : null });
+                    onChange(e, { name: name, value: date ? formatDate(date) : null });
                 }}
             />
         </Form.Field>
     );
 };
-export default DateF;
+export default Date;

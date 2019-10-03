@@ -55,8 +55,8 @@ const Information = ({ form, onChange }) => {
                                     <Grid.Row columns={4}>
                                         <Grid.Column>
                                             <Date
-                                                name="orderCreationDate"
-                                                value={form['orderCreationDate']}
+                                                name="orderDate"
+                                                value={form['orderDate']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -181,7 +181,6 @@ const Information = ({ form, onChange }) => {
                         <Form.Field>
                             <label>{t('boxesCountGroup')}</label>
                             <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
                                 className="mini-column"
                             >
                                 <Grid>

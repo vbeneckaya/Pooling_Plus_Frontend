@@ -16,43 +16,47 @@ const Information = ({ form = {}, onChange }) => {
                 <Grid.Row columns={3}>
                     <Grid.Column>
                         <Select
-                            name="transportCompany"
-                            value={form['transportCompany']}
+                            name="carrier"
+                            value={form['carrier']}
+                            source="transportCompanies"
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
                         <Select
-                            name="deliveryMethod"
-                            value={form['deliveryMethod']}
+                            name="deliveryType"
+                            value={form['deliveryType']}
+                            source="deliveryType"
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <Select name="billingMethod" value={form['billingMethod']} onChange={onChange} />
+                        <Select name="tarifficationType" value={form['tarifficationType']} source="tarifficationType" onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={3}>
                     <Grid.Column>
                         <Select
-                            name="transportType"
-                            text="Тип ТС"
-                            value={form['transportType']}
+                            name="vehicleType"
+                            value={form['vehicleType']}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <Select
-                            name="thermalMode"
-                            value={form['thermalMode']}
-                            onChange={onChange}
-                        />
+                        <Form.Field>
+                            <label>{t('temperature')}</label>
+                            <div className="temperature-fields">
+                                <label>{t('from')}</label>
+                                <Text noLabel name="temperatureMin" value={form["temperatureMin"]} onChange={onChange} />
+                                <label>{t('to')}</label>
+                                <Text noLabel name="temperatureMax" value={form["temperatureMax"]} onChange={onChange} />
+                            </div>
+                        </Form.Field>
                     </Grid.Column>
                     <Grid.Column>
                         <Text
-                            name="thermalMode"
-                            text="Общая стоимость перевозки"
-                            value={form['thermalMode']}
+                            name="totalDeliveryCost"
+                            value={form['totalDeliveryCost']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -61,7 +65,7 @@ const Information = ({ form = {}, onChange }) => {
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('palletsCountGroup')}</label>
-                            <Segment>
+                            <Segment className="mini-column">
                                 <Grid>
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
@@ -98,9 +102,9 @@ const Information = ({ form = {}, onChange }) => {
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('weigth')}</label>
-                            <Segment>
+                            <Segment className="mini-column">
                                 <Grid>
-                                    <Grid.Row columns={2}>
+                                    <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <Text
                                                 name="weightKg"
@@ -134,33 +138,33 @@ const Information = ({ form = {}, onChange }) => {
                                             <Checkbox
                                                 checked={form['waybill']}
                                                 label={t('waybill')}
-                                                onChange={onChange}
+                                                onClick={(event) => onChange(event, {name: 'waybill', value: !form['waybill']})}
                                             />
                                             <Checkbox
                                                 checked={form['waybillTorg12']}
                                                 label={t('waybillTorg12')}
-                                                onChange={onChange}
+                                                onClick={(event) => onChange(event, {name: 'waybillTorg12', value: !form['waybillTorg12']})}
                                             />
                                             <Checkbox
-                                                checked={form['waybillTransportSection']}
-                                                label={t('waybillTransportSection')}
-                                                onChange={onChange}
+                                                checked={form['transportWaybill']}
+                                                label={t('transportWaybill')}
+                                                onClick={(event) => onChange(event, {name: 'transportWaybill', value: !form['transportWaybill']})}
                                             />
                                             <Checkbox
                                                 checked={form['invoice']}
                                                 label={t('invoice')}
-                                                onChange={onChange}
+                                                onClick={(event) => onChange(event, {name: 'invoice', value: !form['invoice']})}
                                             />
                                         </Grid.Column>
                                         <Grid.Column className="mini-column">
                                             <Date
-                                                name="plannedReturnDate"
-                                                value={form['plannedReturnDate']}
+                                                name="documentsReturnDate"
+                                                value={form['documentsReturnDate']}
                                                 onChange={onChange}
                                             />
                                             <Date
-                                                name="actualReturnDate"
-                                                value={form['actualReturnDate']}
+                                                name="actualDocumentsReturnDate"
+                                                value={form['actualDocumentsReturnDate']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>

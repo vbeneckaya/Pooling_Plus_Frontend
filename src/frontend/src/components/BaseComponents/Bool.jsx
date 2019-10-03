@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {useTranslation} from 'react-i18next';
 import { Popup, Input, Button, Icon, Form, Dropdown } from 'semantic-ui-react';
 
 const Bool = ({ value, sort, name, setSort, text, onChange }) => {
@@ -18,15 +18,19 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
         },
     ];
 
+    const {t} = useTranslation();
+
     const handleChange = value => {
 
         if (onChange !== undefined) onChange(null, { name: name, value: value });
     };
 
+    console.log('value', value);
+
     let content = (
         <Form.Field>
             <Form>
-                <label className="label-in-popup">{text}</label>
+                <label className="label-in-popup">{t(name)}</label>
                 <div className="boolean-facet-values">
                     {items &&
                         items.map(x => {
@@ -56,7 +60,7 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
                         onKeyPress={e => {
                             e.preventDefault();
                         }}
-                        placeholder={value !== undefined ? items.find(item => item.value === value) && items.find(item => item.value === value).text : text}
+                        placeholder={value !== undefined ? items.find(item => item.value === value) && items.find(item => item.value === value).text : t(name)}
                     />
                 }
                 content={content}

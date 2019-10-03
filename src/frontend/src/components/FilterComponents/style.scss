@@ -93,3 +93,28 @@
         font-size: 13px !important;
     }
 }
+
+.boolean-facet-values {
+    max-height: 60vh;
+    overflow-x: hidden;
+    margin-top: 10px;
+    min-width: 220px;
+    font-size: 12px !important;
+
+    .active-value {
+        font-weight: bold;
+    }
+
+
+    div {
+        padding: 8px 0!important;
+        &:hover {
+            cursor: pointer;
+        }
+
+        span {
+            font-size: 13px !important;
+        }
+    }
+
+}

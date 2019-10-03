@@ -360,6 +360,7 @@ namespace DAL.Migrations
             AddTranslation("general info", "General info", "Общая информация");
             AddTranslation("from", "From", "От");
             AddTranslation("to", "To", "До");
+            AddTranslation("representation", "Representation", "Представления");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");

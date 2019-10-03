@@ -134,8 +134,8 @@ class SuperGrid extends Component {
     setFilter = (e, { name, value }) => {
         this.setState(prevState => {
             let { filters } = prevState;
-            if (value) filters = { ...filters, [name]: value };
-            else if (filters[name]) {
+            if (value !== null && value !== undefined) filters = { ...filters, [name]: value };
+            else if (filters[name] !== null && filters[name] !== undefined) {
                 filters = Object.assign({}, filters);
                 delete filters[name];
             }
