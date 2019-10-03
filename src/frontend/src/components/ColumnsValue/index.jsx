@@ -1,7 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {ACTIVE_TYPE, DATE_TIME_TYPE, ENUM_TYPE, NUMBER_TYPE, STATE_TYPE,} from '../../constants/columnTypes';
+import {
+    ACTIVE_TYPE,
+    BOOLEAN_TYPE,
+    DATE_TIME_TYPE,
+    ENUM_TYPE,
+    NUMBER_TYPE,
+    STATE_TYPE,
+} from '../../constants/columnTypes';
 import {formatDate} from '../../utils/dateTimeFormater';
 import {numbersFormat} from '../../utils/numbersFormat';
 import {Checkbox, Icon, Label} from 'semantic-ui-react';
@@ -27,7 +34,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 
-    if (typeof value === 'boolean') {
+    if (type === BOOLEAN_TYPE) {
         return value ? 'Да' : 'Нет';
     }
 
