@@ -74,7 +74,7 @@ deploy-backend-dev:
  # environment:
  #   name: 
  
- deploy-tasks-dev:
+deploy-tasks-dev:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.10
