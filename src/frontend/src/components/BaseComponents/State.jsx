@@ -29,7 +29,7 @@ const State = ({ value, name, isDisabled, onChange, className, source }) => {
     if (!isDisabled)
         return (
             <Form.Field>
-                <label>{t(name)}</label>
+                <label className={isDisabled ? "label-disabled" : null}>{t(name)}</label>
                 <Dropdown
                     className={className}
                     selection

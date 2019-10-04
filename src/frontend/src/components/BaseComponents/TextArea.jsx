@@ -8,7 +8,7 @@ const BigText = ({ value, name, onChange, isDisabled, noLabel, className, rows, 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label>{t(text || name)}</label>
+                <label className={isDisabled ? "label-disabled" : null}>{t(text || name)}</label>
             ) : null}
             <TextArea
                 className={className}

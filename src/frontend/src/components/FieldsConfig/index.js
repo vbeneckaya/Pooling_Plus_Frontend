@@ -1,20 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {useSelector} from 'react-redux';
-import {Button, Form, Modal} from 'semantic-ui-react';
-import Text from "../BaseComponents/Text";
-import DragAndDropFields from "./DragAndDropFields";
-import {columnsGridSelector} from "../../ducks/gridList";
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Form, Modal } from 'semantic-ui-react';
+import Text from '../BaseComponents/Text';
+import DragAndDropFields from './DragAndDropFields';
+import { columnsGridSelector } from '../../ducks/gridList';
+import {
+    editRepresentationRequest,
+    representationNameSelector,
+    representationSelector,
+    saveRepresentationRequest,
+    setRepresentationRequest,
+} from '../../ducks/representations';
 
-const FieldsConfig = ({ children, title, gridName }) => {
-    let [modalOpen, setModalOpen ]= useState(false);
-    let [selectedFields, setSelectedFields] = useState([]);
+const FieldsConfig = ({ children, title, gridName, isNew }) => {
+    const currName = useSelector(state => representationNameSelector(state, gridName));
+    const currRepresentation = useSelector(state => representationSelector(state, gridName)) || [];
 
-    let [name, setName] = useState('');
+    let [modalOpen, setModalOpen] = useState(false);
+    let [selectedFields, setSelectedFields] = useState(isNew ? [] : currRepresentation);
+    let [name, setName] = useState(isNew ? '' : currName);
+    let [error, setError] = useState(false);
 
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
-    const fieldsList = useSelector(state => columnsGridSelector(state, gridName));
+    const fieldsList = useSelector(state => columnsGridSelector(state, gridName)).filter(column => {
+        return !selectedFields.map(item => item.name).includes(column.name);
+    });
+
+    console.log('gridName', gridName, currName);
+
+    useEffect(
+        () => {
+            setName(currName);
+        },
+        [currName],
+    );
+    useEffect(
+        () => {
+            setSelectedFields(currRepresentation);
+        },
+        [currRepresentation],
+    );
 
     const onOpen = () => {
         setModalOpen(true);
@@ -22,14 +50,53 @@ const FieldsConfig = ({ children, title, gridName }) => {
 
     const onClose = () => {
         setModalOpen(false);
+        // setName('');
+        // setSelectedFields([]);
     };
 
-    const onChange = (selected) => {
+    const onChange = selected => {
         setSelectedFields(selected);
     };
 
     const handleSave = () => {
+        if (!name) {
+            setError(true);
+        } else {
+            dispatch(
+                saveRepresentationRequest({
+                    gridName,
+                    name,
+                    value: selectedFields,
+                    callbackSuccess: () => {
+                        onClose();
+                    },
+                }),
+            );
+        }
+    };
 
+    const handleEdit = () => {
+        if (!name) {
+            setError(true);
+        } else {
+            dispatch(
+                editRepresentationRequest({
+                    gridName,
+                    name,
+                    oldName: currName,
+                    value: selectedFields,
+                    callbackSuccess: () => {
+                        dispatch(
+                            setRepresentationRequest({
+                                gridName,
+                                value: name,
+                            }),
+                        );
+                        onClose();
+                    },
+                }),
+            );
+        }
     };
 
     return (
@@ -47,8 +114,13 @@ const FieldsConfig = ({ children, title, gridName }) => {
             <Modal.Header>{title}</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
-                    <Form style={{marginBottom: "16px"}}>
-                        <Text name="name" value={name} onChange={(e, {value}) => setName(value)}/>
+                    <Form style={{ marginBottom: '16px' }}>
+                        <Text
+                            name="name"
+                            value={name}
+                            error={error}
+                            onChange={(e, { value }) => setName(value)}
+                        />
                     </Form>
                     <DragAndDropFields
                         type={gridName}
@@ -62,7 +134,7 @@ const FieldsConfig = ({ children, title, gridName }) => {
                 <Button color="grey" onClick={onClose}>
                     {t('CancelButton')}
                 </Button>
-                <Button color="blue" onClick={handleSave}>
+                <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
                     {t('SaveButton')}
                 </Button>
             </Modal.Actions>

@@ -15,7 +15,7 @@ import {
     TEXT_TYPE,
     BOOLEAN_TYPE, DATE_TYPE
 } from '../../../constants/columnTypes';
-import Bool from "../../BaseComponents/Bool";
+import Bool from "../../FilterComponents/Bool";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,

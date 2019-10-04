@@ -24,7 +24,7 @@ const Date = ({ value, name, onChange, isDisabled, noLabel, required, placeholde
     return (
         <Form.Field>
             {!noLabel ? (
-                <label>{t(name)}</label>
+                <label className={isDisabled ? "label-disabled" : null}>{t(name)}</label>
             ) : null}
             <DatePicker
                 disabled={isDisabled || false}

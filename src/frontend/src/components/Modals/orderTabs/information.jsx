@@ -6,10 +6,18 @@ import State from '../../BaseComponents/State';
 import Date from '../../BaseComponents/Date';
 import Select from '../../BaseComponents/Select';
 import TextArea from '../../BaseComponents/TextArea';
+import {useSelector} from "react-redux";
+import {valuesListSelector} from "../../../ducks/lookup";
 
 const Information = ({ form, onChange }) => {
-
     const { t } = useTranslation();
+    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
+
+    const handleChangeSoldTo = (e, {name, value}) => {
+        console.log('valuesList', valuesList);
+
+        onChange(e, {name, value});
+    };
 
     return (
         <Form>
@@ -38,6 +46,7 @@ const Information = ({ form, onChange }) => {
                                         <Grid.Column>
                                             <Text
                                                 name="clientName"
+                                                isDisabled
                                                 value={form['clientName']}
                                                 onChange={onChange}
                                             />
@@ -63,6 +72,7 @@ const Information = ({ form, onChange }) => {
                                             <Select
                                                 name="orderType"
                                                 value={form['orderType']}
+                                                disabled
                                                 source="orderType"
                                                 onChange={onChange}
                                             />
@@ -72,7 +82,7 @@ const Information = ({ form, onChange }) => {
                                                 name="soldTo"
                                                 value={form['soldTo']}
                                                 source="soldTo"
-                                                onChange={onChange}
+                                                onChange={handleChangeSoldTo}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -112,17 +122,17 @@ const Information = ({ form, onChange }) => {
                                         <Grid.Column>
                                             <TextArea
                                                 name="shippingAddress"
-                                                text="addressFrom"
                                                 value={form['shippingAddress']}
                                                 rows={2}
+                                                isDisabled
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
                                             <TextArea
                                                 name="deliveryAddress"
-                                                text="addressTo"
                                                 value={form['deliveryAddress']}
+                                                isDisabled
                                                 rows={2}
                                                 onChange={onChange}
                                             />

@@ -46,7 +46,7 @@ const Select = ({
 
     return (
         <Form.Field>
-            {name ? <label>{t(text || name)}</label> : null}
+            {name ? <label className={disabled ? "label-disabled" : null}>{t(text || name)}</label> : null}
             <Dropdown
                 placeholder={placeholder}
                 fluid

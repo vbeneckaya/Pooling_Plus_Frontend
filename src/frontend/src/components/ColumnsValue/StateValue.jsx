@@ -11,7 +11,7 @@ const StateValue = ({ value, source }) => {
 
     let stateColors = useSelector(state => valuesListSelector(state, source)) || [];
 
-    useEffect(() => {
+    if (!stateColors.length) {
         dispatch(
             getLookupRequest({
                 name: source,
@@ -19,7 +19,7 @@ const StateValue = ({ value, source }) => {
                 isSearch: true,
             }),
         );
-    }, []);
+    }
 
     const state = stateColors.find(x => x.name === value);
     const color = state ? state.color : 'grey';

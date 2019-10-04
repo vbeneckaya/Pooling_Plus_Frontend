@@ -19,6 +19,7 @@ import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
 import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
 import { STATE_TYPE } from '../../constants/columnTypes';
+import {representationFromGridSelector} from "../../ducks/representations";
 
 const CreateButton = ({ t, ...res }) => (
     <Card {...res}>
@@ -139,7 +140,7 @@ function mapStateToProps(state, ownProps) {
     const { name = '' } = params;
 
     return {
-        columns: columnsGridSelector(state, name),
+        columns: representationFromGridSelector(state, name),
         list: listSelector(state),
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),

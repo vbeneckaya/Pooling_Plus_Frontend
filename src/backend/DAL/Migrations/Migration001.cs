@@ -411,6 +411,7 @@ namespace DAL.Migrations
             AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
             AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
             AddTranslation("Create representation", "Create representation", "Создание представления");
+            AddTranslation("Edit representation", "Edit representation {{name}}", "Редактирование представления {{name}}");
             AddTranslation("add value", "Add value", "Добавить значение");
             /*start of add translates for action*/
 
