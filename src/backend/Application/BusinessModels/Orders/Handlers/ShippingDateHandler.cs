@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
-    public class UnloadingDepartureTimeHandler : IFieldHandler<Order, DateTime?>
+    public class ShippingDateHandler : IFieldHandler<Order, DateTime?>
     {
         public void AfterChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
@@ -14,29 +14,22 @@ namespace Application.BusinessModels.Orders.Handlers
             {
                 var ordersToUpdate = _db.Orders.Where(o => o.ShippingId == order.ShippingId
                                                         && o.Id != order.Id
-                                                        && o.DeliveryWarehouseId == order.DeliveryWarehouseId)
+                                                        && o.ShippingWarehouseId == order.ShippingWarehouseId)
                                                .ToList();
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    updOrder.UnloadingDepartureTime = newValue;
+                    updOrder.ShippingDate = newValue;
                 }
             }
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
-            if (order.UnloadingArrivalTime.HasValue && newValue.HasValue && order.UnloadingArrivalTime > newValue)
-            {
-                return $"Время убытия со грузополучателя не может быть раньше Времени прибытия к грузополучателю";
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
-        public UnloadingDepartureTimeHandler(AppDbContext db)
+        public ShippingDateHandler(AppDbContext db)
         {
             _db = db;
         }

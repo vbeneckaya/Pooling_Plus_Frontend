@@ -65,9 +65,9 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status));
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
-                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler());
+                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler(db));
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
-                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus));
+                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(db));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler());
             setter.UpdateField(e => e.OrderDate, ParseDateTime(dto.OrderDate));
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
@@ -76,9 +76,9 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(db));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate));
+            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(db));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
-            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate));
+            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(db));
             setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
@@ -100,8 +100,8 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(db));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(db));
-            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler());
-            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler());
+            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler(db));
+            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler(db));
             setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler(db));
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
@@ -199,33 +199,36 @@ namespace Application.Services.Orders
 
         private void SaveItems(Order entity, OrderFormDto dto)
         {
-            HashSet<Guid> updatedItems = new HashSet<Guid>();
-            List<OrderItem> entityItems = db.OrderItems.Where(i => i.OrderId == entity.Id).ToList();
-            Dictionary<string, OrderItem> entityItemsDict = entityItems.ToDictionary(i => i.Id.ToString());
-            foreach (OrderItemDto itemDto in dto.Items)
+            if (dto.Items != null)
             {
-                OrderItem item;
-                if (string.IsNullOrEmpty(itemDto.Id) || !entityItemsDict.TryGetValue(itemDto.Id, out item))
+                HashSet<Guid> updatedItems = new HashSet<Guid>();
+                List<OrderItem> entityItems = db.OrderItems.Where(i => i.OrderId == entity.Id).ToList();
+                Dictionary<string, OrderItem> entityItemsDict = entityItems.ToDictionary(i => i.Id.ToString());
+                foreach (OrderItemDto itemDto in dto.Items)
                 {
-                    item = new OrderItem
+                    OrderItem item;
+                    if (string.IsNullOrEmpty(itemDto.Id) || !entityItemsDict.TryGetValue(itemDto.Id, out item))
                     {
-                        OrderId = entity.Id
-                    };
-                    MapFromItemDtoToEntity(item, itemDto);
-                    db.OrderItems.Add(item);
+                        item = new OrderItem
+                        {
+                            OrderId = entity.Id
+                        };
+                        MapFromItemDtoToEntity(item, itemDto);
+                        db.OrderItems.Add(item);
+                    }
+                    else
+                    {
+                        updatedItems.Add(item.Id);
+                        MapFromItemDtoToEntity(item, itemDto);
+                        db.OrderItems.Update(item);
+                    }
                 }
-                else
-                {
-                    updatedItems.Add(item.Id);
-                    MapFromItemDtoToEntity(item, itemDto);
-                    db.OrderItems.Update(item);
-                }
+
+                var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
+                db.OrderItems.RemoveRange(itemsToRemove);
+
+                entity.ArticlesCount = dto.Items.Count;
             }
-
-            var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
-            db.OrderItems.RemoveRange(itemsToRemove);
-
-            entity.ArticlesCount = dto.Items.Count;
         }
 
         private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)

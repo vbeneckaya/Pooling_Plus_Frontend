@@ -13,19 +13,20 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             if (order.ShippingId.HasValue)
             {
-                var departureTimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
-                                               .Select(o => o.LoadingDepartureTime)
+                var ordersToUpdate = _db.Orders.Where(o => o.ShippingId == order.ShippingId
+                                                        && o.Id != order.Id
+                                                        && o.ShippingWarehouseId == order.ShippingWarehouseId)
                                                .ToList();
-                departureTimes.Add(newValue);
 
-                var distinctTimes = departureTimes.Distinct().Count();
-                if (distinctTimes == 1)
+                foreach (Order updOrder in ordersToUpdate)
                 {
-                    var shipping = _db.Shippings.GetById(order.ShippingId.Value);
-                    if (shipping != null)
-                    {
-                        shipping.LoadingDepartureTime = newValue;
-                    }
+                    updOrder.LoadingDepartureTime = newValue;
+                }
+
+                var shipping = _db.Shippings.GetById(order.ShippingId.Value);
+                if (shipping != null)
+                {
+                    shipping.LoadingDepartureTime = newValue;
                 }
             }
         }

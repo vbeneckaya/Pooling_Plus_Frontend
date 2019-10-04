@@ -116,7 +116,12 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
-            return MapFromDtoToEntity(entity, dto);
+            var result = MapFromDtoToEntity(entity, dto);
+            if (!result.IsError)
+            {
+                result = SaveRoutePoints(entity, dto);
+            }
+            return result;
         }
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)
@@ -132,16 +137,64 @@ namespace Application.Services.Shippings
             return formDto;
         }
 
+        private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
+        {
+            if (dto.RoutePoints != null)
+            {
+                var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+                var ordersDict = orders.ToDictionary(o => o.Id.ToString());
+                
+                foreach (RoutePointDto pointDto in dto.RoutePoints)
+                {
+                    if (pointDto.OrderIds == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (string orderId in pointDto.OrderIds)
+                    {
+                        Order order;
+                        if (ordersDict.TryGetValue(orderId, out order))
+                        {
+                            var setter = new FieldSetter<Order>(order);
+
+                            if (pointDto.IsLoading)
+                            {
+                                setter.UpdateField(o => o.ShippingDate, ParseDateTime(pointDto.PlannedDate));
+                                setter.UpdateField(o => o.LoadingArrivalTime, ParseDateTime(pointDto.ArrivalTime));
+                                setter.UpdateField(o => o.LoadingDepartureTime, ParseDateTime(pointDto.DepartureTime));
+                                if (!string.IsNullOrEmpty(pointDto.VehicleStatus))
+                                    setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(pointDto.VehicleStatus));
+                            }
+                            else
+                            {
+                                setter.UpdateField(o => o.DeliveryDate, ParseDateTime(pointDto.PlannedDate));
+                                setter.UpdateField(o => o.UnloadingArrivalTime, ParseDateTime(pointDto.ArrivalTime));
+                                setter.UpdateField(o => o.UnloadingDepartureTime, ParseDateTime(pointDto.DepartureTime));
+                                if (!string.IsNullOrEmpty(pointDto.VehicleStatus))
+                                    setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(pointDto.VehicleStatus));
+                            }
+
+                            setter.ApplyAfterActions();
+                        }
+                    }
+                }
+            }
+
+            return new ValidateResult(null, entity.Id.ToString());
+        }
+
         private List<RoutePointDto> GetRoutePoints(Shipping entity)
         {
-            Dictionary<Guid, RoutePointDto> points = new Dictionary<Guid, RoutePointDto>();
+            var points = new Dictionary<string, RoutePointDto>();
             var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
             foreach (Order order in orders)
             {
                 if (order.ShippingWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    if (!points.TryGetValue(order.ShippingWarehouseId.Value, out point))
+                    string key = $"L-{order.ShippingWarehouseId.ToString()}";
+                    if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
                         {
@@ -151,9 +204,10 @@ namespace Application.Services.Shippings
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.ShippingStatus.ToString().ToLowerfirstLetter(),
+                            IsLoading = true,
                             OrderIds = new List<string>()
                         };
-                        points[order.ShippingWarehouseId.Value] = point;
+                        points[key] = point;
                     }
                     point.OrderIds.Add(order.Id.ToString());
                 }
@@ -161,7 +215,8 @@ namespace Application.Services.Shippings
                 if (order.DeliveryWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    if (!points.TryGetValue(order.DeliveryWarehouseId.Value, out point))
+                    string key = $"U-{order.DeliveryWarehouseId.ToString()}";
+                    if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
                         {
@@ -171,15 +226,20 @@ namespace Application.Services.Shippings
                             ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.DeliveryStatus.ToString().ToLowerfirstLetter(),
+                            IsLoading = false,
                             OrderIds = new List<string>()
                         };
-                        points[order.DeliveryWarehouseId.Value] = point;
+                        points[key] = point;
                     }
                     point.OrderIds.Add(order.Id.ToString());
                 }
             }
 
-            var pointsList = points.Values.OrderBy(p => p.PlannedDate).ThenBy(p => p.VehicleStatus).ThenBy(p => p.WarehouseName).ToList();
+            var pointsList = points.Values.OrderBy(p => p.PlannedDate)
+                                          .ThenBy(p => p.IsLoading ? 0 : 1)
+                                          .ThenBy(p => p.VehicleStatus)
+                                          .ThenBy(p => p.WarehouseName)
+                                          .ToList();
             return pointsList;
         }
 

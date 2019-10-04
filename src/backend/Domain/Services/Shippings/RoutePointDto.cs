@@ -11,6 +11,7 @@ namespace Domain.Services.Shippings
         public string DepartureTime { get; set; }
         public string VehicleStatus { get; set; }
         public string Address { get; set; }
+        public bool IsLoading { get; set; }
         public List<string> OrderIds { get; set; }
     }
 }
