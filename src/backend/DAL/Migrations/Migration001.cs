@@ -59,8 +59,8 @@ namespace DAL.Migrations
                 new Column("Properties", DbType.String.WithSize(1000)));
             Database.AddIndex("TaskProperties_pk", true, "TaskProperties", "Id");
 
-            AddTaskProperties("ImportProducts", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
-            AddTaskProperties("ImportOrder", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=24");
+            AddTaskProperties("ImportProducts", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=168");
+            AddTaskProperties("ImportOrder", "ConnectionString=sftp://bsdf-usr:e7%24xFSMgYw%2Bc4N@213.189.208.101/;Folder=/Test/OUT;ViewHours=168");
 
             /*start of add tables*/
             Database.AddTable("Orders",

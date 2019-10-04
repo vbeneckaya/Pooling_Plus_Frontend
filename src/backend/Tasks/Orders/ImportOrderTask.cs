@@ -131,45 +131,57 @@ namespace Tasks.Orders
                 doc.Load(reader);
             }
 
-            OrderFormDto dto = new OrderFormDto();
+            List<OrderFormDto> orders = new List<OrderFormDto>();
+            var docRoots = doc.SelectNodes("//IDOC");
 
-            decimal weightUomCoeff = doc.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
-
-            dto.OrderNumber = doc.SelectSingleNode("//E1EDK02[QUALF='001']/BELNR")?.InnerText;
-            dto.OrderDate = doc.ParseDateTime("//E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy");
-            dto.Payer = doc.SelectSingleNode("//E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
-            dto.SoldTo = doc.SelectSingleNode("//E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
-            dto.WeightKg = doc.ParseDecimal("//E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
-            dto.PalletsCount = doc.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYPAL_H");
-            dto.BoxesCount = doc.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYCAR_H");
-            dto.DeliveryDate = doc.ParseDateTime("//E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy");
-            dto.OrderAmountExcludingVAT = doc.ParseDecimal("//E1EDS01[SUMID='002']/SUMME");
-
-            IEnumerable<string> missedRequiredFields = ValidateRequiredFields(dto);
-            if (missedRequiredFields.Any())
+            int totalCount = docRoots.Count;
+            int processedCount = 0;
+            foreach (XmlNode docRoot in docRoots)
             {
-                string fields = string.Join(", ", missedRequiredFields);
-                Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ не создан.", fileName, fields);
-                return false;
+                OrderFormDto dto = new OrderFormDto();
+
+                decimal weightUomCoeff = docRoot.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
+
+                dto.OrderNumber = docRoot.SelectSingleNode("//E1EDK02[QUALF='001']/BELNR")?.InnerText;
+                dto.OrderDate = docRoot.ParseDateTime("//E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy");
+                dto.Payer = docRoot.SelectSingleNode("//E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
+                dto.SoldTo = docRoot.SelectSingleNode("//E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
+                dto.WeightKg = docRoot.ParseDecimal("//E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
+                dto.PalletsCount = docRoot.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYPAL_H");
+                dto.BoxesCount = docRoot.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYCAR_H");
+                dto.DeliveryDate = docRoot.ParseDateTime("//E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy");
+                dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("//E1EDS01[SUMID='002']/SUMME");
+
+                IEnumerable<string> missedRequiredFields = ValidateRequiredFields(dto);
+                if (missedRequiredFields.Any())
+                {
+                    string fields = string.Join(", ", missedRequiredFields);
+                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ не создан.", fileName, fields);
+                    return false;
+                }
+
+                int entryInd = 0;
+                var itemRoots = docRoot.SelectNodes("//E1EDP01");
+                dto.Items = new List<OrderItemDto>();
+                foreach (XmlNode itemRoot in itemRoots)
+                {
+                    ++entryInd;
+                    OrderItemDto itemDto = new OrderItemDto();
+
+                    itemDto.Quantity = itemRoot.ParseInt("MENGE");
+                    itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
+
+                    dto.Items.Add(itemDto);
+                }
+
+                ++processedCount;
+                Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.", 
+                                dto.OrderNumber, processedCount, totalCount, fileName);
+
+                orders.Add(dto);
             }
 
-            int entryInd = 0;
-            var itemRoots = doc.SelectNodes("//E1EDP01");
-            dto.Items = new List<OrderItemDto>();
-            foreach (XmlNode itemRoot in itemRoots)
-            {
-                ++entryInd;
-                OrderItemDto itemDto = new OrderItemDto();
-
-                itemDto.Quantity = itemRoot.ParseInt("MENGE");
-                itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
-
-                dto.Items.Add(itemDto);
-            }
-
-            Log.Information("Создан новый заказ {OrderNumber} на основании файла {fileName}.", dto.OrderNumber, fileName);
-
-            ordersService.SaveOrCreate(dto);
+            ordersService.Import(orders);
 
             return true;
         }

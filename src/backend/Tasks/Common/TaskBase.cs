@@ -28,10 +28,6 @@ namespace Tasks
 
         public bool IsCompleted { get; private set; }
 
-        public virtual void Dispose()
-        {
-        }
-
         [Test]
         [TestCase((string)null)]
         public void Run(string consoleParameters = null)
@@ -136,6 +132,15 @@ namespace Tasks
             return properties;
         }
 
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                Log.CloseAndFlush();
+                _isDisposed = true;
+            }
+        }
+
         protected TaskBase()
         {
             TaskName = Regex.Replace(GetType().Name, "Task$", string.Empty);
@@ -152,5 +157,7 @@ namespace Tasks
             .Build();
 
         public static IServiceProvider ServiceProvider { get; set; }
+
+        private bool _isDisposed = false;
     }
 }

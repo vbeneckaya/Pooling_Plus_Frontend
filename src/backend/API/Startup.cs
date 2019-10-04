@@ -78,7 +78,7 @@ namespace API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
             if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
@@ -97,6 +97,13 @@ namespace API
                 string version = GetMajorVersion();
                 c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Artlogic TMS API v{version}");
             });
+
+            lifetime.ApplicationStopped.Register(OnAppStopped);
+        }
+
+        public void OnAppStopped()
+        {
+            Log.CloseAndFlush();
         }
 
         private string GetMajorVersion()
