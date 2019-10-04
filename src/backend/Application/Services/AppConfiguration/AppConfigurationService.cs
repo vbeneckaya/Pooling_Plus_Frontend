@@ -23,6 +23,7 @@ using Domain.Services.DocumentTypes;
 using Application.Services.PickingTypes;
 using Application.Services.VehicleTypes;
 using Domain.Services.VehicleTypes;
+using Domain.Services.PickingTypes;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -58,9 +59,9 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderType), FiledType.Select, nameof(OrderType)),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ClientName), FiledType.Select, nameof(WarehousesService)),
-                            new UserConfigurationGridColumn(nameof(OrderDto.SoldTo), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingType), FiledType.Select, nameof(PickingTypesService)),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ClientName), FiledType.Select),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMax), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingDate), FiledType.DateTime),
@@ -70,8 +71,8 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryRegion), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryCity), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryAddress), FiledType.Text),
-                            //new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingStatus), FiledType.State, nameof(VehicleState)),
-                            //new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.DeliveryStatus), FiledType.State, nameof(VehicleState)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingStatus), FiledType.State, nameof(VehicleState)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.DeliveryStatus), FiledType.State, nameof(VehicleState)),
                             new UserConfigurationGridColumn(nameof(OrderDto.ArticlesCount), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.BoxesCount), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ConfirmedBoxesCount), FiledType.Number),
@@ -221,6 +222,16 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
+                        Name = GetName<PickingTypesService>(),
+                        CanCreateByForm = true,
+                        CanImportFromExcel = true,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
+                        }
+                    },
+                    new UserConfigurationDictionaryItem
+                    {
                         Name = GetName<WarehousesService>(), 
                         CanCreateByForm = true, 
                         CanImportFromExcel = true,
@@ -232,7 +243,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(WarehouseDto.Region), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.City), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.Address), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(WarehouseDto.PickingType), FiledType.Text),
+                            new UserConfigurationGridColumnWhitchSource(nameof(WarehouseDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.LeadtimeDays), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.CustomerWarehouse), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.UsePickingType), FiledType.Text),

@@ -2,11 +2,8 @@ using System;
 using Application.Shared;
 using DAL;
 using Domain.Persistables;
-using Domain.Extensions;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
-using Domain.Shared;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.Warehouses
@@ -36,7 +33,7 @@ namespace Application.Services.Warehouses
             entity.Region = dto.Region;
             entity.City = dto.City;
             entity.Address = dto.Address;
-            entity.PickingType = dto.PickingType;
+            entity.PickingTypeId = string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId);
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
             entity.UsePickingType = dto.UsePickingType;
@@ -53,24 +50,12 @@ namespace Application.Services.Warehouses
                 Region = entity.Region,
                 City = entity.City,
                 Address = entity.Address,
-                PickingType = entity.PickingType,
+                PickingTypeId = entity.PickingTypeId?.ToString(),
                 LeadtimeDays = entity.LeadtimeDays,
                 CustomerWarehouse = entity.CustomerWarehouse,
                 UsePickingType = entity.UsePickingType,
                 /*end of map entity to dto fields*/
             };
-        }
-
-        public override IEnumerable<LookUpDto> ForSelect()
-        {
-            foreach (Warehouse wh in db.Warehouses.OrderBy(w => w.WarehouseName))
-            {
-                yield return new LookUpDto
-                {
-                    Name = wh.WarehouseName,
-                    Value = wh.WarehouseName//wh.Id.ToString()
-                };
-            }
         }
     }
 }

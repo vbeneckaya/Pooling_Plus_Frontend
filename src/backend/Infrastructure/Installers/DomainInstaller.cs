@@ -61,6 +61,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
+            services.AddScoped<ISoldToService, SoldToService>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
             services.AddScoped<IFilesService, FilesService>();
