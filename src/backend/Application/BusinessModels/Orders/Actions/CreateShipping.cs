@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -25,28 +23,8 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(User user, Order order)
         {
-            var shippingsCount = db.Shippings.Count();
-            var shipping = new Shipping
-            {
-                Status = ShippingState.ShippingCreated,
-                Id = Guid.NewGuid(),
-                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
-                DeliveryType = DeliveryType.Delivery
-            };
-            db.Shippings.Add(shipping);
-
-            order.Status = OrderState.InShipping;
-            order.ShippingId = shipping.Id;
-            order.ShippingStatus = VehicleState.VehicleWaiting;
-            order.DeliveryStatus = VehicleState.VehicleEmpty;
-
-            db.SaveChanges();
-            
-            return new AppActionResult
-            {
-                IsError = false,
-                Message = $"Созданна перевозка {shipping.ShippingNumber}"
-            };
+            var unionOrders = new UnionOrders(db);
+            return unionOrders.Run(user, new[] { order });
         }
 
         public bool IsAvailable(Role role, Order order)
