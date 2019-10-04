@@ -51,7 +51,7 @@ const FileUploader = ({ document, onChange }) => {
                 }),
             );
         } else if (file.size > 10000000) {
-            toast.error('error_file_size');
+            toast.error(t('error_file_size'));
         }
     };
 

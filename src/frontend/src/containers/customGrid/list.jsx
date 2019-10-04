@@ -129,6 +129,7 @@ class List extends Component {
                     progress={progress}
                     storageSortItem={`${name}Sort`}
                     storageFilterItem={`${name}Filters`}
+                    storageRepresentationItems={`${name}Representation`}
                     getActions={getActions}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}

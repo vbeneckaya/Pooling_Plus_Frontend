@@ -263,6 +263,7 @@ class SuperGrid extends Component {
             loadingReport,
             colorInfo,
             autoUpdateStop,
+            storageRepresentationItems,
             name,
         } = this.props;
 
@@ -287,6 +288,7 @@ class SuperGrid extends Component {
                     searchValue={fullText}
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
+                    storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
                 />
