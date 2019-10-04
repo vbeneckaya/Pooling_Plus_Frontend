@@ -1,15 +1,18 @@
-import React, { useRef } from 'react';
-import { Button, Form, Grid, Popup } from 'semantic-ui-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Button, Dropdown, Form, Grid, Popup } from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from '../../BaseComponents/Select';
 import {
-    canImportFromExcelSelector, exportProgressSelector,
+    canImportFromExcelSelector,
+    exportProgressSelector,
     exportToExcelRequest,
     importFromExcelRequest,
-    importProgressSelector
-} from "../../../ducks/gridList";
+    importProgressSelector,
+} from '../../../ducks/gridList';
+
+import FieldsConfig from '../../FieldsConfig'
 
 const Header = ({
     createButton,
@@ -20,7 +23,16 @@ const Header = ({
     disabledClearFilter,
     loadList,
     name,
+    storageRepresentationItems,
 }) => {
+    let [representation, setRepresentation] = useState(
+        localStorage.getItem(storageRepresentationItems),
+    );
+
+    /* useEffect(() => {
+         localStorage.setItem(storageRepresentationItems, representation)
+     }, [representation]);*/
+
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
@@ -33,8 +45,7 @@ const Header = ({
     const exportLoader = useSelector(state => exportProgressSelector(state));
 
     const exportExcel = () => {
-
-        dispatch(exportToExcelRequest({name}))
+        dispatch(exportToExcelRequest({ name }));
     };
 
     const importExcel = () => {
@@ -49,14 +60,18 @@ const Header = ({
         data.append('FileContent', new Blob([file], { type: file.type }));
         data.append('FileContentType', file.type);
 
-        dispatch(importFromExcelRequest({
-            name,
-            form: data,
-            callbackSuccess: () => loadList()
-        }))
+        dispatch(
+            importFromExcelRequest({
+                name,
+                form: data,
+                callbackSuccess: () => loadList(),
+            }),
+        );
     };
 
     const settings = () => {};
+
+    const addRepresentation = () => {};
 
     return (
         <Grid className="grid-header-panel">
@@ -75,7 +90,22 @@ const Header = ({
                     />
                     <div className="representation">
                         <label>{t('representation')}</label>
-                        <Select />
+                        <Form.Field>
+                            <Dropdown selection>
+                                <Dropdown.Menu>
+                                    {
+                                        false && <Dropdown.Divider />
+                                    }
+                                    <FieldsConfig title={t('Create representation')} gridName={name}>
+                                        <Dropdown.Item
+                                            icon="add"
+                                            text={t('create_btn')}
+                                            onClick={addRepresentation}
+                                        />
+                                    </FieldsConfig>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Form.Field>
                         <Button icon="cogs" onClick={settings} />
                     </div>
                     <Popup
@@ -93,14 +123,26 @@ const Header = ({
                         <Popup
                             content={t('importFromExcel')}
                             position="bottom right"
-                            trigger={<Button icon="upload" loading={importLoader} onClick={importExcel} />}
+                            trigger={
+                                <Button
+                                    icon="upload"
+                                    loading={importLoader}
+                                    onClick={importExcel}
+                                />
+                            }
                         />
                     )}
                     {true && ( // todo
                         <Popup
                             content={t('exportToExcel')}
                             position="bottom right"
-                            trigger={<Button icon="download" loading={exportLoader} onClick={exportExcel} />}
+                            trigger={
+                                <Button
+                                    icon="download"
+                                    loading={exportLoader}
+                                    onClick={exportExcel}
+                                />
+                            }
                         />
                     )}
                 </Grid.Column>
