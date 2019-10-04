@@ -370,6 +370,7 @@ namespace DAL.Migrations
             AddTranslation("representation", "Representation", "Представления");
             AddTranslation("Available", "Available", "Доступные");
             AddTranslation("Selected", "Selected", "Выбранные");
+            AddTranslation("error_file_size", "error_file_size", "Размер файла не должен превышать 10Mb");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -389,6 +390,7 @@ namespace DAL.Migrations
             AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
             AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
             AddTranslation("Create representation", "Create representation", "Создание представления");
+            AddTranslation("add value", "Add value", "Добавить значение");
             /*start of add translates for action*/
 
             /*start of add translates*/

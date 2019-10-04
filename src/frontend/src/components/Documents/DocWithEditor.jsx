@@ -9,10 +9,12 @@ import './style.scss';
 import {
     addDocumentRequest,
     deleteDocumentRequest,
-    documentTypesSelector, downloadDocumentRequest,
+    documentTypesSelector,
+    downloadDocumentRequest,
     editDocumentRequest,
     getDocumentTypesRequest,
 } from '../../ducks/documents';
+import { editCardRequest } from '../../ducks/gridCard';
 
 const DocWithEditor = ({
     okButtonText,
@@ -83,7 +85,7 @@ const DocWithEditor = ({
     };
 
     const handleDownload = () => {
-        dispatch(downloadDocumentRequest({id: document.fileId}))
+        dispatch(downloadDocumentRequest({ id: document.fileId }));
     };
 
     const handleDelete = document => {
@@ -141,6 +143,18 @@ const DocWithEditor = ({
             ...document,
             name: value + extension,
         });
+    };
+
+    const handleAddition = (e, { value }) => {
+        dispatch(
+            editCardRequest({
+                name: 'documentTypes',
+                params: {
+                    name: value,
+                },
+                callbackSuccess: () => dispatch(getDocumentTypesRequest()),
+            }),
+        );
     };
 
     return (
@@ -213,8 +227,12 @@ const DocWithEditor = ({
                                 fluid
                                 selection
                                 name="documentType"
+                                allowAdditions
+                                search
                                 value={document ? document.typeId : null}
                                 options={documentTypes}
+                                additionLabel={<i style={{ color: 'blue' }}>{`${t('add value')}: `} </i>}
+                                onAddItem={handleAddition}
                                 onChange={handleTypeChange}
                             />
                         </Form.Field>
