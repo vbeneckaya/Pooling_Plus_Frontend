@@ -30,6 +30,7 @@ namespace DAL
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<TransportCompany> TransportCompanies { get; set; }
+        public DbSet<VehicleType> VehicleTypes { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<FileStorage> FileStorage { get; set; }
         public DbSet<Document> Documents { get; set; }

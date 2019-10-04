@@ -10,8 +10,8 @@ namespace Domain.Services.Shippings
         public int? TemperatureMin { get; set; }
         public int? TemperatureMax { get; set; }
         public string TarifficationType { get; set; }
-        public string Carrier { get; set; }
-        public string VehicleType { get; set; }
+        public string CarrierId { get; set; }
+        public string VehicleTypeId { get; set; }
         public int? PalletsCount { get; set; }
         public int? ActualPalletsCount { get; set; }
         public int? ConfirmedPalletsCount { get; set; }
