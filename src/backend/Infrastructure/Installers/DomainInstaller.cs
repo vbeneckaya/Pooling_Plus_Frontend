@@ -38,6 +38,8 @@ using Domain.Services.DocumentTypes;
 using Application.Services.DocumentTypes;
 using Application.Services.PickingTypes;
 using Domain.Services.PickingTypes;
+using Application.Services.VehicleTypes;
+using Domain.Services.VehicleTypes;
 
 namespace Infrastructure.Installers
 {
@@ -64,6 +66,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IFilesService, FilesService>();
             services.AddScoped<IDocumentTypesService, DocumentTypesService>();
             services.AddScoped<IPickingTypesService, PickingTypesService>();
+            services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             /*end of add service implementation*/
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");

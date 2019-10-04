@@ -133,8 +133,8 @@ namespace DAL.Migrations
                 new Column("TemperatureMin", DbType.Int32, ColumnProperty.Null),
                 new Column("TemperatureMax", DbType.Int32, ColumnProperty.Null),
                 new Column("TarifficationType", DbType.Int32, ColumnProperty.Null),
-                new Column("Carrier", DbType.String),
-                new Column("VehicleType", DbType.String),
+                new Column("CarrierId", DbType.Guid, ColumnProperty.Null),
+                new Column("VehicleTypeId", DbType.Guid, ColumnProperty.Null),
                 new Column("PalletsCount", DbType.Int32, ColumnProperty.Null),
                 new Column("ManualPalletsCount", DbType.Boolean, defaultValue: false),
                 new Column("ActualPalletsCount", DbType.Int32, ColumnProperty.Null),
@@ -294,6 +294,11 @@ namespace DAL.Migrations
                 );
             Database.AddIndex("transportCompanies_pk", true, "TransportCompanies", "Id");
 
+            Database.AddTable("VehicleTypes",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("Name", DbType.String, ColumnProperty.NotNull));
+            Database.AddIndex("vehicleTypes_pk", true, "VehicleTypes", "Id");
+
             Database.AddTable("FileStorage",
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String, ColumnProperty.NotNull),
@@ -368,6 +373,8 @@ namespace DAL.Migrations
             AddTranslation("from", "From", "От");
             AddTranslation("to", "To", "До");
             AddTranslation("representation", "Representation", "Представления");
+            AddTranslation("documentTypes", "Document types", "Типы документов");
+            AddTranslation("vehicleTypes", "Vehicle types", "Типы ТС");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -487,8 +494,8 @@ namespace DAL.Migrations
             AddTranslation("temperatureMin", "Thermal Mode min °C", "Терморежим мин. °C");
             AddTranslation("temperatureMax", "Thermal Mode max °C", "Терморежим макс. °C");
             AddTranslation("tarifficationType", "Tariffication type", "Способ тарификации");
-            AddTranslation("carrier", "Carrier", "Транспортная компания");
-            AddTranslation("vehicleType", "Vehicle type", "Тип ТС");
+            AddTranslation("carrierId", "Carrier", "Транспортная компания");
+            AddTranslation("vehicleTypeId", "Vehicle type", "Тип ТС");
             AddTranslation("palletsCount", "Planned no. of pallets", "Предварительное количество паллет");
             AddTranslation("actualPalletsCount", "Actual no. of pallets", "Фактическое количество паллет");
             AddTranslation("confirmedPalletsCount", "Confirmed no. of pallets", "Подтвержденное количество паллет");

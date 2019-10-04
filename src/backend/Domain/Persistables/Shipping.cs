@@ -36,11 +36,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Транспортная компания
         /// </summary>
-        public string Carrier { get; set; }
+        public Guid? CarrierId { get; set; }
         /// <summary>
         /// Тип ТС
         /// </summary>
-        public string VehicleType { get; set; }
+        public Guid? VehicleTypeId { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>

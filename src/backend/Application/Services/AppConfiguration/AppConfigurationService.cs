@@ -21,6 +21,8 @@ using Domain.Services.TransportCompanies;
 using Application.Services.DocumentTypes;
 using Domain.Services.DocumentTypes;
 using Application.Services.PickingTypes;
+using Application.Services.VehicleTypes;
+using Domain.Services.VehicleTypes;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -114,8 +116,8 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(ShippingDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TemperatureMax), FiledType.Number),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.TarifficationType), FiledType.Select, nameof(TarifficationType)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Carrier), FiledType.Select, nameof(TransportCompaniesService)),
-                            new UserConfigurationGridColumn(nameof(ShippingDto.VehicleType), FiledType.Text),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.VehicleTypeId), FiledType.Select, nameof(VehicleTypesService)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.PalletsCount), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ActualPalletsCount), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ConfirmedPalletsCount), FiledType.Number),
@@ -289,8 +291,8 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<TransportCompaniesService>(), 
-                        CanCreateByForm = true, 
+                        Name = GetName<TransportCompaniesService>(),
+                        CanCreateByForm = true,
                         CanImportFromExcel = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -299,6 +301,16 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(TransportCompanyDto.ContractNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(TransportCompanyDto.DateOfPowerOfAttorney), FiledType.Text),
                             /*end of add field for TransportCompanies*/
+                        }
+                    },
+                    new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<VehicleTypesService>(),
+                        CanCreateByForm = true,
+                        CanImportFromExcel = true,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(VehicleTypeDto.Name), FiledType.Text)
                         }
                     },
                     new UserConfigurationDictionaryItem

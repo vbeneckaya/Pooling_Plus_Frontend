@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +18,11 @@ namespace API.Controllers
             var result = new List<LookUpDto>();
             foreach (var value in values)
             {
+                string name = value.ToString().ToLowerfirstLetter();
                 result.Add(new LookUpDto
                 {
-                    Name = value.ToString(), 
-                    Value = value.ToString()
+                    Name = name, 
+                    Value = name
                 });
             }
 
