@@ -96,7 +96,7 @@ namespace DAL.Migrations
                 new Column("DeliveryStatus", DbType.Int32, ColumnProperty.Null),
                 new Column("ClientAvisationTime", DbType.Time, ColumnProperty.Null),
                 new Column("OrderComments", DbType.String),
-                new Column("PickingType", DbType.String),
+                new Column("PickingTypeId", DbType.Guid, ColumnProperty.Null),
                 new Column("PlannedArrivalTimeSlotBDFWarehouse", DbType.String),
                 new Column("LoadingArrivalTime", DbType.DateTime, ColumnProperty.Null),
                 new Column("LoadingDepartureTime", DbType.DateTime, ColumnProperty.Null),
@@ -231,7 +231,7 @@ namespace DAL.Migrations
                 new Column("Region", DbType.String),
                 new Column("City", DbType.String),
                 new Column("Address", DbType.String),
-                new Column("PickingType", DbType.String),
+                new Column("PickingTypeId", DbType.Guid, ColumnProperty.Null),
                 new Column("LeadtimeDays", DbType.String),
                 new Column("CustomerWarehouse", DbType.String),
                 new Column("UsePickingType", DbType.String),
@@ -298,6 +298,11 @@ namespace DAL.Migrations
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String, ColumnProperty.NotNull));
             Database.AddIndex("vehicleTypes_pk", true, "VehicleTypes", "Id");
+
+            Database.AddTable("PickingTypes",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("Name", DbType.String, ColumnProperty.NotNull));
+            Database.AddIndex("pickingTypes_pk", true, "PickingTypes", "Id");
 
             Database.AddTable("FileStorage",
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
@@ -387,6 +392,7 @@ namespace DAL.Migrations
             AddTranslation("error_file_size", "error_file_size", "Размер файла не должен превышать 10Mb");
             AddTranslation("documentTypes", "Document types", "Типы документов");
             AddTranslation("vehicleTypes", "Vehicle types", "Типы ТС");
+            AddTranslation("pickingTypes", "Picking types", "Типы комплектации");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -446,7 +452,7 @@ namespace DAL.Migrations
             AddTranslation("deliveryStatus", "Delivery status", "Статус доставки");
             AddTranslation("clientAvisationTime", "Client's avisation time", "Время авизации у клиента");
             AddTranslation("orderComments", "Order comments", "Комментарии по заказу");
-            AddTranslation("pickingType", "Picking type", "Тип комплектации");
+            AddTranslation("pickingTypeId", "Picking type", "Тип комплектации");
             AddTranslation("plannedArrivalTimeSlotBDFWarehouse", "Planned arriving time/Time-slot at BDF WH", "Плановое прибытие/тайм-слот (склад БДФ)");
             AddTranslation("loadingArrivalTime", "Arrival time to BDF WH", "Время прибытия на загрузку  (склад БДФ)");
             AddTranslation("loadingDepartureTime", "Departure time from BDF WH", "Время убытия со склада БДФ");
@@ -596,7 +602,7 @@ namespace DAL.Migrations
             AddTranslation("region", "Region", "Регион");
             AddTranslation("city", "City", "Город");
             AddTranslation("address", "Address", "Адрес");
-            AddTranslation("pickingType", "PickingType", "Тип комплектации");
+            AddTranslation("pickingTypeId", "Picking type", "Тип комплектации");
             AddTranslation("leadtimeDays", "LeadtimeDays", "Leadtime, дней");
             AddTranslation("customerWarehouse", "CustomerWarehouse", "Склад клиента");
             AddTranslation("usePickingType", "Fill order picking type", "Определение типа комплектации");

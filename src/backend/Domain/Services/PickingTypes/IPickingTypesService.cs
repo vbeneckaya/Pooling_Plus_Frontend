@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using Domain.Shared;
+﻿using Domain.Persistables;
 
 namespace Domain.Services.PickingTypes
 {
-    public interface IPickingTypesService
+    public interface IPickingTypesService : IDictonaryService<PickingType, PickingTypeDto>
     {
-        IEnumerable<LookUpDto> ForSelect();
     }
 }

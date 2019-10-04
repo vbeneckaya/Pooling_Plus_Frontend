@@ -35,7 +35,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Тип комплектации
         /// </summary>
-        public string PickingType { get; set; }
+        public Guid? PickingTypeId { get; set; }
         /// <summary>
         /// Leadtime, дней
         /// </summary>

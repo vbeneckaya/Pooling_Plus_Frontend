@@ -36,7 +36,7 @@ namespace Domain.Services.Orders
         public string DeliveryStatus { get; set; }
         public string ClientAvisationTime { get; set; }
         public string OrderComments { get; set; }
-        public string PickingType { get; set; }
+        public string PickingTypeId { get; set; }
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
         public string LoadingArrivalTime { get; set; }
         public string LoadingDepartureTime { get; set; }

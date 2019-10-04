@@ -17,7 +17,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     order.ClientName = soldToWarehouse.WarehouseName;
 
                     if (soldToWarehouse.UsePickingType == "Да")
-                        order.PickingType = soldToWarehouse.PickingType;
+                        order.PickingTypeId = soldToWarehouse.PickingTypeId;
 
                     if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
                     {
