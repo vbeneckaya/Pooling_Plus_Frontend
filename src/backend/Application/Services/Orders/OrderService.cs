@@ -186,6 +186,7 @@ namespace Application.Services.Orders
                 var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
                 if (fromWarehouse != null)
                 {
+                    order.ShippingWarehouseId = fromWarehouse.Id;
                     order.ShippingAddress = fromWarehouse.Address;
                 }
             }
