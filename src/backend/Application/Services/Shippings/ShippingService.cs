@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Shared;
 using AutoMapper;
 using DAL;
+using DAL.Queries;
 using Domain;
 using Domain.Enums;
 using Domain.Extensions;
@@ -16,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingDto>, IShippingsService
+    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -112,7 +114,7 @@ namespace Application.Services.Shippings
             return new ValidateResult(errors, entity.Id.ToString());
         }
 
-        public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingDto dto)
+        public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
             return MapFromDtoToEntity(entity, dto);
         }
@@ -122,15 +124,71 @@ namespace Application.Services.Shippings
             return _mapper.Map<ShippingDto>(entity);
         }
 
-        public override ShippingDto MapFromEntityToFormDto(Shipping entity)
+        public override ShippingFormDto MapFromEntityToFormDto(Shipping entity)
         {
-            return MapFromEntityToDto(entity);
+            ShippingDto dto = MapFromEntityToDto(entity);
+            ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
+            formDto.RoutePoints = GetRoutePoints(entity);
+            return formDto;
+        }
+
+        private List<RoutePointDto> GetRoutePoints(Shipping entity)
+        {
+            Dictionary<Guid, RoutePointDto> points = new Dictionary<Guid, RoutePointDto>();
+            var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+            foreach (Order order in orders)
+            {
+                if (order.ShippingWarehouseId.HasValue)
+                {
+                    RoutePointDto point;
+                    if (!points.TryGetValue(order.ShippingWarehouseId.Value, out point))
+                    {
+                        point = new RoutePointDto
+                        {
+                            WarehouseName = db.Warehouses.GetById(order.ShippingWarehouseId.Value)?.WarehouseName,
+                            Address = order.ShippingAddress,
+                            PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
+                            ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
+                            DepartureTime = order.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
+                            VehicleStatus = order.ShippingStatus.ToString().ToLowerfirstLetter(),
+                            OrderIds = new List<string>()
+                        };
+                        points[order.ShippingWarehouseId.Value] = point;
+                    }
+                    point.OrderIds.Add(order.Id.ToString());
+                }
+
+                if (order.DeliveryWarehouseId.HasValue)
+                {
+                    RoutePointDto point;
+                    if (!points.TryGetValue(order.DeliveryWarehouseId.Value, out point))
+                    {
+                        point = new RoutePointDto
+                        {
+                            WarehouseName = order.ClientName,
+                            Address = order.DeliveryAddress,
+                            PlannedDate = order.DeliveryDate?.ToString("dd.MM.yyyy HH:mm"),
+                            ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
+                            DepartureTime = order.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
+                            VehicleStatus = order.DeliveryStatus.ToString().ToLowerfirstLetter(),
+                            OrderIds = new List<string>()
+                        };
+                        points[order.DeliveryWarehouseId.Value] = point;
+                    }
+                    point.OrderIds.Add(order.Id.ToString());
+                }
+            }
+
+            var pointsList = points.Values.OrderBy(p => p.PlannedDate).ThenBy(p => p.VehicleStatus).ThenBy(p => p.WarehouseName).ToList();
+            return pointsList;
         }
 
         private MapperConfiguration ConfigureMapper()
         {
             var result = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<ShippingDto, ShippingFormDto>();
+
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerfirstLetter()))

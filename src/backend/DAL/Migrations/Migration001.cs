@@ -108,11 +108,10 @@ namespace DAL.Migrations
                 new Column("PlannedReturnDate", DbType.DateTime, ColumnProperty.Null),
                 new Column("ActualReturnDate", DbType.DateTime, ColumnProperty.Null),
                 new Column("MajorAdoptionNumber", DbType.String),
-                new Column("Avization", DbType.String),
-                new Column("OrderItems", DbType.String),
                 new Column("OrderCreationDate", DbType.DateTime, ColumnProperty.Null),
                 new Column("ShippingId", DbType.Guid, ColumnProperty.Null),
-                new Column("Positions", DbType.String),
+                new Column("ShippingWarehouseId", DbType.Guid, ColumnProperty.Null),
+                new Column("DeliveryWarehouseId", DbType.Guid, ColumnProperty.Null),
                 /*general fields for Orders*/
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey)
             );

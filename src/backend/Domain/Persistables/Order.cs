@@ -192,6 +192,14 @@ namespace Domain.Persistables
         /// Перевозка
         /// </summary>
         public Guid? ShippingId { get; set; }
+        /// <summary>
+        /// Склад отгрузки
+        /// </summary>
+        public Guid? ShippingWarehouseId { get; set; }
+        /// <summary>
+        /// Склад доставки
+        /// </summary>
+        public Guid? DeliveryWarehouseId { get; set; }
         /*end of fields*/
     }
 }

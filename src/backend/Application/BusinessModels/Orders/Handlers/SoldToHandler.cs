@@ -27,6 +27,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
 
+                    order.DeliveryWarehouseId = soldToWarehouse.Id;
                     order.DeliveryAddress = soldToWarehouse.Address;
                     order.DeliveryCity = soldToWarehouse.City;
                     order.DeliveryRegion = soldToWarehouse.Region;

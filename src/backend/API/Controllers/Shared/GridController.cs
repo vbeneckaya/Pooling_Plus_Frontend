@@ -57,8 +57,8 @@ namespace API.Controllers.Shared
         {
             try
             {
-                TDto user = service.Get(id);
-                return Ok(user);
+                TFormDto entity = service.GetForm(id);
+                return Ok(entity);
             }
             catch (UnauthorizedAccessException)
             {
