@@ -361,6 +361,8 @@ namespace DAL.Migrations
             AddTranslation("from", "From", "От");
             AddTranslation("to", "To", "До");
             AddTranslation("representation", "Representation", "Представления");
+            AddTranslation("Available", "Available", "Доступные");
+            AddTranslation("Selected", "Selected", "Выбранные");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -379,6 +381,7 @@ namespace DAL.Migrations
             AddTranslation("cancelShipping", "CancelShipping", "Отменить перевозку");
             AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
             AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
+            AddTranslation("Create representation", "Create representation", "Создание представления");
             /*start of add translates for action*/
 
             /*start of add translates*/
