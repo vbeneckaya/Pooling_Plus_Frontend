@@ -60,10 +60,10 @@ const FieldsConfig = ({ children, title, gridName }) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button color="grey" onClick={onClose}>
-                    Отмена
+                    {t('CancelButton')}
                 </Button>
                 <Button color="blue" onClick={handleSave}>
-                    Сохранить
+                    {t('SaveButton')}
                 </Button>
             </Modal.Actions>
         </Modal>

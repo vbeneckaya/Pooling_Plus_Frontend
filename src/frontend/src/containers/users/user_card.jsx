@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-
-import {Button, Dimmer, Form, Grid, Input, Label, Loader, Modal} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {withTranslation} from 'react-i18next';
+import { Button, Dimmer, Form, Grid, Input, Label, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUsersInfo,
     createUserRequest,
@@ -9,7 +9,11 @@ import {
     progressSelector,
     userCardSelector,
 } from '../../ducks/users';
-import {getRolesRequest, progressSelector as rolesProgressSelector, rolesFromUserSelector,} from '../../ducks/roles';
+import {
+    getRolesRequest,
+    progressSelector as rolesProgressSelector,
+    rolesFromUserSelector,
+} from '../../ducks/roles';
 import Select from '../../components/BaseComponents/Select';
 
 class UserCard extends Component {
@@ -20,7 +24,7 @@ class UserCard extends Component {
             modalOpen: false,
             form: {
                 login: null,
-                name: null,
+                userName: null,
                 roleId: null,
                 email: null,
                 isActive: true,
@@ -30,12 +34,12 @@ class UserCard extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.user !== this.props.user) {
-            const {user = {}} = this.props;
+            const { user = {} } = this.props;
 
             this.setState({
                 form: {
                     login: user.login,
-                    name: user.name,
+                    userName: user.userName,
                     roleId: user.roleId,
                     email: user.email,
                     password: user.password,
@@ -46,7 +50,7 @@ class UserCard extends Component {
     }
 
     handleOpen = () => {
-        const {getUser, id, getRoles} = this.props;
+        const { getUser, id, getRoles } = this.props;
 
         id && getUser(id);
         getRoles({
@@ -55,19 +59,19 @@ class UserCard extends Component {
                 take: 20,
             },
         });
-        this.setState({modalOpen: true});
+        this.setState({ modalOpen: true });
     };
 
     handleClose = () => {
-        const {loadList, clear} = this.props;
+        const { loadList, clear } = this.props;
 
-        this.setState({modalOpen: false});
+        this.setState({ modalOpen: false });
 
         clear();
         loadList();
     };
 
-    handleChange = (event, {name, value}) => {
+    handleChange = (event, { name, value }) => {
         this.setState(prevState => ({
             form: {
                 ...prevState.form,
@@ -77,10 +81,10 @@ class UserCard extends Component {
     };
 
     mapProps = () => {
-        const {form} = this.state;
-        const {id} = this.props;
+        const { form } = this.state;
+        const { id } = this.props;
 
-        let params = {...form};
+        let params = { ...form };
 
         if (id) {
             params = {
@@ -93,15 +97,15 @@ class UserCard extends Component {
     };
 
     handleCreate = () => {
-        const {createUser} = this.props;
+        const { createUser } = this.props;
 
-        createUser({params: this.mapProps(), callbackFunc: this.handleClose});
+        createUser({ params: this.mapProps(), callbackFunc: this.handleClose });
     };
 
     render() {
-        const {modalOpen, form} = this.state;
-        const {login, name, roleId, email, isActive} = form;
-        const {children, title, loading, id, rolesLoading, roles} = this.props;
+        const { modalOpen, form } = this.state;
+        const { login, userName, roleId, email, isActive } = form;
+        const { children, title, loading, id, rolesLoading, roles, t } = this.props;
 
         return (
             <Modal
@@ -123,23 +127,7 @@ class UserCard extends Component {
                             <Grid.Row columns="equal">
                                 <Grid.Column>
                                     <Form.Field>
-                                        <label>Логин</label>
-                                        <Input
-                                            name="login"
-                                            value={login}
-                                            onChange={this.handleChange}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>ФИО</label>
-                                        <Input
-                                            name="name"
-                                            value={name}
-                                            onChange={this.handleChange}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>Email</label>
+                                        <label>{t('email')}</label>
                                         <Input
                                             name="email"
                                             value={email}
@@ -147,12 +135,20 @@ class UserCard extends Component {
                                         />
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Роль</label>
+                                        <label>{t('userName')}</label>
+                                        <Input
+                                            name="userName"
+                                            value={userName}
+                                            onChange={this.handleChange}
+                                        />
+                                    </Form.Field>
+                                    <Form.Field>
                                         <Select
                                             fluid
                                             search
                                             selection
                                             loading={rolesLoading}
+                                            text={'role'}
                                             name="roleId"
                                             value={roleId}
                                             valuesList={roles}
@@ -160,21 +156,21 @@ class UserCard extends Component {
                                         />
                                     </Form.Field>
                                     <Form.Field>
-                                        <label>Пароль</label>
+                                        <label>{t('password')}</label>
                                         <Input
                                             type="password"
                                             name="password"
                                             onChange={this.handleChange}
                                         />
-                                        {id ? (
+                                       {/* {id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль
                                             </Label>
-                                        ) : null}
+                                        ) : null}*/}
                                     </Form.Field>
                                     <Form.Field>
                                         <Form.Checkbox
-                                            label="Активен"
+                                            label={t('isActive')}
                                             name="isActive"
                                             checked={isActive}
                                             onChange={this.handleChange}
@@ -186,9 +182,9 @@ class UserCard extends Component {
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.handleClose}>Отменить</Button>
+                    <Button onClick={this.handleClose}>{t('CancelButton')}</Button>
                     <Button color="blue" onClick={this.handleCreate}>
-                        Сохранить
+                        {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -222,7 +218,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(
+export default withTranslation()(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(UserCard);
+)(UserCard));

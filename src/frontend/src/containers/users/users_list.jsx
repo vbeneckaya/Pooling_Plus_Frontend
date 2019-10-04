@@ -15,9 +15,9 @@ import { Button, Icon } from 'semantic-ui-react';
 
 
 const newModal = (t, load) => (
-    <UserCard title="Создание роли" id={null} loadList={load}>
+    <UserCard title={t('create_user_title')} id={null} loadList={load}>
         <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> Создать пользователя
+            <Icon name="plus" /> {t('create_user')}
         </Button>
     </UserCard>
 );
@@ -26,9 +26,9 @@ export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
     };
 
-    getActions = (row, load) => {
+    getActions = (row, load, t) => {
         return [
-            <UserCard id={row.id} title={`Редактирование пользователя ${row.name}`} loadList={load}>
+            <UserCard id={row.id} title={t('edit_user', {name: row.userName})} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
                     <Icon name="edit" /> Редактировать
                 </Button>

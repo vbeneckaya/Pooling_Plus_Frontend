@@ -107,10 +107,10 @@ class Card extends Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button color="grey" onClick={this.onClose}>
-                        Отмена
+                        {t('CancelButton')}
                     </Button>
                     <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        Сохранить
+                        {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
             </Modal>

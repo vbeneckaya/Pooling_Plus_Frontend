@@ -329,14 +329,22 @@ namespace DAL.Migrations
             AddTranslation("UserIncorrectData", "The username or password you entered is incorrect", "Неверное имя пользователя или пароль");
             AddTranslation("Users", "Users", "Пользователи");
             AddTranslation("Roles", "Roles", "Роли");
-            AddTranslation("isActive", "IsActive", "Активен");
+            AddTranslation("isActive", "Active", "Активен");
+            AddTranslation("All", "All", "Все");
+            AddTranslation("create_role_title", "Create role", "Создание роли");
+            AddTranslation("create_role", "Create role", "Создать роль");
+            AddTranslation("edit_role", "Edit role {{name}}", "Редактировать роль {{name}}");
+            AddTranslation("create_user_title", "Create user", "Создание пользователя");
+            AddTranslation("create_user", "Create user", "Создать пользователя");
+            AddTranslation("edit_user", "Edit user {{name}}", "Редактирование пользователя {{name}}");
 
             AddTranslation("login_btn", "Login", "Войти");
             AddTranslation("password", "password", "Пароль");
-            AddTranslation("login", "email", "email");
+            AddTranslation("login", "Email", "Email");
             AddTranslation("dictionaries", "Dictionaries", "Справочники");
             AddTranslation("users", "Users", "Пользователи");
             AddTranslation("roles", "Roles", "Роли");
+            AddTranslation("role", "Role", "Роль");
             AddTranslation("create_btn", "Create", "Создать");
             AddTranslation("search_all_fields", "Search all fields", "Искать по всем полям");
             AddTranslation("reset_filters", "Reset filters", "Сбросить фильтры");
@@ -345,7 +353,7 @@ namespace DAL.Migrations
             AddTranslation("Administrator", "Administrator", "Администратор");
             AddTranslation("TransportCoordinator", "Transport Coordinator", "Транспортный координатор");
             AddTranslation("TransportCompanyEmployee", "Transport Company Employee", "Сотрудник транспортной компании");
-            AddTranslation("permissions", "permissions", "Разрешения");
+            AddTranslation("permissions", "Permissions", "Разрешения");
             AddTranslation("name", "Name", "Наименование");
             AddTranslation("userName", "User name", "ФИО");
             AddTranslation("createCard", "Create", "Создание");
@@ -354,6 +362,7 @@ namespace DAL.Migrations
             AddTranslation("Are you sure to complete", "Are you sure to complete", "Выполнить действие");
             AddTranslation("for", "for", "для");
             AddTranslation("edit", "Edit", "Редактирование");
+            AddTranslation("edit_btn", "Edit", "Редактировать");
             AddTranslation("information", "Information", "Информация");
             AddTranslation("position", "position", "Позиции");
             AddTranslation("returns", "returns", "Возвраты");
@@ -657,6 +666,8 @@ namespace DAL.Migrations
             AddTranslation("AddButton", "Add", "Добавить");
             AddTranslation("Create a Photo", "Create a Photo", "Сделать фотографию");
             AddTranslation("PhotoButton", "Photo", "Фото");
+            AddTranslation("importFromExcel", "Import from Excel", "Загрузить из Excel");
+            AddTranslation("exportExcel", "Export to Excel", "Выгрузить в Excel");
             /*end of add translates*/
 
         }

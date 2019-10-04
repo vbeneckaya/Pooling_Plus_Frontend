@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {withTranslation} from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 
@@ -14,9 +15,9 @@ import { Button, Icon } from 'semantic-ui-react';
 import RoleCard from './role_card';
 
 const newModal = (t, load) => (
-    <RoleCard title="Создание роли" id={null} loadList={load}>
+    <RoleCard title={t('create_role_title')} id={null} loadList={load}>
         <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> Создать роль
+            <Icon name="plus" /> {t('create_role')}
         </Button>
     </RoleCard>
 );
@@ -25,23 +26,23 @@ export class RolesList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
     };
 
-    getActions = (row, load) => {
+    getActions = (row, load, t) => {
         return [
-            <RoleCard id={row.id} title={`Редактировать роль ${row.name}`} loadList={load}>
+            <RoleCard id={row.id} title={t('edit_role', {name: row.name})} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
-                    <Icon name="edit" /> Редактировать
+                    <Icon name="edit" /> {t('edit_btn')}
                 </Button>
             </RoleCard>,
         ];
     };
 
     render() {
-        const { list, loadList, totalCount, loading } = this.props;
+        const { list, loadList, totalCount, loading, t } = this.props;
 
         return (
             <TableInfo
                 headerRow={rolesColumns}
-                title="Роли"
+                title={t('Roles')}
                 loading={loading}
                 className="wider container-margin-top-bottom"
                 list={list}
@@ -72,7 +73,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(
+export default withTranslation()(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(RolesList);
+)(RolesList));
