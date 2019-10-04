@@ -4,7 +4,6 @@ import FormField from "../BaseComponents";
 
 
 const RowForm = ({fields, form, onChange}) => {
-    console.log();
     return (
         <Grid.Row columns={fields.length}>
             {

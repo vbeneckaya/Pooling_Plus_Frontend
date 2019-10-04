@@ -34,7 +34,6 @@ const Control = props => {
         value: props.filters[props.column.name],
         setSort: props.setSort,
         onChange: props.setFilter,
-        stateColors: props.stateColors,
     };
 
     if (props.sort && props.sort.name === props.column.name)

@@ -11,8 +11,6 @@ const FileUploader = ({ document, onChange }) => {
     const dispatch = useDispatch();
     const loading = useSelector(state => uploadProgressSelector(state));
 
-    console.log('document', document);
-
     const onDragEnter = () => {
         setActive(true);
     };
@@ -35,8 +33,6 @@ const FileUploader = ({ document, onChange }) => {
         // this.props.onChange();
         let form = new FormData();
         file = file || e.target.files[0];
-
-        console.log('file', file.size);
 
         if (file && file.size <= 10000000) {
             form.append('formFile', file);

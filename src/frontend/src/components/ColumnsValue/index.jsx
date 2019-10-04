@@ -6,14 +6,16 @@ import {
     BOOLEAN_TYPE,
     DATE_TIME_TYPE,
     ENUM_TYPE,
-    NUMBER_TYPE,
+    NUMBER_TYPE, SELECT_TYPE,
     STATE_TYPE,
 } from '../../constants/columnTypes';
 import {formatDate} from '../../utils/dateTimeFormater';
 import {numbersFormat} from '../../utils/numbersFormat';
 import {Checkbox, Icon, Label} from 'semantic-ui-react';
+import {postman} from "../../utils/postman";
+import StateValue from "./StateValue";
 
-const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate }) => {
+const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate, source }) => {
     const { t } = useTranslation();
 
     if (type === ENUM_TYPE) {
@@ -54,15 +56,18 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         );
     }*/
 
-    if (type === STATE_TYPE) {
-        const state = stateColors.find(x => x.name === value);
-        const color = state ? state.color : 'grey';
+   /*if (type === SELECT_TYPE) {
+       if (source && value) {
+           postman.get(`/${source}/getById/${value}`).then(result => {
+               console.log('result', result);
+               return result.name;
+           });
+       }
+   }*/
 
+    if (type === STATE_TYPE) {
         return (
-            <div>
-                <Icon color={color.toLowerCase()} name="circle" />
-                {t(value)}
-            </div>
+            <StateValue value={value} source={source} />
         );
     }
 

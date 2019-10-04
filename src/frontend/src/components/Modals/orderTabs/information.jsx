@@ -8,7 +8,6 @@ import Select from '../../BaseComponents/Select';
 import TextArea from '../../BaseComponents/TextArea';
 
 const Information = ({ form, onChange }) => {
-    console.log('form', form);
 
     const { t } = useTranslation();
 
@@ -45,8 +44,8 @@ const Information = ({ form, onChange }) => {
                                         </Grid.Column>
                                         <Grid.Column>
                                             <Select
-                                                name="pickingType"
-                                                value={form['pickingType']}
+                                                name="pickingTypeId"
+                                                value={form['pickingTypeId']}
                                                 source="pickingTypes"
                                                 onChange={onChange}
                                             />
@@ -69,9 +68,10 @@ const Information = ({ form, onChange }) => {
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Text
+                                            <Select
                                                 name="soldTo"
                                                 value={form['soldTo']}
+                                                source="soldTo"
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -80,9 +80,19 @@ const Information = ({ form, onChange }) => {
                                                 <label>{t('temperature')}</label>
                                                 <div className="temperature-fields">
                                                     <label>{t('from')}</label>
-                                                    <Text noLabel name="temperatureMin" value={form["temperatureMin"]} onChange={onChange} />
+                                                    <Text
+                                                        noLabel
+                                                        name="temperatureMin"
+                                                        value={form['temperatureMin']}
+                                                        onChange={onChange}
+                                                    />
                                                     <label>{t('to')}</label>
-                                                    <Text noLabel name="temperatureMax" value={form["temperatureMax"]} onChange={onChange} />
+                                                    <Text
+                                                        noLabel
+                                                        name="temperatureMax"
+                                                        value={form['temperatureMax']}
+                                                        onChange={onChange}
+                                                    />
                                                 </div>
                                             </Form.Field>
                                         </Grid.Column>
@@ -180,9 +190,7 @@ const Information = ({ form, onChange }) => {
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('boxesCountGroup')}</label>
-                            <Segment
-                                className="mini-column"
-                            >
+                            <Segment className="mini-column">
                                 <Grid>
                                     <Grid.Row columns={2}>
                                         <Grid.Column>
@@ -237,7 +245,7 @@ const Information = ({ form, onChange }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-               {/* <Grid.Row columns={3} stretched>
+                {/* <Grid.Row columns={3} stretched>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('boxesCountGroup')}</label>

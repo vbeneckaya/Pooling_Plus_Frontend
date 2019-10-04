@@ -25,7 +25,6 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
         if (onChange !== undefined) onChange(null, { name: name, value: value });
     };
 
-    console.log('value', value);
 
     let content = (
         <Form.Field>

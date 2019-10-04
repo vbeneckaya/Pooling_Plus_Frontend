@@ -21,8 +21,6 @@ class Card extends Component {
     loadCard = () => {
         const { openCard, name, id } = this.props;
 
-        console.log('___id', id);
-
         openCard({
             name,
             id,
@@ -52,8 +50,6 @@ class Card extends Component {
     };
 
     onChangeForm = (e, { name, value }) => {
-
-        console.log('nn', name, value);
         this.setState(prevState => ({
             form: {
                 ...prevState.form,
@@ -65,8 +61,6 @@ class Card extends Component {
     handleSave = () => {
         const { editCard, name } = this.props;
         const { form } = this.state;
-
-        console.log('form', form);
 
         editCard({
             name,

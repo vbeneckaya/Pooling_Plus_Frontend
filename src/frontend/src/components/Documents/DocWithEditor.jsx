@@ -47,7 +47,6 @@ const DocWithEditor = ({
     };
 
     const handleSave = () => {
-        console.log('document', document);
         if (document && document.fileId) {
             document.id
                 ? dispatch(

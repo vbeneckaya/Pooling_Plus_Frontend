@@ -37,31 +37,6 @@ class List extends Component {
         };
     }
 
-    getStateColors = () => {
-        const { getStateColors, columns } = this.props;
-        const stateColumn = columns.find(column => column.type === STATE_TYPE) || {};
-        const { source } = stateColumn;
-
-        getStateColors(source);
-    };
-
-    componentDidMount() {
-        this.getStateColors();
-    }
-
-    componentDidUpdate(prevProps) {
-        const {match} = this.props;
-        const {match: extMatch} = prevProps;
-
-        const { params = {} } = match;
-        const { params: extParams = {} } = extMatch;
-        const { name = '' } = params;
-        const { name: extName = '' } = extParams;
-        if (name !== extName) {
-            this.getStateColors();
-        }
-    }
-
     getGroupActions = () => {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
@@ -111,7 +86,6 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
-            stateColors,
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -136,7 +110,6 @@ class List extends Component {
                     createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
-                    stateColors={stateColors}
                 />
             </div>
         );
@@ -156,10 +129,7 @@ function mapDispatchToProps(dispatch) {
         },
         invokeAction: params => {
             dispatch(invokeActionRequest(params));
-        },
-        getStateColors: params => {
-            dispatch(getStateColorsRequest(params));
-        },
+        }
     };
 }
 
@@ -174,8 +144,7 @@ function mapStateToProps(state, ownProps) {
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
-        actions: actionsSelector(state),
-        stateColors: stateColorsSelector(state, name),
+        actions: actionsSelector(state)
     };
 }
 

@@ -1,16 +1,27 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Dropdown, Form, Icon } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { stateColorsSelector } from '../../ducks/gridList';
 import { useTranslation } from 'react-i18next';
+import {getLookupRequest, valuesListSelector} from "../../ducks/lookup";
 
-const State = ({ value, name, isDisabled, onChange, className }) => {
-    console.log('value', value);
-    const stateColors = useSelector(state => stateColorsSelector(state));
+const State = ({ value, name, isDisabled, onChange, className, source }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    let stateColors = useSelector(state => valuesListSelector(state, source)) || [];
+
+    useEffect(() => {
+        dispatch(
+            getLookupRequest({
+                name: source,
+                isForm: true,
+                isSearch: true,
+            }),
+        );
+    }, []);
+
     const state = stateColors.find(x => x.name === value);
     const color = state ? state.color : 'grey';
-    const { t } = useTranslation();
-
     const items = (stateColors || []).map(x => {
         return { key: x.name, value: x.name, text: t(x.name), label:{ color: x.color, empty: true, circular: true } };
     });

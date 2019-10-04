@@ -10,13 +10,14 @@ import {
 import Text from './Text';
 import State from './State';
 import Date from './Date';
+import Select from "./Select";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
     [STATE_TYPE]: <State />,
     [DATE_TYPE]: <Date />,
     [GROUP_TYPE]: <Text />,
-    [SELECT_TYPE]: <Text />,
+    [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
 };
 
@@ -27,6 +28,13 @@ const FormField = props => {
         value: props.value,
         onChange: props.onChange,
     };
+
+    if (props.column.type === SELECT_TYPE) {
+        params = {
+            ...params,
+            source: props.column.source
+        }
+    }
 
     return React.cloneElement(getTypeFacet[props.column.type], params);
 };

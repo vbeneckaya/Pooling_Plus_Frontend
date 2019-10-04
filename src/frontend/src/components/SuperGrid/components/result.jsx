@@ -34,7 +34,6 @@ class Result extends Component {
             actions,
             isShowActions,
             selectedRows,
-            stateColors,
             loadList,
             disabledCheck,
         } = this.props;
@@ -84,7 +83,7 @@ class Result extends Component {
                                                     type={column.type}
                                                     id={`${row.id}_${column.name}_${i}`}
                                                     value={row[column.name]}
-                                                    stateColors={stateColors}
+                                                    source={column.source}
                                                 />
                                             }
                                         </Table.Cell>

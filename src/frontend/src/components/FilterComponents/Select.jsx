@@ -3,7 +3,7 @@ import { Button, Checkbox, Dimmer, Form, Icon, Input, Loader, Popup } from 'sema
 
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import {getLookupRequest, listSelector, progressSelector} from "../../ducks/lookup";
+import {clearLookup, getLookupRequest, listSelector, progressSelector} from "../../ducks/lookup";
 
 class Facet extends React.Component {
     state = {};
@@ -14,10 +14,10 @@ class Facet extends React.Component {
 
     clearFilter = () => {
         this.setState({ filter: '' });
+        this.props.clearLookup();
     };
 
     handleOpen = () => {
-        console.log('select', this.props);
         const {source, getList} = this.props;
 
         getList({
@@ -162,8 +162,11 @@ const mapDispatchToProps = dispatch => {
     return {
         getList: params => {
             dispatch(getLookupRequest(params))
+        },
+        clearLookup: () => {
+            dispatch(clearLookup())
         }
     }
-}
+};
 
 export default withTranslation()(connect(mapStateToProps, mapDispatchToProps)(Facet));

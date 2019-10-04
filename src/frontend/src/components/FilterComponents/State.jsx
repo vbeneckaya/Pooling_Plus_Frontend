@@ -1,9 +1,13 @@
 import React from 'react';
-import { Button, Popup, Checkbox, Icon, Form } from 'semantic-ui-react';
+import {Button, Popup, Checkbox, Icon, Form, Loader, Dimmer} from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import {clearLookup, getLookupRequest, listSelector, progressSelector} from "../../ducks/lookup";
 
-const Facet = ({ value, onChange, stateColors = [], sort, setSort, name }) => {
+const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
     const { t } = useTranslation();
+
+    const dispatch = useDispatch();
 
     let values = value ? value.split('|') : [];
 
@@ -16,12 +20,30 @@ const Facet = ({ value, onChange, stateColors = [], sort, setSort, name }) => {
         if (onChange !== undefined) onChange(e, { name, value: values.join('|') });
     };
 
+    const handleOpen = () => {
+        dispatch(getLookupRequest({
+            name: source,
+            isSearch: true,
+            params: {}
+        }));
+    };
+
+    const handleClose = () => {
+        dispatch(clearLookup());
+    };
+
+    const stateColors = useSelector(state => listSelector(state)) || [];
+    const loading = useSelector(state => progressSelector(state));
+
     let content = (
-        <Form>
+        <Form style={{minWidth: "50px", minHeight: "50px"}}>
+            <Dimmer active={loading} inverted>
+                <Loader size="small">Loading</Loader>
+            </Dimmer>
             {stateColors.map(x => {
                 let label = (
                     <label>
-                        <Icon color={x.color.toLowerCase()} inverted={x.inverted} name="circle" />
+                        <Icon color={x.color ? x.color.toLowerCase() : 'grey'} inverted={x.inverted} name="circle" />
                         {t(x.name)}
                     </label>
                 );
@@ -52,6 +74,8 @@ const Facet = ({ value, onChange, stateColors = [], sort, setSort, name }) => {
                 className="from-popup"
                 hideOnScroll
                 position="bottom left"
+                onOpen={handleOpen}
+                onClose={handleClose}
             />
             <Button
                 className={`sort-button sort-button-up ${

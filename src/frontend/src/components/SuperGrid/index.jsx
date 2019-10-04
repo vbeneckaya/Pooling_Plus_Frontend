@@ -252,7 +252,6 @@ class SuperGrid extends Component {
             isShowActions,
             confirmation = {},
             closeConfirmation = () => {},
-            stateColors,
             groupActions,
             createButton,
             extGrid,
@@ -309,7 +308,6 @@ class SuperGrid extends Component {
                                 filters={filters}
                                 indeterminate={!!(selectedRows.size && selectedRows.size !== count)}
                                 all={!!(selectedRows.size && selectedRows.size === count)}
-                                stateColors={stateColors}
                                 catalogs={catalogsFromGrid}
                                 isShowActions={isShowActions}
                                 sort={sort}
@@ -328,7 +326,6 @@ class SuperGrid extends Component {
                             modalCard={modalCard}
                             actions={actions}
                             onlyOneCheck={onlyOneCheck}
-                            stateColors={stateColors}
                             loadList={this.loadList}
                             disabledCheck={disabledCheck}
                             selectedRows={selectedRows}

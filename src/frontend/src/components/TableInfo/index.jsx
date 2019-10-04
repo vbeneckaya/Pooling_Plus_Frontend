@@ -120,8 +120,6 @@ class TableInfo extends Component {
 
         const { filter } = this.state;
 
-        console.log('importProgress', importLoader);
-
         return (
             <Container className={className}>
                 <Dimmer active={loading} inverted className="table-loader">

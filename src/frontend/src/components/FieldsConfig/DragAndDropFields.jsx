@@ -16,7 +16,6 @@ const DragAndDropFields = ({ type, fieldsConfig, fieldsList, onChange }) => {
                 .map(x => x.name),
         );*/
     const { t } = useTranslation();
-    console.log('fieldsList', fieldsList);
 
     return (
         <div className="flex-container-justify">
