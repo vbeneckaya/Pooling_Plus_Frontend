@@ -20,7 +20,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         return (
             <>
                 {!value
-                    ? 'Все'
+                    ? t('All')
                     : value.map((n, i) => (
                           <Label key={i} className="label-margin">
                               {n}

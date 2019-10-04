@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import {withTranslation} from 'react-i18next';
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
@@ -87,7 +88,7 @@ class Card extends Component {
     };
 
     render() {
-        const { title, loading, children, progress, columns } = this.props;
+        const { title, loading, children, progress, columns, t } = this.props;
         const { modalOpen, form } = this.state;
 
         return (
@@ -121,10 +122,10 @@ class Card extends Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button color="grey" onClick={this.onClose}>
-                        Отмена
+                        {t('CancelButton')}
                     </Button>
                     <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        Сохранить
+                        {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -155,7 +156,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(
+export default withTranslation()(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(Card);
+)(Card));

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { withTranslation } from 'react-i18next';
 import { Button, Form, Input, Modal, Dimmer, Loader } from 'semantic-ui-react';
 import {
     clearRolesInfo,
     createRoleRequest,
     getRoleCardRequest,
     progressSelector,
-    roleCardSelector
+    roleCardSelector,
 } from '../../ducks/roles';
 
 class RoleCard extends Component {
@@ -81,13 +81,13 @@ class RoleCard extends Component {
         const { form } = this.state;
         const { id } = this.props;
 
-        let params = {...form};
+        let params = { ...form };
 
         if (id) {
             params = {
                 ...params,
-                id
-            }
+                id,
+            };
         }
 
         return params;
@@ -96,11 +96,11 @@ class RoleCard extends Component {
     handleCreate = () => {
         const { createRole } = this.props;
 
-        createRole({params: this.mapData(), callbackFunc: this.handleClose});
+        createRole({ params: this.mapData(), callbackFunc: this.handleClose });
     };
 
     render() {
-        const { title, children, loading } = this.props;
+        const { title, children, loading, t } = this.props;
         const { modalOpen, form } = this.state;
         const { name, permissions } = form;
 
@@ -121,11 +121,11 @@ class RoleCard extends Component {
                     </Dimmer>
                     <Form>
                         <Form.Field>
-                            <label>Наименование</label>
+                            <label>{t('name')}</label>
                             <Input value={name} name="name" onChange={this.handleChange} />
                         </Form.Field>
                         <Form.Field>
-                            <label>Разрешения</label>
+                            <label>{t('permission')}</label>
                         </Form.Field>
                         {/*{allPermissions.map(permission => (
                             <Form.Field key={permission}>
@@ -140,9 +140,9 @@ class RoleCard extends Component {
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={this.handleClose}>Отменить</Button>
+                    <Button onClick={this.handleClose}>{t('CancelButton')}</Button>
                     <Button color="blue" onClick={this.handleCreate}>
-                        Сохранить
+                        {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
             </Modal>
@@ -166,12 +166,14 @@ const mapDispatchToProps = dispatch => {
             dispatch(createRoleRequest(params));
         },
         clear: () => {
-            dispatch(clearRolesInfo())
-        }
+            dispatch(clearRolesInfo());
+        },
     };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(RoleCard);
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(RoleCard),
+);

@@ -212,7 +212,7 @@ class TableInfo extends Component {
                                               {isShowActions ? (
                                                   <Table.Cell textAlign="center">
                                                       {actions &&
-                                                          actions(row, this.load).map(
+                                                          actions(row, this.load, t).map(
                                                               (action, index) => (
                                                                   <React.Fragment
                                                                       key={`action_${index}`}
