@@ -46,6 +46,7 @@ const DocWithEditor = ({ children, onChange }) => {
                     isBase64: true,
                     callbackSuccess: (id) => {
                         onChange(id, "WebCamPhoto.jpg");
+                        handleClose();
                     },
                 }),
             );
