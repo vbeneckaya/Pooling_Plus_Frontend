@@ -314,6 +314,10 @@ namespace DAL.Migrations
                 new Column("Name", DbType.String, ColumnProperty.NotNull));
             Database.AddIndex("documentTypes_pk", true, "DocumentTypes", "Id");
 
+            AddDocumentType("Накладная");
+            AddDocumentType("Счет-фактура");
+            AddDocumentType("Другое");
+
             Database.AddTable("Documents",
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String, ColumnProperty.NotNull),
@@ -710,6 +714,12 @@ namespace DAL.Migrations
         {
             Database.Insert("TaskProperties", new string[] { "Id", "TaskName", "Properties" },
                 new string[] { (Guid.NewGuid()).ToString(), taskName, properties });
+        }
+
+        private void AddDocumentType(string name)
+        {
+            Database.Insert("DocumentTypes", new string[] { "Id", "Name" },
+                new string[] { (Guid.NewGuid()).ToString(), name });
         }
     }
 }
