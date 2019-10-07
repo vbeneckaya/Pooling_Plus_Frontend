@@ -109,7 +109,7 @@ class List extends Component {
                     getActions={getActions}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
-                    createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
+                    createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
                 />

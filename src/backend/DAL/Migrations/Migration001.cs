@@ -418,6 +418,11 @@ namespace DAL.Migrations
             AddTranslation("Edit representation", "Edit representation {{name}}", "Редактирование представления {{name}}");
             AddTranslation("add value", "Add value", "Добавить значение");
             AddTranslation("create_orders", "Create order", "Создать заказ");
+            AddTranslation("create_shippings", "Create shipping", "Создать перевозку");
+            AddTranslation("new_orders", "New order", "Новый заказ");
+            AddTranslation("new_shippings", "New shipping", "Новая перевозка");
+            AddTranslation("edit_orders", "Order {{number}} - {{status}}", "Заказ {{number}} - {{status}}");
+            AddTranslation("edit_shippings", "Shipping {{number}} - {{status}}", "Перевозка {{number}} - {{status}}");
             /*start of add translates for action*/
 
             /*start of add translates*/
