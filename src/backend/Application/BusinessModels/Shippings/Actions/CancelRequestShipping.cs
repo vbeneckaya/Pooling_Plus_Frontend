@@ -28,8 +28,8 @@ namespace Application.BusinessModels.Shippings.Actions
             foreach (var order in orders)
             {
                 order.ShippingId = null;
-                order.ShippingId = null;
             }
+
             db.SaveChanges();
             return new AppActionResult
             {

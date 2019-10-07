@@ -1,8 +1,10 @@
-﻿using DAL;
+﻿using Application.Shared;
+using DAL;
 using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 using System.Linq;
 
 namespace Application.BusinessModels.Shippings.Actions
@@ -24,7 +26,9 @@ namespace Application.BusinessModels.Shippings.Actions
             var orders = db.Orders.Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
             foreach (Order order in orders)
             {
-                order.ShippingStatus = VehicleState.VehicleWaiting;
+                var setter = new FieldSetter<Order>(order, _historyService);
+                setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
+                setter.SaveHistoryLog();
             }
 
             db.SaveChanges();
@@ -39,5 +43,12 @@ namespace Application.BusinessModels.Shippings.Actions
         {
             return shipping.Status == ShippingState.ShippingRequestSent && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
+
+        public ConfirmShipping(IHistoryService historyService)
+        {
+            _historyService = historyService;
+        }
+
+        private readonly IHistoryService _historyService;
     }
 }

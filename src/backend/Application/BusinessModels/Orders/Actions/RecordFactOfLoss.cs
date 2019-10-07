@@ -29,7 +29,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             order.Status = OrderState.Lost;
 
-            _historyService.Save(order.Id, "orderStatusChanged", order.Status);
+            _historyService.Save(order.Id, "orderSetLost", order.OrderNumber);
 
             db.SaveChanges();
             

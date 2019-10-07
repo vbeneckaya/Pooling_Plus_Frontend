@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Application.Shared;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -57,12 +58,15 @@ namespace Application.BusinessModels.Orders.Actions
 
             foreach (var order in orders)
             {
-                order.Status = OrderState.InShipping;
-                order.ShippingId = shipping.Id;
-                order.ShippingStatus = VehicleState.VehicleWaiting;
-                order.DeliveryStatus = VehicleState.VehicleEmpty;
+                var setter = new FieldSetter<Order>(order, _historyService);
+
+                setter.UpdateField(o => o.Status, OrderState.InShipping, ignoreChanges: true);
+                setter.UpdateField(o => o.ShippingId, shipping.Id, ignoreChanges: true);
+                setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
+                setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 
                 _historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
+                setter.SaveHistoryLog();
             }
             db.SaveChanges();
             return new AppActionResult

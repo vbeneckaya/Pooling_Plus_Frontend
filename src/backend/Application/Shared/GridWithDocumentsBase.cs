@@ -2,6 +2,7 @@
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Documents;
+using Domain.Services.History;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
 using System;
@@ -14,8 +15,6 @@ namespace Application.Shared
     public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto> : GridServiceBase<TEntity, TDto, TFormDto>, IGridWithDocuments<TEntity, TDto, TFormDto> 
         where TEntity : class, IPersistable, IWithDocumentsPersistable, new() where TDto : IDto, new() where TFormDto : IDto, new()
     {
-        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider) { }
-
         public ValidateResult CreateDocument(Guid id, DocumentDto dto)
         {
             TEntity entity = UseDbSet(db).FirstOrDefault(x => x.Id == id);
@@ -44,6 +43,8 @@ namespace Application.Shared
                 FileId = fileId,
                 TypeId = typeId
             };
+
+            _historyService.Save(id, "documentAttached", file.Name);
 
             db.Documents.Add(document);
             db.SaveChanges();
@@ -113,10 +114,23 @@ namespace Application.Shared
                 return new ValidateResult("notFound");
             }
 
+            FileStorage file = db.FileStorage.FirstOrDefault(x => x.Id == document.FileId);
+            db.FileStorage.Remove(file);
+
+            _historyService.Save(id, "documentRemoved", file.Name);
+
             db.Documents.Remove(document);
             db.SaveChanges();
 
             return new ValidateResult();
         }
+
+        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+            : base(appDbContext, userIdProvider)
+        {
+            _historyService = historyService;
+        }
+
+        protected readonly IHistoryService _historyService;
     }
 }

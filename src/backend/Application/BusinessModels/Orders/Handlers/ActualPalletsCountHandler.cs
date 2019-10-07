@@ -1,7 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
+using Domain.Services.History;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -21,7 +23,10 @@ namespace Application.BusinessModels.Orders.Handlers
                     counts.Add(newValue);
 
                     var shippingActualPalletsCount = counts.Any(x => x.HasValue) ? counts.Sum(x => x ?? 0) : (int?)null;
-                    shipping.ActualPalletsCount = shippingActualPalletsCount;
+
+                    var setter = new FieldSetter<Shipping>(shipping, _historyService);
+                    setter.UpdateField(s => s.ActualPalletsCount, shippingActualPalletsCount);
+                    setter.SaveHistoryLog();
                 }
             }
         }
@@ -31,11 +36,13 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public ActualPalletsCountHandler(AppDbContext db)
+        public ActualPalletsCountHandler(AppDbContext db, IHistoryService historyService)
         {
             _db = db;
+            _historyService = historyService;
         }
 
         private readonly AppDbContext _db;
+        private readonly IHistoryService _historyService;
     }
 }

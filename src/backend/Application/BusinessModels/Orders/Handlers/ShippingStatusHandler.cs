@@ -1,7 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using DAL;
 using Domain.Enums;
 using Domain.Persistables;
+using Domain.Services.History;
 using System;
 using System.Linq;
 
@@ -21,18 +23,22 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    updOrder.ShippingStatus = newValue;
+                    var setter = new FieldSetter<Order>(updOrder, _historyService);
+
+                    setter.UpdateField(o => o.ShippingStatus, newValue);
 
                     if (newValue == VehicleState.VehicleArrived)
                     {
-                        updOrder.LoadingArrivalTime = DateTime.Now;
+                        setter.UpdateField(o => o.LoadingArrivalTime, DateTime.Now);
                     }
                     else if (newValue == VehicleState.VehicleDepartured)
                     {
-                        updOrder.LoadingArrivalTime = updOrder.LoadingArrivalTime ?? DateTime.Now;
-                        updOrder.LoadingDepartureTime = DateTime.Now;
-                        updOrder.DeliveryStatus = VehicleState.VehicleWaiting;
+                        setter.UpdateField(o => o.LoadingArrivalTime, updOrder.LoadingArrivalTime ?? DateTime.Now);
+                        setter.UpdateField(o => o.LoadingDepartureTime, DateTime.Now);
+                        setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleWaiting);
                     }
+
+                    setter.SaveHistoryLog();
                 }
             }
         }
@@ -42,11 +48,13 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public ShippingStatusHandler(AppDbContext db)
+        public ShippingStatusHandler(AppDbContext db, IHistoryService historyService)
         {
             _db = db;
+            _historyService = historyService;
         }
 
         private readonly AppDbContext _db;
+        private readonly IHistoryService _historyService;
     }
 }

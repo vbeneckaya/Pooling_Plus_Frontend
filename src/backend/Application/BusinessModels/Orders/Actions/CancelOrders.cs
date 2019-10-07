@@ -32,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
             foreach (var order in orders)
             {
                 order.Status = OrderState.Canceled;
-                _historyService.Save(order.Id, "orderStatusChanged", order.Status);
+                _historyService.Save(order.Id, "orderSetCancelled", order.OrderNumber);
             }
 
             db.SaveChanges();
