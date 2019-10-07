@@ -4,11 +4,17 @@ import Text from "../../BaseComponents/Text";
 import Date from "../../BaseComponents/Date";
 import TextArea from "../../BaseComponents/TextArea";
 import Select from "../../BaseComponents/Select";
+import {useSelector} from "react-redux";
+import {valuesListSelector} from "../../../ducks/lookup";
 
 const CreateOrder = ({ form = {}, onChange}) => {
-    const handleChangeSoldTo = (e, {name, value}) => {
+    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
+    const handleChangeSoldTo = (e, {name, value}) => {
+        console.log('valuesList', valuesList);
         onChange(e, {name, value});
+        onChange(e, {name: 'clientName', value: valuesList[0].warehouseName})
+        onChange(e, {name: 'deliveryAddress', value: valuesList[0].address});
     };
 
     return (

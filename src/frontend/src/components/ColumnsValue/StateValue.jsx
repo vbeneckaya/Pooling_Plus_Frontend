@@ -25,7 +25,7 @@ const StateValue = ({ value, source }) => {
     const color = state ? state.color : 'grey';
 
     return (
-        <div>
+        <div className="status-value">
             <Icon color={color.toLowerCase()} name="circle" />
             {t(value)}
         </div>

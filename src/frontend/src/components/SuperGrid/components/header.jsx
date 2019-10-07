@@ -12,7 +12,7 @@ import {
     importProgressSelector,
 } from '../../../ducks/gridList';
 
-import FieldsConfig from '../../FieldsConfig'
+import FieldsConfig from '../../FieldsConfig/index'
 import {
     representationNameSelector,
     representationsSelector,
@@ -102,7 +102,7 @@ const Header = ({
                                     }
                                     <Dropdown.Divider/>
                                 </> : null}
-                                <FieldsConfig title={t('Create representation')} gridName={name} isNew>
+                                <FieldsConfig title={t('Create representation')} gridName={name} isNew={true}>
                                     <Dropdown.Item icon="add" text={t('create_btn')}/>
                                 </FieldsConfig>
                             </Dropdown.Menu>

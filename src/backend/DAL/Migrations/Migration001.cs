@@ -406,8 +406,8 @@ namespace DAL.Migrations
             AddTranslation("from", "From", "От");
             AddTranslation("to", "To", "До");
             AddTranslation("representation", "Representation", "Представления");
-            AddTranslation("Available", "Available", "Доступные");
-            AddTranslation("Selected", "Selected", "Выбранные");
+            AddTranslation("Available", "Available", "Доступные поля");
+            AddTranslation("Selected", "Selected", "Выбранные поля");
             AddTranslation("error_file_size", "error_file_size", "Размер файла не должен превышать 10Mb");
             AddTranslation("documentTypes", "Document types", "Типы документов");
             AddTranslation("vehicleTypes", "Vehicle types", "Типы ТС");
