@@ -88,7 +88,7 @@ namespace Application.Services.History
 
         private string GetDisplayValue(object value)
         {
-            if (value == null)
+            if (value == null || (value is string && (value as string).Length == 0))
             {
                 return "emptyValue";
             }

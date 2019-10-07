@@ -118,16 +118,23 @@ namespace Application.Services.Orders
                 setter.UpdateField(e => e.ShippingId, Guid.Parse(dto.ShippingId));
             /*end of map dto to entity fields*/
 
-            if (string.IsNullOrEmpty(dto.Id))
+            bool isNew = string.IsNullOrEmpty(dto.Id);
+            if (isNew)
             {
                 InitializeNewOrder(entity);
             }
 
             setter.ApplyAfterActions();
 
+            bool isCreated = false;
             if (setter.HasChanges)
             {
-                CheckRequiredFields(entity);
+                isCreated = CheckRequiredFields(entity);
+            }
+
+            if (isNew && !isCreated)
+            {
+                _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
             }
 
             string errors = setter.ValidationErrors;
@@ -171,7 +178,7 @@ namespace Application.Services.Orders
             _historyService.Save(order.Id, "fieldChanged", fieldName?.ToLowerfirstLetter(), newValue);
         }
 
-        private void CheckRequiredFields(Order order)
+        private bool CheckRequiredFields(Order order)
         {
             if (order.Status == OrderState.Draft)
             {
@@ -182,18 +189,19 @@ namespace Application.Services.Orders
                     && !string.IsNullOrEmpty(order.Payer)
                     && order.ShippingDate.HasValue
                     && order.DeliveryDate.HasValue;
+
                 if (hasRequiredFields)
                 {
                     order.Status = OrderState.Created;
-                    _historyService.Save(order.Id, "orderStatusChanged", order.Status);
+                    _historyService.Save(order.Id, "orderSetCreated", order.OrderNumber);
+                    return true;
                 }
             }
+            return false;
         }
 
         private void InitializeNewOrder(Order order)
         {
-            _historyService.Save(order.Id, "newOrderCreated");
-
             if (string.IsNullOrEmpty(order.ShippingAddress))
             {
                 var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");

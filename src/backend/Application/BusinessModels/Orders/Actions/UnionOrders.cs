@@ -62,7 +62,7 @@ namespace Application.BusinessModels.Orders.Actions
                 order.ShippingStatus = VehicleState.VehicleWaiting;
                 order.DeliveryStatus = VehicleState.VehicleEmpty;
 
-                _historyService.Save(order.Id, "orderStatusChanged", order.Status);
+                _historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
             }
             db.SaveChanges();
             return new AppActionResult

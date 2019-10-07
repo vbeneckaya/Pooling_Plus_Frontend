@@ -495,7 +495,11 @@ namespace DAL.Migrations
             AddTranslation("shippingId", "Shipping", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
             AddTranslation("newOrderCreated", "New order created", "Создан новый заказ");
-            AddTranslation("orderStatusChanged", "Order status changed to {0}", "Статус заказа изменен на {0}");
+            AddTranslation("orderSetDraft", "Order {0} is not verified", "Заказ {0} не проверен");
+            AddTranslation("orderSetCreated", "Order {0} is created", "Создан заказ {0}");
+            AddTranslation("orderSetInShipping", "Order {0} is included in shipping {1}", "Заказ {0} включен в перевозку {1}");
+            AddTranslation("orderSetShipped", "Order {0} is shipped", "Заказ {0} отгружен");
+            AddTranslation("orderSetDelivered", "Order {0} is delivered", "Заказ {0} доставлен");
 
             AddTranslation("vehicleEmpty", "Empty", "Не указан");
             AddTranslation("vehicleWaiting", "Waiting vehicle", "Ожидает ТС");
