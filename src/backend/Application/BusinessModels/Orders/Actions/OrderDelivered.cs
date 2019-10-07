@@ -3,6 +3,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -12,10 +13,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class OrderDelivered : IAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public OrderDelivered(AppDbContext db)
+        public OrderDelivered(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Green;
         }
 
@@ -24,6 +27,9 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(User user, Order order)
         {
             order.Status = OrderState.Delivered;
+
+            _historyService.Save(order.Id, "orderStatusChanged", order.Status);
+
             db.SaveChanges();
             
             return new AppActionResult

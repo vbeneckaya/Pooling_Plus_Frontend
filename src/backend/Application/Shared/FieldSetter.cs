@@ -34,12 +34,21 @@ namespace Application.Shared
                         {
                             _afterActions.Add(() => fieldHandler.AfterChange(_entity, oldValue, newValue));
                         }
+                        foreach (var action in _commonActions)
+                        {
+                            _afterActions.Add(() => action(_entity, propertyInfo.Name, newValue));
+                        }
                         HasChanges = true;
                         return true;
                     }
                 }
             }
             return false;
+        }
+
+        public void AddCommonAction(Action<TEntity, string, object> action)
+        {
+            _commonActions.Add(action);
         }
 
         public void ApplyAfterActions()
@@ -60,6 +69,7 @@ namespace Application.Shared
         }
 
         private readonly TEntity _entity;
+        private readonly List<Action<TEntity, string, object>> _commonActions = new List<Action<TEntity, string, object>>();
         private readonly List<Action> _afterActions = new List<Action>();
         private readonly List<string> _validationErrors = new List<string>();
     }

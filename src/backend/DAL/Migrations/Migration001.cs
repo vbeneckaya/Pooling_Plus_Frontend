@@ -325,8 +325,24 @@ namespace DAL.Migrations
                 new Column("FileId", DbType.Guid, ColumnProperty.NotNull),
                 new Column("TypeId", DbType.Guid, ColumnProperty.NotNull));
             Database.AddIndex("documents_pk", true, "Documents", "Id");
+            Database.AddIndex("documents_persistableId_ix", false, "Documents", "PersistableId");
             Database.AddForeignKey("documents_fileStorage_fk", "Documents", "FileId", "FileStorage", "Id");
             Database.AddForeignKey("documents_documentTypes_fk", "Documents", "TypeId", "DocumentTypes", "Id");
+
+            Database.AddTable("HistoryEntries",
+                new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
+                new Column("PersistableId", DbType.Guid, ColumnProperty.NotNull),
+                new Column("UserId", DbType.Guid, ColumnProperty.Null),
+                new Column("UserName", DbType.String),
+                new Column("RoleId", DbType.Guid, ColumnProperty.Null),
+                new Column("RoleName", DbType.String),
+                new Column("CreatedAt", DbType.DateTime),
+                new Column("MessageKey", DbType.String),
+                new Column("MessageArgs", DbType.String.WithSize(int.MaxValue)));
+            Database.AddIndex("historyEntries_pk", true, "HistoryEntries", "Id");
+            Database.AddIndex("historyEntries_persistableId_ix", false, "HistoryEntries", "PersistableId");
+            Database.AddForeignKey("historyEntries_user_fk", "HistoryEntries", "UserId", "Users", "Id");
+            Database.AddForeignKey("historyEntries_role_fk", "HistoryEntries", "RoleId", "Roles", "Id");
             /*end of add tables*/
 
             AddTranslation("UserNotFound", "User not found", "Пользователь не найден или не активен");
@@ -396,6 +412,8 @@ namespace DAL.Migrations
             AddTranslation("documentTypes", "Document types", "Типы документов");
             AddTranslation("vehicleTypes", "Vehicle types", "Типы ТС");
             AddTranslation("pickingTypes", "Picking types", "Типы комплектации");
+            AddTranslation("emptyValue", "(empty)", "(пусто)");
+            AddTranslation("fieldChanged", "Field {0} is set to {1}", "Значение поля {0} изменено на '{1}'");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -479,6 +497,8 @@ namespace DAL.Migrations
             AddTranslation("orderCreationDate", "Order creation date", "Дата создания заказа в системе");
             AddTranslation("shippingId", "Shipping", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
+            AddTranslation("newOrderCreated", "New order created", "Создан новый заказ");
+            AddTranslation("orderStatusChanged", "Order status changed to {0}", "Статус заказа изменен на {0}");
 
             AddTranslation("vehicleEmpty", "Empty", "Не указан");
             AddTranslation("vehicleWaiting", "Waiting vehicle", "Ожидает ТС");

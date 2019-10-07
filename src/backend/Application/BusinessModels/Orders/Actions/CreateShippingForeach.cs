@@ -6,6 +6,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.BusinessModels.Orders.Actions
@@ -16,10 +17,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class CreateShippingForeach : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public CreateShippingForeach(AppDbContext db)
+        public CreateShippingForeach(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Blue;
         }
 
@@ -27,7 +30,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(User user, IEnumerable<Order> orders)
         {
-            var createShipping = new CreateShipping(db);
+            var createShipping = new CreateShipping(db, _historyService);
             foreach (var order in orders) 
                 createShipping.Run(user, order);
 

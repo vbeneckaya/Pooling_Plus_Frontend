@@ -7,6 +7,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.History;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
@@ -19,9 +20,11 @@ namespace Application.Services.Orders
 {
     public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto>, IOrdersService
     {
-        public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
+        public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+            : base(appDbContext, userIdProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
+            _historyService = historyService;
         }
 
         public override DbSet<Order> UseDbSet(AppDbContext dbContext)
@@ -33,14 +36,14 @@ namespace Application.Services.Orders
         {
             return new List<IAction<Order>>
             {
-                new CreateShipping(db),
-                new CancelOrder(db),
-                new RemoveFromShipping(db),
-                new SendToArchive(db),
-                new RecordFactOfLoss(db),
-                new OrderShipped(db),
-                new OrderDelivered(db),
-                new FullReject(db),
+                new CreateShipping(db, _historyService),
+                new CancelOrder(db, _historyService),
+                new RemoveFromShipping(db, _historyService),
+                new SendToArchive(db, _historyService),
+                new RecordFactOfLoss(db, _historyService),
+                new OrderShipped(db, _historyService),
+                new OrderDelivered(db, _historyService),
+                new FullReject(db, _historyService),
                 /*end of add single actions*/
             };
         }
@@ -49,9 +52,9 @@ namespace Application.Services.Orders
         {
             return new List<IAction<IEnumerable<Order>>>
             {
-                new UnionOrders(db),
-                new CancelOrders(db),
-                new CreateShippingForeach(db),
+                new UnionOrders(db, _historyService),
+                new CancelOrders(db, _historyService),
+                new CreateShippingForeach(db, _historyService),
                 /*end of add group actions*/
             };
         }
@@ -59,6 +62,8 @@ namespace Application.Services.Orders
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             var setter = new FieldSetter<Order>(entity);
+
+            setter.AddCommonAction(OnFieldChanged);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
@@ -161,6 +166,11 @@ namespace Application.Services.Orders
             };
         }
 
+        private void OnFieldChanged(Order order, string fieldName, object newValue)
+        {
+            _historyService.Save(order.Id, "fieldChanged", fieldName?.ToLowerfirstLetter(), newValue);
+        }
+
         private void CheckRequiredFields(Order order)
         {
             if (order.Status == OrderState.Draft)
@@ -175,12 +185,15 @@ namespace Application.Services.Orders
                 if (hasRequiredFields)
                 {
                     order.Status = OrderState.Created;
+                    _historyService.Save(order.Id, "orderStatusChanged", order.Status);
                 }
             }
         }
 
         private void InitializeNewOrder(Order order)
         {
+            _historyService.Save(order.Id, "newOrderCreated");
+
             if (string.IsNullOrEmpty(order.ShippingAddress))
             {
                 var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
@@ -279,5 +292,6 @@ namespace Application.Services.Orders
         }
 
         private readonly IMapper _mapper;
+        private readonly IHistoryService _historyService;
     }
 }

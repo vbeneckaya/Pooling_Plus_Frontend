@@ -6,6 +6,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -15,10 +16,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class RemoveFromShipping : IAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public RemoveFromShipping(AppDbContext db)
+        public RemoveFromShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Blue;
         }
 
@@ -29,6 +32,8 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Created;
             order.ShippingStatus = VehicleState.VehicleEmpty;
             order.DeliveryStatus = VehicleState.VehicleEmpty;
+
+            _historyService.Save(order.Id, "orderStatusChanged", order.Status);
 
             var shipping = db.Shippings.GetById(order.ShippingId.Value);
             
