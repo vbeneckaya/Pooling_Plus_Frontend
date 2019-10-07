@@ -3,7 +3,13 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
-import {cardSelector, editCardRequest, openGridCardRequest, progressSelector} from '../../ducks/gridCard';
+import {
+    cardSelector,
+    editCardRequest,
+    getCardRequest,
+    openGridCardRequest,
+    progressSelector
+} from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from "../../components/Modals/shippingModal";
 
@@ -33,7 +39,7 @@ class Card extends Component {
     };
 
     onOpen = () => {
-        this.loadCard();
+        this.props.id && this.loadCard();
         this.props.stopUpdate();
         this.setState({
             modalOpen: true,
@@ -122,7 +128,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
     return {
         openCard: params => {
-            dispatch(openGridCardRequest(params));
+            dispatch(getCardRequest(params));
         },
         editCard: params => {
             dispatch(editCardRequest(params))

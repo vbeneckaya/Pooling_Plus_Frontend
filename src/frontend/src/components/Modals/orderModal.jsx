@@ -7,6 +7,7 @@ import Position from './orderTabs/position';
 import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
 import History from './orderTabs/history';
+import CreateOrder from './orderTabs/createOrder';
 
 const OrderModal = ({ form, onChangeForm, name, id }) => {
     const { t } = useTranslation();
@@ -54,7 +55,7 @@ const OrderModal = ({ form, onChangeForm, name, id }) => {
         },
     ];
 
-    return <Tab panes={getPanes} />;
+    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} onChange={onChangeForm}/>}</>;
 };
 
 export default OrderModal;

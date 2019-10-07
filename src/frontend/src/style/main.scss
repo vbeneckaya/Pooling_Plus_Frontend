@@ -185,13 +185,17 @@ body {
 }
 
 .tabs-card {
-    height: 67vh;
-    overflow: auto;
+    height: 65vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    .ui.grid > .row:not(:last-child){
+        padding-bottom: 0!important;
+    }
 
     .ui.grid > .row > .column {
-        display: flex;
+        //display: flex;
         // align-items: flex-end;
-
         .field {
             width: 100%;
         }
@@ -199,6 +203,7 @@ body {
 
     .ui.segment {
         margin: 0 !important;
+        height: 100%;
     }
 
     .all-tabs > .ui.menu.tabular {
@@ -216,7 +221,7 @@ body {
 }
 
 .add-right-elements {
-    display: flex;
+    display: flex!important;
     justify-content: flex-end;
     align-items: flex-end;
     button {
@@ -255,6 +260,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    height: 36px;
     label {
        font-size: .92857143em;
     }
