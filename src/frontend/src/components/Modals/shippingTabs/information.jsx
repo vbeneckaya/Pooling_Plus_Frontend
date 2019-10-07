@@ -22,8 +22,8 @@ const Information = ({ form = {}, onChange }) => {
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <Select
-                                                name="carrier"
-                                                value={form['carrier']}
+                                                name="carrierId"
+                                                value={form['carrierId']}
                                                 source="transportCompanies"
                                                 onChange={onChange}
                                             />
@@ -50,6 +50,7 @@ const Information = ({ form = {}, onChange }) => {
                                             <Select
                                                 name="vehicleType"
                                                 value={form['vehicleType']}
+                                                source="vehicleTypes"
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>

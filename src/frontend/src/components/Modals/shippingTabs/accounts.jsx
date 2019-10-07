@@ -41,7 +41,7 @@ const Accounts = ({ form = {}, onChange }) => {
                     <Grid.Column>
                         <TextArea
                             name="additionalCostsComments"
-                            rows={5}
+                            rows={10}
                             value={form['additionalCostsComments']}
                             onChange={onChange}
                         />

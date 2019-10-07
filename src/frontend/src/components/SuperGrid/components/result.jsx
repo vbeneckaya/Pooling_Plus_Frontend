@@ -56,7 +56,7 @@ class Result extends Component {
                                 ...row,
                                 loadList,
                                 title: t(`edit_${name}`, {
-                                    number: row.orderNumber,
+                                    number: name === 'orders' ? row.orderNumber : row.shippingNumber,
                                     status: t(row.status),
                                 }),
                             }}
