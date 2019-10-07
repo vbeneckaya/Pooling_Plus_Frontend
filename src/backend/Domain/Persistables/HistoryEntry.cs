@@ -8,8 +8,6 @@ namespace Domain.Persistables
         public Guid PersistableId { get; set; }
         public Guid? UserId { get; set; }
         public string UserName { get; set; }
-        public Guid? RoleId { get; set; }
-        public string RoleName { get; set; }
         public DateTime CreatedAt { get; set; }
         public string MessageKey { get; set; }
         public string MessageArgs { get; set; }

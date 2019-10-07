@@ -37,7 +37,8 @@ namespace Application.Services.History
         public void Save(Guid entityId, string messageKey, params object[] messageArgs)
         {
             User user = _userProvider.GetCurrentUser();
-            Role role = user?.RoleId == null ? null : _db.Roles.GetById(user.RoleId);
+            string userName = GetUserName(user);
+
             string[] valueArgs = messageArgs.Select(GetDisplayValue).ToArray();
             string strArgs = JsonConvert.SerializeObject(valueArgs);
 
@@ -45,9 +46,7 @@ namespace Application.Services.History
             {
                 PersistableId = entityId,
                 UserId = user?.Id,
-                UserName = user?.Name ?? "System",
-                RoleId = role?.Id,
-                RoleName = role?.Name,
+                UserName = userName,
                 CreatedAt = DateTime.UtcNow,
                 MessageKey = messageKey,
                 MessageArgs = strArgs
@@ -59,13 +58,13 @@ namespace Application.Services.History
         {
             string[] args = JsonConvert.DeserializeObject<string[]>(entity.MessageArgs ?? string.Empty);
             string[] localArgs = args.Select(x => Localize(x, lang, dict)).ToArray();
+
             string localKey = Localize(entity.MessageKey, lang, dict) ?? string.Empty;
             string message = string.Format(localKey, localArgs);
 
             return new HistoryEntryDto
             {
                 UserName = entity.UserName,
-                RoleName = entity.RoleName,
                 CreatedAt = entity.CreatedAt,
                 Message = message
             };
@@ -104,6 +103,26 @@ namespace Application.Services.History
             else
             {
                 return value?.ToString();
+            }
+        }
+
+        private string GetUserName(User user)
+        {
+            if (user == null)
+            {
+                return "System";
+            }
+            else
+            {
+                Role role = _db.Roles.GetById(user.RoleId);
+                if (role == null)
+                {
+                    return user.Name;
+                }
+                else
+                {
+                    return $"{user.Name} ({role.Name})";
+                }
             }
         }
 

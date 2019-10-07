@@ -334,8 +334,6 @@ namespace DAL.Migrations
                 new Column("PersistableId", DbType.Guid, ColumnProperty.NotNull),
                 new Column("UserId", DbType.Guid, ColumnProperty.Null),
                 new Column("UserName", DbType.String),
-                new Column("RoleId", DbType.Guid, ColumnProperty.Null),
-                new Column("RoleName", DbType.String),
                 new Column("CreatedAt", DbType.DateTime),
                 new Column("MessageKey", DbType.String),
                 new Column("MessageArgs", DbType.String.WithSize(int.MaxValue)));
@@ -531,6 +529,9 @@ namespace DAL.Migrations
 
             AddTranslation("ltl", "LTL", "LTL");
             AddTranslation("ftl", "FTL", "FTL");
+
+            AddTranslation("or", "OR", "OR");
+            AddTranslation("fd", "FD", "FD");
 
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");

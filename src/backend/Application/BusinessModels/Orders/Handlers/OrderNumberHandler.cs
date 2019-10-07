@@ -9,9 +9,9 @@ namespace Application.BusinessModels.Orders.Handlers
         public void AfterChange(Order order, string oldValue, string newValue)
         {
             if (order.OrderNumber.StartsWith("2"))
-                order.OrderType = OrderType.FD;
+                order.OrderType = OrderType.Fd;
             else
-                order.OrderType = OrderType.OR;
+                order.OrderType = OrderType.Or;
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)
