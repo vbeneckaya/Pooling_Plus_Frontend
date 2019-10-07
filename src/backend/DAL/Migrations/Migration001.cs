@@ -340,7 +340,6 @@ namespace DAL.Migrations
             Database.AddIndex("historyEntries_pk", true, "HistoryEntries", "Id");
             Database.AddIndex("historyEntries_persistableId_ix", false, "HistoryEntries", "PersistableId");
             Database.AddForeignKey("historyEntries_user_fk", "HistoryEntries", "UserId", "Users", "Id");
-            Database.AddForeignKey("historyEntries_role_fk", "HistoryEntries", "RoleId", "Roles", "Id");
             /*end of add tables*/
 
             AddTranslation("UserNotFound", "User not found", "Пользователь не найден или не активен");
