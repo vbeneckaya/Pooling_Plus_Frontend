@@ -6,6 +6,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -15,10 +16,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public UnionOrders(AppDbContext db)
+        public UnionOrders(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Orange;
         }
         
@@ -58,6 +61,8 @@ namespace Application.BusinessModels.Orders.Actions
                 order.ShippingId = shipping.Id;
                 order.ShippingStatus = VehicleState.VehicleWaiting;
                 order.DeliveryStatus = VehicleState.VehicleEmpty;
+
+                _historyService.Save(order.Id, "orderStatusChanged", order.Status);
             }
             db.SaveChanges();
             return new AppActionResult

@@ -47,6 +47,19 @@
             <param name="id">Идентификатор файла</param>
             <returns></returns>
         </member>
+        <member name="T:API.Controllers.HistoryController">
+            <summary>
+            История
+            </summary>
+        </member>
+        <member name="M:API.Controllers.HistoryController.Get(System.Guid,System.String)">
+            <summary>
+            Получить историю сущности
+            </summary>
+            <param name="entityId">Идентификатор сущности</param>
+            <param name="lang">Язык для локализации</param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.IdentityController.UserInfo">
             <summary>
             Получение информации о пользователе
