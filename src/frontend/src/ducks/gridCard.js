@@ -240,9 +240,10 @@ function* getCardConfigSaga({ payload }) {
 
 function* getCardSaga({ payload }) {
     try {
-        const { name, id } = payload;
+        const { name, id, callbackSuccess } = payload;
         const result = yield postman.get(`${name}/getById/${id}`);
         yield put({ type: GET_GRID_CARD_SUCCESS, payload: result });
+        callbackSuccess && callbackSuccess(result);
     } catch (error) {
         yield put({ type: GET_GRID_CARD_ERROR });
     }

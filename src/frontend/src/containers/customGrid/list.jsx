@@ -21,13 +21,14 @@ import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../d
 import { STATE_TYPE } from '../../constants/columnTypes';
 import {representationFromGridSelector} from "../../ducks/representations";
 
-const CreateButton = ({ t, ...res }) => (
-    <Card {...res}>
+const CreateButton = ({ t, ...res }) => {
+    console.log('res', res)
+    return <Card {...res}>
         <Button color="blue" className="create-button">
-            {t('create_btn')}
+            {t(`create_${res.name}`)}
         </Button>
     </Card>
-);
+};
 
 class List extends Component {
     constructor(props) {
@@ -108,7 +109,7 @@ class List extends Component {
                     getActions={getActions}
                     groupActions={this.getGroupActions}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
-                    createButton={isCreateBtn ? <CreateButton t={t} title={'new'} /> : null}
+                    createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
                 />

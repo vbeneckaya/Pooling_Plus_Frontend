@@ -323,6 +323,7 @@ class SuperGrid extends Component {
                         <Result
                             columns={columns}
                             rows={rows}
+                            name={name}
                             modalCard={modalCard}
                             actions={actions}
                             onlyOneCheck={onlyOneCheck}

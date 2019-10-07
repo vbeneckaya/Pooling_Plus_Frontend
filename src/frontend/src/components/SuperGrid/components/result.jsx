@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
 import { Button, Checkbox, Table } from 'semantic-ui-react';
 import CellValue from '../../../components/ColumnsValue';
 
@@ -36,6 +37,8 @@ class Result extends Component {
             selectedRows,
             loadList,
             disabledCheck,
+            name,
+            t
         } = this.props;
 
         const columnStyle = column => ({
@@ -49,7 +52,14 @@ class Result extends Component {
                     rows.map((row, i) => (
                         <ModalComponent
                             element={modalCard}
-                            props={{ ...row, loadList, title: `edit` }}
+                            props={{
+                                ...row,
+                                loadList,
+                                title: t(`edit_${name}`, {
+                                    number: row.orderNumber,
+                                    status: t(row.status),
+                                }),
+                            }}
                             key={`modal_${row.id}`}
                         >
                             <Table.Row
@@ -130,4 +140,4 @@ class Result extends Component {
     }
 }
 
-export default Result;
+export default withTranslation()(Result);
