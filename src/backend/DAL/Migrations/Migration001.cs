@@ -417,6 +417,7 @@ namespace DAL.Migrations
             AddTranslation("Create representation", "Create representation", "Создание представления");
             AddTranslation("Edit representation", "Edit representation {{name}}", "Редактирование представления {{name}}");
             AddTranslation("add value", "Add value", "Добавить значение");
+            AddTranslation("create_orders", "Create order", "Создать заказ");
             /*start of add translates for action*/
 
             /*start of add translates*/
