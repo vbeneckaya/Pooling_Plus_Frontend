@@ -13,9 +13,11 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
-    BOOLEAN_TYPE, DATE_TYPE
+    BOOLEAN_TYPE,
+    DATE_TYPE,
+    ENUM_TYPE,
 } from '../../../constants/columnTypes';
-import Bool from "../../FilterComponents/Bool";
+import Bool from '../../FilterComponents/Bool';
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
@@ -24,7 +26,8 @@ const getTypeFacet = {
     [DATE_TIME_TYPE]: <DateFacet />,
     [DATE_TYPE]: <DateFacet />,
     [STATE_TYPE]: <StateFacet />,
-    [BOOLEAN_TYPE]: <Bool/>
+    [BOOLEAN_TYPE]: <Bool />,
+    [ENUM_TYPE]: <SelectFacet />,
 };
 
 const Control = props => {

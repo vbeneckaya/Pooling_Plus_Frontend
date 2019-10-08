@@ -269,3 +269,8 @@ body {
         width: 30%!important;
     }
 }
+
+.grid-card-actions {
+    display: flex;
+    justify-content: space-between;
+}

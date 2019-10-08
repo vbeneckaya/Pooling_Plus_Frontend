@@ -12,28 +12,25 @@ const Returns = ({ form, onChange }) => {
     return (
         <Form>
             <Grid>
-                <Grid.Row columns={3}>
-                    <Grid.Column>
+                <Grid.Row columns={2} stretched>
+                    <Grid.Column width={5}>
                         <Text
                             name="returnShippingAccountNo"
                             value={form['returnShippingAccountNo']}
                             onChange={onChange}
                         />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Text name="majorAdoptionNumber" value={form['majorAdoptionNumber']} onChange={onChange} />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Text name="Расхождение(шт)" value={form['addressFrom']} onChange={onChange} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns='equal' stretched>
-                    <Grid.Column width={5}>
                         <Date name="plannedReturnDate" value={form['plannedReturnDate']} onChange={onChange} />
-                        <Date name="actualReturnDate" value={form['actualReturnDate']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
                         <TextArea name="returnInformation" value={form['returnInformation']} rows={5} onChange={onChange} />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row columns={2}>
+                    <Grid.Column width={5}>
+                        <Date name="actualReturnDate" value={form['actualReturnDate']} onChange={onChange} />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Text name="majorAdoptionNumber" value={form['majorAdoptionNumber']} onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

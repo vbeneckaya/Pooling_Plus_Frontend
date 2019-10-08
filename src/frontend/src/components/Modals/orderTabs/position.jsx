@@ -42,8 +42,8 @@ const Position = ({ rows = [], form, onChange }) => {
     return (
         <>
             <Grid>
-                <Grid.Row>
-                    <Grid.Column width={10}>
+                <Grid.Row columns='equal'>
+                    <Grid.Column width={4}>
                         <Form>
                             <Text
                                 name="orderAmountExcludingVAT"
@@ -52,7 +52,7 @@ const Position = ({ rows = [], form, onChange }) => {
                             />
                         </Form>
                     </Grid.Column>
-                    <Grid.Column width={6} className="add-right-elements">
+                    <Grid.Column className="add-right-elements">
                         <Button>{t('addButton')}</Button>
                     </Grid.Column>
                 </Grid.Row>

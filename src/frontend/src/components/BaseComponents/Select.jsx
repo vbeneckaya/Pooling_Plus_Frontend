@@ -18,7 +18,8 @@ const Select = ({
     multiple,
     loading,
     clearable,
-    source
+    source,
+    isTranslate
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const Select = ({
     let items = valuesList.map((x, index) => ({
         key: `${x.value}_${index}`,
         value: x.value,
-        text: x.name,
+        text: isTranslate ? t(x.name) : x.name,
        /* disabled: !x.isActive,
         description: x.description,*/
     }));

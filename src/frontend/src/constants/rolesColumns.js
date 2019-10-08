@@ -1,4 +1,4 @@
-import { ACTIVE_TYPE, ENUM_TYPE } from './columnTypes';
+import {ACTIVE_TYPE, ENUM_TYPE, LABELS_TYPE} from './columnTypes';
 
 export const rolesColumns = [
     {
@@ -9,7 +9,7 @@ export const rolesColumns = [
     },
     {
         name: 'permissions',
-        type: ENUM_TYPE,
+        type: LABELS_TYPE,
     },
     {
         name: 'isActive',

@@ -12,9 +12,13 @@ const CreateOrder = ({ form = {}, onChange}) => {
 
     const handleChangeSoldTo = (e, {name, value}) => {
         console.log('valuesList', valuesList);
+        const item = valuesList.find(item => item.value === value) || {};
+
         onChange(e, {name, value});
-        onChange(e, {name: 'clientName', value: valuesList[0].warehouseName})
-        onChange(e, {name: 'deliveryAddress', value: valuesList[0].address});
+        onChange(e, {name: 'clientName', value: item.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: item.address});
+
+        if (item.pickingTypeId) onChange(e, {name: 'pickingTypeId', value: item.pickingTypeId});
     };
 
     return (

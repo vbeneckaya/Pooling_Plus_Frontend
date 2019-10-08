@@ -11,29 +11,29 @@ import Text from "../../BaseComponents/Text";
 
 const Route = ({ name, form = {}, onChange }) => {
     const { t } = useTranslation();
-
+console.log('form', form);
     return (
         <Form style={{paddingLeft: "12px"}}>
             <Grid>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <Date/>
+                        <DateTime name="plannedDate" value={form["plannedDate"]} onChange={onChange}/>
                     </Grid.Column>
                     <Grid.Column>
-                        <State/>
+                        <State name="vehicleStatus" value={form["vehicleStatus"]} source="vehicleState" onChange={onChange}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <DateTime/>
+                        <DateTime name="arrivalTime" value={form["arrivalTime"]} onChange={onChange}/>
                     </Grid.Column>
                     <Grid.Column>
-                        <DateTime/>
+                        <DateTime name="departureTime" value={form["departureTime"]} onChange={onChange}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={16}>
-                    <TextArea/>
+                    <TextArea name="address" value={form["address"]} onChange={onChange}/>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>

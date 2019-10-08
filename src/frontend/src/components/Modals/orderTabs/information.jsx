@@ -16,7 +16,13 @@ const Information = ({ form, onChange }) => {
     const handleChangeSoldTo = (e, {name, value}) => {
         console.log('valuesList', valuesList);
 
+        const item = valuesList.find(item => item.value === value) || {};
+
         onChange(e, {name, value});
+        onChange(e, {name: 'clientName', value: item.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: item.address});
+
+        if (item.pickingTypeId) onChange(e, {name: 'pickingTypeId', value: item.pickingTypeId});
     };
 
     return (
@@ -73,6 +79,7 @@ const Information = ({ form, onChange }) => {
                                                 name="orderType"
                                                 value={form['orderType']}
                                                 disabled
+                                                isTranslate
                                                 source="orderType"
                                                 onChange={onChange}
                                             />

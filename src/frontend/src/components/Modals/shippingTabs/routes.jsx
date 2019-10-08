@@ -1,49 +1,42 @@
 import React from 'react';
 import { Form, Grid, Icon, Tab } from 'semantic-ui-react';
 import Route from './route';
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import {stateColorsSelector} from "../../../ducks/gridList";
+import {getLookupRequest, valuesListSelector} from "../../../ducks/lookup";
 
 const Routes = ({ form, onChange }) => {
-    const points = [
-        {
-            name: 'РЦ Томилино',
-            status: '',
-            color: 'green'
-        },
-        {
-            name: 'РЦ Химки',
-            status: '',
-            color: 'orange'
-        },
-        {
-            name: 'Дикси Долгопрудный',
-            status: '',
-            color: 'grey'
-        },
-        {
-            name: 'Перекресток Ростокино',
-            status: '',
-            color: 'grey'
-        },
-    ];
+    const dispatch = useDispatch();
+    const points = form.routePoints;
+    const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
+    if (!stateColors.length) {
+        dispatch(
+            getLookupRequest({
+                name: 'vehicleState',
+                isForm: true,
+                isSearch: true,
+            }),
+        );
+    }
 
     const pointsTabs = [];
 
     points.forEach((point, i) => {
+        const state = stateColors.find(x => x.name === point.vehicleStatus);
+        const color = state ? state.color : 'grey';
         pointsTabs.push({
             menuItem: {
                 key: i,
                 content: (
                     <label>
-                        <Icon color={point.color} name="circle" />
-                        {point.name}
+                        <Icon color={color} name="circle" />
+                        {point.warehouseName}
                     </label>
                 ),
             },
             render: () => {
-                return <Route name={point.name} form={form} onChange={onChange} />;
+                return <Route name={point.warehouseName} form={point} onChange={onChange} />;
             },
         });
     });
