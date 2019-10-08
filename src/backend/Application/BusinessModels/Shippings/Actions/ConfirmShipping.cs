@@ -12,13 +12,17 @@ namespace Application.BusinessModels.Shippings.Actions
     public class ConfirmShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
+
         public AppColor Color { get; set; }
 
-        public ConfirmShipping(AppDbContext db)
+        public ConfirmShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Green;
         }
+
         public AppActionResult Run(User user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingConfirmed;
@@ -30,6 +34,8 @@ namespace Application.BusinessModels.Shippings.Actions
                 setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
                 setter.SaveHistoryLog();
             }
+
+            _historyService.Save(shipping.Id, "shippingSetConfirmed", shipping.ShippingNumber);
 
             db.SaveChanges();
             return new AppActionResult
@@ -43,12 +49,5 @@ namespace Application.BusinessModels.Shippings.Actions
         {
             return shipping.Status == ShippingState.ShippingRequestSent && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
-
-        public ConfirmShipping(IHistoryService historyService)
-        {
-            _historyService = historyService;
-        }
-
-        private readonly IHistoryService _historyService;
     }
 }

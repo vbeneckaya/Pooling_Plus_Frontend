@@ -37,9 +37,9 @@ namespace Application.Services.Shippings
             return new List<IAction<Shipping>>
             {
                 new CancelShipping(db),
-                new SendShippingToTk(db),
+                new SendShippingToTk(db, _historyService),
                 new CancelRequestShipping(db),
-                new ConfirmShipping(db),
+                new ConfirmShipping(db, _historyService),
                 /*end of add single actions*/
             };
         }
@@ -216,7 +216,8 @@ namespace Application.Services.Shippings
                 ShippingOrderDto dto = new ShippingOrderDto
                 {
                     Id = order.Id.ToString(),
-                    OrderNumber = order.OrderNumber
+                    OrderNumber = order.OrderNumber,
+                    Status = order.Status.ToString().ToLowerfirstLetter()
                 };
                 result.Add(dto);
             }
