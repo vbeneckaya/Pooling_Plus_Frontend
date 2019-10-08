@@ -11,6 +11,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
@@ -20,7 +21,8 @@ namespace Application.Services.Shippings
 {
     public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto>, IShippingsService
     {
-        public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
+        public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+            : base(appDbContext, userIdProvider, historyService)
         {
             _mapper = ConfigureMapper().CreateMapper();
         }
@@ -61,17 +63,17 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
-            var setter = new FieldSetter<Shipping>(entity);
+            var setter = new FieldSetter<Shipping>(entity, _historyService);
 
             if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id));
+                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.ShippingNumber, dto.ShippingNumber);
             setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
-            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId));
-            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId));
+            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
+            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId), nameLoader: GetVehicleTypeNameById);
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
@@ -84,10 +86,10 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.DeviationReasonsComments, dto.DeviationReasonsComments);
             setter.UpdateField(e => e.TotalDeliveryCost, dto.TotalDeliveryCost, new TotalDeliveryCostHandler());
             setter.UpdateField(e => e.OtherCosts, dto.OtherCosts);
-            setter.UpdateField(e => e.DeliveryCostWithoutVAT, dto.DeliveryCostWithoutVAT, new DeliveryCostWithoutVATHandler());
-            setter.UpdateField(e => e.ReturnCostWithoutVAT, dto.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler());
+            setter.UpdateField(e => e.DeliveryCostWithoutVAT, dto.DeliveryCostWithoutVAT, new DeliveryCostWithoutVATHandler(_historyService));
+            setter.UpdateField(e => e.ReturnCostWithoutVAT, dto.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler(_historyService));
             setter.UpdateField(e => e.InvoiceAmountWithoutVAT, dto.InvoiceAmountWithoutVAT);
-            setter.UpdateField(e => e.AdditionalCostsWithoutVAT, dto.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler());
+            setter.UpdateField(e => e.AdditionalCostsWithoutVAT, dto.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler(_historyService));
             setter.UpdateField(e => e.AdditionalCostsComments, dto.AdditionalCostsComments);
             setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler());
             setter.UpdateField(e => e.ReturnRate, dto.ReturnRate);
@@ -103,12 +105,13 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.ActualDocumentsReturnDate, ParseDateTime(dto.ActualDocumentsReturnDate));
             setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
             if (!string.IsNullOrEmpty(dto.Status))
-                setter.UpdateField(e => e.Status,  MapFromStateDto<ShippingState>(dto.Status));
+                setter.UpdateField(e => e.Status,  MapFromStateDto<ShippingState>(dto.Status), ignoreChanges: true);
             setter.UpdateField(e => e.CostsConfirmedByShipper, dto.CostsConfirmedByShipper ?? false);
             setter.UpdateField(e => e.CostsConfirmedByCarrier, dto.CostsConfirmedByCarrier ?? false);
             /*end of map dto to entity fields*/
 
             setter.ApplyAfterActions();
+            setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return new ValidateResult(errors, entity.Id.ToString());
@@ -137,6 +140,16 @@ namespace Application.Services.Shippings
             return formDto;
         }
 
+        private string GetCarrierNameById(Guid? id)
+        {
+            return id == null ? null : db.TransportCompanies.GetById(id.Value)?.Title;
+        }
+
+        private string GetVehicleTypeNameById(Guid? id)
+        {
+            return id == null ? null : db.VehicleTypes.GetById(id.Value)?.Name;
+        }
+
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
@@ -156,7 +169,7 @@ namespace Application.Services.Shippings
                         Order order;
                         if (ordersDict.TryGetValue(orderId, out order))
                         {
-                            var setter = new FieldSetter<Order>(order);
+                            var setter = new FieldSetter<Order>(order, _historyService);
 
                             if (pointDto.IsLoading)
                             {
@@ -176,6 +189,7 @@ namespace Application.Services.Shippings
                             }
 
                             setter.ApplyAfterActions();
+                            setter.SaveHistoryLog();
                         }
                     }
                 }
@@ -252,10 +266,10 @@ namespace Application.Services.Shippings
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerfirstLetter()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerfirstLetter()))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId?.ToString()))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerfirstLetter()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))

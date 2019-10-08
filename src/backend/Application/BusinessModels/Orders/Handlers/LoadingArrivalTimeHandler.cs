@@ -1,7 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
+using Domain.Services.History;
 using System;
 using System.Linq;
 
@@ -20,13 +22,17 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    updOrder.LoadingArrivalTime = newValue;
+                    var setter = new FieldSetter<Order>(updOrder, _historyService);
+                    setter.UpdateField(o => o.LoadingArrivalTime, newValue);
+                    setter.SaveHistoryLog();
                 }
 
                 var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                 if (shipping != null)
                 {
-                    shipping.LoadingArrivalTime = newValue;
+                    var setter = new FieldSetter<Shipping>(shipping, _historyService);
+                    setter.UpdateField(s => s.LoadingArrivalTime, newValue);
+                    setter.SaveHistoryLog();
                 }
             }
         }
@@ -43,11 +49,13 @@ namespace Application.BusinessModels.Orders.Handlers
             }
         }
 
-        public LoadingArrivalTimeHandler(AppDbContext db)
+        public LoadingArrivalTimeHandler(AppDbContext db, IHistoryService historyService)
         {
             _db = db;
+            _historyService = historyService;
         }
 
         private readonly AppDbContext _db;
+        private readonly IHistoryService _historyService;
     }
 }

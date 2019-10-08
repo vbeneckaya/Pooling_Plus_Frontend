@@ -1,5 +1,7 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using Domain.Persistables;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Shippings.Handlers
 {
@@ -9,10 +11,12 @@ namespace Application.BusinessModels.Shippings.Handlers
         {
             if (!shipping.ManualTotalDeliveryCost)
             {
-                shipping.TotalDeliveryCost =
-                    shipping.DeliveryCostWithoutVAT ?? 0M
-                    + shipping.ReturnCostWithoutVAT ?? 0M
-                    + shipping.AdditionalCostsWithoutVAT ?? 0M;
+                var setter = new FieldSetter<Shipping>(shipping, _historyService);
+
+                decimal newTotalValue = shipping.DeliveryCostWithoutVAT ?? 0M + shipping.ReturnCostWithoutVAT ?? 0M + shipping.AdditionalCostsWithoutVAT ?? 0M;
+                setter.UpdateField(s => s.TotalDeliveryCost, newTotalValue);
+
+                setter.SaveHistoryLog();
             }
         }
 
@@ -20,5 +24,12 @@ namespace Application.BusinessModels.Shippings.Handlers
         {
             return null;
         }
+
+        public AdditionalCostsWithoutVATHandler(IHistoryService historyService)
+        {
+            _historyService = historyService;
+        }
+
+        private readonly IHistoryService _historyService;
     }
 }

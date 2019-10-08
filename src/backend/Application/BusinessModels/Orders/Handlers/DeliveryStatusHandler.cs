@@ -1,7 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using DAL;
 using Domain.Enums;
 using Domain.Persistables;
+using Domain.Services.History;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -19,7 +21,9 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    updOrder.DeliveryStatus = newValue;
+                    var setter = new FieldSetter<Order>(updOrder, _historyService);
+                    setter.UpdateField(o => o.DeliveryStatus, newValue);
+                    setter.SaveHistoryLog();
                 }
             }
         }
@@ -29,11 +33,13 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public DeliveryStatusHandler(AppDbContext db)
+        public DeliveryStatusHandler(AppDbContext db, IHistoryService historyService)
         {
             _db = db;
+            _historyService = historyService;
         }
 
         private readonly AppDbContext _db;
+        private readonly IHistoryService _historyService;
     }
 }

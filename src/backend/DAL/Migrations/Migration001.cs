@@ -410,7 +410,9 @@ namespace DAL.Migrations
             AddTranslation("vehicleTypes", "Vehicle types", "Типы ТС");
             AddTranslation("pickingTypes", "Picking types", "Типы комплектации");
             AddTranslation("emptyValue", "(empty)", "(пусто)");
-            AddTranslation("fieldChanged", "Field {0} is set to {1}", "Значение поля {0} изменено на '{1}'");
+            AddTranslation("fieldChanged", "Field {0} is set to {2}", "Значение поля {0} изменено на '{2}'");
+            AddTranslation("documentAttached", "Document {0} is attached", "Добавлен документ {0}");
+            AddTranslation("documentRemoved", "Document {0} is removed", "Удален документ {0}");
 
             /*start of add translates for action*/
             AddTranslation("createShipping", "Create shipping", "Создать перевозку");
@@ -495,7 +497,16 @@ namespace DAL.Migrations
             AddTranslation("shippingId", "Shipping", "Перевозка");
             AddTranslation("orderState", "OrderState", "Статус заказа");
             AddTranslation("newOrderCreated", "New order created", "Создан новый заказ");
-            AddTranslation("orderStatusChanged", "Order status changed to {0}", "Статус заказа изменен на {0}");
+            AddTranslation("orderSetDraft", "Order {0} is not verified", "Заказ {0} не проверен");
+            AddTranslation("orderSetCreated", "Order {0} is created", "Создан заказ {0}");
+            AddTranslation("orderSetInShipping", "Order {0} is included in shipping {1}", "Заказ {0} включен в перевозку {1}");
+            AddTranslation("orderSetShipped", "Order {0} is shipped", "Заказ {0} отгружен");
+            AddTranslation("orderSetDelivered", "Order {0} is delivered", "Заказ {0} доставлен");
+            AddTranslation("orderSetArchived", "Order {0} is archived", "Заказ {0} перенесен в архив");
+            AddTranslation("orderSetLost", "Order {0} is lost", "Заказ {0} потерян");
+            AddTranslation("orderSetFullReturn", "Full return of goods on order {0}", "Полный возврат товара по заказу {0}");
+            AddTranslation("orderSetCancelled", "Order {0} is cancelled", "Заказ {0} отменен");
+            AddTranslation("orderRemovedFromShipping", "Order {0} is removed from shipping {1}", "Заказ {0} удален из перевозки {1}");
 
             AddTranslation("vehicleEmpty", "Empty", "Не указан");
             AddTranslation("vehicleWaiting", "Waiting vehicle", "Ожидает ТС");
@@ -582,6 +593,8 @@ namespace DAL.Migrations
             AddTranslation("shippingState", "ShippingState", "Статус перевозки");
             AddTranslation("shippingConfirmed", "Confirmed", "Подтверждена");
             AddTranslation("shippingCompleted", "Completed", "Завершена");
+            AddTranslation("shippingSetCancelled", "Shipping {0} is cancelled", "Перевозка {0} отменена");
+
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
             AddTranslation("tariff", "Tariff", "Тариф");
