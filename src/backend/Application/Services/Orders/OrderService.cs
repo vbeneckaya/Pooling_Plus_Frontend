@@ -173,7 +173,15 @@ namespace Application.Services.Orders
         {
             OrderDto dto = _mapper.Map<OrderDto>(entity);
             OrderFormDto result = _mapper.Map<OrderFormDto>(dto);
+
+            if (entity.ShippingId != null)
+            {
+                var shipping = db.Shippings.GetById(entity.ShippingId.Value);
+                result.ShippingNumber = shipping?.ShippingNumber;
+            }
+
             result.Items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
+
             return result;
         }
 
