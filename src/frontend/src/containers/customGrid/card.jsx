@@ -23,7 +23,7 @@ const SelfComponent = props => {
 };
 
 const Card = props => {
-    const { name, id, stopUpdate, loadList, title, children } = props;
+    const { name, id, stopUpdate, loadList, title, children, onOpen: beforeOpen } = props;
     let [modalOpen, setModalOpen] = useState(false);
     let [form, setForm] = useState({});
     const { t } = useTranslation();
@@ -42,15 +42,18 @@ const Card = props => {
     };
 
     const onOpen = () => {
+        console.log('55', modalOpen);
         id && loadCard();
+        // beforeOpen && beforeOpen();
         stopUpdate && stopUpdate();
         setModalOpen(true);
     };
 
     const onClose = () => {
+        console.log('54656', modalOpen);
         setModalOpen(false);
         setForm({});
-        loadList(false, true);
+        loadList && loadList(false, true);
     };
 
     const onChangeForm = (e, { name, value }) => {
@@ -95,7 +98,8 @@ const Card = props => {
                     {React.cloneElement(getModal[name], {
                         ...props,
                         form,
-                        onChangeForm: onChangeForm,
+                        onClose,
+                        onChangeForm,
                     })}
                 </Modal.Description>
             </Modal.Content>
@@ -110,8 +114,9 @@ const Card = props => {
                                 number: form.shippingNumber,
                                 status: t(form.status),
                             })}
+                            onOpen={() => {setModalOpen(false)}}
                         >
-                            <Button>Открыть перевозку</Button>
+                            <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
                         </SelfComponent>
                     ) : null}
                 </div>

@@ -440,6 +440,9 @@ namespace DAL.Migrations
             AddTranslation("new_shippings", "New shipping", "Новая перевозка");
             AddTranslation("edit_orders", "Order {{number}} - {{status}}", "Заказ {{number}} - {{status}}");
             AddTranslation("edit_shippings", "Shipping {{number}} - {{status}}", "Перевозка {{number}} - {{status}}");
+            AddTranslation("order_item", "Order {{number}}", "Заказ {{number}}");
+            AddTranslation("order_item", "Order {{number}}", "Заказ {{number}}");
+            AddTranslation("open_shipping", "Open shipping {{number}}", "Открыть перевозку {{number}}");
             /*start of add translates for action*/
 
             /*start of add translates*/
