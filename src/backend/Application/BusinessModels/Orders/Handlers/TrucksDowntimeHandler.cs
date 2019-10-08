@@ -17,9 +17,21 @@ namespace Application.BusinessModels.Orders.Handlers
                 var shipping = _db.Shippings.GetById(order.ShippingId.Value);
                 if (shipping != null && !shipping.ManualTrucksDowntime)
                 {
+                    var ordersToUpdate = _db.Orders.Where(o => o.ShippingId == order.ShippingId
+                                                            && o.Id != order.Id
+                                                            && o.DeliveryWarehouseId == order.DeliveryWarehouseId)
+                                                   .ToList();
+
+                    foreach (Order updOrder in ordersToUpdate)
+                    {
+                        var ordSetter = new FieldSetter<Order>(updOrder, _historyService);
+                        ordSetter.UpdateField(o => o.TrucksDowntime, newValue);
+                        ordSetter.SaveHistoryLog();
+                    }
+
                     var downtimes = _db.Orders.Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
-                                             .Select(o => o.TrucksDowntime)
-                                             .ToList();
+                                              .Select(o => o.TrucksDowntime)
+                                              .ToList();
                     downtimes.Add(newValue);
 
                     var shippingDowntime = downtimes.Any(x => x.HasValue) ? downtimes.Sum(x => x ?? 0) : (decimal?)null;

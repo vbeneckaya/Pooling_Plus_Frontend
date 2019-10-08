@@ -44,7 +44,7 @@ namespace Domain.Services.Orders
         public string UnloadingArrivalTime { get; set; }
         public string UnloadingDepartureDate { get; set; }
         public string UnloadingDepartureTime { get; set; }
-        public int? TrucksDowntime { get; set; }
+        public decimal? TrucksDowntime { get; set; }
         public string ReturnInformation { get; set; }
         public string ReturnShippingAccountNo { get; set; }
         public string PlannedReturnDate { get; set; }

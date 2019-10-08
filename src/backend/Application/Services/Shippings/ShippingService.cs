@@ -141,7 +141,11 @@ namespace Application.Services.Shippings
         {
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
-            formDto.RoutePoints = GetRoutePoints(entity);
+
+            var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+            formDto.Orders = GetShippingOrders(orders);
+            formDto.RoutePoints = GetRoutePoints(entity, orders);
+
             return formDto;
         }
 
@@ -189,6 +193,7 @@ namespace Application.Services.Shippings
                                 setter.UpdateField(o => o.DeliveryDate, ParseDateTime(pointDto.PlannedDate));
                                 setter.UpdateField(o => o.UnloadingArrivalTime, ParseDateTime(pointDto.ArrivalTime));
                                 setter.UpdateField(o => o.UnloadingDepartureTime, ParseDateTime(pointDto.DepartureTime));
+                                setter.UpdateField(o => o.TrucksDowntime, pointDto.TrucksDowntime);
                                 if (!string.IsNullOrEmpty(pointDto.VehicleStatus))
                                     setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(pointDto.VehicleStatus));
                             }
@@ -203,10 +208,24 @@ namespace Application.Services.Shippings
             return new ValidateResult(null, entity.Id.ToString());
         }
 
-        private List<RoutePointDto> GetRoutePoints(Shipping entity)
+        private List<ShippingOrderDto> GetShippingOrders(List<Order> orders)
+        {
+            List<ShippingOrderDto> result = new List<ShippingOrderDto>();
+            foreach(Order order in orders.OrderBy(o => o.OrderNumber))
+            {
+                ShippingOrderDto dto = new ShippingOrderDto
+                {
+                    Id = order.Id.ToString(),
+                    OrderNumber = order.OrderNumber
+                };
+                result.Add(dto);
+            }
+            return result;
+        }
+
+        private List<RoutePointDto> GetRoutePoints(Shipping entity, List<Order> orders)
         {
             var points = new Dictionary<string, RoutePointDto>();
-            var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
             foreach (Order order in orders)
             {
                 if (order.ShippingWarehouseId.HasValue)
@@ -223,6 +242,7 @@ namespace Application.Services.Shippings
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.ShippingStatus.ToString().ToLowerfirstLetter(),
+                            TrucksDowntime = null,
                             IsLoading = true,
                             OrderIds = new List<string>()
                         };
@@ -245,6 +265,7 @@ namespace Application.Services.Shippings
                             ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.DeliveryStatus.ToString().ToLowerfirstLetter(),
+                            TrucksDowntime = order.TrucksDowntime,
                             IsLoading = false,
                             OrderIds = new List<string>()
                         };
