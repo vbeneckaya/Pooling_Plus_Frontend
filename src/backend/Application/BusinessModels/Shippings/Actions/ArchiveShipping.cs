@@ -1,4 +1,3 @@
-using System.Linq;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -8,39 +7,38 @@ using Domain.Services.History;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
-    /// <summary>
-    /// РћС‚РјРµРЅРёС‚СЊ Р·Р°СЏРІРєСѓ
-    /// </summary>
-    public class CancelRequestShipping : IAppAction<Shipping>
+    public class ArchiveShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public CancelRequestShipping(AppDbContext db, IHistoryService historyService)
+        public ArchiveShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
             _historyService = historyService;
-            Color = AppColor.Red;
+            Color = AppColor.Teal;
         }
+
         public AppActionResult Run(User user, Shipping shipping)
         {
-            shipping.Status = ShippingState.ShippingCreated;
+            shipping.Status = ShippingState.ShippingArhive;
 
-            _historyService.Save(shipping.Id, "shippingSetCancelledRequest", shipping.ShippingNumber);
+            _historyService.Save(shipping.Id, "shippingSetArchived", shipping.ShippingNumber);
 
             db.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Р—Р°СЏРІРєР° РЅР° РїРµСЂРµРІРѕР·РєСѓ {shipping.ShippingNumber} РѕС‚РјРµРЅРµРЅР°"
+                Message = $"Перевозка {shipping.ShippingNumber} перенесена в архив"
             };
         }
 
         public bool IsAvailable(Role role, Shipping shipping)
         {
-            return (shipping.Status == ShippingState.ShippingRequestSent) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return (shipping.Status == ShippingState.ShippingBillSend) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

@@ -9,6 +9,6 @@ namespace Domain.Services.Warehouses
         public string City { get; set; }
         public string Address { get; set; }
         public string PickingTypeId { get; set; }
-        public string LeadtimeDays { get; set; }
+        public int? LeadtimeDays { get; set; }
     }
 }

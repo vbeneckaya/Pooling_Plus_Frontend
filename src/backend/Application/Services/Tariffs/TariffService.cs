@@ -5,6 +5,7 @@ using Domain.Persistables;
 using Domain.Extensions;
 using Domain.Services.Tariffs;
 using Microsoft.EntityFrameworkCore;
+using Domain.Enums;
 
 namespace Application.Services.Tariffs
 {
@@ -23,30 +24,30 @@ namespace Application.Services.Tariffs
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.CityOfShipment = dto.CityOfShipment;
+            entity.ShipmentCity = dto.ShipmentCity;
             entity.DeliveryCity = dto.DeliveryCity;
-            entity.BillingMethod = dto.BillingMethod;
-            entity.TransportCompany = dto.TransportCompany;
-            entity.VehicleType = dto.VehicleType;
-            entity.FTLBet = dto.FTLBet;
+            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : Enum.Parse<TarifficationType>(dto.TarifficationType.ToUpperfirstLetter());
+            entity.CarrierId = string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId);
+            entity.VehicleTypeId = string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId);
+            entity.FTLRate = dto.FTLRate;
             entity.LTLRate1 = dto.LTLRate1;
             entity.LTLRate2 = dto.LTLRate2;
-            entity.BetLTL3 = dto.BetLTL3;
+            entity.LTLRate3 = dto.LTLRate3;
             entity.LTLRate4 = dto.LTLRate4;
             entity.LTLRate5 = dto.LTLRate5;
             entity.LTLRate6 = dto.LTLRate6;
             entity.LTLRate7 = dto.LTLRate7;
-            entity.LTLBet8 = dto.LTLBet8;
+            entity.LTLRate8 = dto.LTLRate8;
             entity.LTLRate9 = dto.LTLRate9;
             entity.LTLRate10 = dto.LTLRate10;
             entity.LTLRate11 = dto.LTLRate11;
             entity.LTLRate12 = dto.LTLRate12;
             entity.LTLRate13 = dto.LTLRate13;
             entity.LTLRate14 = dto.LTLRate14;
-            entity.BetLTL15 = dto.BetLTL15;
+            entity.LTLRate15 = dto.LTLRate15;
             entity.LTLRate16 = dto.LTLRate16;
-            entity.BetLTL17 = dto.BetLTL17;
-            entity.BetLTL18 = dto.BetLTL18;
+            entity.LTLRate17 = dto.LTLRate17;
+            entity.LTLRate18 = dto.LTLRate18;
             entity.LTLRate19 = dto.LTLRate19;
             entity.LTLRate20 = dto.LTLRate20;
             entity.LTLRate21 = dto.LTLRate21;
@@ -54,14 +55,14 @@ namespace Application.Services.Tariffs
             entity.LTLRate23 = dto.LTLRate23;
             entity.LTLRate24 = dto.LTLRate24;
             entity.LTLRate25 = dto.LTLRate25;
-            entity.LTLBet26 = dto.LTLBet26;
+            entity.LTLRate26 = dto.LTLRate26;
             entity.LTLRate27 = dto.LTLRate27;
-            entity.LTLBet28 = dto.LTLBet28;
+            entity.LTLRate28 = dto.LTLRate28;
             entity.LTLRate29 = dto.LTLRate29;
             entity.LTLRate30 = dto.LTLRate30;
             entity.LTLRate31 = dto.LTLRate31;
-            entity.BetLTL32 = dto.BetLTL32;
-            entity.LTLBid33 = dto.LTLBid33;
+            entity.LTLRate32 = dto.LTLRate32;
+            entity.LTLRate33 = dto.LTLRate33;
             /*end of map dto to entity fields*/
         }
 
@@ -70,30 +71,30 @@ namespace Application.Services.Tariffs
             return new TariffDto
             {
                 Id = entity.Id.ToString(),
-                CityOfShipment = entity.CityOfShipment,
+                ShipmentCity = entity.ShipmentCity,
                 DeliveryCity = entity.DeliveryCity,
-                BillingMethod = entity.BillingMethod,
-                TransportCompany = entity.TransportCompany,
-                VehicleType = entity.VehicleType,
-                FTLBet = entity.FTLBet,
+                TarifficationType = entity.TarifficationType?.ToString().ToLowerfirstLetter(),
+                CarrierId = entity.CarrierId?.ToString(),
+                VehicleTypeId = entity.VehicleTypeId?.ToString(),
+                FTLRate = entity.FTLRate,
                 LTLRate1 = entity.LTLRate1,
                 LTLRate2 = entity.LTLRate2,
-                BetLTL3 = entity.BetLTL3,
+                LTLRate3 = entity.LTLRate3,
                 LTLRate4 = entity.LTLRate4,
                 LTLRate5 = entity.LTLRate5,
                 LTLRate6 = entity.LTLRate6,
                 LTLRate7 = entity.LTLRate7,
-                LTLBet8 = entity.LTLBet8,
+                LTLRate8 = entity.LTLRate8,
                 LTLRate9 = entity.LTLRate9,
                 LTLRate10 = entity.LTLRate10,
                 LTLRate11 = entity.LTLRate11,
                 LTLRate12 = entity.LTLRate12,
                 LTLRate13 = entity.LTLRate13,
                 LTLRate14 = entity.LTLRate14,
-                BetLTL15 = entity.BetLTL15,
+                LTLRate15 = entity.LTLRate15,
                 LTLRate16 = entity.LTLRate16,
-                BetLTL17 = entity.BetLTL17,
-                BetLTL18 = entity.BetLTL18,
+                LTLRate17 = entity.LTLRate17,
+                LTLRate18 = entity.LTLRate18,
                 LTLRate19 = entity.LTLRate19,
                 LTLRate20 = entity.LTLRate20,
                 LTLRate21 = entity.LTLRate21,
@@ -101,14 +102,14 @@ namespace Application.Services.Tariffs
                 LTLRate23 = entity.LTLRate23,
                 LTLRate24 = entity.LTLRate24,
                 LTLRate25 = entity.LTLRate25,
-                LTLBet26 = entity.LTLBet26,
+                LTLRate26 = entity.LTLRate26,
                 LTLRate27 = entity.LTLRate27,
-                LTLBet28 = entity.LTLBet28,
+                LTLRate28 = entity.LTLRate28,
                 LTLRate29 = entity.LTLRate29,
                 LTLRate30 = entity.LTLRate30,
                 LTLRate31 = entity.LTLRate31,
-                BetLTL32 = entity.BetLTL32,
-                LTLBid33 = entity.LTLBid33,
+                LTLRate32 = entity.LTLRate32,
+                LTLRate33 = entity.LTLRate33,
                 /*end of map entity to dto fields*/
             };
         }
