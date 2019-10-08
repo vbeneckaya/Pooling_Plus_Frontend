@@ -3,6 +3,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -12,17 +13,25 @@ namespace Application.BusinessModels.Shippings.Actions
     public class SendShippingToTk : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
+
         public AppColor Color { get; set; }
 
-        public SendShippingToTk(AppDbContext db)
+        public SendShippingToTk(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Blue;
         }
+
         public AppActionResult Run(User user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingRequestSent;
+
+            _historyService.Save(shipping.Id, "shippingSetRequestSent", shipping.ShippingNumber);
+
             db.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,

@@ -593,7 +593,10 @@ namespace DAL.Migrations
             AddTranslation("shippingState", "ShippingState", "Статус перевозки");
             AddTranslation("shippingConfirmed", "Confirmed", "Подтверждена");
             AddTranslation("shippingCompleted", "Completed", "Завершена");
+            AddTranslation("shippingSetCreated", "Shipping {0} is created", "Создана перевозка {0}");
             AddTranslation("shippingSetCancelled", "Shipping {0} is cancelled", "Перевозка {0} отменена");
+            AddTranslation("shippingSetRequestSent", "Shipping request {0} is sent to transport company", "Заявка на перевозку {0} направлена в транспортную компанию");
+            AddTranslation("shippingSetConfirmed", "Shipping request {0} is confirmed by transport company", "Заявка на перевозку {0} подтверждена транспортной компанией");
 
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");
