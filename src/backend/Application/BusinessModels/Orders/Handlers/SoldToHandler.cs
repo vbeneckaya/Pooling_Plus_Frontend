@@ -22,15 +22,10 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
 
-                    if (soldToWarehouse.UsePickingType == "Да")
+                    if (soldToWarehouse.UsePickingType)
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
 
-                    if (!string.IsNullOrEmpty(soldToWarehouse.LeadtimeDays))
-                    {
-                        int leadTimeDays = int.Parse(soldToWarehouse.LeadtimeDays);
-                        setter.UpdateField(o => o.TransitDays, leadTimeDays);
-                    }
-
+                    setter.UpdateField(o => o.TransitDays, soldToWarehouse.LeadtimeDays);
                     setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
 
                     setter.UpdateField(o => o.DeliveryWarehouseId, soldToWarehouse.Id, ignoreChanges: true);

@@ -225,7 +225,7 @@ namespace Application.Services.Orders
         {
             if (string.IsNullOrEmpty(setter.Entity.ShippingAddress))
             {
-                var fromWarehouse = db.Warehouses.FirstOrDefault(x => x.CustomerWarehouse == "Нет");
+                var fromWarehouse = db.Warehouses.FirstOrDefault(x => !x.CustomerWarehouse);
                 if (fromWarehouse != null)
                 {
                     setter.UpdateField(e => e.ShippingWarehouseId, fromWarehouse.Id, ignoreChanges: true);
