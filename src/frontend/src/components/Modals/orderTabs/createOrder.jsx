@@ -1,50 +1,43 @@
-import React from 'react';
-import {Form, Grid} from "semantic-ui-react";
-import Text from "../../BaseComponents/Text";
-import Date from "../../BaseComponents/Date";
-import TextArea from "../../BaseComponents/TextArea";
-import Select from "../../BaseComponents/Select";
-import {useSelector} from "react-redux";
-import {valuesListSelector} from "../../../ducks/lookup";
+import React, { useEffect } from 'react';
+import { Form, Grid } from 'semantic-ui-react';
+import Text from '../../BaseComponents/Text';
+import Date from '../../BaseComponents/Date';
+import TextArea from '../../BaseComponents/TextArea';
+import Select from '../../BaseComponents/Select';
+import { useSelector } from 'react-redux';
+import { valuesListSelector } from '../../../ducks/lookup';
 
-const CreateOrder = ({ form = {}, onChange}) => {
+const CreateOrder = ({ form = {}, onChange }) => {
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        console.log('valuesList', valuesList);
-        const item = valuesList.find(item => item.value === value) || {};
+    useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, { name: 'clientName', value: item.warehouseName });
+        },
+        [form.soldTo],
+    );
 
-        onChange(e, {name, value});
-        onChange(e, {name: 'clientName', value: item.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: item.address});
-
-        if (item.pickingTypeId) onChange(e, {name: 'pickingTypeId', value: item.pickingTypeId});
-    };
+    useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, {name: 'deliveryAddress', value: item.address});
+        },
+        [form.clientName],
+    );
 
     return (
         <Form className="tabs-card">
             <Grid>
                 <Grid.Row columns={3}>
                     <Grid.Column>
-                        <Text
-                            name="orderNumber"
-                            value={form['orderNumber']}
-                            onChange={onChange}
-                        />
+                        <Text name="orderNumber" value={form['orderNumber']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Date
-                            name="orderDate"
-                            value={form['orderDate']}
-                            onChange={onChange}
-                        />
+                        <Date name="orderDate" value={form['orderDate']} onChange={onChange} />
                     </Grid.Column>
                     <Grid.Column>
-                        <Text
-                            name="payer"
-                            value={form['payer']}
-                            onChange={onChange}
-                        />
+                        <Text name="payer" value={form['payer']} onChange={onChange} />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={3}>
@@ -53,7 +46,7 @@ const CreateOrder = ({ form = {}, onChange}) => {
                             name="soldTo"
                             value={form['soldTo']}
                             source="soldTo"
-                            onChange={handleChangeSoldTo}
+                            onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
@@ -85,7 +78,7 @@ const CreateOrder = ({ form = {}, onChange}) => {
                 </Grid.Row>
             </Grid>
         </Form>
-    )
+    );
 };
 
 export default CreateOrder;
