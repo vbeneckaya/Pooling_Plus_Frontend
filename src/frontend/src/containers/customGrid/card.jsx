@@ -49,10 +49,12 @@ const Card = props => {
 
     const onClose = () => {
         setModalOpen(false);
+        setForm({});
         loadList(false, true);
     };
 
     const onChangeForm = (e, { name, value }) => {
+        console.log('form', form, name, value);
         setForm({
             ...form,
             [name]: value,
@@ -104,7 +106,10 @@ const Card = props => {
                             {...props}
                             name="shippings"
                             id={form.shippingId}
-                            title="yyyy"
+                            title={t(`edit_shippings`, {
+                                number: form.shippingNumber,
+                                status: t(form.status),
+                            })}
                         >
                             <Button>Открыть перевозку</Button>
                         </SelfComponent>
