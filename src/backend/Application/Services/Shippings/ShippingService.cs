@@ -36,10 +36,15 @@ namespace Application.Services.Shippings
         {
             return new List<IAction<Shipping>>
             {
-                new CancelShipping(db),
                 new SendShippingToTk(db, _historyService),
-                new CancelRequestShipping(db),
                 new ConfirmShipping(db, _historyService),
+                new RejectRequestShipping(db, _historyService),
+                new CancelRequestShipping(db, _historyService),
+                new CompleteShipping(db, _historyService),
+                new CancelShipping(db, _historyService),
+                new ProblemShipping(db, _historyService),
+                new BillingShipping(db, _historyService),
+                new ArchiveShipping(db, _historyService),
                 /*end of add single actions*/
             };
         }

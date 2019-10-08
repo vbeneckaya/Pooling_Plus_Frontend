@@ -427,9 +427,19 @@ namespace DAL.Migrations
             AddTranslation("orderDelivered", "orderDelivered", "Заказ доставлен");
             AddTranslation("fullReject", "OrderShipped", "Полный возврат");
             AddTranslation("sendToArchive", "sendToArchive", "Перевести в архив");
-            AddTranslation("testGenerateException", "TestGenerateException", "Сгенерировать ошибку в системе");
-            AddTranslation("cancelShipping", "CancelShipping", "Отменить перевозку");
-            AddTranslation("sendShippingToTk", "SendShippingToTk", "Отправить заявку в ТК");
+            AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
+            AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Заказ потерян");
+
+            AddTranslation("archiveShipping", "Move to archive", "Перевести в архив");
+            AddTranslation("billingShipping", "Bill", "Выставить счет");
+            AddTranslation("cancelRequestShipping", "Cancel request", "Отменить заявку");
+            AddTranslation("cancelShipping", "Cancel shipping", "Отменить перевозку");
+            AddTranslation("completeShipping", "Complete shipping", "Завершить перевозку");
+            AddTranslation("confirmShipping", "Confirm request", "Подтвердить заявку");
+            AddTranslation("problemShipping", "Disruption of shipping", "Срыв поставки");
+            AddTranslation("rejectRequestShipping", "Reject request", "Отклонить заявку");
+            AddTranslation("sendShippingToTk", "Send request", "Отправить заявку в ТК");
+
             AddTranslation("cancelRequestShipping", "CancelRequestShipping", "Отменить заявку");
             AddTranslation("Create representation", "Create representation", "Создание представления");
             AddTranslation("Edit representation", "Edit representation {{name}}", "Редактирование представления {{name}}");
@@ -507,6 +517,7 @@ namespace DAL.Migrations
             AddTranslation("orderSetFullReturn", "Full return of goods on order {0}", "Полный возврат товара по заказу {0}");
             AddTranslation("orderSetCancelled", "Order {0} is cancelled", "Заказ {0} отменен");
             AddTranslation("orderRemovedFromShipping", "Order {0} is removed from shipping {1}", "Заказ {0} удален из перевозки {1}");
+            AddTranslation("orderCancellingShipping", "Shipping {1} is cancelled. Order {0} is removed from shipping.", "Перевозка {1} отменена. Заказ {0} удален из перевозки.");
 
             AddTranslation("vehicleEmpty", "Empty", "Не указан");
             AddTranslation("vehicleWaiting", "Waiting vehicle", "Ожидает ТС");
@@ -546,8 +557,6 @@ namespace DAL.Migrations
             AddTranslation("createShipping", "createShipping", "Создать перевозку");
             AddTranslation("cancel", "cancel", "Отменить");
             AddTranslation("addButton", "Add", "Добавить");
-            AddTranslation("removeFromShipping", "removeFromShipping", "Убрать из перевозки");
-            AddTranslation("recordFactOfLoss", "recordFactOfLoss", "Заказ потерян");
             AddTranslation("shipping", "Shipping", "Перевозка");
             AddTranslation("shippings", "Shippings", "Перевозки");
             AddTranslation("shippingNumber", "Shipping number", "Номер перевозки");
@@ -597,6 +606,12 @@ namespace DAL.Migrations
             AddTranslation("shippingSetCancelled", "Shipping {0} is cancelled", "Перевозка {0} отменена");
             AddTranslation("shippingSetRequestSent", "Shipping request {0} is sent to transport company", "Заявка на перевозку {0} направлена в транспортную компанию");
             AddTranslation("shippingSetConfirmed", "Shipping request {0} is confirmed by transport company", "Заявка на перевозку {0} подтверждена транспортной компанией");
+            AddTranslation("shippingSetCancelledRequest", "Shipping request {0} is cancelled", "Заявка в ТК по перевозке {0} отменена");
+            AddTranslation("shippingSetCompleted", "Shipping {0} is completed", "Перевозка {0} завершена");
+            AddTranslation("shippingSetBillSend", "Shipping invoice {0}", "Выставлен счет по перевозке {0}");
+            AddTranslation("shippingSetArchived", "Shipping {0} is archived", "Перевозка {0} перенесена в архив");
+            AddTranslation("shippingSetRejected", "Shipping request {0} is rejected by transport company", "Заявка на перевозку {0} отклонена транспортной компанией");
+            AddTranslation("shippingSetProblem", "Disruption of shipping {0}", "Срыв поставки по перевозке {0}");
 
             AddTranslation("tariff", "Tariff", "Тариф");
             AddTranslation("tariffs", "Tariffs", "Тарифы");

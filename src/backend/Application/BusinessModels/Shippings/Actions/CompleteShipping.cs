@@ -1,4 +1,3 @@
-using System.Linq;
 using DAL;
 using Domain;
 using Domain.Enums;
@@ -8,39 +7,38 @@ using Domain.Services.History;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
-    /// <summary>
-    /// Отменить заявку
-    /// </summary>
-    public class CancelRequestShipping : IAppAction<Shipping>
+    public class CompleteShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public CancelRequestShipping(AppDbContext db, IHistoryService historyService)
+        public CompleteShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
             _historyService = historyService;
-            Color = AppColor.Red;
+            Color = AppColor.Blue;
         }
+
         public AppActionResult Run(User user, Shipping shipping)
         {
-            shipping.Status = ShippingState.ShippingCreated;
+            shipping.Status = ShippingState.ShippingCompleted;
 
-            _historyService.Save(shipping.Id, "shippingSetCancelledRequest", shipping.ShippingNumber);
+            _historyService.Save(shipping.Id, "shippingSetCompleted", shipping.ShippingNumber);
 
             db.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заявка на перевозку {shipping.ShippingNumber} отменена"
+                Message = $"��������� {shipping.ShippingNumber} ���������"
             };
         }
 
         public bool IsAvailable(Role role, Shipping shipping)
         {
-            return (shipping.Status == ShippingState.ShippingRequestSent) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return (shipping.Status == ShippingState.ShippingConfirmed) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
         }
     }
 }

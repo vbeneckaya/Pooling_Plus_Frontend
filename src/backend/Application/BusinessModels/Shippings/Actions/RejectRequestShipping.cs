@@ -11,14 +11,14 @@ namespace Application.BusinessModels.Shippings.Actions
     /// <summary>
     /// Отменить заявку
     /// </summary>
-    public class CancelRequestShipping : IAppAction<Shipping>
+    public class RejectRequestShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public CancelRequestShipping(AppDbContext db, IHistoryService historyService)
+        public RejectRequestShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
             _historyService = historyService;
@@ -26,15 +26,15 @@ namespace Application.BusinessModels.Shippings.Actions
         }
         public AppActionResult Run(User user, Shipping shipping)
         {
-            shipping.Status = ShippingState.ShippingCreated;
+            shipping.Status = ShippingState.ShippingRejectedByTc;
 
-            _historyService.Save(shipping.Id, "shippingSetCancelledRequest", shipping.ShippingNumber);
+            _historyService.Save(shipping.Id, "shippingSetRejected", shipping.ShippingNumber);
 
             db.SaveChanges();
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заявка на перевозку {shipping.ShippingNumber} отменена"
+                Message = $"Заявка на перевозку {shipping.ShippingNumber} отклонена"
             };
         }
 
