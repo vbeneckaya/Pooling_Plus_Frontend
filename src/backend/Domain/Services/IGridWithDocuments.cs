@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 namespace Domain.Services
 {
-    public interface IGridWithDocuments<TEntity, TDto, TFormDto> : IGridService<TEntity, TDto, TFormDto> where TEntity : IWithDocumentsPersistable
+    public interface IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto> : IGridService<TEntity, TDto, TFormDto, TSummaryDto> 
+        where TEntity : IWithDocumentsPersistable
     {
         IEnumerable<DocumentDto> GetDocuments(Guid id);
         ValidateResult CreateDocument(Guid id, DocumentDto dto);

@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, OrderSummaryDto>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)
@@ -57,6 +57,19 @@ namespace Application.Services.Orders
                 new CreateShippingForeach(db, _historyService),
                 /*end of add group actions*/
             };
+        }
+
+        public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
+        {
+            var orders = db.Orders.Where(o => ids.Contains(o.Id)).ToList();
+            var result = new OrderSummaryDto
+            {
+                Count = orders.Count,
+                BoxesCount = orders.Sum(o => o.BoxesCount ?? 0),
+                PalletsCount = orders.Sum(o => o.PalletsCount ?? 0),
+                WeightKg = orders.Sum(o => o.WeightKg ?? 0M)
+            };
+            return result;
         }
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
