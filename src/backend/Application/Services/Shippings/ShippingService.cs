@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto>, IShippingsService
+    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)
@@ -59,6 +59,11 @@ namespace Application.Services.Shippings
             {
                 /*end of add group actions*/
             };
+        }
+
+        public override ShippingSummaryDto GetSummary(IEnumerable<Guid> ids)
+        {
+            return new ShippingSummaryDto();
         }
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)

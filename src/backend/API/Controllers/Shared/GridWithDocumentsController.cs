@@ -16,8 +16,9 @@ namespace API.Controllers.Shared
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TDto"></typeparam>
     /// <typeparam name="TFormDto"></typeparam>
-    public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto> : GridController<TService, TEntity, TDto, TFormDto>
-        where TService : IGridWithDocuments<TEntity, TDto, TFormDto> where TEntity : IWithDocumentsPersistable, IPersistable
+    public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto, TSummaryDto> : GridController<TService, TEntity, TDto, TFormDto, TSummaryDto>
+        where TService : IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto> 
+        where TEntity : IWithDocumentsPersistable, IPersistable
     {
         public GridWithDocumentsController(TService service) : base(service) { }
 

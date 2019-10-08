@@ -9,7 +9,8 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto> : Controller where TService : IGridService<TEntity, TDto, TFormDto>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto> : Controller 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto>
     {
         protected readonly TService service;
 
@@ -99,16 +100,38 @@ namespace API.Controllers.Shared
             
             var memoryStream = service.ExportToExcel();
             return File(memoryStream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
-            
+
             //var memoryStream = new MemoryStream();
-    
+
             //var stream = service.ExportToExcel();
             //stream.CopyTo(memoryStream);
-            
+
             //return new FileContentResult(memoryStream.ToArray(), "application/octet-stream");
             //return File(stream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
-        }  
-        
+        }
+
+        /// <summary>
+        /// Получение сводной информации по выделенным записям
+        /// </summary>
+        [HttpPost("getSummary")]
+        public IActionResult GetSummary([FromBody]IEnumerable<string> ids)
+        {
+            try
+            {
+                TSummaryDto result = service.GetSummary(ids.Select(Guid.Parse));
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Get summary for {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Список возможных экшенов
         /// </summary>

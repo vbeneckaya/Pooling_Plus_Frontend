@@ -5,7 +5,7 @@ using Domain.Shared;
 
 namespace Domain.Services
 {
-    public interface IGridService<TEntity, TDto, TFormDto> : IService
+    public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto> : IService
     {
         SearchResult<TDto> Search(SearchForm form);
         IEnumerable<LookUpDto> ForSelect();
@@ -13,8 +13,11 @@ namespace Domain.Services
         TDto Get(Guid id);
         TFormDto GetForm(Guid id);
 
+        TSummaryDto GetSummary(IEnumerable<Guid> ids);
+
         IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
         AppActionResult InvokeAction(string actionName, IEnumerable<Guid> ids);
+
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
         IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream);
         Stream ExportToExcel();
