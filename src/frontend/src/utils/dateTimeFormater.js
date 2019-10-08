@@ -1,4 +1,5 @@
 import { format } from 'date-fns/esm';
+import moment from 'moment';
 
 export const parseDate = dateString => {
     if (!dateString) return null;
@@ -28,4 +29,21 @@ export const formatDate = (date, dateFormat = 'dd.MM.YYYY') => {
     if (!date) return null;
 
     return format(date, dateFormat);
+};
+
+export const dateToUTC = (date, format = 'DD.MM.YYYY', isNotUtc) => {
+    if (!date) {
+        return null;
+    }
+
+    if (isNotUtc) {
+        return moment(date).format(format);
+    }
+
+    const stillUtc = moment.utc(date).toDate();
+    const local = moment(stillUtc)
+        .local()
+        .format(format);
+
+    return local;
 };

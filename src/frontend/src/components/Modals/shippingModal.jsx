@@ -5,7 +5,7 @@ import {Grid, Menu, Tab} from 'semantic-ui-react';
 import Information from './shippingTabs/information';
 import Routes from './shippingTabs/routes';
 import Documents from './shared/documents';
-import History from './shippingTabs/history';
+import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import Card from "../../containers/customGrid/card";
 
@@ -50,7 +50,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose}) => {
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <History/>
+                    <History cardId={id} />
                 </Tab.Pane>
             ),
         },
@@ -68,7 +68,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose}) => {
                             id={order.id}
                             title={t(`edit_orders`, {
                                 number: order.orderNumber,
-                                status: '',
+                                status: t(order.status),
                             })}
                             onOpen={onClose}
                         >
