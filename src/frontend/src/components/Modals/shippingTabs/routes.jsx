@@ -20,6 +20,14 @@ const Routes = ({ form, onChange }) => {
         );
     }
 
+    const handleChange = (point, index) => {
+        points[index] = point;
+        onChange(null, {
+            name: 'routePoints',
+            value: points
+        })
+    };
+
     const pointsTabs = [];
 
     points.forEach((point, i) => {
@@ -36,7 +44,7 @@ const Routes = ({ form, onChange }) => {
                 ),
             },
             render: () => {
-                return <Route name={point.warehouseName} form={point} onChange={onChange} />;
+                return <Route index={i} form={form} point={point} pointChange={handleChange} onChange={onChange} />;
             },
         });
     });

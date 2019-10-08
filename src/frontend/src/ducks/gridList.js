@@ -57,7 +57,7 @@ export default (state = initial, {type, payload}) => {
                 ...state,
                 progress: false,
                 totalCount: payload.totalCount,
-                data: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
+                data: payload.isConcat ? [...state.data, ...payload.items] : payload.items,
             };
         case GET_GRID_LIST_ERROR:
             return {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
@@ -7,14 +7,16 @@ const SelectValue = ({ value, source }) => {
 
     let lookup = useSelector(state => valuesListSelector(state, source)) || [];
 
-    if (!lookup.length) {
-        dispatch(
-            getLookupRequest({
-                name: source,
-                isForm: true,
-            }),
-        );
-    }
+    useEffect(() => {
+        if (!lookup.length) {
+            dispatch(
+                getLookupRequest({
+                    name: source,
+                    isForm: true,
+                }),
+            );
+        }
+    }, [])
 
     console.log('lookup', lookup, value);
 
