@@ -50,7 +50,7 @@ namespace Tasks.Helpers
             return defaultValue;
         }
 
-        public static decimal? ParseDecimal(this XmlNode node, string xPath, int? entryInd = null)
+        public static decimal? ParseDecimal(this XmlNode node, string xPath, int? entryInd = null, bool isRequired = false)
         {
             string value = node.SelectSingleNode(xPath)?.InnerText;
             if (!string.IsNullOrEmpty(value))
@@ -69,10 +69,21 @@ namespace Tasks.Helpers
                     Log.Warning("Некорректное значение {value} элемента {xPath}, ожидалось число.", value, xPath);
                 }
             }
+            else if (isRequired)
+            {
+                if (entryInd.HasValue)
+                {
+                    Log.Warning("Элемент {xPath} не найден в записи #{entryInd}.", xPath, entryInd);
+                }
+                else
+                {
+                    Log.Warning("Элемент {xPath} не найден.", xPath);
+                }
+            }
             return null;
         }
 
-        public static DateTime? ParseDateTime(this XmlNode node, string xPath, int? entryInd = null)
+        public static DateTime? ParseDateTime(this XmlNode node, string xPath, int? entryInd = null, bool isRequired = false)
         {
             string value = node.SelectSingleNode(xPath)?.InnerText;
             if (!string.IsNullOrEmpty(value))
@@ -95,10 +106,21 @@ namespace Tasks.Helpers
                     Log.Warning("Некорректное значение {value} элемента {xPath}, ожидалась дата/время.", value, xPath);
                 }
             }
+            else if (isRequired)
+            {
+                if (entryInd.HasValue)
+                {
+                    Log.Warning("Элемент {xPath} не найден в записи #{entryInd}.", xPath, entryInd);
+                }
+                else
+                {
+                    Log.Warning("Элемент {xPath} не найден.", xPath);
+                }
+            }
             return null;
         }
 
-        public static int? ParseInt(this XmlNode node, string xPath, int? entryInd = null)
+        public static int? ParseInt(this XmlNode node, string xPath, int? entryInd = null, bool isRequired = false)
         {
             string value = node.SelectSingleNode(xPath)?.InnerText;
             if (!string.IsNullOrEmpty(value))
@@ -115,6 +137,17 @@ namespace Tasks.Helpers
                 else
                 {
                     Log.Warning("Некорректное значение {value} элемента {xPath}, ожидалось целое число.", value, xPath);
+                }
+            }
+            else if (isRequired)
+            {
+                if (entryInd.HasValue)
+                {
+                    Log.Warning("Элемент {xPath} не найден в записи #{entryInd}.", xPath, entryInd);
+                }
+                else
+                {
+                    Log.Warning("Элемент {xPath} не найден.", xPath);
                 }
             }
             return null;
