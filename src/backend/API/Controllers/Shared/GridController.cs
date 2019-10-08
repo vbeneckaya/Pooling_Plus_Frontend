@@ -9,7 +9,7 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto> : Controller where TService : IGridService<TEntity, TDto, TFormDto>
+    public abstract class GridController<TService, TDto, TFormDto> : Controller where TService : IGridService<TDto, TFormDto>
     {
         protected readonly TService service;
 
@@ -35,7 +35,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Search {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Search {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -66,7 +66,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get {typeof(TEntity).Name} by {id}");
+                Log.Error(ex, $"Failed to Get {typeof(TDto).Name} by {id}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -126,7 +126,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get actions for {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Get actions for {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -148,7 +148,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,7 +171,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Save or create {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Save or create {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }

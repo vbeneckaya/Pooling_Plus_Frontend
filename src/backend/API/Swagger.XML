@@ -101,52 +101,52 @@
             Сохранить или изменить
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.Search(Domain.Shared.SearchForm)">
+        <member name="M:API.Controllers.Shared.GridController`3.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.ForSelect">
+        <member name="M:API.Controllers.Shared.GridController`3.ForSelect">
             <summary>
             Получение данных для выпадающего списка в 
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.GetById(System.Guid)">
+        <member name="M:API.Controllers.Shared.GridController`3.GetById(System.Guid)">
             <summary>
             Данные по id
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.Import(System.Collections.Generic.IEnumerable{`3})">
+        <member name="M:API.Controllers.Shared.GridController`3.Import(System.Collections.Generic.IEnumerable{`2})">
             <summary>
             Импортировать
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.ImportFromExcel">
+        <member name="M:API.Controllers.Shared.GridController`3.ImportFromExcel">
             <summary>
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.ExportToExcel">
+        <member name="M:API.Controllers.Shared.GridController`3.ExportToExcel">
             <summary>
             Экспортировать в excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.GetActions(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:API.Controllers.Shared.GridController`3.GetActions(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Список возможных экшенов
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.InvokeAction(System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:API.Controllers.Shared.GridController`3.InvokeAction(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Выполнить действие
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`4.SaveOrCreate(`3)">
+        <member name="M:API.Controllers.Shared.GridController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
             </summary>
         </member>
-        <member name="T:API.Controllers.Shared.GridWithDocumentsController`4">
+        <member name="T:API.Controllers.Shared.GridWithDocumentsController`3">
             <summary>
             Грид поддерживающий работу с документами
             </summary>
@@ -155,14 +155,14 @@
             <typeparam name="TDto"></typeparam>
             <typeparam name="TFormDto"></typeparam>
         </member>
-        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.GetDocuments(System.Guid)">
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`3.GetDocuments(System.Guid)">
             <summary>
             Получить документы
             </summary>
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.CreateDocument(System.Guid,Domain.Services.Documents.DocumentDto)">
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`3.CreateDocument(System.Guid,Domain.Services.Documents.DocumentDto)">
             <summary>
             Создать документ
             </summary>
@@ -170,7 +170,7 @@
             <param name="dto"></param>
             <returns></returns>
         </member>
-        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.UpdateDocument(System.Guid,System.Guid,Domain.Services.Documents.DocumentDto)">
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`3.UpdateDocument(System.Guid,System.Guid,Domain.Services.Documents.DocumentDto)">
             <summary>
             Обновление документа
             </summary>
@@ -179,7 +179,7 @@
             <param name="dto"></param>
             <returns></returns>
         </member>
-        <member name="M:API.Controllers.Shared.GridWithDocumentsController`4.DeleteDocument(System.Guid,System.Guid)">
+        <member name="M:API.Controllers.Shared.GridWithDocumentsController`3.DeleteDocument(System.Guid,System.Guid)">
             <summary>
             Удалить документ
             </summary>
