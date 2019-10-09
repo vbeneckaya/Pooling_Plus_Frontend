@@ -23,7 +23,7 @@ const SelfComponent = props => {
 };
 
 const Card = props => {
-    const { name, id, stopUpdate, loadList, title, children, onOpen: beforeOpen } = props;
+    const { name, id, stopUpdate, loadList, title, children, onClose: beforeClose} = props;
     let [modalOpen, setModalOpen] = useState(false);
     let [form, setForm] = useState({});
     const { t } = useTranslation();
@@ -42,16 +42,13 @@ const Card = props => {
     };
 
     const onOpen = () => {
-        console.log('55', modalOpen);
         id && loadCard();
-        // beforeOpen && beforeOpen();
         stopUpdate && stopUpdate();
         setModalOpen(true);
     };
 
     const onClose = () => {
-        console.log('54656', modalOpen);
-        setModalOpen(false);
+        beforeClose ? beforeClose() : setModalOpen(false);
         setForm({});
         loadList && loadList(false, true);
     };
@@ -114,7 +111,7 @@ const Card = props => {
                                 number: form.shippingNumber,
                                 status: t(form.status),
                             })}
-                            onOpen={() => {setModalOpen(false)}}
+                            onClose={onClose}
                         >
                             <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
                         </SelfComponent>

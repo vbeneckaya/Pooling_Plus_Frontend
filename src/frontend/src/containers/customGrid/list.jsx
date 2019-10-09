@@ -4,13 +4,9 @@ import SuperGrid from '../../components/SuperGrid';
 import {
     autoUpdateStart,
     autoUpdateStop,
-    canCreateByFormSelector, canImportFromExcelSelector,
-    columnsGridSelector, exportToExcelRequest,
-    getListRequest,
-    getStateColorsRequest, importFromExcelRequest,
+    canCreateByFormSelector,
     listSelector,
     progressSelector,
-    stateColorsSelector,
     totalCountSelector,
 } from '../../ducks/gridList';
 import { withRouter } from 'react-router-dom';
@@ -18,16 +14,17 @@ import Card from './card';
 import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
 import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
-import { STATE_TYPE } from '../../constants/columnTypes';
-import {representationFromGridSelector} from "../../ducks/representations";
+import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
-    console.log('res', res)
-    return <Card {...res}>
-        <Button color="blue" className="create-button">
-            {t(`create_${res.name}`)}
-        </Button>
-    </Card>
+    console.log('res', res);
+    return (
+        <Card {...res}>
+            <Button color="blue" className="create-button">
+                {t(`create_${res.name}`)}
+            </Button>
+        </Card>
+    );
 };
 
 class List extends Component {
@@ -131,7 +128,7 @@ function mapDispatchToProps(dispatch) {
         },
         invokeAction: params => {
             dispatch(invokeActionRequest(params));
-        }
+        },
     };
 }
 
@@ -146,7 +143,7 @@ function mapStateToProps(state, ownProps) {
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
-        actions: actionsSelector(state)
+        actions: actionsSelector(state),
     };
 }
 

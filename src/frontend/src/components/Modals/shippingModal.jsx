@@ -9,7 +9,7 @@ import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import Card from "../../containers/customGrid/card";
 
-const ShippingModal = ({form, onChangeForm, name, id}) => {
+const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose}) => {
     const {t} = useTranslation();
     const {orders = []} = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
@@ -75,6 +75,7 @@ const ShippingModal = ({form, onChangeForm, name, id}) => {
                                 number: order.orderNumber,
                                 status: t(order.status),
                             })}
+                            onClose={beforeClose}
                         >
                             <Menu.Item>{t('order_item', {number: order.orderNumber})}</Menu.Item>
                         </Card>
