@@ -16,7 +16,11 @@ using System.Globalization;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto> where TEntity : class, IPersistable, new() where TDto : IDto, new() where TFormDto : IDto, new()
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSearchForm> 
+        where TEntity : class, IPersistable, 
+        new() where TDto : IDto, 
+        new() where TFormDto : IDto,
+        new() where TSearchForm: PagingForm
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
@@ -26,6 +30,8 @@ namespace Application.Shared
         public abstract TDto MapFromEntityToDto(TEntity entity);
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
+
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, TSearchForm searchForm);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
@@ -56,20 +62,21 @@ namespace Application.Shared
             return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
-        public SearchResult<TDto> Search(SearchForm form)
+        public SearchResult<TDto> Search(TSearchForm form)
         {
             var dbSet = UseDbSet(db);
             var query = dbSet.AsQueryable();
 
+            //if (!string.IsNullOrEmpty(form.Search))
+            //{
+            //    var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
+            //        prop.PropertyType == form.Search.GetType());
 
-            if (!string.IsNullOrEmpty(form.Search))
-            {
-                var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
-                    prop.PropertyType == form.Search.GetType());
-         
-                //TODO Вернуть полнотекстовый поиск
-                query = query.Where(entity =>  entity.Id.ToString() == form.Search);
-            }
+            //    //TODO Вернуть полнотекстовый поиск
+            //    query = query.Where(entity =>  entity.Id.ToString() == form.Search);
+            //}
+
+            query = this.ApplySearchForm(query, form);
 
             if (form.Take == 0)
                 form.Take = 1000;

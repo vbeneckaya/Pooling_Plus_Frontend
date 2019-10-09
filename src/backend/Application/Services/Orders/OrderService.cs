@@ -10,6 +10,7 @@ using Domain.Persistables;
 using Domain.Services.Orders;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
+using Domain.Shared.FormFilters;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, FilterForm<OrderFilter>>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -279,5 +280,159 @@ namespace Application.Services.Orders
         }
 
         private readonly IMapper _mapper;
+
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterForm<OrderFilter> searchForm)
+        {
+            // OrderNumber Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.OrderNumber))
+            {
+                query = query.Where(i => i.OrderNumber == searchForm.Filter.OrderNumber);
+            }
+
+            // OrderDate Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.OrderDate))
+            {
+                var dates = searchForm.Filter.OrderDate.Split("-");
+
+                var fromDateStr = dates.FirstOrDefault();
+                var toDateStr = dates.ElementAtOrDefault(1);
+
+                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
+                {
+                    query = query.Where(i => i.OrderDate >= fromDate);
+                }
+
+                if (DateTime.TryParse(toDateStr, out DateTime toDate))
+                {
+                    query = query.Where(i => i.OrderDate <= toDate);
+                }
+            }
+
+            // OrderType Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.OrderType))
+            {
+                var types = searchForm.Filter.OrderType.Split("|")
+                    .Select(i => MapFromStateDto<OrderType>(i));
+
+                query = query.Where(i => i.OrderType.HasValue && types.Contains(i.OrderType.Value));
+            }
+
+            // SoldTo Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.SoldTo))
+            {
+                var solds = searchForm.Filter.SoldTo.Split("|");
+                query = query.Where(i => solds.Contains(i.SoldTo));
+            }
+
+            // PickingTypeId Filter
+            if (!string.IsNullOrEmpty(searchForm.Filter.PickingTypeId))
+            {
+                var pickingTypes = searchForm.Filter.PickingTypeId.Split("|").Select(i => new Guid(i));
+                query = query.Where(i => i.PickingTypeId.HasValue && pickingTypes.Contains(i.PickingTypeId.Value));
+            }
+
+            // Payer Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.Payer))
+            {
+                query = query.Where(i => i.Payer.Contains(searchForm.Filter.Payer));
+            }
+
+            // TemperatureMin Filter
+
+            if (int.TryParse(searchForm.Filter.TemperatureMin, out int temperatureMin))
+            {
+                query = query.Where(i => i.TemperatureMin == temperatureMin);
+            }
+
+            // TemperatureMax Filter
+
+            if (int.TryParse(searchForm.Filter.TemperatureMax, out int temperatureMax))
+            {
+                query = query.Where(i => i.TemperatureMax == temperatureMax);
+            }
+
+            // TransitDays Filter
+
+            if (int.TryParse(searchForm.Filter.TransitDays, out int transitDays))
+            {
+                query = query.Where(i => i.TransitDays == transitDays);
+            }
+
+
+            // ShippingAddress Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.ShippingAddress))
+            {
+                query = query.Where(i => i.ShippingAddress.Contains(searchForm.Filter.ShippingAddress));
+            }
+
+            // ShippingDate Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.ShippingDate))
+            {
+                var dates = searchForm.Filter.ShippingDate.Split("-");
+
+                var fromDateStr = dates.FirstOrDefault();
+                var toDateStr = dates.ElementAtOrDefault(1);
+
+                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
+                {
+                    query = query.Where(i => i.ShippingDate >= fromDate);
+                }
+
+                if (DateTime.TryParse(toDateStr, out DateTime toDate))
+                {
+                    query = query.Where(i => i.ShippingDate <= toDate);
+                }
+            }
+
+            // DeliveryCity Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryCity))
+            {
+                query = query.Where(i => i.DeliveryCity.Contains(searchForm.Filter.DeliveryCity));
+            }
+
+            // DeliveryRegion Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryRegion))
+            {
+                query = query.Where(i => i.DeliveryRegion.Contains(searchForm.Filter.DeliveryRegion));
+            }
+
+            // DeliveryAddress Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryAddress))
+            {
+                query = query.Where(i => i.DeliveryAddress.Contains(searchForm.Filter.DeliveryAddress));
+            }
+
+            // DeliveryDate Filter
+
+            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryDate))
+            {
+                var dates = searchForm.Filter.DeliveryDate.Split("-");
+
+                var fromDateStr = dates.FirstOrDefault();
+                var toDateStr = dates.ElementAtOrDefault(1);
+
+                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
+                {
+                    query = query.Where(i => i.DeliveryDate >= fromDate);
+                }
+
+                if (DateTime.TryParse(toDateStr, out DateTime toDate))
+                {
+                    query = query.Where(i => i.DeliveryDate <= toDate);
+                }
+            }
+
+            return query;
+        }
     }
 }

@@ -9,7 +9,7 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TDto, TFormDto> : Controller where TService : IGridService<TDto, TFormDto>
+    public abstract class GridController<TService, TDto, TFormDto, TSearchForm> : Controller where TService : IGridService<TDto, TFormDto, TSearchForm>
     {
         protected readonly TService service;
 
@@ -22,7 +22,7 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public IActionResult Search([FromBody]SearchForm form)
+        public IActionResult Search([FromBody]TSearchForm form)
         {
             try
             {
