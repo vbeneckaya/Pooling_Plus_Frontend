@@ -103,7 +103,7 @@ const Information = ({ form, onChange }) => {
                                             <Select
                                                 name="soldTo"
                                                 value={form['soldTo']}
-                                                errorText={t('soldTo_error')}
+                                                errorText={error && t('soldTo_error')}
                                                 textValue={error && form['soldTo']}
                                                 error={error}
                                                 source="soldTo"
