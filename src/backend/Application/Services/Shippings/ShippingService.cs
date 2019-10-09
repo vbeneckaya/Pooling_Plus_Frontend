@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, FilterForm<SearchFilter>>, IShippingsService
+    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, FilterForm<SearchFilterDto>>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -267,7 +267,7 @@ namespace Application.Services.Shippings
 
         private readonly IMapper _mapper;
 
-        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterForm<SearchFilter> searchForm)
+        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterForm<SearchFilterDto> searchForm)
         {
             return query;
         }

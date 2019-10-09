@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, FilterForm<OrderFilter>>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, FilterForm<OrderFilterDto>>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -281,7 +281,13 @@ namespace Application.Services.Orders
 
         private readonly IMapper _mapper;
 
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterForm<OrderFilter> searchForm)
+        /// <summary>
+        /// Apply search form filter to query
+        /// </summary>
+        /// <param name="query">query</param>
+        /// <param name="searchForm">search form</param>
+        /// <returns></returns>
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterForm<OrderFilterDto> searchForm)
         {
             // OrderNumber Filter
 
@@ -428,7 +434,7 @@ namespace Application.Services.Orders
 
                 if (DateTime.TryParse(toDateStr, out DateTime toDate))
                 {
-                    query = query.Where(i => i.DeliveryDate <= toDate);
+                    query = query.Where(i => i.DeliveryDate < toDate.AddDays(1));
                 }
             }
 

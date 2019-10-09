@@ -1,6 +1,6 @@
 namespace Domain.Shared.FormFilters
 {
-    public class SearchFilter
+    public class SearchFilterDto
     {
         public string Search { get; set; }
     }

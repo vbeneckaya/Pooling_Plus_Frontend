@@ -4,7 +4,7 @@ using Domain.Shared.FormFilters;
 
 namespace Domain.Services.Orders
 {
-    public interface IOrdersService : IGridWithDocuments<OrderDto, OrderFormDto, FilterForm<OrderFilter>>
+    public interface IOrdersService : IGridWithDocuments<OrderDto, OrderFormDto, FilterForm<OrderFilterDto>>
     {
     }
 }
