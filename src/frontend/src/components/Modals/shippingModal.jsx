@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import {Grid, Menu, Tab} from 'semantic-ui-react';
@@ -9,9 +9,14 @@ import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import Card from "../../containers/customGrid/card";
 
-const ShippingModal = ({form, onChangeForm, name, id, onClose}) => {
+const ShippingModal = ({form, onChangeForm, name, id}) => {
     const {t} = useTranslation();
     const {orders = []} = form;
+    let [routeActiveIndex, setRouteActiveIndex] = useState(0);
+
+    const handleTabChange = (e, { activeIndex }) => {
+        setRouteActiveIndex(activeIndex);
+    };
 
     const getPanes = [
         {
@@ -26,7 +31,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose}) => {
             menuItem: t('route'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Routes form={form} onChange={onChangeForm}/>
+                    <Routes form={form} routeActiveIndex={routeActiveIndex} tabChange={handleTabChange} onChange={onChangeForm}/>
                 </Tab.Pane>
             ),
         },
@@ -70,7 +75,6 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose}) => {
                                 number: order.orderNumber,
                                 status: t(order.status),
                             })}
-                            onOpen={onClose}
                         >
                             <Menu.Item>{t('order_item', {number: order.orderNumber})}</Menu.Item>
                         </Card>

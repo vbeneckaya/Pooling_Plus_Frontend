@@ -46,7 +46,10 @@ const Login = () => {
 
     const handleFormSubmit = (e, { api }) => {
         const params = {
-            form,
+            form: {
+                ...form,
+                language: i18n.language
+            },
             api: login_btn.api,
         };
         dispatch(loginRequest(params));

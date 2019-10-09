@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Grid, Icon, Tab } from 'semantic-ui-react';
 import Route from './route';
-import {useSelector, useDispatch} from "react-redux";
-import {stateColorsSelector} from "../../../ducks/gridList";
-import {getLookupRequest, valuesListSelector} from "../../../ducks/lookup";
+import { useSelector, useDispatch } from 'react-redux';
+import { stateColorsSelector } from '../../../ducks/gridList';
+import { getLookupRequest, valuesListSelector } from '../../../ducks/lookup';
 
-const Routes = ({ form, onChange }) => {
+const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
     const dispatch = useDispatch();
-    const points = form.routePoints;
+    const { routePoints: points } = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
     if (!stateColors.length) {
@@ -24,8 +24,8 @@ const Routes = ({ form, onChange }) => {
         points[index] = point;
         onChange(null, {
             name: 'routePoints',
-            value: points
-        })
+            value: points,
+        });
     };
 
     const pointsTabs = [];
@@ -44,7 +44,15 @@ const Routes = ({ form, onChange }) => {
                 ),
             },
             render: () => {
-                return <Route index={i} form={form} point={point} pointChange={handleChange} onChange={onChange} />;
+                return (
+                    <Route
+                        index={i}
+                        form={form}
+                        point={point}
+                        pointChange={handleChange}
+                        onChange={onChange}
+                    />
+                );
             },
         });
     });
@@ -54,8 +62,10 @@ const Routes = ({ form, onChange }) => {
             <Tab
                 className="all-tabs"
                 panes={pointsTabs}
+                activeIndex={routeActiveIndex}
                 menu={{ vertical: true }}
                 menuPosition="left"
+                onTabChange={tabChange}
             />
         </div>
     );

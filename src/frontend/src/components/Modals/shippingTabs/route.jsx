@@ -28,6 +28,7 @@ const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) =>
                     <Grid.Column>
                         <DateTime
                             name="plannedDate"
+                            text={index === 0 ? 'plannedDate_loading' : 'plannedDate_delivery'}
                             value={point['plannedDate']}
                             onChange={handleChange}
                         />
