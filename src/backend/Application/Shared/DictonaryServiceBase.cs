@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Application.Shared.Excel;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
@@ -90,33 +91,22 @@ namespace Application.Shared
             return result;
         }
         
-        public ValidateResult ImportFromExcel(Stream fileStream)
+        public IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
-            var dtos = workSheet.ConvertSheetToObjects<TListDto>(out string parseErrors);
-            if (!string.IsNullOrEmpty(parseErrors))
+            var excelMapper = CreateExcelMapper();
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+
+            if (excelMapper.Errors.Any(e => e.IsError))
             {
-                return new ValidateResult(parseErrors);
+                return excelMapper.Errors;
             }
 
-            int ind = 1;
-            StringBuilder errors = new StringBuilder();
-            var results = Import(dtos);
-            foreach (ValidateResult result in results)
-            {
-                ++ind;
-                if (result.IsError)
-                {
-                    errors.AppendLine($"Строка {ind}: {result.Error}.");
-                }
-            }
-
-            return new ValidateResult(errors.ToString());
+            var result = Import(dtos);
+            return result;
         }
-        
-        
         
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
@@ -148,6 +138,11 @@ namespace Application.Shared
             {
                 Id = entity.Id.ToString()
             };
+        }
+
+        protected virtual ExcelMapper<TListDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<TListDto>(db);
         }
     }
 }

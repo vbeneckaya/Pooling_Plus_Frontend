@@ -6,6 +6,10 @@ using Domain.Extensions;
 using Domain.Services.Tariffs;
 using Microsoft.EntityFrameworkCore;
 using Domain.Enums;
+using System.Linq;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
+using DAL.Queries;
 
 namespace Application.Services.Tariffs
 {
@@ -112,6 +116,38 @@ namespace Application.Services.Tariffs
                 LTLRate33 = entity.LTLRate33,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override ExcelMapper<TariffDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<TariffDto>(db)
+                .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>())
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
+        }
+
+        private Guid? GetCarrierIdByName(string name)
+        {
+            var entry = db.TransportCompanies.Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetCarrierNameById(Guid id)
+        {
+            var entry = db.TransportCompanies.GetById(id);
+            return entry?.Title;
+        }
+
+        private Guid? GetVehicleTypeIdByName(string name)
+        {
+            var entry = db.VehicleTypes.Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetVehicleTypeNameById(Guid id)
+        {
+            var entry = db.VehicleTypes.GetById(id);
+            return entry?.Name;
         }
     }
 }

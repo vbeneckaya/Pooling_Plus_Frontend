@@ -10,7 +10,7 @@ namespace Domain.Services
         SearchResult<TDto> Search(SearchForm form);
         IEnumerable<LookUpDto> ForSelect();
         IEnumerable<ValidateResult> Import(IEnumerable<TDto> entityFrom);
-        ValidateResult ImportFromExcel(Stream fileStream);
+        IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream);
         ValidateResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);
     }
