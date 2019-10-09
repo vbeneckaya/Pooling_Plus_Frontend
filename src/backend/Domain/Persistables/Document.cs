@@ -12,7 +12,7 @@ namespace Domain.Persistables
         public Guid FileId { get; set; }
         public FileStorage File { get; set; }
 
-        public Guid TypeId { get; set; }
+        public Guid? TypeId { get; set; }
         public DocumentType Type { get; set; }
 
         public override bool Equals(object obj)

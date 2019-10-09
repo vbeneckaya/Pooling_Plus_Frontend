@@ -32,11 +32,11 @@ namespace Application.Shared
             {
                 return new ValidateResult("notFound");
             }
-            bool tryParseTypeId = Guid.TryParse(dto.TypeId, out Guid typeId);
-            DocumentType type = db.DocumentTypes.FirstOrDefault(x => x.Id == typeId);
-            if (!tryParseTypeId || type == null)
+
+            Guid? typeId = null;
+            if (!string.IsNullOrEmpty(dto.TypeId) && Guid.TryParse(dto.TypeId, out Guid tId))
             {
-                return new ValidateResult("notFound");
+                typeId = tId;
             }
 
             var document = new Document
@@ -73,11 +73,10 @@ namespace Application.Shared
                 return new ValidateResult("notFound");
             }
 
-            bool tryParseTypeId = Guid.TryParse(dto.TypeId, out Guid typeId);
-            DocumentType type = db.DocumentTypes.FirstOrDefault(x => x.Id == typeId);
-            if (!tryParseTypeId || type == null)
+            Guid? typeId = null;
+            if (!string.IsNullOrEmpty(dto.TypeId) && Guid.TryParse(dto.TypeId, out Guid tId))
             {
-                return new ValidateResult("notFound");
+                typeId = tId;
             }
 
             Document document = db.Documents.FirstOrDefault(x => x.Id == documentId);
