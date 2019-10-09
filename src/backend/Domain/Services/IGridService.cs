@@ -5,7 +5,7 @@ using Domain.Shared;
 
 namespace Domain.Services
 {
-    public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto> : IService
+    public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : IService
     {
         SearchResult<TDto> Search(TSearchForm form);
         IEnumerable<LookUpDto> ForSelect();

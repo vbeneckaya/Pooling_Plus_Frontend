@@ -12,11 +12,13 @@ using System.Linq;
 namespace Application.Shared
 {
     // TODO настроить foreignkeys
-    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto, TSummaryDto> : GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto>, 
-                                                                                        IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto> 
+    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
+        : GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>, 
+          IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
         where TEntity : class, IPersistable, IWithDocumentsPersistable, new() 
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
+        where TSearchForm : PagingFormDto
     {
         public ValidateResult CreateDocument(Guid id, DocumentDto dto)
         {

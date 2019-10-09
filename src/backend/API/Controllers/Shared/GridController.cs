@@ -9,8 +9,8 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto> : Controller 
-        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : Controller 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
     {
         protected readonly TService service;
 

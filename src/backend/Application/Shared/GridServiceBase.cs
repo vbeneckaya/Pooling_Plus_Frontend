@@ -16,10 +16,11 @@ using System.Globalization;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto> 
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
         where TEntity : class, IPersistable, new() 
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
+        where TSearchForm: PagingFormDto
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();

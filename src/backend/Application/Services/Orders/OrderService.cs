@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, OrderSummaryDto>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)

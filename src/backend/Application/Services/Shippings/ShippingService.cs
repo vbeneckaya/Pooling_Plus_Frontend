@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto>, IShippingsService
+    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
     {
         public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)
