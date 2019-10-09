@@ -42,7 +42,7 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
     }
 
     if (type === BOOLEAN_TYPE) {
-        return value ? 'Да' : 'Нет';
+        return value ? t('Yes') : t('No');
     }
 
     if (value === undefined || value === null) return '';

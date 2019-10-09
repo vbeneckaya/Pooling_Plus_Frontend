@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Grid, Segment } from 'semantic-ui-react';
 import Text from '../../BaseComponents/Text';
@@ -11,19 +11,34 @@ import {valuesListSelector} from "../../../ducks/lookup";
 
 const Information = ({ form, onChange }) => {
     const { t } = useTranslation();
+    let [error, setError] = useState(false);
+
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        console.log('valuesList', valuesList);
+    useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, { name: 'clientName', value: item.warehouseName });
+        },
+        [form.soldTo],
+    );
 
-        const item = valuesList.find(item => item.value === value) || {};
+    useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, {name: 'deliveryAddress', value: item.address});
+        },
+        [form.clientName],
+    );
 
-        onChange(e, {name, value});
-        onChange(e, {name: 'clientName', value: item.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: item.address});
-
-        if (item.pickingTypeId) onChange(e, {name: 'pickingTypeId', value: item.pickingTypeId});
-    };
+    useEffect(() => {
+        console.log('valuesList', valuesList.find(item => item.value === form.soldTo), form.soldTo);
+        if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
+            setError(true)
+        } else {
+            setError(false)
+        }
+    }, [valuesList, form.soldTo]);
 
     return (
         <Form>
@@ -88,8 +103,11 @@ const Information = ({ form, onChange }) => {
                                             <Select
                                                 name="soldTo"
                                                 value={form['soldTo']}
+                                                errorText={t('soldTo_error')}
+                                                textValue={error && form['soldTo']}
+                                                error={error}
                                                 source="soldTo"
-                                                onChange={handleChangeSoldTo}
+                                                onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>

@@ -109,3 +109,18 @@
     -webkit-box-shadow: none;
     box-shadow: none!important;
 }
+
+.label-error {
+   color: #9f3a38!important;
+    font-size: .8rem;
+}
+
+.bool-radio-button {
+    display: flex;
+    height: 38px;
+    align-items: center;
+
+    .ui.radio.checkbox {
+        padding-right: 15px;
+    }
+}
