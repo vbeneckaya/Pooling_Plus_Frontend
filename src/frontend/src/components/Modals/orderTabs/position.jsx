@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {Button, Form, Grid, Table} from 'semantic-ui-react';
+import { Button, Form, Grid, Table } from 'semantic-ui-react';
 import TableInfo from '../../TableInfo';
 import Text from '../../BaseComponents/Text';
 
@@ -37,12 +37,13 @@ const columns = [
     },
 ];
 
-const Position = ({ rows = [], form, onChange }) => {
+const Position = ({ form, onChange }) => {
     const { t } = useTranslation();
+    const { items = [] } = form;
     return (
         <>
             <Grid>
-                <Grid.Row columns='equal'>
+                <Grid.Row columns="equal">
                     <Grid.Column width={4}>
                         <Form>
                             <Text
@@ -68,7 +69,7 @@ const Position = ({ rows = [], form, onChange }) => {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {rows.map((row, index) => (
+                            {items.map((row, index) => (
                                 <Table.Row key={row.id}>
                                     {columns.map(column => (
                                         <Table.Cell key={`cell_${row.id}_${column.name}_${index}`}>
