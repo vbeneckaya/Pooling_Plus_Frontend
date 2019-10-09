@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-    DATE_TYPE,
+    BOOLEAN_TYPE,
+    DATE_TYPE, ENUM_TYPE,
     GROUP_TYPE,
     NUMBER_TYPE,
     SELECT_TYPE,
@@ -11,6 +12,7 @@ import Text from './Text';
 import State from './State';
 import Date from './Date';
 import Select from "./Select";
+import Bool from "./Bool";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
@@ -19,6 +21,8 @@ const getTypeFacet = {
     [GROUP_TYPE]: <Text />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
+    [BOOLEAN_TYPE]: <Bool/>,
+    [ENUM_TYPE]: <Select isTranslate/>
 };
 
 const FormField = props => {

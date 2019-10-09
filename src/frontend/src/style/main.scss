@@ -27,12 +27,12 @@ body {
     line-height: 1.4285em;
     color: rgba(0, 0, 0, 0.87);
     -webkit-transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
-        -webkit-box-shadow 0.1s ease;
+    -webkit-box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
-        -webkit-box-shadow 0.1s ease;
+    -webkit-box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease,
-        -webkit-box-shadow 0.1s ease;
+    -webkit-box-shadow 0.1s ease;
     border-radius: 0.28571429rem !important;
     -webkit-box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
     box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
@@ -185,12 +185,12 @@ body {
 }
 
 .tabs-card {
-    height: 65vh;
+    height: 67vh;
     overflow-y: auto;
     overflow-x: hidden;
 
-    .ui.grid > .row:not(:last-child){
-        padding-bottom: 0!important;
+    .ui.grid > .row:not(:last-child) {
+        padding-bottom: 0 !important;
     }
 
     .ui.grid > .row > .column {
@@ -221,9 +221,10 @@ body {
 }
 
 .add-right-elements {
-    display: flex!important;
+    display: flex !important;
     justify-content: flex-end;
     align-items: flex-end;
+
     button {
         height: 33px;
     }
@@ -231,7 +232,7 @@ body {
 
 .mini-column {
     .field {
-        width: 50%!important;
+        width: 50% !important;
     }
 }
 
@@ -239,9 +240,9 @@ body {
     display: flex;
 
     .ui.vertical.menu {
-        margin: 0 12px 0 0!important;
+        margin: 0 12px 0 0 !important;
         flex-grow: 0;
-      /*  width: max-content;*/
+        /*  width: max-content;*/
         /*height: max-content;*/
     }
 
@@ -252,7 +253,7 @@ body {
 
 .all-tabs {
     .ui.vertical.menu {
-        margin: 0 12px 0 0!important;
+        margin: 0 12px 0 0 !important;
     }
 }
 
@@ -261,11 +262,29 @@ body {
     justify-content: space-between;
     align-items: baseline;
     height: 36px;
+
     label {
-       font-size: .92857143em;
+        font-size: .92857143em;
     }
 
     .field {
-        width: 30%!important;
+        width: 30% !important;
     }
 }
+
+.grid-card-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.history-who {
+    font-size: 12px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+  .history-comment {
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+

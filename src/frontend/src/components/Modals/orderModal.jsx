@@ -6,7 +6,7 @@ import Information from './orderTabs/information';
 import Position from './orderTabs/position';
 import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
-import History from './orderTabs/history';
+import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
 const OrderModal = ({ form, onChangeForm, name, id }) => {
@@ -49,7 +49,7 @@ const OrderModal = ({ form, onChangeForm, name, id }) => {
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <History />
+                    <History cardId={id} />
                 </Tab.Pane>
             ),
         },

@@ -5,7 +5,7 @@ import {
     ACTIVE_TYPE,
     BOOLEAN_TYPE,
     DATE_TIME_TYPE,
-    ENUM_TYPE,
+    ENUM_TYPE, LABELS_TYPE,
     NUMBER_TYPE, SELECT_TYPE,
     STATE_TYPE,
 } from '../../constants/columnTypes';
@@ -14,11 +14,12 @@ import {numbersFormat} from '../../utils/numbersFormat';
 import {Checkbox, Icon, Label} from 'semantic-ui-react';
 import {postman} from "../../utils/postman";
 import StateValue from "./StateValue";
+import SelectValue from "./SelectValue";
 
 const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate, source }) => {
     const { t } = useTranslation();
 
-    if (type === ENUM_TYPE) {
+    if (type === LABELS_TYPE) {
         return (
             <>
                 {!value
@@ -32,12 +33,16 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         );
     }
 
+    if (type === ENUM_TYPE) {
+        return <>{t(value)}</>
+    }
+
     if (type === ACTIVE_TYPE) {
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 
     if (type === BOOLEAN_TYPE) {
-        return value ? 'Да' : 'Нет';
+        return value ? t('Yes') : t('No');
     }
 
     if (value === undefined || value === null) return '';
@@ -56,14 +61,9 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
         );
     }*/
 
-   /*if (type === SELECT_TYPE) {
-       if (source && value) {
-           postman.get(`/${source}/getById/${value}`).then(result => {
-               console.log('result', result);
-               return result.name;
-           });
-       }
-   }*/
+   if (type === SELECT_TYPE) {
+       return <SelectValue value={value} source={source} />
+   }
 
     if (type === STATE_TYPE) {
         return (

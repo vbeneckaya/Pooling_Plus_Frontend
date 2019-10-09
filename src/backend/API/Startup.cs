@@ -18,6 +18,7 @@ using Serilog;
 using Infrastructure.Logging;
 using Domain.Services.UserIdProvider;
 using Application.Services.UserIdProvider;
+using Infrastructure.Translations;
 
 namespace API
 {
@@ -68,6 +69,8 @@ namespace API
             services.AddHttpContextAccessor();
 
             services.AddDomain(Configuration, true);
+
+            services.SyncTranslations();
 
             services.AddScoped<IUserIdProvider, UserIdProvider>();
         }

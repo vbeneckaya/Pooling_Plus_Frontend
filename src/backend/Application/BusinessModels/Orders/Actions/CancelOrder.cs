@@ -3,6 +3,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -12,10 +13,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class CancelOrder : IAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public CancelOrder(AppDbContext db)
+        public CancelOrder(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Red;
         }
 
@@ -24,7 +27,9 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(User user, Order order)
         {
             order.Status = OrderState.Canceled;
-            
+
+            _historyService.Save(order.Id, "orderSetCancelled", order.OrderNumber);
+
             db.SaveChanges();
             
             return new AppActionResult

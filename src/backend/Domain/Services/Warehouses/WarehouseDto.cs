@@ -9,9 +9,9 @@ namespace Domain.Services.Warehouses
         public string City { get; set; }
         public string Address { get; set; }
         public string PickingTypeId { get; set; }
-        public string LeadtimeDays { get; set; }
-        public string CustomerWarehouse { get; set; }
-        public string UsePickingType { get; set; }
+        public int? LeadtimeDays { get; set; }
+        public bool CustomerWarehouse { get; set; }
+        public bool UsePickingType { get; set; }
         /*end of fields*/
     }
 }

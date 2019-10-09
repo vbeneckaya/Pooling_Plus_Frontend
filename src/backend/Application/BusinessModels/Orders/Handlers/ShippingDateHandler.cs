@@ -1,6 +1,8 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Shared;
 using DAL;
 using Domain.Persistables;
+using Domain.Services.History;
 using System;
 using System.Linq;
 
@@ -19,7 +21,9 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    updOrder.ShippingDate = newValue;
+                    var setter = new FieldSetter<Order>(updOrder, _historyService);
+                    setter.UpdateField(o => o.ShippingDate, newValue);
+                    setter.SaveHistoryLog();
                 }
             }
         }
@@ -29,11 +33,13 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public ShippingDateHandler(AppDbContext db)
+        public ShippingDateHandler(AppDbContext db, IHistoryService historyService)
         {
             _db = db;
+            _historyService = historyService;
         }
 
         private readonly AppDbContext _db;
+        private readonly IHistoryService _historyService;
     }
 }

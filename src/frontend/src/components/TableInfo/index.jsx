@@ -203,6 +203,7 @@ class TableInfo extends Component {
                                                           id={`${row.id}_${column.name}_${index}`}
                                                           toggleIsActive={toggleIsActive}
                                                           isTranslate={column.isTranslate}
+                                                          source={column.source}
                                                           value={row[column.name]}
                                                       />
                                                   </Table.Cell>

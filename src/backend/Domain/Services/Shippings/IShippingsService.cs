@@ -4,7 +4,7 @@ using Domain.Shared.FormFilters;
 
 namespace Domain.Services.Shippings
 {
-    public interface IShippingsService : IGridWithDocuments<ShippingDto, ShippingFormDto, FilterFormDto<SearchFilterDto>>
+    public interface IShippingsService : IGridWithDocuments<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto>
     {
     }
 }

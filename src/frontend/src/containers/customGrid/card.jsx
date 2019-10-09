@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
@@ -8,137 +8,129 @@ import {
     editCardRequest,
     getCardRequest,
     openGridCardRequest,
-    progressSelector
+    progressSelector,
 } from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
-import ShippingModal from "../../components/Modals/shippingModal";
+import ShippingModal from '../../components/Modals/shippingModal';
 
 const getModal = {
     orders: <OrderModal />,
     shippings: <ShippingModal />,
 };
 
-class Card extends Component {
-    state = {
-        modalOpen: false,
-        form: {},
+const SelfComponent = props => {
+    return React.cloneElement(<Card />, props);
+};
+
+const Card = props => {
+    const { name, id, stopUpdate, loadList, title, children, onOpen: beforeOpen } = props;
+    let [modalOpen, setModalOpen] = useState(false);
+    let [form, setForm] = useState({});
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const loadCard = () => {
+        dispatch(
+            getCardRequest({
+                name,
+                id,
+                callbackSuccess: card => {
+                    setForm(card);
+                },
+            }),
+        );
     };
 
-    loadCard = () => {
-        const { openCard, name, id } = this.props;
+    const onOpen = () => {
+        console.log('55', modalOpen);
+        id && loadCard();
+        // beforeOpen && beforeOpen();
+        stopUpdate && stopUpdate();
+        setModalOpen(true);
+    };
 
-        openCard({
-            name,
-            id,
-            callbackSuccess: (card) => {
-                this.setState({
-                    form: card,
-                });
-            }
+    const onClose = () => {
+        console.log('54656', modalOpen);
+        setModalOpen(false);
+        setForm({});
+        loadList && loadList(false, true);
+    };
+
+    const onChangeForm = (e, { name, value }) => {
+        console.log('form', form, name, value);
+        setForm({
+            ...form,
+            [name]: value,
         });
     };
 
-    onOpen = () => {
-        this.props.id && this.loadCard();
-        this.props.stopUpdate();
-        this.setState({
-            modalOpen: true,
-        });
+    const handleSave = () => {
+        dispatch(
+            editCardRequest({
+                name,
+                params: form,
+                callbackSuccess: () => {
+                    onClose();
+                },
+            }),
+        );
     };
 
-    onClose = () => {
-        const { loadList } = this.props;
+    const loading = useSelector(state => progressSelector(state));
 
-        this.setState({
-            modalOpen: false,
-        });
-        loadList(false, true);
-    };
-
-    onChangeForm = (e, { name, value }) => {
-        this.setState(prevState => ({
-            form: {
-                ...prevState.form,
-                [name]: value,
-            },
-        }));
-    };
-
-    handleSave = () => {
-        const { editCard, name } = this.props;
-        const { form } = this.state;
-
-        editCard({
-            name,
-            params: form,
-            callbackSuccess: () => {
-                this.onClose()
-            }
-        })
-    };
-
-    render() {
-        const { title, loading, children, progress, name, t } = this.props;
-        const { modalOpen, form } = this.state;
-
-        return (
-            <Modal
-                dimmer="blurring"
-                className="card-modal"
-                trigger={children}
-                open={modalOpen}
-                onOpen={this.onOpen}
-                onClose={this.onClose}
-                closeIcon
-                size="large"
-            >
-                <Modal.Header>{t(title)}</Modal.Header>
-                <Modal.Content scrolling>
-                    <Dimmer active={loading} inverted>
-                        <Loader size="huge">Loading</Loader>
-                    </Dimmer>
-                    <Modal.Description>
-                        {React.cloneElement(getModal[name], {
-                            ...this.props,
-                            form,
-                            onChangeForm: this.onChangeForm,
-                        })}
-                    </Modal.Description>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button color="grey" onClick={this.onClose}>
+    return (
+        <Modal
+            dimmer="blurring"
+            className="card-modal"
+            trigger={children}
+            open={modalOpen}
+            onOpen={onOpen}
+            onClose={onClose}
+            closeIcon
+            size="large"
+        >
+            <Modal.Header>{t(title)}</Modal.Header>
+            <Modal.Content scrolling>
+                <Dimmer active={loading} inverted>
+                    <Loader size="huge">Loading</Loader>
+                </Dimmer>
+                <Modal.Description>
+                    {React.cloneElement(getModal[name], {
+                        ...props,
+                        form,
+                        onClose,
+                        onChangeForm,
+                    })}
+                </Modal.Description>
+            </Modal.Content>
+            <Modal.Actions className="grid-card-actions">
+                <div>
+                    {name === 'orders' && form.shippingId ? (
+                        <SelfComponent
+                            {...props}
+                            name="shippings"
+                            id={form.shippingId}
+                            title={t(`edit_shippings`, {
+                                number: form.shippingNumber,
+                                status: t(form.status),
+                            })}
+                            onOpen={() => {setModalOpen(false)}}
+                        >
+                            <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
+                        </SelfComponent>
+                    ) : null}
+                </div>
+                <div>
+                    <Button color="grey" onClick={onClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" loading={progress} onClick={this.handleSave}>
+                    <Button color="blue" onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
-                </Modal.Actions>
-            </Modal>
-        );
-    }
-}
-
-const mapStateToProps = (state, ownProps) => {
-    return {
-        card: cardSelector(state),
-        loading: progressSelector(state),
-    };
+                </div>
+            </Modal.Actions>
+        </Modal>
+    );
 };
 
-const mapDispatchToProps = dispatch => {
-    return {
-        openCard: params => {
-            dispatch(getCardRequest(params));
-        },
-        editCard: params => {
-            dispatch(editCardRequest(params))
-        }
-    };
-};
-
-export default withTranslation()(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(Card),
-);
+export default Card;

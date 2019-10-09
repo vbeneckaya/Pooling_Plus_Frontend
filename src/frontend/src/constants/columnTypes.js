@@ -8,5 +8,6 @@ export const DATE_TYPE = 'Date';
 export const BOOLEAN_TYPE = 'Boolean';
 export const GROUP_TYPE = 'Group';
 
-export const ENUM_TYPE = 'enum';
+export const ENUM_TYPE = 'Enum';
 export const ACTIVE_TYPE = 'active';
+export const LABELS_TYPE = 'Labels';

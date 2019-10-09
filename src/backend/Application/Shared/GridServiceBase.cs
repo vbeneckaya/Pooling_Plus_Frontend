@@ -16,11 +16,10 @@ using System.Globalization;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSearchForm> 
-        where TEntity : class, IPersistable, 
-        new() where TDto : IDto, 
-        new() where TFormDto : IDto,
-        new() where TSearchForm: PagingFormDto
+    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto> 
+        where TEntity : class, IPersistable, new() 
+        where TDto : IDto, new() 
+        where TFormDto : IDto, new()
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
@@ -31,6 +30,7 @@ namespace Application.Shared
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
+        public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
         public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, TSearchForm searchForm);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }

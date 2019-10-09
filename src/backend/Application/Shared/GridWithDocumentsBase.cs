@@ -2,6 +2,7 @@
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Documents;
+using Domain.Services.History;
 using Domain.Services.UserIdProvider;
 using Domain.Shared;
 using System;
@@ -11,14 +12,12 @@ using System.Linq;
 namespace Application.Shared
 {
     // TODO настроить foreignkeys
-    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto, TSearchForm> : GridServiceBase<TEntity, TDto, TFormDto, TSearchForm>, IGridWithDocuments<TDto, TFormDto, TSearchForm> 
-        where TEntity : class, IPersistable, IWithDocumentsPersistable, 
-        new() where TDto : IDto, 
-        new() where TFormDto : IDto, 
-        new() where TSearchForm: PagingFormDto
+    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto, TSummaryDto> : GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto>, 
+                                                                                        IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto> 
+        where TEntity : class, IPersistable, IWithDocumentsPersistable, new() 
+        where TDto : IDto, new() 
+        where TFormDto : IDto, new()
     {
-        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider) { }
-
         public ValidateResult CreateDocument(Guid id, DocumentDto dto)
         {
             TEntity entity = UseDbSet(db).FirstOrDefault(x => x.Id == id);
@@ -33,11 +32,11 @@ namespace Application.Shared
             {
                 return new ValidateResult("notFound");
             }
-            bool tryParseTypeId = Guid.TryParse(dto.TypeId, out Guid typeId);
-            DocumentType type = db.DocumentTypes.FirstOrDefault(x => x.Id == typeId);
-            if (!tryParseTypeId || type == null)
+
+            Guid? typeId = null;
+            if (!string.IsNullOrEmpty(dto.TypeId) && Guid.TryParse(dto.TypeId, out Guid tId))
             {
-                return new ValidateResult("notFound");
+                typeId = tId;
             }
 
             var document = new Document
@@ -47,6 +46,8 @@ namespace Application.Shared
                 FileId = fileId,
                 TypeId = typeId
             };
+
+            _historyService.Save(id, "documentAttached", file.Name);
 
             db.Documents.Add(document);
             db.SaveChanges();
@@ -72,11 +73,10 @@ namespace Application.Shared
                 return new ValidateResult("notFound");
             }
 
-            bool tryParseTypeId = Guid.TryParse(dto.TypeId, out Guid typeId);
-            DocumentType type = db.DocumentTypes.FirstOrDefault(x => x.Id == typeId);
-            if (!tryParseTypeId || type == null)
+            Guid? typeId = null;
+            if (!string.IsNullOrEmpty(dto.TypeId) && Guid.TryParse(dto.TypeId, out Guid tId))
             {
-                return new ValidateResult("notFound");
+                typeId = tId;
             }
 
             Document document = db.Documents.FirstOrDefault(x => x.Id == documentId);
@@ -116,10 +116,23 @@ namespace Application.Shared
                 return new ValidateResult("notFound");
             }
 
+            FileStorage file = db.FileStorage.FirstOrDefault(x => x.Id == document.FileId);
+            db.FileStorage.Remove(file);
+
+            _historyService.Save(id, "documentRemoved", file.Name);
+
             db.Documents.Remove(document);
             db.SaveChanges();
 
             return new ValidateResult();
         }
+
+        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+            : base(appDbContext, userIdProvider)
+        {
+            _historyService = historyService;
+        }
+
+        protected readonly IHistoryService _historyService;
     }
 }

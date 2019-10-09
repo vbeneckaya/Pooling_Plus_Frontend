@@ -9,10 +9,12 @@ import { saga as gridCardSaga } from '../ducks/gridCard';
 import { saga as lookupSaga } from '../ducks/lookup';
 import { saga as documentsSaga } from '../ducks/documents';
 import { saga as representationsSaga } from '../ducks/representations';
+import { saga as historySaga } from '../ducks/history';
 import { saga as usersSaga } from '../ducks/users';
 
 export default function* rootSaga() {
     yield all([
+        historySaga(),
         representationsSaga(),
         documentsSaga(),
         lookupSaga(),

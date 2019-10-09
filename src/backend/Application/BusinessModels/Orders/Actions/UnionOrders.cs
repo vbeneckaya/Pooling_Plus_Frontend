@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Application.Shared;
 using DAL;
 using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -15,10 +17,12 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : IGroupAppAction<Order>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
 
-        public UnionOrders(AppDbContext db)
+        public UnionOrders(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Orange;
         }
         
@@ -39,25 +43,37 @@ namespace Application.BusinessModels.Orders.Actions
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
                 ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
-                DeliveryType = DeliveryType.Delivery,
-                TarifficationType = TarifficationType.Ftl,
-                TemperatureMin = tempRange?.Key,
-                TemperatureMax = tempRange?.Value,
-                PalletsCount = palletsCount,
-                ActualPalletsCount = actualPalletsCount,
-                ConfirmedPalletsCount = confirmedPalletsCount,
-                WeightKg = weight,
-                ActualWeightKg = actualWeight,
-                TrucksDowntime = downtime
             };
+
+            var setter = new FieldSetter<Shipping>(shipping, _historyService);
+
+            setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
+            setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
+            setter.UpdateField(s => s.TemperatureMin, tempRange?.Key);
+            setter.UpdateField(s => s.TemperatureMax, tempRange?.Value);
+            setter.UpdateField(s => s.PalletsCount, palletsCount);
+            setter.UpdateField(s => s.ActualPalletsCount, actualPalletsCount);
+            setter.UpdateField(s => s.ConfirmedPalletsCount, confirmedPalletsCount);
+            setter.UpdateField(s => s.WeightKg, weight);
+            setter.UpdateField(s => s.ActualWeightKg, actualWeight);
+            setter.UpdateField(s => s.TrucksDowntime, downtime);
+
+            _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
+            setter.SaveHistoryLog();
+
             db.Shippings.Add(shipping);
 
             foreach (var order in orders)
             {
-                order.Status = OrderState.InShipping;
-                order.ShippingId = shipping.Id;
-                order.ShippingStatus = VehicleState.VehicleWaiting;
-                order.DeliveryStatus = VehicleState.VehicleEmpty;
+                var ordSetter = new FieldSetter<Order>(order, _historyService);
+
+                ordSetter.UpdateField(o => o.Status, OrderState.InShipping, ignoreChanges: true);
+                ordSetter.UpdateField(o => o.ShippingId, shipping.Id, ignoreChanges: true);
+                ordSetter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
+                ordSetter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
+
+                _historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
+                ordSetter.SaveHistoryLog();
             }
             db.SaveChanges();
             return new AppActionResult

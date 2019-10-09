@@ -15,6 +15,8 @@ const DragAndDropFields = ({ type, fieldsConfig, fieldsList, onChange }) => {
                 )
                 .map(x => x.name),
         );*/
+
+   console.log('fieldsList', fieldsList);
     const { t } = useTranslation();
 
     return (
@@ -75,6 +77,22 @@ class DnDList extends React.Component {
         items: this.props.left.map(x => ({ id: x.name, content: x })),
         selected: this.props.right.map(x => ({ id: x.name, content: x })),
     };
+
+    componentDidUpdate (prevProps) {
+        if (prevProps.left !== this.props.left) {
+            this.setState(
+                {
+                    items: this.props.left.map(x => ({ id: x.name, content: x })),
+                }
+            )
+        }
+
+        if (prevProps.right !== this.props.right) {
+            this.setState({
+                selected: this.props.right.map(x => ({ id: x.name, content: x }))
+            })
+        }
+    }
 
     id2List = {
         droppable: 'items',

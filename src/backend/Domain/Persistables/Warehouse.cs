@@ -39,15 +39,15 @@ namespace Domain.Persistables
         /// <summary>
         /// Leadtime, дней
         /// </summary>
-        public string LeadtimeDays { get; set; }
+        public int? LeadtimeDays { get; set; }
         /// <summary>
         /// Склад клиента
         /// </summary>
-        public string CustomerWarehouse { get; set; }
+        public bool CustomerWarehouse { get; set; }
         /// <summary>
         /// Использование типа комплектации
         /// </summary>
-        public string UsePickingType { get; set; }
+        public bool UsePickingType { get; set; }
         /*end of fields*/
     }
 }

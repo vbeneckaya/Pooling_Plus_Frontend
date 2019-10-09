@@ -22,8 +22,8 @@ const Information = ({ form = {}, onChange }) => {
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <Select
-                                                name="carrier"
-                                                value={form['carrier']}
+                                                name="carrierId"
+                                                value={form['carrierId']}
                                                 source="transportCompanies"
                                                 onChange={onChange}
                                             />
@@ -32,6 +32,7 @@ const Information = ({ form = {}, onChange }) => {
                                             <Select
                                                 name="deliveryType"
                                                 value={form['deliveryType']}
+                                                isTranslate
                                                 source="deliveryType"
                                                 onChange={onChange}
                                             />
@@ -40,6 +41,7 @@ const Information = ({ form = {}, onChange }) => {
                                             <Select
                                                 name="tarifficationType"
                                                 value={form['tarifficationType']}
+                                                isTranslate
                                                 source="tarifficationType"
                                                 onChange={onChange}
                                             />
@@ -48,8 +50,9 @@ const Information = ({ form = {}, onChange }) => {
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <Select
-                                                name="vehicleType"
-                                                value={form['vehicleType']}
+                                                name="vehicleTypeId"
+                                                value={form['vehicleTypeId']}
+                                                source="vehicleTypes"
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>

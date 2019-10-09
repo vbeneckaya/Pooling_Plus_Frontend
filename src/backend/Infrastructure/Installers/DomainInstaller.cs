@@ -40,6 +40,8 @@ using Application.Services.PickingTypes;
 using Domain.Services.PickingTypes;
 using Application.Services.VehicleTypes;
 using Domain.Services.VehicleTypes;
+using Application.Services.History;
+using Domain.Services.History;
 
 namespace Infrastructure.Installers
 {
@@ -55,6 +57,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITranslationsService, TranslationsService>();
             services.AddScoped<IInjectionsService, InjectionsService>();
             services.AddScoped<ITaskPropertiesService, TaskPropertiesService>();
+            services.AddScoped<IHistoryService, HistoryService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();
@@ -82,9 +85,6 @@ namespace Infrastructure.Installers
             if (migrateDb)
             {
                 var appDbContext = buildServiceProvider.GetService<AppDbContext>();
-
-                appDbContext.DropDb();
-                appDbContext.SaveChanges();
                 appDbContext.Migrate(connectionString);
             }
         }

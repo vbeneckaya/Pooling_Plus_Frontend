@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Form, Modal } from 'semantic-ui-react';
+import {Button, Form, Input, Modal, Search} from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -13,6 +13,7 @@ import {
     setRepresentationRequest,
 } from '../../ducks/representations';
 
+
 const FieldsConfig = ({ children, title, gridName, isNew }) => {
     const currName = useSelector(state => representationNameSelector(state, gridName));
     const currRepresentation = useSelector(state => representationSelector(state, gridName)) || [];
@@ -21,6 +22,7 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
     let [selectedFields, setSelectedFields] = useState(isNew ? [] : currRepresentation);
     let [name, setName] = useState(isNew ? '' : currName);
     let [error, setError] = useState(false);
+    let [search, setSearch] = useState('');
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -29,20 +31,19 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
         return !selectedFields.map(item => item.name).includes(column.name);
     });
 
-    console.log('gridName', gridName, currName);
-
     useEffect(
         () => {
-            setName(currName);
+            !isNew && setName(currName);
         },
         [currName],
     );
     useEffect(
         () => {
-            setSelectedFields(currRepresentation);
+            !isNew && setSelectedFields(currRepresentation);
         },
         [currRepresentation],
     );
+
 
     const onOpen = () => {
         setModalOpen(true);
@@ -50,8 +51,7 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
 
     const onClose = () => {
         setModalOpen(false);
-        // setName('');
-        // setSelectedFields([]);
+        setSearch('');
     };
 
     const onChange = selected => {
@@ -99,6 +99,11 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
         }
     };
 
+    const fieldsListSearch = fieldsList.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
+    const selectedListSearch = selectedFields.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
+
+    console.log('ff', fieldsList);
+
     return (
         <Modal
             dimmer="blurring"
@@ -121,11 +126,19 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
                             error={error}
                             onChange={(e, { value }) => setName(value)}
                         />
+                        <Input
+                            icon='search'
+                            iconPosition='left'
+                            placeholder='Поиск поля'
+                            value={search}
+                            clearable
+                            onChange={(e, {value}) => setSearch(value)}
+                        />
                     </Form>
                     <DragAndDropFields
                         type={gridName}
-                        fieldsConfig={selectedFields}
-                        fieldsList={fieldsList}
+                        fieldsConfig={selectedListSearch}
+                        fieldsList={fieldsListSearch}
                         onChange={onChange}
                     />
                 </Modal.Description>

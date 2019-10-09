@@ -1,8 +1,10 @@
-﻿using DAL;
+﻿using Application.Shared;
+using DAL;
 using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.History;
 using System.Linq;
 
 namespace Application.BusinessModels.Shippings.Actions
@@ -10,13 +12,17 @@ namespace Application.BusinessModels.Shippings.Actions
     public class ConfirmShipping : IAppAction<Shipping>
     {
         private readonly AppDbContext db;
+        private readonly IHistoryService _historyService;
+
         public AppColor Color { get; set; }
 
-        public ConfirmShipping(AppDbContext db)
+        public ConfirmShipping(AppDbContext db, IHistoryService historyService)
         {
             this.db = db;
+            _historyService = historyService;
             Color = AppColor.Green;
         }
+
         public AppActionResult Run(User user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingConfirmed;
@@ -24,8 +30,12 @@ namespace Application.BusinessModels.Shippings.Actions
             var orders = db.Orders.Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
             foreach (Order order in orders)
             {
-                order.ShippingStatus = VehicleState.VehicleWaiting;
+                var setter = new FieldSetter<Order>(order, _historyService);
+                setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
+                setter.SaveHistoryLog();
             }
+
+            _historyService.Save(shipping.Id, "shippingSetConfirmed", shipping.ShippingNumber);
 
             db.SaveChanges();
             return new AppActionResult

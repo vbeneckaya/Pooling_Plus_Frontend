@@ -5,6 +5,7 @@ namespace Domain.Enums
         Text,
         State,
         Number,
+        Enum,
         Select,
         Boolean,
         DateTime,
