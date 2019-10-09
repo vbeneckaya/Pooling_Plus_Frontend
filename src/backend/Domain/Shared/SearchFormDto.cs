@@ -7,7 +7,7 @@ namespace Domain.Shared
     /// <summary>
     /// Basic Search Form
     /// </summary>
-    public class SearchForm: PagingForm
+    public class SearchFormDto: PagingFormDto
     {
         public string Search { get; set; }
     }

@@ -15,7 +15,7 @@ namespace Application.Shared
         where TEntity : class, IPersistable, IWithDocumentsPersistable, 
         new() where TDto : IDto, 
         new() where TFormDto : IDto, 
-        new() where TSearchForm: PagingForm
+        new() where TSearchForm: PagingFormDto
     {
         protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider) { }
 

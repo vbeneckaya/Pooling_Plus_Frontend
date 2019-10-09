@@ -20,7 +20,7 @@ namespace Application.Shared
         where TEntity : class, IPersistable, 
         new() where TDto : IDto, 
         new() where TFormDto : IDto,
-        new() where TSearchForm: PagingForm
+        new() where TSearchForm: PagingFormDto
     {
         public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();

@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, FilterForm<OrderFilterDto>>, IOrdersService
+    public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, FilterFormDto<OrderFilterDto>>, IOrdersService
     {
         public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider) : base(appDbContext, userIdProvider)
         {
@@ -287,7 +287,7 @@ namespace Application.Services.Orders
         /// <param name="query">query</param>
         /// <param name="searchForm">search form</param>
         /// <returns></returns>
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterForm<OrderFilterDto> searchForm)
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
         {
             // OrderNumber Filter
 

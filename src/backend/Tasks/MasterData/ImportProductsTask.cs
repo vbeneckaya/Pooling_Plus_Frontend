@@ -124,7 +124,7 @@ namespace Tasks.MasterData
         {
             // Загружаем текущий список продуктов из базы
             IArticlesService articlesService = ServiceProvider.GetService<IArticlesService>();
-            IEnumerable<ArticleDto> currentProducts = articlesService.Search(new SearchForm { Take = int.MaxValue }).Items;
+            IEnumerable<ArticleDto> currentProducts = articlesService.Search(new SearchFormDto { Take = int.MaxValue }).Items;
 
             // Получаем список продуктов из файла, обновляем имеющиеся продукты
             bool hasErrors;

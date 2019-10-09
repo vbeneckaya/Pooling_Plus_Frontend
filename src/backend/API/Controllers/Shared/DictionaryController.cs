@@ -32,7 +32,7 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public SearchResult<TDto> Search([FromBody]SearchForm form)
+        public SearchResult<TDto> Search([FromBody]SearchFormDto form)
         {
             return _service.Search(form);
         }
