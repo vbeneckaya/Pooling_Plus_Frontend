@@ -69,7 +69,7 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel")]
-        public ValidateResult ImportFromExcel()
+        public IEnumerable<ValidateResult> ImportFromExcel()
         {
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))

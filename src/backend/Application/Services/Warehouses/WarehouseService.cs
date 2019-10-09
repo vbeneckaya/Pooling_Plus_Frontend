@@ -5,6 +5,9 @@ using Domain.Persistables;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
+using DAL.Queries;
 
 namespace Application.Services.Warehouses
 {
@@ -56,6 +59,24 @@ namespace Application.Services.Warehouses
                 UsePickingType = entity.UsePickingType,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<WarehouseDto>(db)
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById));
+        }
+
+        private Guid? GetPickingTypeIdByName(string name)
+        {
+            var entry = db.PickingTypes.Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetPickingTypeNameById(Guid id)
+        {
+            var entry = db.PickingTypes.GetById(id);
+            return entry?.Name;
         }
     }
 }

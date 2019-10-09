@@ -13,6 +13,7 @@ using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
+using Application.Shared.Excel;
 
 namespace Application.Shared
 {
@@ -268,10 +269,12 @@ namespace Application.Shared
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
-            var dtos = workSheet.ConvertSheetToObjects<TFormDto>(out string parseErrors);
-            if (!string.IsNullOrEmpty(parseErrors))
+            var excelMapper = CreateExcelMapper();
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+
+            if (excelMapper.Errors.Any(e => e.IsError))
             {
-                return new[] { new ValidateResult(parseErrors) };
+                return excelMapper.Errors;
             }
 
             return Import(dtos);
@@ -284,9 +287,16 @@ namespace Application.Shared
             var dbSet = UseDbSet(db);
             var entities = dbSet.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-            workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
+
+            var excelMapper = new ExcelMapper<TDto>(db);
+            excelMapper.FillSheet(workSheet, dtos, "ru");
             
             return new MemoryStream(excel.GetAsByteArray());
+        }
+
+        protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<TFormDto>(db);
         }
 
         protected TimeSpan? ParseTime(string value)
