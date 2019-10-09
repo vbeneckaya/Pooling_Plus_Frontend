@@ -5,6 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Resources\translations.yml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Resources\translations.yml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
       <Folder Include="Services\ActionRunner" />
     </ItemGroup>
 

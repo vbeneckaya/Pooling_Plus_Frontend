@@ -157,18 +157,6 @@ namespace Application.Services.AppConfiguration
                 }, 
                 Dictionaries = new List<UserConfigurationDictionaryItem>
                 {
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<TranslationsService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn("name", FiledType.Text),
-                            new UserConfigurationGridColumn("ru", FiledType.Text),
-                            new UserConfigurationGridColumn("en", FiledType.Text),
-                        }
-                    },
                     /*start of add dictionaries*/
                     new UserConfigurationDictionaryItem
                     {
