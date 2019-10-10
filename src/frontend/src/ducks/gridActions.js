@@ -13,10 +13,13 @@ const INVOKE_ACTION_REQUEST = 'INVOKE_ACTION_REQUEST';
 const INVOKE_ACTION_SUCCESS = 'INVOKE_ACTION_SUCCESS';
 const INVOKE_ACTION_ERROR = 'INVOKE_ACTION_ERROR';
 
+const CLEAR_ACTIONS = 'CLEAR_ACTIONS';
+
 //*  INITIAL STATE  *//
 
 const initial = {
     actions: [],
+    progressActionName: null,
 };
 
 //*  REDUCER  *//
@@ -39,14 +42,22 @@ export default (state = initial, { type, payload }) => {
         case INVOKE_ACTION_REQUEST:
             return {
                 ...state,
+                progressActionName: payload.actionName,
             };
         case INVOKE_ACTION_SUCCESS:
             return {
                 ...state,
+                progressActionName: null,
             };
         case INVOKE_ACTION_ERROR:
             return {
                 ...state,
+                progressActionName: null,
+            };
+        case CLEAR_ACTIONS:
+            return {
+                ...state,
+                actions: []
             };
         default:
             return state;
@@ -65,20 +76,30 @@ export const getActionsRequest = payload => {
 export const invokeActionRequest = payload => {
     return {
         type: INVOKE_ACTION_REQUEST,
-        payload
-    }
+        payload,
+    };
+};
+
+export const clearActions = () => {
+    return {
+        type: CLEAR_ACTIONS,
+    };
 };
 
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridActions;
 
-export const actionsSelector = createSelector(
-    stateSelector,
-    state => state.actions.map(item => ({
+export const actionsSelector = createSelector(stateSelector, state =>
+    state.actions.map(item => ({
         ...item,
-        ids: item.ids || []
+        ids: item.ids || [],
     })),
+);
+
+export const progressActionNameSelector = createSelector(
+    stateSelector,
+    state => state.progressActionName,
 );
 
 //*  SAGA  *//
@@ -99,18 +120,18 @@ function* getActionsSaga({ payload }) {
 
 function* invokeActionSaga({ payload }) {
     try {
-        const {ids, callbackSuccess, name, actionName} = payload;
+        const { ids, callbackSuccess, name, actionName } = payload;
         const result = yield postman.post(`/${name}/invokeAction/${actionName}`, ids);
         yield put({
-            type: INVOKE_ACTION_SUCCESS
+            type: INVOKE_ACTION_SUCCESS,
         });
         toast.info(result.message);
         callbackSuccess();
     } catch (e) {
         yield put({
             type: INVOKE_ACTION_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 

@@ -17,7 +17,6 @@ import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../d
 import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
-    console.log('res', res);
     return (
         <Card {...res}>
             <Button color="blue" className="create-button">

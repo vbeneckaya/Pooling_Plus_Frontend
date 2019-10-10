@@ -32,7 +32,6 @@ const Information = ({ form, onChange }) => {
     );
 
     useEffect(() => {
-        console.log('valuesList', valuesList.find(item => item.value === form.soldTo), form.soldTo);
         if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
             setError(true)
         } else {

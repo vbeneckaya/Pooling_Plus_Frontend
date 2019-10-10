@@ -68,13 +68,12 @@ class UserCard extends Component {
 
         this.setState({ modalOpen: false });
 
-        this.setState({form: {}});
+        this.setState({ form: {} });
         clear();
         loadList();
     };
 
     handleChange = (event, { name, value }) => {
-        console.log('event', event);
         this.setState(prevState => ({
             form: {
                 ...prevState.form,
@@ -151,7 +150,7 @@ class UserCard extends Component {
                                         value={password}
                                         onChange={this.handleChange}
                                     />
-                                    {/* {id ? (
+                                    {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль
                                             </Label>
@@ -161,7 +160,9 @@ class UserCard extends Component {
                                             label={t('isActive')}
                                             name="isActive"
                                             checked={isActive}
-                                            onChange={this.handleChange}
+                                            onChange={(e, { name, checked }) =>
+                                                this.handleChange(e, { name, value: checked })
+                                            }
                                         />
                                     </Form.Field>
                                 </Grid.Column>

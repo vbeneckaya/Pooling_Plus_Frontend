@@ -71,10 +71,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose}) => 
                             key={order.id}
                             name="orders"
                             id={order.id}
-                            title={t(`edit_orders`, {
-                                number: order.orderNumber,
-                                status: t(order.status),
-                            })}
+                            title={`edit_orders`}
                             onClose={beforeClose}
                         >
                             <Menu.Item>{t('order_item', {number: order.orderNumber})}</Menu.Item>

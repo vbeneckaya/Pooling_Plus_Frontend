@@ -8,7 +8,6 @@ const SelectValue = ({ value, source, indexRow }) => {
     let lookup = useSelector(state => valuesListSelector(state, source)) || [];
 
     useEffect(() => {
-        console.log('index', indexRow);
         if (!lookup.length && indexRow === 0) {
             dispatch(
                 getLookupRequest({
@@ -18,8 +17,6 @@ const SelectValue = ({ value, source, indexRow }) => {
             );
         }
     }, []);
-
-    console.log('lookup', lookup, value);
 
     const valueText = lookup.find(x => x.value === value);
 

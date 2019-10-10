@@ -131,7 +131,6 @@ function* saveRepresentationSaga({ payload }) {
     try {
         const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.list);
-        console.log('s', state);
         localStorage.setItem(REPRESENTATIONS_KEY, JSON.stringify(state));
         callbackSuccess && callbackSuccess();
     } catch (e) {
@@ -144,7 +143,6 @@ function* editRepresentationSaga({ payload }) {
     try {
         const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.list);
-        console.log('s', state);
         localStorage.setItem(REPRESENTATIONS_KEY, JSON.stringify(state));
         callbackSuccess && callbackSuccess();
     } catch (e) {

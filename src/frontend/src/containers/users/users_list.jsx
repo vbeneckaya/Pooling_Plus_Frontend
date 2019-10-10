@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import TableInfo from '../../components/TableInfo';
 import { usersColumns } from '../../constants/usersColumns';
 import {
+    createUserRequest,
     getUsersRequest,
     progressSelector,
     totalCountSelector,
@@ -24,6 +25,9 @@ const newModal = (t, load) => (
 
 export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }) => {
+        const {editUser} = this.props;
+
+
     };
 
     getActions = (row, load, t) => {
@@ -42,7 +46,7 @@ export class UsersList extends Component {
         return (
             <TableInfo
                 headerRow={usersColumns}
-                title="Пользователи"
+                title={t('users')}
                 loading={loading}
                 className="wider container-margin-top-bottom"
                 list={list}
@@ -69,6 +73,9 @@ const mapDispatchToProps = dispatch => {
     return {
         loadList: params => {
             dispatch(getUsersRequest(params));
+        },
+        editUser: params => {
+            dispatch(createUserRequest(params));
         },
     };
 };
