@@ -69,6 +69,11 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
+            <summary>
+            Получение данных для выпадающего списка в 
+            </summary>
+        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь
@@ -116,6 +121,11 @@
         <member name="M:API.Controllers.Shared.GridController`5.Search(Domain.Shared.SearchForm)">
             <summary>
             Поиск по вхождению с пагинацией
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.GridController`5.SearchIds(Domain.Shared.SearchForm)">
+            <summary>
+            Получение Id сущностей, подходящих под фильтр
             </summary>
         </member>
         <member name="M:API.Controllers.Shared.GridController`5.ForSelect">
@@ -228,6 +238,31 @@
             <summary>
             Получение переводов для языка
             </summary>
+        </member>
+        <member name="M:API.Controllers.UsersController.SetActive(System.Guid,System.Boolean)">
+            <summary>
+            Получение данных для выпадающего списка в 
+            </summary>
+        </member>
+        <member name="T:API.Controllers.UserSettingsController">
+            <summary>
+            Пользовательские настройки
+            </summary>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.GetValue(System.String)">
+            <summary>
+            Получение значения пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.SetValue(System.String,API.Models.UserSettingValueDto)">
+            <summary>
+            Сохранение пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <param name="value">Новое значение</param>
+            <returns></returns>
         </member>
     </members>
 </doc>

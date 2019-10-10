@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Application.Shared;
 using DAL;
+using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services.Roles;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,13 +15,32 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(AppDbContext appDbContext) : base(appDbContext)
+        public RolesService(AppDbContext appDbContext, IUserProvider userProvider) 
+            : base(appDbContext)
         {
+            _userProvider = userProvider;
         }
 
         public override DbSet<Role> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Roles;
+        }
+
+        public ValidateResult SetActive(Guid id, bool active)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var entity = db.Roles.GetById(id);
+            if (entity == null)
+            {
+                return new ValidateResult("roleNotFound".translate(user.Language));
+            }
+            else
+            {
+                entity.IsActive = active;
+                db.SaveChanges();
+
+                return new ValidateResult(null, entity.Id.ToString());
+            }
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -40,6 +62,7 @@ namespace Application.Services.Roles
                 entity.Id = Guid.Parse(dto.Id);
             
             entity.Name = dto.Name;
+            entity.IsActive = dto.IsActive;
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
@@ -47,8 +70,11 @@ namespace Application.Services.Roles
             return new RoleDto
             {
                 Id = entity.Id.ToString(),
-                Name = entity.Name
+                Name = entity.Name,
+                IsActive = entity.IsActive
             };
         }
+
+        private readonly IUserProvider _userProvider;
     }
 }

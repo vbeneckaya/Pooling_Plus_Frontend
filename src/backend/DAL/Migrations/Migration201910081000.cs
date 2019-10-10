@@ -19,7 +19,7 @@ namespace DAL.Migrations
                 new Column("Name", DbType.String.WithSize(100)),
                 new Column("RoleId", DbType.Guid),
                 new Column("Email", DbType.String.WithSize(100)),
-                new Column("IsActive", DbType.Boolean),
+                new Column("IsActive", DbType.Boolean, defaultValue: true),
                 new Column("FieldsConfig", DbType.String.WithSize(300)),
                 new Column("PasswordHash", DbType.String.WithSize(300)));
             Database.AddIndex("Users_pk", true, "Users", "Id");

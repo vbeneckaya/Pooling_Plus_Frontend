@@ -17,7 +17,7 @@ namespace API.Controllers.Shared
     /// <typeparam name="TDto"></typeparam>
     public abstract class DictionaryController<TService, TEntity, TDto> : Controller where TService: IDictonaryService<TEntity, TDto>
     {
-        private readonly TService _service;
+        protected readonly TService _service;
 
         /// <summary>
         /// Словарь
@@ -69,7 +69,7 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel")]
-        public IEnumerable<ValidateResult> ImportFromExcel()
+        public ValidateResult ImportFromExcel()
         {
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
