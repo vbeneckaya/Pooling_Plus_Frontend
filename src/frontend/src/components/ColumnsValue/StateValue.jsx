@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
-const StateValue = ({ value, source }) => {
+const StateValue = ({ value, source, indexRow }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
     let stateColors = useSelector(state => valuesListSelector(state, source)) || [];
 
     useEffect(() => {
-        if (!stateColors.length) {
+        if (!stateColors.length && indexRow === 0) {
             dispatch(
                 getLookupRequest({
                     name: source,

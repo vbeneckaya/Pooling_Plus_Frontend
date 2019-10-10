@@ -92,6 +92,7 @@ class Result extends Component {
                                                 <CellValue
                                                     type={column.type}
                                                     id={`${row.id}_${column.name}_${i}`}
+                                                    indexRow={i}
                                                     value={row[column.name]}
                                                     source={column.source}
                                                 />
