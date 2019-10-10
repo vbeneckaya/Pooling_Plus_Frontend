@@ -5,9 +5,10 @@ import TableInfo from '../../TableInfo';
 import Text from '../../BaseComponents/Text';
 import { useSelector, useDispatch } from 'react-redux';
 import {cardSelector, editCardRequest} from '../../../ducks/gridCard';
+import {getLookupRequest, valuesListSelector} from "../../../ducks/lookup";
 
-const EditField = ({ value, name, onChange }) => {
-    return <Text value={value} name={name} onChange={onChange} noLabel/>;
+const EditField = ({ value, name, onChange, datalist }) => {
+    return <Text value={value} name={name} onChange={onChange} noLabel datalist={datalist}/>;
 };
 
 const columns = [
@@ -47,6 +48,18 @@ const Position = ({ form, onChange, gridName, load }) => {
     let [indexEdit, setIndexEdit] = useState(null);
 
     const card = useSelector(state => cardSelector(state));
+    const articles = useSelector(state => valuesListSelector(state, 'articles')) || [];
+
+    useEffect(() => {
+        if (!articles.length) {
+            dispatch(getLookupRequest({
+                name: 'articles',
+                isForm: true
+            }))
+        }
+    }, []);
+
+    console.log('articles', articles);
 
     useEffect(() => {
         setItems(form.items);
@@ -141,7 +154,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                                                     key={`cell_${row.id}_${column.name}_${index}`}
                                                     className={`table-edit-field-${column.name}`}
                                                 >
-                                                    <EditField value={row[column.name]} name={column.name} onChange={handleChangeField} />
+                                                    <EditField value={row[column.name]} name={column.name} datalist={column.name === 'nart' && articles} onChange={handleChangeField} />
                                                 </Table.Cell>
                                             ) : (
                                                 <Table.Cell

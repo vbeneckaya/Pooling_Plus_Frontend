@@ -298,3 +298,7 @@ body {
         width: 80px;
     }
 }
+
+input::-webkit-calendar-picker-indicator {
+    display: none;
+}
