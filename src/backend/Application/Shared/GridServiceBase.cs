@@ -91,6 +91,19 @@ namespace Application.Shared
             return a;
         }
 
+        public IEnumerable<string> SearchIds(SearchForm form)
+        {
+            var dbSet = UseDbSet(db);
+            var query = dbSet.AsQueryable();
+
+            //TODO: добавить применение фильтров и полнотекстового поиска
+
+            var ids = query.Select(e => e.Id).ToList();
+
+            var result = ids.Select(x => x.ToString());
+            return result;
+        }
+
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             ValidateResult mapResult;

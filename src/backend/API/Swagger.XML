@@ -123,6 +123,11 @@
             Поиск по вхождению с пагинацией
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`5.SearchIds(Domain.Shared.SearchForm)">
+            <summary>
+            Получение Id сущностей, подходящих под фильтр
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`5.ForSelect">
             <summary>
             Получение данных для выпадающего списка в 

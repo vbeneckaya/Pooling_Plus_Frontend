@@ -40,7 +40,29 @@ namespace API.Controllers.Shared
                 return StatusCode(500, ex.Message);
             }
         }
-        
+
+        /// <summary>
+        /// Получение Id сущностей, подходящих под фильтр
+        /// </summary>
+        [HttpPost("ids")]
+        public IActionResult SearchIds([FromBody]SearchForm form)
+        {
+            try
+            {
+                var result = service.SearchIds(form);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Load IDs of {typeof(TEntity).Name}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Получение данных для выпадающего списка в 
         /// </summary>
