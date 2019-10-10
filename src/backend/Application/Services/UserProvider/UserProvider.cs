@@ -2,18 +2,18 @@
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Services.UserIdProvider
+namespace Application.Services.UserProvider
 {
 
-    public class UserIdProvider : IUserIdProvider
+    public class UserProvider : IUserProvider
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly AppDbContext db;
 
-        public UserIdProvider(IHttpContextAccessor httpContextAccessor, AppDbContext dbContext)
+        public UserProvider(IHttpContextAccessor httpContextAccessor, AppDbContext dbContext)
         {
             this.httpContextAccessor = httpContextAccessor;
             db = dbContext;
@@ -26,6 +26,14 @@ namespace Application.Services.UserIdProvider
             return userIdClaim != null
                 ? Guid.Parse(userIdClaim.Value)
                 : (Guid?)null;
+        }
+
+        public string GetCurrentUserLanguage()
+        {
+            var httpContext = httpContextAccessor.HttpContext;
+            var langClaim = httpContext.User.FindFirst("lang");
+            string lang = langClaim?.Value ?? "ru";
+            return lang;
         }
 
         public User GetCurrentUser()

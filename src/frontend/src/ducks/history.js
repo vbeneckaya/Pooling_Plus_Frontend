@@ -63,7 +63,7 @@ export const historySelector = createSelector(
 function* getHistorySaga({ payload }) {
     try {
         const result = yield postman.get(
-            `/history/${payload}/${localStorage.getItem('i18nextLng')}`,
+            `/history/${payload}`,
         );
         yield put({
             type: GET_HISTORY_SUCCESS,

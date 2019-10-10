@@ -3,7 +3,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Documents;
 using Domain.Services.History;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -127,7 +127,7 @@ namespace Application.Shared
             return new ValidateResult();
         }
 
-        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+        protected GridWithDocumentsBase(AppDbContext appDbContext, IUserProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider)
         {
             _historyService = historyService;

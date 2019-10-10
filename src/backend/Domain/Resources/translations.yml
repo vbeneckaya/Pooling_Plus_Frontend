@@ -31,7 +31,7 @@
   boxesCountGroup: "Количество коробок"
   boxHeightMm: "Высота короба, мм"
   boxLengthMm: "Длина короба, мм"
-  cancel: "Отменить"
+  Cancel: "Отменить"
   CancelButton: "Отменить"
   canceled: "Отменён"
   cancelOrder: "Отменить заказ"
@@ -343,13 +343,13 @@
   widthOfABoxMm: "Ширина короба, мм"
   widthOfPalletsMm: "Ширина паллеты, мм"
   widthShrinkMm: "Ширина shrink, мм"
-  widthUnitsGoodsMm: "Ширина ед. товара, мм",
-  plannedDate_loading: "Плановая дата отгрузки",
-  plannedDate_delivery: "Плановая дата доставки",
-  arrivalTime: "Дата и время прибытия",
-  departureTime: "Дата и время убытия",
-  Yes: "Да",
-  No: "Нет",
+  widthUnitsGoodsMm: "Ширина ед. товара, мм"
+  plannedDate_loading: "Плановая дата отгрузки"
+  plannedDate_delivery: "Плановая дата доставки"
+  arrivalTime: "Дата и время прибытия"
+  departureTime: "Дата и время убытия"
+  Yes: "Да"
+  No: "Нет"
   soldTo_error: "SoldTo не найден. Выберите значение из списка"
 en:
   accounts: "Accounts"
@@ -696,11 +696,11 @@ en:
   widthOfABoxMm: "WidthOfABoxMm"
   widthOfPalletsMm: "WidthOfPalletsMm"
   widthShrinkMm: "WidthShrinkMm"
-  widthUnitsGoodsMm: "WidthUnitsGoodsMm",
-  plannedDate_loading: "Planned date of shipment",
-  plannedDate_delivery: "Planned Delivery Date",
-  arrivalTime: "Arrival Time",
-  departureTime: "Departure Time",
-  Yes: "Yes",
-  No: "No",
+  widthUnitsGoodsMm: "WidthUnitsGoodsMm"
+  plannedDate_loading: "Planned date of shipment"
+  plannedDate_delivery: "Planned Delivery Date"
+  arrivalTime: "Arrival Time"
+  departureTime: "Departure Time"
+  Yes: "Yes"
+  No: "No"
   soldTo_error: "SoldTo not found. Select a value from the list"

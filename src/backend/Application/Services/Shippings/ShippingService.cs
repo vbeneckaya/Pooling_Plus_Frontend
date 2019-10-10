@@ -13,7 +13,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
 using Domain.Services.Shippings;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +21,7 @@ namespace Application.Services.Shippings
 {
     public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto>, IShippingsService
     {
-        public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+        public ShippingsService(AppDbContext appDbContext, IUserProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)
         {
             _mapper = ConfigureMapper().CreateMapper();

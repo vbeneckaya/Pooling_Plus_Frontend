@@ -1,5 +1,6 @@
 ﻿using DAL;
 using Domain.Persistables;
+using Domain.Services.Translations;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
@@ -58,6 +59,9 @@ namespace Infrastructure.Translations
             {
                 Log.Error(ex, "Не удалось актуализировать локализацию сайта");
             }
+
+            var actualTranslations = db.Translations.ToList();
+            TranslationProvider.FillCache(actualTranslations);
         }
     }
 }

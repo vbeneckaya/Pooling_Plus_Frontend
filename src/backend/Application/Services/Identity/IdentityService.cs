@@ -7,7 +7,7 @@ using DAL;
 using DAL.Queries;
 using Domain.Persistables;
 using Domain.Services.Identity;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.IdentityModel.Tokens;
@@ -17,10 +17,10 @@ namespace Application.Services.Identity
     
     public class IdentityService : IIdentityService
         {
-            private readonly IUserIdProvider userIdProvider;
+            private readonly IUserProvider userIdProvider;
             private readonly AppDbContext db;
 
-            public IdentityService(IUserIdProvider userIdProvider, AppDbContext dbContext)
+            public IdentityService(IUserProvider userIdProvider, AppDbContext dbContext)
         {
             this.userIdProvider = userIdProvider;
             db = dbContext;
@@ -33,7 +33,7 @@ namespace Application.Services.Identity
             if (user != null && !user.IsActive)
                 return new VerificationResultWith<TokenModel>{Result = VerificationResult.Forbidden, Data = null};
 
-            var identity = GetIdentity(model.Login, model.Password);
+            var identity = GetIdentity(model.Login, model.Password, model.Language);
 
             if (identity == null)
                 return new VerificationResultWith<TokenModel>{Result = VerificationResult.WrongCredentials, Data = null};
@@ -65,7 +65,7 @@ namespace Application.Services.Identity
             };
         }
 
-        private ClaimsIdentity GetIdentity(string userName, string password)
+        private ClaimsIdentity GetIdentity(string userName, string password, string language)
         {
             var user = db.Users.GetByLogin(userName);
             if (user == null)
@@ -83,7 +83,8 @@ namespace Application.Services.Identity
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, role.Name),
-                new Claim("userId", user.Id.ToString())
+                new Claim("userId", user.Id.ToString()),
+                new Claim("lang", language)
             };
 
             return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
