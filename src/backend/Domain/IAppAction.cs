@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.UserProvider;
 
 namespace Domain
 {
@@ -16,7 +17,7 @@ namespace Domain
     {
         AppColor Color { get; set; }
 
-        AppActionResult Run(User user, T target);
+        AppActionResult Run(CurrentUserDto user, T target);
         bool IsAvailable(Role role, T target);
     }
 }

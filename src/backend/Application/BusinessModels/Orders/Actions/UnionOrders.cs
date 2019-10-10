@@ -8,6 +8,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -27,7 +29,7 @@ namespace Application.BusinessModels.Orders.Actions
         }
         
         public AppColor Color { get; set; }
-        public AppActionResult Run(User user, IEnumerable<Order> orders)
+        public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingsCount = db.Shippings.Count();
             var tempRange = FindCommonTempRange(orders);
@@ -79,7 +81,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданна перевозка {shipping.ShippingNumber}"
+                Message = "shippingSetCreated".translate(user.Language, shipping.ShippingNumber)
             };
         }
 

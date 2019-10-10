@@ -7,6 +7,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.BusinessModels.Orders.Actions
@@ -28,8 +30,9 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppColor Color { get; set; }
 
-        public AppActionResult Run(User user, IEnumerable<Order> orders)
+        public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
+            string orderNumbers = orders.Select(x => x.OrderNumber).Join(", ");
             var createShipping = new CreateShipping(db, _historyService);
             foreach (var order in orders) 
                 createShipping.Run(user, order);
@@ -37,7 +40,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Созданы перевозки для заказов {orders.Select(x=>x.OrderNumber).Join(", ")}"
+                Message = "ordersShippingCreated".translate(user.Language, orderNumbers)
             };
         }
 

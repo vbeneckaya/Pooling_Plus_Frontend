@@ -1,24 +1,24 @@
-﻿using Domain.Persistables;
-using Domain.Services.UserProvider;
+﻿using Domain.Services.UserProvider;
 using System;
 
 namespace Tasks.Services
 {
     public class TasksUserProvider : IUserProvider
     {
-        public User GetCurrentUser()
+        public CurrentUserDto GetCurrentUser()
         {
-            return null;
+            return new CurrentUserDto
+            {
+                Id = null,
+                RoleId = null,
+                Name = "System",
+                Language = "ru"
+            };
         }
 
         public Guid? GetCurrentUserId()
         {
             return null;
-        }
-
-        public string GetCurrentUserLanguage()
-        {
-            return "ru";
         }
     }
 }
