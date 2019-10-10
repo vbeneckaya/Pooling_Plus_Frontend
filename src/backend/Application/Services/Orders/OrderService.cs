@@ -10,7 +10,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
 using Domain.Services.Orders;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,7 +21,7 @@ namespace Application.Services.Orders
 {
     public class OrdersService : GridWithDocumentsBase<Order, OrderDto, OrderFormDto, OrderSummaryDto>, IOrdersService
     {
-        public OrdersService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
+        public OrdersService(AppDbContext appDbContext, IUserProvider userIdProvider, IHistoryService historyService) 
             : base(appDbContext, userIdProvider, historyService)
         {
             _mapper = ConfigureMapper().CreateMapper();

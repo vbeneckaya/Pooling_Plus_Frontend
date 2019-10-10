@@ -75,7 +75,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 function* getHistorySaga({ payload }) {
     try {
         const result = yield postman.get(
-            `/history/${payload}/${localStorage.getItem('i18nextLng')}`,
+            `/history/${payload}`,
         );
         yield put({
             type: GET_HISTORY_SUCCESS,

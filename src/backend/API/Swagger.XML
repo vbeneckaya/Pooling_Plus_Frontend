@@ -52,12 +52,11 @@
             История
             </summary>
         </member>
-        <member name="M:API.Controllers.HistoryController.Get(System.Guid,System.String)">
+        <member name="M:API.Controllers.HistoryController.Get(System.Guid)">
             <summary>
             Получить историю сущности
             </summary>
             <param name="entityId">Идентификатор сущности</param>
-            <param name="lang">Язык для локализации</param>
             <returns></returns>
         </member>
         <member name="M:API.Controllers.IdentityController.UserInfo">

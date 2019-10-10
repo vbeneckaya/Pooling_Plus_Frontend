@@ -8,6 +8,8 @@ using System.Linq;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Queries;
+using System.Collections.Generic;
+using Domain.Shared;
 
 namespace Application.Services.Warehouses
 {
@@ -20,6 +22,19 @@ namespace Application.Services.Warehouses
         public override DbSet<Warehouse> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Warehouses;
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var entities = db.Warehouses.OrderBy(x => x.WarehouseName).ToList();
+            foreach (var entity in entities)
+            {
+                yield return new LookUpDto
+                {
+                    Name = entity.WarehouseName,
+                    Value = entity.Id.ToString()
+                };
+            }
         }
 
         public override Warehouse FindByKey(WarehouseDto dto)

@@ -16,8 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Infrastructure.Logging;
-using Domain.Services.UserIdProvider;
-using Application.Services.UserIdProvider;
+using Domain.Services.UserProvider;
+using Application.Services.UserProvider;
 using Infrastructure.Translations;
 
 namespace API
@@ -72,7 +72,7 @@ namespace API
 
             services.SyncTranslations();
 
-            services.AddScoped<IUserIdProvider, UserIdProvider>();
+            services.AddScoped<IUserProvider, UserProvider>();
         }
 
         private static string GetXmlCommentsPath()

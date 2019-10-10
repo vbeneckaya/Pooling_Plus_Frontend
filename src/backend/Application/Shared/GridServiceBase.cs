@@ -7,7 +7,7 @@ using DAL.Queries;
 using Domain;
 using Domain.Persistables;
 using Domain.Services;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -34,9 +34,9 @@ namespace Application.Shared
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
 
         protected AppDbContext db;
-        private readonly IUserIdProvider userIdProvider;
+        private readonly IUserProvider userIdProvider;
         
-        protected GridServiceBase(AppDbContext appDbContext, IUserIdProvider userIdProvider)
+        protected GridServiceBase(AppDbContext appDbContext, IUserProvider userIdProvider)
         {
             db = appDbContext;
             this.userIdProvider = userIdProvider;

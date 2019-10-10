@@ -6,6 +6,8 @@ using Domain.Persistables;
 using Domain.Services.Users;
 using Domain.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using Domain.Shared;
 
 namespace Application.Services.Users
 {
@@ -19,6 +21,19 @@ namespace Application.Services.Users
         public override DbSet<User> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Users;
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var entities = db.Users.OrderBy(x => x.Name).ToList();
+            foreach (var entity in entities)
+            {
+                yield return new LookUpDto
+                {
+                    Name = entity.Name,
+                    Value = entity.Id.ToString()
+                };
+            }
         }
 
 
