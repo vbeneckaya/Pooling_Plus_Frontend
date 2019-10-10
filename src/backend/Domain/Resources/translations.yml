@@ -354,6 +354,7 @@
   Yes: "Да"
   No: "Нет"
   soldTo_error: "SoldTo не найден. Выберите значение из списка"
+  quantity: "Кол-во(шт)"
 en:
   accounts: "Accounts"
   actualDocumentsReturnDate: "Actual documents return date"
@@ -710,3 +711,4 @@ en:
   Yes: "Yes"
   No: "No"
   soldTo_error: "SoldTo not found. Select a value from the list"
+  quantity: "Quantity"
