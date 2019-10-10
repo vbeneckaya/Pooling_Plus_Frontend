@@ -145,6 +145,7 @@ const Card = props => {
                     {React.cloneElement(getModal[name], {
                         ...props,
                         form,
+                        load: loadCard,
                         onClose,
                         onChangeForm,
                     })}

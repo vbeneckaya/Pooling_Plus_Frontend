@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Grid, Icon, Table } from 'semantic-ui-react';
 import TableInfo from '../../TableInfo';
 import Text from '../../BaseComponents/Text';
+import { useSelector, useDispatch } from 'react-redux';
+import {cardSelector, editCardRequest} from '../../../ducks/gridCard';
 
-const EditField = ({ value }) => {
-    return <Text value={value} />;
+const EditField = ({ value, name, onChange }) => {
+    return <Text value={value} name={name} onChange={onChange} noLabel/>;
 };
 
 const columns = [
@@ -38,28 +40,65 @@ const columns = [
     },
 ];
 
-const Position = ({ form, onChange }) => {
+const Position = ({ form, onChange, gridName, load }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     let [items, setItems] = useState([...form.items]);
-    let [editItem, setEditItem] = useState({});
     let [indexEdit, setIndexEdit] = useState(null);
 
-    useEffect(
-        () => {
-            setItems(form.items);
-        },
-        [form.items],
-    );
+    const card = useSelector(state => cardSelector(state));
 
-    const handleDeleteItem = index => {};
+    useEffect(() => {
+        setItems(form.items);
+    }, [form.items]);
+
+    const editPositions = (positions) => {
+        dispatch(editCardRequest({
+            name: gridName,
+            params: {
+                ...card,
+                items: positions
+            },
+            callbackSuccess: load
+        }));
+    };
+
+    const handleDeleteItem = index => {
+        const newItems = items.filter((item, i) => i !== index);
+
+        editPositions(newItems);
+    };
 
     const handleEditItem = index => {
         setIndexEdit(index);
     };
 
     const handleSaveItem = () => {
+        editPositions(items);
 
-    }
+        setIndexEdit(null);
+    };
+
+    const handleChangeField = (e, {name, value})=> {
+        const newColumns = [...items];
+
+        newColumns[indexEdit] = {
+            ...items[indexEdit],
+            [name]: value
+        };
+
+        setItems(newColumns)
+    };
+
+    const handleCancelItem = (index) => {
+        setItems([...card.items]);
+        setIndexEdit(null);
+    };
+
+    const handleAddItems = () => {
+        setItems([...items, {}]);
+        setIndexEdit(items.length);
+    };
 
     return (
         <>
@@ -75,7 +114,7 @@ const Position = ({ form, onChange }) => {
                         </Form>
                     </Grid.Column>
                     <Grid.Column className="add-right-elements">
-                        <Button>{t('AddButton')}</Button>
+                        <Button onClick={handleAddItems}>{t('AddButton')}</Button>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -102,7 +141,7 @@ const Position = ({ form, onChange }) => {
                                                     key={`cell_${row.id}_${column.name}_${index}`}
                                                     className={`table-edit-field-${column.name}`}
                                                 >
-                                                    <EditField value={row[column.name]} />
+                                                    <EditField value={row[column.name]} name={column.name} onChange={handleChangeField} />
                                                 </Table.Cell>
                                             ) : (
                                                 <Table.Cell
@@ -114,23 +153,28 @@ const Position = ({ form, onChange }) => {
                                         </>
                                     ))}
                                     <Table.Cell textAlign="right">
-                                        {
-                                            index === indexEdit
-                                                ? <>
-                                                    <Button icon onClick={() => handleSaveItem(index)}>
-                                                        <Icon name="check" />
-                                                    </Button>
-                                                </>
-                                                : <>
-                                                    <Button icon onClick={() => handleDeleteItem(index)}>
-                                                    <Icon name="delete" />
+                                        {index === indexEdit ? (
+                                            <>
+                                                <Button icon onClick={() => handleCancelItem(index)}>
+                                                    <Icon name="undo alternate" />
                                                 </Button>
-                                                    <Button icon onClick={() => handleEditItem(index)}>
-                                                        <Icon name="edit" />
-                                                    </Button>
-                                                </>
-                                        }
-
+                                                <Button icon onClick={() => handleSaveItem(index)}>
+                                                    <Icon name="check" />
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Button icon onClick={() => handleEditItem(index)}>
+                                                    <Icon name="pencil alternate" />
+                                                </Button>
+                                                <Button
+                                                    icon
+                                                    onClick={() => handleDeleteItem(index)}
+                                                >
+                                                    <Icon name="trash alternate" />
+                                                </Button>
+                                            </>
+                                        )}
                                     </Table.Cell>
                                 </Table.Row>
                             ))}

@@ -9,7 +9,7 @@ import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
-const OrderModal = ({ form, onChangeForm, name, id }) => {
+const OrderModal = ({ form, onChangeForm, name, id, load }) => {
     const { t } = useTranslation();
 
     const getPanes = [
@@ -25,7 +25,7 @@ const OrderModal = ({ form, onChangeForm, name, id }) => {
             menuItem: t('position'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Position form={form} onChange={onChangeForm} />
+                    <Position form={form} onChange={onChangeForm} gridName={name} load={load}/>
                 </Tab.Pane>
             ),
         },

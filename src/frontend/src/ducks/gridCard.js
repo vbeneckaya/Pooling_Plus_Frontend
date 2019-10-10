@@ -152,11 +152,7 @@ const idSelector = createSelector(stateSelector, state => state.data.id);
 
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(stateSelector, state => {
-    const {data = {}} = state;
-    Object.keys(data).forEach(item => console.log(typeof data[item]));
-    return state.data
-});
+export const cardSelector = createSelector(stateSelector, state => state.data);
 
 //*  SAGA  *//
 
