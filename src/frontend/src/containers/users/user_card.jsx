@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Dimmer, Form, Grid, Input, Label, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUsersInfo,
@@ -15,6 +15,7 @@ import {
     rolesFromUserSelector,
 } from '../../ducks/roles';
 import Select from '../../components/BaseComponents/Select';
+import Text from '../../components/BaseComponents/Text';
 
 class UserCard extends Component {
     constructor(props) {
@@ -67,11 +68,13 @@ class UserCard extends Component {
 
         this.setState({ modalOpen: false });
 
+        this.setState({form: {}});
         clear();
         loadList();
     };
 
     handleChange = (event, { name, value }) => {
+        console.log('event', event);
         this.setState(prevState => ({
             form: {
                 ...prevState.form,
@@ -104,7 +107,7 @@ class UserCard extends Component {
 
     render() {
         const { modalOpen, form } = this.state;
-        const { login, userName, roleId, email, isActive } = form;
+        const { login, userName, roleId, email, isActive, password } = form;
         const { children, title, loading, id, rolesLoading, roles, t } = this.props;
 
         return (
@@ -122,52 +125,37 @@ class UserCard extends Component {
                     <Dimmer active={loading} inverted className="table-loader">
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
-                    <Form>
+                    <Form autoComplete="off">
                         <Grid columns="equal">
                             <Grid.Row columns="equal">
                                 <Grid.Column>
-                                    <Form.Field>
-                                        <label>{t('email')}</label>
-                                        <Input
-                                            name="email"
-                                            value={email}
-                                            onChange={this.handleChange}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>{t('userName')}</label>
-                                        <Input
-                                            name="userName"
-                                            value={userName}
-                                            onChange={this.handleChange}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <Select
-                                            fluid
-                                            search
-                                            selection
-                                            loading={rolesLoading}
-                                            text={'role'}
-                                            name="roleId"
-                                            value={roleId}
-                                            valuesList={roles}
-                                            onChange={this.handleChange}
-                                        />
-                                    </Form.Field>
-                                    <Form.Field>
-                                        <label>{t('password')}</label>
-                                        <Input
-                                            type="password"
-                                            name="password"
-                                            onChange={this.handleChange}
-                                        />
-                                       {/* {id ? (
+                                    <Text name="email" value={email} onChange={this.handleChange} />
+                                    <Text
+                                        name="userName"
+                                        value={userName}
+                                        onChange={this.handleChange}
+                                    />
+                                    <Select
+                                        fluid
+                                        search
+                                        selection
+                                        text="role"
+                                        name="roleId"
+                                        value={roleId}
+                                        source="roles"
+                                        onChange={this.handleChange}
+                                    />
+                                    <Text
+                                        type="password"
+                                        name="password"
+                                        value={password}
+                                        onChange={this.handleChange}
+                                    />
+                                    {/* {id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль
                                             </Label>
                                         ) : null}*/}
-                                    </Form.Field>
                                     <Form.Field>
                                         <Form.Checkbox
                                             label={t('isActive')}
@@ -218,7 +206,9 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withTranslation()(connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(UserCard));
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(UserCard),
+);
