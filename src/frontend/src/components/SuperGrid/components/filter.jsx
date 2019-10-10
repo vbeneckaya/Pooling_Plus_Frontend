@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Checkbox, Table, Input } from 'semantic-ui-react';
+import { Resizable } from 'react-resizable';
 
 import DateFacet from '../../FilterComponents/Date';
 import TextFacet from '../../FilterComponents/Text';
@@ -56,20 +57,38 @@ const Control = props => {
 };
 
 class Filter extends Component {
-    render() {
-        const {
-            columns,
-            isShowActions,
-            indeterminate,
-            all,
-            checkAllDisabled,
-            setSelectedAll,
-        } = this.props;
+    constructor(props) {
+        super(props);
 
-        const columnStyle = column => ({
+        const widths = [];
+
+        props.columns.forEach(() => {
+            widths.push(100)
+        });
+
+        this.state = {
+            widths,
+        };
+    }
+
+    handleResize = (e, { size, index }) => {
+        this.setState(({ widths }) => {
+            const nextColumns = [...widths];
+            nextColumns[index] = size.width;
+            return { widths: nextColumns };
+        });
+    };
+
+    render() {
+        const { isShowActions, indeterminate, all, checkAllDisabled, setSelectedAll, columns } = this.props;
+
+        const { widths } = this.state;
+
+        /*const columnStyle = column => ({
             maxWidth: column.width || 100 + 'px',
             minWidth: column.width || 100 + 'px',
-        });
+        });*/
+
 
         return (
             <Table.Row className="sticky-header">
@@ -83,15 +102,21 @@ class Filter extends Component {
                 </Table.HeaderCell>
                 {columns &&
                     columns.map((x, i) => (
-                        <Table.HeaderCell
-                            key={'th' + x.name + i}
-                            style={columnStyle(x)}
-                            className={`column-facet column-${x.name
-                                .toLowerCase()
-                                .replace(' ', '-')}-facet`}
+                        <Resizable
+                            width={widths[i]}
+                            height={0}
+                            onResize={(e, { size }) => this.handleResize(e, { size, index: i })}
                         >
-                            <Control key={'facet' + x.name} column={x} {...this.props} />
-                        </Table.HeaderCell>
+                            <Table.HeaderCell
+                                key={'th' + x.name + i}
+                                style={{ maxWidth: `${widths[i]}px`, minWidth: `${widths[i]}px` }}
+                                className={`column-facet column-${x.name
+                                    .toLowerCase()
+                                    .replace(' ', '-')}-facet`}
+                            >
+                                <Control key={'facet' + x.name} column={x} {...this.props} />
+                            </Table.HeaderCell>
+                        </Resizable>
                     ))}
                 {isShowActions ? <Table.HeaderCell className="actions-column" /> : null}
             </Table.Row>
