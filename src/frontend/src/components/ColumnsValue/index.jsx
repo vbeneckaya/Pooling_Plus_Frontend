@@ -16,8 +16,18 @@ import {postman} from "../../utils/postman";
 import StateValue from "./StateValue";
 import SelectValue from "./SelectValue";
 
-const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate, source }) => {
+const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isTranslate, source, indexRow }) => {
     const { t } = useTranslation();
+
+    if (type === SELECT_TYPE) {
+        return <SelectValue value={value} source={source} indexRow={indexRow} />
+    }
+
+    if (type === STATE_TYPE) {
+        return (
+            <StateValue value={value} source={source} indexRow={indexRow} />
+        );
+    }
 
     if (type === LABELS_TYPE) {
         return (
@@ -60,16 +70,6 @@ const CellValue = ({ type, value = '', stateColors = [], id, toggleIsActive, isT
             />
         );
     }*/
-
-   if (type === SELECT_TYPE) {
-       return <SelectValue value={value} source={source} />
-   }
-
-    if (type === STATE_TYPE) {
-        return (
-            <StateValue value={value} source={source} />
-        );
-    }
 
     return isTranslate ? t(value) : value
         .toString()

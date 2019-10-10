@@ -187,7 +187,7 @@ class TableInfo extends Component {
                             {customRowComponent
                                 ? customRowComponent
                                 : list &&
-                                  list.map(row => (
+                                  list.map((row, i) => (
                                       <ModalComponent
                                           element={modalCard}
                                           props={{ id: row.id, loadList: this.load, name }}
@@ -202,6 +202,7 @@ class TableInfo extends Component {
                                                           type={column.type}
                                                           id={`${row.id}_${column.name}_${index}`}
                                                           toggleIsActive={toggleIsActive}
+                                                          indexRow={i}
                                                           isTranslate={column.isTranslate}
                                                           source={column.source}
                                                           value={row[column.name]}
