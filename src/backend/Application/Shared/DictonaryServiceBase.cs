@@ -91,7 +91,7 @@ namespace Application.Shared
             return result;
         }
         
-        public IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream)
+        public ValidateResult ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
@@ -101,11 +101,18 @@ namespace Application.Shared
 
             if (excelMapper.Errors.Any(e => e.IsError))
             {
-                return excelMapper.Errors;
+                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
+                return new ValidateResult(errors);
             }
 
-            var result = Import(dtos);
-            return result;
+            var importResult = Import(dtos);
+            if (importResult.Any(e => e.IsError))
+            {
+                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
+                return new ValidateResult(errors);
+            }
+
+            return new ValidateResult();
         }
         
         public ValidateResult SaveOrCreate(TListDto entityFrom)

@@ -107,7 +107,7 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel"), DisableRequestSizeLimit]
-        public IEnumerable<ValidateResult> ImportFromExcel()
+        public ValidateResult ImportFromExcel()
         {
             var file = HttpContext.Request.Form.Files.ElementAt(0);
             return service.ImportFromExcel(file.OpenReadStream());            

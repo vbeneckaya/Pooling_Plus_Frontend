@@ -244,5 +244,25 @@
             Получение данных для выпадающего списка в 
             </summary>
         </member>
+        <member name="T:API.Controllers.UserSettingsController">
+            <summary>
+            Пользовательские настройки
+            </summary>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.GetValue(System.String)">
+            <summary>
+            Получение значения пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.SetValue(System.String,API.Models.UserSettingValueDto)">
+            <summary>
+            Сохранение пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <param name="value">Новое значение</param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
