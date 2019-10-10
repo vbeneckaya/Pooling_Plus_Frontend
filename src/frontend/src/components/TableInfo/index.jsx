@@ -95,7 +95,9 @@ class TableInfo extends Component {
         data.append('FileName', file.name);
         data.append('FileContent', new Blob([file], { type: file.type }));
         data.append('FileContentType', file.type);
-        this.props.importFromExcel(data);
+        this.props.importFromExcel(data, () => this.load());
+
+        e.target.value = null;
     };
 
     render() {
