@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Application.Shared;
 using DAL;
@@ -8,6 +7,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -28,7 +29,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppColor Color { get; set; }
 
-        public AppActionResult Run(User user, Order order)
+        public AppActionResult Run(CurrentUserDto user, Order order)
         {
             var setter = new FieldSetter<Order>(order, _historyService);
 
@@ -59,7 +60,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ убран из перевозки {order.OrderNumber}"
+                Message = "orderRemovedFromShipping".translate(user.Language, order.OrderNumber, shipping.ShippingNumber)
             };
         }
 

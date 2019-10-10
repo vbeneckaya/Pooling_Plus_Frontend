@@ -4,6 +4,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -21,7 +23,7 @@ namespace Application.BusinessModels.Shippings.Actions
             Color = AppColor.Red;
         }
 
-        public AppActionResult Run(User user, Shipping shipping)
+        public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingProblem;
 
@@ -32,7 +34,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Срыв поставки по перевозке {shipping.ShippingNumber}"
+                Message = "shippingSetProblem".translate(user.Language, shipping.ShippingNumber)
             };
         }
 

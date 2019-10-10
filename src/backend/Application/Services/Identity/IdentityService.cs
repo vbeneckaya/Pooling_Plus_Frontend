@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using DAL;
 using DAL.Queries;
-using Domain.Persistables;
 using Domain.Services.Identity;
 using Domain.Services.UserProvider;
 using Domain.Extensions;
@@ -55,13 +54,13 @@ namespace Application.Services.Identity
 
         public UserInfo GetUserInfo()
         {
-            User user = userIdProvider.GetCurrentUser();
+            var user = userIdProvider.GetCurrentUser();
 
             //TODO Получать имя пользователя и роль
             return new UserInfo
             {   
                 UserName = user.Name,
-                UserRole = db.Roles.GetById(user.RoleId).Name,
+                UserRole = user.RoleId.HasValue ? db.Roles.GetById(user.RoleId.Value)?.Name : null
             };
         }
 

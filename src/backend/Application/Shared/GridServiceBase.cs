@@ -143,7 +143,7 @@ namespace Application.Shared
             
             var dbSet = UseDbSet(db);
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
+            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
 
             var result = new List<ActionDto>();
 
@@ -203,7 +203,7 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
+            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
             var dbSet = UseDbSet(db);
             var entity = dbSet.GetById(id);
             var message = "";
@@ -232,7 +232,7 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
+            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
             var dbSet = UseDbSet(db);
 
             var entities = ids.Select(dbSet.GetById);

@@ -6,6 +6,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.BusinessModels.Orders.Actions
@@ -27,8 +29,9 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppColor Color { get; set; }
 
-        public AppActionResult Run(User user, IEnumerable<Order> orders)
+        public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
+            string orderNumbers = orders.Select(x => x.OrderNumber).Join(", ");
             foreach (var order in orders)
             {
                 order.Status = OrderState.Canceled;
@@ -40,7 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказы {orders.Select(x=>x.OrderNumber).Join(", ")} отменёны"
+                Message = "ordersSetCancelled".translate(user.Language, orderNumbers)
             };
         }
 

@@ -7,7 +7,6 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.History
@@ -20,8 +19,8 @@ namespace Application.Services.History
                                             .OrderByDescending(e => e.CreatedAt)
                                             .ToList();
 
-            string lang = _userProvider.GetCurrentUserLanguage();
-            var dtos = entries.Select(e => ConvertEntityToDto(e, lang)).ToList();
+            var user = _userProvider.GetCurrentUser();
+            var dtos = entries.Select(e => ConvertEntityToDto(e, user.Language)).ToList();
 
             return new HistoryDto
             {
@@ -31,7 +30,7 @@ namespace Application.Services.History
 
         public void Save(Guid entityId, string messageKey, params object[] messageArgs)
         {
-            User user = _userProvider.GetCurrentUser();
+            var user = _userProvider.GetCurrentUser();
             string userName = GetUserName(user);
 
             string[] valueArgs = messageArgs.Select(GetDisplayValue).ToArray();
@@ -54,7 +53,7 @@ namespace Application.Services.History
             string[] args = JsonConvert.DeserializeObject<string[]>(entity.MessageArgs ?? string.Empty);
             string[] localArgs = args.Select(x => x.translate(lang)).ToArray();
 
-            string message = entity.MessageKey.translateFormat(lang, localArgs);
+            string message = entity.MessageKey.translate(lang, localArgs);
 
             return new HistoryEntryDto
             {
@@ -84,7 +83,7 @@ namespace Application.Services.History
             }
         }
 
-        private string GetUserName(User user)
+        private string GetUserName(CurrentUserDto user)
         {
             if (user == null)
             {
@@ -92,7 +91,7 @@ namespace Application.Services.History
             }
             else
             {
-                Role role = _db.Roles.GetById(user.RoleId);
+                Role role = user.RoleId.HasValue ? _db.Roles.GetById(user.RoleId.Value) : null;
                 if (role == null)
                 {
                     return user.Name;

@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
@@ -10,6 +11,7 @@ namespace Application.Services.UserProvider
 
     public class UserProvider : IUserProvider
     {
+        private readonly IMapper mapper;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly AppDbContext db;
 
@@ -17,6 +19,7 @@ namespace Application.Services.UserProvider
         {
             this.httpContextAccessor = httpContextAccessor;
             db = dbContext;
+            mapper = new MapperConfiguration(cfg => cfg.CreateMap<User, CurrentUserDto>()).CreateMapper();
         }
 
         public Guid? GetCurrentUserId()
@@ -28,22 +31,18 @@ namespace Application.Services.UserProvider
                 : (Guid?)null;
         }
 
-        public string GetCurrentUserLanguage()
-        {
-            var httpContext = httpContextAccessor.HttpContext;
-            var langClaim = httpContext.User.FindFirst("lang");
-            string lang = langClaim?.Value ?? "ru";
-            return lang;
-        }
-
-        public User GetCurrentUser()
+        public CurrentUserDto GetCurrentUser()
         {
             User user = db.Users.GetById(EnsureCurrentUserId());
             if (user == null)
             {
                 throw new UnauthorizedAccessException();
             }
-            return user;
+
+            CurrentUserDto dto = mapper.Map<CurrentUserDto>(user);
+            dto.Language = GetCurrentUserLanguage();
+
+            return dto;
         }
         
         public Guid EnsureCurrentUserId()
@@ -53,6 +52,14 @@ namespace Application.Services.UserProvider
                 throw new UnauthorizedAccessException("Невозможно определить текущего пользователя");
 
             return userId.Value;
+        }
+
+        private string GetCurrentUserLanguage()
+        {
+            var httpContext = httpContextAccessor.HttpContext;
+            var langClaim = httpContext.User.FindFirst("lang");
+            string lang = langClaim?.Value ?? "ru";
+            return lang;
         }
     }
 }
