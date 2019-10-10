@@ -41,7 +41,7 @@ const DocWithEditor = ({
     };
 
     const handleClose = () => {
-        // setDocument(null);
+        setDocument(null);
         getDocuments();
         setModalOpen(false);
     };
