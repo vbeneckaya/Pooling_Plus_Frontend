@@ -127,7 +127,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                         </Form>
                     </Grid.Column>
                     <Grid.Column className="add-right-elements">
-                        <Button onClick={handleAddItems}>{t('AddButton')}</Button>
+                        <Button disabled={indexEdit !== null} onClick={handleAddItems}>{t('AddButton')}</Button>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
@@ -177,10 +177,11 @@ const Position = ({ form, onChange, gridName, load }) => {
                                             </>
                                         ) : (
                                             <>
-                                                <Button icon onClick={() => handleEditItem(index)}>
+                                                <Button disabled={indexEdit !== null} icon onClick={() => handleEditItem(index)}>
                                                     <Icon name="pencil alternate" />
                                                 </Button>
                                                 <Button
+                                                    disabled={indexEdit !== null}
                                                     icon
                                                     onClick={() => handleDeleteItem(index)}
                                                 >
