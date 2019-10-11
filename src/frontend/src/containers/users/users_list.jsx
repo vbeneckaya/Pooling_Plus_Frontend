@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import TableInfo from '../../components/TableInfo';
-import { usersColumns } from '../../constants/usersColumns';
+import {usersColumns} from '../../constants/usersColumns';
 import {
-    createUserRequest,
     getUsersRequest,
     progressSelector,
+    toggleUserActiveRequest,
     totalCountSelector,
     usersListSelector,
 } from '../../ducks/users';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 import UserCard from './user_card';
-import { Button, Icon } from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 
 
 const newModal = (t, load) => (
@@ -24,10 +24,15 @@ const newModal = (t, load) => (
 );
 
 export class UsersList extends Component {
-    handleToggleIsActive = (event, { itemID, checked }) => {
-        const {editUser} = this.props;
-
-
+    handleToggleIsActive = (event, { itemID, checked }, load) => {
+        const {toggleActive} = this.props;
+        toggleActive({
+            id: itemID,
+            active: checked,
+            callbackSuccess: () => {
+                load();
+            }
+        })
     };
 
     getActions = (row, load, t) => {
@@ -74,9 +79,9 @@ const mapDispatchToProps = dispatch => {
         loadList: params => {
             dispatch(getUsersRequest(params));
         },
-        editUser: params => {
-            dispatch(createUserRequest(params));
-        },
+        toggleActive: params => {
+            dispatch(toggleUserActiveRequest(params))
+        }
     };
 };
 
