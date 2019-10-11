@@ -355,12 +355,11 @@ class SuperGrid extends Component {
                             {
                                 selectedRows.size && name === 'orders' ?
                                 <Popup
-                                    trigger={<div><Icon name="sort down"/>Данные по заказам</div>}
+                                    trigger={<div className="footer-info-label"><Icon name="sort down"/>Данные по заказам</div>}
                                     content={this.infoView()}
                                     on="click"
                                     hideOnScroll
                                     className="from-popup"
-                                    position="bottom center"
                                 />
                                 : null
                             }
