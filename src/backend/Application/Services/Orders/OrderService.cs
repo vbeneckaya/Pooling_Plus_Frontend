@@ -124,8 +124,6 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
-            if (!string.IsNullOrEmpty(dto.ShippingId))
-                setter.UpdateField(e => e.ShippingId, Guid.Parse(dto.ShippingId), ignoreChanges: true);
             /*end of map dto to entity fields*/
 
             bool isNew = string.IsNullOrEmpty(dto.Id);

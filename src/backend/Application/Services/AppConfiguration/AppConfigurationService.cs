@@ -98,7 +98,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderComments), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingId), FiledType.Select, nameof(ShippingsService)),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ShippingNumber), FiledType.Text),
                             /*end of add field for Orders*/
                         }
                     },

@@ -67,10 +67,12 @@ namespace Application.BusinessModels.Orders.Actions
 
             foreach (var order in orders)
             {
+                order.ShippingId = shipping.Id;
+                order.ShippingNumber = shipping.ShippingNumber;
+                order.Status = OrderState.InShipping;
+
                 var ordSetter = new FieldSetter<Order>(order, _historyService);
 
-                ordSetter.UpdateField(o => o.Status, OrderState.InShipping, ignoreChanges: true);
-                ordSetter.UpdateField(o => o.ShippingId, shipping.Id, ignoreChanges: true);
                 ordSetter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
                 ordSetter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 

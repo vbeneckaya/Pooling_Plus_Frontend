@@ -40,6 +40,7 @@ namespace Application.BusinessModels.Orders.Actions
             var shipping = db.Shippings.GetById(order.ShippingId.Value);
 
             order.ShippingId = null;
+            order.ShippingNumber = null;
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
             setter.SaveHistoryLog();
