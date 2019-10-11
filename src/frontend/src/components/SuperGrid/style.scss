@@ -281,6 +281,19 @@ $teal: #b5eae7;
     white-space: nowrap;
     padding: 1rem;
 
+    &-value {
+        font-weight: bold;
+        padding-left: 8px;
+    }
+
+    &-close {
+        position: absolute;
+        top: 0px;
+        right: -20px;
+        &:hover {
+            cursor: pointer;
+        }
+    }
     div:not(:last-child) {
         padding-right: 24px;
     }

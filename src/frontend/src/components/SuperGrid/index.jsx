@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 import { debounce } from 'throttle-debounce';
 
@@ -10,7 +11,7 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import {Button, Confirm, Grid, Dimmer, Loader, Popup, Icon} from 'semantic-ui-react';
+import { Button, Confirm, Grid, Dimmer, Loader, Popup, Icon } from 'semantic-ui-react';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -32,8 +33,17 @@ class SuperGrid extends Component {
 
         this.state = {
             ...initState(storageFilterItem, storageSortItem),
+            isOpen: false,
         };
     }
+
+    handleOpen = () => {
+        this.setState({ isOpen: true });
+    };
+
+    handleClose = () => {
+        this.setState({ isOpen: false });
+    };
 
     componentDidMount() {
         this.props.autoUpdateStart(this.mapData());
@@ -171,9 +181,14 @@ class SuperGrid extends Component {
     };
 
     setSelected = item => {
-        this.setState({
-            selectedRows: item,
-        }, () => {this.props.getActions({name: this.props.name, ids: Array.from(item)})});
+        this.setState(
+            {
+                selectedRows: item,
+            },
+            () => {
+                this.props.getActions({ name: this.props.name, ids: Array.from(item) });
+            },
+        );
     };
 
     setSelectedAll = () => {
@@ -241,20 +256,35 @@ class SuperGrid extends Component {
     };
 
     infoView = () => {
-        const {info} = this.props;
+        const { info, t } = this.props;
 
         return (
             <div className="footer-info">
-                <div>{`Выбрано заказов: ${info.count}`}</div>
-                <div>{`Предварительное количество коробок: ${info.boxesCount}`}</div>
-                <div>{`Предварительное количество паллет: ${info.palletsCount}`}</div>
-                <div>{`Плановый вес, кг: ${info.weightKg}`}</div>
+                <div className="footer-info-close" onClick={this.handleClose}>
+                    <Icon name="sort down" />
+                </div>
+                <div>
+                    {t('orders_selected')}
+                    <span className="footer-info-value">{info.count}</span>
+                </div>
+                <div>
+                    {t('number_of_boxes')}
+                    <span className="footer-info-value">{info.boxesCount}</span>
+                </div>
+                <div>
+                    {t('number_of_pallets')}
+                    <span className="footer-info-value">{info.palletsCount}</span>
+                </div>
+                <div>
+                    {t('target_weight')}
+                    <span className="footer-info-value">{info.weightKg}</span>
+                </div>
             </div>
-        )
+        );
     };
 
     render() {
-        const { filters, sort, fullText, selectedRows } = this.state;
+        const { filters, sort, fullText, selectedRows, isOpen } = this.state;
         const {
             totalCount: count = 0,
             columns,
@@ -277,13 +307,14 @@ class SuperGrid extends Component {
             colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
-            name
+            name,
         } = this.props;
 
         return (
             <>
                 <Dimmer active={progress} inverted className="table-loader">
-                      <Loader size="huge">Loading</Loader> 
+                      <Loader size="huge">Loading</Loader>
+
                 </Dimmer>
                 <HeaderSearchGrid
                     createButton={
@@ -353,42 +384,48 @@ class SuperGrid extends Component {
                 <Grid className="grid-footer-panel" columns="2">
                     <Grid.Row>
                         <Grid.Column>
-                            {
-                                selectedRows.size && name === 'orders' ?
+                            {selectedRows.size && name === 'orders' ? (
                                 <Popup
-                                    trigger={<div className="footer-info-label"><Icon name="sort down"/>Данные по заказам</div>}
+                                    trigger={
+                                        <div className="footer-info-label" onClick={isOpen ? this.handleClose : this.handleOpen}>
+                                            <Icon name={isOpen ? "sort up" : "sort down"} />
+                                            Данные по заказам
+                                        </div>
+                                    }
                                     content={this.infoView()}
                                     on="click"
+                                    open={isOpen}
+                                    onClose={this.handleClose}
+                                    onOpen={this.handleOpen}
                                     hideOnScroll
                                     className="from-popup"
                                 />
-                                : null
-                            }
-                            <div style={{paddingTop: "4px"}}>
-                            {selectedRows.size && groupActions
-                                ? groupActions().map(action => (
-                                      <span key={action.name}>
-                                          <Button
-                                              color={action.color}
-                                              content={action.name}
-                                              loading={action.loading}
-                                              disabled={action.loading}
-                                              icon={action.icon}
-                                              size="mini"
-                                              onClick={() =>
-                                                  action.action(action.ids, () => {
-                                                      this.setState(
-                                                          {
-                                                              selectedRows: new Set(),
-                                                          },
-                                                          () => this.loadList(false, true),
-                                                      );
-                                                  })
-                                              }
-                                          />
-                                      </span>
-                                  ))
-                                : null}
+                            ) : null}
+                            <div style={{ paddingTop: '4px' }}>
+                                {selectedRows.size && groupActions
+                                    ? groupActions().map(action => (
+                                          <span key={action.name}>
+                                              <Button
+                                                  color={action.color}
+                                                  content={action.name}
+                                                  loading={action.loading}
+                                                  disabled={action.loading}
+                                                  icon={action.icon}
+                                                  size="mini"
+                                                  onClick={() =>
+                                                      action.action(action.ids, () => {
+                                                          this.setState(
+                                                              {
+                                                                  selectedRows: new Set(),
+                                                              },
+                                                              () => this.loadList(false, true),
+                                                          );
+                                                      })
+                                                  }
+                                              />
+                                          </span>
+                                      ))
+                                    : null}
                             </div>
                         </Grid.Column>
                         <Grid.Column floated="right">{colorInfo}</Grid.Column>
@@ -427,4 +464,4 @@ SuperGrid.defaultProps = {
     disabledCheck: () => {},
 };
 
-export default SuperGrid;
+export default withTranslation()(SuperGrid);
