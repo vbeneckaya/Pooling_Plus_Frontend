@@ -234,7 +234,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumnWhitchSource(nameof(WarehouseDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.LeadtimeDays), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.CustomerWarehouse), FiledType.Boolean),
-                            new UserConfigurationGridColumn(nameof(WarehouseDto.UsePickingType), FiledType.Boolean),
                             /*end of add field for Warehouses*/
                         }
                     },
