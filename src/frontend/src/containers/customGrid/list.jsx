@@ -13,7 +13,13 @@ import { withRouter } from 'react-router-dom';
 import Card from './card';
 import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
-import {actionsSelector, getActionsRequest, infoSelector, invokeActionRequest} from '../../ducks/gridActions';
+import {
+    actionsSelector,
+    getActionsRequest,
+    getAllIdsRequest,
+    infoSelector,
+    invokeActionRequest
+} from '../../ducks/gridActions';
 import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
@@ -84,7 +90,8 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
-            info
+            info,
+            getAllIds
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -106,6 +113,7 @@ class List extends Component {
                     storageRepresentationItems={`${name}Representation`}
                     getActions={getActions}
                     groupActions={this.getGroupActions}
+                    getAllIds={getAllIds}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
@@ -130,6 +138,9 @@ function mapDispatchToProps(dispatch) {
         invokeAction: params => {
             dispatch(invokeActionRequest(params));
         },
+        getAllIds: params => {
+            dispatch(getAllIdsRequest(params))
+        }
     };
 }
 

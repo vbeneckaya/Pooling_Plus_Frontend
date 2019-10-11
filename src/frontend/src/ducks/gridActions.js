@@ -5,6 +5,10 @@ import { toast } from 'react-toastify';
 
 //*  TYPES  *//
 
+const GET_IDS_REQUEST = 'GET_IDS_REQUEST';
+const GET_IDS_SUCCESS = 'GET_IDS_SUCCESS';
+const GET_IDS_ERROR = 'GET_IDS_ERROR';
+
 const GET_ACTIONS_REQUEST = 'GET_ACTIONS_REQUEST';
 const GET_ACTIONS_SUCCESS = 'GET_ACTIONS_SUCCESS';
 const GET_ACTIONS_ERROR = 'GET_ACTIONS_ERROR';
@@ -35,7 +39,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 actions: payload.actions,
-                info: payload.info
+                info: payload.info,
             };
         case GET_ACTIONS_ERROR:
             return {
@@ -60,7 +64,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 actions: [],
-                info: {}
+                info: {},
             };
         default:
             return state;
@@ -89,6 +93,13 @@ export const clearActions = () => {
     };
 };
 
+export const getAllIdsRequest = payload => {
+    return {
+        type: GET_IDS_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridActions;
@@ -111,14 +122,20 @@ export const infoSelector = createSelector(stateSelector, state => state.info);
 
 function* getActionsSaga({ payload }) {
     try {
-        const { name, ids } = payload;
-        const actions = yield postman.post(`/${name}/getActions`, ids);
-        const info = yield postman.post(`/${name}/getSummary`, ids);
-
-        yield put({
-            type: GET_ACTIONS_SUCCESS,
-            payload: {actions, info},
-        });
+        const { name, ids = [] } = payload;
+        if (ids.length) {
+            const actions = yield postman.post(`/${name}/getActions`, ids);
+            const info = yield postman.post(`/${name}/getSummary`, ids);
+            yield put({
+                type: GET_ACTIONS_SUCCESS,
+                payload: { actions, info },
+            });
+        } else {
+            yield put({
+                type: GET_ACTIONS_SUCCESS,
+                payload: { actions: [], info: {} },
+            });
+        }
     } catch (e) {
         yield put({ type: GET_ACTIONS_ERROR });
     }
@@ -141,9 +158,28 @@ function* invokeActionSaga({ payload }) {
     }
 }
 
+function* getAllIdsSaga({ payload }) {
+    try {
+        const { filter, name, callbackSuccess } = payload;
+        const result = yield postman.post(`/${name}/ids`, filter);
+
+        yield put({
+            type: GET_IDS_SUCCESS,
+        });
+
+        callbackSuccess && callbackSuccess(result);
+    } catch (e) {
+        yield put({
+            type: GET_IDS_ERROR,
+            payload: e,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_ACTIONS_REQUEST, getActionsSaga),
         takeEvery(INVOKE_ACTION_REQUEST, invokeActionSaga),
+        takeEvery(GET_IDS_REQUEST, getAllIdsSaga),
     ]);
 }

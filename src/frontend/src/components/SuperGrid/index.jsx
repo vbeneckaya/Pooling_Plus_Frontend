@@ -178,7 +178,7 @@ class SuperGrid extends Component {
 
     setSelectedAll = () => {
         const { selectedRows, filters: filter } = this.state;
-        const { allIds = [], getAllIds, defaultFilter } = this.props;
+        const { allIds = [], getAllIds, defaultFilter, name } = this.props;
         let newSelectedRows = new Set();
 
         if (selectedRows.size) {
@@ -189,7 +189,8 @@ class SuperGrid extends Component {
             this.setSelected(newSelectedRows);
         } else {
             getAllIds({
-                filter: { ...filter, ...defaultFilter },
+                name,
+                filter: this.mapData(),
                 callbackSuccess: ids => {
                     newSelectedRows = new Set(ids);
                     this.setSelected(newSelectedRows);
