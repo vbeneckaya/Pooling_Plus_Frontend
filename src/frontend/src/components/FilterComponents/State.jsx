@@ -66,7 +66,7 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
             <Popup
                 trigger={
                     <Button size="small" style={{ lineHeight: '1.1rem' }} fluid>
-                        {values.length > 0 ? values.length + ' ' + 'выбрано' : 'Все'}
+                        {values.length > 0 ? t('selected_count', {count: values.length}) : t('All')}
                     </Button>
                 }
                 content={content}

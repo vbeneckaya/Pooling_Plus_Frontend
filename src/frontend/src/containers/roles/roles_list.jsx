@@ -8,7 +8,7 @@ import { rolesColumns } from '../../constants/rolesColumns';
 import {
     getRolesRequest,
     progressSelector,
-    rolesListSelector,
+    rolesListSelector, toggleRoleActiveRequest,
     totalCountSelector,
 } from '../../ducks/roles';
 import { Button, Icon } from 'semantic-ui-react';
@@ -23,7 +23,16 @@ const newModal = (t, load) => (
 );
 
 export class RolesList extends Component {
-    handleToggleIsActive = (event, { itemID, checked }) => {
+    handleToggleIsActive = (event, { itemID, checked }, load) => {
+        const {toggleActive} = this.props;
+
+        toggleActive({
+            id: itemID,
+            active: checked,
+            callbackSuccess: () => {
+                load();
+            }
+        })
     };
 
     getActions = (row, load, t) => {
@@ -42,7 +51,7 @@ export class RolesList extends Component {
         return (
             <TableInfo
                 headerRow={rolesColumns}
-                title={t('Roles')}
+                title={t('roles')}
                 loading={loading}
                 className="wider container-margin-top-bottom"
                 list={list}
@@ -70,6 +79,9 @@ const mapDispatchToProps = dispatch => {
         loadList: params => {
             dispatch(getRolesRequest(params));
         },
+        toggleActive: params => {
+            dispatch(toggleRoleActiveRequest(params))
+        }
     };
 };
 

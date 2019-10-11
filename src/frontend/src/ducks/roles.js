@@ -20,6 +20,10 @@ const CREATE_ROLE_REQUEST = 'CREATE_ROLE_REQUEST';
 const CREATE_ROLE_SUCCESS = 'CREATE_ROLE_SUCCESS';
 const CREATE_ROLE_ERROR = 'CREATE_ROLE_ERROR';
 
+const TOGGLE_ROLE_ACTIVE_REQUEST = 'TOGGLE_ROLE_ACTIVE_REQUEST';
+const TOGGLE_ROLE_ACTIVE_SUCCESS = 'TOGGLE_ROLE_ACTIVE_SUCCESS';
+const TOGGLE_ROLE_ACTIVE_ERROR = 'TOGGLE_ROLE_ACTIVE_ERROR';
+
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 
 //*  INITIAL STATE  *//
@@ -109,36 +113,33 @@ export const clearRolesInfo = () => {
     };
 };
 
+export const toggleRoleActiveRequest = payload => {
+    return {
+        type: TOGGLE_ROLE_ACTIVE_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.roles;
 
-export const rolesListSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
+export const rolesListSelector = createSelector(stateSelector, state => state.list);
 
 export const rolesFromUserSelector = createSelector(stateSelector, state => {
-    return state.list && state.list.map(item => ({
-        name: item.name,
-        value: item.id,
-        isActive: true
-    }))
+    return (
+        state.list &&
+        state.list.map(item => ({
+            name: item.name,
+            value: item.id,
+            isActive: true,
+        }))
+    );
 });
 
-
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const roleCardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const roleCardSelector = createSelector(stateSelector, state => state.card);
 
 //*  SAGA  *//
 
@@ -195,10 +196,28 @@ function* createRoleSaga({ payload }) {
     }
 }
 
+function* toggleRoleActiveSaga({ payload }) {
+    try {
+        const { id, active, callbackSuccess } = payload;
+        const result = yield postman.post(`/roles/setActive/${id}/${active}`);
+
+        yield put({
+            type: TOGGLE_ROLE_ACTIVE_SUCCESS,
+        });
+        callbackSuccess && callbackSuccess();
+    } catch (e) {
+        yield put({
+            type: TOGGLE_ROLE_ACTIVE_ERROR,
+            payload: e,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
         takeEvery(GET_ROLE_CARD_REQUEST, getRoleCardSaga),
         takeEvery(CREATE_ROLE_REQUEST, createRoleSaga),
+        takeEvery(TOGGLE_ROLE_ACTIVE_REQUEST, toggleRoleActiveSaga),
     ]);
 }

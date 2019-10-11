@@ -6,6 +6,7 @@ import Text from '../../BaseComponents/Text';
 import { useSelector, useDispatch } from 'react-redux';
 import {cardSelector, editCardRequest} from '../../../ducks/gridCard';
 import {getLookupRequest, valuesListSelector} from "../../../ducks/lookup";
+import Number from "../../BaseComponents/Number";
 
 const EditField = ({ value, name, onChange, datalist }) => {
     return <Text value={value} name={name} onChange={onChange} noLabel datalist={datalist}/>;
@@ -119,7 +120,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                 <Grid.Row columns="equal">
                     <Grid.Column width={4}>
                         <Form>
-                            <Text
+                            <Number
                                 name="orderAmountExcludingVAT"
                                 value={form['orderAmountExcludingVAT']}
                                 onChange={onChange}

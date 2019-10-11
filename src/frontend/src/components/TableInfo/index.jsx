@@ -202,8 +202,9 @@ class TableInfo extends Component {
                                                   >
                                                       <CellValue
                                                           type={column.type}
-                                                          id={`${row.id}_${column.name}_${index}`}
-                                                          toggleIsActive={toggleIsActive}
+                                                          key_id={`${row.id}_${column.name}_${index}`}
+                                                          id={row.id}
+                                                          toggleIsActive={(event, { itemID, checked }) => toggleIsActive(event, { itemID, checked }, this.load)}
                                                           indexRow={i}
                                                           isTranslate={column.isTranslate}
                                                           source={column.source}

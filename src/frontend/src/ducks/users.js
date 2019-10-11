@@ -20,6 +20,11 @@ const CREATE_USER_REQUEST = 'CREATE_USER_REQUEST';
 const CREATE_USER_SUCCESS = 'CREATE_USER_SUCCESS';
 const CREATE_USER_ERROR = 'CREATE_USER_ERROR';
 
+const TOGGLE_USER_ACTIVE_REQUEST = 'TOGGLE_USER_ACTIVE_REQUEST';
+const TOGGLE_USER_ACTIVE_SUCCESS = 'TOGGLE_USER_ACTIVE_SUCCESS';
+const TOGGLE_USER_ACTIVE_ERROR = 'TOGGLE_USER_ACTIVE_ERROR';
+
+
 const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
 
 //*  INITIAL STATE  *//
@@ -109,6 +114,13 @@ export const clearUsersInfo = () => {
     }
 };
 
+export const toggleUserActiveRequest = payload => {
+    return {
+        type: TOGGLE_USER_ACTIVE_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.users;
@@ -184,10 +196,28 @@ function* createUserSaga({ payload }) {
     }
 }
 
+function* toggleUserActiveSaga({ payload }) {
+    try {
+        const { id, active, callbackSuccess } = payload;
+        const result = yield postman.post(`/users/setActive/${id}/${active}`);
+
+        yield put({
+            type: TOGGLE_USER_ACTIVE_SUCCESS,
+        });
+        callbackSuccess && callbackSuccess();
+    } catch (e) {
+        yield put({
+            type: TOGGLE_USER_ACTIVE_ERROR,
+            payload: e,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_USERS_LIST_REQUEST, getUsersListSaga),
         takeEvery(GET_USER_CARD_REQUEST, getUserCardSaga),
         takeEvery(CREATE_USER_REQUEST, createUserSaga),
+        takeEvery(TOGGLE_USER_ACTIVE_REQUEST, toggleUserActiveSaga),
     ]);
 }

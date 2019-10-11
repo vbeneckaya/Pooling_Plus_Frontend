@@ -62,8 +62,8 @@ class Filter extends Component {
 
         const widths = [];
 
-        props.columns.forEach(() => {
-            widths.push(100)
+        props.columns.forEach(column => {
+            column.name === 'status' ? widths.push(200) : widths.push(100)
         });
 
         this.state = {

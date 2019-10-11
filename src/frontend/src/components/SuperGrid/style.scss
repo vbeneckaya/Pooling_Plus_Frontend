@@ -187,9 +187,13 @@
 }
 
 .grid-footer-panel {
-    padding-top: 0.3rem !important;
+    padding-top: 1rem !important;
     white-space: nowrap;
     width: 100% !important;
+
+    .row {
+        padding-top: 0!important;
+    }
 
     .grid-right-elements {
         text-align: right;
@@ -279,5 +283,16 @@ $teal: #b5eae7;
 
     div:not(:last-child) {
         padding-right: 24px;
+    }
+}
+
+.footer-info-label {
+    display: flex;
+    font-weight: bold;
+    color: #2185d0;
+    align-items: baseline;
+
+    &:hover {
+        cursor: pointer;
     }
 }

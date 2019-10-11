@@ -3,6 +3,7 @@ import { Checkbox, Form, Grid, Segment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import Text from '../../BaseComponents/Text';
 import TextArea from '../../BaseComponents/TextArea';
+import Number from "../../BaseComponents/Number";
 
 const Accounts = ({ form = {}, onChange }) => {
     const { t } = useTranslation();
@@ -12,17 +13,17 @@ const Accounts = ({ form = {}, onChange }) => {
             <Grid>
                 <Grid.Row columns={2} stretched>
                     <Grid.Column>
-                        <Text
+                        <Number
                             name="deliveryCostWithoutVAT"
                             value={form['deliveryCostWithoutVAT']}
                             onChange={onChange}
                         />
-                        <Text
+                        <Number
                             name="additionalCostsWithoutVAT"
                             value={form['additionalCostsWithoutVAT']}
                             onChange={onChange}
                         />
-                        <Text
+                        <Number
                             name="returnCostWithoutVAT"
                             value={form['returnCostWithoutVAT']}
                             onChange={onChange}
