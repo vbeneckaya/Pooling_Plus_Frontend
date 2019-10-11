@@ -21,48 +21,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridServiceBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
+    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
     {
         private readonly IHistoryService _historyService;
 
-        public ShippingsService(ICommonDataService dataService, IUserIdProvider userIdProvider, IHistoryService historyService) 
-            : base(dataService, userIdProvider)
+        public ShippingsService(ICommonDataService dataService, IUserIdProvider userIdProvider, IHistoryService historyService, IActionService<Shipping> actionService) 
+            : base(dataService, userIdProvider, actionService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
         }
 
-        public override IEnumerable<IAction<Shipping>> Actions()
-        {
-            return new List<IAction<Shipping>>
-            {
-                new SendShippingToTk(dataService, _historyService),
-                new ConfirmShipping(dataService, _historyService),
-                new RejectRequestShipping(dataService, _historyService),
-                new CancelRequestShipping(dataService, _historyService),
-                new CompleteShipping(dataService, _historyService),
-                new CancelShipping(dataService, _historyService),
-                new ProblemShipping(dataService, _historyService),
-                new BillingShipping(dataService, _historyService),
-                new ArchiveShipping(dataService, _historyService),
-                /*end of add single actions*/
-            };
-        }
-        
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
         {
             return new LookUpDto
             {
                 Value = entity.Id.ToString(),
                 Name = entity.ShippingNumber
-            };
-        }
-
-        public override IEnumerable<IAction<IEnumerable<Shipping>>> GroupActions()
-        {
-            return new List<IAction<IEnumerable<Shipping>>>
-            {
-                /*end of add group actions*/
             };
         }
 

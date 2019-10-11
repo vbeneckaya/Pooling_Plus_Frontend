@@ -22,42 +22,15 @@ using System.Linq.Expressions;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridServiceBase<Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>>, IOrdersService
+    public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>>, IOrdersService
     {
         private readonly IHistoryService _historyService;
 
-        public OrdersService(ICommonDataService dataSevice, IUserIdProvider userIdProvider, IHistoryService historyService) 
-            : base(dataSevice, userIdProvider)
+        public OrdersService(ICommonDataService dataSevice, IUserIdProvider userIdProvider, IHistoryService historyService, IActionService<Order> actionService) 
+            : base(dataSevice, userIdProvider, actionService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
-        }
-
-        public override IEnumerable<IAction<Order>> Actions()
-        {
-            return new List<IAction<Order>>
-            {
-                new CreateShipping(dataService, _historyService),
-                new CancelOrder(dataService, _historyService),
-                new RemoveFromShipping(dataService, _historyService),
-                new SendToArchive(dataService, _historyService),
-                new RecordFactOfLoss(dataService, _historyService),
-                new OrderShipped(dataService, _historyService),
-                new OrderDelivered(dataService, _historyService),
-                new FullReject(dataService, _historyService),
-                /*end of add single actions*/
-            };
-        }
-
-        public override IEnumerable<IAction<IEnumerable<Order>>> GroupActions()
-        {
-            return new List<IAction<IEnumerable<Order>>>
-            {
-                new UnionOrders(dataService, _historyService),
-                new CancelOrders(dataService, _historyService),
-                new CreateShippingForeach(dataService, _historyService),
-                /*end of add group actions*/
-            };
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)

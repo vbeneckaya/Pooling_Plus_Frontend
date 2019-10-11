@@ -1,4 +1,5 @@
-﻿using Domain.Services;
+﻿using Domain.Persistables;
+using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,12 @@ namespace DAL.Services
             _context = context;
         }
 
-        public TEntity GetById<TEntity>(Guid id) where TEntity : class
+        public TEntity GetById<TEntity>(Guid id) where TEntity : class, IPersistable
         {
             return this.GetDbSet<TEntity>().Find(id);
         }
 
-        public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class
+        public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class, IPersistable
         {
             return this._context.Set<TEntity>();
         }

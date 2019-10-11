@@ -16,15 +16,13 @@ using System.Globalization;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
+    public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
         where TEntity : class, IPersistable, new() 
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
         where TSearchForm: PagingFormDto
     {
         //public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
-        public abstract IEnumerable<IAction<TEntity>> Actions();
-        public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
@@ -39,8 +37,10 @@ namespace Application.Shared
         private readonly IUserIdProvider userIdProvider;
 
         protected readonly ICommonDataService dataService;
-        
-        protected GridServiceBase(ICommonDataService dataService, IUserIdProvider userIdProvider)
+
+        protected readonly IActionService<TEntity> actionService;
+
+        protected GridService(ICommonDataService dataService, IUserIdProvider userIdProvider, IActionService<TEntity> actionService)
         {
             this.userIdProvider = userIdProvider;
             this.dataService = dataService;
@@ -156,7 +156,7 @@ namespace Application.Shared
                 var id = ids.First();
 
                 var entity = dbSet.GetById(id);
-                var actions = Actions();
+                var actions = actionService.GetActions();
 
                 return actions.Where(x => x.IsAvailable(role, entity))
                     .Select(action => new ActionDto
@@ -171,7 +171,7 @@ namespace Application.Shared
             }
             else
             {
-                var actions = GroupActions();
+                var actions = actionService.GetGroupActions();
                 var entities = ids.Select(id => dbSet.GetById(id));
 
                 foreach (var action in actions)
@@ -197,7 +197,7 @@ namespace Application.Shared
 
         public AppActionResult InvokeAction(string name, Guid id)
         {
-            var action = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var action = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -225,7 +225,7 @@ namespace Application.Shared
             if (ids.Count() == 1)
                 return InvokeAction(name, ids.First());
 
-            var action = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var action = actionService.GetGroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult

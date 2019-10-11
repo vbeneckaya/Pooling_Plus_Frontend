@@ -15,8 +15,8 @@ namespace Domain.Services
 
         TSummaryDto GetSummary(IEnumerable<Guid> ids);
 
-        IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
         AppActionResult InvokeAction(string actionName, IEnumerable<Guid> ids);
+        IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
 
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
         IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream);
