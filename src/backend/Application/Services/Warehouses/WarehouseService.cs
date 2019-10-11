@@ -54,7 +54,6 @@ namespace Application.Services.Warehouses
             entity.PickingTypeId = string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId);
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
-            entity.UsePickingType = dto.UsePickingType;
             /*end of map dto to entity fields*/
         }
 
@@ -71,7 +70,6 @@ namespace Application.Services.Warehouses
                 PickingTypeId = entity.PickingTypeId?.ToString(),
                 LeadtimeDays = entity.LeadtimeDays,
                 CustomerWarehouse = entity.CustomerWarehouse,
-                UsePickingType = entity.UsePickingType,
                 /*end of map entity to dto fields*/
             };
         }

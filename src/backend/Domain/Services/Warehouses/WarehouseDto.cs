@@ -11,7 +11,6 @@ namespace Domain.Services.Warehouses
         public string PickingTypeId { get; set; }
         public int? LeadtimeDays { get; set; }
         public bool CustomerWarehouse { get; set; }
-        public bool UsePickingType { get; set; }
         /*end of fields*/
     }
 }
