@@ -13,7 +13,7 @@ import { withRouter } from 'react-router-dom';
 import Card from './card';
 import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
-import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
+import {actionsSelector, getActionsRequest, infoSelector, invokeActionRequest} from '../../ducks/gridActions';
 import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
@@ -84,6 +84,7 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
+            info
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -95,6 +96,7 @@ class List extends Component {
                     columns={columns}
                     rows={list}
                     name={name}
+                    info={info}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -143,6 +145,7 @@ function mapStateToProps(state, ownProps) {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
+        info: infoSelector(state)
     };
 }
 

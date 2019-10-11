@@ -10,7 +10,7 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import { Button, Confirm, Grid, Dimmer, Loader } from 'semantic-ui-react';
+import {Button, Confirm, Grid, Dimmer, Loader, Popup, Icon} from 'semantic-ui-react';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -239,6 +239,19 @@ class SuperGrid extends Component {
         getReport({ filter });
     };
 
+    infoView = () => {
+        const {info} = this.props;
+
+        return (
+            <div className="footer-info">
+                <div>{`Выбрано заказов: ${info.count}`}</div>
+                <div>{`Предварительное количество коробок: ${info.boxesCount}`}</div>
+                <div>{`Предварительное количество паллет: ${info.palletsCount}`}</div>
+                <div>{`Плановый вес, кг: ${info.weightKg}`}</div>
+            </div>
+        )
+    };
+
     render() {
         const { filters, sort, fullText, selectedRows } = this.state;
         const {
@@ -263,7 +276,7 @@ class SuperGrid extends Component {
             colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
-            name,
+            name
         } = this.props;
 
         return (
@@ -335,20 +348,23 @@ class SuperGrid extends Component {
                         />
                     </InfiniteScrollTable>
                 </div>
+
                 <Grid className="grid-footer-panel" columns="2">
                     <Grid.Row>
-                        {isUnloadInExcel ? (
-                            <Grid.Column>
-                                <Button
-                                    color="grey"
-                                    content={'Экспортировать в Excel'}
-                                    icon={'file excel'}
-                                    loading={loadingReport}
-                                    onClick={this.handleUnloadInExcel}
-                                />
-                            </Grid.Column>
-                        ) : null}
                         <Grid.Column>
+                            {
+                                selectedRows.size && name === 'orders' ?
+                                <Popup
+                                    trigger={<div><Icon name="sort down"/>Данные по заказам</div>}
+                                    content={this.infoView()}
+                                    on="click"
+                                    hideOnScroll
+                                    className="from-popup"
+                                    position="bottom center"
+                                />
+                                : null
+                            }
+                            <div style={{paddingTop: "4px"}}>
                             {selectedRows.size && groupActions
                                 ? groupActions().map(action => (
                                       <span key={action.name}>
@@ -373,6 +389,7 @@ class SuperGrid extends Component {
                                       </span>
                                   ))
                                 : null}
+                            </div>
                         </Grid.Column>
                         <Grid.Column floated="right">{colorInfo}</Grid.Column>
                     </Grid.Row>

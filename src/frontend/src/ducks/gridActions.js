@@ -19,6 +19,7 @@ const CLEAR_ACTIONS = 'CLEAR_ACTIONS';
 
 const initial = {
     actions: [],
+    info: {},
     progressActionName: null,
 };
 
@@ -33,7 +34,8 @@ export default (state = initial, { type, payload }) => {
         case GET_ACTIONS_SUCCESS:
             return {
                 ...state,
-                actions: payload,
+                actions: payload.actions,
+                info: payload.info
             };
         case GET_ACTIONS_ERROR:
             return {
@@ -57,7 +59,8 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_ACTIONS:
             return {
                 ...state,
-                actions: []
+                actions: [],
+                info: {}
             };
         default:
             return state;
@@ -102,16 +105,19 @@ export const progressActionNameSelector = createSelector(
     state => state.progressActionName,
 );
 
+export const infoSelector = createSelector(stateSelector, state => state.info);
+
 //*  SAGA  *//
 
 function* getActionsSaga({ payload }) {
     try {
         const { name, ids } = payload;
-        const result = yield postman.post(`/${name}/getActions`, ids);
+        const actions = yield postman.post(`/${name}/getActions`, ids);
+        const info = yield postman.post(`/${name}/getSummary`, ids);
 
         yield put({
             type: GET_ACTIONS_SUCCESS,
-            payload: result,
+            payload: {actions, info},
         });
     } catch (e) {
         yield put({ type: GET_ACTIONS_ERROR });
