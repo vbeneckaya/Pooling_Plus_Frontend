@@ -200,6 +200,10 @@ namespace Domain.Persistables
         /// Склад доставки
         /// </summary>
         public Guid? DeliveryWarehouseId { get; set; }
+        /// <summary>
+        /// Активный?
+        /// </summary>
+        public bool IsActive { get; set; }
         /*end of fields*/
     }
 }

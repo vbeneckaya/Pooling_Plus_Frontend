@@ -160,30 +160,31 @@ namespace Application.Shared
 
             var result = new List<ActionDto>();
 
-            if (ids.Count() == 1)
+            var entities = ids.Select(id => dbSet.GetById(id));
+
+            var singleActions = Actions();
+            foreach (var action in singleActions)
             {
-                var id = ids.First();
-
-                var entity = dbSet.GetById(id);
-                var actions = Actions();
-
-                return actions.Where(x => x.IsAvailable(role, entity))
-                    .Select(action => new ActionDto
+                var validEntities = entities.Where(e => action.IsAvailable(role, e));
+                if (validEntities.Any())
                 {
-                    Color = action.Color.ToString().ToLowerfirstLetter(),
-                    Name = action.GetType().Name.ToLowerfirstLetter(),
-                    Ids = new List<string>
+                    var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
+                    if (actionDto == null)
                     {
-                        id.ToString()
+                        result.Add(new ActionDto
+                        {
+                            Color = action.Color.ToString().ToLowerfirstLetter(),
+                            Name = action.GetType().Name.ToLowerfirstLetter(),
+                            Ids = validEntities.Select(x => x.Id.ToString())
+                        });
                     }
-                });
+                }
             }
-            else
-            {
-                var actions = GroupActions();
-                var entities = ids.Select(id => dbSet.GetById(id));
 
-                foreach (var action in actions)
+            if (ids.Count() > 1)
+            {
+                var groupActions = GroupActions();
+                foreach (var action in groupActions)
                 {
                     if (action.IsAvailable(role, entities))
                     {
@@ -232,12 +233,10 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
-            if (ids.Count() == 1)
-                return InvokeAction(name, ids.First());
+            var singleAction = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var groupAction = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
 
-            var action = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
-            
-            if(action == null)
+            if (singleAction == null && groupAction == null)
                 return new AppActionResult
                 {
                     IsError = true,
@@ -249,9 +248,32 @@ namespace Application.Shared
             var dbSet = UseDbSet(db);
 
             var entities = ids.Select(dbSet.GetById);
-            
-            if (action.IsAvailable(role, entities)) 
-                return action.Run(currentUser, entities);
+
+            if (groupAction != null)
+            {
+                if (groupAction.IsAvailable(role, entities))
+                    return groupAction.Run(currentUser, entities);
+            }
+            else
+            {
+                List<string> messages = new List<string>();
+                foreach (var entity in entities)
+                {
+                    if (singleAction.IsAvailable(role, entity))
+                    {
+                        string message = singleAction.Run(currentUser, entity)?.Message;
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            messages.Add(message);
+                        }
+                    }
+                }
+                return new AppActionResult
+                {
+                    IsError = false,
+                    Message = string.Join(". ", messages)
+                };
+            }
 
             return new AppActionResult
             {

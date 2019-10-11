@@ -44,6 +44,7 @@ namespace Application.Services.Orders
                 new OrderShipped(db, _historyService),
                 new OrderDelivered(db, _historyService),
                 new FullReject(db, _historyService),
+                new DeleteOrder(db), 
                 /*end of add single actions*/
             };
         }
@@ -52,9 +53,7 @@ namespace Application.Services.Orders
         {
             return new List<IAction<IEnumerable<Order>>>
             {
-                new UnionOrders(db, _historyService),
-                new CancelOrders(db, _historyService),
-                new CreateShippingForeach(db, _historyService),
+                new UnionOrders(db, _historyService)
                 /*end of add group actions*/
             };
         }
