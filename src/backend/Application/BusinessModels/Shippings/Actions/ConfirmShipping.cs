@@ -11,14 +11,14 @@ namespace Application.BusinessModels.Shippings.Actions
 {
     public class ConfirmShipping : IAppAction<Shipping>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public ConfirmShipping(AppDbContext db, IHistoryService historyService)
+        public ConfirmShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this._dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Green;
         }
@@ -27,7 +27,7 @@ namespace Application.BusinessModels.Shippings.Actions
         {
             shipping.Status = ShippingState.ShippingConfirmed;
 
-            var orders = db.Orders.Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
+            var orders = _dataService.GetDbSet<Order>().Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
             foreach (Order order in orders)
             {
                 var setter = new FieldSetter<Order>(order, _historyService);
@@ -37,7 +37,8 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetConfirmed", shipping.ShippingNumber);
 
-            db.SaveChanges();
+            _dataService.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,

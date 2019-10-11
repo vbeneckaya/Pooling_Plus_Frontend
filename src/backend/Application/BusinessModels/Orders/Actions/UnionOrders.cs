@@ -16,12 +16,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class UnionOrders : IGroupAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public UnionOrders(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }
@@ -29,7 +30,7 @@ namespace Application.BusinessModels.Orders.Actions
         public AppColor Color { get; set; }
         public AppActionResult Run(User user, IEnumerable<Order> orders)
         {
-            var shippingsCount = db.Shippings.Count();
+            var shippingsCount = this.dataService.GetDbSet<Shipping>().Count();
             var tempRange = FindCommonTempRange(orders);
             decimal? downtime = orders.Any(o => o.TrucksDowntime.HasValue) ? orders.Sum(o => o.TrucksDowntime ?? 0) : (decimal?)null;
             int? palletsCount = orders.Any(o => o.PalletsCount.HasValue) ? orders.Sum(o => o.PalletsCount ?? 0) : (int?)null;
@@ -61,7 +62,7 @@ namespace Application.BusinessModels.Orders.Actions
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             setter.SaveHistoryLog();
 
-            db.Shippings.Add(shipping);
+            this.dataService.GetDbSet<Shipping>().Add(shipping);
 
             foreach (var order in orders)
             {
@@ -75,7 +76,9 @@ namespace Application.BusinessModels.Orders.Actions
                 _historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
                 ordSetter.SaveHistoryLog();
             }
-            db.SaveChanges();
+
+            this.dataService.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,

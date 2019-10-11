@@ -11,6 +11,7 @@ using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserIdProvider;
@@ -20,32 +21,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
+    public class ShippingsService : GridServiceBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
     {
-        public ShippingsService(AppDbContext appDbContext, IUserIdProvider userIdProvider, IHistoryService historyService) 
-            : base(appDbContext, userIdProvider, historyService)
+        private readonly IHistoryService _historyService;
+
+        public ShippingsService(ICommonDataService dataService, IUserIdProvider userIdProvider, IHistoryService historyService) 
+            : base(dataService, userIdProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
-        }
-
-        public override DbSet<Shipping> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Shippings;
+            this._historyService = historyService;
         }
 
         public override IEnumerable<IAction<Shipping>> Actions()
         {
             return new List<IAction<Shipping>>
             {
-                new SendShippingToTk(db, _historyService),
-                new ConfirmShipping(db, _historyService),
-                new RejectRequestShipping(db, _historyService),
-                new CancelRequestShipping(db, _historyService),
-                new CompleteShipping(db, _historyService),
-                new CancelShipping(db, _historyService),
-                new ProblemShipping(db, _historyService),
-                new BillingShipping(db, _historyService),
-                new ArchiveShipping(db, _historyService),
+                new SendShippingToTk(dataService, _historyService),
+                new ConfirmShipping(dataService, _historyService),
+                new RejectRequestShipping(dataService, _historyService),
+                new CancelRequestShipping(dataService, _historyService),
+                new CompleteShipping(dataService, _historyService),
+                new CancelShipping(dataService, _historyService),
+                new ProblemShipping(dataService, _historyService),
+                new BillingShipping(dataService, _historyService),
+                new ArchiveShipping(dataService, _historyService),
                 /*end of add single actions*/
             };
         }
@@ -148,7 +147,7 @@ namespace Application.Services.Shippings
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
 
-            var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+            var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
             formDto.Orders = GetShippingOrders(orders);
             formDto.RoutePoints = GetRoutePoints(entity, orders);
 
@@ -157,19 +156,19 @@ namespace Application.Services.Shippings
 
         private string GetCarrierNameById(Guid? id)
         {
-            return id == null ? null : db.TransportCompanies.GetById(id.Value)?.Title;
+            return id == null ? null : dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
 
         private string GetVehicleTypeNameById(Guid? id)
         {
-            return id == null ? null : db.VehicleTypes.GetById(id.Value)?.Name;
+            return id == null ? null : dataService.GetById<VehicleType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
             {
-                var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+                var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
                 var ordersDict = orders.ToDictionary(o => o.Id.ToString());
                 
                 foreach (RoutePointDto pointDto in dto.RoutePoints)
@@ -243,7 +242,7 @@ namespace Application.Services.Shippings
                     {
                         point = new RoutePointDto
                         {
-                            WarehouseName = db.Warehouses.GetById(order.ShippingWarehouseId.Value)?.WarehouseName,
+                            WarehouseName = dataService.GetById<Warehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
                             Address = order.ShippingAddress,
                             PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),

@@ -13,12 +13,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class SendToArchive : IAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public SendToArchive(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public SendToArchive(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -31,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetArchived", order.OrderNumber);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

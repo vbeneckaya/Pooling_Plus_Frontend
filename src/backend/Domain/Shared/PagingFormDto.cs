@@ -4,5 +4,7 @@ namespace Domain.Shared
     {
         public int Skip { get; set; }
         public int Take { get; set; }
+
+        public SortingDto Sort { get; set; }
     }
 }

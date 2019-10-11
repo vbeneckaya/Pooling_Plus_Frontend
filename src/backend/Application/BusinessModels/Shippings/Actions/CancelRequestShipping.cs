@@ -13,14 +13,15 @@ namespace Application.BusinessModels.Shippings.Actions
     /// </summary>
     public class CancelRequestShipping : IAppAction<Shipping>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
+
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public CancelRequestShipping(AppDbContext db, IHistoryService historyService)
+        public CancelRequestShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this._dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -30,7 +31,8 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetCancelledRequest", shipping.ShippingNumber);
 
-            db.SaveChanges();
+            _dataService.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,

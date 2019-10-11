@@ -16,12 +16,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class RemoveFromShipping : IAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public RemoveFromShipping(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public RemoveFromShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -36,14 +37,14 @@ namespace Application.BusinessModels.Orders.Actions
             setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 
-            var shipping = db.Shippings.GetById(order.ShippingId.Value);
+            var shipping = dataService.GetById<Shipping>(order.ShippingId.Value);
 
             order.ShippingId = null;
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
             setter.SaveHistoryLog();
 
-            if (db.Orders.Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
+            if (dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
             {
                 shipping.Status = ShippingState.ShippingCanceled;
                 _historyService.Save(shipping.Id, "shippingSetCancelled", shipping.ShippingNumber);
@@ -54,7 +55,7 @@ namespace Application.BusinessModels.Orders.Actions
             }
             
             
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

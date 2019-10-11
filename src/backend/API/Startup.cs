@@ -19,6 +19,8 @@ using Infrastructure.Logging;
 using Domain.Services.UserIdProvider;
 using Application.Services.UserIdProvider;
 using Infrastructure.Translations;
+using Domain.Services;
+using DAL.Services;
 
 namespace API
 {
@@ -73,6 +75,7 @@ namespace API
             services.SyncTranslations();
 
             services.AddScoped<IUserIdProvider, UserIdProvider>();
+            services.AddScoped<ICommonDataService, CommonDataService>();
         }
 
         private static string GetXmlCommentsPath()

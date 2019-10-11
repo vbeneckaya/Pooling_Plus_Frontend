@@ -12,12 +12,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class CreateShipping : IAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public CreateShipping(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public CreateShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -26,7 +27,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(User user, Order order)
         {
-            var unionOrders = new UnionOrders(db, _historyService);
+            var unionOrders = new UnionOrders(dataService, _historyService);
             return unionOrders.Run(user, new[] { order });
         }
 

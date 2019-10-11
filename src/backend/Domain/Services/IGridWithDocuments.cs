@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Domain.Services
 {
+    [Obsolete("Use DocumentService", true)]
     public interface IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
         where TEntity : IWithDocumentsPersistable
     {

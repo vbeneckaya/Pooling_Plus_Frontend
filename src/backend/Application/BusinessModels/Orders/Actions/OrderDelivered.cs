@@ -12,12 +12,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class OrderDelivered : IAppAction<Order>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService dataService;
+
         private readonly IHistoryService _historyService;
 
-        public OrderDelivered(AppDbContext db, IHistoryService historyService)
+        public OrderDelivered(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Green;
         }
@@ -30,7 +31,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetDelivered", order.OrderNumber);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

@@ -18,10 +18,15 @@ namespace API.Controllers.Shared
     /// <typeparam name="TFormDto"></typeparam>
     public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
         : GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
-        where TService : IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
         where TEntity : IWithDocumentsPersistable, IPersistable
     {
-        public GridWithDocumentsController(TService service) : base(service) { }
+        private readonly IDocumentService documentService;
+
+        public GridWithDocumentsController(TService service, IDocumentService documentService) : base(service)
+        {
+            this.documentService = documentService;
+        }
 
         /// <summary>
         /// Получить документы
@@ -34,7 +39,7 @@ namespace API.Controllers.Shared
         {
             try
             {
-                IEnumerable<DocumentDto> documents = service.GetDocuments(id);
+                IEnumerable<DocumentDto> documents = documentService.GetDocuments(id);
 
                 return Ok(documents);
             }
@@ -61,7 +66,7 @@ namespace API.Controllers.Shared
         {
             try
             {
-                ValidateResult result = service.CreateDocument(id, dto);
+                ValidateResult result = documentService.CreateDocument(id, dto);
 
                 return Ok(result);
             }
@@ -89,7 +94,7 @@ namespace API.Controllers.Shared
         {
             try
             {
-                ValidateResult result = service.UpdateDocument(id, documentId, dto);
+                ValidateResult result = documentService.UpdateDocument(id, documentId, dto);
 
                 return Ok(result);
             }
@@ -116,7 +121,7 @@ namespace API.Controllers.Shared
         {
             try
             {
-                ValidateResult result = service.DeleteDocument(id, documentId);
+                ValidateResult result = documentService.DeleteDocument(id, documentId);
 
                 return Ok(result);
             }

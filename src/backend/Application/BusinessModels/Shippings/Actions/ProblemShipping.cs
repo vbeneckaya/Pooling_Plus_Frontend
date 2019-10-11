@@ -9,14 +9,15 @@ namespace Application.BusinessModels.Shippings.Actions
 {
     public class ProblemShipping : IAppAction<Shipping>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
+
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public ProblemShipping(AppDbContext db, IHistoryService historyService)
+        public ProblemShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this._dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -27,7 +28,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetProblem", shipping.ShippingNumber);
 
-            db.SaveChanges();
+            _dataService.SaveChanges();
 
             return new AppActionResult
             {

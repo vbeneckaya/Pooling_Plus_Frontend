@@ -16,12 +16,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class CreateShippingForeach : IGroupAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public CreateShippingForeach(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public CreateShippingForeach(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -30,7 +31,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(User user, IEnumerable<Order> orders)
         {
-            var createShipping = new CreateShipping(db, _historyService);
+            var createShipping = new CreateShipping(this.dataService, _historyService);
             foreach (var order in orders) 
                 createShipping.Run(user, order);
 

@@ -22,7 +22,7 @@ namespace Application.Shared
         where TFormDto : IDto, new()
         where TSearchForm: PagingFormDto
     {
-        public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
+        //public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract IEnumerable<IAction<TEntity>> Actions();
         public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
@@ -36,37 +36,37 @@ namespace Application.Shared
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
-        protected AppDbContext db;
         private readonly IUserIdProvider userIdProvider;
+
+        protected readonly ICommonDataService dataService;
         
-        protected GridServiceBase(AppDbContext appDbContext, IUserIdProvider userIdProvider)
+        protected GridServiceBase(ICommonDataService dataService, IUserIdProvider userIdProvider)
         {
-            db = appDbContext;
             this.userIdProvider = userIdProvider;
+            this.dataService = dataService;
         }
 
         public TDto Get(Guid id)
         {
-            var dbSet = UseDbSet(db);
-            return MapFromEntityToDto(dbSet.GetById(id));
+            var entity = dataService.GetById<TEntity>(id);
+            return MapFromEntityToDto(entity);
         }
 
         public TFormDto GetForm(Guid id)
         {
-            var dbSet = UseDbSet(db);
-            return MapFromEntityToFormDto(dbSet.GetById(id));
+            var entity = dataService.GetById<TEntity>(id);
+            return MapFromEntityToFormDto(entity);
         }
 
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
         public SearchResult<TDto> Search(TSearchForm form)
         {
-            var dbSet = UseDbSet(db);
-            var query = dbSet.AsQueryable();
+            var query = dataService.GetDbSet<TEntity>();
 
             //if (!string.IsNullOrEmpty(form.Search))
             //{
@@ -77,7 +77,7 @@ namespace Application.Shared
             //    query = query.Where(entity =>  entity.Id.ToString() == form.Search);
             //}
 
-            query = this.ApplySearchForm(query, form);
+           // query = this.ApplySearchForm(query, form);
 
             if (form.Take == 0)
                 form.Take = 1000;
@@ -98,7 +98,7 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             ValidateResult mapResult;
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
@@ -112,7 +112,7 @@ namespace Application.Shared
 
                     dbSet.Update(entityFromDb);
                     
-                    db.SaveChanges();
+                    dataService.SaveChanges();
                     return new ValidateResult
                     {
                         Id = entityFromDb.Id.ToString()
@@ -133,7 +133,7 @@ namespace Application.Shared
 
             dbSet.Add(entity);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             return new ValidateResult
             {
                 Id = entity.Id.ToString()
@@ -145,9 +145,9 @@ namespace Application.Shared
             if (ids == null) 
                 throw new ArgumentNullException(nameof(ids));
             
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
+            var role = dataService.GetById<Role>(currentUser.RoleId);
 
             var result = new List<ActionDto>();
 
@@ -207,9 +207,8 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
-            var dbSet = UseDbSet(db);
-            var entity = dbSet.GetById(id);
+            var role = dataService.GetById<Role>(currentUser.RoleId);
+            var entity = dataService.GetById<TEntity>(id);
             var message = "";
             if (action.IsAvailable(role, entity)) 
                 message += action.Run(currentUser, entity).Message;
@@ -236,10 +235,9 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = db.Roles.GetById(currentUser.RoleId);
-            var dbSet = UseDbSet(db);
+            var role = dataService.GetById<Role>(currentUser.RoleId);
+            var entities = dataService.GetDbSet<TEntity>().Where(i => ids.Contains(i.Id));
 
-            var entities = ids.Select(dbSet.GetById);
             
             if (action.IsAvailable(role, entities)) 
                 return action.Run(currentUser, entities);
@@ -286,8 +284,7 @@ namespace Application.Shared
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
-            var dbSet = UseDbSet(db);
-            var entities = dbSet.ToList();
+            var entities = dataService.GetDbSet<TEntity>().ToList();
             var dtos = entities.Select(MapFromEntityToDto);
             workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
             

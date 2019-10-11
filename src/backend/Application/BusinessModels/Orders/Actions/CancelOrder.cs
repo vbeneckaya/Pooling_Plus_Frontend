@@ -12,12 +12,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class CancelOrder : IAppAction<Order>
     {
-        private readonly AppDbContext db;
         private readonly IHistoryService _historyService;
 
-        public CancelOrder(AppDbContext db, IHistoryService historyService)
+        private readonly ICommonDataService dataService;
+
+        public CancelOrder(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -30,7 +31,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetCancelled", order.OrderNumber);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

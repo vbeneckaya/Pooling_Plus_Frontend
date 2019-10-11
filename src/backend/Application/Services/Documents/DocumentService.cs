@@ -1,33 +1,36 @@
-﻿using DAL;
-using Domain.Persistables;
+﻿using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Documents;
-using Domain.Services.History;
-using Domain.Services.UserIdProvider;
 using Domain.Shared;
+using Domain.Persistables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Domain.Services.History;
 
-namespace Application.Shared
+namespace Application.Services.Documents
 {
-    // TODO настроить foreignkeys
-    [Obsolete("Use DocumentService", true)]
-    public abstract class GridWithDocumentsBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
-        : GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>, 
-          IGridWithDocuments<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
-        where TEntity : class, IPersistable, IWithDocumentsPersistable, new() 
-        where TDto : IDto, new() 
-        where TFormDto : IDto, new()
-        where TSearchForm : PagingFormDto
+    public class DocumentService: IDocumentService
     {
+        private readonly ICommonDataService dataService;
+
+        private readonly IHistoryService _historyService;
+
+
+        public DocumentService(ICommonDataService dataService, IHistoryService historyService)
+        {
+            this.dataService = dataService;
+            _historyService = historyService;
+        }
+
         public ValidateResult CreateDocument(Guid id, DocumentDto dto)
         {
-            TEntity entity = this.dataService.GetById<TEntity>(id);
-            if (entity == null)
-            {
-                return new ValidateResult("notFound");
-            }
+            //TEntity entity = this.dataService.GetById<TEntity>(id);
+            //if (entity == null)
+            //{
+            //    return new ValidateResult("notFound");
+            //}
 
             bool tryParseFileId = Guid.TryParse(dto.FileId, out Guid fileId);
             FileStorage file = dataService.GetDbSet<FileStorage>().FirstOrDefault(x => x.Id == fileId);
@@ -45,7 +48,7 @@ namespace Application.Shared
             var document = new Document
             {
                 Name = dto.Name,
-                PersistableId = entity.Id,
+                PersistableId = id,
                 FileId = fileId,
                 TypeId = typeId
             };
@@ -63,11 +66,11 @@ namespace Application.Shared
 
         public ValidateResult UpdateDocument(Guid id, Guid documentId, DocumentDto dto)
         {
-            TEntity entity = this.dataService.GetById<TEntity>(id);
-            if (entity == null)
-            {
-                return new ValidateResult("notFound");
-            }
+            //TEntity entity = this.dataService.GetById<TEntity>(id);
+            //if (entity == null)
+            //{
+            //    return new ValidateResult("notFound");
+            //}
 
             bool tryParseFileId = Guid.TryParse(dto.FileId, out Guid fileId);
             FileStorage file = dataService.GetDbSet<FileStorage>().FirstOrDefault(x => x.Id == fileId);
@@ -129,13 +132,5 @@ namespace Application.Shared
 
             return new ValidateResult();
         }
-
-        protected GridWithDocumentsBase(ICommonDataService dataService, IUserIdProvider userIdProvider, IHistoryService historyService) 
-            : base(dataService, userIdProvider)
-        {
-            _historyService = historyService;
-        }
-
-        protected readonly IHistoryService _historyService;
     }
 }
