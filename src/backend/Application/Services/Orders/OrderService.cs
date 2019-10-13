@@ -305,31 +305,13 @@ namespace Application.Services.Orders
         public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
         {
             // OrderNumber Filter
-
             if (!string.IsNullOrEmpty(searchForm.Filter.OrderNumber))
             {
                 query = query.Where(i => i.OrderNumber == searchForm.Filter.OrderNumber);
             }
 
             // OrderDate Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.OrderDate))
-            {
-                var dates = searchForm.Filter.OrderDate.Split("-");
-
-                var fromDateStr = dates.FirstOrDefault();
-                var toDateStr = dates.ElementAtOrDefault(1);
-
-                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
-                {
-                    query = query.Where(i => i.OrderDate >= fromDate);
-                }
-
-                if (DateTime.TryParse(toDateStr, out DateTime toDate))
-                {
-                    query = query.Where(i => i.OrderDate <= toDate);
-                }
-            }
+            query = query.ApplyDateRangeFilter(i => i.OrderDate.Value, searchForm.Filter.OrderDate);
 
             // OrderType Filter
 
@@ -357,113 +339,97 @@ namespace Application.Services.Orders
             }
 
             // Payer Filter
+            query = query.ApplyStringFilter(i => i.Payer, searchForm.Filter.Payer);
 
-            if (!string.IsNullOrEmpty(searchForm.Filter.Payer))
-            {
-                query = query.Where(i => i.Payer.Contains(searchForm.Filter.Payer));
-            }
+            // Temperature Filters
 
-            // TemperatureMin Filter
-
-            if (int.TryParse(searchForm.Filter.TemperatureMin, out int temperatureMin))
-            {
-                query = query.Where(i => i.TemperatureMin == temperatureMin);
-            }
-
-            // TemperatureMax Filter
-
-            if (int.TryParse(searchForm.Filter.TemperatureMax, out int temperatureMax))
-            {
-                query = query.Where(i => i.TemperatureMax == temperatureMax);
-            }
+            query = query
+            .ApplyNumericFilter(i => i.TemperatureMin.Value, searchForm.Filter.TemperatureMin)
+            .ApplyNumericFilter(i => i.TemperatureMax.Value, searchForm.Filter.TemperatureMax);
 
             // TransitDays Filter
-
-            if (int.TryParse(searchForm.Filter.TransitDays, out int transitDays))
-            {
-                query = query.Where(i => i.TransitDays == transitDays);
-            }
-
+            query = query.ApplyNumericFilter(i => i.TransitDays.Value, searchForm.Filter.TransitDays);
 
             // ShippingAddress Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.ShippingAddress))
-            {
-                query = query.Where(i => i.ShippingAddress.Contains(searchForm.Filter.ShippingAddress));
-            }
+            query = query.ApplyStringFilter(i => i.ShippingAddress, searchForm.Filter.ShippingAddress);
 
             // ShippingDate Filter
 
-            if (!string.IsNullOrEmpty(searchForm.Filter.ShippingDate))
-            {
-                var dates = searchForm.Filter.ShippingDate.Split("-");
-
-                var fromDateStr = dates.FirstOrDefault();
-                var toDateStr = dates.ElementAtOrDefault(1);
-
-                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
-                {
-                    query = query.Where(i => i.ShippingDate >= fromDate);
-                }
-
-                if (DateTime.TryParse(toDateStr, out DateTime toDate))
-                {
-                    query = query.Where(i => i.ShippingDate <= toDate);
-                }
-            }
+            query = query.ApplyDateRangeFilter(i => i.ShippingDate.Value, searchForm.Filter.ShippingDate);
 
             // DeliveryCity Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryCity))
-            {
-                query = query.Where(i => i.DeliveryCity.Contains(searchForm.Filter.DeliveryCity));
-            }
+            query = query.ApplyStringFilter(i => i.DeliveryCity, searchForm.Filter.DeliveryCity);
 
             // DeliveryRegion Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryRegion))
-            {
-                query = query.Where(i => i.DeliveryRegion.Contains(searchForm.Filter.DeliveryRegion));
-            }
+            query = query.ApplyStringFilter(i => i.DeliveryRegion, searchForm.Filter.DeliveryRegion);
 
             // DeliveryAddress Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryAddress))
-            {
-                query = query.Where(i => i.DeliveryAddress.Contains(searchForm.Filter.DeliveryAddress));
-            }
+            query = query.ApplyStringFilter(i => i.DeliveryAddress, searchForm.Filter.DeliveryAddress);
 
             // DeliveryDate Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.DeliveryDate))
-            {
-                var dates = searchForm.Filter.DeliveryDate.Split("-");
-
-                var fromDateStr = dates.FirstOrDefault();
-                var toDateStr = dates.ElementAtOrDefault(1);
-
-                if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
-                {
-                    query = query.Where(i => i.DeliveryDate >= fromDate);
-                }
-
-                if (DateTime.TryParse(toDateStr, out DateTime toDate))
-                {
-                    query = query.Where(i => i.DeliveryDate < toDate.AddDays(1));
-                }
-            }
+            query = query.ApplyDateRangeFilter(i => i.DeliveryDate.Value, searchForm.Filter.DeliveryDate);
 
             return query;
         }
     }
 
+
+    /// <summary>
+    /// Filter Extentions
+    /// </summary>
     public static class FiltersExtentions
     {
-        public static IQueryable<TModel> ApplyDateRangeFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, DateTime?>> selector, string datesStr)
+        /// <summary>
+        /// Apply numeric filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, int>> property, int? filterData)
         {
-            if (string.IsNullOrEmpty(datesStr)) return query;
+            if (!filterData.HasValue) return query;
+            {
+                Expression<Func<int>> filterDataExp = () => filterData.Value;
+                var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-            var dates = datesStr.Split("-");
+                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+
+                query = query.Where(exp);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Apply numeric filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, int>> property, string filterData)
+        {
+            if (!int.TryParse(filterData, out int filterDataInt)) return query;
+
+            return query.ApplyNumericFilter(property, filterDataInt);
+        }
+
+        /// <summary>
+        /// Apply date range filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="dateRangeStr"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyDateRangeFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, DateTime>> property, string dateRangeStr)
+        {
+            if (string.IsNullOrEmpty(dateRangeStr)) return query;
+
+            var dates = dateRangeStr.Split("-");
 
             var fromDateStr = dates.FirstOrDefault();
             var toDateStr = dates.ElementAtOrDefault(1);
@@ -472,20 +438,47 @@ namespace Application.Services.Orders
             {
                 Expression<Func<DateTime>> dateExp = () => fromDate;
 
-                var newValue = Expression.Parameter(selector.Body.Type);
-                var grEx = Expression.GreaterThanOrEqual(selector, dateExp);
-
-                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx);
+                var grEx = Expression.GreaterThanOrEqual(property.Body, dateExp.Body);
+                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
 
                 query = query.Where(exp);
             }
 
-            //if (DateTime.TryParse(toDateStr, out DateTime toDate))
-            //{
-            //    query = query.Where(i => i.DeliveryDate < toDate.AddDays(1));
-            //}
+            if (DateTime.TryParse(toDateStr, out DateTime toDate))
+            {
+                toDate = toDate.AddDays(1);
+                Expression<Func<DateTime>> dateExp = () => toDate;
+
+                var ltEx = Expression.LessThan(property.Body, dateExp.Body);
+                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(ltEx, property.Parameters.Single());
+
+                query = query.Where(exp);
+            }
 
             return query;
+        }
+
+        /// <summary>
+        /// Apply string filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyStringFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, string>> property, string search)
+        {
+            if (string.IsNullOrEmpty(search)) return query;
+
+            Expression<Func<string>> searchStrExp = () => search;
+
+            var method = property.Body.Type.GetMethod("Contains", new[] { typeof(string) });
+
+            var conainsExp = Expression.Call(property.Body, method, searchStrExp.Body);
+
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
+
+            return query.Where(exp); ;
         }
     }
 }

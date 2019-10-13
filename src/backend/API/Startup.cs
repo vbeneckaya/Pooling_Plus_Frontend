@@ -21,6 +21,11 @@ using Application.Services.UserIdProvider;
 using Infrastructure.Translations;
 using Domain.Services;
 using DAL.Services;
+using Domain.Persistables;
+using Application.Services.Orders;
+using Application.Services.Shippings;
+using Domain.Services.Documents;
+using Application.Services.Documents;
 
 namespace API
 {
@@ -76,6 +81,9 @@ namespace API
 
             services.AddScoped<IUserIdProvider, UserIdProvider>();
             services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddScoped<IActionService<Order>, OrderActionsService>();
+            services.AddScoped<IActionService<Shipping>,ShippingActionsService>();
+            services.AddScoped<IDocumentService, DocumentService>();
         }
 
         private static string GetXmlCommentsPath()

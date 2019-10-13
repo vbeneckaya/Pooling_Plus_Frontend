@@ -66,7 +66,7 @@ namespace Application.Shared
 
         public SearchResult<TDto> Search(TSearchForm form)
         {
-            var query = dataService.GetDbSet<TEntity>();
+            var dbSet = dataService.GetDbSet<TEntity>();
 
             //if (!string.IsNullOrEmpty(form.Search))
             //{
@@ -77,7 +77,7 @@ namespace Application.Shared
             //    query = query.Where(entity =>  entity.Id.ToString() == form.Search);
             //}
 
-           // query = this.ApplySearchForm(query, form);
+           var query = this.ApplySearchForm(dbSet, form);
 
             if (form.Take == 0)
                 form.Take = 1000;

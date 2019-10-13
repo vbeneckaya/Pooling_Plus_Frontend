@@ -9,13 +9,13 @@ using System.Text;
 
 namespace Application.Services.Orders
 {
-    public class OrdersAcrionsService : IActionService<Order>
+    public class OrderActionsService : IActionService<Order>
     {
         private readonly IHistoryService historyService;
 
         private readonly ICommonDataService dataService;
 
-        public OrdersAcrionsService(ICommonDataService dataService, IHistoryService historyService)
+        public OrderActionsService(ICommonDataService dataService, IHistoryService historyService)
         {
             this.dataService = dataService;
             this.historyService = historyService;
