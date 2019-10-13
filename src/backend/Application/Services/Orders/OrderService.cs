@@ -1,10 +1,6 @@
-using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Orders.Handlers;
 using Application.Shared;
 using AutoMapper;
-using DAL;
-using DAL.Queries;
-using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -305,38 +301,19 @@ namespace Application.Services.Orders
         public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
         {
             // OrderNumber Filter
-            if (!string.IsNullOrEmpty(searchForm.Filter.OrderNumber))
-            {
-                query = query.Where(i => i.OrderNumber == searchForm.Filter.OrderNumber);
-            }
+            query = query.ApplyStringFilter(i => i.OrderNumber, searchForm.Filter.OrderNumber);
 
             // OrderDate Filter
             query = query.ApplyDateRangeFilter(i => i.OrderDate.Value, searchForm.Filter.OrderDate);
 
             // OrderType Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.OrderType))
-            {
-                var types = searchForm.Filter.OrderType.Split("|")
-                    .Select(i => MapFromStateDto<OrderType>(i));
-
-                query = query.Where(i => i.OrderType.HasValue && types.Contains(i.OrderType.Value));
-            }
+            query = query.ApplyEnumFilter(i => i.OrderType.Value, searchForm.Filter.OrderType);
 
             // SoldTo Filter
-
-            if (!string.IsNullOrEmpty(searchForm.Filter.SoldTo))
-            {
-                var solds = searchForm.Filter.SoldTo.Split("|");
-                query = query.Where(i => solds.Contains(i.SoldTo));
-            }
+            query = query.ApplyOptionsFilter(i => i.SoldTo, searchForm.Filter.SoldTo);
 
             // PickingTypeId Filter
-            if (!string.IsNullOrEmpty(searchForm.Filter.PickingTypeId))
-            {
-                var pickingTypes = searchForm.Filter.PickingTypeId.Split("|").Select(i => new Guid(i));
-                query = query.Where(i => i.PickingTypeId.HasValue && pickingTypes.Contains(i.PickingTypeId.Value));
-            }
+            query = query.ApplyOptionsFilter(i => i.PickingTypeId, searchForm.Filter.PickingTypeId, i => new Guid(i));
 
             // Payer Filter
             query = query.ApplyStringFilter(i => i.Payer, searchForm.Filter.Payer);
@@ -478,7 +455,80 @@ namespace Application.Services.Orders
 
             Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
 
-            return query.Where(exp); ;
+            return query.Where(exp);
+        }
+
+        /// <summary>
+        /// Applay enum filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyEnumFilter<TModel, TEnum>(this IQueryable<TModel> query, Expression<Func<TModel, TEnum>> property, string options)
+            where TEnum: struct, IConvertible
+        {
+            return query.ApplyOptionsFilter(property, options, i => MapFromStateDto<TEnum>(i));
+
+            if (string.IsNullOrEmpty(options)) return query;
+
+            var types = options.Split("|")
+                    .Select(i => MapFromStateDto<TEnum>(i));
+            
+            var methodInfo = typeof(Enumerable).GetMethods().Where(i => i.Name == "Contains").First();
+            var method = methodInfo.MakeGenericMethod(new[] { typeof(TEnum) });
+
+            Expression<Func<IEnumerable<TEnum>>> searchStrExp = () => types;
+
+            var conainsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
+
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
+
+            return query.Where(exp);
+        }
+
+        /// <summary>
+        /// Apply options filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyOptionsFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, string>> property, string options)
+        {
+            return query.ApplyOptionsFilter(property, options, i => i);
+        }
+
+        public static IQueryable<TModel> ApplyOptionsFilter<TModel, TProperty>(
+            this IQueryable<TModel> query, 
+            Expression<Func<TModel, TProperty>> property, 
+            string options, 
+            Expression<Func<string, TProperty>> selector)
+        {
+            if (string.IsNullOrEmpty(options)) return query;
+
+            var types = options.Split("|").AsQueryable().Select(selector);
+
+            var methodInfo = typeof(Enumerable).GetMethods().Where(i => i.Name == "Contains").First();
+            var method = methodInfo.MakeGenericMethod(new[] { typeof(TProperty) });
+
+            Expression<Func<IEnumerable<TProperty>>> searchStrExp = () => types;
+
+            var conainsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
+
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
+
+            return query.Where(exp);
+        }
+
+        private static TEnum MapFromStateDto<TEnum>(string dtoStatus) where TEnum : struct
+        {
+            var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperfirstLetter());
+
+            return mapFromStateDto;
         }
     }
 }
