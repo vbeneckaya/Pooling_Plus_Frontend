@@ -86,7 +86,7 @@ deploy-tasks-dev:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks
   when: manual   
   
-deploy-frontend-dev:
+deploy-frontend-demo:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.15
@@ -97,7 +97,7 @@ deploy-frontend-dev:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
   when: manual    
  
-deploy-backend-dev:
+deploy-backend-demo:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.15
@@ -108,7 +108,7 @@ deploy-backend-dev:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back
   when: manual    
  
-deploy-tasks-dev:
+deploy-tasks-demo:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.15
