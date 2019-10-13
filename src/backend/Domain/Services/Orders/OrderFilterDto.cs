@@ -84,5 +84,90 @@ namespace Domain.Shared.FormFilters
         /// Delivery Date
         /// </summary>
         public string DeliveryDate { get; set; }
+
+        /// <summary>
+        /// Count of articles
+        /// </summary>
+        public string ArticlesCount { get; set; }
+
+        /// <summary>
+        /// Boxes Count
+        /// </summary>
+        public string BoxesCount { get; set; }
+
+        /// <summary>
+        /// Confirmed Boxes Count
+        /// </summary>
+        public string ConfirmedBoxesCount { get; set; }
+
+        /// <summary>
+        /// Pallets Count
+        /// </summary>
+        public string PalletsCount { get; set; }
+
+        /// <summary>
+        /// Actual Pallets Count
+        /// </summary>
+        public string ActualPalletsCount { get; set; }
+
+        /// <summary>
+        /// Weight Kg
+        /// </summary>
+        public string WeightKg { get; set; }
+
+        /// <summary>
+        /// Actual Weight Kg
+        /// </summary>
+        public string ActualWeightKg { get; set; }
+
+        /// <summary>
+        /// OrderAmountExcludingVAT
+        /// </summary>
+        public string OrderAmountExcludingVAT { get; set; }
+
+        /// <summary>
+        /// Bdf Invoice Number
+        /// </summary>
+        public string BdfInvoiceNumber { get; set; }
+
+        /// <summary>
+        /// Loading Arrival Time
+        /// </summary>
+        public string LoadingArrivalTime { get; set; }
+
+        /// <summary>
+        /// Loading DepartureT ime
+        /// </summary>
+        public string LoadingDepartureTime { get; set; }
+
+        /// <summary>
+        /// Unloading Arrival Date
+        /// </summary>
+        public string UnloadingArrivalDate { get; set; }
+
+        /// <summary>
+        /// Unloading Arrival Time
+        /// </summary>
+        public string UnloadingArrivalTime { get; set; }
+
+        /// <summary>
+        /// Unloading Departure Date
+        /// </summary>
+        public string UnloadingDepartureDate { get; set; }
+
+        /// <summary>
+        /// Unloading Departure Time
+        /// </summary>
+        public string UnloadingDepartureTime { get; set; }
+
+        /// <summary>
+        /// Trucks Downtime
+        /// </summary>
+        public string TrucksDowntime { get; set; }
+
+        /// <summary>
+        /// Return Information
+        /// </summary>
+        public string ReturnInformation { get; set; }
     }
 }

@@ -319,7 +319,6 @@ namespace Application.Services.Orders
             query = query.ApplyStringFilter(i => i.Payer, searchForm.Filter.Payer);
 
             // Temperature Filters
-
             query = query
             .ApplyNumericFilter(i => i.TemperatureMin.Value, searchForm.Filter.TemperatureMin)
             .ApplyNumericFilter(i => i.TemperatureMax.Value, searchForm.Filter.TemperatureMax);
@@ -327,24 +326,31 @@ namespace Application.Services.Orders
             // TransitDays Filter
             query = query.ApplyNumericFilter(i => i.TransitDays.Value, searchForm.Filter.TransitDays);
 
-            // ShippingAddress Filter
-            query = query.ApplyStringFilter(i => i.ShippingAddress, searchForm.Filter.ShippingAddress);
+            // Shipping Filters
+            query = query
+                .ApplyStringFilter(i => i.ShippingAddress, searchForm.Filter.ShippingAddress)
+                .ApplyDateRangeFilter(i => i.ShippingDate.Value, searchForm.Filter.ShippingDate);
 
-            // ShippingDate Filter
+            // Delivery Filters
+            query = query
+                .ApplyStringFilter(i => i.DeliveryCity, searchForm.Filter.DeliveryCity)
+                .ApplyStringFilter(i => i.DeliveryRegion, searchForm.Filter.DeliveryRegion)
+                .ApplyStringFilter(i => i.DeliveryAddress, searchForm.Filter.DeliveryAddress)
+                .ApplyDateRangeFilter(i => i.DeliveryDate.Value, searchForm.Filter.DeliveryDate);
 
-            query = query.ApplyDateRangeFilter(i => i.ShippingDate.Value, searchForm.Filter.ShippingDate);
 
-            // DeliveryCity Filter
-            query = query.ApplyStringFilter(i => i.DeliveryCity, searchForm.Filter.DeliveryCity);
+            query = query
+                .ApplyNumericFilter(i => i.ArticlesCount.Value, searchForm.Filter.ArticlesCount)
+                .ApplyNumericFilter(i => i.BoxesCount.Value, searchForm.Filter.BoxesCount)
+                .ApplyNumericFilter(i => i.ConfirmedBoxesCount.Value, searchForm.Filter.ConfirmedBoxesCount)
+                .ApplyNumericFilter(i => i.PalletsCount.Value, searchForm.Filter.PalletsCount)
+                .ApplyNumericFilter(i => i.ActualPalletsCount.Value, searchForm.Filter.ActualPalletsCount)
+                .ApplyNumericFilter(i => i.WeightKg.Value, searchForm.Filter.WeightKg)
+                .ApplyNumericFilter(i => i.ActualWeightKg.Value, searchForm.Filter.ActualWeightKg)
 
-            // DeliveryRegion Filter
-            query = query.ApplyStringFilter(i => i.DeliveryRegion, searchForm.Filter.DeliveryRegion);
-
-            // DeliveryAddress Filter
-            query = query.ApplyStringFilter(i => i.DeliveryAddress, searchForm.Filter.DeliveryAddress);
-
-            // DeliveryDate Filter
-            query = query.ApplyDateRangeFilter(i => i.DeliveryDate.Value, searchForm.Filter.DeliveryDate);
+                .ApplyNumericFilter(i => i.OrderAmountExcludingVAT.Value, searchForm.Filter.OrderAmountExcludingVAT)
+                .ApplyStringFilter(i => i.BDFInvoiceNumber, searchForm.Filter.BdfInvoiceNumber)
+                .ApplyDateRangeFilter(i => i.LoadingArrivalTime.Value, searchForm.Filter.LoadingArrivalTime);
 
             return query;
         }
@@ -377,6 +383,44 @@ namespace Application.Services.Orders
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// Apply numeric filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, decimal>> property, decimal? filterData)
+        {
+            if (!filterData.HasValue) return query;
+            {
+                Expression<Func<decimal>> filterDataExp = () => filterData.Value;
+                var grEx = Expression.Equal(property.Body, filterDataExp.Body);
+
+                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+
+                query = query.Where(exp);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Apply numeric filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
+        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, decimal>> property, string filterData)
+        {
+            if (!decimal.TryParse(filterData, out decimal filterDataDecimal)) return query;
+
+            return query.ApplyNumericFilter(property, filterDataDecimal);
         }
 
         /// <summary>
