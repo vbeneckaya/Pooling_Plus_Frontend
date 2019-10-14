@@ -26,6 +26,7 @@ using Application.Services.Orders;
 using Application.Services.Shippings;
 using Domain.Services.Documents;
 using Application.Services.Documents;
+using Application;
 
 namespace API
 {
@@ -80,10 +81,7 @@ namespace API
             services.SyncTranslations();
 
             services.AddScoped<IUserProvider, UserProvider>();
-            services.AddScoped<ICommonDataService, CommonDataService>();
-            services.AddScoped<IActionService<Order>, OrderActionsService>();
-            services.AddScoped<IActionService<Shipping>,ShippingActionsService>();
-            services.AddScoped<IDocumentService, DocumentService>();
+
         }
 
         private static string GetXmlCommentsPath()

@@ -44,6 +44,11 @@ using Application.Services.History;
 using Domain.Services.History;
 using Application.Services.UserSettings;
 using Domain.Services.UserSettings;
+using DAL.Services;
+using Domain.Services;
+using Domain.Persistables;
+using Domain.Services.Documents;
+using Application.Services.Documents;
 
 namespace Infrastructure.Installers
 {
@@ -74,6 +79,10 @@ namespace Infrastructure.Installers
             services.AddScoped<IDocumentTypesService, DocumentTypesService>();
             services.AddScoped<IPickingTypesService, PickingTypesService>();
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
+            services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddScoped<IActionService<Order>, OrderActionsService>();
+            services.AddScoped<IActionService<Shipping>, ShippingActionsService>();
+            services.AddScoped<IDocumentService, DocumentService>();
             /*end of add service implementation*/
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
