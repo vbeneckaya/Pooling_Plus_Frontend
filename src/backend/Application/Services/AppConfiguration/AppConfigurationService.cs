@@ -99,6 +99,11 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.MajorAdoptionNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderComments), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.WaybillTorg12), FiledType.Boolean),
+                            new UserConfigurationGridColumn(nameof(OrderDto.Invoice), FiledType.Boolean),
+                            new UserConfigurationGridColumn(nameof(OrderDto.DocumentsReturnDate), FiledType.DateTime),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ActualDocumentsReturnDate), FiledType.DateTime),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderShippingStatus), FiledType.State, nameof(ShippingState)),
                             /*end of add field for Orders*/
                         }
                     },

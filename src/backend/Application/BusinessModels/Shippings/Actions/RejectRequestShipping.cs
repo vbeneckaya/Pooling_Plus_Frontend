@@ -30,6 +30,11 @@ namespace Application.BusinessModels.Shippings.Actions
         {
             shipping.Status = ShippingState.ShippingRejectedByTc;
 
+            foreach (var order in db.Orders.Where(o => o.ShippingId == shipping.Id))
+            {
+                order.OrderShippingStatus = shipping.Status;
+            }
+
             _historyService.Save(shipping.Id, "shippingSetRejected", shipping.ShippingNumber);
 
             db.SaveChanges();

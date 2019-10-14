@@ -38,6 +38,7 @@ namespace Application.BusinessModels.Shippings.Actions
             {
                 order.ShippingId = null;
                 order.ShippingNumber = null;
+                order.OrderShippingStatus = null;
 
                 _historyService.Save(order.Id, "orderCancellingShipping", order.OrderNumber, shipping.ShippingNumber);
             }

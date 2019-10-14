@@ -51,8 +51,13 @@ namespace Domain.Services.Orders
         public string ActualReturnDate { get; set; }
         public string MajorAdoptionNumber { get; set; }
         public string OrderCreationDate { get; set; }
+        public bool? WaybillTorg12 { get; set; }
+        public bool? Invoice { get; set; }
+        public string DocumentsReturnDate { get; set; }
+        public string ActualDocumentsReturnDate { get; set; }
         public string ShippingId { get; set; }
         public string ShippingNumber { get; set; }
+        public string OrderShippingStatus { get; set; }
         public bool? IsActive { get; set; }
 
         /*end of fields*/

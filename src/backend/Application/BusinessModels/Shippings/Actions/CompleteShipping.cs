@@ -6,6 +6,7 @@ using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
+using System.Linq;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -26,6 +27,11 @@ namespace Application.BusinessModels.Shippings.Actions
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingCompleted;
+
+            foreach (var order in db.Orders.Where(o => o.ShippingId == shipping.Id))
+            {
+                order.OrderShippingStatus = shipping.Status;
+            }
 
             _historyService.Save(shipping.Id, "shippingSetCompleted", shipping.ShippingNumber);
 

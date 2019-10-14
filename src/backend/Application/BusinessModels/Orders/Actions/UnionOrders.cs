@@ -71,6 +71,7 @@ namespace Application.BusinessModels.Orders.Actions
                 order.ShippingId = shipping.Id;
                 order.ShippingNumber = shipping.ShippingNumber;
                 order.Status = OrderState.InShipping;
+                order.OrderShippingStatus = shipping.Status;
 
                 var ordSetter = new FieldSetter<Order>(order, _historyService);
 

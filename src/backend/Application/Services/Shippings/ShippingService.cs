@@ -114,8 +114,6 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.DocumentsReturnDate, ParseDateTime(dto.DocumentsReturnDate));
             setter.UpdateField(e => e.ActualDocumentsReturnDate, ParseDateTime(dto.ActualDocumentsReturnDate));
             setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
-            if (!string.IsNullOrEmpty(dto.Status))
-                setter.UpdateField(e => e.Status,  MapFromStateDto<ShippingState>(dto.Status), ignoreChanges: true);
             setter.UpdateField(e => e.CostsConfirmedByShipper, dto.CostsConfirmedByShipper ?? false);
             setter.UpdateField(e => e.CostsConfirmedByCarrier, dto.CostsConfirmedByCarrier ?? false);
             /*end of map dto to entity fields*/

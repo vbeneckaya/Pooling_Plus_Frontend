@@ -189,6 +189,22 @@ namespace Domain.Persistables
         /// </summary>
         public DateTime? OrderCreationDate { get; set; }
         /// <summary>
+        /// Товарная накладная(Торг-12)
+        /// </summary>
+        public bool WaybillTorg12 { get; set; }
+        /// <summary>
+        /// Счет-фактура
+        /// </summary>
+        public bool Invoice { get; set; }
+        /// <summary>
+        /// Плановая дата возврата документов
+        /// </summary>
+        public DateTime? DocumentsReturnDate { get; set; }
+        /// <summary>
+        /// Фактическая дата возврата документов
+        /// </summary>
+        public DateTime? ActualDocumentsReturnDate { get; set; }
+        /// <summary>
         /// Перевозка
         /// </summary>
         public Guid? ShippingId { get; set; }
@@ -196,6 +212,10 @@ namespace Domain.Persistables
         /// Номер перевозки
         /// </summary>
         public string ShippingNumber { get; set; }
+        /// <summary>
+        /// Статус перевозки
+        /// </summary>
+        public ShippingState? OrderShippingStatus { get; set; }
         /// <summary>
         /// Склад отгрузки
         /// </summary>

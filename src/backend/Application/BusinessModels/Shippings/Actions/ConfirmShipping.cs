@@ -35,6 +35,8 @@ namespace Application.BusinessModels.Shippings.Actions
                 var setter = new FieldSetter<Order>(order, _historyService);
                 setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
                 setter.SaveHistoryLog();
+
+                order.OrderShippingStatus = shipping.Status;
             }
 
             _historyService.Save(shipping.Id, "shippingSetConfirmed", shipping.ShippingNumber);
