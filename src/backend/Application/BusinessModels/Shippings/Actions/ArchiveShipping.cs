@@ -12,14 +12,14 @@ namespace Application.BusinessModels.Shippings.Actions
 {
     public class ArchiveShipping : IAppAction<Shipping>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public ArchiveShipping(AppDbContext db, IHistoryService historyService)
+        public ArchiveShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this._dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Teal;
         }
@@ -28,14 +28,14 @@ namespace Application.BusinessModels.Shippings.Actions
         {
             shipping.Status = ShippingState.ShippingArhive;
 
-            foreach (var order in db.Orders.Where(o => o.ShippingId == shipping.Id))
+            foreach (var order in _dataService.GetDbSet<Order>().Where(o => o.ShippingId == shipping.Id))
             {
                 order.OrderShippingStatus = shipping.Status;
             }
 
             _historyService.Save(shipping.Id, "shippingSetArchived", shipping.ShippingNumber);
 
-            db.SaveChanges();
+            _dataService.SaveChanges();
 
             return new AppActionResult
             {

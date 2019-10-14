@@ -17,14 +17,13 @@ using Application.Shared.Excel;
 
 namespace Application.Shared
 {
-    public abstract class GridServiceBase<TEntity, TDto, TFormDto, TSummaryDto> 
+    public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
         where TEntity : class, IPersistable, new() 
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
+        where TSearchForm: PagingFormDto
     {
-        public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
-        public abstract IEnumerable<IAction<TEntity>> Actions();
-        public abstract IEnumerable<IAction<IEnumerable<TEntity>>> GroupActions();
+        //public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
@@ -32,48 +31,59 @@ namespace Application.Shared
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, TSearchForm searchForm);
 
-        protected AppDbContext db;
+        protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
+
         private readonly IUserProvider userIdProvider;
-        
-        protected GridServiceBase(AppDbContext appDbContext, IUserProvider userIdProvider)
+
+        protected readonly ICommonDataService dataService;
+
+        protected readonly IActionService<TEntity> actionService;
+
+        //TODO: remove this
+        private readonly AppDbContext db;
+
+        protected GridService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IActionService<TEntity> actionService)
         {
-            db = appDbContext;
             this.userIdProvider = userIdProvider;
+            this.dataService = dataService;
+            this.actionService = actionService;
+            this.db = db;
         }
 
         public TDto Get(Guid id)
         {
-            var dbSet = UseDbSet(db);
-            return MapFromEntityToDto(dbSet.GetById(id));
+            var entity = dataService.GetById<TEntity>(id);
+            return MapFromEntityToDto(entity);
         }
 
         public TFormDto GetForm(Guid id)
         {
-            var dbSet = UseDbSet(db);
-            return MapFromEntityToFormDto(dbSet.GetById(id));
+            var entity = dataService.GetById<TEntity>(id);
+            return MapFromEntityToFormDto(entity);
         }
 
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
-        public SearchResult<TDto> Search(SearchForm form)
+        public SearchResult<TDto> Search(TSearchForm form)
         {
-            var dbSet = UseDbSet(db);
-            var query = dbSet.AsQueryable();
+            var dbSet = dataService.GetDbSet<TEntity>();
 
+            //if (!string.IsNullOrEmpty(form.Search))
+            //{
+            //    var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
+            //        prop.PropertyType == form.Search.GetType());
 
-            if (!string.IsNullOrEmpty(form.Search))
-            {
-                var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
-                    prop.PropertyType == form.Search.GetType());
-         
-                //TODO Вернуть полнотекстовый поиск
-                query = query.Where(entity =>  entity.Id.ToString() == form.Search);
-            }
+            //    //TODO Вернуть полнотекстовый поиск
+            //    query = query.Where(entity =>  entity.Id.ToString() == form.Search);
+            //}
+
+            var query = this.ApplySearchForm(dbSet, form);
 
             if (form.Take == 0)
                 form.Take = 1000;
@@ -91,12 +101,11 @@ namespace Application.Shared
             return a;
         }
 
-        public IEnumerable<string> SearchIds(SearchForm form)
+        public IEnumerable<string> SearchIds(TSearchForm form)
         {
-            var dbSet = UseDbSet(db);
-            var query = dbSet.AsQueryable();
-
-            //TODO: добавить применение фильтров и полнотекстового поиска
+            var dbSet = dataService.GetDbSet<TEntity>();
+            
+            var query = this.ApplySearchForm(dbSet, form);
 
             var ids = query.Select(e => e.Id).ToList();
 
@@ -107,7 +116,7 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             ValidateResult mapResult;
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
@@ -121,7 +130,7 @@ namespace Application.Shared
 
                     dbSet.Update(entityFromDb);
                     
-                    db.SaveChanges();
+                    dataService.SaveChanges();
                     return new ValidateResult
                     {
                         Id = entityFromDb.Id.ToString()
@@ -142,7 +151,7 @@ namespace Application.Shared
 
             dbSet.Add(entity);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             return new ValidateResult
             {
                 Id = entity.Id.ToString()
@@ -154,15 +163,15 @@ namespace Application.Shared
             if (ids == null) 
                 throw new ArgumentNullException(nameof(ids));
             
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
 
             var result = new List<ActionDto>();
 
             var entities = ids.Select(id => dbSet.GetById(id));
 
-            var singleActions = Actions();
+            var singleActions = actionService.GetActions();
             foreach (var action in singleActions)
             {
                 var validEntities = entities.Where(e => action.IsAvailable(role, e));
@@ -183,7 +192,7 @@ namespace Application.Shared
 
             if (ids.Count() > 1)
             {
-                var groupActions = GroupActions();
+                var groupActions = actionService.GetGroupActions();
                 foreach (var action in groupActions)
                 {
                     if (action.IsAvailable(role, entities))
@@ -207,7 +216,7 @@ namespace Application.Shared
 
         public AppActionResult InvokeAction(string name, Guid id)
         {
-            var action = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var action = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -217,9 +226,8 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
-            var dbSet = UseDbSet(db);
-            var entity = dbSet.GetById(id);
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var entity = dataService.GetById<TEntity>(id);
             var message = "";
             if (action.IsAvailable(role, entity)) 
                 message += action.Run(currentUser, entity).Message;
@@ -233,8 +241,8 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
-            var singleAction = Actions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
-            var groupAction = GroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var singleAction = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var groupAction = actionService.GetGroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
 
             if (singleAction == null && groupAction == null)
                 return new AppActionResult
@@ -244,8 +252,8 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? db.Roles.GetById(currentUser.RoleId.Value) : null;
-            var dbSet = UseDbSet(db);
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var dbSet = dataService.GetDbSet<TEntity>();
 
             var entities = ids.Select(dbSet.GetById);
 
@@ -327,7 +335,7 @@ namespace Application.Shared
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
-            var dbSet = UseDbSet(db);
+            var dbSet = dataService.GetDbSet<TEntity>();
             var entities = dbSet.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
 

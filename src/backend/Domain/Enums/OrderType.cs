@@ -8,10 +8,10 @@ namespace Domain.Enums
         /// <summary>
         /// OR
         /// </summary>
-        Or,
+        OR,
         /// <summary>
         /// FD
         /// </summary>
-        Fd
+        FD
     }
 }

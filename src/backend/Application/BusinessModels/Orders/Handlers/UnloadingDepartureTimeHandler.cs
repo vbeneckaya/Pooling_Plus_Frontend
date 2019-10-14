@@ -2,6 +2,7 @@
 using Application.Shared;
 using DAL;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using System;
 using System.Linq;
@@ -10,11 +11,15 @@ namespace Application.BusinessModels.Orders.Handlers
 {
     public class UnloadingDepartureTimeHandler : IFieldHandler<Order, DateTime?>
     {
+        private readonly ICommonDataService _dataService;
+
+        private readonly IHistoryService _historyService;
+
         public void AfterChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
             if (order.ShippingId.HasValue)
             {
-                var ordersToUpdate = _db.Orders.Where(o => o.ShippingId == order.ShippingId
+                var ordersToUpdate = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId
                                                         && o.Id != order.Id
                                                         && o.DeliveryWarehouseId == order.DeliveryWarehouseId)
                                                .ToList();
@@ -40,13 +45,10 @@ namespace Application.BusinessModels.Orders.Handlers
             }
         }
 
-        public UnloadingDepartureTimeHandler(AppDbContext db, IHistoryService historyService)
+        public UnloadingDepartureTimeHandler(ICommonDataService dataService, IHistoryService historyService)
         {
-            _db = db;
+            _dataService = dataService;
             _historyService = historyService;
-        }
-
-        private readonly AppDbContext _db;
-        private readonly IHistoryService _historyService;
+        }        
     }
 }

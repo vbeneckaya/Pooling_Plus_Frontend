@@ -9,8 +9,8 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto> : Controller 
-        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : Controller 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
     {
         protected readonly TService service;
 
@@ -23,7 +23,7 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public IActionResult Search([FromBody]SearchForm form)
+        public IActionResult Search([FromBody]TSearchForm form)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Search {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Search {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -45,7 +45,7 @@ namespace API.Controllers.Shared
         /// Получение Id сущностей, подходящих под фильтр
         /// </summary>
         [HttpPost("ids")]
-        public IActionResult SearchIds([FromBody]SearchForm form)
+        public IActionResult SearchIds([FromBody]TSearchForm form)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get {typeof(TEntity).Name} by {id}");
+                Log.Error(ex, $"Failed to Get {typeof(TDto).Name} by {id}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,7 +171,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get actions for {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Get actions for {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -193,7 +193,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -216,7 +216,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Save or create {typeof(TEntity).Name}");
+                Log.Error(ex, $"Failed to Save or create {typeof(TDto).Name}");
                 return StatusCode(500, ex.Message);
             }
         }

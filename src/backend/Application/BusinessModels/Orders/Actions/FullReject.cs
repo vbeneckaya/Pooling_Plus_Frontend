@@ -14,12 +14,12 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class FullReject : IAppAction<Order>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService dataService;
         private readonly IHistoryService _historyService;
 
-        public FullReject(AppDbContext db, IHistoryService historyService)
+        public FullReject(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }
@@ -32,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetFullReturn", order.OrderNumber);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

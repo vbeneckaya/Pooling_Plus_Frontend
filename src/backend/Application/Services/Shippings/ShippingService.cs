@@ -11,58 +11,33 @@ using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Domain.Shared.FormFilters;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridWithDocumentsBase<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto>, IShippingsService
+    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
     {
-        public ShippingsService(AppDbContext appDbContext, IUserProvider userIdProvider, IHistoryService historyService) 
-            : base(appDbContext, userIdProvider, historyService)
+        private readonly IHistoryService _historyService;
+
+        public ShippingsService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IHistoryService historyService, IActionService<Shipping> actionService) 
+            : base(dataService, db, userIdProvider, actionService)
         {
             _mapper = ConfigureMapper().CreateMapper();
+            this._historyService = historyService;
         }
 
-        public override DbSet<Shipping> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Shippings;
-        }
-
-        public override IEnumerable<IAction<Shipping>> Actions()
-        {
-            return new List<IAction<Shipping>>
-            {
-                new SendShippingToTk(db, _historyService),
-                new ConfirmShipping(db, _historyService),
-                new RejectRequestShipping(db, _historyService),
-                new CancelRequestShipping(db, _historyService),
-                new CompleteShipping(db, _historyService),
-                new CancelShipping(db, _historyService),
-                new ProblemShipping(db, _historyService),
-                new BillingShipping(db, _historyService),
-                new ArchiveShipping(db, _historyService),
-                /*end of add single actions*/
-            };
-        }
-        
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
         {
             return new LookUpDto
             {
                 Value = entity.Id.ToString(),
                 Name = entity.ShippingNumber
-            };
-        }
-
-        public override IEnumerable<IAction<IEnumerable<Shipping>>> GroupActions()
-        {
-            return new List<IAction<IEnumerable<Shipping>>>
-            {
-                /*end of add group actions*/
             };
         }
 
@@ -145,7 +120,7 @@ namespace Application.Services.Shippings
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
 
-            var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+            var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
             formDto.Orders = GetShippingOrders(orders);
             formDto.RoutePoints = GetRoutePoints(entity, orders);
 
@@ -154,19 +129,19 @@ namespace Application.Services.Shippings
 
         private string GetCarrierNameById(Guid? id)
         {
-            return id == null ? null : db.TransportCompanies.GetById(id.Value)?.Title;
+            return id == null ? null : dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
 
         private string GetVehicleTypeNameById(Guid? id)
         {
-            return id == null ? null : db.VehicleTypes.GetById(id.Value)?.Name;
+            return id == null ? null : dataService.GetById<VehicleType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
             {
-                var orders = db.Orders.Where(o => o.ShippingId == entity.Id).ToList();
+                var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
                 var ordersDict = orders.ToDictionary(o => o.Id.ToString());
                 
                 foreach (RoutePointDto pointDto in dto.RoutePoints)
@@ -240,7 +215,7 @@ namespace Application.Services.Shippings
                     {
                         point = new RoutePointDto
                         {
-                            WarehouseName = db.Warehouses.GetById(order.ShippingWarehouseId.Value)?.WarehouseName,
+                            WarehouseName = dataService.GetById<Warehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
                             Address = order.ShippingAddress,
                             PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
@@ -310,5 +285,10 @@ namespace Application.Services.Shippings
         }
 
         private readonly IMapper _mapper;
+
+        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<SearchFilterDto> searchForm)
+        {
+            return query;
+        }
     }
 }

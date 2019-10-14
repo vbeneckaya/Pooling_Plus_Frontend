@@ -14,12 +14,12 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class RecordFactOfLoss : IAppAction<Order>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService dataService;
         private readonly IHistoryService _historyService;
 
-        public RecordFactOfLoss(AppDbContext db, IHistoryService historyService)
+        public RecordFactOfLoss(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this.dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -32,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetLost", order.OrderNumber);
 
-            db.SaveChanges();
+            dataService.SaveChanges();
             
             return new AppActionResult
             {

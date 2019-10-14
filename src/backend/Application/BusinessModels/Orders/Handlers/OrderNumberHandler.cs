@@ -12,9 +12,9 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             OrderType newOrderType;
             if (order.OrderNumber.StartsWith("2"))
-                newOrderType = OrderType.Fd;
+                newOrderType = OrderType.FD;
             else
-                newOrderType = OrderType.Or;
+                newOrderType = OrderType.OR;
 
             var setter = new FieldSetter<Order>(order, _historyService);
             setter.UpdateField(o => o.OrderType, newOrderType);

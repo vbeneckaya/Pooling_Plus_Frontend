@@ -15,14 +15,15 @@ namespace Application.BusinessModels.Shippings.Actions
     /// </summary>
     public class CancelShipping : IAppAction<Shipping>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
+
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
 
-        public CancelShipping(AppDbContext db, IHistoryService historyService)
+        public CancelShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.db = db;
+            this._dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -33,7 +34,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetCancelled", shipping.ShippingNumber);
 
-            var orders = db.Orders.Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
+            var orders = _dataService.GetDbSet<Order>().Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
             foreach (var order in orders)
             {
                 order.ShippingId = null;
@@ -43,7 +44,8 @@ namespace Application.BusinessModels.Shippings.Actions
                 _historyService.Save(order.Id, "orderCancellingShipping", order.OrderNumber, shipping.ShippingNumber);
             }
 
-            db.SaveChanges();
+            _dataService.SaveChanges();
+
             return new AppActionResult
             {
                 IsError = false,

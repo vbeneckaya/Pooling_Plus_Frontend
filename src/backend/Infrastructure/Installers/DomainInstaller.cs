@@ -44,6 +44,11 @@ using Application.Services.History;
 using Domain.Services.History;
 using Application.Services.UserSettings;
 using Domain.Services.UserSettings;
+using Domain.Services;
+using DAL.Services;
+using Domain.Persistables;
+using Application.Services.Documents;
+using Domain.Services.Documents;
 
 namespace Infrastructure.Installers
 {
@@ -61,6 +66,11 @@ namespace Infrastructure.Installers
             services.AddScoped<ITaskPropertiesService, TaskPropertiesService>();
             services.AddScoped<IHistoryService, HistoryService>();
             services.AddScoped<IUserSettingsService, UserSettingsService>();
+
+            services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddScoped<IActionService<Order>, OrderActionsService>();
+            services.AddScoped<IActionService<Shipping>, ShippingActionsService>();
+            services.AddScoped<IDocumentService, DocumentService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();

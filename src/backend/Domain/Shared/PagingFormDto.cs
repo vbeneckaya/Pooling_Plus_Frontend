@@ -1,8 +1,10 @@
 namespace Domain.Shared
 {
-    public class PagingForm
+    public class PagingFormDto
     {
         public int Skip { get; set; }
         public int Take { get; set; }
+
+        public SortingDto Sort { get; set; }
     }
 }

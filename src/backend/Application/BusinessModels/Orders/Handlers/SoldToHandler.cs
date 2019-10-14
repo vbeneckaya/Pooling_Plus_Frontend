@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL;
 using DAL.Queries;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using System;
 using System.Linq;
@@ -11,11 +12,16 @@ namespace Application.BusinessModels.Orders.Handlers
 {
     public class SoldToHandler : IFieldHandler<Order, string>
     {
+
+        private readonly ICommonDataService _dataService;
+
+        private readonly IHistoryService _historyService;
+
         public void AfterChange(Order order, string oldValue, string newValue)
         {
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
-                var soldToWarehouse = _db.Warehouses.FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
+                var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
                     var setter = new FieldSetter<Order>(order, _historyService);
@@ -45,16 +51,13 @@ namespace Application.BusinessModels.Orders.Handlers
 
         private string GetPickingTypeNameById(Guid? id)
         {
-            return id == null ? null : _db.PickingTypes.GetById(id.Value)?.Name;
+            return id == null ? null : _dataService.GetDbSet<PickingType>().GetById(id.Value)?.Name;
         }
 
-        public SoldToHandler(AppDbContext db, IHistoryService historyService)
+        public SoldToHandler(ICommonDataService dataService, IHistoryService historyService)
         {
-            _db = db;
+            _dataService = dataService;
             _historyService = historyService;
         }
-
-        private readonly AppDbContext _db;
-        private readonly IHistoryService _historyService;
     }
 }

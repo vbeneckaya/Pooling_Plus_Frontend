@@ -11,11 +11,11 @@ namespace Application.BusinessModels.Orders.Actions
 {
     public class DeleteOrder : IAppAction<Order>
     {
-        private readonly AppDbContext db;
+        private readonly ICommonDataService _dataService;
 
-        public DeleteOrder(AppDbContext db)
+        public DeleteOrder(ICommonDataService dataService)
         {
-            this.db = db;
+            _dataService = dataService;
             Color = AppColor.Red;
         }
 
@@ -26,11 +26,15 @@ namespace Application.BusinessModels.Orders.Actions
             string orderNumber = order.OrderNumber;
 
             ///TODO: заменить на использованием флага IsActive после реализации фильтров (нужно будет прокидывать условие, что отбираем только активные для грида)
-            db.RemoveRange(db.OrderItems.Where(x => x.OrderId == order.Id));
-            db.RemoveRange(db.HistoryEntries.Where(x => x.PersistableId == order.Id));
-            db.Remove(order);
+            var itemsDbSet = _dataService.GetDbSet<OrderItem>();
+            itemsDbSet.RemoveRange(itemsDbSet.Where(x => x.OrderId == order.Id));
 
-            db.SaveChanges();
+            var historyDbSet = _dataService.GetDbSet<HistoryEntry>();
+            historyDbSet.RemoveRange(historyDbSet.Where(x => x.PersistableId == order.Id));
+
+            _dataService.GetDbSet<Order>().Remove(order);
+
+            _dataService.SaveChanges();
 
             return new AppActionResult
             {

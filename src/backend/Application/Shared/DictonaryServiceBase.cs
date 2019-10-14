@@ -51,7 +51,7 @@ namespace Application.Shared
             }
         }
 
-        public SearchResult<TListDto> Search(SearchForm form)
+        public SearchResult<TListDto> Search(SearchFormDto form)
         {
             var dbSet = UseDbSet(db);
             var query = dbSet.AsQueryable();
