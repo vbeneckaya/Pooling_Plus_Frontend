@@ -252,30 +252,52 @@ namespace Application.Services.Orders
                         {
                             OrderId = entity.Id
                         };
-                        MapFromItemDtoToEntity(item, itemDto);
+                        MapFromItemDtoToEntity(entity.Id, item, itemDto, true);
                         db.OrderItems.Add(item);
+
+                        _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
                     }
                     else
                     {
                         updatedItems.Add(item.Id);
-                        MapFromItemDtoToEntity(item, itemDto);
+                        MapFromItemDtoToEntity(entity.Id, item, itemDto, false);
                         db.OrderItems.Update(item);
                     }
                 }
 
                 var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
+                foreach (var item in itemsToRemove)
+                {
+                    _historyService.Save(entity.Id, "orderItemRemoved", item.Nart, item.Quantity);
+                }
                 db.OrderItems.RemoveRange(itemsToRemove);
 
                 entity.ArticlesCount = dto.Items.Count;
             }
         }
 
-        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)
+        private void MapFromItemDtoToEntity(Guid orderId, OrderItem entity, OrderItemDto dto, bool isNew)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.Nart = dto.Nart;
-            entity.Quantity = dto.Quantity ?? 0;
+
+            if (entity.Nart != dto.Nart)
+            {
+                if (!isNew)
+                {
+                    _historyService.Save(orderId, "orderItemChangeNart", entity.Nart, dto.Nart);
+                }
+                entity.Nart = dto.Nart;
+            }
+
+            if (entity.Quantity != dto.Quantity)
+            {
+                entity.Quantity = dto.Quantity ?? 0;
+                if (!isNew)
+                {
+                    _historyService.Save(orderId, "orderItemChangeQuantity", entity.Nart, entity.Quantity);
+                }
+            }
         }
 
         private OrderItemDto MapFromItemEntityToDto(OrderItem entity)
