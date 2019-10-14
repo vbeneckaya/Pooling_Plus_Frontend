@@ -169,5 +169,45 @@ namespace Domain.Shared.FormFilters
         /// Return Information
         /// </summary>
         public string ReturnInformation { get; set; }
+
+        /// <summary>
+        /// Return Shipping Account No
+        /// </summary>
+        public string ReturnShippingAccountNo { get; set; }
+
+        /// <summary>
+        /// Planned Return Date
+        /// </summary>
+        public string PlannedReturnDate { get; set; }
+
+        /// <summary>
+        /// Actual Return Date
+        /// </summary>
+        public string ActualReturnDate { get; set; }
+
+        /// <summary>
+        /// Major Adoption Number
+        /// </summary>
+        public string MajorAdoptionNumber { get; set; }
+
+        /// <summary>
+        /// Client Avisation Time 
+        /// </summary>
+        public string ClientAvisationTime { get; set; }
+
+        /// <summary>
+        /// Order Comments
+        /// </summary>
+        public string OrderComments { get; set; }
+
+        /// <summary>
+        /// Order Creation Date
+        /// </summary>
+        public string OrderCreationDate { get; set; }
+
+        /// <summary>
+        /// Shipping Ids list
+        /// </summary>
+        public string ShippingId { get; set; }
     }
 }

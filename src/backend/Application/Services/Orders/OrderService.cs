@@ -338,7 +338,6 @@ namespace Application.Services.Orders
                 .ApplyStringFilter(i => i.DeliveryAddress, searchForm.Filter.DeliveryAddress)
                 .ApplyDateRangeFilter(i => i.DeliveryDate.Value, searchForm.Filter.DeliveryDate);
 
-
             query = query
                 .ApplyNumericFilter(i => i.ArticlesCount.Value, searchForm.Filter.ArticlesCount)
                 .ApplyNumericFilter(i => i.BoxesCount.Value, searchForm.Filter.BoxesCount)
@@ -347,15 +346,33 @@ namespace Application.Services.Orders
                 .ApplyNumericFilter(i => i.ActualPalletsCount.Value, searchForm.Filter.ActualPalletsCount)
                 .ApplyNumericFilter(i => i.WeightKg.Value, searchForm.Filter.WeightKg)
                 .ApplyNumericFilter(i => i.ActualWeightKg.Value, searchForm.Filter.ActualWeightKg)
-
                 .ApplyNumericFilter(i => i.OrderAmountExcludingVAT.Value, searchForm.Filter.OrderAmountExcludingVAT)
                 .ApplyStringFilter(i => i.BDFInvoiceNumber, searchForm.Filter.BdfInvoiceNumber)
-                .ApplyDateRangeFilter(i => i.LoadingArrivalTime.Value, searchForm.Filter.LoadingArrivalTime);
+                .ApplyDateRangeFilter(i => i.LoadingArrivalTime.Value, searchForm.Filter.LoadingArrivalTime)
+                .ApplyDateRangeFilter(i => i.LoadingDepartureTime.Value, searchForm.Filter.LoadingDepartureTime)
+
+                .ApplyDateRangeFilter(i => i.UnloadingArrivalTime.Value.Date, searchForm.Filter.UnloadingArrivalDate)
+                // TODO: add filters for UnloadingArrivalTime
+                //.ApplyDateRangeFilter(i => i.UnloadingArrivalTime.Value, searchForm.Filter.UnloadingArrivalTime);
+
+                .ApplyDateRangeFilter(i => i.UnloadingDepartureTime.Value.Date, searchForm.Filter.UnloadingDepartureDate)
+                // TODO: add filters for UnloadingDepartureTime
+
+                .ApplyNumericFilter(i => i.TrucksDowntime.Value, searchForm.Filter.TrucksDowntime)
+                .ApplyStringFilter(i => i.ReturnInformation, searchForm.Filter.ReturnInformation)
+                .ApplyStringFilter(i => i.ReturnShippingAccountNo, searchForm.Filter.ReturnShippingAccountNo)
+                .ApplyDateRangeFilter(i => i.PlannedReturnDate.Value, searchForm.Filter.PlannedReturnDate)
+                .ApplyStringFilter(i => i.MajorAdoptionNumber, searchForm.Filter.MajorAdoptionNumber)
+                //TODO: Apply ClientAvisationTime time filter
+                //.ApplyStringFilter(i => i.ClientAvisationTime)
+
+                .ApplyStringFilter(i => i.OrderComments, searchForm.Filter.OrderComments)
+                .ApplyDateRangeFilter(i => i.OrderCreationDate.Value, searchForm.Filter.OrderCreationDate)
+                .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
             return query;
         }
     }
-
 
     /// <summary>
     /// Filter Extentions
