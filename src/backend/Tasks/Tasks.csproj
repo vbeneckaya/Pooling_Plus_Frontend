@@ -9,10 +9,10 @@
     <Content Include="appsettings.Demo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="appsettings.Dev.json">
+    <Content Include="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="appsettings.Development.json">
+    <Content Include="appsettings.Debug.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="appsettings.json">
