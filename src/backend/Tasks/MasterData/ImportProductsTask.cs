@@ -1,4 +1,5 @@
-﻿using Domain.Persistables;
+﻿using DAL;
+using Domain.Persistables;
 using Domain.Services.Articles;
 using Domain.Services.Injections;
 using Domain.Shared;
@@ -122,13 +123,22 @@ namespace Tasks.MasterData
 
         private bool ProcessProductsFile(string fileName, string fileContent)
         {
+            // Загружаем справочник стран
+            AppDbContext db = ServiceProvider.GetService<AppDbContext>();
+            var countries = db.Countries.ToList();
+            Dictionary<string, string> countryNameLookup = new Dictionary<string, string>();
+            foreach (var country in countries)
+            {
+                countryNameLookup[country.Key] = country.Name;
+            }
+
             // Загружаем текущий список продуктов из базы
             IArticlesService articlesService = ServiceProvider.GetService<IArticlesService>();
             IEnumerable<ArticleDto> currentProducts = articlesService.Search(new SearchForm { Take = int.MaxValue }).Items;
 
             // Получаем список продуктов из файла, обновляем имеющиеся продукты
             bool hasErrors;
-            IEnumerable<ArticleDto> products = LoadProductsFromFile(fileName, fileContent, currentProducts, out hasErrors);
+            IEnumerable<ArticleDto> products = LoadProductsFromFile(fileName, fileContent, currentProducts, countryNameLookup, out hasErrors);
 
             if (!hasErrors)
             {
@@ -139,13 +149,25 @@ namespace Tasks.MasterData
             return !hasErrors;
         }
 
-        private IEnumerable<ArticleDto> LoadProductsFromFile(string fileName, string fileContent, IEnumerable<ArticleDto> currentProducts, out bool hasErrors)
+        private IEnumerable<ArticleDto> LoadProductsFromFile(
+            string fileName, 
+            string fileContent, 
+            IEnumerable<ArticleDto> currentProducts,
+            Dictionary<string, string> countryNameLookup,
+            out bool hasErrors)
         {
             List<ArticleDto> result = new List<ArticleDto>();
             hasErrors = false;
 
             // Формируем справочники старых и новых значений
-            Dictionary<string, ArticleDto> currentLookup = currentProducts.ToDictionary(p => p.Nart);
+            Dictionary<string, ArticleDto> currentLookup = new Dictionary<string, ArticleDto>();
+            foreach (var product in currentProducts)
+            {
+                if (!string.IsNullOrEmpty(product.Nart))
+                {
+                    currentLookup[product.Nart] = product;
+                }
+            }
 
             // Загружаем данные из файла
             XmlDocument doc = new XmlDocument();
@@ -196,6 +218,13 @@ namespace Tasks.MasterData
                 decimal sizeLayerUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='#18']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
                 decimal sizePalletUowCoeff = pRoot.ParseUom("E1MARMM[MEINH='PF']/MEABM", new[] { "MMT", "MTR" }, new[] { 1M, 1000M }, 1, entryInd);
 
+                string countryCode = pRoot.SelectSingleNode("E1MARCM/HERKL")?.InnerText;
+                string countryName = null;
+                if (!string.IsNullOrEmpty(countryCode))
+                {
+                    countryNameLookup.TryGetValue(countryCode, out countryName);
+                }
+
                 // Непосредственно заполнение полей
 
                 product.SPGR = pRoot.SelectSingleNode("PRDHA")?.InnerText?.ExtractSPGR() ?? product.SPGR;
@@ -203,9 +232,9 @@ namespace Tasks.MasterData
                                    ?? pRoot.SelectSingleNode("E1MAKTM[SPRAS_ISO='EN']/MAKTX")?.InnerText
                                    ?? product.Description;
                 product.Nart = nart;
-                product.CountryOfOrigin = pRoot.SelectSingleNode("E1MARCM/HERKL")?.InnerText ?? product.CountryOfOrigin;
+                product.CountryOfOrigin = countryName ?? product.CountryOfOrigin;
                 product.ShelfLife = pRoot.ParseInt("MHDHB", entryInd) ?? product.ShelfLife;
-                //product.Status = pRoot.SelectSingleNode("E1MARCM/MMSTA")?.InnerText;
+                product.Status = GetProductStatus(pRoot.SelectSingleNode("E1MARCM/MMSTA")?.InnerText);
 
                 product.UnitLengthGoodsMm = pRoot.ParseDecimal("E1MARMM[MEINH='PCE']/LAENG", entryInd, true).ApplyUowCoeff(sizePieceUowCoeff) ?? product.UnitLengthGoodsMm;
                 product.WidthUnitsGoodsMm = pRoot.ParseDecimal("E1MARMM[MEINH='PCE']/BREIT", entryInd, true).ApplyUowCoeff(sizePieceUowCoeff) ?? product.WidthUnitsGoodsMm;
@@ -246,12 +275,36 @@ namespace Tasks.MasterData
                 product.PalletHeightMm = pRoot.ParseDecimal("E1MARMM[MEINH='PF']/HOEHE", entryInd, true).ApplyUowCoeff(sizePalletUowCoeff) ?? product.PalletHeightMm;
                 product.GrossPalletWeightG = pRoot.ParseDecimal("E1MARMM[MEINH='PF']/BRGEW", entryInd, true).ApplyUowCoeff(weightPalletUowCoeff) ?? product.GrossPalletWeightG;
 
-                product.Status = "Активный";
-
                 result.Add(product);
             }
 
             return result;
+        }
+
+        private string GetProductStatus(string code)
+        {
+            if (string.IsNullOrEmpty(code))
+            {
+                return code;
+            }
+
+            switch (code)
+            {
+                case "A":
+                    return "Active";
+                case "S1":
+                    return "Under construction";
+                case "S2":
+                    return "Ready f.order intake";
+                case "V0":
+                    return "Announcement";
+                case "V1":
+                    return "Sold out";
+                case "V2":
+                    return "Ready to archive";
+                default:
+                    return null;
+            }
         }
     }
 }

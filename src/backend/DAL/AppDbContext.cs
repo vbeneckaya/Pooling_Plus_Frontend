@@ -37,6 +37,7 @@ namespace DAL
         public DbSet<Document> Documents { get; set; }
         public DbSet<HistoryEntry> HistoryEntries { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
+        public DbSet<Country> Countries { get; set; }
         /*end of add DbSets*/
 
         public void Migrate(string connectionString)
