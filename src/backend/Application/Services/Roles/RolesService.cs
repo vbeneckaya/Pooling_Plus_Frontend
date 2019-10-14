@@ -45,7 +45,7 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = db.Roles.OrderBy(x => x.Name).ToList();
+            var entities = db.Roles.Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto

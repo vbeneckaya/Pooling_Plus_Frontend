@@ -46,7 +46,7 @@ namespace Application.Services.Users
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = db.Users.OrderBy(x => x.Name).ToList();
+            var entities = db.Users.Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
