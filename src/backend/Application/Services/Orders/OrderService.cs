@@ -177,7 +177,9 @@ namespace Application.Services.Orders
                 result.ShippingNumber = shipping?.ShippingNumber;
             }
 
-            result.Items = db.OrderItems.Where(i => i.OrderId == entity.Id).Select(MapFromItemEntityToDto).ToList();
+            result.Items = db.OrderItems.Where(i => i.OrderId == entity.Id)
+                                        .Select(_mapper.Map<OrderItemDto>)
+                                        .ToList();
 
             return result;
         }
@@ -252,7 +254,7 @@ namespace Application.Services.Orders
                         {
                             OrderId = entity.Id
                         };
-                        MapFromItemDtoToEntity(entity.Id, item, itemDto, true);
+                        MapFromItemDtoToEntity(item, itemDto, true);
                         db.OrderItems.Add(item);
 
                         _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
@@ -260,7 +262,7 @@ namespace Application.Services.Orders
                     else
                     {
                         updatedItems.Add(item.Id);
-                        MapFromItemDtoToEntity(entity.Id, item, itemDto, false);
+                        MapFromItemDtoToEntity(item, itemDto, false);
                         db.OrderItems.Update(item);
                     }
                 }
@@ -276,38 +278,16 @@ namespace Application.Services.Orders
             }
         }
 
-        private void MapFromItemDtoToEntity(Guid orderId, OrderItem entity, OrderItemDto dto, bool isNew)
+        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto, bool isNew)
         {
+            var setter = new FieldSetter<OrderItem>(entity, _historyService);
+
             if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
+                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
+            setter.UpdateField(x => x.Nart, dto.Nart, new OrderItemNartHandler(db, _historyService, isNew));
+            setter.UpdateField(x => x.Quantity, dto.Quantity ?? 0, new OrderItemQuantityHandler(_historyService, isNew));
 
-            if (entity.Nart != dto.Nart)
-            {
-                if (!isNew)
-                {
-                    _historyService.Save(orderId, "orderItemChangeNart", entity.Nart, dto.Nart);
-                }
-                entity.Nart = dto.Nart;
-            }
-
-            if (entity.Quantity != dto.Quantity)
-            {
-                entity.Quantity = dto.Quantity ?? 0;
-                if (!isNew)
-                {
-                    _historyService.Save(orderId, "orderItemChangeQuantity", entity.Nart, entity.Quantity);
-                }
-            }
-        }
-
-        private OrderItemDto MapFromItemEntityToDto(OrderItem entity)
-        {
-            return new OrderItemDto
-            {
-                Id = entity.Id.ToString(),
-                Nart = entity.Nart,
-                Quantity = entity.Quantity
-            };
+            setter.ApplyAfterActions();
         }
 
         private MapperConfiguration ConfigureMapper()
@@ -335,6 +315,9 @@ namespace Application.Services.Orders
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")));
+
+                cfg.CreateMap<OrderItem, OrderItemDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
             });
             return result;
         }

@@ -23,6 +23,31 @@ namespace Domain.Persistables
         public string Nart { get; set; }
 
         /// <summary>
+        /// Описание
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Страна происхождения
+        /// </summary>
+        public string CountryOfOrigin { get; set; }
+
+        /// <summary>
+        /// SPGR
+        /// </summary>
+        public string SPGR { get; set; }
+
+        /// <summary>
+        /// EAN
+        /// </summary>
+        public string Ean { get; set; }
+
+        /// <summary>
+        /// Срок годности, дней
+        /// </summary>
+        public int? ShelfLife { get; set; }
+
+        /// <summary>
         /// Количество единиц товара
         /// </summary>
         public int Quantity { get; set; }
