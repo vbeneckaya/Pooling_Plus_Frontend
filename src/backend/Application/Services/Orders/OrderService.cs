@@ -3,6 +3,7 @@ using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
 using DAL;
+using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
