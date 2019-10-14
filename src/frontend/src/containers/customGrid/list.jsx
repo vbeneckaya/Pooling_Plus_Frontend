@@ -4,30 +4,32 @@ import SuperGrid from '../../components/SuperGrid';
 import {
     autoUpdateStart,
     autoUpdateStop,
-    canCreateByFormSelector, canImportFromExcelSelector,
-    columnsGridSelector, exportToExcelRequest,
-    getListRequest,
-    getStateColorsRequest, importFromExcelRequest,
+    canCreateByFormSelector,
     listSelector,
     progressSelector,
-    stateColorsSelector,
     totalCountSelector,
 } from '../../ducks/gridList';
 import { withRouter } from 'react-router-dom';
 import Card from './card';
 import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
-import { actionsSelector, getActionsRequest, invokeActionRequest } from '../../ducks/gridActions';
-import { STATE_TYPE } from '../../constants/columnTypes';
-import {representationFromGridSelector} from "../../ducks/representations";
+import {
+    actionsSelector,
+    getActionsRequest,
+    getAllIdsRequest,
+    infoSelector,
+    invokeActionRequest
+} from '../../ducks/gridActions';
+import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
-    console.log('res', res)
-    return <Card {...res}>
-        <Button color="blue" className="create-button">
-            {t(`create_${res.name}`)}
-        </Button>
-    </Card>
+    return (
+        <Card {...res}>
+            <Button color="blue" className="create-button">
+                {t(`create_${res.name}`)}
+            </Button>
+        </Card>
+    );
 };
 
 class List extends Component {
@@ -88,6 +90,8 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
+            info,
+            getAllIds
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -99,6 +103,7 @@ class List extends Component {
                     columns={columns}
                     rows={list}
                     name={name}
+                    info={info}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -108,6 +113,7 @@ class List extends Component {
                     storageRepresentationItems={`${name}Representation`}
                     getActions={getActions}
                     groupActions={this.getGroupActions}
+                    getAllIds={getAllIds}
                     modalCard={<Card stopUpdate={stopUpdate} name={name} />}
                     createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
@@ -131,6 +137,9 @@ function mapDispatchToProps(dispatch) {
         },
         invokeAction: params => {
             dispatch(invokeActionRequest(params));
+        },
+        getAllIds: params => {
+            dispatch(getAllIdsRequest(params))
         }
     };
 }
@@ -146,7 +155,8 @@ function mapStateToProps(state, ownProps) {
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
-        actions: actionsSelector(state)
+        actions: actionsSelector(state),
+        info: infoSelector(state)
     };
 }
 

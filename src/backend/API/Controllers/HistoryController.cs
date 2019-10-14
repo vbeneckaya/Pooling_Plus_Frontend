@@ -15,15 +15,14 @@ namespace API.Controllers
         /// Получить историю сущности
         /// </summary>
         /// <param name="entityId">Идентификатор сущности</param>
-        /// <param name="lang">Язык для локализации</param>
         /// <returns></returns>
-        [Route("{entityId}/{lang}")]
+        [Route("{entityId}")]
         [HttpGet]
-        public IActionResult Get(Guid entityId, string lang)
+        public IActionResult Get(Guid entityId)
         {
             try
             {
-                HistoryDto dto = _historyService.Get(entityId, lang);
+                HistoryDto dto = _historyService.Get(entityId);
 
                 return Json(dto);
             }

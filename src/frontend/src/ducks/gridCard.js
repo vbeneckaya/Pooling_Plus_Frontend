@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, takeEvery, put, call, select } from 'redux-saga/effects';
-import { newExpression } from '@babel/types';
+import { toast } from 'react-toastify';
 
 //*  TYPES  *//
 
@@ -152,11 +152,7 @@ const idSelector = createSelector(stateSelector, state => state.data.id);
 
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(stateSelector, state => {
-    const {data = {}} = state;
-    Object.keys(data).forEach(item => console.log(typeof data[item]));
-    return state.data
-});
+export const cardSelector = createSelector(stateSelector, state => state.data);
 
 //*  SAGA  *//
 
@@ -207,12 +203,16 @@ function* editCardSaga({ payload }) {
         const { name, params, callbackSuccess } = payload;
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
 
-        yield put({
-            type: EDIT_GRID_CARD_SUCCESS,
-            payload: result,
-        });
+        if (result.isError) {
+            toast.error(result.error)
+        } else {
+            yield put({
+                type: EDIT_GRID_CARD_SUCCESS,
+                payload: result,
+            });
 
-        callbackSuccess && callbackSuccess();
+            callbackSuccess && callbackSuccess();
+        }
     } catch (error) {
         yield put({
             type: EDIT_GRID_CARD_ERROR,

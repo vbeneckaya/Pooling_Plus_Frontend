@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 
 //*  TYPES  *//
 
@@ -29,7 +30,7 @@ const initial = {
     card: {},
     totalCount: 0,
     progress: false,
-    importProgress: false
+    importProgress: false,
 };
 
 //*  REDUCER  *//
@@ -71,24 +72,24 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_DICTIONARY_INFO:
             return {
                 ...state,
-                ...initial
+                ...initial,
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
         case SAVE_DICTIONARY_CARD_ERROR:
             return {
                 ...state,
-                progress: false
+                progress: false,
             };
         case DICTIONARY_IMPORT_FROM_EXCEL_REQUEST:
             return {
                 ...state,
-                importProgress: true
+                importProgress: true,
             };
         case DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS:
         case DICTIONARY_IMPORT_FROM_EXCEL_ERROR:
             return {
                 ...state,
-                importProgress: false
+                importProgress: false,
             };
         default:
             return state;
@@ -114,21 +115,21 @@ export const getCardRequest = payload => {
 export const saveDictionaryCardRequest = payload => {
     return {
         type: SAVE_DICTIONARY_CARD_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 export const clearDictionaryInfo = () => {
     return {
-        type: CLEAR_DICTIONARY_INFO
-    }
+        type: CLEAR_DICTIONARY_INFO,
+    };
 };
 
 export const importFromExcelRequest = payload => {
     return {
         type: DICTIONARY_IMPORT_FROM_EXCEL_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -138,39 +139,32 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const dictionaryName = (state, name) => name;
 
-export const columnsSelector = createSelector(
+export const columnsSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.columns : [];
+});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const listSelector = createSelector(stateSelector, state => state.list);
+export const cardSelector = createSelector(stateSelector, state => state.card);
+
+export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
     (state, name) => {
-        const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
-        return dictionary ? dictionary.columns : [];
+        const dictionary =
+            state.dictionaries && state.dictionaries.find(item => item.name === name);
+        return dictionary ? dictionary.canCreateByForm : false;
     },
 );
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const listSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
 
-export const canCreateByFormSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
-    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
-    return dictionary ? dictionary.canCreateByForm : false
-});
-
-export const canImportFromExcelSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
-    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
-    return dictionary ? dictionary.canImportFromExcel : false
-});
+export const canImportFromExcelSelector = createSelector(
+    [stateProfile, dictionaryName],
+    (state, name) => {
+        const dictionary =
+            state.dictionaries && state.dictionaries.find(item => item.name === name);
+        return dictionary ? dictionary.canImportFromExcel : false;
+    },
+);
 
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
@@ -200,38 +194,48 @@ function* getCardSaga({ payload }) {
     }
 }
 
-function* saveDictionaryCardSaga ({ payload }) {
+function* saveDictionaryCardSaga({ payload }) {
     try {
-        const {params, name, callbackSuccess} = payload;
+        const { params, name, callbackSuccess } = payload;
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
 
-        yield put({
-            type: SAVE_DICTIONARY_CARD_SUCCESS
-        });
+        if (result.isError) {
+            toast.error(result.error);
+        } else {
+            yield put({
+                type: SAVE_DICTIONARY_CARD_SUCCESS,
+            });
 
-        callbackSuccess && callbackSuccess();
+            callbackSuccess && callbackSuccess();
+        }
     } catch (e) {
         yield put({
             type: SAVE_DICTIONARY_CARD_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 
 function* importFromExcelSaga({ payload }) {
     try {
-        const {form, name} = payload;
+        const { form, name, callbackSuccess } = payload;
         const result = yield postman.post(`${name}/importFromExcel`, form, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 
-        yield put({
-            type: DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS
-        })
+        if (result.isError) {
+            toast.error(result.error)
+        } else {
+            yield put({
+                type: DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS,
+            });
+
+            callbackSuccess && callbackSuccess();
+        }
     } catch (e) {
         yield put({
-            type: DICTIONARY_IMPORT_FROM_EXCEL_ERROR
-        })
+            type: DICTIONARY_IMPORT_FROM_EXCEL_ERROR,
+        });
     }
 }
 

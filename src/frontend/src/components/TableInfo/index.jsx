@@ -95,7 +95,9 @@ class TableInfo extends Component {
         data.append('FileName', file.name);
         data.append('FileContent', new Blob([file], { type: file.type }));
         data.append('FileContentType', file.type);
-        this.props.importFromExcel(data);
+        this.props.importFromExcel(data, () => this.load());
+
+        e.target.value = null;
     };
 
     render() {
@@ -187,7 +189,7 @@ class TableInfo extends Component {
                             {customRowComponent
                                 ? customRowComponent
                                 : list &&
-                                  list.map(row => (
+                                  list.map((row, i) => (
                                       <ModalComponent
                                           element={modalCard}
                                           props={{ id: row.id, loadList: this.load, name }}
@@ -200,8 +202,10 @@ class TableInfo extends Component {
                                                   >
                                                       <CellValue
                                                           type={column.type}
-                                                          id={`${row.id}_${column.name}_${index}`}
-                                                          toggleIsActive={toggleIsActive}
+                                                          key_id={`${row.id}_${column.name}_${index}`}
+                                                          id={row.id}
+                                                          toggleIsActive={(event, { itemID, checked }) => toggleIsActive(event, { itemID, checked }, this.load)}
+                                                          indexRow={i}
                                                           isTranslate={column.isTranslate}
                                                           source={column.source}
                                                           value={row[column.name]}

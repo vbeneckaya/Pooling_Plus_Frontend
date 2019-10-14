@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
+import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
     cardSelector,
     editCardRequest,
@@ -12,6 +12,12 @@ import {
 } from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
+import {
+    actionsSelector, clearActions,
+    getActionsRequest,
+    invokeActionRequest,
+    progressActionNameSelector
+} from "../../ducks/gridActions";
 
 const getModal = {
     orders: <OrderModal />,
@@ -23,9 +29,10 @@ const SelfComponent = props => {
 };
 
 const Card = props => {
-    const { name, id, stopUpdate, loadList, title, children, onOpen: beforeOpen } = props;
+    const { name, id, stopUpdate, loadList, title, children, onClose: beforeClose} = props;
     let [modalOpen, setModalOpen] = useState(false);
     let [form, setForm] = useState({});
+    let [confirmation, setConfirmation] = useState({open: false});
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -41,23 +48,29 @@ const Card = props => {
         );
     };
 
+    const getActions = () => {
+      dispatch(getActionsRequest({
+          name,
+          ids: [id]
+      }))
+    };
+
     const onOpen = () => {
-        console.log('55', modalOpen);
+        dispatch(clearActions());
         id && loadCard();
-        // beforeOpen && beforeOpen();
+        id && getActions();
         stopUpdate && stopUpdate();
         setModalOpen(true);
     };
 
     const onClose = () => {
-        console.log('54656', modalOpen);
-        setModalOpen(false);
+        beforeClose ? beforeClose() : setModalOpen(false);
         setForm({});
         loadList && loadList(false, true);
     };
 
     const onChangeForm = (e, { name, value }) => {
-        console.log('form', form, name, value);
+
         setForm({
             ...form,
             [name]: value,
@@ -76,7 +89,41 @@ const Card = props => {
         );
     };
 
+    const closeConfirmation = () => {
+        setConfirmation({open: false})
+    };
+
+    const showConfirmation = (content, onConfirm) => {
+        setConfirmation({
+            open: true,
+            content,
+            onConfirm
+        })
+    };
+
+    const invokeAction = (actionName) => {
+        showConfirmation(
+            `${t('Are you sure to complete')} "${t(actionName)}"?`,
+            () => {
+                closeConfirmation();
+                dispatch(invokeActionRequest({
+                    ids: [id],
+                    name,
+                    actionName,
+                    callbackSuccess: () => {
+                        loadCard();
+                        getActions();
+                    },
+                }));
+            },
+        );
+    };
+
     const loading = useSelector(state => progressSelector(state));
+    const actions = useSelector(state => actionsSelector(state));
+    const progressActionName = useSelector(state => progressActionNameSelector(state));
+
+    console.log('title', title);
 
     return (
         <Modal
@@ -89,7 +136,7 @@ const Card = props => {
             closeIcon
             size="large"
         >
-            <Modal.Header>{t(title)}</Modal.Header>
+            <Modal.Header>{t(title, {number: name === 'orders' ? form.orderNumber : form.shippingNumber, status: t(form.status)})}</Modal.Header>
             <Modal.Content scrolling>
                 <Dimmer active={loading} inverted>
                     <Loader size="huge">Loading</Loader>
@@ -98,6 +145,7 @@ const Card = props => {
                     {React.cloneElement(getModal[name], {
                         ...props,
                         form,
+                        load: loadCard,
                         onClose,
                         onChangeForm,
                     })}
@@ -110,25 +158,41 @@ const Card = props => {
                             {...props}
                             name="shippings"
                             id={form.shippingId}
-                            title={t(`edit_shippings`, {
-                                number: form.shippingNumber,
-                                status: t(form.status),
-                            })}
-                            onOpen={() => {setModalOpen(false)}}
+                            title={`edit_shippings`}
+                            onClose={onClose}
                         >
                             <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
                         </SelfComponent>
                     ) : null}
+                    {
+                        actions &&
+                        actions.map(item => (
+                            <Button
+                                color={item.color}
+                                loading={progressActionName === item.name}
+                                disabled={progressActionName}
+                                onClick={() => invokeAction(item.name)}>
+                                {t(item.name)}
+                                </Button>
+                        ))
+                    }
                 </div>
                 <div>
-                    <Button color="grey" onClick={onClose}>
+                    <Button color="grey" disabled={progressActionName} onClick={onClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" onClick={handleSave}>
+                    <Button color="blue" disabled={progressActionName} onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
                 </div>
             </Modal.Actions>
+            <Confirm
+                dimmer="blurring"
+                open={confirmation.open}
+                onCancel={closeConfirmation}
+                onConfirm={confirmation.onConfirm}
+                content={confirmation.content}
+            />
         </Modal>
     );
 };

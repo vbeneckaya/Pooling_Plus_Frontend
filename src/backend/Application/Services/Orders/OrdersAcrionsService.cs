@@ -42,8 +42,8 @@ namespace Application.Services.Orders
             return new List<IAction<IEnumerable<Order>>>
             {
                 new UnionOrders(dataService, historyService),
-                new CancelOrders(dataService, historyService),
-                new CreateShippingForeach(dataService, historyService),
+                //new CancelOrders(dataService, historyService),
+                //new CreateShippingForeach(dataService, historyService),
                 /*end of add group actions*/
             };
         }

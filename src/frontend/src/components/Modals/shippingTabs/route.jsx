@@ -7,6 +7,7 @@ import DateTime from '../../BaseComponents/DateTime';
 import Date from '../../BaseComponents/Date';
 import State from '../../BaseComponents/State';
 import Text from '../../BaseComponents/Text';
+import Number from "../../BaseComponents/Number";
 
 const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) => {
     const { t } = useTranslation();
@@ -28,6 +29,7 @@ const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) =>
                     <Grid.Column>
                         <DateTime
                             name="plannedDate"
+                            text={index === 0 ? 'plannedDate_loading' : 'plannedDate_delivery'}
                             value={point['plannedDate']}
                             onChange={handleChange}
                         />
@@ -73,7 +75,7 @@ const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) =>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={8}>
-                        <Text
+                        <Number
                             name="trucksDowntime"
                             value={point['trucksDowntime']}
                             onChange={handleChange}

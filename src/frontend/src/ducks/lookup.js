@@ -87,7 +87,7 @@ function* getLookupSaga({ payload }) {
     try {
         const { name, isForm, isSearch } = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
-            `/${name}/${isSearch ? 'search' : 'forSelect'}`,
+            `/${name}/${isSearch ? 'search' : 'forSelect'}`, {}
         );
 
         if (isForm) {
@@ -95,7 +95,7 @@ function* getLookupSaga({ payload }) {
                 type: GET_EDIT_LOOKUP_SUCCESS,
                 payload: {
                     key: name,
-                    list: result,
+                    list: result.items || result,
                 },
             });
         } else {

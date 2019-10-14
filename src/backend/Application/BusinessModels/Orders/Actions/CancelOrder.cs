@@ -4,6 +4,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -25,7 +27,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppColor Color { get; set; }
 
-        public AppActionResult Run(User user, Order order)
+        public AppActionResult Run(CurrentUserDto user, Order order)
         {
             order.Status = OrderState.Canceled;
 
@@ -36,7 +38,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Заказ {order.OrderNumber} отменён"
+                Message = "orderSetCancelled".translate(user.Language, order.OrderNumber)
             };
         }
 

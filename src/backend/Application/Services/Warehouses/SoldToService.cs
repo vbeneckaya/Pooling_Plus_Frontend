@@ -22,7 +22,7 @@ namespace Application.Services.Warehouses
                     City = wh.City,
                     Region = wh.Region,
                     LeadtimeDays = wh.LeadtimeDays,
-                    PickingTypeId = wh.UsePickingType ? wh.PickingTypeId?.ToString() : null
+                    PickingTypeId = wh.PickingTypeId?.ToString()
                 };
                 yield return dto;
             }

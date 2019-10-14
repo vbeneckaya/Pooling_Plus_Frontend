@@ -8,6 +8,7 @@ namespace Domain.Services
     public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : IService
     {
         SearchResult<TDto> Search(TSearchForm form);
+        IEnumerable<string> SearchIds(TSearchForm form);
         IEnumerable<LookUpDto> ForSelect();
         ValidateResult SaveOrCreate(TFormDto entityFrom);
         TDto Get(Guid id);
@@ -19,7 +20,7 @@ namespace Domain.Services
         IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
 
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
-        IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream);
+        ValidateResult ImportFromExcel(Stream fileStream);
         Stream ExportToExcel();
     }
 }

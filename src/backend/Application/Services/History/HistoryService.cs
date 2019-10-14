@@ -3,30 +3,24 @@ using DAL.Queries;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
-using Domain.Services.UserIdProvider;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.History
 {
     public class HistoryService : IHistoryService
     {
-        public HistoryDto Get(Guid entityId, string lang)
+        public HistoryDto Get(Guid entityId)
         {
-            var translations = _db.Translations.ToList();
-            var dict = new Dictionary<string, Translation>();
-            foreach (Translation local in translations)
-            {
-                dict[local.Name] = local;
-            }
-
             var entries = _db.HistoryEntries.Where(e => e.PersistableId == entityId)
                                             .OrderByDescending(e => e.CreatedAt)
                                             .ToList();
 
-            var dtos = entries.Select(e => ConvertEntityToDto(e, lang, dict)).ToList();
+            var user = _userProvider.GetCurrentUser();
+            var dtos = entries.Select(e => ConvertEntityToDto(e, user.Language)).ToList();
 
             return new HistoryDto
             {
@@ -36,7 +30,7 @@ namespace Application.Services.History
 
         public void Save(Guid entityId, string messageKey, params object[] messageArgs)
         {
-            User user = _userProvider.GetCurrentUser();
+            var user = _userProvider.GetCurrentUser();
             string userName = GetUserName(user);
 
             string[] valueArgs = messageArgs.Select(GetDisplayValue).ToArray();
@@ -54,13 +48,12 @@ namespace Application.Services.History
             _db.HistoryEntries.Add(entry);
         }
 
-        private HistoryEntryDto ConvertEntityToDto(HistoryEntry entity, string lang, Dictionary<string, Translation> dict)
+        private HistoryEntryDto ConvertEntityToDto(HistoryEntry entity, string lang)
         {
             string[] args = JsonConvert.DeserializeObject<string[]>(entity.MessageArgs ?? string.Empty);
-            string[] localArgs = args.Select(x => Localize(x, lang, dict)).ToArray();
+            string[] localArgs = args.Select(x => x.translate(lang)).ToArray();
 
-            string localKey = Localize(entity.MessageKey, lang, dict) ?? string.Empty;
-            string message = string.Format(localKey, localArgs);
+            string message = entity.MessageKey.translate(lang, localArgs);
 
             return new HistoryEntryDto
             {
@@ -68,22 +61,6 @@ namespace Application.Services.History
                 CreatedAt = entity.CreatedAt,
                 Message = message
             };
-        }
-
-        private string Localize(string key, string lang, Dictionary<string, Translation> dict)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                return key;
-            }
-            if (dict.TryGetValue(key, out Translation local))
-            {
-                return lang == "en" ? local.En : local.Ru;
-            }
-            else
-            {
-                return key;
-            }
         }
 
         private string GetDisplayValue(object value)
@@ -106,7 +83,7 @@ namespace Application.Services.History
             }
         }
 
-        private string GetUserName(User user)
+        private string GetUserName(CurrentUserDto user)
         {
             if (user == null)
             {
@@ -114,7 +91,7 @@ namespace Application.Services.History
             }
             else
             {
-                Role role = _db.Roles.GetById(user.RoleId);
+                Role role = user.RoleId.HasValue ? _db.Roles.GetById(user.RoleId.Value) : null;
                 if (role == null)
                 {
                     return user.Name;
@@ -126,13 +103,13 @@ namespace Application.Services.History
             }
         }
 
-        public HistoryService(AppDbContext db, IUserIdProvider userProvider)
+        public HistoryService(AppDbContext db, IUserProvider userProvider)
         {
             _db = db;
             _userProvider = userProvider;
         }
 
         private readonly AppDbContext _db;
-        private readonly IUserIdProvider _userProvider;
+        private readonly IUserProvider _userProvider;
     }
 }

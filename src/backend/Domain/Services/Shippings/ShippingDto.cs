@@ -45,6 +45,7 @@ namespace Domain.Services.Shippings
         public string Status { get; set; }
         public bool? CostsConfirmedByShipper { get; set; }
         public bool? CostsConfirmedByCarrier { get; set; }
+        public string ShippingCreationDate { get; set; }
         /*end of fields*/
     }
 }

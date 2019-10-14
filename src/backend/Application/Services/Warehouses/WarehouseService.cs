@@ -5,6 +5,11 @@ using Domain.Persistables;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
+using DAL.Queries;
+using System.Collections.Generic;
+using Domain.Shared;
 
 namespace Application.Services.Warehouses
 {
@@ -17,6 +22,19 @@ namespace Application.Services.Warehouses
         public override DbSet<Warehouse> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Warehouses;
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var entities = db.Warehouses.OrderBy(x => x.WarehouseName).ToList();
+            foreach (var entity in entities)
+            {
+                yield return new LookUpDto
+                {
+                    Name = entity.WarehouseName,
+                    Value = entity.Id.ToString()
+                };
+            }
         }
 
         public override Warehouse FindByKey(WarehouseDto dto)
@@ -36,7 +54,6 @@ namespace Application.Services.Warehouses
             entity.PickingTypeId = string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId);
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
-            entity.UsePickingType = dto.UsePickingType;
             /*end of map dto to entity fields*/
         }
 
@@ -53,9 +70,26 @@ namespace Application.Services.Warehouses
                 PickingTypeId = entity.PickingTypeId?.ToString(),
                 LeadtimeDays = entity.LeadtimeDays,
                 CustomerWarehouse = entity.CustomerWarehouse,
-                UsePickingType = entity.UsePickingType,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<WarehouseDto>(db)
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById));
+        }
+
+        private Guid? GetPickingTypeIdByName(string name)
+        {
+            var entry = db.PickingTypes.Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetPickingTypeNameById(Guid id)
+        {
+            var entry = db.PickingTypes.GetById(id);
+            return entry?.Name;
         }
     }
 }

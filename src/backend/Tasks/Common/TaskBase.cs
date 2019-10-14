@@ -1,5 +1,7 @@
-﻿using Domain.Services.TaskProperties;
-using Domain.Services.UserIdProvider;
+﻿using DAL;
+using Domain.Services.TaskProperties;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Infrastructure.Installers;
 using Infrastructure.Logging;
 using Microsoft.Extensions.Configuration;
@@ -70,6 +72,10 @@ namespace Tasks
 
         protected virtual void Initialize()
         {
+            var db = ServiceProvider.GetService<AppDbContext>();
+
+            var translations = db.Translations.ToList();
+            TranslationProvider.FillCache(translations);
         }
 
         protected virtual void CreateContainer()
@@ -78,7 +84,7 @@ namespace Tasks
 
             services.AddDomain(Configuration, false);
 
-            services.AddScoped<IUserIdProvider, TasksUserIdProvider>();
+            services.AddScoped<IUserProvider, TasksUserProvider>();
 
             ServiceProvider = services.BuildServiceProvider();
         }
@@ -144,9 +150,9 @@ namespace Tasks
         protected TaskBase()
         {
             TaskName = Regex.Replace(GetType().Name, "Task$", string.Empty);
-            Initialize();
             CreateLogger();
             CreateContainer();
+            Initialize();
         }
 
         public static IConfiguration Configuration { get; } = new ConfigurationBuilder()

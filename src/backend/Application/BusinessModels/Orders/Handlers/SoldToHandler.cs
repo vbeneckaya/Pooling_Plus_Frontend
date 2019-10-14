@@ -28,7 +28,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
 
-                    if (soldToWarehouse.UsePickingType)
+                    if (soldToWarehouse.PickingTypeId.HasValue)
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
 
                     setter.UpdateField(o => o.TransitDays, soldToWarehouse.LeadtimeDays);

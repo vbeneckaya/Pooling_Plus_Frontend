@@ -2,13 +2,13 @@ import React, {useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
-const SelectValue = ({ value, source }) => {
+const SelectValue = ({ value, source, indexRow }) => {
     const dispatch = useDispatch();
 
     let lookup = useSelector(state => valuesListSelector(state, source)) || [];
 
     useEffect(() => {
-        if (!lookup.length) {
+        if (!lookup.length && indexRow === 0) {
             dispatch(
                 getLookupRequest({
                     name: source,
@@ -16,9 +16,7 @@ const SelectValue = ({ value, source }) => {
                 }),
             );
         }
-    }, [])
-
-    console.log('lookup', lookup, value);
+    }, []);
 
     const valueText = lookup.find(x => x.value === value);
 

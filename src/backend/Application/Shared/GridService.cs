@@ -7,12 +7,13 @@ using DAL.Queries;
 using Domain;
 using Domain.Persistables;
 using Domain.Services;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Extensions;
 using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
+using Application.Shared.Excel;
 
 namespace Application.Shared
 {
@@ -34,16 +35,20 @@ namespace Application.Shared
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
-        private readonly IUserIdProvider userIdProvider;
+        private readonly IUserProvider userIdProvider;
 
         protected readonly ICommonDataService dataService;
 
         protected readonly IActionService<TEntity> actionService;
 
-        protected GridService(ICommonDataService dataService, IUserIdProvider userIdProvider, IActionService<TEntity> actionService)
+        //TODO: remove this
+        private readonly AppDbContext db;
+
+        protected GridService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IActionService<TEntity> actionService)
         {
             this.userIdProvider = userIdProvider;
             this.dataService = dataService;
+            this.db = db;
         }
 
         public TDto Get(Guid id)
@@ -93,6 +98,19 @@ namespace Application.Shared
                 Items = entities.Select(entity => MapFromEntityToDto(entity))
             };
             return a;
+        }
+
+        public IEnumerable<string> SearchIds(TSearchForm form)
+        {
+            var dbSet = dataService.GetDbSet<TEntity>();
+            var query = dbSet.AsQueryable();
+
+            //TODO: добавить применение фильтров и полнотекстового поиска
+
+            var ids = query.Select(e => e.Id).ToList();
+
+            var result = ids.Select(x => x.ToString());
+            return result;
         }
 
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
@@ -147,34 +165,35 @@ namespace Application.Shared
             
             var dbSet = dataService.GetDbSet<TEntity>();
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = dataService.GetById<Role>(currentUser.RoleId);
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
 
             var result = new List<ActionDto>();
 
-            if (ids.Count() == 1)
+            var entities = ids.Select(id => dbSet.GetById(id));
+
+            var singleActions = actionService.GetActions();
+            foreach (var action in singleActions)
             {
-                var id = ids.First();
-
-                var entity = dbSet.GetById(id);
-                var actions = actionService.GetActions();
-
-                return actions.Where(x => x.IsAvailable(role, entity))
-                    .Select(action => new ActionDto
+                var validEntities = entities.Where(e => action.IsAvailable(role, e));
+                if (validEntities.Any())
                 {
-                    Color = action.Color.ToString().ToLowerfirstLetter(),
-                    Name = action.GetType().Name.ToLowerfirstLetter(),
-                    Ids = new List<string>
+                    var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
+                    if (actionDto == null)
                     {
-                        id.ToString()
+                        result.Add(new ActionDto
+                        {
+                            Color = action.Color.ToString().ToLowerfirstLetter(),
+                            Name = action.GetType().Name.ToLowerfirstLetter(),
+                            Ids = validEntities.Select(x => x.Id.ToString())
+                        });
                     }
-                });
+                }
             }
-            else
-            {
-                var actions = actionService.GetGroupActions();
-                var entities = ids.Select(id => dbSet.GetById(id));
 
-                foreach (var action in actions)
+            if (ids.Count() > 1)
+            {
+                var groupActions = actionService.GetGroupActions();
+                foreach (var action in groupActions)
                 {
                     if (action.IsAvailable(role, entities))
                     {
@@ -207,7 +226,7 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = dataService.GetById<Role>(currentUser.RoleId);
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var entity = dataService.GetById<TEntity>(id);
             var message = "";
             if (action.IsAvailable(role, entity)) 
@@ -222,12 +241,10 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
-            if (ids.Count() == 1)
-                return InvokeAction(name, ids.First());
+            var singleAction = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var groupAction = actionService.GetGroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
 
-            var action = actionService.GetGroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
-            
-            if(action == null)
+            if (singleAction == null && groupAction == null)
                 return new AppActionResult
                 {
                     IsError = true,
@@ -235,12 +252,36 @@ namespace Application.Shared
                 };
 
             var currentUser = userIdProvider.GetCurrentUser();
-            var role = dataService.GetById<Role>(currentUser.RoleId);
-            var entities = dataService.GetDbSet<TEntity>().Where(i => ids.Contains(i.Id));
+            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var dbSet = dataService.GetDbSet<TEntity>();
 
-            
-            if (action.IsAvailable(role, entities)) 
-                return action.Run(currentUser, entities);
+            var entities = ids.Select(dbSet.GetById);
+
+            if (groupAction != null)
+            {
+                if (groupAction.IsAvailable(role, entities))
+                    return groupAction.Run(currentUser, entities);
+            }
+            else
+            {
+                List<string> messages = new List<string>();
+                foreach (var entity in entities)
+                {
+                    if (singleAction.IsAvailable(role, entity))
+                    {
+                        string message = singleAction.Run(currentUser, entity)?.Message;
+                        if (!string.IsNullOrEmpty(message))
+                        {
+                            messages.Add(message);
+                        }
+                    }
+                }
+                return new AppActionResult
+                {
+                    IsError = false,
+                    Message = string.Join(". ", messages)
+                };
+            }
 
             return new AppActionResult
             {
@@ -266,29 +307,49 @@ namespace Application.Shared
             return result;
         }        
         
-        public IEnumerable<ValidateResult> ImportFromExcel(Stream fileStream)
+        public ValidateResult ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
-            var dtos = workSheet.ConvertSheetToObjects<TFormDto>(out string parseErrors);
-            if (!string.IsNullOrEmpty(parseErrors))
+            var excelMapper = CreateExcelMapper();
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+
+            if (excelMapper.Errors.Any(e => e.IsError))
             {
-                return new[] { new ValidateResult(parseErrors) };
+                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
+                return new ValidateResult(errors);
             }
 
-            return Import(dtos);
+            var importResult = Import(dtos);
+            if (importResult.Any(e => e.IsError))
+            {
+                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
+                return new ValidateResult(errors);
+            }
+
+            return new ValidateResult();
         }
         
         public Stream ExportToExcel()
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
-            var entities = dataService.GetDbSet<TEntity>().ToList();
+            var dbSet = dataService.GetDbSet<TEntity>();
+            var entities = dbSet.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-            workSheet.ConvertObjectsToSheet(dtos);//.Cells[1, 1].LoadFromCollection(dtos);
+
+            var user = userIdProvider.GetCurrentUser();
+
+            var excelMapper = new ExcelMapper<TDto>(db);
+            excelMapper.FillSheet(workSheet, dtos, user.Language);
             
             return new MemoryStream(excel.GetAsByteArray());
+        }
+
+        protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<TFormDto>(db);
         }
 
         protected TimeSpan? ParseTime(string value)

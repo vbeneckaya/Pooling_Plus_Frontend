@@ -16,7 +16,6 @@ const DragAndDropFields = ({ type, fieldsConfig, fieldsList, onChange }) => {
                 .map(x => x.name),
         );*/
 
-   console.log('fieldsList', fieldsList);
     const { t } = useTranslation();
 
     return (

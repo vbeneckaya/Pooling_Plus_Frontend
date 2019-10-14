@@ -14,7 +14,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Shippings;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using Domain.Shared.FormFilters;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +25,8 @@ namespace Application.Services.Shippings
     {
         private readonly IHistoryService _historyService;
 
-        public ShippingsService(ICommonDataService dataService, IUserIdProvider userIdProvider, IHistoryService historyService, IActionService<Shipping> actionService) 
-            : base(dataService, userIdProvider, actionService)
+        public ShippingsService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IHistoryService historyService, IActionService<Shipping> actionService) 
+            : base(dataService, db, userIdProvider, actionService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
@@ -280,7 +280,8 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ShippingCreationDate, e => e.MapFrom((s, t) => s.ShippingCreationDate?.ToString("dd.MM.yyyy HH:mm")));
             });
             return result;
         }

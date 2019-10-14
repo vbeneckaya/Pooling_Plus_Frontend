@@ -32,6 +32,8 @@ const DOWNLOAD_DOCUMENT_REQUEST = 'DOWNLOAD_DOCUMENT_REQUEST';
 const DOWNLOAD_DOCUMENT_SUCCESS = 'DOWNLOAD_DOCUMENT_SUCCESS';
 const DOWNLOAD_DOCUMENT_ERROR = 'DOWNLOAD_DOCUMENT_ERROR';
 
+const CLEAR_DOCUMENTS = 'CLEAR_DOCUMENTS';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -90,6 +92,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 addProgress: false,
             };
+        case CLEAR_DOCUMENTS:
+            return {
+                ...state,
+                documents: [],
+            };
         default:
             return state;
     }
@@ -146,6 +153,12 @@ export const downloadDocumentRequest = payload => {
     };
 };
 
+export const clearDocuments = () => {
+    return {
+        type: CLEAR_DOCUMENTS,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.documents;
@@ -164,14 +177,17 @@ export const documentTypesSelector = createSelector(
 );
 
 export const documentsSelector = createSelector(stateSelector, state => state.documents);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 //*  SAGA  *//
 
 function* uploadFileSaga({ payload }) {
     try {
-        const { form, fileName, callbackSuccess ,isBase64 } = payload;
+        const { form, fileName, callbackSuccess, isBase64 } = payload;
         const result = yield postman.post(`/files/${isBase64 ? 'base64' : 'upload'}`, form, {
-            headers: { 'Content-Type': isBase64 ? 'application/json-patch+json' : 'multipart/form-data' },
+            headers: {
+                'Content-Type': isBase64 ? 'application/json-patch+json' : 'multipart/form-data',
+            },
         });
 
         yield put({
@@ -283,7 +299,7 @@ function* downloadDocumentSaga({ payload }) {
         const res = yield downloader.get(`/files/${id}/download`, { responseType: 'blob' });
         const { data } = res;
         let headerLine = res.headers['content-disposition'];
-        let startFileNameIndex = headerLine.indexOf("filename=") + 9;
+        let startFileNameIndex = headerLine.indexOf('filename=') + 9;
         let endFileNameIndex = headerLine.lastIndexOf(';');
         let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
 

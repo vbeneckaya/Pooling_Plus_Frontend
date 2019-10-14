@@ -17,7 +17,7 @@ namespace API.Controllers.Shared
     /// <typeparam name="TDto"></typeparam>
     public abstract class DictionaryController<TService, TEntity, TDto> : Controller where TService: IDictonaryService<TEntity, TDto>
     {
-        private readonly TService _service;
+        protected readonly TService _service;
 
         /// <summary>
         /// Словарь

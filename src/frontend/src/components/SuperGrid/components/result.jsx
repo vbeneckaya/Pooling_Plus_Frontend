@@ -55,10 +55,7 @@ class Result extends Component {
                             props={{
                                 ...row,
                                 loadList,
-                                title: t(`edit_${name}`, {
-                                    number: name === 'orders' ? row.orderNumber : row.shippingNumber,
-                                    status: t(row.status),
-                                }),
+                                title: `edit_${name}`,
                             }}
                             key={`modal_${row.id}`}
                         >
@@ -92,6 +89,7 @@ class Result extends Component {
                                                 <CellValue
                                                     type={column.type}
                                                     id={`${row.id}_${column.name}_${i}`}
+                                                    indexRow={i}
                                                     value={row[column.name]}
                                                     source={column.source}
                                                 />

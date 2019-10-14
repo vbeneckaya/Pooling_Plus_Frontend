@@ -52,6 +52,8 @@ namespace Domain.Services.Orders
         public string MajorAdoptionNumber { get; set; }
         public string OrderCreationDate { get; set; }
         public string ShippingId { get; set; }
+        public string ShippingNumber { get; set; }
+        public bool? IsActive { get; set; }
 
         /*end of fields*/
     }

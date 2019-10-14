@@ -193,6 +193,10 @@ namespace Domain.Persistables
         /// </summary>
         public Guid? ShippingId { get; set; }
         /// <summary>
+        /// Номер перевозки
+        /// </summary>
+        public string ShippingNumber { get; set; }
+        /// <summary>
         /// Склад отгрузки
         /// </summary>
         public Guid? ShippingWarehouseId { get; set; }
@@ -200,6 +204,10 @@ namespace Domain.Persistables
         /// Склад доставки
         /// </summary>
         public Guid? DeliveryWarehouseId { get; set; }
+        /// <summary>
+        /// Активный?
+        /// </summary>
+        public bool IsActive { get; set; }
         /*end of fields*/
     }
 }

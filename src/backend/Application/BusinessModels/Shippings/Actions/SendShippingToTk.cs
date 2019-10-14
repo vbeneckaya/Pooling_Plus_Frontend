@@ -4,6 +4,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -24,7 +26,7 @@ namespace Application.BusinessModels.Shippings.Actions
             Color = AppColor.Blue;
         }
 
-        public AppActionResult Run(User user, Shipping shipping)
+        public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingRequestSent;
 
@@ -35,7 +37,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Перевозка {shipping.ShippingNumber} отправлена в ТК"
+                Message = "shippingSetRequestSent".translate(user.Language, shipping.ShippingNumber)
             };
         }
 

@@ -4,6 +4,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -25,7 +26,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppColor Color { get; set; }
 
-        public AppActionResult Run(User user, Order order)
+        public AppActionResult Run(CurrentUserDto user, Order order)
         {
             var unionOrders = new UnionOrders(dataService, _historyService);
             return unionOrders.Run(user, new[] { order });

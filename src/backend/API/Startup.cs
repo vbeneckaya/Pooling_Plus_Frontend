@@ -16,8 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Infrastructure.Logging;
-using Domain.Services.UserIdProvider;
-using Application.Services.UserIdProvider;
+using Domain.Services.UserProvider;
+using Application.Services.UserProvider;
 using Infrastructure.Translations;
 using Domain.Services;
 using DAL.Services;
@@ -79,7 +79,7 @@ namespace API
 
             services.SyncTranslations();
 
-            services.AddScoped<IUserIdProvider, UserIdProvider>();
+            services.AddScoped<IUserProvider, UserProvider>();
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IActionService<Order>, OrderActionsService>();
             services.AddScoped<IActionService<Shipping>,ShippingActionsService>();

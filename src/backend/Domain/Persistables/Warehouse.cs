@@ -44,10 +44,6 @@ namespace Domain.Persistables
         /// Склад клиента
         /// </summary>
         public bool CustomerWarehouse { get; set; }
-        /// <summary>
-        /// Использование типа комплектации
-        /// </summary>
-        public bool UsePickingType { get; set; }
         /*end of fields*/
     }
 }

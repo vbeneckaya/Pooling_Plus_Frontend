@@ -3,7 +3,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Documents;
 using Domain.Services.History;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
 using System.Collections.Generic;

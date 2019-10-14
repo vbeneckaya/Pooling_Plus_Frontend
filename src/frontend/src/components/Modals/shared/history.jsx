@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getHistoryRequest, historySelector } from '../../../ducks/history';
-import {Grid} from "semantic-ui-react";
-import {dateToUTC, formatDate} from "../../../utils/dateTimeFormater";
+import {
+    clearHistory,
+    getHistoryRequest,
+    historySelector,
+    progressSelector,
+} from '../../../ducks/history';
+import { Dimmer, Grid, Loader } from 'semantic-ui-react';
+import { dateToUTC, formatDate } from '../../../utils/dateTimeFormater';
 
 const History = ({ cardId }) => {
     const dispatch = useDispatch();
@@ -10,13 +15,19 @@ const History = ({ cardId }) => {
 
     useEffect(() => {
         dispatch(getHistoryRequest(cardId));
+        return () => {
+            dispatch(clearHistory());
+        };
     }, []);
 
-    console.log('history', history);
+    const loading = useSelector(state => progressSelector(state));
 
     return (
         <div>
             <Grid>
+                <Dimmer active={loading} inverted>
+                    <Loader size="huge">Loading</Loader>
+                </Dimmer>
                 {(history || []).map((historyItem, i) => (
                     <Grid.Row key={i}>
                         <Grid.Column width={5}>

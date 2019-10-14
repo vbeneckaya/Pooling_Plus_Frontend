@@ -7,6 +7,8 @@ const GET_HISTORY_REQUEST = 'GET_HISTORY_REQUEST';
 const GET_HISTORY_SUCCESS = 'GET_HISTORY_SUCCESS';
 const GET_HISTORY_ERROR = 'GET_HISTORY_ERROR';
 
+const CLEAR_HISTORY = 'CLEAR_HISTORY';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -35,6 +37,11 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 data: [],
             };
+        case CLEAR_HISTORY:
+            return {
+                ...state,
+                data: [],
+            };
         default:
             return state;
     }
@@ -49,21 +56,26 @@ export const getHistoryRequest = payload => {
     };
 };
 
+export const clearHistory = () => {
+    return {
+        type: CLEAR_HISTORY,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.historyList;
 
-export const historySelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const historySelector = createSelector(stateSelector, state => state.data);
+
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 //*  SAGA  *//
 
 function* getHistorySaga({ payload }) {
     try {
         const result = yield postman.get(
-            `/history/${payload}/${localStorage.getItem('i18nextLng')}`,
+            `/history/${payload}`,
         );
         yield put({
             type: GET_HISTORY_SUCCESS,

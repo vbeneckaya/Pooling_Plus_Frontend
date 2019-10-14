@@ -201,6 +201,10 @@ namespace Domain.Persistables
         /// Расходы подтверждена ТК
         /// </summary>
         public bool CostsConfirmedByCarrier { get; set; }
+        /// <summary>
+        /// Дата создания перевозки
+        /// </summary>
+        public DateTime? ShippingCreationDate { get; set; }
         /*end of fields*/
     }
 }

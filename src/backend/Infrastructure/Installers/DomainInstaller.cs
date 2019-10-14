@@ -42,6 +42,8 @@ using Application.Services.VehicleTypes;
 using Domain.Services.VehicleTypes;
 using Application.Services.History;
 using Domain.Services.History;
+using Application.Services.UserSettings;
+using Domain.Services.UserSettings;
 
 namespace Infrastructure.Installers
 {
@@ -58,6 +60,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IInjectionsService, InjectionsService>();
             services.AddScoped<ITaskPropertiesService, TaskPropertiesService>();
             services.AddScoped<IHistoryService, HistoryService>();
+            services.AddScoped<IUserSettingsService, UserSettingsService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();

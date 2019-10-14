@@ -1,13 +1,14 @@
 using Application.BusinessModels.Orders.Handlers;
 using Application.Shared;
 using AutoMapper;
+using DAL;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Orders;
-using Domain.Services.UserIdProvider;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using Domain.Shared.FormFilters;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +23,8 @@ namespace Application.Services.Orders
     {
         private readonly IHistoryService _historyService;
 
-        public OrdersService(ICommonDataService dataSevice, IUserIdProvider userIdProvider, IHistoryService historyService, IActionService<Order> actionService) 
-            : base(dataSevice, userIdProvider, actionService)
+        public OrdersService(ICommonDataService dataSevice, AppDbContext db, IUserProvider userIdProvider, IHistoryService historyService, IActionService<Order> actionService) 
+            : base(dataSevice, db, userIdProvider, actionService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
@@ -95,8 +96,6 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
-            if (!string.IsNullOrEmpty(dto.ShippingId))
-                setter.UpdateField(e => e.ShippingId, Guid.Parse(dto.ShippingId), ignoreChanges: true);
             /*end of map dto to entity fields*/
 
             bool isNew = string.IsNullOrEmpty(dto.Id);
@@ -225,30 +224,52 @@ namespace Application.Services.Orders
                         {
                             OrderId = entity.Id
                         };
-                        MapFromItemDtoToEntity(item, itemDto);
+                        MapFromItemDtoToEntity(entity.Id, item, itemDto, true);
                         dataService.GetDbSet<OrderItem>().Add(item);
+
+                        _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
                     }
                     else
                     {
                         updatedItems.Add(item.Id);
-                        MapFromItemDtoToEntity(item, itemDto);
+                        MapFromItemDtoToEntity(entity.Id, item, itemDto, false);
                         dataService.GetDbSet<OrderItem>().Update(item);
                     }
                 }
 
                 var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
+                foreach (var item in itemsToRemove)
+                {
+                    _historyService.Save(entity.Id, "orderItemRemoved", item.Nart, item.Quantity);
+                }
                 dataService.GetDbSet<OrderItem>().RemoveRange(itemsToRemove);
 
                 entity.ArticlesCount = dto.Items.Count;
             }
         }
 
-        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto)
+        private void MapFromItemDtoToEntity(Guid orderId, OrderItem entity, OrderItemDto dto, bool isNew)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.Nart = dto.Nart;
-            entity.Quantity = dto.Quantity ?? 0;
+
+            if (entity.Nart != dto.Nart)
+            {
+                if (!isNew)
+                {
+                    _historyService.Save(orderId, "orderItemChangeNart", entity.Nart, dto.Nart);
+                }
+                entity.Nart = dto.Nart;
+            }
+
+            if (entity.Quantity != dto.Quantity)
+            {
+                entity.Quantity = dto.Quantity ?? 0;
+                if (!isNew)
+                {
+                    _historyService.Save(orderId, "orderItemChangeQuantity", entity.Nart, entity.Quantity);
+                }
+            }
         }
 
         private OrderItemDto MapFromItemEntityToDto(OrderItem entity)

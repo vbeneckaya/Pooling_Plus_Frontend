@@ -102,8 +102,6 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
     const fieldsListSearch = fieldsList.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
     const selectedListSearch = selectedFields.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
 
-    console.log('ff', fieldsList);
-
     return (
         <Modal
             dimmer="blurring"

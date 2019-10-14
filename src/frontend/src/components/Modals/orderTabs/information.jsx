@@ -8,6 +8,7 @@ import Select from '../../BaseComponents/Select';
 import TextArea from '../../BaseComponents/TextArea';
 import {useSelector} from "react-redux";
 import {valuesListSelector} from "../../../ducks/lookup";
+import Number from "../../BaseComponents/Number";
 
 const Information = ({ form, onChange }) => {
     const { t } = useTranslation();
@@ -32,7 +33,6 @@ const Information = ({ form, onChange }) => {
     );
 
     useEffect(() => {
-        console.log('valuesList', valuesList.find(item => item.value === form.soldTo), form.soldTo);
         if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
             setError(true)
         } else {
@@ -115,14 +115,14 @@ const Information = ({ form, onChange }) => {
                                                 <label>{t('temperature')}</label>
                                                 <div className="temperature-fields">
                                                     <label>{t('from')}</label>
-                                                    <Text
+                                                    <Number
                                                         noLabel
                                                         name="temperatureMin"
                                                         value={form['temperatureMin']}
                                                         onChange={onChange}
                                                     />
                                                     <label>{t('to')}</label>
-                                                    <Text
+                                                    <Number
                                                         noLabel
                                                         name="temperatureMax"
                                                         value={form['temperatureMax']}
@@ -192,7 +192,7 @@ const Information = ({ form, onChange }) => {
                                 <Grid>
                                     <Grid.Row columns={4}>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="palletsCount"
                                                 text="prepare"
                                                 value={form['palletsCount']}
@@ -200,7 +200,7 @@ const Information = ({ form, onChange }) => {
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="confirmedPalletsCount"
                                                 text="plan"
                                                 value={form['confirmedPalletsCount']}
@@ -208,7 +208,7 @@ const Information = ({ form, onChange }) => {
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="actualPalletsCount"
                                                 text="fact"
                                                 value={form['actualPalletsCount']}
@@ -229,7 +229,7 @@ const Information = ({ form, onChange }) => {
                                 <Grid>
                                     <Grid.Row columns={2}>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="boxesCount"
                                                 text="prepare"
                                                 value={form['boxesCount']}
@@ -237,7 +237,7 @@ const Information = ({ form, onChange }) => {
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="confirmedBoxesCount"
                                                 text="fact"
                                                 value={form['confirmedBoxesCount']}
@@ -259,7 +259,7 @@ const Information = ({ form, onChange }) => {
                                 <Grid>
                                     <Grid.Row columns={2}>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="weightKg"
                                                 text="planWeigth"
                                                 value={form['weightKg']}
@@ -267,7 +267,7 @@ const Information = ({ form, onChange }) => {
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Text
+                                            <Number
                                                 name="actualWeightKg"
                                                 text="factWeigth"
                                                 value={form['actualWeightKg']}

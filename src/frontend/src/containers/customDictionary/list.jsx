@@ -42,11 +42,11 @@ const List = ({
     const { name = '' } = params;
     const { t } = useTranslation();
 
-    const handleImportFromExcel = form => {
+    const handleImportFromExcel = (form, callbackSuccess) => {
         importFromExcel({
             form,
             name,
-            callbackSuccess: () => this.loadList(),
+            callbackSuccess
         });
     };
 

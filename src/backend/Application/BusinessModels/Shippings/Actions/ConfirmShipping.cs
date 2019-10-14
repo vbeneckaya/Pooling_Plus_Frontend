@@ -5,6 +5,8 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using System.Linq;
 
 namespace Application.BusinessModels.Shippings.Actions
@@ -23,7 +25,7 @@ namespace Application.BusinessModels.Shippings.Actions
             Color = AppColor.Green;
         }
 
-        public AppActionResult Run(User user, Shipping shipping)
+        public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
             shipping.Status = ShippingState.ShippingConfirmed;
 
@@ -42,7 +44,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = $"Перевозка {shipping.ShippingNumber} подтверждена"
+                Message = "shippingSetConfirmed".translate(user.Language, shipping.ShippingNumber)
             };
         }
 

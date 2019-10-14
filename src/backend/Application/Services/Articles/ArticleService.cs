@@ -5,6 +5,9 @@ using Domain.Persistables;
 using Domain.Extensions;
 using Domain.Services.Articles;
 using Microsoft.EntityFrameworkCore;
+using Domain.Shared;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Articles
 {
@@ -17,6 +20,19 @@ namespace Application.Services.Articles
         public override DbSet<Article> UseDbSet(AppDbContext dbContext)
         {
             return dbContext.Articles;
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var entities = db.Articles.OrderBy(x => x.Nart).ToList();
+            foreach (var entity in entities)
+            {
+                yield return new LookUpDto
+                {
+                    Name = entity.Nart,
+                    Value = entity.Id.ToString()
+                };
+            }
         }
 
         public override void MapFromDtoToEntity(Article entity, ArticleDto dto)

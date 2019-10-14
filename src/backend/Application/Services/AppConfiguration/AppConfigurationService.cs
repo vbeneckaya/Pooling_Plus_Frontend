@@ -54,18 +54,20 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState)),
-                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState), isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ShippingNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ClientName), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.DeliveryDate), FiledType.DateTime, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime, isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderType), FiledType.Enum, nameof(OrderType)),
-                            new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.ClientName), FiledType.Text),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService)),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMax), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingDate), FiledType.DateTime),
-                            new UserConfigurationGridColumn(nameof(OrderDto.DeliveryDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.TransitDays), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingAddress), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryRegion), FiledType.Text),
@@ -97,8 +99,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.MajorAdoptionNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderComments), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.ShippingId), FiledType.Select, nameof(ShippingsService)),
                             /*end of add field for Orders*/
                         }
                     },
@@ -111,13 +111,14 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState)),
-                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.DeliveryType), FiledType.Enum, nameof(DeliveryType)),
+                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState), isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService), isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.DeliveryType), FiledType.Enum, nameof(DeliveryType), isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.TarifficationType), FiledType.Enum, nameof(TarifficationType), isDefault: true),
+                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingCreationDate), FiledType.DateTime, isDefault: true),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(ShippingDto.TemperatureMax), FiledType.Number),
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.TarifficationType), FiledType.Enum, nameof(TarifficationType)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService)),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.VehicleTypeId), FiledType.Select, nameof(VehicleTypesService)),
                             new UserConfigurationGridColumn(nameof(ShippingDto.PalletsCount), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(ShippingDto.ActualPalletsCount), FiledType.Number),
@@ -234,7 +235,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumnWhitchSource(nameof(WarehouseDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.LeadtimeDays), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(WarehouseDto.CustomerWarehouse), FiledType.Boolean),
-                            new UserConfigurationGridColumn(nameof(WarehouseDto.UsePickingType), FiledType.Boolean),
                             /*end of add field for Warehouses*/
                         }
                     },

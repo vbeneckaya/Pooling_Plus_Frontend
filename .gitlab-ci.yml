@@ -9,6 +9,7 @@ before_script:
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - ssh-keyscan -t rsa 10.10.5.10 >> ~/.ssh/known_hosts
+  - ssh-keyscan -t rsa 10.10.5.15 >> ~/.ssh/known_hosts
 
   
 build-frontend-dev:
@@ -84,15 +85,36 @@ deploy-tasks-dev:
   script:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks
   when: manual   
-
-#deploy-frontend-prod:    
-#  variables:
-#    SSH_USER: server
-#    SSH_HOST: 10.10.5.10
-#    SSH_OPT:   -o StrictHostKeyChecking=no
-#    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-#  stage: deploy
-#  script:
-#    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
- # environment:
- #   name:
+  
+deploy-frontend-demo:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.15
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
+  when: manual    
+ 
+deploy-backend-demo:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.15
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
+  when: manual    
+ 
+deploy-tasks-demo:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.15
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+  when: manual     
