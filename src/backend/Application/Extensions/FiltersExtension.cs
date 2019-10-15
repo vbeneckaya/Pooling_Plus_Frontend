@@ -23,14 +23,13 @@ namespace Application.Extensions
         public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, int>> property, int? filterData)
         {
             if (!filterData.HasValue) return query;
-            {
-                Expression<Func<int>> filterDataExp = () => filterData.Value;
-                var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+            Expression<Func<int>> filterDataExp = () => filterData.Value;
+            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-                query = query.Where(exp);
-            }
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+
+            query = query.Where(exp);
 
             return query;
         }
@@ -46,14 +45,13 @@ namespace Application.Extensions
         public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, decimal>> property, decimal? filterData)
         {
             if (!filterData.HasValue) return query;
-            {
-                Expression<Func<decimal>> filterDataExp = () => filterData.Value;
-                var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+            Expression<Func<decimal>> filterDataExp = () => filterData.Value;
+            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-                query = query.Where(exp);
-            }
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+
+            query = query.Where(exp);
 
             return query;
         }
@@ -86,6 +84,20 @@ namespace Application.Extensions
             if (!int.TryParse(filterData, out int filterDataInt)) return query;
 
             return query.ApplyNumericFilter(property, filterDataInt);
+        }
+
+        public static IQueryable<TModel> ApplyBooleanFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, bool>> property, string filterData)
+        {
+            if (!bool.TryParse(filterData, out bool filterValue)) return query;
+
+            Expression<Func<bool>> filterDataExp = () => filterValue;
+            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
+
+            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
+
+            query = query.Where(exp);
+
+            return query;
         }
 
         /// <summary>
@@ -161,7 +173,7 @@ namespace Application.Extensions
         /// <param name="property"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IQueryable<TModel> ApplyEnumFilter<TModel, TEnum>(this IQueryable<TModel> query, Expression<Func<TModel, TEnum>> property, string options)
+        public static IQueryable<TModel> ApplyEnumFilter<TModel, TEnum>(this IQueryable<TModel> query, Expression<Func<TModel, TEnum?>> property, string options)
             where TEnum : struct, IConvertible
         {
             return query.ApplyOptionsFilter(property, options, i => MapFromStateDto<TEnum>(i));

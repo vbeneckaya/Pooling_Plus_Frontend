@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Handlers;
+using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
 using DAL;
-using DAL.Queries;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -17,12 +15,10 @@ using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Domain.Shared.FormFilters;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>, IShippingsService
+    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<ShippingFilterDto>>, IShippingsService
     {
         private readonly IHistoryService _historyService;
 
@@ -287,9 +283,51 @@ namespace Application.Services.Shippings
 
         private readonly IMapper _mapper;
 
-        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<SearchFilterDto> searchForm)
+        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {
-            return query;
+            query = query
+                .ApplyStringFilter(i => i.ShippingNumber, searchForm.Filter.ShippingNumber)
+                .ApplyOptionsFilter(i => i.CarrierId.Value.ToString(), searchForm.Filter.CarrierId)
+                .ApplyEnumFilter(i => i.TarifficationType, searchForm.Filter.TarifficationType)
+                .ApplyEnumFilter(i => i.DeliveryType, searchForm.Filter.DeliveryType)
+                .ApplyDateRangeFilter(i => i.ShippingCreationDate.Value, searchForm.Filter.ShippingCreationDate)
+                .ApplyNumericFilter(i => i.TemperatureMin.Value, searchForm.Filter.TemperatureMin)
+                .ApplyNumericFilter(i => i.TemperatureMax.Value, searchForm.Filter.TemperatureMax)
+                .ApplyOptionsFilter(i => i.VehicleTypeId, searchForm.Filter.VehicleTypeId, i => new Guid(i))
+                .ApplyNumericFilter(i => i.PalletsCount.Value, searchForm.Filter.PalletsCount)
+                .ApplyNumericFilter(i => i.ActualPalletsCount.Value, searchForm.Filter.ActualPalletsCount)
+                .ApplyNumericFilter(i => i.ConfirmedPalletsCount.Value, searchForm.Filter.ConfirmedPalletsCount)
+                .ApplyNumericFilter(i => i.WeightKg.Value, searchForm.Filter.WeightKg)
+                .ApplyNumericFilter(i => i.ActualWeightKg.Value, searchForm.Filter.ActualWeightKg)
+                .ApplyDateRangeFilter(i => i.LoadingArrivalTime.Value, searchForm.Filter.LoadingArrivalTime)
+                .ApplyDateRangeFilter(i => i.LoadingDepartureTime.Value, searchForm.Filter.LoadingDepartureTime)
+                .ApplyStringFilter(i => i.DeliveryInvoiceNumber,searchForm.Filter.DeliveryInvoiceNumber)
+                .ApplyStringFilter(i => i.DeviationReasonsComments, searchForm.Filter.DeviationReasonsComments)
+                .ApplyNumericFilter(i => i.TotalDeliveryCost.Value, searchForm.Filter.TotalDeliveryCost)
+                .ApplyNumericFilter(i => i.OtherCosts.Value, searchForm.Filter.OtherCosts)
+                .ApplyNumericFilter(i => i.DeliveryCostWithoutVAT.Value, searchForm.Filter.DeliveryCostWithoutVAT)
+                .ApplyNumericFilter(i => i.ReturnCostWithoutVAT.Value, searchForm.Filter.ReturnCostWithoutVAT)
+                .ApplyNumericFilter(i => i.InvoiceAmountWithoutVAT.Value, searchForm.Filter.InvoiceAmountWithoutVAT)
+                .ApplyNumericFilter(i => i.AdditionalCostsWithoutVAT.Value, searchForm.Filter.AdditionalCostsWithoutVAT)
+                .ApplyStringFilter(i => i.AdditionalCostsComments, searchForm.Filter.AdditionalCostsComments)
+                .ApplyNumericFilter(i => i.TrucksDowntime.Value, searchForm.Filter.TrucksDowntime)
+                .ApplyNumericFilter(i => i.ReturnRate.Value, searchForm.Filter.ReturnRate)
+                .ApplyNumericFilter(i => i.AdditionalPointRate.Value, searchForm.Filter.AdditionalPointRate)
+                .ApplyNumericFilter(i => i.DowntimeRate.Value, searchForm.Filter.DowntimeRate)
+                .ApplyNumericFilter(i => i.BlankArrivalRate.Value, searchForm.Filter.BlankArrivalRate)
+                .ApplyBooleanFilter(i => i.BlankArrival, searchForm.Filter.BlankArrival)
+                .ApplyBooleanFilter(i => i.Waybill, searchForm.Filter.Waybill)
+                .ApplyBooleanFilter(i => i.WaybillTorg12, searchForm.Filter.WaybillTorg12)
+                .ApplyBooleanFilter(i => i.TransportWaybill, searchForm.Filter.TransportWaybill)
+                .ApplyBooleanFilter(i => i.Invoice, searchForm.Filter.Invoice)
+                .ApplyDateRangeFilter(i => i.DocumentsReturnDate.Value, searchForm.Filter.DocumentsReturnDate)
+                .ApplyDateRangeFilter(i => i.ActualDocumentsReturnDate.Value, searchForm.Filter.ActualDocumentsReturnDate)
+                .ApplyStringFilter(i => i.InvoiceNumber, searchForm.Filter.InvoiceNumber)
+                .ApplyBooleanFilter(i => i.CostsConfirmedByShipper, searchForm.Filter.CostsConfirmedByShipper)
+                .ApplyBooleanFilter(i => i.CostsConfirmedByCarrier, searchForm.Filter.CostsConfirmedByCarrier);
+
+            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+                .DefaultOrderBy(i => i.ShippingCreationDate);
         }
     }
 }

@@ -321,7 +321,7 @@ namespace Application.Services.Orders
             query = query.ApplyDateRangeFilter(i => i.OrderDate.Value, searchForm.Filter.OrderDate);
 
             // OrderType Filter
-            query = query.ApplyEnumFilter(i => i.OrderType.Value, searchForm.Filter.OrderType);
+            query = query.ApplyEnumFilter(i => i.OrderType, searchForm.Filter.OrderType);
 
             // SoldTo Filter
             query = query.ApplyOptionsFilter(i => i.SoldTo, searchForm.Filter.SoldTo);
