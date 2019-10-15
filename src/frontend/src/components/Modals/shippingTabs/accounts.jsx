@@ -57,16 +57,18 @@ const Accounts = ({ form = {}, onChange }) => {
                                 <Grid.Row columns={2}>
                                     <Grid.Column>
                                         <Checkbox
-                                            checked={form['amountConfirmedByShipper']}
-                                            label={t('Расходы подтверждены грузоотправителем')}
-                                            onClick={(event) => onChange(event, {name: 'amountConfirmedByShipper', value: !form['amountConfirmedByShipper']})}
+                                            checked={form['costsConfirmedByCarrier']}
+                                            label={t('costsConfirmedByCarrier')}
+                                            name="costsConfirmedByCarrier"
+                                            onClick={(event, {name, checked}) => onChange(event, {name, value: checked})}
                                         />
                                     </Grid.Column>
                                     <Grid.Column>
                                         <Checkbox
-                                            checked={form['amountConfirmedByTC']}
-                                            label={t('Расходы подтверждены ТК')}
-                                            onClick={(event) => onChange(event, {name: 'amountConfirmedByTC', value: !form['amountConfirmedByTC']})}
+                                            checked={form['costsConfirmedByShipper']}
+                                            label={t('costsConfirmedByShipper')}
+                                            name="costsConfirmedByShipper"
+                                            onClick={(event, {name, checked}) => onChange(event, {name, value: checked})}
                                         />
                                     </Grid.Column>
                                 </Grid.Row>
