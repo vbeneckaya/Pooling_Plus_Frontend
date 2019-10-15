@@ -1,6 +1,5 @@
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
@@ -16,11 +15,11 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
 
         public CreateShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -29,7 +28,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
-            var unionOrders = new UnionOrders(dataService, _historyService);
+            var unionOrders = new UnionOrders(_dataService, _historyService);
             return unionOrders.Run(user, new[] { order });
         }
 

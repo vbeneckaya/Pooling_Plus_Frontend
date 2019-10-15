@@ -9,11 +9,6 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
-        <member name="M:API.Controllers.AppConfigurationController.GetFormFor(System.String,System.Guid)">
-            <summary>
-            Получение конфигурации гридов и справочников
-            </summary>
-        </member>
         <member name="T:API.Controllers.FilesController">
             <summary>
             Файлы
@@ -168,6 +163,16 @@
             Выполнить действие
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.GridController`6.GetBulkUpdates(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Список возможных массовых изменений
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.GridController`6.InvokeBulkUpdate(System.String,Domain.Shared.BulkUpdateFormDto)">
+            <summary>
+            Применить массовое изменения
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`6.SaveOrCreate(`3)">
             <summary>
             Сохранить или изменить
@@ -181,6 +186,8 @@
             <typeparam name="TEntity"></typeparam>
             <typeparam name="TDto"></typeparam>
             <typeparam name="TFormDto"></typeparam>
+            <typeparam name="TSummaryDto"></typeparam>
+            <typeparam name="TSearchForm"></typeparam>
         </member>
         <member name="M:API.Controllers.Shared.GridWithDocumentsController`6.GetDocuments(System.Guid)">
             <summary>

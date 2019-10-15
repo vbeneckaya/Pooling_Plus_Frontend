@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -14,6 +12,9 @@ using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using Domain.Shared.FormFilters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Shippings
 {
@@ -26,8 +27,9 @@ namespace Application.Services.Shippings
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IEnumerable<IAppAction<Shipping>> singleActions,
-            IEnumerable<IGroupAppAction<Shipping>> groupActions)
-            : base(dataService, userIdProvider, singleActions, groupActions)
+            IEnumerable<IGroupAppAction<Shipping>> groupActions,
+            IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
+            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;

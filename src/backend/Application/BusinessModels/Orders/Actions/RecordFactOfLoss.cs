@@ -1,6 +1,5 @@
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
@@ -15,12 +14,12 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class RecordFactOfLoss : IAppAction<Order>
     {
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
         public RecordFactOfLoss(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
@@ -33,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetLost", order.OrderNumber);
 
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             
             return new AppActionResult
             {

@@ -1,18 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.BulkUpdates;
+using Application.Shared.Excel;
 using DAL.Queries;
-using Domain;
+using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.UserProvider;
-using Domain.Extensions;
 using Domain.Shared;
 using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
-using Application.Shared.Excel;
-using DAL.Services;
+using System.IO;
+using System.Linq;
 
 namespace Application.Shared
 {
@@ -41,16 +42,20 @@ namespace Application.Shared
 
         protected readonly IEnumerable<IGroupAppAction<TEntity>> _groupActions;
 
+        protected readonly IEnumerable<IBulkUpdate<TEntity>> _bulkUpdates;
+
         protected GridService(
             ICommonDataService dataService, 
             IUserProvider userIdProvider,
             IEnumerable<IAppAction<TEntity>> singleActions,
-            IEnumerable<IGroupAppAction<TEntity>> groupActions)
+            IEnumerable<IGroupAppAction<TEntity>> groupActions,
+            IEnumerable<IBulkUpdate<TEntity>> bulkUpdates)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
             _singleActions = singleActions;
             _groupActions = groupActions;
+            _bulkUpdates = bulkUpdates;
         }
 
         public TDto Get(Guid id)
@@ -170,7 +175,7 @@ namespace Application.Shared
 
             var result = new List<ActionDto>();
 
-            var entities = ids.Select(id => dbSet.GetById(id));
+            var entities = dbSet.Where(x => ids.Contains(x.Id));
 
             foreach (var action in _singleActions)
             {
@@ -254,7 +259,7 @@ namespace Application.Shared
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entities = ids.Select(dbSet.GetById);
+            var entities = dbSet.Where(x => ids.Contains(x.Id));
 
             if (groupAction != null)
             {
@@ -287,8 +292,79 @@ namespace Application.Shared
                 IsError = false,
                 Message = "Done"
             };
-        }    
-        
+        }
+
+        public IEnumerable<BulkUpdateDto> GetBulkUpdates(IEnumerable<Guid> ids)
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+
+            var dbSet = _dataService.GetDbSet<TEntity>();
+            var currentUser = _userIdProvider.GetCurrentUser();
+            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+
+            var result = new List<BulkUpdateDto>();
+
+            var entities = dbSet.Where(x => ids.Contains(x.Id));
+
+            foreach (var bulkUpdate in _bulkUpdates)
+            {
+                var validEntities = entities.Where(e => bulkUpdate.IsAvailable(role, e));
+                if (validEntities.Any())
+                {
+                    var dto = result.FirstOrDefault(x => x.Name == bulkUpdate.FieldName.ToLowerfirstLetter());
+                    if (dto == null)
+                    {
+                        result.Add(new BulkUpdateDto
+                        {
+                            Name = bulkUpdate.FieldName.ToLowerfirstLetter(),
+                            Type = bulkUpdate.FieldType.ToString(),
+                            Ids = validEntities.Select(x => x.Id.ToString())
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
+        {
+            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName.ToLowerfirstLetter() == fieldName);
+
+            if (bulkUpdate == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = $"Bulk update {fieldName} not found"
+                };
+
+            var currentUser = _userIdProvider.GetCurrentUser();
+            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var dbSet = _dataService.GetDbSet<TEntity>();
+
+            var entities = dbSet.Where(x => ids.Contains(x.Id));
+
+            List<string> messages = new List<string>();
+            foreach (var entity in entities)
+            {
+                if (bulkUpdate.IsAvailable(role, entity))
+                {
+                    string message = bulkUpdate.Update(currentUser, entity, value)?.Message;
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        messages.Add(message);
+                    }
+                }
+            }
+
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = string.Join(". ", messages)
+            };
+        }
+
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
             var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperfirstLetter());

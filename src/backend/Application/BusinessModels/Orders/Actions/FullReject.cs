@@ -1,6 +1,5 @@
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
@@ -15,12 +14,12 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class FullReject : IAppAction<Order>
     {
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
         public FullReject(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }
@@ -33,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetFullReturn", order.OrderNumber);
 
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             
             return new AppActionResult
             {
