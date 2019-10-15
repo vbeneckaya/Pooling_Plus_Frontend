@@ -7,6 +7,7 @@ using Application.Shared;
 using AutoMapper;
 using DAL;
 using DAL.Queries;
+using DAL.Services;
 using Domain;
 using Domain.Enums;
 using Domain.Extensions;

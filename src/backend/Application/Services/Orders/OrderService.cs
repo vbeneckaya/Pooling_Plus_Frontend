@@ -3,6 +3,7 @@ using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
 using DAL;
+using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -383,7 +384,8 @@ namespace Application.Services.Orders
                 .ApplyDateRangeFilter(i => i.OrderCreationDate.Value, searchForm.Filter.OrderCreationDate)
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
-            return query;
+            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+                .DefaultOrderBy(i => i.OrderCreationDate);
         }
     }
 }
