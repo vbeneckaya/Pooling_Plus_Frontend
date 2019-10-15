@@ -20,7 +20,7 @@ const columns = [
         name: 'description',
     },
     {
-        name: 'country',
+        name: 'countryOfOrigin',
     },
     {
         name: 'spgr',
@@ -29,14 +29,14 @@ const columns = [
         name: 'ean',
     },
     {
-        name: 'expirationDate',
+        name: 'shelfLife',
     },
-    {
+   /* {
         name: 'weight',
     },
     {
         name: 'netWeight',
-    },
+    },*/
     {
         name: 'quantity',
     },

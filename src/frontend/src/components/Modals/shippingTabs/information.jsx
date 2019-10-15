@@ -14,12 +14,12 @@ const Information = ({ form = {}, onChange }) => {
     return (
         <Form>
             <Grid>
-                <Grid.Row>
+               {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('general info')}</label>
                             <Segment>
-                                <Grid>
+                                <Grid>*/}
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <Select
@@ -86,11 +86,11 @@ const Information = ({ form = {}, onChange }) => {
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
-                                </Grid>
+                              {/*  </Grid>
                             </Segment>
                         </Form.Field>
                     </Grid.Column>
-                </Grid.Row>
+                </Grid.Row>*/}
                 <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
@@ -157,7 +157,7 @@ const Information = ({ form = {}, onChange }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row>
+               {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('documents')}</label>
@@ -223,7 +223,7 @@ const Information = ({ form = {}, onChange }) => {
                             </Segment>
                         </Form.Field>
                     </Grid.Column>
-                </Grid.Row>
+                </Grid.Row>*/}
             </Grid>
         </Form>
     );
