@@ -16,8 +16,13 @@ namespace Infrastructure.Logging
 
             LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .Enrich.FromLogContext()
-                .WriteTo.Console(outputTemplate: messageTemplate);
+                .Enrich.FromLogContext();
+
+            bool isConsoleLogEnabled = configuration.GetValue("Logging:Console:Enabled", false);
+            if (isConsoleLogEnabled)
+            {
+                loggerConfiguration = loggerConfiguration.WriteTo.Console(outputTemplate: messageTemplate);
+            }
 
             bool isFileLogEnabled = configuration.GetValue("Logging:File:Enabled", false);
             if (isFileLogEnabled)
