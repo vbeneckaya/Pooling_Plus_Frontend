@@ -55,7 +55,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose}) => 
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <History cardId={id} />
+                    <History cardId={id} status={form.status}/>
                 </Tab.Pane>
             ),
         },
