@@ -9,7 +9,7 @@ import {
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
 import { dateToUTC, formatDate } from '../../../utils/dateTimeFormater';
 
-const History = ({ cardId }) => {
+const History = ({ cardId, status }) => {
     const dispatch = useDispatch();
     const history = useSelector(state => historySelector(state));
 
@@ -18,7 +18,7 @@ const History = ({ cardId }) => {
         return () => {
             dispatch(clearHistory());
         };
-    }, []);
+    }, [status]);
 
     const loading = useSelector(state => progressSelector(state));
 

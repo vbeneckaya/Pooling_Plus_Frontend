@@ -49,7 +49,7 @@ const OrderModal = ({ form, onChangeForm, name, id, load }) => {
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <History cardId={id} />
+                    <History cardId={id} status={form.status}/>
                 </Tab.Pane>
             ),
         },
