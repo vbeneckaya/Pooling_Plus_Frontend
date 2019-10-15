@@ -71,8 +71,6 @@ const Position = ({ form, onChange, gridName, load }) => {
         }
     }, []);
 
-    console.log('articles', articles);
-
     useEffect(
         () => {
             setItems(form.items);
@@ -105,7 +103,6 @@ const Position = ({ form, onChange, gridName, load }) => {
 
     const handleSaveItem = () => {
         const { quantity } = items[indexEdit];
-        console.log(quantity, parseInt(quantity) > 0, parseInt(quantity) === quantity);
         if (quantity && parseInt(quantity) > 0 && !quantity.toString().includes(".")) {
             editPositions(items);
             setIndexEdit(null);

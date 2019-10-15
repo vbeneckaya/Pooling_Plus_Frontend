@@ -96,7 +96,6 @@ const Card = props => {
         });
 
         if (notChangeForm && value !== undefined && Object.keys(form).length && value !== card[name]) {
-            console.log('&&&&', name, value);
             setNotChangeForm(false);
         }
     };
@@ -135,7 +134,6 @@ const Card = props => {
                     name,
                     actionName,
                     callbackSuccess: () => {
-                        console.log('^^', actionName.toLowerCase(), actionName.toLowerCase().includes('delete'));
                         if (actionName.toLowerCase().includes('delete')) {
                             onClose()
                         } else {
@@ -151,8 +149,6 @@ const Card = props => {
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-
-    console.log('title', title);
 
     return (
         <Modal
