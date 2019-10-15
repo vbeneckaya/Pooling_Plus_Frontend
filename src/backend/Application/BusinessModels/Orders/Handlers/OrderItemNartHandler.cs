@@ -1,5 +1,6 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
