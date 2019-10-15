@@ -165,22 +165,6 @@ namespace Application.Extensions
             where TEnum : struct, IConvertible
         {
             return query.ApplyOptionsFilter(property, options, i => MapFromStateDto<TEnum>(i));
-
-            if (string.IsNullOrEmpty(options)) return query;
-
-            var types = options.Split("|")
-                    .Select(i => MapFromStateDto<TEnum>(i));
-
-            var methodInfo = typeof(Enumerable).GetMethods().Where(i => i.Name == "Contains").First();
-            var method = methodInfo.MakeGenericMethod(new[] { typeof(TEnum) });
-
-            Expression<Func<IEnumerable<TEnum>>> searchStrExp = () => types;
-
-            var conainsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
-
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
-
-            return query.Where(exp);
         }
 
         /// <summary>
@@ -223,6 +207,45 @@ namespace Application.Extensions
             var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperfirstLetter());
 
             return mapFromStateDto;
+        }
+
+        public static IQueryable<TModel> OrderBy<TModel>(this IQueryable<TModel> query, string propertyName, bool descending)
+        {
+            if (string.IsNullOrEmpty(propertyName)) return query;
+
+            var propertyInfo = typeof(TModel).GetProperties()
+                .FirstOrDefault(i => i.Name.ToLower() == propertyName.ToLower());
+
+            if (propertyInfo == null)
+            {
+                throw new Exception($"Invalid property name {propertyName} for type {typeof(TModel).Name}");
+            }
+
+            ParameterExpression param = Expression.Parameter(typeof(TModel), string.Empty);
+            MemberExpression property = Expression.PropertyOrField(param, propertyInfo.Name);
+            LambdaExpression sort = Expression.Lambda(property, param);
+            MethodCallExpression call = Expression.Call(
+                typeof(Queryable),
+                 "OrderBy" + (descending ? "Descending" : string.Empty),
+                new[] { typeof(TModel), property.Type },
+                query.Expression,
+                Expression.Quote(sort));
+
+            return (IOrderedQueryable<TModel>)query.Provider.CreateQuery<TModel>(call);
+        }
+
+        public static IQueryable<TSource> DefaultOrderBy<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        {
+            IOrderedQueryable<TSource> ordered = source as IOrderedQueryable<TSource>;
+
+            if (ordered == null)
+            {
+                return source.OrderByDescending(keySelector);
+            }
+            else
+            { 
+                return ordered.ThenByDescending(keySelector);
+            }
         }
     }
 }
