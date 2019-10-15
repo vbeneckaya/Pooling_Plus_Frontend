@@ -103,7 +103,7 @@ const Position = ({ form, onChange, gridName, load }) => {
 
     const handleSaveItem = () => {
         const { quantity } = items[indexEdit];
-        if (quantity && parseInt(quantity) > 0 && !quantity.toString().includes(".")) {
+        if (quantity && parseInt(quantity) >= 0 && !quantity.toString().includes(".")) {
             editPositions(items);
             setIndexEdit(null);
             setError(false);
