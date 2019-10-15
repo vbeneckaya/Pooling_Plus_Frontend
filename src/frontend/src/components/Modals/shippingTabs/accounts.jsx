@@ -28,7 +28,7 @@ const Accounts = ({ form = {}, onChange }) => {
                             value={form['returnCostWithoutVAT']}
                             onChange={onChange}
                         />
-                        <Text
+                       {/* <Text
                             name="invoiceNumber"
                             value={form['invoiceNumber']}
                             onChange={onChange}
@@ -37,7 +37,7 @@ const Accounts = ({ form = {}, onChange }) => {
                             name="invoiceAmountWithoutVAT"
                             value={form['invoiceAmountWithoutVAT']}
                             onChange={onChange}
-                        />
+                        />*/}
                     </Grid.Column>
                     <Grid.Column>
                         <TextArea
@@ -46,27 +46,33 @@ const Accounts = ({ form = {}, onChange }) => {
                             value={form['additionalCostsComments']}
                             onChange={onChange}
                         />
-                        <Form.Field>
-                            <label>{t('reconciliation of expenses')}</label>
-                            <Segment style={{height: "calc(100% - 22px)"}}>
-                                <Grid>
-                                    <Grid.Row columns={1} stretched>
-                                        <Grid.Column>
-                                            <Checkbox
-                                                checked={form['amountConfirmedByShipper']}
-                                                label={t('Расходы подтверждены грузоотправителем')}
-                                                onClick={(event) => onChange(event, {name: 'amountConfirmedByShipper', value: !form['amountConfirmedByShipper']})}
-                                            />
-                                            <Checkbox
-                                                checked={form['amountConfirmedByTC']}
-                                                label={t('Расходы подтверждены ТК')}
-                                                onClick={(event) => onChange(event, {name: 'amountConfirmedByTC', value: !form['amountConfirmedByTC']})}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                </Grid>
-                            </Segment>
-                        </Form.Field>
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row columns={1}>
+                    <Grid.Column>
+                    <Form.Field>
+                        <label>{t('reconciliation of expenses')}</label>
+                        <Segment style={{height: "calc(100% - 22px)"}}>
+                            <Grid>
+                                <Grid.Row columns={2}>
+                                    <Grid.Column>
+                                        <Checkbox
+                                            checked={form['amountConfirmedByShipper']}
+                                            label={t('Расходы подтверждены грузоотправителем')}
+                                            onClick={(event) => onChange(event, {name: 'amountConfirmedByShipper', value: !form['amountConfirmedByShipper']})}
+                                        />
+                                    </Grid.Column>
+                                    <Grid.Column>
+                                        <Checkbox
+                                            checked={form['amountConfirmedByTC']}
+                                            label={t('Расходы подтверждены ТК')}
+                                            onClick={(event) => onChange(event, {name: 'amountConfirmedByTC', value: !form['amountConfirmedByTC']})}
+                                        />
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                        </Segment>
+                    </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
