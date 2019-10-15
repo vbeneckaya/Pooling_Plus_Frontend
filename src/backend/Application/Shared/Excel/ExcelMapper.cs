@@ -1,5 +1,5 @@
 ﻿using Application.Shared.Excel.Columns;
-using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using OfficeOpenXml;
@@ -180,9 +180,9 @@ namespace Application.Shared.Excel
                 .ForEach(AddColumn);
         }
 
-        public ExcelMapper(AppDbContext db)
+        public ExcelMapper(ICommonDataService dataService)
         {
-            _translations = db.Translations.ToList();
+            _translations = dataService.GetDbSet<Translation>().ToList();
             InitColumns();
         }
 

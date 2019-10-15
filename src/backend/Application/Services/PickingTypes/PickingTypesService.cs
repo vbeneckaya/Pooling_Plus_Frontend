@@ -1,9 +1,8 @@
 ﻿using Application.Shared;
-using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.PickingTypes;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,8 @@ namespace Application.Services.PickingTypes
 {
     public class PickingTypesService : DictonaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
+        public PickingTypesService(ICommonDataService dataService) : base(dataService) { }
+
         public override void MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
@@ -28,14 +29,9 @@ namespace Application.Services.PickingTypes
             };
         }
 
-        public override DbSet<PickingType> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.PickingTypes;
-        }
-
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var pickingTypes = db.PickingTypes.OrderBy(c => c.Name).ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>().OrderBy(c => c.Name).ToList();
             foreach (PickingType pickingType in pickingTypes)
             {
                 yield return new LookUpDto
@@ -44,10 +40,6 @@ namespace Application.Services.PickingTypes
                     Value = pickingType.Id.ToString()
                 };
             }
-        }
-
-        public PickingTypesService(AppDbContext appDbContext) : base(appDbContext)
-        {
         }
     }
 }

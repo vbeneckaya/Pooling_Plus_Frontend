@@ -1,30 +1,21 @@
 using System;
 using Application.Shared;
-using DAL;
 using Domain.Persistables;
-using Domain.Extensions;
 using Domain.Services.Articles;
-using Microsoft.EntityFrameworkCore;
 using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
+using DAL.Services;
 
 namespace Application.Services.Articles
 {
     public class ArticlesService : DictonaryServiceBase<Article, ArticleDto>, IArticlesService
     {
-        public ArticlesService(AppDbContext appDbContext) : base(appDbContext)
-        {
-        }
-
-        public override DbSet<Article> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Articles;
-        }
+        public ArticlesService(ICommonDataService dataService) : base(dataService) { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = db.Articles.OrderBy(x => x.Nart).ToList();
+            var entities = _dataService.GetDbSet<Article>().OrderBy(x => x.Nart).ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto

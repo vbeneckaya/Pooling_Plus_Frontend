@@ -2,34 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Application.Shared.Excel;
-using DAL;
 using DAL.Queries;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 
 namespace Application.Shared
 {
     public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
-        public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
-        protected AppDbContext db ;
+        protected ICommonDataService _dataService;
 
-        protected DictonaryServiceBase(AppDbContext appDbContext)
+        protected DictonaryServiceBase(ICommonDataService dataService)
         {
-            db = appDbContext;
+            _dataService = dataService;
         }
 
         public TListDto Get(Guid id)
         {
-            var dbSet = UseDbSet(db);
+            var dbSet = _dataService.GetDbSet<TEntity>();
             return MapFromEntityToDto(dbSet.GetById(id));
         }
 
@@ -42,7 +39,7 @@ namespace Application.Shared
         {
             if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
             {
-                var dbSet = UseDbSet(db);
+                var dbSet = _dataService.GetDbSet<TEntity>();
                 return dbSet.GetById(id);
             }
             else
@@ -53,7 +50,7 @@ namespace Application.Shared
 
         public SearchResult<TListDto> Search(SearchFormDto form)
         {
-            var dbSet = UseDbSet(db);
+            var dbSet = _dataService.GetDbSet<TEntity>();
             var query = dbSet.AsQueryable();
 
 
@@ -117,7 +114,7 @@ namespace Application.Shared
         
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
-            var dbSet = UseDbSet(db);
+            var dbSet = _dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
@@ -127,7 +124,7 @@ namespace Application.Shared
                     
                     dbSet.Update(entityFromDb);
                     
-                    db.SaveChanges();
+                    _dataService.SaveChanges();
                     return new ValidateResult
                     {
                         Id = entityFromDb.Id.ToString()
@@ -140,7 +137,7 @@ namespace Application.Shared
             };
             MapFromDtoToEntity(entity, entityFrom);
             dbSet.Add(entity);
-            db.SaveChanges();
+            _dataService.SaveChanges();
             return new ValidateResult
             {
                 Id = entity.Id.ToString()
@@ -149,7 +146,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TListDto>(db);
+            return new ExcelMapper<TListDto>(_dataService);
         }
     }
 }

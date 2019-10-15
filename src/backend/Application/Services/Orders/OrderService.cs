@@ -2,12 +2,11 @@ using Application.BusinessModels.Orders.Handlers;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
-using DAL;
 using DAL.Services;
+using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Orders;
 using Domain.Services.UserProvider;
@@ -17,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Application.Services.Orders
 {
@@ -25,8 +23,13 @@ namespace Application.Services.Orders
     {
         private readonly IHistoryService _historyService;
 
-        public OrdersService(ICommonDataService dataSevice, AppDbContext db, IUserProvider userIdProvider, IHistoryService historyService, IActionService<Order> actionService) 
-            : base(dataSevice, db, userIdProvider, actionService)
+        public OrdersService(
+            IHistoryService historyService,
+            ICommonDataService dataService,
+            IUserProvider userIdProvider,
+            IEnumerable<IAppAction<Order>> singleActions,
+            IEnumerable<IGroupAppAction<Order>> groupActions) 
+            : base(dataService, userIdProvider, singleActions, groupActions)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
@@ -34,7 +37,7 @@ namespace Application.Services.Orders
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
         {
-            var orders = this.dataService.GetDbSet<Order>().Where(o => ids.Contains(o.Id)).ToList();
+            var orders = this._dataService.GetDbSet<Order>().Where(o => ids.Contains(o.Id)).ToList();
             var result = new OrderSummaryDto
             {
                 Count = orders.Count,
@@ -54,29 +57,29 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
-                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler(dataService, _historyService));
+                setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
-                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(dataService, _historyService));
+                setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler(_historyService));
             setter.UpdateField(e => e.OrderDate, ParseDateTime(dto.OrderDate));
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
             setter.UpdateField(e => e.Payer, dto.Payer);
             setter.UpdateField(e => e.ClientName, dto.ClientName);
-            setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(dataService, _historyService));
+            setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(dataService, _historyService));
+            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
-            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(dataService, _historyService));
+            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
             setter.UpdateField(e => e.ConfirmedBoxesCount, dto.ConfirmedBoxesCount);
-            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(dataService, _historyService));
-            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(dataService, _historyService));
-            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(dataService, _historyService));
-            setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(dataService, _historyService));
-            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(dataService, _historyService));
+            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
@@ -87,15 +90,15 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
             setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(dataService, _historyService));
-            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(dataService, _historyService));
-            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler(dataService, _historyService));
-            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler(dataService, _historyService));
+            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.UnloadingArrivalTime, ParseDateTime(dto.UnloadingArrivalDate)?.Add(ParseTime(dto.UnloadingArrivalTime) ?? TimeSpan.Zero), new UnloadingArrivalTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.UnloadingDepartureTime, ParseDateTime(dto.UnloadingDepartureDate)?.Add(ParseTime(dto.UnloadingDepartureTime) ?? TimeSpan.Zero), new UnloadingDepartureTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.DocumentsReturnDate, ParseDateTime(dto.DocumentsReturnDate));
             setter.UpdateField(e => e.ActualDocumentsReturnDate, ParseDateTime(dto.ActualDocumentsReturnDate));
             setter.UpdateField(e => e.WaybillTorg12, dto.WaybillTorg12 ?? false);
             setter.UpdateField(e => e.Invoice, dto.Invoice ?? false);
-            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler(dataService, _historyService));
+            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ReturnInformation, dto.ReturnInformation);
             setter.UpdateField(e => e.ReturnShippingAccountNo, dto.ReturnShippingAccountNo);
             setter.UpdateField(e => e.PlannedReturnDate, ParseDateTime(dto.PlannedReturnDate));
@@ -151,11 +154,11 @@ namespace Application.Services.Orders
 
             if (entity.ShippingId != null)
             {
-                var shipping = dataService.GetById<Shipping>(entity.ShippingId.Value);
+                var shipping = _dataService.GetById<Shipping>(entity.ShippingId.Value);
                 result.ShippingNumber = shipping?.ShippingNumber;
             }
 
-            result.Items = dataService.GetDbSet<OrderItem>()
+            result.Items = _dataService.GetDbSet<OrderItem>()
                                       .Where(i => i.OrderId == entity.Id)
                                       .Select(_mapper.Map<OrderItemDto>)
                                       .ToList();
@@ -174,7 +177,7 @@ namespace Application.Services.Orders
 
         private string GetPickingTypeNameById(Guid? id)
         {
-            return id == null ? null : dataService.GetById<PickingType>(id.Value)?.Name;
+            return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
         }
 
         private bool CheckRequiredFields(Order order)
@@ -203,7 +206,7 @@ namespace Application.Services.Orders
         {
             if (string.IsNullOrEmpty(setter.Entity.ShippingAddress))
             {
-                var fromWarehouse = dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
+                var fromWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
                 if (fromWarehouse != null)
                 {
                     setter.UpdateField(e => e.ShippingWarehouseId, fromWarehouse.Id, ignoreChanges: true);
@@ -222,7 +225,7 @@ namespace Application.Services.Orders
             if (dto.Items != null)
             {
                 HashSet<Guid> updatedItems = new HashSet<Guid>();
-                List<OrderItem> entityItems = dataService.GetDbSet<OrderItem>().Where(i => i.OrderId == entity.Id).ToList();
+                List<OrderItem> entityItems = _dataService.GetDbSet<OrderItem>().Where(i => i.OrderId == entity.Id).ToList();
                 Dictionary<string, OrderItem> entityItemsDict = entityItems.ToDictionary(i => i.Id.ToString());
                 foreach (OrderItemDto itemDto in dto.Items)
                 {
@@ -234,7 +237,7 @@ namespace Application.Services.Orders
                             OrderId = entity.Id
                         };
                         MapFromItemDtoToEntity(item, itemDto, true);
-                        dataService.GetDbSet<OrderItem>().Add(item);
+                        _dataService.GetDbSet<OrderItem>().Add(item);
 
                         _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
                     }
@@ -242,7 +245,7 @@ namespace Application.Services.Orders
                     {
                         updatedItems.Add(item.Id);
                         MapFromItemDtoToEntity(item, itemDto, false);
-                        dataService.GetDbSet<OrderItem>().Update(item);
+                        _dataService.GetDbSet<OrderItem>().Update(item);
                     }
                 }
 
@@ -251,7 +254,7 @@ namespace Application.Services.Orders
                 {
                     _historyService.Save(entity.Id, "orderItemRemoved", item.Nart, item.Quantity);
                 }
-                dataService.GetDbSet<OrderItem>().RemoveRange(itemsToRemove);
+                _dataService.GetDbSet<OrderItem>().RemoveRange(itemsToRemove);
 
                 entity.ArticlesCount = dto.Items.Count;
             }
@@ -263,7 +266,7 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(x => x.Nart, dto.Nart, new OrderItemNartHandler(dataService, _historyService, isNew));
+            setter.UpdateField(x => x.Nart, dto.Nart, new OrderItemNartHandler(_dataService, _historyService, isNew));
             setter.UpdateField(x => x.Quantity, dto.Quantity ?? 0, new OrderItemQuantityHandler(_historyService, isNew));
 
             setter.ApplyAfterActions();
