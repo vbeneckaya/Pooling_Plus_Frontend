@@ -2,6 +2,7 @@
 using Application.Shared;
 using DAL;
 using DAL.Queries;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;

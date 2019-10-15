@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Domain.Services.History;
+using DAL.Services;
 
 namespace Application.Services.Documents
 {
