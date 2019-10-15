@@ -140,17 +140,17 @@ namespace Tasks.Orders
             {
                 OrderFormDto dto = new OrderFormDto();
 
-                decimal weightUomCoeff = docRoot.ParseUom("//E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
+                decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
-                dto.OrderNumber = docRoot.SelectSingleNode("//E1EDK02[QUALF='001']/BELNR")?.InnerText;
-                dto.OrderDate = docRoot.ParseDateTime("//E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy");
-                dto.Payer = docRoot.SelectSingleNode("//E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
-                dto.SoldTo = docRoot.SelectSingleNode("//E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
-                dto.WeightKg = docRoot.ParseDecimal("//E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
-                dto.PalletsCount = docRoot.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYPAL_H");
-                dto.BoxesCount = docRoot.ParseInt("//Y0126SD_ORDERS05_TMS_01/YYCAR_H");
-                dto.DeliveryDate = docRoot.ParseDateTime("//E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy");
-                dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("//E1EDS01[SUMID='002']/SUMME");
+                dto.OrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText;
+                dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy");
+                dto.Payer = docRoot.SelectSingleNode("E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
+                dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
+                dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
+                dto.PalletsCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYPAL_H");
+                dto.BoxesCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYCAR_H");
+                dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy");
+                dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME");
 
                 IEnumerable<string> missedRequiredFields = ValidateRequiredFields(dto);
                 if (missedRequiredFields.Any())
@@ -161,7 +161,7 @@ namespace Tasks.Orders
                 }
 
                 int entryInd = 0;
-                var itemRoots = docRoot.SelectNodes("//E1EDP01");
+                var itemRoots = docRoot.SelectNodes("E1EDP01");
                 dto.Items = new List<OrderItemDto>();
                 foreach (XmlNode itemRoot in itemRoots)
                 {
