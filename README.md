@@ -34,5 +34,5 @@
 Изменить в файле "src/frontend/package.json" опцию "proxy" (указывается только хост/IP и порт)
 
 **Запуск по расписанию задач
-в раз 5 минут dotnet /app/build/Tasks.dll run ImportProducts
-в раз 5 минут dotnet /app/build/Tasks.dll run ImportOrder
+- в раз 5 минут dotnet /app/build/Tasks.dll run ImportProducts
+- в раз 5 минут dotnet /app/build/Tasks.dll run ImportOrder
