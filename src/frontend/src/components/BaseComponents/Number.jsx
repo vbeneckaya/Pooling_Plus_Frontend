@@ -16,7 +16,7 @@ const Number = ({ value, name, onChange, isDisabled, noLabel, className, text, e
                 error={error}
                 disabled={isDisabled || false}
                 name={name}
-                value={value || ''}
+                value={value}
                 onChange={onChange}
                 autoComplete="off"
             />
