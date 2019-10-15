@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DAL;
 using DAL.Queries;
 using Domain;
 using Domain.Persistables;
@@ -10,7 +9,6 @@ using Domain.Services;
 using Domain.Services.UserProvider;
 using Domain.Extensions;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Globalization;
 using Application.Shared.Excel;
@@ -24,7 +22,6 @@ namespace Application.Shared
         where TFormDto : IDto, new()
         where TSearchForm: PagingFormDto
     {
-        //public abstract DbSet<TEntity> UseDbSet(AppDbContext dbContext);
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
@@ -36,44 +33,47 @@ namespace Application.Shared
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
-        private readonly IUserProvider userIdProvider;
+        private readonly IUserProvider _userIdProvider;
 
-        protected readonly ICommonDataService dataService;
+        protected readonly ICommonDataService _dataService;
 
-        protected readonly IActionService<TEntity> actionService;
+        protected readonly IEnumerable<IAppAction<TEntity>> _singleActions;
 
-        //TODO: remove this
-        private readonly AppDbContext db;
+        protected readonly IEnumerable<IGroupAppAction<TEntity>> _groupActions;
 
-        protected GridService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IActionService<TEntity> actionService)
+        protected GridService(
+            ICommonDataService dataService, 
+            IUserProvider userIdProvider,
+            IEnumerable<IAppAction<TEntity>> singleActions,
+            IEnumerable<IGroupAppAction<TEntity>> groupActions)
         {
-            this.userIdProvider = userIdProvider;
-            this.dataService = dataService;
-            this.actionService = actionService;
-            this.db = db;
+            _userIdProvider = userIdProvider;
+            _dataService = dataService;
+            _singleActions = singleActions;
+            _groupActions = groupActions;
         }
 
         public TDto Get(Guid id)
         {
-            var entity = dataService.GetById<TEntity>(id);
+            var entity = _dataService.GetById<TEntity>(id);
             return MapFromEntityToDto(entity);
         }
 
         public TFormDto GetForm(Guid id)
         {
-            var entity = dataService.GetById<TEntity>(id);
+            var entity = _dataService.GetById<TEntity>(id);
             return MapFromEntityToFormDto(entity);
         }
 
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var dbSet = _dataService.GetDbSet<TEntity>();
             return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
         public SearchResult<TDto> Search(TSearchForm form)
         {
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var dbSet = _dataService.GetDbSet<TEntity>();
 
             //if (!string.IsNullOrEmpty(form.Search))
             //{
@@ -104,7 +104,7 @@ namespace Application.Shared
 
         public IEnumerable<string> SearchIds(TSearchForm form)
         {
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var dbSet = _dataService.GetDbSet<TEntity>();
             
             var query = this.ApplySearchForm(dbSet, form);
 
@@ -117,7 +117,7 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             ValidateResult mapResult;
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var dbSet = _dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
@@ -131,7 +131,7 @@ namespace Application.Shared
 
                     dbSet.Update(entityFromDb);
                     
-                    dataService.SaveChanges();
+                    _dataService.SaveChanges();
                     return new ValidateResult
                     {
                         Id = entityFromDb.Id.ToString()
@@ -152,7 +152,7 @@ namespace Application.Shared
 
             dbSet.Add(entity);
 
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             return new ValidateResult
             {
                 Id = entity.Id.ToString()
@@ -164,16 +164,15 @@ namespace Application.Shared
             if (ids == null) 
                 throw new ArgumentNullException(nameof(ids));
             
-            var dbSet = dataService.GetDbSet<TEntity>();
-            var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var dbSet = _dataService.GetDbSet<TEntity>();
+            var currentUser = _userIdProvider.GetCurrentUser();
+            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
 
             var result = new List<ActionDto>();
 
             var entities = ids.Select(id => dbSet.GetById(id));
 
-            var singleActions = actionService.GetActions();
-            foreach (var action in singleActions)
+            foreach (var action in _singleActions)
             {
                 var validEntities = entities.Where(e => action.IsAvailable(role, e));
                 if (validEntities.Any())
@@ -193,8 +192,7 @@ namespace Application.Shared
 
             if (ids.Count() > 1)
             {
-                var groupActions = actionService.GetGroupActions();
-                foreach (var action in groupActions)
+                foreach (var action in _groupActions)
                 {
                     if (action.IsAvailable(role, entities))
                     {
@@ -217,7 +215,7 @@ namespace Application.Shared
 
         public AppActionResult InvokeAction(string name, Guid id)
         {
-            var action = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var action = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -226,9 +224,9 @@ namespace Application.Shared
                     Message = $"Action {name} not found"
                 };
 
-            var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            var entity = dataService.GetById<TEntity>(id);
+            var currentUser = _userIdProvider.GetCurrentUser();
+            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var entity = _dataService.GetById<TEntity>(id);
             var message = "";
             if (action.IsAvailable(role, entity)) 
                 message += action.Run(currentUser, entity).Message;
@@ -242,8 +240,8 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
-            var singleAction = actionService.GetActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
-            var groupAction = actionService.GetGroupActions().FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var singleAction = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var groupAction = _groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
 
             if (singleAction == null && groupAction == null)
                 return new AppActionResult
@@ -252,9 +250,9 @@ namespace Application.Shared
                     Message = $"Action {name} not found"
                 };
 
-            var currentUser = userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var currentUser = _userIdProvider.GetCurrentUser();
+            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
+            var dbSet = _dataService.GetDbSet<TEntity>();
 
             var entities = ids.Select(dbSet.GetById);
 
@@ -336,13 +334,13 @@ namespace Application.Shared
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
-            var dbSet = dataService.GetDbSet<TEntity>();
+            var dbSet = _dataService.GetDbSet<TEntity>();
             var entities = dbSet.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
 
-            var user = userIdProvider.GetCurrentUser();
+            var user = _userIdProvider.GetCurrentUser();
 
-            var excelMapper = new ExcelMapper<TDto>(db);
+            var excelMapper = new ExcelMapper<TDto>(_dataService);
             excelMapper.FillSheet(workSheet, dtos, user.Language);
             
             return new MemoryStream(excel.GetAsByteArray());
@@ -350,7 +348,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TFormDto>(db);
+            return new ExcelMapper<TFormDto>(_dataService);
         }
 
         protected TimeSpan? ParseTime(string value)

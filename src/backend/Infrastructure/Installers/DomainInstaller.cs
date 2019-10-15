@@ -49,6 +49,9 @@ using DAL.Services;
 using Domain.Persistables;
 using Application.Services.Documents;
 using Domain.Services.Documents;
+using Domain;
+using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Shippings.Actions;
 
 namespace Infrastructure.Installers
 {
@@ -68,8 +71,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IUserSettingsService, UserSettingsService>();
 
             services.AddScoped<ICommonDataService, CommonDataService>();
-            services.AddScoped<IActionService<Order>, OrderActionsService>();
-            services.AddScoped<IActionService<Shipping>, ShippingActionsService>();
             services.AddScoped<IDocumentService, DocumentService>();
 
             /*start of add service implementation*/
@@ -86,6 +87,9 @@ namespace Infrastructure.Installers
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             /*end of add service implementation*/
 
+            AddOrderBusinessModels(services);
+            AddShippingBusinessModels(services);
+
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
 
             var buildServiceProvider = services.AddEntityFrameworkNpgsql()
@@ -100,6 +104,34 @@ namespace Infrastructure.Installers
                 var appDbContext = buildServiceProvider.GetService<AppDbContext>();
                 appDbContext.Migrate(connectionString);
             }
+        }
+
+        private static void AddOrderBusinessModels(IServiceCollection services)
+        {
+            services.AddScoped<IAppAction<Order>, CreateShipping>();
+            services.AddScoped<IAppAction<Order>, CancelOrder>();
+            services.AddScoped<IAppAction<Order>, RemoveFromShipping>();
+            services.AddScoped<IAppAction<Order>, SendToArchive>();
+            services.AddScoped<IAppAction<Order>, RecordFactOfLoss>();
+            services.AddScoped<IAppAction<Order>, OrderShipped>();
+            services.AddScoped<IAppAction<Order>, OrderDelivered>();
+            services.AddScoped<IAppAction<Order>, FullReject>();
+            services.AddScoped<IAppAction<Order>, DeleteOrder>();
+
+            services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
+        }
+
+        private static void AddShippingBusinessModels(IServiceCollection services)
+        {
+            services.AddScoped<IAppAction<Shipping>, SendShippingToTk>();
+            services.AddScoped<IAppAction<Shipping>, ConfirmShipping>();
+            services.AddScoped<IAppAction<Shipping>, RejectRequestShipping>();
+            services.AddScoped<IAppAction<Shipping>, CancelRequestShipping>();
+            services.AddScoped<IAppAction<Shipping>, CompleteShipping>();
+            services.AddScoped<IAppAction<Shipping>, CancelShipping>();
+            services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
+            services.AddScoped<IAppAction<Shipping>, BillingShipping>();
+            services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
         }
     }
 }

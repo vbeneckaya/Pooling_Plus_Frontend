@@ -1,8 +1,7 @@
 ﻿using Application.Shared;
-using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Injections;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,8 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
+        public InjectionsService(ICommonDataService dataService) : base(dataService) { }
+
         public override void MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
@@ -33,20 +34,11 @@ namespace Application.Services.Injections
             };
         }
 
-        public override DbSet<Injection> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Injections;
-        }
-
         public IEnumerable<InjectionDto> GetByTaskName(string taskName)
         {
-            var resultEntries = db.Injections.Where(i => i.Type == taskName);
+            var resultEntries = _dataService.GetDbSet<Injection>().Where(i => i.Type == taskName);
             var resultDtos = resultEntries.Select(MapFromEntityToDto).ToArray();
             return resultDtos;
-        }
-
-        public InjectionsService(AppDbContext appDbContext) : base(appDbContext)
-        {
         }
     }
 }

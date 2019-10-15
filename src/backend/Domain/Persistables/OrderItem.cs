@@ -35,7 +35,7 @@ namespace Domain.Persistables
         /// <summary>
         /// SPGR
         /// </summary>
-        public string SPGR { get; set; }
+        public string Spgr { get; set; }
 
         /// <summary>
         /// EAN

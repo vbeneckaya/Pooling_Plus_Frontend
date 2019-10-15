@@ -1,35 +1,26 @@
 using System;
 using Application.Shared;
-using DAL;
 using Domain.Persistables;
-using Domain.Extensions;
 using Domain.Services.TransportCompanies;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Domain.Shared;
 using System.Collections.Generic;
+using DAL.Services;
 
 namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(AppDbContext appDbContext) : base(appDbContext)
-        {
-        }
-
-        public override DbSet<TransportCompany> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.TransportCompanies;
-        }
+        public TransportCompaniesService(ICommonDataService dataService) : base(dataService) { }
 
         public override TransportCompany FindByKey(TransportCompanyDto dto)
         {
-            return db.TransportCompanies.Where(x => x.Title == dto.Title).FirstOrDefault();
+            return _dataService.GetDbSet<TransportCompany>().Where(x => x.Title == dto.Title).FirstOrDefault();
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var carriers = db.TransportCompanies.OrderBy(c => c.Title).ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>().OrderBy(c => c.Title).ToList();
             foreach (TransportCompany carrier in carriers)
             {
                 yield return new LookUpDto
