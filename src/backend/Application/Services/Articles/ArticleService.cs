@@ -39,7 +39,7 @@ namespace Application.Services.Articles
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            entity.SPGR = dto.SPGR;
+            entity.Spgr = dto.Spgr;
             entity.Description = dto.Description;
             entity.Nart = dto.Nart;
             entity.CountryOfOrigin = dto.CountryOfOrigin;
@@ -51,14 +51,14 @@ namespace Application.Services.Articles
             entity.UnitHeightGoodsMm = dto.UnitHeightGoodsMm;
             entity.WeightUnitsGrossProductG = dto.WeightUnitsGrossProductG;
             entity.WeightUnitsNetGoodsG = dto.WeightUnitsNetGoodsG;
-            entity.EANShrink = dto.EANShrink;
+            entity.EanShrink = dto.EanShrink;
             entity.PiecesInShrink = dto.PiecesInShrink;
             entity.LengthShrinkMm = dto.LengthShrinkMm;
             entity.WidthShrinkMm = dto.WidthShrinkMm;
             entity.HeightShrinkMm = dto.HeightShrinkMm;
             entity.GrossShrinkWeightG = dto.GrossShrinkWeightG;
             entity.NetWeightShrinkG = dto.NetWeightShrinkG;
-            entity.EANBox = dto.EANBox;
+            entity.EanBox = dto.EanBox;
             entity.PiecesInABox = dto.PiecesInABox;
             entity.BoxLengthMm = dto.BoxLengthMm;
             entity.WidthOfABoxMm = dto.WidthOfABoxMm;
@@ -71,7 +71,7 @@ namespace Application.Services.Articles
             entity.LayerHeightMm = dto.LayerHeightMm;
             entity.GrossLayerWeightMm = dto.GrossLayerWeightMm;
             entity.NetWeightMm = dto.NetWeightMm;
-            entity.EANPallet = dto.EANPallet;
+            entity.EanPallet = dto.EanPallet;
             entity.PiecesOnAPallet = dto.PiecesOnAPallet;
             entity.PalletLengthMm = dto.PalletLengthMm;
             entity.WidthOfPalletsMm = dto.WidthOfPalletsMm;
@@ -86,7 +86,7 @@ namespace Application.Services.Articles
             return new ArticleDto
             {
                 Id = entity.Id.ToString(),
-                SPGR = entity.SPGR,
+                Spgr = entity.Spgr,
                 Description = entity.Description,
                 Nart = entity.Nart,
                 CountryOfOrigin = entity.CountryOfOrigin,
@@ -98,14 +98,14 @@ namespace Application.Services.Articles
                 UnitHeightGoodsMm = entity.UnitHeightGoodsMm,
                 WeightUnitsGrossProductG = entity.WeightUnitsGrossProductG,
                 WeightUnitsNetGoodsG = entity.WeightUnitsNetGoodsG,
-                EANShrink = entity.EANShrink,
+                EanShrink = entity.EanShrink,
                 PiecesInShrink = entity.PiecesInShrink,
                 LengthShrinkMm = entity.LengthShrinkMm,
                 WidthShrinkMm = entity.WidthShrinkMm,
                 HeightShrinkMm = entity.HeightShrinkMm,
                 GrossShrinkWeightG = entity.GrossShrinkWeightG,
                 NetWeightShrinkG = entity.NetWeightShrinkG,
-                EANBox = entity.EANBox,
+                EanBox = entity.EanBox,
                 PiecesInABox = entity.PiecesInABox,
                 BoxLengthMm = entity.BoxLengthMm,
                 WidthOfABoxMm = entity.WidthOfABoxMm,
@@ -118,7 +118,7 @@ namespace Application.Services.Articles
                 LayerHeightMm = entity.LayerHeightMm,
                 GrossLayerWeightMm = entity.GrossLayerWeightMm,
                 NetWeightMm = entity.NetWeightMm,
-                EANPallet = entity.EANPallet,
+                EanPallet = entity.EanPallet,
                 PiecesOnAPallet = entity.PiecesOnAPallet,
                 PalletLengthMm = entity.PalletLengthMm,
                 WidthOfPalletsMm = entity.WidthOfPalletsMm,

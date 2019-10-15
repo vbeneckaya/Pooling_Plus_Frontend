@@ -15,7 +15,7 @@ namespace Domain.Persistables
         /// <summary>
         /// SPGR
         /// </summary>
-        public string SPGR { get; set; }
+        public string Spgr { get; set; }
         /// <summary>
         /// Описание
         /// </summary>
@@ -63,7 +63,7 @@ namespace Domain.Persistables
         /// <summary>
         /// EAN, shrink
         /// </summary>
-        public string EANShrink { get; set; }
+        public string EanShrink { get; set; }
         /// <summary>
         /// Штук в shrink
         /// </summary>
@@ -91,7 +91,7 @@ namespace Domain.Persistables
         /// <summary>
         /// EAN, короб
         /// </summary>
-        public string EANBox { get; set; }
+        public string EanBox { get; set; }
         /// <summary>
         /// Штук в коробе
         /// </summary>
@@ -143,7 +143,7 @@ namespace Domain.Persistables
         /// <summary>
         /// EAN, паллета
         /// </summary>
-        public string EANPallet { get; set; }
+        public string EanPallet { get; set; }
         /// <summary>
         /// Штук на паллете
         /// </summary>

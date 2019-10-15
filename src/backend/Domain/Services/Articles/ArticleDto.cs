@@ -3,7 +3,7 @@ namespace Domain.Services.Articles
     public class ArticleDto : IDto
     {
         public string Id { get; set; }
-        public string SPGR { get; set; }
+        public string Spgr { get; set; }
         public string Description { get; set; }
         public string Nart { get; set; }
         public string CountryOfOrigin { get; set; }
@@ -15,14 +15,14 @@ namespace Domain.Services.Articles
         public int? UnitHeightGoodsMm { get; set; }
         public int? WeightUnitsGrossProductG { get; set; }
         public int? WeightUnitsNetGoodsG { get; set; }
-        public string EANShrink { get; set; }
+        public string EanShrink { get; set; }
         public int? PiecesInShrink { get; set; }
         public int? LengthShrinkMm { get; set; }
         public int? WidthShrinkMm { get; set; }
         public int? HeightShrinkMm { get; set; }
         public int? GrossShrinkWeightG { get; set; }
         public int? NetWeightShrinkG { get; set; }
-        public string EANBox { get; set; }
+        public string EanBox { get; set; }
         public int? PiecesInABox { get; set; }
         public int? BoxLengthMm { get; set; }
         public int? WidthOfABoxMm { get; set; }
@@ -35,7 +35,7 @@ namespace Domain.Services.Articles
         public int? LayerHeightMm { get; set; }
         public int? GrossLayerWeightMm { get; set; }
         public int? NetWeightMm { get; set; }
-        public string EANPallet { get; set; }
+        public string EanPallet { get; set; }
         public int? PiecesOnAPallet { get; set; }
         public int? PalletLengthMm { get; set; }
         public int? WidthOfPalletsMm { get; set; }
