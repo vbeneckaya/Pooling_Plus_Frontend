@@ -14,6 +14,6 @@ COPY /docker/tasks/cron/cron.d /etc/cron.d
 
 RUN touch /var/log/cron.log
 
-RUN dotnet publish Tasks/ -c Release -o app/build/
+RUN dotnet publish Tasks/ -c Release -o /app/build/
 
 ENTRYPOINT ["tail", "-f", "/var/log/cron.log"]
