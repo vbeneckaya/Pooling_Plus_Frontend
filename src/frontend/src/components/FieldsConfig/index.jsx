@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {Button, Form, Input, Modal, Search} from 'semantic-ui-react';
+import { Button, Confirm, Form, Input, Modal, Search } from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
 import {
+    deleteRepresentationRequest,
     editRepresentationRequest,
     representationNameSelector,
     representationSelector,
+    representationsSelector,
     saveRepresentationRequest,
     setRepresentationRequest,
 } from '../../ducks/representations';
 
-
-const FieldsConfig = ({ children, title, gridName, isNew }) => {
+const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) => {
     const currName = useSelector(state => representationNameSelector(state, gridName));
     const currRepresentation = useSelector(state => representationSelector(state, gridName)) || [];
 
@@ -23,13 +24,18 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
     let [name, setName] = useState(isNew ? '' : currName);
     let [error, setError] = useState(false);
     let [search, setSearch] = useState('');
+    let [confirmation, setConfirmation] = useState({ open: false });
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
+    console.log('children', children);
+
     const fieldsList = useSelector(state => columnsGridSelector(state, gridName)).filter(column => {
         return !selectedFields.map(item => item.name).includes(column.name);
     });
+
+    const list = useSelector(state => representationsSelector(state));
 
     useEffect(
         () => {
@@ -44,12 +50,12 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
         [currRepresentation],
     );
 
-
     const onOpen = () => {
         setModalOpen(true);
     };
 
-    const onClose = () => {
+    const onClose = callBackFunc => {
+        getRepresentations && getRepresentations(callBackFunc);
         setModalOpen(false);
         setSearch('');
     };
@@ -58,13 +64,20 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
         setSelectedFields(selected);
     };
 
+    const isNotUniqueName = () => {
+        console.log('list[name]', list[name]);
+        return Boolean(list[name]);
+    };
+
     const handleSave = () => {
         if (!name) {
-            setError(true);
+            setError('required_field');
+        } else if (isNotUniqueName()) {
+            setError('representation_already_exists');
         } else {
             dispatch(
                 saveRepresentationRequest({
-                    gridName,
+                    key: gridName,
                     name,
                     value: selectedFields,
                     callbackSuccess: () => {
@@ -76,31 +89,62 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
     };
 
     const handleEdit = () => {
-        if (!name) {
+        if (!name || isNotUniqueName()) {
             setError(true);
         } else {
             dispatch(
                 editRepresentationRequest({
-                    gridName,
+                    key: gridName,
                     name,
                     oldName: currName,
                     value: selectedFields,
                     callbackSuccess: () => {
-                        dispatch(
-                            setRepresentationRequest({
-                                gridName,
-                                value: name,
-                            }),
-                        );
-                        onClose();
+                        onClose(() => {
+                            dispatch(
+                                setRepresentationRequest({
+                                    gridName,
+                                    value: name,
+                                }),
+                            );
+                        });
                     },
                 }),
             );
         }
     };
 
-    const fieldsListSearch = fieldsList.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
-    const selectedListSearch = selectedFields.filter(item => t(item.name).toLowerCase().includes(search.toLowerCase()));
+    const handleDelete = () => {
+        showConfirmation(t('confirm_delete_representation'), () => {
+            dispatch(
+                deleteRepresentationRequest({
+                    key: gridName,
+                    name: currName,
+                    callbackSuccess: () => {
+                        onClose(() => {
+                            dispatch(
+                                setRepresentationRequest({
+                                    gridName,
+                                    value: null,
+                                }),
+                            );
+                        });
+                    },
+                }),
+            );
+        });
+    };
+
+    const closeConfirmation = () => {
+        setConfirmation({ open: false });
+    };
+
+    const showConfirmation = (content, onConfirm) => {
+        setConfirmation({
+            open: true,
+            content,
+            onConfirm,
+        });
+    };
 
     return (
         <Modal
@@ -122,33 +166,51 @@ const FieldsConfig = ({ children, title, gridName, isNew }) => {
                             name="name"
                             value={name}
                             error={error}
+                            errorText={
+                                error && t(error)
+                            }
                             onChange={(e, { value }) => setName(value)}
                         />
                         <Input
-                            icon='search'
-                            iconPosition='left'
-                            placeholder='Поиск поля'
+                            icon="search"
+                            iconPosition="left"
+                            placeholder={t('search_field')}
                             value={search}
                             clearable
-                            onChange={(e, {value}) => setSearch(value)}
+                            onChange={(e, { value }) => setSearch(value)}
                         />
                     </Form>
                     <DragAndDropFields
                         type={gridName}
-                        fieldsConfig={selectedListSearch}
-                        fieldsList={fieldsListSearch}
+                        fieldsConfig={selectedFields}
+                        fieldsList={fieldsList}
+                        search={search}
                         onChange={onChange}
                     />
                 </Modal.Description>
             </Modal.Content>
-            <Modal.Actions>
-                <Button color="grey" onClick={onClose}>
-                    {t('CancelButton')}
-                </Button>
-                <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
-                    {t('SaveButton')}
-                </Button>
+            <Modal.Actions className="grid-card-actions">
+                <div>
+                    <Button color="red" onClick={handleDelete}>
+                        {t('delete')}
+                    </Button>
+                </div>
+                <div>
+                    <Button color="grey" onClick={onClose}>
+                        {t('CancelButton')}
+                    </Button>
+                    <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
+                        {t('SaveButton')}
+                    </Button>
+                </div>
             </Modal.Actions>
+            <Confirm
+                dimmer="blurring"
+                open={confirmation.open}
+                onCancel={closeConfirmation}
+                onConfirm={confirmation.onConfirm}
+                content={confirmation.content}
+            />
         </Modal>
     );
 };
