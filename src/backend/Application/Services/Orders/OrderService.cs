@@ -384,7 +384,7 @@ namespace Application.Services.Orders
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
             return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
-                .DefaultOrderBy(i => i.OrderCreationDate, searchForm.Sort?.Name != null);
+                .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }
 }

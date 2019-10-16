@@ -335,7 +335,7 @@ namespace Application.Services.Shippings
                 .ApplyBooleanFilter(i => i.CostsConfirmedByCarrier, searchForm.Filter.CostsConfirmedByCarrier);
 
             return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
-                .DefaultOrderBy(i => i.ShippingCreationDate, searchForm.Sort?.Name != null);
+                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }
 }
