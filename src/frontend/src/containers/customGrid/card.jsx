@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
     editCardRequest,
@@ -13,11 +13,12 @@ import {
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
 import {
-    actionsSelector, clearActions,
+    actionsSelector,
+    clearActions,
     getActionsRequest,
     invokeActionRequest,
-    progressActionNameSelector
-} from "../../ducks/gridActions";
+    progressActionNameSelector,
+} from '../../ducks/gridActions';
 
 const getModal = {
     orders: <OrderModal />,
@@ -29,12 +30,15 @@ const SelfComponent = props => {
 };
 
 const Card = props => {
-    const { name, id, stopUpdate, loadList, title, children, onClose: beforeClose} = props;
+    const { name, id, stopUpdate, loadList, title, children, onClose: beforeClose } = props;
     let [modalOpen, setModalOpen] = useState(false);
     let [form, setForm] = useState({});
-    let [confirmation, setConfirmation] = useState({open: false});
+    let [notChangeForm, setNotChangeForm] = useState(true);
+    let [confirmation, setConfirmation] = useState({ open: false });
     const { t } = useTranslation();
     const dispatch = useDispatch();
+
+    const card = useSelector(state => cardSelector(state));
 
     const loadCard = () => {
         dispatch(
@@ -49,10 +53,12 @@ const Card = props => {
     };
 
     const getActions = () => {
-      dispatch(getActionsRequest({
-          name,
-          ids: [id]
-      }))
+        dispatch(
+            getActionsRequest({
+                name,
+                ids: [id],
+            }),
+        );
     };
 
     const onOpen = () => {
@@ -63,18 +69,35 @@ const Card = props => {
         setModalOpen(true);
     };
 
-    const onClose = () => {
-        beforeClose ? beforeClose() : setModalOpen(false);
-        setForm({});
-        loadList && loadList(false, true);
+    const onClose = isConfirm => {
+        if (!isConfirm || notChangeForm) {
+            beforeClose ? beforeClose() : setModalOpen(false);
+            setForm({});
+            loadList && loadList(false, true);
+        } else {
+            showConfirmation(
+                t('confirm_close'),
+                () => {
+                    closeConfirmation();
+                    handleSave();
+                },
+                () => {
+                    closeConfirmation();
+                    onClose();
+                },
+            );
+        }
     };
 
     const onChangeForm = (e, { name, value }) => {
-
         setForm({
             ...form,
             [name]: value,
         });
+
+        if (notChangeForm && value !== undefined && Object.keys(form).length && value !== card[name]) {
+            setNotChangeForm(false);
+        }
     };
 
     const handleSave = () => {
@@ -90,40 +113,42 @@ const Card = props => {
     };
 
     const closeConfirmation = () => {
-        setConfirmation({open: false})
+        setConfirmation({ open: false });
     };
 
-    const showConfirmation = (content, onConfirm) => {
+    const showConfirmation = (content, onConfirm, onCancel) => {
         setConfirmation({
             open: true,
             content,
-            onConfirm
-        })
+            onConfirm,
+            onCancel,
+        });
     };
 
-    const invokeAction = (actionName) => {
-        showConfirmation(
-            `${t('Are you sure to complete')} "${t(actionName)}"?`,
-            () => {
-                closeConfirmation();
-                dispatch(invokeActionRequest({
+    const invokeAction = actionName => {
+        showConfirmation(`${t('Are you sure to complete')} "${t(actionName)}"?`, () => {
+            closeConfirmation();
+            dispatch(
+                invokeActionRequest({
                     ids: [id],
                     name,
                     actionName,
                     callbackSuccess: () => {
-                        loadCard();
-                        getActions();
+                        if (actionName.toLowerCase().includes('delete')) {
+                            onClose()
+                        } else {
+                            loadCard();
+                            getActions();
+                        }
                     },
-                }));
-            },
-        );
+                }),
+            );
+        });
     };
 
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-
-    console.log('title', title);
 
     return (
         <Modal
@@ -136,7 +161,12 @@ const Card = props => {
             closeIcon
             size="large"
         >
-            <Modal.Header>{t(title, {number: name === 'orders' ? form.orderNumber : form.shippingNumber, status: t(form.status)})}</Modal.Header>
+            <Modal.Header>
+                {t(title, {
+                    number: name === 'orders' ? form.orderNumber : form.shippingNumber,
+                    status: t(form.status),
+                })}
+            </Modal.Header>
             <Modal.Content scrolling>
                 <Dimmer active={loading} inverted>
                     <Loader size="huge">Loading</Loader>
@@ -164,24 +194,31 @@ const Card = props => {
                             <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
                         </SelfComponent>
                     ) : null}
-                    {
-                        actions &&
+                    {actions &&
                         actions.map(item => (
                             <Button
                                 color={item.color}
                                 loading={progressActionName === item.name}
                                 disabled={progressActionName}
-                                onClick={() => invokeAction(item.name)}>
+                                onClick={() => invokeAction(item.name)}
+                            >
                                 {t(item.name)}
-                                </Button>
-                        ))
-                    }
+                            </Button>
+                        ))}
                 </div>
                 <div>
-                    <Button color="grey" disabled={progressActionName} onClick={onClose}>
+                    <Button
+                        color="grey"
+                        disabled={progressActionName}
+                        onClick={() => onClose(true)}
+                    >
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" disabled={progressActionName} onClick={handleSave}>
+                    <Button
+                        color="blue"
+                        disabled={progressActionName || notChangeForm}
+                        onClick={handleSave}
+                    >
                         {t('SaveButton')}
                     </Button>
                 </div>
@@ -189,7 +226,7 @@ const Card = props => {
             <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
-                onCancel={closeConfirmation}
+                onCancel={confirmation.onCancel || closeConfirmation}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />

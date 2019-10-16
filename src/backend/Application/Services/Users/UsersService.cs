@@ -1,36 +1,30 @@
 using System;
 using System.Linq;
 using Application.Shared;
-using DAL;
 using Domain.Persistables;
 using Domain.Services.Users;
 using Domain.Extensions;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Domain.Shared;
 using DAL.Queries;
 using Domain.Services.UserProvider;
 using Domain.Services.Translations;
+using DAL.Services;
 
 namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(AppDbContext dbContext, IUserProvider userProvider)
-            : base(dbContext)
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider)
+            : base(dataService)
         {
             _userProvider = userProvider;
-        }
-
-        public override DbSet<User> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Users;
         }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
             var user = _userProvider.GetCurrentUser();
-            var entity = db.Users.GetById(id);
+            var entity = _dataService.GetDbSet<User>().GetById(id);
             if (entity == null)
             {
                 return new ValidateResult("userNotFoundEntity".translate(user.Language));
@@ -38,7 +32,7 @@ namespace Application.Services.Users
             else
             {
                 entity.IsActive = active;
-                db.SaveChanges();
+                _dataService.SaveChanges();
 
                 return new ValidateResult(null, entity.Id.ToString());
             }
@@ -46,7 +40,7 @@ namespace Application.Services.Users
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = db.Users.Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<User>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -60,7 +54,7 @@ namespace Application.Services.Users
 
         public override UserDto MapFromEntityToDto(User entity)
         {
-            var roles = db.Roles.ToList();
+            var roles = _dataService.GetDbSet<Role>().ToList();
             return new UserDto
             {
                 Email = entity.Email,

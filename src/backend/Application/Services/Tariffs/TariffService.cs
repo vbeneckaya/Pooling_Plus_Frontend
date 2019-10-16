@@ -1,28 +1,20 @@
 using System;
 using Application.Shared;
-using DAL;
 using Domain.Persistables;
 using Domain.Extensions;
 using Domain.Services.Tariffs;
-using Microsoft.EntityFrameworkCore;
 using Domain.Enums;
 using System.Linq;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Queries;
+using DAL.Services;
 
 namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(AppDbContext appDbContext) : base(appDbContext)
-        {
-        }
-
-        public override DbSet<Tariff> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Tariffs;
-        }
+        public TariffsService(ICommonDataService dataService) : base(dataService) { }
 
         public override void MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
@@ -120,7 +112,7 @@ namespace Application.Services.Tariffs
 
         protected override ExcelMapper<TariffDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TariffDto>(db)
+            return new ExcelMapper<TariffDto>(_dataService)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>())
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
@@ -128,25 +120,25 @@ namespace Application.Services.Tariffs
 
         private Guid? GetCarrierIdByName(string name)
         {
-            var entry = db.TransportCompanies.Where(t => t.Title == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
             return entry?.Id;
         }
 
         private string GetCarrierNameById(Guid id)
         {
-            var entry = db.TransportCompanies.GetById(id);
+            var entry = _dataService.GetDbSet<TransportCompany>().GetById(id);
             return entry?.Title;
         }
 
         private Guid? GetVehicleTypeIdByName(string name)
         {
-            var entry = db.VehicleTypes.Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
         private string GetVehicleTypeNameById(Guid id)
         {
-            var entry = db.VehicleTypes.GetById(id);
+            var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
             return entry?.Name;
         }
     }

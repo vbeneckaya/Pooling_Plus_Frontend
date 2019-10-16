@@ -2,22 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared;
-using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Translations;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(AppDbContext appDbContext) : base(appDbContext)
-        {
-        }
+        public TranslationsService(ICommonDataService dataService) : base(dataService) { }
         
         public IEnumerable<TranslationDto> GetAll()
         {
-            return db.Translations.ToList().Select(x=>
+            return _dataService.GetDbSet<Translation>().ToList().Select(x=>
             {
                 return new TranslationDto
                 {
@@ -29,14 +26,9 @@ namespace Application.Services.Translations
             } );
         }
 
-        public override DbSet<Translation> UseDbSet(AppDbContext dbContext)
-        {
-            return db.Translations;
-        }
-
         public override Translation FindByKey(TranslationDto dto)
         {
-            return db.Translations.Where(x => x.Name == dto.Name).FirstOrDefault();
+            return _dataService.GetDbSet<Translation>().Where(x => x.Name == dto.Name).FirstOrDefault();
         }
 
         public override void MapFromDtoToEntity(Translation entity, TranslationDto dto)

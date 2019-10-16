@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Application.BusinessModels.Shared.Actions;
 using Application.Shared;
-using DAL;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -21,11 +20,11 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
 
         public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }
@@ -33,7 +32,7 @@ namespace Application.BusinessModels.Orders.Actions
         public AppColor Color { get; set; }
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
-            var shippingsCount = this.dataService.GetDbSet<Shipping>().Count();
+            var shippingsCount = _dataService.GetDbSet<Shipping>().Count();
             var tempRange = FindCommonTempRange(orders);
             decimal? downtime = orders.Any(o => o.TrucksDowntime.HasValue) ? orders.Sum(o => o.TrucksDowntime ?? 0) : (decimal?)null;
             int? palletsCount = orders.Any(o => o.PalletsCount.HasValue) ? orders.Sum(o => o.PalletsCount ?? 0) : (int?)null;
@@ -66,7 +65,7 @@ namespace Application.BusinessModels.Orders.Actions
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             setter.SaveHistoryLog();
 
-            this.dataService.GetDbSet<Shipping>().Add(shipping);
+            _dataService.GetDbSet<Shipping>().Add(shipping);
 
             foreach (var order in orders)
             {
@@ -84,7 +83,7 @@ namespace Application.BusinessModels.Orders.Actions
                 ordSetter.SaveHistoryLog();
             }
 
-            this.dataService.SaveChanges();
+            _dataService.SaveChanges();
 
             return new AppActionResult
             {

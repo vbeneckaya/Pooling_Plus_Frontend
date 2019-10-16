@@ -39,7 +39,7 @@ export class UsersList extends Component {
         return [
             <UserCard id={row.id} title={t('edit_user', {name: row.userName})} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
-                    <Icon name="edit" /> Редактировать
+                    <Icon name="edit" /> {t('edit_btn')}
                 </Button>
             </UserCard>,
         ];

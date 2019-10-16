@@ -20,7 +20,7 @@ namespace Application.BusinessModels.Orders.Handlers
             var product = _dataService.GetDbSet<Article>().Where(x => x.Nart == newValue).FirstOrDefault();
             if (product != null)
             {
-                entity.SPGR = product.SPGR;
+                entity.Spgr = product.Spgr;
                 entity.Description = product.Description;
                 entity.CountryOfOrigin = product.CountryOfOrigin;
                 entity.Ean = product.Ean;

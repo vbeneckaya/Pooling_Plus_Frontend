@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
 using Application.Shared;
@@ -10,11 +9,14 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Domain.Shared.FormFilters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Shippings
 {
@@ -22,8 +24,14 @@ namespace Application.Services.Shippings
     {
         private readonly IHistoryService _historyService;
 
-        public ShippingsService(ICommonDataService dataService, AppDbContext db, IUserProvider userIdProvider, IHistoryService historyService, IActionService<Shipping> actionService) 
-            : base(dataService, db, userIdProvider, actionService)
+        public ShippingsService(
+            IHistoryService historyService,
+            ICommonDataService dataService,
+            IUserProvider userIdProvider,
+            IEnumerable<IAppAction<Shipping>> singleActions,
+            IEnumerable<IGroupAppAction<Shipping>> groupActions,
+            IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
+            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
@@ -117,7 +125,7 @@ namespace Application.Services.Shippings
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
 
-            var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
+            var orders = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
             formDto.Orders = GetShippingOrders(orders);
             formDto.RoutePoints = GetRoutePoints(entity, orders);
 
@@ -126,19 +134,19 @@ namespace Application.Services.Shippings
 
         private string GetCarrierNameById(Guid? id)
         {
-            return id == null ? null : dataService.GetById<TransportCompany>(id.Value)?.Title;
+            return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
 
         private string GetVehicleTypeNameById(Guid? id)
         {
-            return id == null ? null : dataService.GetById<VehicleType>(id.Value)?.Name;
+            return id == null ? null : _dataService.GetById<VehicleType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
             {
-                var orders = dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
+                var orders = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == entity.Id).ToList();
                 var ordersDict = orders.ToDictionary(o => o.Id.ToString());
                 
                 foreach (RoutePointDto pointDto in dto.RoutePoints)
@@ -212,7 +220,7 @@ namespace Application.Services.Shippings
                     {
                         point = new RoutePointDto
                         {
-                            WarehouseName = dataService.GetById<Warehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
+                            WarehouseName = _dataService.GetById<Warehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
                             Address = order.ShippingAddress,
                             PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),

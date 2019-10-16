@@ -227,7 +227,7 @@ namespace Tasks.MasterData
 
                 // Непосредственно заполнение полей
 
-                product.SPGR = pRoot.SelectSingleNode("PRDHA")?.InnerText?.ExtractSPGR() ?? product.SPGR;
+                product.Spgr = pRoot.SelectSingleNode("PRDHA")?.InnerText?.ExtractSPGR() ?? product.Spgr;
                 product.Description = pRoot.SelectSingleNode("E1MAKTM[SPRAS_ISO='RU']/MAKTX")?.InnerText
                                    ?? pRoot.SelectSingleNode("E1MAKTM[SPRAS_ISO='EN']/MAKTX")?.InnerText
                                    ?? product.Description;
@@ -242,18 +242,18 @@ namespace Tasks.MasterData
                 product.WeightUnitsGrossProductG = pRoot.ParseDecimal("E1MARMM[MEINH='PCE']/BRGEW", entryInd, true).ApplyUowCoeff(weightPieceUowCoeff) ?? product.WeightUnitsGrossProductG;
                 product.WeightUnitsNetGoodsG = pRoot.ParseDecimal("NTGEW", entryInd, true).ApplyUowCoeff(weightNetUowCoeff) ?? product.WeightUnitsNetGoodsG;
 
-                product.EANShrink = pRoot.SelectSingleNode("E1MARMM[MEINH='#2R' and NUMTP='HK']/EAN11")?.InnerText
+                product.EanShrink = pRoot.SelectSingleNode("E1MARMM[MEINH='#2R' and NUMTP='HK']/EAN11")?.InnerText
                                  ?? pRoot.SelectSingleNode("E1MARMM[MEINH='#2R' and NUMTP='HE']/EAN11")?.InnerText
-                                 ?? product.EANShrink;
+                                 ?? product.EanShrink;
                 product.PiecesInShrink = pRoot.ParseInt("E1MARMM[MEINH='#2R']/UMREZ", entryInd, true) ?? product.PiecesInShrink;
                 product.LengthShrinkMm = pRoot.ParseDecimal("E1MARMM[MEINH='#2R']/LAENG", entryInd, true).ApplyUowCoeff(sizeShrinkUowCoeff) ?? product.LengthShrinkMm;
                 product.WidthShrinkMm = pRoot.ParseDecimal("E1MARMM[MEINH='#2R']/BREIT", entryInd, true).ApplyUowCoeff(sizeShrinkUowCoeff) ?? product.WidthShrinkMm;
                 product.HeightShrinkMm = pRoot.ParseDecimal("E1MARMM[MEINH='#2R']/HOEHE", entryInd, true).ApplyUowCoeff(sizeShrinkUowCoeff) ?? product.HeightShrinkMm;
                 product.GrossShrinkWeightG = pRoot.ParseDecimal("E1MARMM[MEINH='#2R']/BRGEW", entryInd, true).ApplyUowCoeff(weightShrinkUowCoeff) ?? product.GrossShrinkWeightG;
 
-                product.EANBox = pRoot.SelectSingleNode("E1MARMM[MEINH='CT' and NUMTP='HK']/EAN11")?.InnerText
+                product.EanBox = pRoot.SelectSingleNode("E1MARMM[MEINH='CT' and NUMTP='HK']/EAN11")?.InnerText
                               ?? pRoot.SelectSingleNode("E1MARMM[MEINH='CT' and NUMTP='HE']/EAN11")?.InnerText
-                              ?? product.EANBox;
+                              ?? product.EanBox;
                 product.PiecesInABox = pRoot.ParseInt("E1MARMM[MEINH='CT']/UMREZ", entryInd, true) ?? product.PiecesInABox;
                 product.BoxLengthMm = pRoot.ParseDecimal("E1MARMM[MEINH='CT']/LAENG", entryInd, true).ApplyUowCoeff(sizeBoxUowCoeff) ?? product.BoxLengthMm;
                 product.WidthOfABoxMm = pRoot.ParseDecimal("E1MARMM[MEINH='CT']/BREIT", entryInd, true).ApplyUowCoeff(sizeBoxUowCoeff) ?? product.WidthOfABoxMm;
@@ -266,9 +266,9 @@ namespace Tasks.MasterData
                 product.LayerHeightMm = pRoot.ParseDecimal("E1MARMM[MEINH='#18']/HOEHE", entryInd, true).ApplyUowCoeff(sizeLayerUowCoeff) ?? product.LayerHeightMm;
                 product.GrossLayerWeightMm = pRoot.ParseDecimal("E1MARMM[MEINH='#18']/BRGEW", entryInd, true).ApplyUowCoeff(weightLayerUowCoeff) ?? product.GrossLayerWeightMm;
 
-                product.EANPallet = pRoot.SelectSingleNode("E1MARMM[MEINH='PF' and NUMTP='HK']/EAN11")?.InnerText
+                product.EanPallet = pRoot.SelectSingleNode("E1MARMM[MEINH='PF' and NUMTP='HK']/EAN11")?.InnerText
                                  ?? pRoot.SelectSingleNode("E1MARMM[MEINH='PF' and NUMTP='HE']/EAN11")?.InnerText
-                                 ?? product.EANPallet;
+                                 ?? product.EanPallet;
                 product.PiecesOnAPallet = pRoot.ParseInt("E1MARMM[MEINH='PF']/UMREZ", entryInd, true) ?? product.PiecesOnAPallet;
                 product.PalletLengthMm = pRoot.ParseDecimal("E1MARMM[MEINH='PF']/LAENG", entryInd, true).ApplyUowCoeff(sizePalletUowCoeff) ?? product.PalletLengthMm;
                 product.WidthOfPalletsMm = pRoot.ParseDecimal("E1MARMM[MEINH='PF']/BREIT", entryInd, true).ApplyUowCoeff(sizePalletUowCoeff) ?? product.WidthOfPalletsMm;

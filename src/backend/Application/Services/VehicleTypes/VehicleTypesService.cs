@@ -1,9 +1,8 @@
 ﻿using Application.Shared;
-using DAL;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.VehicleTypes;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,8 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
+        public VehicleTypesService(ICommonDataService dataService) : base(dataService) { }
+
         public override void MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
@@ -30,7 +31,7 @@ namespace Application.Services.VehicleTypes
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var vehicleTypes = db.VehicleTypes.OrderBy(c => c.Name).ToList();
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>().OrderBy(c => c.Name).ToList();
             foreach (VehicleType vehicleType in vehicleTypes)
             {
                 yield return new LookUpDto
@@ -39,15 +40,6 @@ namespace Application.Services.VehicleTypes
                     Value = vehicleType.Id.ToString()
                 };
             }
-        }
-
-        public override DbSet<VehicleType> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.VehicleTypes;
-        }
-
-        public VehicleTypesService(AppDbContext appDbContext) : base(appDbContext)
-        {
         }
     }
 }

@@ -2,34 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared;
-using DAL;
 using DAL.Queries;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(AppDbContext appDbContext, IUserProvider userProvider) 
-            : base(appDbContext)
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider) 
+            : base(dataService)
         {
             _userProvider = userProvider;
-        }
-
-        public override DbSet<Role> UseDbSet(AppDbContext dbContext)
-        {
-            return dbContext.Roles;
         }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
             var user = _userProvider.GetCurrentUser();
-            var entity = db.Roles.GetById(id);
+            var entity = _dataService.GetDbSet<Role>().GetById(id);
             if (entity == null)
             {
                 return new ValidateResult("roleNotFound".translate(user.Language));
@@ -37,7 +31,7 @@ namespace Application.Services.Roles
             else
             {
                 entity.IsActive = active;
-                db.SaveChanges();
+                _dataService.SaveChanges();
 
                 return new ValidateResult(null, entity.Id.ToString());
             }
@@ -45,7 +39,7 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = db.Roles.Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<Role>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto

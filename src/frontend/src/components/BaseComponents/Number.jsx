@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input } from 'semantic-ui-react';
 import {useTranslation} from "react-i18next";
 
-const Number = ({ value, name, onChange, isDisabled, noLabel, className, text }) => {
+const Number = ({ value, name, onChange, isDisabled, noLabel, className, text, error }) => {
     const {t }=useTranslation();
 
     return (
@@ -13,9 +13,10 @@ const Number = ({ value, name, onChange, isDisabled, noLabel, className, text })
             <Input
                 className={className}
                 type="number"
+                error={error}
                 disabled={isDisabled || false}
                 name={name}
-                value={value || ''}
+                value={value}
                 onChange={onChange}
                 autoComplete="off"
             />

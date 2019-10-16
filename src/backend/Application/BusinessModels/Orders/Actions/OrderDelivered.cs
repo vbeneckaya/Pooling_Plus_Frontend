@@ -1,6 +1,5 @@
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
@@ -15,13 +14,13 @@ namespace Application.BusinessModels.Orders.Actions
     /// </summary>
     public class OrderDelivered : IAppAction<Order>
     {
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
 
         private readonly IHistoryService _historyService;
 
         public OrderDelivered(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Green;
         }
@@ -34,7 +33,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetDelivered", order.OrderNumber);
 
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             
             return new AppActionResult
             {

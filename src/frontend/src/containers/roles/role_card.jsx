@@ -53,6 +53,8 @@ class RoleCard extends Component {
             modalOpen: false,
         });
 
+        this.setState({ form: {} });
+
         clear();
 
         loadList();
