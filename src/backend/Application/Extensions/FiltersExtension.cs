@@ -246,17 +246,17 @@ namespace Application.Extensions
             return (IOrderedQueryable<TModel>)query.Provider.CreateQuery<TModel>(call);
         }
 
-        public static IQueryable<TSource> DefaultOrderBy<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector)
+        public static IQueryable<TSource> DefaultOrderBy<TSource, TKey>(this IQueryable<TSource> source, Expression<Func<TSource, TKey>> keySelector, bool secondarySort)
         {
             IOrderedQueryable<TSource> ordered = source as IOrderedQueryable<TSource>;
 
-            if (ordered == null)
+            if (secondarySort && ordered != null)
             {
-                return source.OrderByDescending(keySelector);
+                return ordered.ThenByDescending(keySelector);
             }
             else
-            { 
-                return ordered.ThenByDescending(keySelector);
+            {
+                return source.OrderByDescending(keySelector);
             }
         }
     }
