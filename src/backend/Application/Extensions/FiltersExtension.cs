@@ -3,6 +3,7 @@ using Domain.Shared;
 using Domain.Shared.FormFilters;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -296,20 +297,39 @@ namespace Application.Extensions
 
             if (!properties.Any()) return query;
 
-
             var expressions = new List<Expression<Func<TModel, bool>>>();
             ParameterExpression param = Expression.Parameter(typeof(TModel), string.Empty);
 
             foreach (var property in properties)
             {
                 var attr = (FilterFieldAttribute)property.GetCustomAttributes(typeof(FilterFieldAttribute), false).First();
+                
+                if (!attr.Searched) continue;
+
                 MemberExpression propertyExp = Expression.Property(param, property.Name);
 
                 switch (attr.Type)
                 {
+                    // String search
                     case FilterFieldType.String:
-                        var lambda = Expression.Lambda<Func<TModel, string>>(propertyExp, param);
-                        expressions.Add(GetStringFilterExpression(lambda, searchForm.Filter.Search));
+                        var lambdaStr = Expression.Lambda<Func<TModel, string>>(propertyExp, param);
+                        expressions.Add(GetStringFilterExpression(lambdaStr, searchForm.Filter.Search));
+                        break;
+
+                    // Integer search
+                    case FilterFieldType.Integer:
+                        if (!int.TryParse(searchForm.Filter.Search, out int intValue)) continue;
+
+                        var lambdaInt = Expression.Lambda<Func<TModel, int?>>(propertyExp, param);
+                        expressions.Add(GetPropertyEqualExpression(lambdaInt, intValue));
+                        break;
+
+                    // Decimal search
+                    case FilterFieldType.Decimal:
+                        if (!decimal.TryParse(searchForm.Filter.Search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decValue)) continue;
+
+                        var lambdaDec = Expression.Lambda<Func<TModel, decimal?>>(propertyExp, param);
+                        expressions.Add(GetPropertyEqualExpression(lambdaDec, decValue));
                         break;
                 }
             }
@@ -336,6 +356,5 @@ namespace Application.Extensions
 
             return Expression.Lambda<Func<TModel, bool>>(orExpressions, param);
         }
-
     }
 }

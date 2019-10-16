@@ -7,7 +7,8 @@ namespace Domain.Shared.FormFilters
     public enum FilterFieldType
     {
         String,
-        Number,
+        Integer,
+        Decimal,
         DateRange,
         Options,
         Enum,

@@ -14,5 +14,7 @@ namespace Domain.Shared.FormFilters
         public bool Sorted { get; set; } = true;
 
         public bool Filtered { get; set; } = true;
+
+        public bool Searched { get; set; } = true;
     }
 }

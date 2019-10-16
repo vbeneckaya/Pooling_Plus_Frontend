@@ -379,6 +379,7 @@ namespace Application.Services.Orders
                 .ApplyStringFilter(i => i.ReturnInformation, searchForm.Filter.ReturnInformation)
                 .ApplyStringFilter(i => i.ReturnShippingAccountNo, searchForm.Filter.ReturnShippingAccountNo)
                 .ApplyDateRangeFilter(i => i.PlannedReturnDate.Value, searchForm.Filter.PlannedReturnDate)
+                .ApplyDateRangeFilter(i => i.ActualReturnDate.Value, searchForm.Filter.ActualReturnDate)
                 .ApplyStringFilter(i => i.MajorAdoptionNumber, searchForm.Filter.MajorAdoptionNumber)
                 //TODO: Apply ClientAvisationTime time filter
                 //.ApplyStringFilter(i => i.ClientAvisationTime)
