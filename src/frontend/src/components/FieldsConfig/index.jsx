@@ -174,7 +174,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                         <Input
                             icon="search"
                             iconPosition="left"
-                            placeholder="Поиск поля"
+                            placeholder={t('search_field')}
                             value={search}
                             clearable
                             onChange={(e, { value }) => setSearch(value)}
