@@ -1,9 +1,10 @@
 using Application.BusinessModels.Orders.Handlers;
+using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.BulkUpdates;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -28,8 +29,9 @@ namespace Application.Services.Orders
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions) 
-            : base(dataService, userIdProvider, singleActions, groupActions)
+            IEnumerable<IGroupAppAction<Order>> groupActions,
+            IEnumerable<IBulkUpdate<Order>> bulkUpdates) 
+            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
             this._historyService = historyService;
@@ -151,12 +153,6 @@ namespace Application.Services.Orders
         {
             OrderDto dto = _mapper.Map<OrderDto>(entity);
             OrderFormDto result = _mapper.Map<OrderFormDto>(dto);
-
-            if (entity.ShippingId != null)
-            {
-                var shipping = _dataService.GetById<Shipping>(entity.ShippingId.Value);
-                result.ShippingNumber = shipping?.ShippingNumber;
-            }
 
             result.Items = _dataService.GetDbSet<OrderItem>()
                                       .Where(i => i.OrderId == entity.Id)

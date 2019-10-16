@@ -1,15 +1,13 @@
-using System.Linq;
+using Application.BusinessModels.Shared.Actions;
 using Application.Shared;
-using DAL;
-using DAL.Queries;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
+using System.Linq;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -20,11 +18,11 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
 
         public RemoveFromShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -39,7 +37,7 @@ namespace Application.BusinessModels.Orders.Actions
             setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 
-            var shipping = dataService.GetById<Shipping>(order.ShippingId.Value);
+            var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
 
             order.ShippingId = null;
             order.ShippingNumber = null;
@@ -47,7 +45,7 @@ namespace Application.BusinessModels.Orders.Actions
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
             setter.SaveHistoryLog();
 
-            if (dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
+            if (_dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
             {
                 shipping.Status = ShippingState.ShippingCanceled;
                 _historyService.Save(shipping.Id, "shippingSetCancelled", shipping.ShippingNumber);
@@ -58,7 +56,7 @@ namespace Application.BusinessModels.Orders.Actions
             }
             
             
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             
             return new AppActionResult
             {

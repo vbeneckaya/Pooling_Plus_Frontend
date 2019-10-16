@@ -1,57 +1,54 @@
+using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Orders.BulkUpdates;
+using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.BulkUpdates;
+using Application.BusinessModels.Shippings.Actions;
 using Application.Services.AppConfiguration;
-/*start of using application service*/
+using Application.Services.Articles;
+using Application.Services.Documents;
+using Application.Services.DocumentTypes;
+using Application.Services.Files;
+using Application.Services.History;
+using Application.Services.Identity;
+using Application.Services.Injections;
 using Application.Services.Orders;
+using Application.Services.PickingTypes;
+using Application.Services.Roles;
 using Application.Services.Shippings;
 using Application.Services.Tariffs;
-using Application.Services.Warehouses;
-using Application.Services.Articles;
-using Application.Services.TransportCompanies;
-/*end of using application service*/
-using Application.Services.Users;
-using Application.Services.Identity;
-using Application.Services.Roles;
-using Application.Services.Translations;
-using Application.Services.Injections;
 using Application.Services.TaskProperties;
-using DAL;
-using Domain.Services.AppConfiguration;
-using Domain.Services.Identity;
-using Domain.Services.Roles;
-using Domain.Services.Translations;
-using Domain.Services.Users;
-using Domain.Services.TaskProperties;
-/*start of using domain service*/
-using Domain.Services.Orders;
-using Domain.Services.Shippings;
-using Domain.Services.Tariffs;
-using Domain.Services.Warehouses;
-using Domain.Services.Articles;
-using Domain.Services.TransportCompanies;
-using Domain.Services.Injections;
-/*end of using domain service*/
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Domain.Services.Files;
-using Application.Services.Files;
-using Domain.Services.DocumentTypes;
-using Application.Services.DocumentTypes;
-using Application.Services.PickingTypes;
-using Domain.Services.PickingTypes;
-using Application.Services.VehicleTypes;
-using Domain.Services.VehicleTypes;
-using Application.Services.History;
-using Domain.Services.History;
+using Application.Services.Translations;
+using Application.Services.TransportCompanies;
+using Application.Services.Users;
 using Application.Services.UserSettings;
-using Domain.Services.UserSettings;
-using Domain.Services;
+using Application.Services.VehicleTypes;
+using Application.Services.Warehouses;
+using DAL;
 using DAL.Services;
 using Domain.Persistables;
-using Application.Services.Documents;
+using Domain.Services.AppConfiguration;
+using Domain.Services.Articles;
 using Domain.Services.Documents;
-using Domain;
-using Application.BusinessModels.Orders.Actions;
-using Application.BusinessModels.Shippings.Actions;
+using Domain.Services.DocumentTypes;
+using Domain.Services.Files;
+using Domain.Services.History;
+using Domain.Services.Identity;
+using Domain.Services.Injections;
+using Domain.Services.Orders;
+using Domain.Services.PickingTypes;
+using Domain.Services.Roles;
+using Domain.Services.Shippings;
+using Domain.Services.Tariffs;
+using Domain.Services.TaskProperties;
+using Domain.Services.Translations;
+using Domain.Services.TransportCompanies;
+using Domain.Services.Users;
+using Domain.Services.UserSettings;
+using Domain.Services.VehicleTypes;
+using Domain.Services.Warehouses;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Installers
 {
@@ -119,6 +116,9 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
+
+            services.AddScoped<IBulkUpdate<Order>, ShippingDateBulkUpdate>();
+            services.AddScoped<IBulkUpdate<Order>, DeliveryDateBulkUpdate>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)

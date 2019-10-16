@@ -197,8 +197,52 @@ namespace API.Controllers.Shared
                 return StatusCode(500, ex.Message);
             }
         }
-        
-        
+
+        /// <summary>
+        /// Список возможных массовых изменений
+        /// </summary>
+        [HttpPost("getBulkUpdates")]
+        public IActionResult GetBulkUpdates([FromBody]IEnumerable<string> ids)
+        {
+            try
+            {
+                IEnumerable<BulkUpdateDto> result = service.GetBulkUpdates(ids.Select(Guid.Parse));
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Get bulk updates for {typeof(TDto).Name}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Применить массовое изменения
+        /// </summary>
+        [HttpPost("invokeBulkUpdate/{name}")]
+        public IActionResult InvokeBulkUpdate(string name, [FromBody]BulkUpdateFormDto dto)
+        {
+            try
+            {
+                AppActionResult result = service.InvokeBulkUpdate(name, dto.Ids.Select(Guid.Parse), dto.Value);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Invoke bulk update {name} for {typeof(TDto).Name}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         /// <summary>
         /// Сохранить или изменить
         /// </summary>

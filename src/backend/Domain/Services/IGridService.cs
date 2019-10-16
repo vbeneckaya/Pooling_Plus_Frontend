@@ -19,6 +19,9 @@ namespace Domain.Services
         AppActionResult InvokeAction(string actionName, IEnumerable<Guid> ids);
         IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids);
 
+        AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value);
+        IEnumerable<BulkUpdateDto> GetBulkUpdates(IEnumerable<Guid> ids);
+
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
         ValidateResult ImportFromExcel(Stream fileStream);
         Stream ExportToExcel();

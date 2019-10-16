@@ -1,6 +1,5 @@
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
@@ -17,11 +16,11 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService dataService;
+        private readonly ICommonDataService _dataService;
 
         public SendToArchive(ICommonDataService dataService, IHistoryService historyService)
         {
-            this.dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
         }
@@ -34,7 +33,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetArchived", order.OrderNumber);
 
-            dataService.SaveChanges();
+            _dataService.SaveChanges();
             
             return new AppActionResult
             {

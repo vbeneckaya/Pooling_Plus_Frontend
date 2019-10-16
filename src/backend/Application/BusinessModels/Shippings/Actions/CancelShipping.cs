@@ -1,13 +1,12 @@
-using System.Linq;
-using DAL;
+using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
-using Domain;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
+using System.Linq;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -24,7 +23,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public CancelShipping(ICommonDataService dataService, IHistoryService historyService)
         {
-            this._dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
         }
