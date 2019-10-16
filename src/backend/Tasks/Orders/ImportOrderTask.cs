@@ -8,7 +8,6 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -157,33 +156,38 @@ namespace Tasks.Orders
                 {
                     string fields = string.Join(", ", missedRequiredFields);
                     Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ не создан.", fileName, fields);
-                    return false;
                 }
-
-                int entryInd = 0;
-                var itemRoots = docRoot.SelectNodes("E1EDP01");
-                dto.Items = new List<OrderItemDto>();
-                foreach (XmlNode itemRoot in itemRoots)
+                else
                 {
-                    ++entryInd;
-                    OrderItemDto itemDto = new OrderItemDto();
+                    int entryInd = 0;
+                    var itemRoots = docRoot.SelectNodes("E1EDP01");
+                    dto.Items = new List<OrderItemDto>();
+                    foreach (XmlNode itemRoot in itemRoots)
+                    {
+                        ++entryInd;
+                        OrderItemDto itemDto = new OrderItemDto();
 
-                    itemDto.Quantity = itemRoot.ParseInt("MENGE");
-                    itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
+                        itemDto.Quantity = itemRoot.ParseInt("MENGE");
+                        itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
 
-                    dto.Items.Add(itemDto);
+                        dto.Items.Add(itemDto);
+                    }
+
+                    ++processedCount;
+                    Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                    dto.OrderNumber, processedCount, totalCount, fileName);
+
+                    orders.Add(dto);
                 }
-
-                ++processedCount;
-                Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.", 
-                                dto.OrderNumber, processedCount, totalCount, fileName);
-
-                orders.Add(dto);
             }
 
-            ordersService.Import(orders);
+            bool isSuccess = orders.Any();
+            if (isSuccess)
+            {
+                ordersService.Import(orders);
+            }
 
-            return true;
+            return isSuccess;
         }
 
         private IEnumerable<string> ValidateRequiredFields(OrderDto dto)
