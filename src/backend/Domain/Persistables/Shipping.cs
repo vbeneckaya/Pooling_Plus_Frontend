@@ -206,5 +206,10 @@ namespace Domain.Persistables
         /// </summary>
         public DateTime? ShippingCreationDate { get; set; }
         /*end of fields*/
+
+        public override string ToString()
+        {
+            return ShippingNumber;
+        }
     }
 }
