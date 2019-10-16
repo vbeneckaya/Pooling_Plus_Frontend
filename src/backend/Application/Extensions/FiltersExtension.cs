@@ -1,4 +1,6 @@
 ﻿using Domain.Extensions;
+using Domain.Shared;
+using Domain.Shared.FormFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,14 +26,9 @@ namespace Application.Extensions
         {
             if (!filterData.HasValue) return query;
 
-            Expression<Func<int>> filterDataExp = () => filterData.Value;
-            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
+            var propertyExpression = GetPropertyEqualExpression(property, filterData.Value);
 
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
-
-            query = query.Where(exp);
-
-            return query;
+            return query.Where(propertyExpression);
         }
 
         /// <summary>
@@ -46,15 +43,27 @@ namespace Application.Extensions
         {
             if (!filterData.HasValue) return query;
 
-            Expression<Func<decimal>> filterDataExp = () => filterData.Value;
+            var propertyExpression = GetPropertyEqualExpression(property, filterData.Value);
+
+            return query.Where(propertyExpression);
+        }
+
+        /// <summary>
+        /// Get property equal expression
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <typeparam name="TProperty"></typeparam>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
+        public static Expression<Func<TModel, bool>> GetPropertyEqualExpression<TModel, TProperty>(Expression<Func<TModel, TProperty>> property, TProperty filterData)
+        {
+            Expression<Func<TProperty>> filterDataExp = () => filterData;
             var grEx = Expression.Equal(property.Body, filterDataExp.Body);
 
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
-
-            query = query.Where(exp);
-
-            return query;
+            return Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
         }
+
 
         /// <summary>
         /// Apply numeric filter
@@ -86,18 +95,21 @@ namespace Application.Extensions
             return query.ApplyNumericFilter(property, filterDataInt);
         }
 
+        /// <summary>
+        /// Apply boolean filter
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="property"></param>
+        /// <param name="filterData"></param>
+        /// <returns></returns>
         public static IQueryable<TModel> ApplyBooleanFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, bool>> property, string filterData)
         {
             if (!bool.TryParse(filterData, out bool filterValue)) return query;
 
-            Expression<Func<bool>> filterDataExp = () => filterValue;
-            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
+            var propertyExpression = GetPropertyEqualExpression(property, filterValue);
 
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
-
-            query = query.Where(exp);
-
-            return query;
+            return query.Where(propertyExpression);
         }
 
         /// <summary>
@@ -153,15 +165,20 @@ namespace Application.Extensions
         {
             if (string.IsNullOrEmpty(search)) return query;
 
+            var searchExp = GetStringFilterExpression(property, search);
+
+            return query.Where(searchExp);
+        }
+
+        public static Expression<Func<TModel, bool>> GetStringFilterExpression<TModel>(Expression<Func<TModel, string>> property, string search)
+        {
             Expression<Func<string>> searchStrExp = () => search;
 
             var method = property.Body.Type.GetMethod("Contains", new[] { typeof(string) });
 
             var conainsExp = Expression.Call(property.Body, method, searchStrExp.Body);
 
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
-
-            return query.Where(exp);
+            return Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
         }
 
         /// <summary>
@@ -200,6 +217,16 @@ namespace Application.Extensions
         {
             if (string.IsNullOrEmpty(options)) return query;
 
+            var searchExpression = GetOptionsFilterExpression(property, options, selector);
+
+            return query.Where(searchExpression);
+        }
+
+        public static Expression<Func<TModel, bool>> GetOptionsFilterExpression<TModel, TProperty>(
+            Expression<Func<TModel, TProperty>> property,
+            string options,
+            Expression<Func<string, TProperty>> selector)
+        {
             var types = options.Split("|").AsQueryable().Select(selector);
 
             var methodInfo = typeof(Enumerable).GetMethods().Where(i => i.Name == "Contains").First();
@@ -207,11 +234,9 @@ namespace Application.Extensions
 
             Expression<Func<IEnumerable<TProperty>>> searchStrExp = () => types;
 
-            var conainsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
+            var containsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
 
-            Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
-
-            return query.Where(exp);
+            return Expression.Lambda<Func<TModel, bool>>(containsExp, property.Parameters.Single());
         }
 
         private static TEnum MapFromStateDto<TEnum>(string dtoStatus) where TEnum : struct
@@ -259,5 +284,58 @@ namespace Application.Extensions
                 return source.OrderByDescending(keySelector);
             }
         }
+
+        public static IQueryable<TModel> ApplySearch<TModel, TFilter>(this IQueryable<TModel> query, FilterFormDto<TFilter> searchForm)
+            where TFilter : SearchFilterDto
+        {
+
+            if (string.IsNullOrEmpty(searchForm?.Filter?.Search)) return query;
+
+                var properties = typeof(TFilter).GetProperties()
+                .Where(i => i.CustomAttributes.Any(attr => attr.AttributeType == typeof(FilterFieldAttribute)));
+
+            if (!properties.Any()) return query;
+
+
+            var expressions = new List<Expression<Func<TModel, bool>>>();
+            ParameterExpression param = Expression.Parameter(typeof(TModel), string.Empty);
+
+            foreach (var property in properties)
+            {
+                var attr = (FilterFieldAttribute)property.GetCustomAttributes(typeof(FilterFieldAttribute), false).First();
+                MemberExpression propertyExp = Expression.Property(param, property.Name);
+
+                switch (attr.Type)
+                {
+                    case FilterFieldType.String:
+                        var lambda = Expression.Lambda<Func<TModel, string>>(propertyExp, param);
+                        expressions.Add(GetStringFilterExpression(lambda, searchForm.Filter.Search));
+                        break;
+                }
+            }
+
+            return query.Where(GetOrExpressions(expressions));
+        }
+
+        private static Expression<Func<TModel, bool>> GetOrExpressions<TModel>(IEnumerable<Expression<Func<TModel, bool>>> expressions)
+        {
+            Expression orExpressions = null;
+
+            var param = expressions.First().Parameters.Single();
+
+            foreach (var expression in expressions)
+            {
+                if (orExpressions == null)
+                {
+                    orExpressions = expression.Body;
+                    continue;
+                }
+
+                orExpressions = Expression.Or(orExpressions, expression.Body);
+            }
+
+            return Expression.Lambda<Func<TModel, bool>>(orExpressions, param);
+        }
+
     }
 }

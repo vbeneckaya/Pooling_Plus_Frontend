@@ -316,6 +316,10 @@ namespace Application.Services.Orders
             // OrderNumber Filter
             query = query.ApplyStringFilter(i => i.OrderNumber, searchForm.Filter.OrderNumber);
 
+            query = query.ApplyStringFilter(i => i.ShippingNumber, searchForm.Filter.ShippingNumber);
+
+            query = query.ApplyStringFilter(i => i.ClientName, searchForm.Filter.ClientName);
+
             // OrderDate Filter
             query = query.ApplyDateRangeFilter(i => i.OrderDate.Value, searchForm.Filter.OrderDate);
 
@@ -383,7 +387,9 @@ namespace Application.Services.Orders
                 .ApplyDateRangeFilter(i => i.OrderCreationDate.Value, searchForm.Filter.OrderCreationDate)
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
-            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+            return query
+                .ApplySearch(searchForm)
+                .OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
                 .DefaultOrderBy(i => i.OrderCreationDate, searchForm.Sort?.Name != null);
         }
     }

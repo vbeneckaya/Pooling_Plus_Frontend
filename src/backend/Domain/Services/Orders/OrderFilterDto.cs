@@ -12,31 +12,49 @@ namespace Domain.Shared.FormFilters
         /// <summary>
         /// Order Number
         /// </summary>
+        [FilterField(Type = FilterFieldType.String)]
         public string OrderNumber { get; set; }
+
+        /// <summary>
+        /// Shipping Number
+        /// </summary>
+        [FilterField(Type = FilterFieldType.String)]
+        public string ShippingNumber { get; set; }
+
+        /// <summary>
+        /// ClientName
+        /// </summary>
+        [FilterField(Type = FilterFieldType.String)]
+        public string ClientName { get; set; }
 
         /// <summary>
         /// Order Date
         /// </summary>
+        [FilterField(Type = FilterFieldType.DateRange)]
         public string OrderDate { get; set; }
 
         /// <summary>
         /// Order Type
         /// </summary>
+        [FilterField(Type = FilterFieldType.Options)]
         public string OrderType { get; set; }
 
         /// <summary>
         /// SoldTo
         /// </summary>
+        [FilterField(Type = FilterFieldType.Options)]
         public string SoldTo { get; set; }
 
         /// <summary>
         /// Payer
         /// </summary>
+        [FilterField(Type = FilterFieldType.String)]
         public string Payer { get; set; }
 
         /// <summary>
         /// PickingTypeIds List
         /// </summary>
+        [FilterField(Type = FilterFieldType.Options)]
         public string PickingTypeId { get; set; }
 
         /// <summary>
