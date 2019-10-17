@@ -20,7 +20,7 @@ const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange })
 
     return (
         <div className="flex-container-justify">
-            {fieldsList && fieldsList.length > 0 ? (
+            {fieldsList && fieldsList.length > 0 || fieldsConfig && fieldsConfig.length ? (
                 <DnDList
                     key={'dnd' + type}
                     type={type}

@@ -95,7 +95,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
     const handleEdit = () => {
         if (!name) {
             setError('required_field');
-        } else if (isNotUniqueName()) {
+        } else if (isNotUniqueName() && name !== currName) {
             setError('representation_already_exists');
         } else {
             dispatch(
