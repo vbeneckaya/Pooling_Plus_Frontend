@@ -65,9 +65,9 @@
         left: -15px;
         width: 15px;
         background: linear-gradient(
-            to right,
-            rgba(249, 250, 251, 0) 0%,
-            rgba(249, 250, 251, 1) 100%
+                to right,
+                rgba(249, 250, 251, 0) 0%,
+                rgba(249, 250, 251, 1) 100%
         );
     }
     .small-column {
@@ -191,7 +191,7 @@
     white-space: nowrap;
 
     .row {
-        padding-top: 0!important;
+        padding-top: 0 !important;
     }
 
     .grid-right-elements {
@@ -314,22 +314,36 @@ $teal: #b5eae7;
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
+    flex-wrap: nowrap;
 
-    .ui .grid {
+    .ui.grid {
         width: 100%;
     }
 
-   label {
-       padding-right: 8px;
-   }
-    button {
-        margin-left: 8px!important;
-        height: 38px!important;
+    label {
+        padding-right: 8px;
+        margin: 0!important;
     }
 
-    &-value {
-        margin: 0!important;
-        padding-left: 8px;
-        width: 20%;
+    &-fields {
+        display: inline-flex!important;
+        align-items: center;
+        .field {
+            margin: 0 !important;
+        }
     }
+
+    &-save {
+        margin-left: 8px !important;
+        height: 38px !important;
+    }
+
+    //&-value {
+    //    .field {
+    //        margin: 0 !important;
+    //        padding-left: 8px;
+    //    }
+    //    display: flex;
+    //    align-items: center;
+    //}
 }

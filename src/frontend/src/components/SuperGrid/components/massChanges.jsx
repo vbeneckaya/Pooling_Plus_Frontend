@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Dropdown, Form, Grid, Icon } from 'semantic-ui-react';
-import {invokeMassUpdateRequest, updatesSelector} from '../../../ducks/gridActions';
+import { invokeMassUpdateRequest, updatesSelector } from '../../../ducks/gridActions';
 import FormField from '../../BaseComponents';
+import { TEXT_TYPE } from '../../../constants/columnTypes';
 
-const MassChanges = ({gridName, load}) => {
+const MassChanges = ({ gridName, load }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const updates = useSelector(state => updatesSelector(state)) || [];
@@ -20,57 +21,59 @@ const MassChanges = ({gridName, load}) => {
             console.log('gg', fieldParams);
             setColumn({
                 name: field,
-                type: fieldParams && fieldParams.type,
+                type: fieldParams ? fieldParams.type : TEXT_TYPE,
                 noLabel: true,
-                placeholder: t('new_value')
+                isDisabled: !field,
+                placeholder: t('new_value'),
             });
         },
         [field],
     );
 
     const handleSave = () => {
-        dispatch(invokeMassUpdateRequest({
-            name: gridName,
-            field,
-            ids: fieldParams.ids,
-            value: changValue,
-            callbackSuccess: load
-        }))
+        dispatch(
+            invokeMassUpdateRequest({
+                name: gridName,
+                field,
+                ids: fieldParams.ids,
+                value: changValue,
+                callbackSuccess: load,
+            }),
+        );
     };
 
     return (
         <Form className="grid-mass-updates">
             {updates.length ? (
-                <>
-                    <label>{t('change')}</label>
-                    <Dropdown
-                        placeholder={t('choose_option')}
-                        fluid
-                        selection
-                        value={field}
-                        options={updates.map(item => ({
-                            key: item.name,
-                            value: item.name,
-                            text: t(item.name),
-                        }))}
-                        style={{ width: '20%' }}
-                        onChange={(e, { value }) => setField(value)}
-                    />
-                    <div className="grid-mass-updates-value">
-                    {column.type ? (
-                        <>
+                <Grid>
+                    <Grid.Row columns="equal">
+                        <Grid.Column className="grid-mass-updates-fields">
+                            <label>{t('change')}</label>
+                            <Dropdown
+                                placeholder={t('choose_option')}
+                                fluid
+                                selection
+                                value={field}
+                                options={updates.map(item => ({
+                                    key: item.name,
+                                    value: item.name,
+                                    text: t(item.name),
+                                }))}
+                                onChange={(e, { value }) => setField(value)}
+                            />
+                        </Grid.Column>
+                        <Grid.Column className="grid-mass-updates-fields">
                             <FormField
                                 column={column}
                                 value={changValue}
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
-                            <Button icon disabled={!changValue} onClick={handleSave}>
+                            <Button icon disabled={!changValue} className="grid-mass-updates-save" onClick={handleSave}>
                                 <Icon name="save" />
                             </Button>
-                        </>
-                    ) : null}
-                    </div>
-                </>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             ) : null}
         </Form>
     );

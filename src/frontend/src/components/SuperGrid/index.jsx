@@ -321,6 +321,8 @@ class SuperGrid extends Component {
             t
         } = this.props;
 
+        console.log('columns', columns);
+
         return (
             <>
                 <Dimmer active={progress} inverted className="table-loader">
@@ -392,8 +394,8 @@ class SuperGrid extends Component {
                 </div>
 
                 <Grid className="grid-footer-panel" columns="2">
-                    <Grid.Row columns={2}>
-                        <Grid.Column>
+                    <Grid.Row columns='equal'>
+                        <Grid.Column width={10}>
                             {selectedRows.size && name === 'orders' ? (
                                 <Popup
                                     trigger={
