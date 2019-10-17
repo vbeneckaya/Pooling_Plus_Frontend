@@ -73,11 +73,30 @@ const getItemStyle = (isDragging, draggableStyle) => {
     };
 };
 
+const sortFunc = (item, t) => {
+    item.sort(function(a, b) {
+        console.log('!!', a, b);
+        const nameA = t(a.id).toLowerCase();
+        const nameB = t(b.id).toLowerCase();
+        if (nameA < nameB)
+            //сортируем строки по возрастанию
+            return -1;
+        if (nameA > nameB) return 1;
+        return 0; // Никакой сортировки
+    });
+
+    return item;
+};
+
 class DnDList extends React.Component {
-    state = {
-        items: this.props.left.map(x => ({ id: x.name, content: x })),
-        selected: this.props.right.map(x => ({ id: x.name, content: x })),
-    };
+    constructor (props) {
+        super(props);
+        this.state = {
+            items: sortFunc(this.props.left.map(x => ({ id: x.name, content: x })), props.t),
+            selected: this.props.right.map(x => ({ id: x.name, content: x })),
+        };
+    }
+
 
     /*componentDidUpdate (prevProps) {
         if (prevProps.left !== this.props.left) {
@@ -106,7 +125,7 @@ class DnDList extends React.Component {
         console.log('result', result);
         const { source, destination } = result;
         let state = {
-            items: this.state.items,
+            items: sortFunc(this.state.items, this.props.t),
             selected: this.state.selected,
         };
         // dropped outside the list
@@ -123,7 +142,7 @@ class DnDList extends React.Component {
             if (source.droppableId === 'droppable2') {
                 state.selected = items;
             } else {
-                state.items = items;
+                state.items = sortFunc(items, this.props.t);
             }
         } else {
             console.log('&&', this.getList(source.droppableId));
@@ -135,7 +154,7 @@ class DnDList extends React.Component {
             );
             console.log('%%%%', result);
             state = {
-                items: result.droppable,
+                items: sortFunc(result.droppable, this.props.t),
                 selected: result.droppable2,
             };
         }
