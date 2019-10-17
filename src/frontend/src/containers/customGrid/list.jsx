@@ -18,7 +18,7 @@ import {
     getActionsRequest,
     getAllIdsRequest,
     infoSelector,
-    invokeActionRequest
+    invokeActionRequest, updatesSelector
 } from '../../ducks/gridActions';
 import {getRepresentationsRequest, representationFromGridSelector} from '../../ducks/representations';
 

@@ -23,6 +23,7 @@ const Select = ({
     error,
     textValue,
     errorText,
+    noLabel,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const Select = ({
 
     return (
         <Form.Field>
-            {name ? (
+            {!noLabel ? (
                 <label className={disabled ? 'label-disabled' : null}>{t(text || name)}</label>
             ) : null}
             <Dropdown

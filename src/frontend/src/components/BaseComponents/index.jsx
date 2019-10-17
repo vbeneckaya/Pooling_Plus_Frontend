@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    BOOLEAN_TYPE,
+    BOOLEAN_TYPE, DATE_TIME_TYPE,
     DATE_TYPE, ENUM_TYPE,
     GROUP_TYPE,
     NUMBER_TYPE,
@@ -13,11 +13,13 @@ import State from './State';
 import Date from './Date';
 import Select from "./Select";
 import Bool from "./Bool";
+import DateTime from "./DateTime";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
     [STATE_TYPE]: <State />,
     [DATE_TYPE]: <Date />,
+    [DATE_TIME_TYPE]: <DateTime />,
     [GROUP_TYPE]: <Text />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
@@ -26,6 +28,7 @@ const getTypeFacet = {
 };
 
 const FormField = props => {
+    console.log("props", props);
     let params = {
         ...props.column,
         name: props.column.name,

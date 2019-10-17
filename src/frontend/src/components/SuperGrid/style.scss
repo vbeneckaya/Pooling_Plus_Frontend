@@ -189,7 +189,6 @@
 .grid-footer-panel {
     padding-top: 1rem !important;
     white-space: nowrap;
-    width: 100% !important;
 
     .row {
         padding-top: 0!important;
@@ -307,5 +306,29 @@ $teal: #b5eae7;
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.grid-mass-updates {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+
+    .ui .grid {
+        width: 100%;
+    }
+
+   label {
+       padding-right: 8px;
+   }
+    button {
+        margin-left: 8px!important;
+        height: 38px!important;
+    }
+
+    .field {
+        margin: 0!important;
+        padding-left: 8px;
+        width: 40%;
     }
 }

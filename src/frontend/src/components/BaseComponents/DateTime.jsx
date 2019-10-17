@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 
 import {formatDate, parseDateTime} from "../../utils/dateTimeFormater";
 
-const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement="bottom-end", className, text }) => {
+const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement="bottom-end", className, text, placeholder }) => {
     const { t } = useTranslation();
 
     return (
@@ -14,6 +14,7 @@ const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement=
                 <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
             ) : null}
             <DatePicker
+                placeholderText={placeholder}
                 locale={localStorage.getItem('i18nextLng')}
                 disabled={isDisabled || false}
                 isClearable={!(isDisabled || false)}

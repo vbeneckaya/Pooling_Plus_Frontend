@@ -11,7 +11,19 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import { Button, Confirm, Grid, Dimmer, Loader, Popup, Icon } from 'semantic-ui-react';
+import {
+    Button,
+    Confirm,
+    Grid,
+    Dimmer,
+    Loader,
+    Popup,
+    Icon,
+    Form,
+    Dropdown,
+} from 'semantic-ui-react';
+import Select from '../BaseComponents/Select';
+import MassChanges from './components/massChanges';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -302,8 +314,6 @@ class SuperGrid extends Component {
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
-            isUnloadInExcel,
-            loadingReport,
             colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
@@ -313,8 +323,7 @@ class SuperGrid extends Component {
         return (
             <>
                 <Dimmer active={progress} inverted className="table-loader">
-                      <Loader size="huge">Loading</Loader>
-
+                    <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <HeaderSearchGrid
                     createButton={
@@ -382,13 +391,16 @@ class SuperGrid extends Component {
                 </div>
 
                 <Grid className="grid-footer-panel" columns="2">
-                    <Grid.Row>
+                    <Grid.Row columns={2}>
                         <Grid.Column>
                             {selectedRows.size && name === 'orders' ? (
                                 <Popup
                                     trigger={
-                                        <div className="footer-info-label" onClick={isOpen ? this.handleClose : this.handleOpen}>
-                                            <Icon name={isOpen ? "sort up" : "sort down"} />
+                                        <div
+                                            className="footer-info-label"
+                                            onClick={isOpen ? this.handleClose : this.handleOpen}
+                                        >
+                                            <Icon name={isOpen ? 'sort up' : 'sort down'} />
                                             Данные по заказам
                                         </div>
                                     }
@@ -428,7 +440,14 @@ class SuperGrid extends Component {
                                     : null}
                             </div>
                         </Grid.Column>
-                        <Grid.Column floated="right">{colorInfo}</Grid.Column>
+                        <Grid.Column>
+                            {selectedRows.size ? (
+                                <MassChanges
+                                    gridName={name}
+                                    load={() => this.loadList(false, true)}
+                                />
+                            ) : null}
+                        </Grid.Column>
                     </Grid.Row>
                 </Grid>
                 <Confirm
