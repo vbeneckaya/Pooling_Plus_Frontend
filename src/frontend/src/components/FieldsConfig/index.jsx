@@ -39,24 +39,28 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
 
     useEffect(
         () => {
-            !isNew && setName(currName);
+            !isNew ? setName(currName) : setName('');
         },
         [currName],
     );
     useEffect(
         () => {
-            !isNew && setSelectedFields(currRepresentation);
+            !isNew ? setSelectedFields(currRepresentation) : setSelectedFields([]);
         },
         [currRepresentation],
     );
 
     const onOpen = () => {
+        !isNew ? setName(currName) : setName('');
+        !isNew ? setSelectedFields(currRepresentation) : setSelectedFields([]);
         setModalOpen(true);
     };
 
     const onClose = callBackFunc => {
         getRepresentations && getRepresentations(callBackFunc);
         setModalOpen(false);
+        setError(null);
+        setConfirmation({open: false});
         setSearch('');
     };
 
@@ -89,8 +93,10 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
     };
 
     const handleEdit = () => {
-        if (!name || isNotUniqueName()) {
-            setError(true);
+        if (!name) {
+            setError('required_field');
+        } else if (isNotUniqueName()) {
+            setError('representation_already_exists');
         } else {
             dispatch(
                 editRepresentationRequest({

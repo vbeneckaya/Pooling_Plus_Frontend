@@ -192,7 +192,7 @@ function* invokeActionSaga({ payload }) {
 function* getAllIdsSaga({ payload }) {
     try {
         const { filter, name, callbackSuccess } = payload;
-        const result = yield postman.post(`/${name}/ids`, filter);
+        const result = yield postman.post(`/${name}/ids`, filter.filter);
 
         yield put({
             type: GET_IDS_SUCCESS,

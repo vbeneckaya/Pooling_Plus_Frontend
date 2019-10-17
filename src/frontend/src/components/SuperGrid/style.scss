@@ -313,6 +313,7 @@ $teal: #b5eae7;
     height: 100%;
     display: flex;
     align-items: flex-end;
+    justify-content: flex-end;
 
     .ui .grid {
         width: 100%;
@@ -326,9 +327,9 @@ $teal: #b5eae7;
         height: 38px!important;
     }
 
-    .field {
+    &-value {
         margin: 0!important;
         padding-left: 8px;
-        width: 40%;
+        width: 20%;
     }
 }

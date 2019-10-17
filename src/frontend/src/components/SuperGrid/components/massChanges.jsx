@@ -53,9 +53,10 @@ const MassChanges = ({gridName, load}) => {
                             value: item.name,
                             text: t(item.name),
                         }))}
-                        style={{ width: '40%' }}
+                        style={{ width: '20%' }}
                         onChange={(e, { value }) => setField(value)}
                     />
+                    <div className="grid-mass-updates-value">
                     {column.type ? (
                         <>
                             <FormField
@@ -68,6 +69,7 @@ const MassChanges = ({gridName, load}) => {
                             </Button>
                         </>
                     ) : null}
+                    </div>
                 </>
             ) : null}
         </Form>

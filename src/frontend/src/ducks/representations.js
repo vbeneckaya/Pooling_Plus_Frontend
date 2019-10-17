@@ -89,15 +89,23 @@ export const setRepresentationRequest = payload => {
 export const deleteRepresentationRequest = payload => {
     return {
         type: DELETE_REPRESENTATION_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
 
 export const stateSelector = state => state.representations;
 
-export const representationsSelector = createSelector(stateSelector, state => state.list);
+export const representationsSelector = createSelector(stateSelector, state => {
+    const { list = {} } = state;
+    const ordered = {};
+    Object.keys(list).sort().forEach(function(key) {
+        ordered[key] = list[key];
+    });
+
+    return ordered;
+});
 
 export const representationNameSelector = createSelector(
     [stateSelector, (state, name) => name],
@@ -161,15 +169,15 @@ function* saveRepresentationSaga({ payload }) {
         });
 
         yield put({
-            type: SAVE_REPRESENTATION_SUCCESS
+            type: SAVE_REPRESENTATION_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
             type: SAVE_REPRESENTATION_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 
@@ -199,18 +207,17 @@ function* editRepresentationSaga({ payload }) {
         });
 
         yield put({
-            type: EDIT_REPRESENTATION_SUCCESS
+            type: EDIT_REPRESENTATION_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
             type: EDIT_REPRESENTATION_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
-
 
 function* deleteRepresentationSaga({ payload }) {
     try {
@@ -233,15 +240,15 @@ function* deleteRepresentationSaga({ payload }) {
         });
 
         yield put({
-            type: DELETE_REPRESENTATION_SUCCESS
+            type: DELETE_REPRESENTATION_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
             type: DELETE_REPRESENTATION_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 

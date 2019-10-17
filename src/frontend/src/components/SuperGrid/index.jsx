@@ -440,7 +440,7 @@ class SuperGrid extends Component {
                                     : null}
                             </div>
                         </Grid.Column>
-                        <Grid.Column>
+                        <Grid.Column floated="right">
                             {selectedRows.size ? (
                                 <MassChanges
                                     gridName={name}
