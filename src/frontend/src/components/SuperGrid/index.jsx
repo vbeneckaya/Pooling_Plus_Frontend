@@ -318,6 +318,7 @@ class SuperGrid extends Component {
             autoUpdateStop,
             storageRepresentationItems,
             name,
+            t
         } = this.props;
 
         return (
@@ -455,6 +456,7 @@ class SuperGrid extends Component {
                     open={confirmation.open}
                     onCancel={closeConfirmation}
                     onConfirm={confirmation.onConfirm}
+                    cancelButton={t('cancelConfirm')}
                     content={confirmation.content}
                 />
             </>

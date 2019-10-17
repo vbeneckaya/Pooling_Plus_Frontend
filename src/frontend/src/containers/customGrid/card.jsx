@@ -228,6 +228,7 @@ const Card = props => {
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel || closeConfirmation}
+                cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />

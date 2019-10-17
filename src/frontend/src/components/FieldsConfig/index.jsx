@@ -214,6 +214,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={closeConfirmation}
+                cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />

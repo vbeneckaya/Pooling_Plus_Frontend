@@ -120,7 +120,7 @@ const Header = ({
                                     />
                                     {representations && Object.keys(representations).length ? (
                                         <>
-                                            {Object.keys(representations).map(key => (
+                                            {Object.keys(representations).sort().map(key => (
                                                 <Dropdown.Item
                                                     text={key}
                                                     onClick={() => changeRepresentation(key)}
