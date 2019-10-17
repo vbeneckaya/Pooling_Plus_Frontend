@@ -67,6 +67,12 @@ namespace Application.Shared.Excel
 
             foreach(int rowIndex in rows.Skip(1))
             {
+                bool isEmpty = IsEmptyRow(worksheet, rowIndex);
+                if (isEmpty)
+                {
+                    continue;
+                }
+
                 StringBuilder errors = new StringBuilder();
                 var entity = new TDto();
                 foreach (var column in _columns.Values)
@@ -155,6 +161,23 @@ namespace Application.Shared.Excel
         private string GetColumnKey(IExcelColumn column)
         {
             return column.Property.Name.ToLower();
+        }
+
+        private bool IsEmptyRow(ExcelWorksheet worksheet, int rowIndex)
+        {
+            foreach (var column in _columns.Values)
+            {
+                if (column.ColumnIndex >= 0)
+                {
+                    var value = worksheet.Cells[rowIndex, column.ColumnIndex];
+                    var strValue = value.Value?.ToString();
+                    if (!string.IsNullOrEmpty(strValue))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private void InitColumns()
