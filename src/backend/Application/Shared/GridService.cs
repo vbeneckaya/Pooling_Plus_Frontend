@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
@@ -345,7 +346,8 @@ namespace Application.Shared
 
             var entities = dbSet.Where(x => ids.Contains(x.Id));
 
-            List<string> messages = new List<string>();
+            Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
+
             foreach (var entity in entities)
             {
                 if (bulkUpdate.IsAvailable(role, entity))
@@ -353,15 +355,30 @@ namespace Application.Shared
                     string message = bulkUpdate.Update(currentUser, entity, value)?.Message;
                     if (!string.IsNullOrEmpty(message))
                     {
-                        messages.Add(message);
+                        List<string> numbers;
+                        if (!errors.TryGetValue(message, out numbers))
+                        {
+                            numbers = new List<string>();
+                            errors[message] = numbers;
+                        }
+                        numbers.Add(entity.ToString());
                     }
                 }
+            }
+
+            _dataService.SaveChanges();
+
+            List<string> messages = new List<string>();
+            foreach (var error in errors)
+            {
+                string numbers = string.Join(", ", error.Value);
+                messages.Add("bulkUpdateOrderErrors".translate(currentUser.Language, numbers, error.Key));
             }
 
             return new AppActionResult
             {
                 IsError = false,
-                Message = string.Join(". ", messages)
+                Message = string.Join(" ", messages)
             };
         }
 

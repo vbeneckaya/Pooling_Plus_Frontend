@@ -320,7 +320,7 @@ namespace Application.Services.Orders
             query = query.ApplyDateRangeFilter(i => i.OrderDate.Value, searchForm.Filter.OrderDate);
 
             // OrderType Filter
-            query = query.ApplyEnumFilter(i => i.OrderType.Value, searchForm.Filter.OrderType);
+            query = query.ApplyEnumFilter(i => i.OrderType, searchForm.Filter.OrderType);
 
             // SoldTo Filter
             query = query.ApplyOptionsFilter(i => i.SoldTo, searchForm.Filter.SoldTo);
@@ -384,7 +384,7 @@ namespace Application.Services.Orders
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
             return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
-                .DefaultOrderBy(i => i.OrderCreationDate);
+                .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }
 }

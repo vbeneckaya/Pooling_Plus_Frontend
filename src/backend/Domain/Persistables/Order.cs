@@ -229,5 +229,10 @@ namespace Domain.Persistables
         /// </summary>
         public bool IsActive { get; set; }
         /*end of fields*/
+
+        public override string ToString()
+        {
+            return OrderNumber;
+        }
     }
 }

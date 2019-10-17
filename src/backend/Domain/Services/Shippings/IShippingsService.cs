@@ -4,7 +4,7 @@ using Domain.Shared.FormFilters;
 
 namespace Domain.Services.Shippings
 {
-    public interface IShippingsService : IGridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<SearchFilterDto>>
+    public interface IShippingsService : IGridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<ShippingFilterDto>>
     {
     }
 }

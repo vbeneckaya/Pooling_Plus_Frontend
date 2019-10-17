@@ -36,7 +36,14 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
-            return null;
+            if (order.DeliveryDate.HasValue && newValue.HasValue && order.DeliveryDate < newValue)
+            {
+                return $"Дата отгрузки не может быть больше даты доставки.";
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public ShippingDateHandler(ICommonDataService dataService, IHistoryService historyService)
