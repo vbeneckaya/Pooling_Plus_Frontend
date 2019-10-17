@@ -286,7 +286,10 @@ namespace Application.Extensions
             }
         }
 
-        public static IQueryable<TModel> ApplySearch<TModel, TFilter>(this IQueryable<TModel> query, FilterFormDto<TFilter> searchForm)
+        public static IQueryable<TModel> ApplySearch<TModel, TFilter>(
+            this IQueryable<TModel> query,
+            FilterFormDto<TFilter> searchForm, 
+            IEnumerable<Expression<Func<TModel, bool>>> additionalExpressions)
             where TFilter : SearchFilterDto
         {
 
@@ -331,6 +334,14 @@ namespace Application.Extensions
                         var lambdaDec = Expression.Lambda<Func<TModel, decimal?>>(propertyExp, param);
                         expressions.Add(GetPropertyEqualExpression(lambdaDec, decValue));
                         break;
+
+                    // Decimal search
+                    //case FilterFieldType.DateRange:
+                    //    if (!decimal.TryParse(searchForm.Filter.Search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decValue)) continue;
+
+                    //    var lambdaDec = Expression.Lambda<Func<TModel, decimal?>>(propertyExp, param);
+                    //    expressions.Add(GetPropertyEqualExpression(lambdaDec, decValue));
+                    //    break;
                 }
             }
 
@@ -355,6 +366,11 @@ namespace Application.Extensions
             }
 
             return Expression.Lambda<Func<TModel, bool>>(orExpressions, param);
+        }
+
+        public static IQueryable<TModel> WhereOr<TModel>(this IQueryable<TModel> query, params Expression<Func<TModel, bool>>[] conditions)
+        {
+            return query.Where(GetOrExpressions(conditions));
         }
     }
 }

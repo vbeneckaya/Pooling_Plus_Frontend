@@ -30,7 +30,7 @@ namespace Application.Services.Orders
             IUserProvider userIdProvider,
             IEnumerable<IAppAction<Order>> singleActions,
             IEnumerable<IGroupAppAction<Order>> groupActions,
-            IEnumerable<IBulkUpdate<Order>> bulkUpdates) 
+            IEnumerable<IBulkUpdate<Order>> bulkUpdates)
             : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
@@ -388,10 +388,22 @@ namespace Application.Services.Orders
                 .ApplyDateRangeFilter(i => i.OrderCreationDate.Value, searchForm.Filter.OrderCreationDate)
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
+            // Apply Search
+            query = this.ApplySearch(query, searchForm);
+
             return query
-                .ApplySearch(searchForm)
                 .OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
                 .DefaultOrderBy(i => i.OrderCreationDate, searchForm.Sort?.Name != null);
+        }
+
+        private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        {
+            var search = searchForm.Filter.Search;
+
+            return query.WhereOr(
+                i => i.OrderNumber.Contains(search),
+                i => i.ShippingNumber.Contains(search)
+                );
         }
     }
 }
