@@ -137,45 +137,67 @@ namespace Tasks.Orders
             int processedCount = 0;
             foreach (XmlNode docRoot in docRoots)
             {
-                OrderFormDto dto = new OrderFormDto();
+                ++processedCount;
+
+                string orderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText;
+                OrderFormDto dto = ordersService.GetFormByNumber(orderNumber);
+                bool isNew = dto == null;
+                if (dto == null)
+                {
+                    dto = new OrderFormDto();
+                }
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
-                dto.OrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText;
-                dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy");
-                dto.Payer = docRoot.SelectSingleNode("E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0');
-                dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
-                dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff);
-                dto.PalletsCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYPAL_H");
-                dto.BoxesCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYCAR_H");
-                dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy");
-                dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME");
+                dto.OrderNumber = orderNumber;
+                dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
+                dto.Payer = docRoot.SelectSingleNode("E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.Payer;
+                dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.SoldTo;
+                dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
+                dto.PalletsCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYPAL_H") ?? dto.PalletsCount;
+                dto.BoxesCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
+                dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
+                dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME") ?? dto.OrderAmountExcludingVAT;
 
                 IEnumerable<string> missedRequiredFields = ValidateRequiredFields(dto);
                 if (missedRequiredFields.Any())
                 {
                     string fields = string.Join(", ", missedRequiredFields);
-                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ не создан.", fileName, fields);
+                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ ({processedCount}/{totalCount}) не создан.", 
+                              fileName, fields, processedCount, totalCount);
                 }
                 else
                 {
                     int entryInd = 0;
                     var itemRoots = docRoot.SelectNodes("E1EDP01");
-                    dto.Items = new List<OrderItemDto>();
+                    dto.Items = dto.Items ?? new List<OrderItemDto>();
                     foreach (XmlNode itemRoot in itemRoots)
                     {
                         ++entryInd;
-                        OrderItemDto itemDto = new OrderItemDto();
 
-                        itemDto.Quantity = itemRoot.ParseInt("MENGE");
-                        itemDto.Nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
+                        string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
+                        OrderItemDto itemDto = dto.Items.Where(i => i.Nart == nart).FirstOrDefault();
 
-                        dto.Items.Add(itemDto);
+                        if (itemDto == null)
+                        {
+                            itemDto = new OrderItemDto();
+                            dto.Items.Add(itemDto);
+                        }
+
+                        itemDto.Nart = nart;
+                        itemDto.Quantity = itemRoot.ParseInt("MENGE") ?? itemDto.Quantity;
                     }
 
-                    ++processedCount;
-                    Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
-                                    dto.OrderNumber, processedCount, totalCount, fileName);
+                    if (isNew)
+                    {
+                        Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
+                    }
+                    else
+                    {
+                        Log.Information("Обновлен заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
+                    }
 
                     orders.Add(dto);
                 }
