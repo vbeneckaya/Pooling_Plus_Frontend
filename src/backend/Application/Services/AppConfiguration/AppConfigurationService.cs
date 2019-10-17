@@ -57,6 +57,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Text, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState), isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderShippingStatus), FiledType.State, nameof(ShippingState), isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.ClientName), FiledType.Text, isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.Payer), FiledType.Text, isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.DeliveryDate), FiledType.DateTime, isDefault: true),
@@ -103,7 +104,6 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.Invoice), FiledType.Boolean),
                             new UserConfigurationGridColumn(nameof(OrderDto.DocumentsReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualDocumentsReturnDate), FiledType.DateTime),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderShippingStatus), FiledType.State, nameof(ShippingState)),
                             /*end of add field for Orders*/
                         }
                     },
