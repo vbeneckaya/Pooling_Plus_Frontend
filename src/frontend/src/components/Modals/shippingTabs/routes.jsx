@@ -21,10 +21,11 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
     }
 
     const handleChange = (point, index) => {
-        points[index] = point;
+        const newPoints = [...points];
+        newPoints[index] = point;
         onChange(null, {
             name: 'routePoints',
-            value: points,
+            value: newPoints,
         });
     };
 
