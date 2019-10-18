@@ -130,13 +130,14 @@ class SuperGrid extends Component {
     };
 
     loadList = (isConcat, isReload) => {
-        const { autoUpdateStop, autoUpdateStart, extGrid, loadList } = this.props;
+        const { autoUpdateStop, autoUpdateStart } = this.props;
+        const { selectedRows } = this.state;
 
-        if (extGrid) {
-            loadList(this.mapData(isConcat, isReload));
-        } else {
-            autoUpdateStop();
-            autoUpdateStart(this.mapData(isConcat, isReload));
+        autoUpdateStop();
+        autoUpdateStart(this.mapData(isConcat, isReload));
+
+        if (selectedRows.size) {
+            this.props.getActions({ name: this.props.name, ids: Array.from(selectedRows) });
         }
     };
 
@@ -318,7 +319,7 @@ class SuperGrid extends Component {
             autoUpdateStop,
             storageRepresentationItems,
             name,
-            t
+            t,
         } = this.props;
 
         console.log('columns', columns);
@@ -392,16 +393,18 @@ class SuperGrid extends Component {
                             isShowActions={isShowActions}
                         />
                     </InfiniteScrollTable>
-                    {selectedRows.size
-                        ? <Grid className="grid-footer-panel" columns="2">
-                            <Grid.Row columns='equal'>
-                                <Grid.Column width={10}>
+                    {selectedRows.size ? (
+                        <Grid className="grid-footer-panel" columns="2">
+                            <Grid.Row>
+                                <Grid.Column>
                                     {name === 'orders' ? (
                                         <Popup
                                             trigger={
                                                 <div
                                                     className="footer-info-label"
-                                                    onClick={isOpen ? this.handleClose : this.handleOpen}
+                                                    onClick={
+                                                        isOpen ? this.handleClose : this.handleOpen
+                                                    }
                                                 >
                                                     <Icon name={isOpen ? 'sort up' : 'sort down'} />
                                                     Данные по заказам
@@ -419,42 +422,44 @@ class SuperGrid extends Component {
                                     <div style={{ paddingTop: '4px' }}>
                                         {groupActions
                                             ? groupActions().map(action => (
-                                                <span key={action.name}>
-                                              <Button
-                                                  color={action.color}
-                                                  content={action.name}
-                                                  loading={action.loading}
-                                                  disabled={action.loading}
-                                                  icon={action.icon}
-                                                  size="mini"
-                                                  compact
-                                                  onClick={() =>
-                                                      action.action(action.ids, () => {
-                                                          this.setState(
-                                                              {
-                                                                  selectedRows: new Set(),
-                                                              },
-                                                              () => this.loadList(false, true),
-                                                          );
-                                                      })
-                                                  }
-                                              />
-                                          </span>
-                                            ))
+                                                  <span key={action.name}>
+                                                      <Button
+                                                          color={action.color}
+                                                          content={action.name}
+                                                          loading={action.loading}
+                                                          disabled={action.loading}
+                                                          icon={action.icon}
+                                                          size="mini"
+                                                          compact
+                                                          onClick={() =>
+                                                              action.action(action.ids, () => {
+                                                                  this.setState(
+                                                                      {
+                                                                          selectedRows: new Set(),
+                                                                      },
+                                                                      () =>
+                                                                          this.loadList(
+                                                                              false,
+                                                                              true,
+                                                                          ),
+                                                                  );
+                                                              })
+                                                          }
+                                                      />
+                                                  </span>
+                                              ))
                                             : null}
                                     </div>
                                 </Grid.Column>
                                 <Grid.Column floated="right">
-                                        <MassChanges
-                                            gridName={name}
-                                            load={() => this.loadList(false, true)}
-                                        />
+                                    <MassChanges
+                                        gridName={name}
+                                        load={() => this.loadList(false, true)}
+                                    />
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
-                        : null
-                    }
-
+                    ) : null}
                 </div>
                 <Confirm
                     dimmer="blurring"

@@ -13,6 +13,7 @@ import {
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
 import {
+    actionsCardSelector,
     actionsSelector,
     clearActions,
     getActionsRequest,
@@ -57,6 +58,7 @@ const Card = props => {
             getActionsRequest({
                 name,
                 ids: [id],
+                isCard: true
             }),
         );
     };
@@ -148,7 +150,7 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
-    const actions = useSelector(state => actionsSelector(state));
+    const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
 
     return (
