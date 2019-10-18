@@ -6,5 +6,6 @@ namespace Domain.Services.Orders
 {
     public interface IOrdersService : IGridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>>
     {
+        OrderFormDto GetFormByNumber(string orderNumber);
     }
 }

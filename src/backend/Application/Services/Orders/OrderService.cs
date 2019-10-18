@@ -50,6 +50,12 @@ namespace Application.Services.Orders
             return result;
         }
 
+        public OrderFormDto GetFormByNumber(string orderNumber)
+        {
+            var entity = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
+            return MapFromEntityToFormDto(entity);
+        }
+
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             var setter = new FieldSetter<Order>(entity, _historyService);
@@ -146,11 +152,20 @@ namespace Application.Services.Orders
 
         public override OrderDto MapFromEntityToDto(Order entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
             return _mapper.Map<OrderDto>(entity);
         }
 
         public override OrderFormDto MapFromEntityToFormDto(Order entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
+
             OrderDto dto = _mapper.Map<OrderDto>(entity);
             OrderFormDto result = _mapper.Map<OrderFormDto>(dto);
 
@@ -210,6 +225,7 @@ namespace Application.Services.Orders
                 }
             }
 
+            setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
             setter.UpdateField(e => e.OrderCreationDate, DateTime.Today, ignoreChanges: true);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);

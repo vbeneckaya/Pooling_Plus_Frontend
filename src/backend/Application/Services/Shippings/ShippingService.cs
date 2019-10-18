@@ -117,11 +117,20 @@ namespace Application.Services.Shippings
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
             return _mapper.Map<ShippingDto>(entity);
         }
 
         public override ShippingFormDto MapFromEntityToFormDto(Shipping entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
+
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
 
