@@ -18,7 +18,27 @@ namespace Domain.Extensions
         {
             return Char.ToLowerInvariant(input[0]) + input.Substring(1);
         }
-        
+
+        public static string Pluralize(this string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+            else if (input.EndsWith('s'))
+            {
+                return input + "es";
+            }
+            else if (input.EndsWith('y'))
+            {
+                return input.Substring(0, input.Length - 1) + "es";
+            }
+            else
+            {
+                return input + "s";
+            }
+        }
+
         public static string GetHash(this string text)
         {
             return Convert.ToBase64String(new SHA256Managed().ComputeHash(Encoding.UTF8.GetBytes(text)));

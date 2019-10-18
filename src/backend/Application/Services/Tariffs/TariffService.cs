@@ -9,12 +9,13 @@ using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Services.UserProvider;
 
 namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService) : base(dataService) { }
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override void MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {

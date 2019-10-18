@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Domain.Extensions;
 using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Search {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Search {EntityName}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -89,7 +90,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get {typeof(TDto).Name} by {id}");
+                Log.Error(ex, $"Failed to Get {EntityName} by {id}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -113,7 +114,6 @@ namespace API.Controllers.Shared
             return service.ImportFromExcel(file.OpenReadStream());            
         }      
         
-        
         /// <summary>
         /// Экспортировать в excel
         /// </summary>
@@ -121,15 +121,7 @@ namespace API.Controllers.Shared
         public IActionResult ExportToExcel() {
             
             var memoryStream = service.ExportToExcel();
-            return File(memoryStream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
-
-            //var memoryStream = new MemoryStream();
-
-            //var stream = service.ExportToExcel();
-            //stream.CopyTo(memoryStream);
-
-            //return new FileContentResult(memoryStream.ToArray(), "application/octet-stream");
-            //return File(stream, "application/vnd.ms-excel", "exportOrders-26.09.19.xlsx");
+            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Today.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
 
         /// <summary>
@@ -171,7 +163,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get actions for {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Get actions for {EntityName}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -193,7 +185,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Invoke action {name} for {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Invoke action {name} for {EntityName}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -215,7 +207,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Get bulk updates for {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Get bulk updates for {EntityName}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -237,7 +229,7 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Invoke bulk update {name} for {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Invoke bulk update {name} for {EntityName}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -260,8 +252,22 @@ namespace API.Controllers.Shared
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Failed to Save or create {typeof(TDto).Name}");
+                Log.Error(ex, $"Failed to Save or create {EntityName}");
                 return StatusCode(500, ex.Message);
+            }
+        }
+
+        private string EntityName
+        {
+            get
+            {
+                string dtoSuffix = "Dto";
+                string name = typeof(TDto).Name;
+                if (name.EndsWith(dtoSuffix))
+                {
+                    name = name.Substring(0, name.Length - dtoSuffix.Length);
+                }
+                return name;
             }
         }
     }
