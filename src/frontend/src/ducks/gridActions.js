@@ -37,6 +37,12 @@ const initial = {
 
 export default (state = initial, { type, payload }) => {
     switch (type) {
+        case GET_IDS_REQUEST:
+            return {
+                actions: [],
+                info: [],
+                updates: [],
+            };
         case GET_ACTIONS_REQUEST:
             return {
                 ...state,
@@ -218,8 +224,8 @@ function* invokeMassUpdateSaga({ payload }) {
             toast.error(result.message);
             yield put({
                 type: INVOKE_MASS_UPDATE_ERROR,
-                payload: result
-            })
+                payload: result,
+            });
         } else {
             yield put({
                 type: INVOKE_MASS_UPDATE_SUCCESS,

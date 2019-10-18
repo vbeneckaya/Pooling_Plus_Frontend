@@ -391,35 +391,34 @@ class SuperGrid extends Component {
                             isShowActions={isShowActions}
                         />
                     </InfiniteScrollTable>
-                </div>
-
-                <Grid className="grid-footer-panel" columns="2">
-                    <Grid.Row columns='equal'>
-                        <Grid.Column width={10}>
-                            {selectedRows.size && name === 'orders' ? (
-                                <Popup
-                                    trigger={
-                                        <div
-                                            className="footer-info-label"
-                                            onClick={isOpen ? this.handleClose : this.handleOpen}
-                                        >
-                                            <Icon name={isOpen ? 'sort up' : 'sort down'} />
-                                            Данные по заказам
-                                        </div>
-                                    }
-                                    content={this.infoView()}
-                                    on="click"
-                                    open={isOpen}
-                                    onClose={this.handleClose}
-                                    onOpen={this.handleOpen}
-                                    hideOnScroll
-                                    className="from-popup"
-                                />
-                            ) : null}
-                            <div style={{ paddingTop: '4px' }}>
-                                {selectedRows.size && groupActions
-                                    ? groupActions().map(action => (
-                                          <span key={action.name}>
+                    {selectedRows.size
+                        ? <Grid className="grid-footer-panel" columns="2">
+                            <Grid.Row columns='equal'>
+                                <Grid.Column width={10}>
+                                    {name === 'orders' ? (
+                                        <Popup
+                                            trigger={
+                                                <div
+                                                    className="footer-info-label"
+                                                    onClick={isOpen ? this.handleClose : this.handleOpen}
+                                                >
+                                                    <Icon name={isOpen ? 'sort up' : 'sort down'} />
+                                                    Данные по заказам
+                                                </div>
+                                            }
+                                            content={this.infoView()}
+                                            on="click"
+                                            open={isOpen}
+                                            onClose={this.handleClose}
+                                            onOpen={this.handleOpen}
+                                            hideOnScroll
+                                            className="from-popup"
+                                        />
+                                    ) : null}
+                                    <div style={{ paddingTop: '4px' }}>
+                                        {groupActions
+                                            ? groupActions().map(action => (
+                                                <span key={action.name}>
                                               <Button
                                                   color={action.color}
                                                   content={action.name}
@@ -427,6 +426,7 @@ class SuperGrid extends Component {
                                                   disabled={action.loading}
                                                   icon={action.icon}
                                                   size="mini"
+                                                  compact
                                                   onClick={() =>
                                                       action.action(action.ids, () => {
                                                           this.setState(
@@ -439,20 +439,22 @@ class SuperGrid extends Component {
                                                   }
                                               />
                                           </span>
-                                      ))
-                                    : null}
-                            </div>
-                        </Grid.Column>
-                        <Grid.Column floated="right">
-                            {selectedRows.size ? (
-                                <MassChanges
-                                    gridName={name}
-                                    load={() => this.loadList(false, true)}
-                                />
-                            ) : null}
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
+                                            ))
+                                            : null}
+                                    </div>
+                                </Grid.Column>
+                                <Grid.Column floated="right">
+                                        <MassChanges
+                                            gridName={name}
+                                            load={() => this.loadList(false, true)}
+                                        />
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                        : null
+                    }
+
+                </div>
                 <Confirm
                     dimmer="blurring"
                     open={confirmation.open}
