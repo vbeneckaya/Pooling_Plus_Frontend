@@ -394,8 +394,8 @@ class SuperGrid extends Component {
                     </InfiniteScrollTable>
                     {selectedRows.size
                         ? <Grid className="grid-footer-panel" columns="2">
-                            <Grid.Row columns='equal'>
-                                <Grid.Column width={10}>
+                            <Grid.Row>
+                                <Grid.Column>
                                     {name === 'orders' ? (
                                         <Popup
                                             trigger={
