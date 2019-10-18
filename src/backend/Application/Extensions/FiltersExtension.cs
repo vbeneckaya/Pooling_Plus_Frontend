@@ -351,18 +351,17 @@ namespace Application.Extensions
         private static Expression<Func<TModel, bool>> GetOrExpressions<TModel>(IEnumerable<Expression<Func<TModel, bool>>> expressions)
         {
             Expression orExpressions = null;
-
-            var param = expressions.First().Parameters.Single();
+            var param = expressions.First().Parameters.First();
 
             foreach (var expression in expressions)
             {
                 if (orExpressions == null)
                 {
-                    orExpressions = expression.Body;
+                    orExpressions = Expression.Invoke(expression);
                     continue;
                 }
 
-                orExpressions = Expression.Or(orExpressions, expression.Body);
+                orExpressions = Expression.OrElse(orExpressions, Expression.Invoke(expression));
             }
 
             return Expression.Lambda<Func<TModel, bool>>(orExpressions, param);
@@ -370,7 +369,9 @@ namespace Application.Extensions
 
         public static IQueryable<TModel> WhereOr<TModel>(this IQueryable<TModel> query, params Expression<Func<TModel, bool>>[] conditions)
         {
-            return query.Where(GetOrExpressions(conditions));
+            var exp = GetOrExpressions(conditions);
+
+            return query.Where(exp);
         }
     }
 }
