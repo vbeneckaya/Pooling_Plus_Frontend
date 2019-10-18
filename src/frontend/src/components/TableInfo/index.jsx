@@ -174,7 +174,7 @@ class TableInfo extends Component {
                     </Grid>
                 </div>
                 <div
-                    className={`scroll-grid-container`}
+                    className={`scroll-table-container`}
                     ref={instance => {
                         this.container = instance;
                     }}

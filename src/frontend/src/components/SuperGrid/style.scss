@@ -201,6 +201,8 @@
     width: calc(100% + 14px);
     border-top: 1px solid rgba(34,36,38,.15);
     flex-wrap: nowrap!important;
+    height: max-content;
+    top: calc(100% - 90px);
 
     .row {
         padding-top: 0 !important;
