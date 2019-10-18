@@ -155,7 +155,7 @@ namespace Tasks.Orders
                 dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.SoldTo;
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
                 dto.PalletsCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYPAL_H") ?? dto.PalletsCount;
-                dto.BoxesCount = docRoot.ParseInt("Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
+                dto.BoxesCount = docRoot.ParseDecimal("Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
                 dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME") ?? dto.OrderAmountExcludingVAT;
 

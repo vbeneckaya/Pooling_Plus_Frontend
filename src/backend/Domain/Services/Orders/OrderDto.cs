@@ -19,8 +19,8 @@ namespace Domain.Services.Orders
         public string DeliveryDate { get; set; }
         public string BDFInvoiceNumber { get; set; }
         public int? ArticlesCount { get; set; }
-        public int? BoxesCount { get; set; }
-        public int? ConfirmedBoxesCount { get; set; }
+        public decimal? BoxesCount { get; set; }
+        public decimal? ConfirmedBoxesCount { get; set; }
         public int? PalletsCount { get; set; }
         public int? ConfirmedPalletsCount { get; set; }
         public int? ActualPalletsCount { get; set; }
