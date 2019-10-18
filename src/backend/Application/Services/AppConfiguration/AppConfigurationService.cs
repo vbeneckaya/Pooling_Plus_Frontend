@@ -171,7 +171,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<TariffsService>(), 
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Tariffs*/
@@ -222,7 +223,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<PickingTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
@@ -233,7 +235,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<WarehousesService>(), 
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Warehouses*/
@@ -253,7 +256,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<ArticlesService>(), 
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Articles*/
@@ -304,7 +308,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<TransportCompaniesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for TransportCompanies*/
@@ -319,7 +324,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<VehicleTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(VehicleTypeDto.Name), FiledType.Text)
@@ -330,7 +336,8 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<DocumentTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(DocumentTypeDto.Name), FiledType.Text)
