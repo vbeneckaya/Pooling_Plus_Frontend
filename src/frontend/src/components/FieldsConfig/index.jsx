@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Confirm, Form, Input, Modal, Search } from 'semantic-ui-react';
+import {Button, Confirm, Form, Input, Label, Message, Modal, Search} from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -23,6 +23,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
     let [selectedFields, setSelectedFields] = useState(isNew ? [] : currRepresentation);
     let [name, setName] = useState(isNew ? '' : currName);
     let [error, setError] = useState(false);
+    let [isEmpty, setEmpty] = useState(false);
     let [search, setSearch] = useState('');
     let [confirmation, setConfirmation] = useState({ open: false });
 
@@ -60,12 +61,14 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
         getRepresentations && getRepresentations(callBackFunc);
         setModalOpen(false);
         setError(null);
+        setEmpty(false);
         setConfirmation({open: false});
         setSearch('');
     };
 
     const onChange = selected => {
         setSelectedFields(selected);
+        setEmpty(false);
     };
 
     const isNotUniqueName = () => {
@@ -73,11 +76,16 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
         return Boolean(list[name]);
     };
 
+
     const handleSave = () => {
+        console.log('ss', selectedFields);
         if (!name) {
             setError('required_field');
         } else if (isNotUniqueName()) {
             setError('representation_already_exists');
+        } else if (!selectedFields.length) {
+            setError(null);
+            setEmpty(true);
         } else {
             dispatch(
                 saveRepresentationRequest({
@@ -97,6 +105,9 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
             setError('required_field');
         } else if (isNotUniqueName() && name !== currName) {
             setError('representation_already_exists');
+        } else if (!selectedFields.length) {
+            setError(null);
+            setEmpty(true);
         } else {
             dispatch(
                 editRepresentationRequest({
@@ -162,6 +173,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
             onClose={onClose}
             closeOnEscape
             closeOnDimmerClick={false}
+            className="representation-modal"
             closeIcon
         >
             <Modal.Header>{title}</Modal.Header>
@@ -193,6 +205,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                         search={search}
                         onChange={onChange}
                     />
+                    {isEmpty ? <Message negative>{t('Добавьте поля в представление')}</Message> : null}
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">

@@ -307,3 +307,9 @@ input::-webkit-calendar-picker-indicator {
 .dnd-not-visible {
     display: none;
 }
+
+.representation-modal {
+    .ui.message {
+        margin: 0!important;
+    }
+}
