@@ -347,6 +347,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    setSelected={this.setSelected}
                 />
                 <div
                     className={`scroll-grid-container${extGrid ? ' grid_small' : ''}`}

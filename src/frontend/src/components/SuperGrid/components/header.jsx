@@ -29,6 +29,7 @@ const Header = ({
     disabledClearFilter,
     loadList,
     name,
+    setSelected,
 }) => {
     const { t } = useTranslation();
 
@@ -86,6 +87,9 @@ const Header = ({
             setRepresentationRequest({
                 gridName: name,
                 value: key,
+                callbackSuccess: () => {
+                    setSelected(new Set())
+                }
             }),
         );
     };
@@ -120,12 +124,14 @@ const Header = ({
                                     />
                                     {representations && Object.keys(representations).length ? (
                                         <>
-                                            {Object.keys(representations).sort().map(key => (
-                                                <Dropdown.Item
-                                                    text={key}
-                                                    onClick={() => changeRepresentation(key)}
-                                                />
-                                            ))}
+                                            {Object.keys(representations)
+                                                .sort()
+                                                .map(key => (
+                                                    <Dropdown.Item
+                                                        text={key}
+                                                        onClick={() => changeRepresentation(key)}
+                                                    />
+                                                ))}
                                         </>
                                     ) : null}
                                     <Dropdown.Divider />

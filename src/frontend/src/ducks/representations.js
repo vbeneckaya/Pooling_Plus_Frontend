@@ -244,10 +244,13 @@ function* deleteRepresentationSaga({ payload }) {
     }
 }
 
-function* setRepresentationSaga({ paylod }) {
+function* setRepresentationSaga({ payload }) {
     try {
+        const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.representation);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
+
+        callbackSuccess && callbackSuccess();
     } catch (e) {
         console.log('___error', e);
     }
