@@ -27,6 +27,7 @@ const CLEAR_ACTIONS = 'CLEAR_ACTIONS';
 
 const initial = {
     actions: [],
+    actionsCard: [],
     info: {},
     updates: [],
     progressActionName: null,
@@ -37,17 +38,36 @@ const initial = {
 
 export default (state = initial, { type, payload }) => {
     switch (type) {
+        case GET_IDS_REQUEST:
+            return {
+                actions: [],
+                info: [],
+                updates: [],
+            };
         case GET_ACTIONS_REQUEST:
             return {
                 ...state,
             };
         case GET_ACTIONS_SUCCESS:
-            return {
+            let stateNew = {
                 ...state,
-                actions: payload.actions,
                 info: payload.info,
                 updates: payload.updates,
             };
+
+            if (payload.isCard) {
+                stateNew = {
+                    ...stateNew,
+                    actionsCard: payload.actions,
+                };
+            } else {
+                stateNew = {
+                    ...stateNew,
+                    actions: payload.actions,
+                };
+            }
+
+            return stateNew;
         case GET_ACTIONS_ERROR:
             return {
                 ...state,
@@ -83,6 +103,8 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 actions: [],
                 info: {},
+                updates: [],
+                actionsCard: [],
             };
         default:
             return state;
@@ -136,6 +158,13 @@ export const actionsSelector = createSelector(stateSelector, state =>
     })),
 );
 
+export const actionsCardSelector = createSelector(stateSelector, state =>
+    (state.actionsCard || []).map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
+);
+
 export const progressActionNameSelector = createSelector(
     stateSelector,
     state => state.progressActionName,
@@ -152,19 +181,24 @@ export const progressMassUpdateSelector = createSelector(
 
 function* getActionsSaga({ payload }) {
     try {
-        const { name, ids = [] } = payload;
+        const { name, ids = [], isCard } = payload;
         if (ids.length) {
             const actions = yield postman.post(`/${name}/getActions`, ids);
-            const info = yield postman.post(`/${name}/getSummary`, ids);
-            const updates = yield postman.post(`/${name}/getBulkUpdates`, ids);
+            let info = {};
+            let updates = [];
+
+            if (!isCard) {
+                info = yield postman.post(`/${name}/getSummary`, ids);
+                updates = yield postman.post(`/${name}/getBulkUpdates`, ids);
+            }
             yield put({
                 type: GET_ACTIONS_SUCCESS,
-                payload: { actions, info, updates },
+                payload: { actions, info, updates, isCard },
             });
         } else {
             yield put({
                 type: GET_ACTIONS_SUCCESS,
-                payload: { actions: [], info: {} },
+                payload: { actions: [], info: {}, update: [], actionsCard: [] },
             });
         }
     } catch (e) {
@@ -218,8 +252,8 @@ function* invokeMassUpdateSaga({ payload }) {
             toast.error(result.message);
             yield put({
                 type: INVOKE_MASS_UPDATE_ERROR,
-                payload: result
-            })
+                payload: result,
+            });
         } else {
             yield put({
                 type: INVOKE_MASS_UPDATE_SUCCESS,

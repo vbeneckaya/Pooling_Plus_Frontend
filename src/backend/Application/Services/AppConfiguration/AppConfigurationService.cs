@@ -49,8 +49,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<OrdersService>(), 
                         CanCreateByForm = true,
-                        CanViewAdditionSummary = true,                        
-                        CanImportFromExcel = true,
+                        CanViewAdditionSummary = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
@@ -111,8 +112,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<ShippingsService>(), 
                         CanCreateByForm = false,
-                        CanViewAdditionSummary = true,                        
-                        CanImportFromExcel = true,
+                        CanViewAdditionSummary = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
@@ -167,8 +169,10 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<TariffsService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
+                        CanCreateByForm = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Tariffs*/
@@ -177,40 +181,40 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.TarifficationType), FiledType.Enum, nameof(TarifficationType)),
                             new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService)),
                             new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.VehicleTypeId), FiledType.Select, nameof(VehicleTypesService)),
-                            new UserConfigurationGridColumn(nameof(TariffDto.FTLRate), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate1), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate2), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate3), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate4), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate5), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate6), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate7), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate8), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate9), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate10), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate11), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate12), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate13), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate14), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate15), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate16), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate17), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate18), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate19), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate20), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate21), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate22), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate23), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate24), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate25), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate26), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate27), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate28), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate29), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate30), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate31), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate32), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LTLRate33), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.FtlRate), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate1), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate2), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate3), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate4), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate5), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate6), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate7), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate8), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate9), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate10), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate11), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate12), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate13), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate14), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate15), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate16), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate17), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate18), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate19), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate20), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate21), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate22), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate23), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate24), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate25), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate26), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate27), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate28), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate29), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate30), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate31), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate32), FiledType.Number),
+                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate33), FiledType.Number),
                             /*end of add field for Tariffs*/
                         }
                     },
@@ -218,7 +222,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<PickingTypesService>(),
                         CanCreateByForm = true,
-                        CanImportFromExcel = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
@@ -227,8 +233,10 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<WarehousesService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
+                        CanCreateByForm = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Warehouses*/
@@ -246,8 +254,10 @@ namespace Application.Services.AppConfiguration
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<ArticlesService>(), 
-                        CanCreateByForm = true, 
-                        CanImportFromExcel = true,
+                        CanCreateByForm = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Articles*/
@@ -297,7 +307,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<TransportCompaniesService>(),
                         CanCreateByForm = true,
-                        CanImportFromExcel = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for TransportCompanies*/
@@ -311,7 +323,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<VehicleTypesService>(),
                         CanCreateByForm = true,
-                        CanImportFromExcel = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(VehicleTypeDto.Name), FiledType.Text)
@@ -321,7 +335,9 @@ namespace Application.Services.AppConfiguration
                     {
                         Name = GetName<DocumentTypesService>(),
                         CanCreateByForm = true,
-                        CanImportFromExcel = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true, 
+                        ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(DocumentTypeDto.Name), FiledType.Text)

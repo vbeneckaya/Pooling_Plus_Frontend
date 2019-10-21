@@ -15,11 +15,7 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider)
-            : base(dataService)
-        {
-            _userProvider = userProvider;
-        }
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
@@ -81,7 +77,5 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
         }
-
-        private readonly IUserProvider _userProvider;
     }
 }

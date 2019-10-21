@@ -258,5 +258,26 @@ namespace Domain.Shared.FormFilters
         /// </summary>
         [FilterField(Type = FilterFieldType.Options)]
         public string ShippingId { get; set; }
+
+        /// <summary>
+        /// Status
+        /// </summary>
+        public string Status { get; set; }
+
+        /// <summary>
+        /// Order Shipping Status
+        /// </summary>
+        public string OrderShippingStatus { get; set; }
+
+        /// <summary>
+        /// Delivery Status
+        /// </summary>
+        public string DeliveryStatus { get; set; }
+
+        /// <summary>
+        /// Shipping Status
+        /// </summary>
+        public string ShippingStatus { get; set; }
+
     }
 }

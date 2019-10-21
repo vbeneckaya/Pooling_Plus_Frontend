@@ -9,14 +9,13 @@ using DAL.Queries;
 using System.Collections.Generic;
 using Domain.Shared;
 using DAL.Services;
+using Domain.Services.UserProvider;
 
 namespace Application.Services.Warehouses
 {
     public class WarehousesService : DictonaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
     {
-        public WarehousesService(ICommonDataService dataService) : base(dataService)
-        {
-        }
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {

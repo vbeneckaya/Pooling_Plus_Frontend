@@ -97,15 +97,7 @@ export const deleteRepresentationRequest = payload => {
 
 export const stateSelector = state => state.representations;
 
-export const representationsSelector = createSelector(stateSelector, state => {
-    const { list = {} } = state;
-    const ordered = {};
-    Object.keys(list).sort().forEach(function(key) {
-        ordered[key] = list[key];
-    });
-
-    return ordered;
-});
+export const representationsSelector = createSelector(stateSelector, state => state.list);
 
 export const representationNameSelector = createSelector(
     [stateSelector, (state, name) => name],
@@ -252,10 +244,13 @@ function* deleteRepresentationSaga({ payload }) {
     }
 }
 
-function* setRepresentationSaga({ paylod }) {
+function* setRepresentationSaga({ payload }) {
     try {
+        const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.representation);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
+
+        callbackSuccess && callbackSuccess();
     } catch (e) {
         console.log('___error', e);
     }

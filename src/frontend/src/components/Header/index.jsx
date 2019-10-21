@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
+    dictionariesHeaderSelector,
     dictionariesMenuSelector,
     getUserProfile,
     gridsMenuSelector,
@@ -20,7 +21,8 @@ import { DICTIONARY_LINK, GRID_LINK, ROLES_LINK, USERS_LINK } from '../../router
 const Header = () => {
     const dispatch = useDispatch();
     const grids = useSelector(state => gridsMenuSelector(state));
-    const dictionaries = useSelector(state => dictionariesMenuSelector(state));
+    const dictionariesList = useSelector(state => dictionariesMenuSelector(state));
+    const dictionariesMenu = useSelector(state => dictionariesHeaderSelector(state));
     const usersAndRoles = useSelector(state => rolesAndUsersMenu(state));
     const userName = useSelector(state => userNameSelector(state));
     const userRole = useSelector(state => roleSelector(state));
@@ -68,28 +70,33 @@ const Header = () => {
                                     {t(item)}
                                 </Menu.Item>
                             ))}
-                        {usersAndRoles.map(item => (
-                            <Menu.Item
-                                className="large"
-                                key={item.name}
-                                as={Link}
-                                to={item.link}
-                                active={activeItem.includes(item.name)}
-                                name="roles"
-                            >
-                                {t(item.name)}
-                            </Menu.Item>
-                        ))}
-                        {dictionaries && (
+                        {
+                            dictionariesMenu && dictionariesMenu
+                            ?
+                                dictionariesMenu.map(item => (
+                                    <Menu.Item
+                                        className="large"
+                                        key={item}
+                                        as={Link}
+                                        to={DICTIONARY_LINK.replace(':name', item)}
+                                        name={item}
+                                        active={activeItem.includes(item)}
+                                    >
+                                        {t(item)}
+                                    </Menu.Item>
+                                ))
+                                : null
+                        }
+                        {dictionariesList && (
                             <Menu.Menu>
                                 <Dropdown
                                     text={t('dictionaries')}
                                     item
-                                    className={`${dictionaries.some(x => activeItem.includes(x)) &&
+                                    className={`${[...dictionariesList, ...usersAndRoles.map(item => item.name)].some(x => activeItem.includes(x)) &&
                                         'superActive'}`}
                                 >
                                     <Dropdown.Menu>
-                                        {dictionaries.map(item => {
+                                        {dictionariesList.map(item => {
                                             return (
                                                 <Dropdown.Item
                                                     key={item}
@@ -102,6 +109,17 @@ const Header = () => {
                                                 </Dropdown.Item>
                                             );
                                         })}
+                                        {usersAndRoles.map(item => (
+                                            <Dropdown.Item
+                                                key={item.name}
+                                                as={Link}
+                                                to={item.link}
+                                                active={activeItem.includes(item.name)}
+                                                name={item.name}
+                                            >
+                                                {t(item.name)}
+                                            </Dropdown.Item>
+                                        ))}
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </Menu.Menu>

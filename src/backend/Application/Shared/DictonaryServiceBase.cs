@@ -7,6 +7,7 @@ using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
 
@@ -17,11 +18,13 @@ namespace Application.Shared
         public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
-        protected ICommonDataService _dataService;
+        protected readonly ICommonDataService _dataService;
+        protected readonly IUserProvider _userProvider;
 
-        protected DictonaryServiceBase(ICommonDataService dataService)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider)
         {
             _dataService = dataService;
+            _userProvider = userProvider;
         }
 
         public TListDto Get(Guid id)
@@ -111,7 +114,23 @@ namespace Application.Shared
 
             return new ValidateResult();
         }
-        
+
+        public Stream ExportToExcel()
+        {
+            var excel = new ExcelPackage();
+            var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+            var dbSet = _dataService.GetDbSet<TEntity>();
+            var entities = dbSet.ToList();
+            var dtos = entities.Select(MapFromEntityToDto);
+
+            var user = _userProvider.GetCurrentUser();
+
+            var excelMapper = new ExcelMapper<TListDto>(_dataService);
+            excelMapper.FillSheet(workSheet, dtos, user.Language);
+
+            return new MemoryStream(excel.GetAsByteArray());
+        }
+
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
