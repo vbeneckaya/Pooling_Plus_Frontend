@@ -314,8 +314,6 @@ namespace Application.Services.Orders
         /// <returns></returns>
         public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
         {
-            return this.ApplySearch(query, searchForm);
-
             // OrderNumber Filter
             query = query.ApplyStringFilter(i => i.OrderNumber, searchForm.Filter.OrderNumber);
 
@@ -393,6 +391,7 @@ namespace Application.Services.Orders
 
             // Apply Search
 
+            query = this.ApplySearch(query, searchForm);
 
             return query
                 .OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
