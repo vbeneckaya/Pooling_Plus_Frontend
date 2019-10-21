@@ -215,7 +215,7 @@
   orderItemRemoved: "Удалена позиция: {0} ({1})"
   orderItemChangeNart: "NART по позиции изменен с {0} на {1}"
   orderItemChangeQuantity: "Количество по позиции {0} установлено в {1}"
-  orderNumber: "Номер заказ клиента"
+  orderNumber: "Номер заказа клиента"
   orderRemoved: "Заказ {0} удален"
   orderRemovedFromShipping: "Заказ {0} удален из перевозки {1}"
   orders: "Заказы"
