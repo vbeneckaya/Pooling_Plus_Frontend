@@ -3,8 +3,9 @@ using Domain.Persistables;
 using Domain.Services.Documents;
 using Domain.Services.Shippings;
 using Domain.Shared;
-using Domain.Shared.FormFilters;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System;
 
 namespace API.Controllers
 {
@@ -13,6 +14,28 @@ namespace API.Controllers
     {
         public ShippingsController(IShippingsService shippingsService, IDocumentService documentService) : base(shippingsService, documentService)
         {
+        }
+
+        /// <summary>
+        /// Поиск по номеру
+        /// </summary>
+        [HttpPost("findNumber")]
+        public IActionResult Search([FromBody]NumberSearchFormDto form)
+        {
+            try
+            {
+                var result = service.FindByNumber(form);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"Failed to Find Shipping number");
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

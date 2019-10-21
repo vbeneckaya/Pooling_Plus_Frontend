@@ -51,6 +51,22 @@ namespace Application.Services.Shippings
             return new ShippingSummaryDto();
         }
 
+        public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
+        {
+            var dbSet = _dataService.GetDbSet<Shipping>();
+            List<Shipping> entities;
+            if (dto.IsPartial)
+            {
+                entities = dbSet.Where(x => x.ShippingNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            }
+            else
+            {
+                entities = dbSet.Where(x => x.ShippingNumber == dto.Number).ToList();
+            }
+            var result = entities.Select(MapFromEntityToLookupDto);
+            return result;
+        }
+
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
             var setter = new FieldSetter<Shipping>(entity, _historyService);
