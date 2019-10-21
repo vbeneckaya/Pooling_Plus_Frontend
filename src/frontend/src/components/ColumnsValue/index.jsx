@@ -16,7 +16,7 @@ import {postman} from "../../utils/postman";
 import StateValue from "./StateValue";
 import SelectValue from "./SelectValue";
 
-const CellValue = ({ type, value = '', stateColors = [], id, key_id, toggleIsActive, isTranslate, source, indexRow }) => {
+const CellValue = ({ type, value = '', stateColors = [], id, key_id, toggleIsActive, isTranslate, source, indexRow, name }) => {
     const { t } = useTranslation();
 
     if (type === SELECT_TYPE) {
@@ -71,6 +71,12 @@ const CellValue = ({ type, value = '', stateColors = [], id, key_id, toggleIsAct
             />
         );
     }*/
+
+   if (name.toLowerCase().includes('address')) {
+       return <div className="column-address">
+           {value}
+       </div>
+   }
 
     return isTranslate ? t(value) : value
         .toString()

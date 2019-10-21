@@ -41,10 +41,10 @@ class Result extends Component {
             t
         } = this.props;
 
-        const columnStyle = column => ({
+       /* const columnStyle = column => ({
             maxWidth: column.width + 'px',
             minWidth: column.width + 'px',
-        });
+        });*/
 
         return (
             <Table.Body>
@@ -83,15 +83,14 @@ class Result extends Component {
                                     columns.map(column => (
                                         <Table.Cell
                                             key={`cell_${row.id}_${column.name}_${i}`}
-                                            style={columnStyle(column)}
+                                            className={column.name.toLowerCase().includes('address') ? 'address-cell' : ''}
                                         >
                                             {
                                                 <CellValue
-                                                    type={column.type}
+                                                    {...column}
                                                     id={`${row.id}_${column.name}_${i}`}
                                                     indexRow={i}
                                                     value={row[column.name]}
-                                                    source={column.source}
                                                 />
                                             }
                                         </Table.Cell>

@@ -42,6 +42,7 @@
 
     th {
         min-width: 100px;
+        max-width: 100px;
         position: sticky !important;
         position: -webkit-sticky !important;
         top: 0;
@@ -139,16 +140,41 @@
 
 .grid-row > td > div {
     max-height: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     -webkit-line-clamp: 7;
     -webkit-box-orient: vertical;
     width: inherit;
 }
 
+
 .grid-row td {
     cursor: pointer;
     background-color: #fbfdff;
+}
+
+.grid-row {
+    .address-cell{
+        max-width: 100px;
+    }
+    .column-address {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: inherit;
+        display: block;
+        position: relative;
+      &:hover {
+            white-space: normal;
+            position: absolute;
+            background: #fbfdff;
+            padding: .78571429em .78571429em;
+            z-index: 5;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            max-height: max-content!important;
+            max-width: min-content;
+            min-width: min-content;
+        }
+
+    }
 }
 
 .grid-row .checkbox,
