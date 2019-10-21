@@ -5,7 +5,7 @@ import { stateColorsSelector } from '../../ducks/gridList';
 import { useTranslation } from 'react-i18next';
 import {getLookupRequest, valuesListSelector} from "../../ducks/lookup";
 
-const State = ({ value, name, isDisabled, onChange, className, source }) => {
+const State = ({ value, name, isDisabled, onChange, className, source, placeholder }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     let stateColors = useSelector(state => valuesListSelector(state, source)) || [];
@@ -31,6 +31,7 @@ const State = ({ value, name, isDisabled, onChange, className, source }) => {
             <Form.Field>
                 <label className={isDisabled ? "label-disabled" : null}>{t(name)}</label>
                 <Dropdown
+                    placeholder={placeholder}
                     className={className}
                     selection
                     search

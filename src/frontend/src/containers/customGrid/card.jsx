@@ -13,6 +13,7 @@ import {
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
 import {
+    actionsCardSelector,
     actionsSelector,
     clearActions,
     getActionsRequest,
@@ -57,6 +58,7 @@ const Card = props => {
             getActionsRequest({
                 name,
                 ids: [id],
+                isCard: true
             }),
         );
     };
@@ -90,6 +92,7 @@ const Card = props => {
     };
 
     const onChangeForm = (e, { name, value }) => {
+        console.log('va', value, name, card[name], value !== card[name]);
         setForm({
             ...form,
             [name]: value,
@@ -147,7 +150,7 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
-    const actions = useSelector(state => actionsSelector(state));
+    const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
 
     return (
@@ -227,6 +230,7 @@ const Card = props => {
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel || closeConfirmation}
+                cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />

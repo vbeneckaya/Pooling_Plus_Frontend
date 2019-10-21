@@ -18,9 +18,9 @@ import {
     getActionsRequest,
     getAllIdsRequest,
     infoSelector,
-    invokeActionRequest
+    invokeActionRequest, updatesSelector
 } from '../../ducks/gridActions';
-import { representationFromGridSelector } from '../../ducks/representations';
+import {getRepresentationsRequest, representationFromGridSelector} from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -140,7 +140,7 @@ function mapDispatchToProps(dispatch) {
         },
         getAllIds: params => {
             dispatch(getAllIdsRequest(params))
-        }
+        },
     };
 }
 

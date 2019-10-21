@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Injections;
+using Domain.Services.UserProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
-        public InjectionsService(ICommonDataService dataService) : base(dataService) { }
+        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override void MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {

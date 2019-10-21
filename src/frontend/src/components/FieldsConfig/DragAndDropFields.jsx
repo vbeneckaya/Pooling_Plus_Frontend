@@ -1,31 +1,32 @@
 import React from 'react';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import {Label} from "semantic-ui-react";
+import { Label } from 'semantic-ui-react';
 
-const DragAndDropFields = ({ type, fieldsConfig, fieldsList, onChange }) => {
-   /* let showed = (fieldsConfig.order || [])
-        .filter(x => fieldsList.some(y => y.name === x))
-        .concat(
-            fieldsList
-                .filter(
-                    x =>
-                        !(fieldsConfig.hidden || []).includes(x.name) &&
-                        !(fieldsConfig.order || []).includes(x.name),
-                )
-                .map(x => x.name),
-        );*/
+const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange }) => {
+    /* let showed = (fieldsConfig.order || [])
+         .filter(x => fieldsList.some(y => y.name === x))
+         .concat(
+             fieldsList
+                 .filter(
+                     x =>
+                         !(fieldsConfig.hidden || []).includes(x.name) &&
+                         !(fieldsConfig.order || []).includes(x.name),
+                 )
+                 .map(x => x.name),
+         );*/
 
     const { t } = useTranslation();
 
     return (
         <div className="flex-container-justify">
-            {fieldsList && fieldsList.length > 0 ? (
+            {fieldsList && fieldsList.length > 0 || fieldsConfig && fieldsConfig.length ? (
                 <DnDList
                     key={'dnd' + type}
                     type={type}
                     left={fieldsList}
                     right={fieldsConfig}
+                    search={search}
                     t={t}
                     onChange={onChange}
                 />
@@ -46,6 +47,7 @@ const reorder = (list, startIndex, endIndex) => {
 const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
+    console.log(sourceClone);
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
     destClone.splice(droppableDestination.index, 0, removed);
@@ -71,13 +73,32 @@ const getItemStyle = (isDragging, draggableStyle) => {
     };
 };
 
-class DnDList extends React.Component {
-    state = {
-        items: this.props.left.map(x => ({ id: x.name, content: x })),
-        selected: this.props.right.map(x => ({ id: x.name, content: x })),
-    };
+const sortFunc = (item, t) => {
+    item.sort(function(a, b) {
+        console.log('!!', a, b);
+        const nameA = t(a.id).toLowerCase();
+        const nameB = t(b.id).toLowerCase();
+        if (nameA < nameB)
+            //сортируем строки по возрастанию
+            return -1;
+        if (nameA > nameB) return 1;
+        return 0; // Никакой сортировки
+    });
 
-    componentDidUpdate (prevProps) {
+    return item;
+};
+
+class DnDList extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            items: sortFunc(this.props.left.map(x => ({ id: x.name, content: x })), props.t),
+            selected: this.props.right.map(x => ({ id: x.name, content: x })),
+        };
+    }
+
+
+    /*componentDidUpdate (prevProps) {
         if (prevProps.left !== this.props.left) {
             this.setState(
                 {
@@ -91,7 +112,7 @@ class DnDList extends React.Component {
                 selected: this.props.right.map(x => ({ id: x.name, content: x }))
             })
         }
-    }
+    }*/
 
     id2List = {
         droppable: 'items',
@@ -101,9 +122,10 @@ class DnDList extends React.Component {
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
+        console.log('result', result);
         const { source, destination } = result;
         let state = {
-            items: this.state.items,
+            items: sortFunc(this.state.items, this.props.t),
             selected: this.state.selected,
         };
         // dropped outside the list
@@ -120,17 +142,19 @@ class DnDList extends React.Component {
             if (source.droppableId === 'droppable2') {
                 state.selected = items;
             } else {
-                state.items = items;
+                state.items = sortFunc(items, this.props.t);
             }
         } else {
+            console.log('&&', this.getList(source.droppableId));
             const result = move(
                 this.getList(source.droppableId),
                 this.getList(destination.droppableId),
                 source,
                 destination,
             );
+            console.log('%%%%', result);
             state = {
-                items: result.droppable,
+                items: sortFunc(result.droppable, this.props.t),
                 selected: result.droppable2,
             };
         }
@@ -144,17 +168,20 @@ class DnDList extends React.Component {
     };
 
     render() {
-        const { t } = this.props;
+        const { t, search } = this.props;
+        console.log('search', this.state.selected);
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <DroppableLabel
                     items={this.state.items}
+                    search={search}
                     droppableId="droppable"
                     name={t('Available')}
                     t={t}
                 />
                 <DroppableLabel
                     items={this.state.selected}
+                    search={search}
                     droppableId="droppable2"
                     name={t('Selected')}
                     t={t}
@@ -164,7 +191,7 @@ class DnDList extends React.Component {
     }
 }
 
-const DroppableLabel = ({ items, droppableId, name, t }) => (
+const DroppableLabel = ({ items, droppableId, name, t, search }) => (
     <div style={{ width: '49%' }}>
         <p style={{ textAlign: 'center' }}>{name}</p>
         <Droppable droppableId={droppableId}>
@@ -180,21 +207,29 @@ const DroppableLabel = ({ items, droppableId, name, t }) => (
                     }}
                 >
                     {items.map((item, index) => (
-                        <Draggable key={item.id} draggableId={item.id} index={index}>
-                            {(provided, snapshot) => (
-                                <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={getItemStyle(
-                                        snapshot.isDragging,
-                                        provided.draggableProps.style,
+                        <>
+                            {t(item.id)
+                                .toLowerCase()
+                                .includes(search.toLowerCase()) ? (
+                                <Draggable key={item.id} draggableId={item.id} index={index}>
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            style={getItemStyle(
+                                                snapshot.isDragging,
+                                                provided.draggableProps.style,
+                                            )}
+                                        >
+                                            <Label style={{ width: '100%' }}>
+                                                {t(item.content.name)}
+                                            </Label>
+                                        </div>
                                     )}
-                                >
-                                    <Label style={{ width: '100%' }}>{t(item.content.name)}</Label>
-                                </div>
-                            )}
-                        </Draggable>
+                                </Draggable>
+                            ) : null}
+                        </>
                     ))}
                     {provided.placeholder}
                 </div>
@@ -203,4 +238,4 @@ const DroppableLabel = ({ items, droppableId, name, t }) => (
     </div>
 );
 
-export default DragAndDropFields
+export default DragAndDropFields;

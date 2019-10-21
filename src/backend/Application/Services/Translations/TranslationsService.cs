@@ -5,13 +5,14 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 
 namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(ICommonDataService dataService) : base(dataService) { }
-        
+        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+
         public IEnumerable<TranslationDto> GetAll()
         {
             return _dataService.GetDbSet<Translation>().ToList().Select(x=>

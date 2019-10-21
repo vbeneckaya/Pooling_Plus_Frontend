@@ -6,12 +6,13 @@ using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using DAL.Services;
+using Domain.Services.UserProvider;
 
 namespace Application.Services.Articles
 {
     public class ArticlesService : DictonaryServiceBase<Article, ArticleDto>, IArticlesService
     {
-        public ArticlesService(ICommonDataService dataService) : base(dataService) { }
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {

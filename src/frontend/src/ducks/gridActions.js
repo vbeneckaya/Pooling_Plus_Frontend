@@ -17,30 +17,57 @@ const INVOKE_ACTION_REQUEST = 'INVOKE_ACTION_REQUEST';
 const INVOKE_ACTION_SUCCESS = 'INVOKE_ACTION_SUCCESS';
 const INVOKE_ACTION_ERROR = 'INVOKE_ACTION_ERROR';
 
+const INVOKE_MASS_UPDATE_REQUEST = 'INVOKE_MASS_UPDATE_REQUEST';
+const INVOKE_MASS_UPDATE_SUCCESS = 'INVOKE_MASS_UPDATE_SUCCESS';
+const INVOKE_MASS_UPDATE_ERROR = 'INVOKE_MASS_UPDATE_ERROR';
+
 const CLEAR_ACTIONS = 'CLEAR_ACTIONS';
 
 //*  INITIAL STATE  *//
 
 const initial = {
     actions: [],
+    actionsCard: [],
     info: {},
+    updates: [],
     progressActionName: null,
+    progressMassUpdate: false,
 };
 
 //*  REDUCER  *//
 
 export default (state = initial, { type, payload }) => {
     switch (type) {
+        case GET_IDS_REQUEST:
+            return {
+                actions: [],
+                info: [],
+                updates: [],
+            };
         case GET_ACTIONS_REQUEST:
             return {
                 ...state,
             };
         case GET_ACTIONS_SUCCESS:
-            return {
+            let stateNew = {
                 ...state,
-                actions: payload.actions,
                 info: payload.info,
+                updates: payload.updates,
             };
+
+            if (payload.isCard) {
+                stateNew = {
+                    ...stateNew,
+                    actionsCard: payload.actions,
+                };
+            } else {
+                stateNew = {
+                    ...stateNew,
+                    actions: payload.actions,
+                };
+            }
+
+            return stateNew;
         case GET_ACTIONS_ERROR:
             return {
                 ...state,
@@ -60,11 +87,24 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progressActionName: null,
             };
+        case INVOKE_MASS_UPDATE_REQUEST:
+            return {
+                ...state,
+                progressMassUpdate: true,
+            };
+        case INVOKE_MASS_UPDATE_SUCCESS:
+        case INVOKE_MASS_UPDATE_ERROR:
+            return {
+                ...state,
+                progressMassUpdate: false,
+            };
         case CLEAR_ACTIONS:
             return {
                 ...state,
                 actions: [],
                 info: {},
+                updates: [],
+                actionsCard: [],
             };
         default:
             return state;
@@ -100,6 +140,13 @@ export const getAllIdsRequest = payload => {
     };
 };
 
+export const invokeMassUpdateRequest = payload => {
+    return {
+        type: INVOKE_MASS_UPDATE_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridActions;
@@ -111,29 +158,47 @@ export const actionsSelector = createSelector(stateSelector, state =>
     })),
 );
 
+export const actionsCardSelector = createSelector(stateSelector, state =>
+    (state.actionsCard || []).map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
+);
+
 export const progressActionNameSelector = createSelector(
     stateSelector,
     state => state.progressActionName,
 );
 
 export const infoSelector = createSelector(stateSelector, state => state.info);
+export const updatesSelector = createSelector(stateSelector, state => state.updates);
+export const progressMassUpdateSelector = createSelector(
+    stateSelector,
+    state => state.progressMassUpdate,
+);
 
 //*  SAGA  *//
 
 function* getActionsSaga({ payload }) {
     try {
-        const { name, ids = [] } = payload;
+        const { name, ids = [], isCard } = payload;
         if (ids.length) {
             const actions = yield postman.post(`/${name}/getActions`, ids);
-            const info = yield postman.post(`/${name}/getSummary`, ids);
+            let info = {};
+            let updates = [];
+
+            if (!isCard) {
+                info = yield postman.post(`/${name}/getSummary`, ids);
+                updates = yield postman.post(`/${name}/getBulkUpdates`, ids);
+            }
             yield put({
                 type: GET_ACTIONS_SUCCESS,
-                payload: { actions, info },
+                payload: { actions, info, updates, isCard },
             });
         } else {
             yield put({
                 type: GET_ACTIONS_SUCCESS,
-                payload: { actions: [], info: {} },
+                payload: { actions: [], info: {}, update: [], actionsCard: [] },
             });
         }
     } catch (e) {
@@ -161,7 +226,7 @@ function* invokeActionSaga({ payload }) {
 function* getAllIdsSaga({ payload }) {
     try {
         const { filter, name, callbackSuccess } = payload;
-        const result = yield postman.post(`/${name}/ids`, filter);
+        const result = yield postman.post(`/${name}/ids`, filter.filter);
 
         yield put({
             type: GET_IDS_SUCCESS,
@@ -176,10 +241,39 @@ function* getAllIdsSaga({ payload }) {
     }
 }
 
+function* invokeMassUpdateSaga({ payload }) {
+    try {
+        const { ids, callbackSuccess, name, field, value } = payload;
+        const result = yield postman.post(`/${name}/invokeBulkUpdate/${field}`, {
+            ids,
+            value,
+        });
+        if (result.isError) {
+            toast.error(result.message);
+            yield put({
+                type: INVOKE_MASS_UPDATE_ERROR,
+                payload: result,
+            });
+        } else {
+            yield put({
+                type: INVOKE_MASS_UPDATE_SUCCESS,
+            });
+            result.message && toast.info(result.message);
+            callbackSuccess();
+        }
+    } catch (e) {
+        yield put({
+            type: INVOKE_MASS_UPDATE_ERROR,
+            payload: e,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_ACTIONS_REQUEST, getActionsSaga),
         takeEvery(INVOKE_ACTION_REQUEST, invokeActionSaga),
         takeEvery(GET_IDS_REQUEST, getAllIdsSaga),
+        takeEvery(INVOKE_MASS_UPDATE_REQUEST, invokeMassUpdateSaga),
     ]);
 }

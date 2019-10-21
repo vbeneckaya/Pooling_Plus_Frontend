@@ -117,11 +117,20 @@ namespace Application.Services.Shippings
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
             return _mapper.Map<ShippingDto>(entity);
         }
 
         public override ShippingFormDto MapFromEntityToFormDto(Shipping entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
+
             ShippingDto dto = MapFromEntityToDto(entity);
             ShippingFormDto formDto = _mapper.Map<ShippingFormDto>(dto);
 
@@ -335,7 +344,7 @@ namespace Application.Services.Shippings
                 .ApplyBooleanFilter(i => i.CostsConfirmedByCarrier, searchForm.Filter.CostsConfirmedByCarrier);
 
             return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
-                .DefaultOrderBy(i => i.ShippingCreationDate, searchForm.Sort?.Name != null);
+                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }
 }

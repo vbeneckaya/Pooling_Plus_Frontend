@@ -59,8 +59,14 @@ export const gridsMenuSelector = createSelector(
 );
 export const dictionariesMenuSelector = createSelector(
     stateSelector,
-    state => state.dictionaries && state.dictionaries.map(dictionary => dictionary.name),
+    state => state.dictionaries && state.dictionaries.filter(dictionary => !dictionary.showOnHeader).map(dictionary => dictionary.name),
 );
+
+export const dictionariesHeaderSelector = createSelector(
+    stateSelector,
+    state => state.dictionaries && state.dictionaries.filter(dictionary => dictionary.showOnHeader).map(dictionary => dictionary.name),
+);
+
 export const userNameSelector = createSelector(stateSelector, state => state.userName);
 export const roleSelector = createSelector(stateSelector, state => state.userRole);
 

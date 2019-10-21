@@ -189,6 +189,14 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
+export const canExportToExcelSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.canExportToExcel : false;
+    },
+);
+
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
 export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);

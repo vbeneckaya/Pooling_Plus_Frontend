@@ -246,6 +246,7 @@ const DocWithEditor = ({
                 open={confirmation.open}
                 content={confirmation.content}
                 onCancel={confirmation.cancel}
+                cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.confirm}
             />
         </DocView>

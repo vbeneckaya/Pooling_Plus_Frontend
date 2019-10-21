@@ -254,10 +254,7 @@ namespace Application.Extensions
             var propertyInfo = typeof(TModel).GetProperties()
                 .FirstOrDefault(i => i.Name.ToLower() == propertyName.ToLower());
 
-            if (propertyInfo == null)
-            {
-                throw new Exception($"Invalid property name {propertyName} for type {typeof(TModel).Name}");
-            }
+            if (propertyInfo == null) return query;
 
             ParameterExpression param = Expression.Parameter(typeof(TModel), string.Empty);
             MemberExpression property = Expression.PropertyOrField(param, propertyInfo.Name);

@@ -11,7 +11,19 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import { Button, Confirm, Grid, Dimmer, Loader, Popup, Icon } from 'semantic-ui-react';
+import {
+    Button,
+    Confirm,
+    Grid,
+    Dimmer,
+    Loader,
+    Popup,
+    Icon,
+    Form,
+    Dropdown,
+} from 'semantic-ui-react';
+import Select from '../BaseComponents/Select';
+import MassChanges from './components/massChanges';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -118,13 +130,14 @@ class SuperGrid extends Component {
     };
 
     loadList = (isConcat, isReload) => {
-        const { autoUpdateStop, autoUpdateStart, extGrid, loadList } = this.props;
+        const { autoUpdateStop, autoUpdateStart } = this.props;
+        const { selectedRows } = this.state;
 
-        if (extGrid) {
-            loadList(this.mapData(isConcat, isReload));
-        } else {
-            autoUpdateStop();
-            autoUpdateStart(this.mapData(isConcat, isReload));
+        autoUpdateStop();
+        autoUpdateStart(this.mapData(isConcat, isReload));
+
+        if (selectedRows.size) {
+            this.props.getActions({ name: this.props.name, ids: Array.from(selectedRows) });
         }
     };
 
@@ -302,19 +315,19 @@ class SuperGrid extends Component {
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
-            isUnloadInExcel,
-            loadingReport,
             colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
             name,
+            t,
         } = this.props;
+
+        console.log('columns', columns);
 
         return (
             <>
                 <Dimmer active={progress} inverted className="table-loader">
-                      <Loader size="huge">Loading</Loader>
-
+                    <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <HeaderSearchGrid
                     createButton={
@@ -335,6 +348,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    setSelected={this.setSelected}
                 />
                 <div
                     className={`scroll-grid-container${extGrid ? ' grid_small' : ''}`}
@@ -379,63 +393,80 @@ class SuperGrid extends Component {
                             isShowActions={isShowActions}
                         />
                     </InfiniteScrollTable>
+                    {selectedRows.size ? (
+                        <Grid className="grid-footer-panel" columns="2">
+                            <Grid.Row>
+                                <Grid.Column>
+                                    {name === 'orders' ? (
+                                        <Popup
+                                            trigger={
+                                                <div
+                                                    className="footer-info-label"
+                                                    onClick={
+                                                        isOpen ? this.handleClose : this.handleOpen
+                                                    }
+                                                >
+                                                    <Icon name={isOpen ? 'sort up' : 'sort down'} />
+                                                    Данные по заказам
+                                                </div>
+                                            }
+                                            content={this.infoView()}
+                                            on="click"
+                                            open={isOpen}
+                                            onClose={this.handleClose}
+                                            onOpen={this.handleOpen}
+                                            hideOnScroll
+                                            className="from-popup"
+                                        />
+                                    ) : null}
+                                    <div style={{ paddingTop: '4px' }}>
+                                        {groupActions
+                                            ? groupActions().map(action => (
+                                                  <span key={action.name}>
+                                                      <Button
+                                                          color={action.color}
+                                                          content={action.name}
+                                                          loading={action.loading}
+                                                          disabled={action.loading}
+                                                          icon={action.icon}
+                                                          size="mini"
+                                                          compact
+                                                          onClick={() =>
+                                                              action.action(action.ids, () => {
+                                                                  this.setState(
+                                                                      {
+                                                                          selectedRows: new Set(),
+                                                                      },
+                                                                      () =>
+                                                                          this.loadList(
+                                                                              false,
+                                                                              true,
+                                                                          ),
+                                                                  );
+                                                              })
+                                                          }
+                                                      />
+                                                  </span>
+                                              ))
+                                            : null}
+                                    </div>
+                                </Grid.Column>
+                                <Grid.Column floated="right">
+                                    <MassChanges
+                                        gridName={name}
+                                        load={() => this.loadList(false, true)}
+                                    />
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    ) : null}
                 </div>
-
-                <Grid className="grid-footer-panel" columns="2">
-                    <Grid.Row>
-                        <Grid.Column>
-                            {selectedRows.size && name === 'orders' ? (
-                                <Popup
-                                    trigger={
-                                        <div className="footer-info-label" onClick={isOpen ? this.handleClose : this.handleOpen}>
-                                            <Icon name={isOpen ? "sort up" : "sort down"} />
-                                            Данные по заказам
-                                        </div>
-                                    }
-                                    content={this.infoView()}
-                                    on="click"
-                                    open={isOpen}
-                                    onClose={this.handleClose}
-                                    onOpen={this.handleOpen}
-                                    hideOnScroll
-                                    className="from-popup"
-                                />
-                            ) : null}
-                            <div style={{ paddingTop: '4px' }}>
-                                {selectedRows.size && groupActions
-                                    ? groupActions().map(action => (
-                                          <span key={action.name}>
-                                              <Button
-                                                  color={action.color}
-                                                  content={action.name}
-                                                  loading={action.loading}
-                                                  disabled={action.loading}
-                                                  icon={action.icon}
-                                                  size="mini"
-                                                  onClick={() =>
-                                                      action.action(action.ids, () => {
-                                                          this.setState(
-                                                              {
-                                                                  selectedRows: new Set(),
-                                                              },
-                                                              () => this.loadList(false, true),
-                                                          );
-                                                      })
-                                                  }
-                                              />
-                                          </span>
-                                      ))
-                                    : null}
-                            </div>
-                        </Grid.Column>
-                        <Grid.Column floated="right">{colorInfo}</Grid.Column>
-                    </Grid.Row>
-                </Grid>
                 <Confirm
                     dimmer="blurring"
                     open={confirmation.open}
                     onCancel={closeConfirmation}
                     onConfirm={confirmation.onConfirm}
+                    cancelButton={t('cancelConfirm')}
                     content={confirmation.content}
                 />
             </>

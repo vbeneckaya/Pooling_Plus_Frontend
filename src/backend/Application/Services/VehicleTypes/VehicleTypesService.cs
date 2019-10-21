@@ -1,6 +1,7 @@
 ﻿using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Shared;
 using System;
@@ -11,7 +12,7 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService) : base(dataService) { }
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override void MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {

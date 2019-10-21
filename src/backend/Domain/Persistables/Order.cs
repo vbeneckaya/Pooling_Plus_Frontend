@@ -71,11 +71,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Предварительное Кол-во коробок
         /// </summary>
-        public int? BoxesCount { get; set; }
+        public decimal? BoxesCount { get; set; }
         /// <summary>
         /// Подтвержденное количество коробок
         /// </summary>
-        public int? ConfirmedBoxesCount { get; set; }
+        public decimal? ConfirmedBoxesCount { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
@@ -229,5 +229,10 @@ namespace Domain.Persistables
         /// </summary>
         public bool IsActive { get; set; }
         /*end of fields*/
+
+        public override string ToString()
+        {
+            return OrderNumber;
+        }
     }
 }

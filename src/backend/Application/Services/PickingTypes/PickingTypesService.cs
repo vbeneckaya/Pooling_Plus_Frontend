@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.PickingTypes;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Application.Services.PickingTypes
 {
     public class PickingTypesService : DictonaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
-        public PickingTypesService(ICommonDataService dataService) : base(dataService) { }
+        public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override void MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
