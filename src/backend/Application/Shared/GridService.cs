@@ -487,5 +487,17 @@ namespace Application.Shared
             }
             return null;
         }
+
+        protected decimal? Round(decimal? value, int decimals)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            else
+            {
+                return decimal.Round(value.Value, decimals);
+            }
+        }
     }
 }

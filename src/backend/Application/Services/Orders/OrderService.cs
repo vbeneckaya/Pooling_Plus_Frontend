@@ -82,8 +82,8 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
-            setter.UpdateField(e => e.BoxesCount, dto.BoxesCount);
-            setter.UpdateField(e => e.ConfirmedBoxesCount, dto.ConfirmedBoxesCount);
+            setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1));
+            setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1));
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService));
@@ -454,8 +454,8 @@ namespace Application.Services.Orders
                 || !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search)
                 || i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
                 || isInt && i.ArticlesCount == searchInt
-                || isInt && i.BoxesCount == searchInt
-                || isInt && i.ConfirmedBoxesCount == searchInt
+                || isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount >= searchDecimal + precision
+                || isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount >= searchDecimal + precision
                 || isInt && i.PalletsCount == searchInt
                 || isInt && i.ActualPalletsCount == searchInt
                 || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg >= searchDecimal + precision
