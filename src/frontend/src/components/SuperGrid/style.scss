@@ -154,6 +154,20 @@
 .grid-row {
     .address-cell{
         max-width: 100px;
+        &:hover {
+            .column-address {
+                white-space: normal;
+                position: absolute;
+                background: #fbfdff;
+                padding: .78571429em .78571429em;
+                z-index: 5;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                max-height: max-content !important;
+                max-width: min-content;
+                min-width: min-content;
+            }
+        }
+    }
     }
     .column-address {
         white-space: nowrap;
@@ -162,19 +176,7 @@
         width: inherit;
         display: block;
         position: relative;
-      &:hover {
-            white-space: normal;
-            position: absolute;
-            background: #fbfdff;
-            padding: .78571429em .78571429em;
-            z-index: 5;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            max-height: max-content!important;
-            max-width: min-content;
-            min-width: min-content;
-        }
 
-    }
 }
 
 .grid-row .checkbox,
