@@ -6,12 +6,13 @@ using System.Linq;
 using Domain.Shared;
 using System.Collections.Generic;
 using DAL.Services;
+using Domain.Services.UserProvider;
 
 namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService) : base(dataService) { }
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override TransportCompany FindByKey(TransportCompanyDto dto)
         {

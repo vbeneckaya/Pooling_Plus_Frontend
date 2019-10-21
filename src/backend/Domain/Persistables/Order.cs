@@ -71,11 +71,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Предварительное Кол-во коробок
         /// </summary>
-        public int? BoxesCount { get; set; }
+        public decimal? BoxesCount { get; set; }
         /// <summary>
         /// Подтвержденное количество коробок
         /// </summary>
-        public int? ConfirmedBoxesCount { get; set; }
+        public decimal? ConfirmedBoxesCount { get; set; }
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>

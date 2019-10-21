@@ -108,6 +108,11 @@
             Импортировать из excel
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ExportToExcel">
+            <summary>
+            Экспортировать в excel
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.DictionaryController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить

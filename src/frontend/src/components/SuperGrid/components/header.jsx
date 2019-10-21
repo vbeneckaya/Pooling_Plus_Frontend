@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from '../../BaseComponents/Select';
 import {
+    canExportToExcelSelector,
     canImportFromExcelSelector,
     exportProgressSelector,
     exportToExcelRequest,
@@ -38,6 +39,7 @@ const Header = ({
     const fileUploader = useRef(null);
 
     const isImportBtn = useSelector(state => canImportFromExcelSelector(state, name));
+    const isExportBtn = useSelector(state => canExportToExcelSelector(state, name));
 
     const importLoader = useSelector(state => importProgressSelector(state));
     const exportLoader = useSelector(state => exportProgressSelector(state));
@@ -178,7 +180,7 @@ const Header = ({
                             }
                         />
                     )}
-                    {true && (
+                    {isExportBtn && (
                         <Popup
                             content={
                                 t('exportToExcel') // todo

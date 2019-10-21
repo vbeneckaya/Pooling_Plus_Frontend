@@ -14,11 +14,7 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider) 
-            : base(dataService)
-        {
-            _userProvider = userProvider;
-        }
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
@@ -68,7 +64,5 @@ namespace Application.Services.Roles
                 IsActive = entity.IsActive
             };
         }
-
-        private readonly IUserProvider _userProvider;
     }
 }
