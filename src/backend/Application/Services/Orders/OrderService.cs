@@ -51,6 +51,22 @@ namespace Application.Services.Orders
             return result;
         }
 
+        public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
+        {
+            var dbSet = _dataService.GetDbSet<Order>();
+            List<Order> entities;
+            if (dto.IsPartial)
+            {
+                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            }
+            else
+            {
+                entities = dbSet.Where(x => x.OrderNumber == dto.Number).ToList();
+            }
+            var result = entities.Select(MapFromEntityToLookupDto);
+            return result;
+        }
+
         public OrderFormDto GetFormByNumber(string orderNumber)
         {
             var entity = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == orderNumber).FirstOrDefault();

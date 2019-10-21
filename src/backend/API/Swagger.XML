@@ -64,6 +64,11 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
+            <summary>
+            Поиск по номеру
+            </summary>
+        </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
             Получение данных для выпадающего списка в 
@@ -239,6 +244,11 @@
         <member name="M:API.Controllers.StateController`1.ForSelect">
             <summary>
             Все доступные статусы
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.Search(Domain.Shared.NumberSearchFormDto)">
+            <summary>
+            Поиск по номеру
             </summary>
         </member>
         <member name="M:API.Controllers.SoldToController.ForSelect">
