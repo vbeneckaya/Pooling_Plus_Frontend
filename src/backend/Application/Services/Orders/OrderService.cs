@@ -416,6 +416,7 @@ namespace Application.Services.Orders
             // Apply Search
 
             query = this.ApplySearch(query, searchForm);
+
             return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
                 .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
