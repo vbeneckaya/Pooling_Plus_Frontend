@@ -405,6 +405,14 @@ namespace Application.Services.Orders
                 .ApplyDateRangeFilter(i => i.OrderCreationDate.Value, searchForm.Filter.OrderCreationDate)
                 .ApplyOptionsFilter(i => i.ShippingId.Value.ToString(), searchForm.Filter.ShippingId);
 
+            // Status Filters
+
+            query = query
+                .ApplyEnumFilter(i => (OrderState?)i.Status, searchForm.Filter.Status)
+                .ApplyEnumFilter(i => i.OrderShippingStatus, searchForm.Filter.OrderShippingStatus)
+                .ApplyEnumFilter(i => (VehicleState?)i.DeliveryStatus, searchForm.Filter.DeliveryStatus)
+                .ApplyEnumFilter(i => (VehicleState?)i.ShippingStatus, searchForm.Filter.ShippingStatus);
+
             // Apply Search
 
             query = this.ApplySearch(query, searchForm);
