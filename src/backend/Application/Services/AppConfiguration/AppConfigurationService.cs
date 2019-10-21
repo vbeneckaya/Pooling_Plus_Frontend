@@ -168,10 +168,10 @@ namespace Application.Services.AppConfiguration
                     /*start of add dictionaries*/
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<TariffsService>(), 
+                        Name = GetName<TariffsService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -220,22 +220,10 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<PickingTypesService>(),
+                        Name = GetName<WarehousesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
-                        }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<WarehousesService>(), 
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -253,10 +241,10 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<ArticlesService>(), 
+                        Name = GetName<ArticlesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -308,7 +296,7 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<TransportCompaniesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -321,10 +309,22 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
+                        Name = GetName<PickingTypesService>(),
+                        CanCreateByForm = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true,
+                        ShowOnHeader = false,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
+                        }
+                    },
+                    new UserConfigurationDictionaryItem
+                    {
                         Name = GetName<VehicleTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -336,7 +336,7 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<DocumentTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
