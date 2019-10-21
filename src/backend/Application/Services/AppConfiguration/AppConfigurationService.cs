@@ -65,7 +65,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime, isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderType), FiledType.Enum, nameof(OrderType)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService), showRawValue: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMax), FiledType.Number),
