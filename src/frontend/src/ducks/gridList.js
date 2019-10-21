@@ -250,7 +250,7 @@ export const backgroundSyncListSaga = function*() {
     try {
         while (true) {
             yield put(getListRequest(filters));
-            yield delay(60000);
+            yield delay(1200000);
         }
     } finally {
         if (yield cancelled()) {
