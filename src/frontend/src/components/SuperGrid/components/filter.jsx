@@ -7,7 +7,8 @@ import TextFacet from '../../FilterComponents/Text';
 import NumberFacet from '../../FilterComponents/Number';
 import SelectFacet from '../../FilterComponents/Select';
 import StateFacet from '../../FilterComponents/State';
-
+import Bool from '../../FilterComponents/Bool';
+import TimeFaset from '../../FilterComponents/Time';
 import {
     DATE_TIME_TYPE,
     NUMBER_TYPE,
@@ -17,8 +18,8 @@ import {
     BOOLEAN_TYPE,
     DATE_TYPE,
     ENUM_TYPE,
+    TIME_TYPE, LINK_TYPE,
 } from '../../../constants/columnTypes';
-import Bool from '../../FilterComponents/Bool';
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
@@ -26,9 +27,11 @@ const getTypeFacet = {
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,
     [DATE_TYPE]: <DateFacet />,
+    [TIME_TYPE]: <TimeFaset />,
     [STATE_TYPE]: <StateFacet />,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <SelectFacet />,
+    [LINK_TYPE]: <TextFacet/>
 };
 
 const Control = props => {
@@ -63,7 +66,7 @@ class Filter extends Component {
         const widths = [];
 
         props.columns.forEach(column => {
-            column.name === 'status' ? widths.push(200) : widths.push(100)
+            column.name === 'status' ? widths.push(200) : widths.push(100);
         });
 
         this.state = {
@@ -80,7 +83,14 @@ class Filter extends Component {
     };
 
     render() {
-        const { isShowActions, indeterminate, all, checkAllDisabled, setSelectedAll, columns } = this.props;
+        const {
+            isShowActions,
+            indeterminate,
+            all,
+            checkAllDisabled,
+            setSelectedAll,
+            columns,
+        } = this.props;
 
         const { widths } = this.state;
 
@@ -88,7 +98,6 @@ class Filter extends Component {
             maxWidth: column.width || 100 + 'px',
             minWidth: column.width || 100 + 'px',
         });*/
-
 
         return (
             <Table.Row className="sticky-header">

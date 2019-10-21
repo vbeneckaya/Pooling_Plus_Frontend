@@ -257,6 +257,11 @@
 
 .from-popup {
     filter: none !important;
+
+    .separator {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .label-margin {
