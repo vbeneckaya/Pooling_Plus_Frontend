@@ -432,10 +432,17 @@ namespace Application.Services.Orders
             decimal precision = 0.01M;
 
             var pickingTypes = this._dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search));
-            var orderType = Enum.GetNames(typeof(OrderType))
-                .Where(i => i.Contains(search))
-                .Select(i => (OrderType?)MapFromStateDto<OrderType>(i))
-                .FirstOrDefault();
+            var orderTypes = Enum.GetNames(typeof(OrderType))
+                .Where(i => i.Contains(search, StringComparison.CurrentCultureIgnoreCase))
+                .Select(i => (OrderType?)MapFromStateDto<OrderType>(i));
+
+            var orderShippingStates = Enum.GetNames(typeof(ShippingState))
+                .Where(i => i.Contains(search, StringComparison.CurrentCultureIgnoreCase))
+                .Select(i => (ShippingState?)MapFromStateDto<ShippingState>(i));
+
+            var vehicleStates = Enum.GetNames(typeof(VehicleState))
+                .Where(i => i.Contains(search, StringComparison.CurrentCultureIgnoreCase))
+                .Select(i => (VehicleState?)MapFromStateDto<VehicleState>(i));
 
             return query.Where(i =>
                    !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search)
@@ -476,7 +483,10 @@ namespace Application.Services.Orders
                 || i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
 
                 || pickingTypes.Any(p => p.Id == i.PickingTypeId)
-                || orderType.HasValue && i.OrderType == orderType
+                || orderTypes.Contains(i.OrderType)
+                || orderShippingStates.Contains(i.OrderShippingStatus)
+                || vehicleStates.Contains(i.DeliveryStatus)
+                || vehicleStates.Contains(i.ShippingStatus)
                 );
         }
     }
