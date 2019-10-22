@@ -124,8 +124,8 @@ const Card = props => {
     };
 
     const handleSave = () => {
-        if (!handleUniquenessCheck() && name === 'orders') {
-            saveOrEditForm();
+        if (name === 'orders') {
+            handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
         }
@@ -166,18 +166,16 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        return dispatch(
+        dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
                 callbackSuccess: number => {
-                    let check = false;
                     if (number && number !== card.orderNumber) {
-                        check = true;
+                        setIsNotUnqueNumber(true)
+                    } else {
+                        setIsNotUnqueNumber(false);
+                        callbackFunc && callbackFunc();
                     }
-
-                    setIsNotUnqueNumber(check);
-
-                    return check;
                 },
             }),
         );

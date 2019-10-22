@@ -55,7 +55,7 @@ const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uni
         },
     ];
 
-    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} onChange={onChangeForm}/>}</>;
+    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} isNotUniqueNumber={isNotUniqueNumber} uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>}</>;
 };
 
 export default OrderModal;
