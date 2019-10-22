@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
+import {useTranslation} from "react-i18next";
 import Text from '../../BaseComponents/Text';
 import Date from '../../BaseComponents/Date';
 import TextArea from '../../BaseComponents/TextArea';
@@ -8,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { valuesListSelector } from '../../../ducks/lookup';
 
 const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck }) => {
+    const { t } = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
     useEffect(
