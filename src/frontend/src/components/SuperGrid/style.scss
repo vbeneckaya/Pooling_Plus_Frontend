@@ -152,6 +152,10 @@
 }
 
 .grid-row {
+    .link-cell {
+        color: #2185d0;
+        text-decoration-line: underline;
+    }
     .address-cell{
         max-width: 100px;
         &:hover {

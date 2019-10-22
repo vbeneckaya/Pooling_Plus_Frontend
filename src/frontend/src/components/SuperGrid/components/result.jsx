@@ -38,27 +38,13 @@ class Result extends Component {
             loadList,
             disabledCheck,
             name,
-            t
+            t,
         } = this.props;
-
-       /* const columnStyle = column => ({
-            maxWidth: column.width + 'px',
-            minWidth: column.width + 'px',
-        });*/
 
         return (
             <Table.Body>
                 {rows &&
                     rows.map((row, i) => (
-                        <ModalComponent
-                            element={modalCard}
-                            props={{
-                                ...row,
-                                loadList,
-                                title: `edit_${name}`,
-                            }}
-                            key={`modal_${row.id}`}
-                        >
                             <Table.Row
                                 key={row.id}
                                 className={'grid-row ' + row.color || ''}
@@ -83,7 +69,11 @@ class Result extends Component {
                                     columns.map(column => (
                                         <Table.Cell
                                             key={`cell_${row.id}_${column.name}_${i}`}
-                                            className={column.name.toLowerCase().includes('address') ? 'address-cell' : ''}
+                                            className={
+                                                column.name.toLowerCase().includes('address')
+                                                    ? 'address-cell'
+                                                    : ''
+                                            }
                                         >
                                             {
                                                 <CellValue
@@ -91,6 +81,17 @@ class Result extends Component {
                                                     id={`${row.id}_${column.name}_${i}`}
                                                     indexRow={i}
                                                     value={row[column.name]}
+                                                    modalCard={
+                                                        <ModalComponent
+                                                            element={modalCard}
+                                                            props={{
+                                                                ...row,
+                                                                loadList,
+                                                                title: `edit_${name}`,
+                                                            }}
+                                                            key={`modal_${row.id}`}
+                                                        />
+                                                    }
                                                 />
                                             }
                                         </Table.Cell>
@@ -130,7 +131,6 @@ class Result extends Component {
                                     </Table.HeaderCell>
                                 ) : null}
                             </Table.Row>
-                        </ModalComponent>
                     ))}
             </Table.Body>
         );

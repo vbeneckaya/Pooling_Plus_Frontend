@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { all, takeEvery, put, cancelled, delay, fork, cancel, select } from 'redux-saga/effects';
 import { IS_AUTO_UPDATE } from '../constants/settings';
 import { formatDate } from '../utils/dateTimeFormater';
 import { toast } from 'react-toastify';
+import { representationFromGridSelector } from './representations';
 
 let task = null;
 let filters = {};
@@ -189,13 +190,10 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canExportToExcel : false;
-    },
-);
+export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canExportToExcel : false;
+});
 
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
@@ -302,7 +300,13 @@ function* exportToExcelSaga({ payload }) {
     try {
         const { name } = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
-        const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+        const result = yield postman.post(
+            `/${name}/exportToExcel`,
+            { columns },
+            { responseType: 'blob' },
+        );
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
