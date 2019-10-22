@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -11,7 +11,7 @@ import {
 } from '../../constants/columnTypes';
 import {formatDate} from '../../utils/dateTimeFormater';
 import {numbersFormat} from '../../utils/numbersFormat';
-import {Checkbox, Icon, Label} from 'semantic-ui-react';
+import {Checkbox, Icon, Label, Popup} from 'semantic-ui-react';
 import {postman} from "../../utils/postman";
 import StateValue from "./StateValue";
 import SelectValue from "./SelectValue";
@@ -25,6 +25,7 @@ const ModalComponent = ({ element, props, children }) => {
 
 const CellValue = ({ type, value = '', stateColors = [], id, key_id, toggleIsActive, isTranslate, source, indexRow, name, modalCard, showRawValue }) => {
     const { t } = useTranslation();
+    const addressRef = useRef(null);
 
     if (type === SELECT_TYPE) {
         return <SelectValue value={value} source={source} indexRow={indexRow} showRawValue={showRawValue} />
@@ -84,9 +85,18 @@ const CellValue = ({ type, value = '', stateColors = [], id, key_id, toggleIsAct
     }*/
 
    if (name.toLowerCase().includes('address')) {
-       return <div className="column-address">
-           {value}
-       </div>
+       const addressBlock = addressRef.current;
+       const scrollWidth = addressBlock && addressRef.current.scrollWidth;
+       const offsetWidth = addressBlock && addressRef.current.offsetWidth;
+       return (
+           <Popup
+               content={value}
+               disabled={scrollWidth <= offsetWidth}
+               trigger={<div className="column-address" ref={addressRef}>
+                   {value}
+               </div>}
+           />
+       );
    }
 
     return isTranslate ? t(value) : value
