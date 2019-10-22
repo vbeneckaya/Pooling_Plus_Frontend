@@ -1,4 +1,4 @@
-﻿ru:
+ru:
   accounts: "Счета"
   actualDocumentsReturnDate: "Фактическая дата возврата документов"
   actualPalletsCount: "Фактическое количество паллет"
@@ -264,7 +264,7 @@
   region: "Регион"
   rejectRequestShipping: "Отклонить заявку"
   removeFromShipping: "Убрать из перевозки"
-  representation: "Представления"
+  representation: "Представлениe"
   representation_already_exists: "Представление с таким названием уже существует"
   reset_filters: "Сбросить фильтры"
   returnCostWithoutVAT: "Стоимость перевозки возврата, без НДС"
