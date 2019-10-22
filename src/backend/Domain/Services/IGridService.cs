@@ -24,6 +24,6 @@ namespace Domain.Services
 
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
         ValidateResult ImportFromExcel(Stream fileStream);
-        Stream ExportToExcel();
+        Stream ExportToExcel(ExportExcelFormDto dto);
     }
 }

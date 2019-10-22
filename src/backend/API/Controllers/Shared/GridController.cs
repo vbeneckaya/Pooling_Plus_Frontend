@@ -112,16 +112,16 @@ namespace API.Controllers.Shared
         {
             var file = HttpContext.Request.Form.Files.ElementAt(0);
             return service.ImportFromExcel(file.OpenReadStream());            
-        }      
-        
+        }
+
         /// <summary>
         /// Экспортировать в excel
         /// </summary>
-        [HttpGet("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel() {
+        [HttpPost("exportToExcel"), DisableRequestSizeLimit]
+        public IActionResult ExportToExcel([FromBody]ExportExcelFormDto dto) {
             
-            var memoryStream = service.ExportToExcel();
-            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Today.ToString("dd.MM.yy HH.mm")}.xlsx");
+            var memoryStream = service.ExportToExcel(dto);
+            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
 
         /// <summary>

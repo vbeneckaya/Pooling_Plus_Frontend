@@ -153,7 +153,7 @@
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`6.ExportToExcel">
+        <member name="M:API.Controllers.Shared.GridController`6.ExportToExcel(Domain.Shared.ExportExcelFormDto)">
             <summary>
             Экспортировать в excel
             </summary>

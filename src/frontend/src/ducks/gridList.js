@@ -302,7 +302,7 @@ function* exportToExcelSaga({ payload }) {
     try {
         const { name } = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
-        const result = yield postman.get(`/${name}/exportToExcel`, { responseType: 'blob' });
+        const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
