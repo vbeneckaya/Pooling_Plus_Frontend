@@ -93,7 +93,14 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                     name,
                     value: selectedFields,
                     callbackSuccess: () => {
-                        onClose();
+                        onClose(() => {
+                            dispatch(
+                                setRepresentationRequest({
+                                    gridName,
+                                    value: name,
+                                }),
+                            );
+                        });
                     },
                 }),
             );
@@ -209,11 +216,11 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">
-                <div>
+               {/* <div>
                     <Button color="red" onClick={handleDelete}>
                         {t('delete')}
                     </Button>
-                </div>
+                </div>*/}
                 <div>
                     <Button color="grey" onClick={onClose}>
                         {t('CancelButton')}
