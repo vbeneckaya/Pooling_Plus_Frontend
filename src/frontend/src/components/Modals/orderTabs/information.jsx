@@ -56,7 +56,7 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck 
                                                 name="orderNumber"
                                                 value={form['orderNumber']}
                                                 error={isNotUniqueNumber}
-                                                errorText={isNotUniqueNumber && 'number_already_exists'}
+                                                errorText={isNotUniqueNumber && t('number_already_exists')}
                                                 onChange={onChange}
                                                 onBlur={uniquenessNumberCheck}
                                             />

@@ -35,7 +35,8 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="orderNumber"
                             value={form['orderNumber']}
                             error={isNotUniqueNumber}
-                            errorText={isNotUniqueNumber && 'number_already_exists'}
+                            errorText={isNotUniqueNumber && t('number_already_exists')}
+                            onBlur={uniquenessNumberCheck}
                             onChange={onChange}
                         />
                     </Grid.Column>
