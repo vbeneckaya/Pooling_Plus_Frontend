@@ -55,7 +55,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
-                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Link, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState), isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingNumber), FiledType.Text, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderShippingStatus), FiledType.State, nameof(ShippingState), isDefault: true),
@@ -118,7 +118,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
-                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Link, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState), isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService), isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.DeliveryType), FiledType.Enum, nameof(DeliveryType), isDefault: true),
