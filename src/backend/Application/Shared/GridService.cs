@@ -423,7 +423,7 @@ namespace Application.Shared
             return new ValidateResult();
         }
         
-        public Stream ExportToExcel()
+        public Stream ExportToExcel(ExportExcelFormDto dto)
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
@@ -434,7 +434,7 @@ namespace Application.Shared
             var user = _userIdProvider.GetCurrentUser();
 
             var excelMapper = new ExcelMapper<TDto>(_dataService);
-            excelMapper.FillSheet(workSheet, dtos, user.Language);
+            excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
             
             return new MemoryStream(excel.GetAsByteArray());
         }
