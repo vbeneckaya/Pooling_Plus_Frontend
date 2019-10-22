@@ -7,6 +7,7 @@ import {
     cardSelector,
     editCardRequest,
     getCardRequest,
+    isUniqueNumberRequest,
     openGridCardRequest,
     progressSelector,
 } from '../../ducks/gridCard';
@@ -36,6 +37,7 @@ const Card = props => {
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
     let [confirmation, setConfirmation] = useState({ open: false });
+    let [isNotUniqueNumber, setIsNotUnqueNumber] = useState(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -58,7 +60,7 @@ const Card = props => {
             getActionsRequest({
                 name,
                 ids: [id],
-                isCard: true
+                isCard: true,
             }),
         );
     };
@@ -75,6 +77,7 @@ const Card = props => {
         if (!isConfirm || notChangeForm) {
             beforeClose ? beforeClose() : setModalOpen(false);
             setForm({});
+            setIsNotUnqueNumber(false);
             loadList && loadList(false, true);
         } else {
             showConfirmation(
@@ -98,12 +101,17 @@ const Card = props => {
             [name]: value,
         });
 
-        if (notChangeForm && value !== undefined && Object.keys(form).length && value !== card[name]) {
+        if (
+            notChangeForm &&
+            value !== undefined &&
+            Object.keys(form).length &&
+            value !== card[name]
+        ) {
             setNotChangeForm(false);
         }
     };
 
-    const handleSave = () => {
+    const saveOrEditForm = () => {
         dispatch(
             editCardRequest({
                 name,
@@ -113,6 +121,14 @@ const Card = props => {
                 },
             }),
         );
+    };
+
+    const handleSave = () => {
+        if (!handleUniquenessCheck() && name === 'orders') {
+            saveOrEditForm();
+        } else {
+            saveOrEditForm();
+        }
     };
 
     const closeConfirmation = () => {
@@ -138,7 +154,7 @@ const Card = props => {
                     actionName,
                     callbackSuccess: () => {
                         if (actionName.toLowerCase().includes('delete')) {
-                            onClose()
+                            onClose();
                         } else {
                             loadCard();
                             getActions();
@@ -149,9 +165,28 @@ const Card = props => {
         });
     };
 
+    const handleUniquenessCheck = callbackFunc => {
+        return dispatch(
+            isUniqueNumberRequest({
+                number: form.orderNumber,
+                callbackSuccess: number => {
+                    let check = false;
+                    if (number && number !== card.orderNumber) {
+                        check = true;
+                    }
+
+                    setIsNotUnqueNumber(check);
+
+                    return check;
+                },
+            }),
+        );
+    };
+
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
+    const disableSave = progressActionName || notChangeForm || isNotUniqueNumber;
 
     return (
         <Modal
@@ -179,6 +214,8 @@ const Card = props => {
                         ...props,
                         form,
                         load: loadCard,
+                        uniquenessNumberCheck: handleUniquenessCheck,
+                        isNotUniqueNumber,
                         onClose,
                         onChangeForm,
                     })}
@@ -217,11 +254,7 @@ const Card = props => {
                     >
                         {t('CancelButton')}
                     </Button>
-                    <Button
-                        color="blue"
-                        disabled={progressActionName || notChangeForm}
-                        onClick={handleSave}
-                    >
+                    <Button color="blue" disabled={disableSave} onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
                 </div>

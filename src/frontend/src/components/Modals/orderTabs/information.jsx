@@ -10,7 +10,7 @@ import {useSelector} from "react-redux";
 import {valuesListSelector} from "../../../ducks/lookup";
 import Number from "../../BaseComponents/Number";
 
-const Information = ({ form, onChange }) => {
+const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck }) => {
     const { t } = useTranslation();
     let [error, setError] = useState(false);
 
@@ -40,6 +40,7 @@ const Information = ({ form, onChange }) => {
         }
     }, [valuesList, form.soldTo]);
 
+
     return (
         <Form>
             <Grid>
@@ -54,7 +55,10 @@ const Information = ({ form, onChange }) => {
                                             <Text
                                                 name="orderNumber"
                                                 value={form['orderNumber']}
+                                                error={isNotUniqueNumber}
+                                                errorText={isNotUniqueNumber && 'number_already_exists'}
                                                 onChange={onChange}
+                                                onBlur={uniquenessNumberCheck}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
