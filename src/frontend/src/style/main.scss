@@ -150,15 +150,7 @@ body {
     margin-top: 58px !important;
 
     &-big {
-        height: calc(100vh - 167px)!important;
-    }
-
-    &-mini {
-        height: calc(100vh - 167px)!important;
-        bottom: 0;
-        .ui.dimmer {
-            top: calc(100vh - 167px)!important;
-        }
+        height: calc(100vh - 180px)!important;
     }
 }
 
