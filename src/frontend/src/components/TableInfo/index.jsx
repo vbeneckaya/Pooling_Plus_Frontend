@@ -88,6 +88,7 @@ class TableInfo extends Component {
         this.fileUploader && this.fileUploader.click();
     };
 
+
     onFilePicked = e => {
         const file = e.target.files[0];
 
@@ -117,7 +118,10 @@ class TableInfo extends Component {
             name,
             modalCard,
             isImportBtn,
-            importLoader
+            isExportBtn,
+            importLoader,
+            exportLoader,
+            exportToExcel
         } = this.props;
 
         const { filter } = this.state;
@@ -152,6 +156,12 @@ class TableInfo extends Component {
                                     <Button color="green" loading={importLoader} onClick={this.importFromExcel}>
                                         <Icon name="upload" />
                                         {t('importFromExcel')}
+                                    </Button>
+                                ) : null}
+                                {isExportBtn ? (
+                                    <Button color="green" loading={exportLoader} onClick={exportToExcel}>
+                                        <Icon name="download" />
+                                        {t('exportToExcel')}
                                     </Button>
                                 ) : null}
                                 {newModal ? newModal(t, this.load, name) : null}
