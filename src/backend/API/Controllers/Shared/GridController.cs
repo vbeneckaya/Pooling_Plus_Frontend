@@ -10,8 +10,8 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : Controller 
-        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TFilter> : Controller 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
     {
         protected readonly TService service;
 
@@ -24,7 +24,7 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public IActionResult Search([FromBody]TSearchForm form)
+        public IActionResult Search([FromBody]FilterFormDto<TFilter> form)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace API.Controllers.Shared
         /// Получение Id сущностей, подходящих под фильтр
         /// </summary>
         [HttpPost("ids")]
-        public IActionResult SearchIds([FromBody]TSearchForm form)
+        public IActionResult SearchIds([FromBody]FilterFormDto<TFilter> form)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace API.Controllers.Shared
         /// Экспортировать в excel
         /// </summary>
         [HttpPost("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel([FromBody]ExportExcelFormDto dto) {
+        public IActionResult ExportToExcel([FromBody]ExportExcelFormDto<TFilter> dto) {
             
             var memoryStream = service.ExportToExcel(dto);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");

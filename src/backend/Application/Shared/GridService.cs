@@ -18,11 +18,10 @@ using System.Linq;
 
 namespace Application.Shared
 {
-    public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
+    public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
         where TEntity : class, IPersistable, new() 
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
-        where TSearchForm: PagingFormDto
     {
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
@@ -31,7 +30,7 @@ namespace Application.Shared
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
-        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, TSearchForm searchForm);
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
@@ -77,18 +76,9 @@ namespace Application.Shared
             return  dbSet.ToList().Select(MapFromEntityToLookupDto);
         }
 
-        public SearchResult<TDto> Search(TSearchForm form)
+        public SearchResult<TDto> Search(FilterFormDto<TFilter> form)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
-
-            //if (!string.IsNullOrEmpty(form.Search))
-            //{
-            //    var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
-            //        prop.PropertyType == form.Search.GetType());
-
-            //    //TODO Вернуть полнотекстовый поиск
-            //    query = query.Where(entity =>  entity.Id.ToString() == form.Search);
-            //}
 
             var query = this.ApplySearchForm(dbSet, form);
 
@@ -108,7 +98,7 @@ namespace Application.Shared
             return a;
         }
 
-        public IEnumerable<string> SearchIds(TSearchForm form)
+        public IEnumerable<string> SearchIds(FilterFormDto<TFilter> form)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
             
@@ -423,12 +413,14 @@ namespace Application.Shared
             return new ValidateResult();
         }
         
-        public Stream ExportToExcel(ExportExcelFormDto dto)
+        public Stream ExportToExcel(ExportExcelFormDto<TFilter> dto)
         {
             var excel = new ExcelPackage();
             var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var entities = dbSet.ToList();
+            var query = this.ApplySearchForm(dbSet, dto);
+            var entities = query.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
 
             var user = _userIdProvider.GetCurrentUser();

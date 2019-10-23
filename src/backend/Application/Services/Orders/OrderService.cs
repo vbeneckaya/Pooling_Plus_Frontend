@@ -21,7 +21,7 @@ using System.Linq;
 
 namespace Application.Services.Orders
 {
-    public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>>, IOrdersService
+    public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
 
@@ -404,7 +404,7 @@ namespace Application.Services.Orders
 
             query = this.ApplySearch(query, searchForm);
 
-            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+            return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
                 .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
 

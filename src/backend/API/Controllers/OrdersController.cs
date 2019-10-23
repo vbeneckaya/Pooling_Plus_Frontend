@@ -11,7 +11,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/orders")]
-    public class OrdersController : GridWithDocumentsController<IOrdersService, Order, OrderDto, OrderFormDto, OrderSummaryDto, FilterFormDto<OrderFilterDto>> 
+    public class OrdersController : GridWithDocumentsController<IOrdersService, Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto> 
     {
         public OrdersController(IOrdersService ordersService, IDocumentService documentService) : base(ordersService, documentService)
         {

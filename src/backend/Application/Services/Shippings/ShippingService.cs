@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<ShippingFilterDto>>, IShippingsService
+    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IHistoryService _historyService;
 
@@ -365,7 +365,7 @@ namespace Application.Services.Shippings
             string sql = $@"SELECT * FROM ""Shippings"" {where}";
             query = query.FromSql(sql, parameters.ToArray());
 
-            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+            return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
                 .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }

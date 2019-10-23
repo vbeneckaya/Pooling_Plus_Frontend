@@ -123,12 +123,12 @@
             Сохранить или изменить
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`6.Search(`5)">
+        <member name="M:API.Controllers.Shared.GridController`6.Search(Domain.Shared.FilterFormDto{`5})">
             <summary>
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`6.SearchIds(`5)">
+        <member name="M:API.Controllers.Shared.GridController`6.SearchIds(Domain.Shared.FilterFormDto{`5})">
             <summary>
             Получение Id сущностей, подходящих под фильтр
             </summary>
@@ -153,7 +153,7 @@
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.GridController`6.ExportToExcel(Domain.Shared.ExportExcelFormDto)">
+        <member name="M:API.Controllers.Shared.GridController`6.ExportToExcel(Domain.Shared.ExportExcelFormDto{`5})">
             <summary>
             Экспортировать в excel
             </summary>
@@ -197,7 +197,7 @@
             <typeparam name="TDto"></typeparam>
             <typeparam name="TFormDto"></typeparam>
             <typeparam name="TSummaryDto"></typeparam>
-            <typeparam name="TSearchForm"></typeparam>
+            <typeparam name="TFilter"></typeparam>
         </member>
         <member name="M:API.Controllers.Shared.GridWithDocumentsController`6.GetDocuments(System.Guid)">
             <summary>
