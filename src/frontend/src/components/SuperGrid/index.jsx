@@ -376,12 +376,10 @@ class SuperGrid extends Component {
                         context={this.container}
                         onBottomVisible={this.nextPage}
                     >
-                        <Dimmer active={progress && !rows.length} inverted className={`table-loader ${!rows.length ? 'table-loader-big' : ''}`}>
-                            <Loader size="huge">Loading</Loader>
-                        </Dimmer>
                         <Result
                             columns={columns}
                             rows={rows}
+                            progress={progress}
                             name={name}
                             modalCard={modalCard}
                             actions={actions}

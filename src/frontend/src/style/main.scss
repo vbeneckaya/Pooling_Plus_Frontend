@@ -147,11 +147,24 @@ body {
 }
 
 .table-loader {
-    margin-top: 45px !important;
+    margin-top: 58px !important;
 
     &-big {
         height: calc(100vh - 167px)!important;
     }
+
+    &-mini {
+        height: calc(100vh - 167px)!important;
+        bottom: 0;
+        .ui.dimmer {
+            top: calc(100vh - 167px)!important;
+        }
+    }
+}
+
+.table-bottom-loader {
+    position: sticky;
+    left: calc(100vw / 2);
 }
 
 .ui.checkbox label {
