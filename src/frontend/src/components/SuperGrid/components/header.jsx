@@ -31,6 +31,7 @@ const Header = ({
     loadList,
     name,
     setSelected,
+    filter
 }) => {
     const { t } = useTranslation();
 
@@ -47,7 +48,7 @@ const Header = ({
     const representations = useSelector(state => representationsSelector(state, name));
 
     const exportExcel = () => {
-        dispatch(exportToExcelRequest({ name }));
+        dispatch(exportToExcelRequest({ name, filter }));
     };
 
     const importExcel = () => {

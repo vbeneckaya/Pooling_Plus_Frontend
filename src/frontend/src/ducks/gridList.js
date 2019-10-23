@@ -167,38 +167,20 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const gridName = (state, name) => name;
 
-export const columnsGridSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.columns : [];
-    },
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const listSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const columnsGridSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.columns : [];
+});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const listSelector = createSelector(stateSelector, state => state.data);
 
-export const stateColorsSelector = createSelector(
-    stateSelector,
-    state => state.stateColors,
-);
+export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
 
-export const canCreateByFormSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canCreateByForm : false;
-    },
-);
+export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canCreateByForm : false;
+});
 
 export const canImportFromExcelSelector = createSelector(
     [stateProfile, gridName],
@@ -208,23 +190,14 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canExportToExcel : false;
-    },
-);
+export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canExportToExcel : false;
+});
 
-export const importProgressSelector = createSelector(
-    stateSelector,
-    state => state.importProgress,
-);
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
-export const exportProgressSelector = createSelector(
-    stateSelector,
-    state => state.exportProgress,
-);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 
@@ -266,7 +239,7 @@ export function* autoUpdateStartSaga({ payload }) {
 
 export function* autoUpdateStopSaga({ payload = {} }) {
     if (task) {
-        const {isClear} = payload;
+        const { isClear } = payload;
         if (isClear) yield put(clearGridInfo());
         yield cancel(task);
         task = null;
@@ -328,13 +301,13 @@ function* importFromExcelSaga({ payload }) {
 
 function* exportToExcelSaga({ payload }) {
     try {
-        const { name } = payload;
+        const { name, filter } = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const representation = yield select(state => representationFromGridSelector(state, name));
         const columns = representation ? representation.map(item => item.name) : [];
         const result = yield postman.post(
             `/${name}/exportToExcel`,
-            { columns },
+            { columns, filter },
             { responseType: 'blob' },
         );
         const link = document.createElement('a');

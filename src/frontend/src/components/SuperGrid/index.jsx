@@ -345,6 +345,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    filter={filters}
                     setSelected={this.setSelected}
                 />
                 <div
