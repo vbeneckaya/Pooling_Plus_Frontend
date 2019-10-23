@@ -95,13 +95,13 @@ class SuperGrid extends Component {
                 autoUpdateStart,
             } = this.props;
 
-            autoUpdateStop();
+            autoUpdateStop({isClear: true});
             clearStore();
             this.setState(
                 {
                     ...initState(storageFilterItem, storageSortItem),
                 },
-                autoUpdateStart(this.mapData()),
+                () => autoUpdateStart(this.mapData()),
             );
         }
     }
@@ -326,9 +326,6 @@ class SuperGrid extends Component {
 
         return (
             <>
-                <Dimmer active={progress} inverted className="table-loader">
-                    <Loader size="huge">Loading</Loader>
-                </Dimmer>
                 <HeaderSearchGrid
                     createButton={
                         createButton && (
@@ -379,6 +376,9 @@ class SuperGrid extends Component {
                         context={this.container}
                         onBottomVisible={this.nextPage}
                     >
+                        <Dimmer active={progress && !rows.length} inverted className={`table-loader ${!rows.length ? 'table-loader-big' : ''}`}>
+                            <Loader size="huge">Loading</Loader>
+                        </Dimmer>
                         <Result
                             columns={columns}
                             rows={rows}

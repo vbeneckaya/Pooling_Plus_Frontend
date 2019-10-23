@@ -148,6 +148,10 @@ body {
 
 .table-loader {
     margin-top: 45px !important;
+
+    &-big {
+        height: calc(100vh - 167px)!important;
+    }
 }
 
 .ui.checkbox label {

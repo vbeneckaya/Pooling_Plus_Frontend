@@ -27,8 +27,8 @@ const GRID_EXPORT_TO_EXCEL_REQUEST = 'GRID_EXPORT_TO_EXCEL_REQUEST';
 const GRID_EXPORT_TO_EXCEL_SUCCESS = 'GRID_EXPORT_TO_EXCEL_SUCCESS';
 const GRID_EXPORT_TO_EXCEL_ERROR = 'GRID_EXPORT_TO_EXCEL_ERROR';
 
-const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
-const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
+const GRID_AUTO_UPDATE_START = 'GRID_AUTO_UPDATE_START';
+const GRID_AUTO_UPDATE_STOP = 'GRID_AUTO_UPDATE_STOP';
 
 const CLEAR_GRID_INFO = 'CLEAR_GRID_INFO';
 
@@ -136,8 +136,8 @@ export const autoUpdateStart = payload => {
     return { type: GRID_AUTO_UPDATE_START, payload };
 };
 
-export const autoUpdateStop = () => {
-    return { type: GRID_AUTO_UPDATE_STOP };
+export const autoUpdateStop = payload => {
+    return { type: GRID_AUTO_UPDATE_STOP, payload };
 };
 
 export const importFromExcelRequest = payload => {
@@ -264,8 +264,10 @@ export function* autoUpdateStartSaga({ payload }) {
     }
 }
 
-export function* autoUpdateStopSaga() {
+export function* autoUpdateStopSaga({ payload = {} }) {
     if (task) {
+        const {isClear} = payload;
+        if (isClear) yield put(clearGridInfo());
         yield cancel(task);
         task = null;
         filters = {};
