@@ -1,11 +1,10 @@
 ﻿using Domain.Extensions;
-using Domain.Shared;
-using Domain.Shared.FormFilters;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace Application.Extensions
@@ -16,235 +15,183 @@ namespace Application.Extensions
     public static class FiltersExtentions
     {
         /// <summary>
-        /// Apply numeric filter
+        /// Apply numeric filter (float)
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, int>> property, int? filterData)
+        public static string ApplyNumericFilter<TModel>(this string search, Expression<Func<TModel, decimal?>> property, ref List<object> parameters)
         {
-            if (!filterData.HasValue) return query;
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            var propertyExpression = GetPropertyEqualExpression(property, filterData.Value);
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
-            return query.Where(propertyExpression);
+            decimal searchValue;
+            if (!decimal.TryParse(search.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out searchValue)) return string.Empty;
+
+            int paramInd = parameters.Count();
+            parameters.Add(searchValue);
+            return $@"ROUND(""{fieldName}"",3) = ROUND({{{paramInd}}},3)";
         }
 
         /// <summary>
-        /// Apply numeric filter
+        /// Apply numeric filter (integer)
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, decimal>> property, decimal? filterData)
+        public static string ApplyNumericFilter<TModel>(this string search, Expression<Func<TModel, int?>> property, ref List<object> parameters)
         {
-            if (!filterData.HasValue) return query;
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            var propertyExpression = GetPropertyEqualExpression(property, filterData.Value);
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
-            return query.Where(propertyExpression);
-        }
+            int searchValue;
+            if (!int.TryParse(search, NumberStyles.Integer, CultureInfo.InvariantCulture, out searchValue)) return string.Empty;
 
-        /// <summary>
-        /// Get property equal expression
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <typeparam name="TProperty"></typeparam>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static Expression<Func<TModel, bool>> GetPropertyEqualExpression<TModel, TProperty>(Expression<Func<TModel, TProperty>> property, TProperty filterData)
-        {
-            Expression<Func<TProperty>> filterDataExp = () => filterData;
-            var grEx = Expression.Equal(property.Body, filterDataExp.Body);
-
-            return Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
-        }
-
-
-        /// <summary>
-        /// Apply numeric filter
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, decimal>> property, string filterData)
-        {
-            if (!decimal.TryParse(filterData, out decimal filterDataDecimal)) return query;
-
-            return query.ApplyNumericFilter(property, filterDataDecimal);
-        }
-
-        /// <summary>
-        /// Apply numeric filter
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyNumericFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, int>> property, string filterData)
-        {
-            if (!int.TryParse(filterData, out int filterDataInt)) return query;
-
-            return query.ApplyNumericFilter(property, filterDataInt);
+            int paramInd = parameters.Count();
+            parameters.Add(searchValue);
+            return $@"""{fieldName}"" = {{{paramInd}}}";
         }
 
         /// <summary>
         /// Apply boolean filter
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="filterData"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyBooleanFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, bool>> property, string filterData)
+        public static string ApplyBooleanFilter<TModel>(this string search, Expression<Func<TModel, bool>> property, ref List<object> parameters)
         {
-            if (!bool.TryParse(filterData, out bool filterValue)) return query;
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            var propertyExpression = GetPropertyEqualExpression(property, filterValue);
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
-            return query.Where(propertyExpression);
+            bool searchValue = search.ToLower() == "true";
+
+            int paramInd = parameters.Count();
+            parameters.Add(searchValue);
+            return $@"""{fieldName}"" = {{{paramInd}}}";
         }
 
         /// <summary>
         /// Apply date range filter
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="dateRangeStr"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyDateRangeFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, DateTime>> property, string dateRangeStr)
+        public static string ApplyDateRangeFilter<TModel>(this string search, Expression<Func<TModel, DateTime?>> property, ref List<object> parameters)
         {
-            if (string.IsNullOrEmpty(dateRangeStr)) return query;
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            var dates = dateRangeStr.Split("-");
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
+
+            var dates = search.Split("-");
 
             var fromDateStr = dates.FirstOrDefault();
             var toDateStr = dates.ElementAtOrDefault(1);
 
-            if (DateTime.TryParse(fromDateStr, out DateTime fromDate))
+            StringBuilder result = new StringBuilder();
+
+            if (TryExtractDateTime(fromDateStr, out DateTime fromDate))
             {
-                Expression<Func<DateTime>> dateExp = () => fromDate;
-
-                var grEx = Expression.GreaterThanOrEqual(property.Body, dateExp.Body);
-                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(grEx, property.Parameters.Single());
-
-                query = query.Where(exp);
+                int paramInd = parameters.Count();
+                parameters.Add(fromDate);
+                result.Append($@"""{fieldName}"" >= {{{paramInd}}}");
             }
 
-            if (DateTime.TryParse(toDateStr, out DateTime toDate))
+            if (TryExtractDateTime(toDateStr, out DateTime toDate))
             {
+                if (result.Length > 0)
+                {
+                    result.Append(" AND ");
+                }
                 toDate = toDate.AddDays(1);
-                Expression<Func<DateTime>> dateExp = () => toDate;
-
-                var ltEx = Expression.LessThan(property.Body, dateExp.Body);
-                Expression<Func<TModel, bool>> exp = Expression.Lambda<Func<TModel, bool>>(ltEx, property.Parameters.Single());
-
-                query = query.Where(exp);
+                int paramInd = parameters.Count();
+                parameters.Add(toDate);
+                result.Append($@"""{fieldName}"" < {{{paramInd}}}");
             }
 
-            return query;
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Apply time range filter
+        /// </summary>
+        public static string ApplyTimeRangeFilter<TModel>(this string search, Expression<Func<TModel, TimeSpan?>> property, ref List<object> parameters)
+        {
+            if (string.IsNullOrEmpty(search)) return string.Empty;
+
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
+
+            string field = $@"""{fieldName}""";
+            return search.ApplyTimeRangeFilterBase<TModel>(field, ref parameters);
+        }
+
+        /// <summary>
+        /// Apply time range filter
+        /// </summary>
+        public static string ApplyTimeRangeFilter<TModel>(this string search, Expression<Func<TModel, DateTime?>> property, ref List<object> parameters)
+        {
+            if (string.IsNullOrEmpty(search)) return string.Empty;
+
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
+
+            string field = $@"to_char(""{fieldName}"", 'HH24:MI:SS')::time";
+            return search.ApplyTimeRangeFilterBase<TModel>(field, ref parameters);
         }
 
         /// <summary>
         /// Apply string filter
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="search"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyStringFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, string>> property, string search)
+        public static string ApplyStringFilter<TModel>(this string search, Expression<Func<TModel, string>> property, ref List<object> parameters)
         {
-            if (string.IsNullOrEmpty(search)) return query;
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            var searchExp = GetStringFilterExpression(property, search);
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
-            return query.Where(searchExp);
-        }
-
-        public static Expression<Func<TModel, bool>> GetStringFilterExpression<TModel>(Expression<Func<TModel, string>> property, string search)
-        {
-            Expression<Func<string>> searchStrExp = () => search;
-
-            var method = property.Body.Type.GetMethod("Contains", new[] { typeof(string) });
-
-            var conainsExp = Expression.Call(property.Body, method, searchStrExp.Body);
-
-            return Expression.Lambda<Func<TModel, bool>>(conainsExp, property.Parameters.Single());
-        }
-
-        /// <summary>
-        /// Applay enum filter
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <typeparam name="TEnum"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyEnumFilter<TModel, TEnum>(this IQueryable<TModel> query, Expression<Func<TModel, TEnum?>> property, string options)
-            where TEnum : struct, IConvertible
-        {
-            return query.ApplyOptionsFilter(property, options, i => MapFromStateDto<TEnum>(i));
+            int paramInd = parameters.Count();
+            parameters.Add($"%{search}%");
+            return $@"""{fieldName}"" ~~* {{{paramInd}}}";
         }
 
         /// <summary>
         /// Apply options filter
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query"></param>
-        /// <param name="property"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static IQueryable<TModel> ApplyOptionsFilter<TModel>(this IQueryable<TModel> query, Expression<Func<TModel, string>> property, string options)
+        public static string ApplyOptionsFilter<TModel, TValue>(this string search, Expression<Func<TModel, TValue>> property, ref List<object> parameters)
         {
-            return query.ApplyOptionsFilter(property, options, i => i);
+            return search.ApplyOptionsFilterBase(property, ref parameters, x => x);
         }
 
-        public static IQueryable<TModel> ApplyOptionsFilter<TModel, TProperty>(
-            this IQueryable<TModel> query,
-            Expression<Func<TModel, TProperty>> property,
-            string options,
-            Expression<Func<string, TProperty>> selector)
+        /// <summary>
+        /// Apply options filter
+        /// </summary>
+        public static string ApplyEnumFilter<TModel, TEnum>(this string search, Expression<Func<TModel, TEnum>> property, ref List<object> parameters) 
+            where TEnum : struct
         {
-            if (string.IsNullOrEmpty(options)) return query;
-
-            var searchExpression = GetOptionsFilterExpression(property, options, selector);
-
-            return query.Where(searchExpression);
+            return search.ApplyOptionsFilterBase(property, ref parameters, x => MapFromStateDto<TEnum>(x));
         }
 
-        public static Expression<Func<TModel, bool>> GetOptionsFilterExpression<TModel, TProperty>(
-            Expression<Func<TModel, TProperty>> property,
-            string options,
-            Expression<Func<string, TProperty>> selector)
+        /// <summary>
+        /// Apply options filter
+        /// </summary>
+        public static string ApplyEnumFilter<TModel, TEnum>(this string search, Expression<Func<TModel, TEnum?>> property, ref List<object> parameters)
+            where TEnum : struct
         {
-            var types = options.Split("|").AsQueryable().Select(selector);
-
-            var methodInfo = typeof(Enumerable).GetMethods().Where(i => i.Name == "Contains").First();
-            var method = methodInfo.MakeGenericMethod(new[] { typeof(TProperty) });
-
-            Expression<Func<IEnumerable<TProperty>>> searchStrExp = () => types;
-
-            var containsExp = Expression.Call(null, method, searchStrExp.Body, property.Body);
-
-            return Expression.Lambda<Func<TModel, bool>>(containsExp, property.Parameters.Single());
+            return search.ApplyOptionsFilterBase(property, ref parameters, x => MapFromStateDto<TEnum>(x));
         }
 
-        private static TEnum MapFromStateDto<TEnum>(string dtoStatus) where TEnum : struct
+        /// <summary>
+        /// Add WHERE condition with AND operator
+        /// </summary>
+        public static string WhereAnd(this string where, string condition)
         {
-            var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperfirstLetter());
-
-            return mapFromStateDto;
+            if (string.IsNullOrEmpty(condition))
+            {
+                return where;
+            }
+            else if (string.IsNullOrEmpty(where))
+            {
+                return $"WHERE {condition}";
+            }
+            else
+            {
+                return $"{where} AND {condition}";
+            }
         }
 
         public static IQueryable<TModel> OrderBy<TModel>(this IQueryable<TModel> query, string propertyName, bool descending)
@@ -283,92 +230,103 @@ namespace Application.Extensions
             }
         }
 
-        public static IQueryable<TModel> ApplySearch<TModel, TFilter>(
-            this IQueryable<TModel> query,
-            FilterFormDto<TFilter> searchForm, 
-            IEnumerable<Expression<Func<TModel, bool>>> additionalExpressions)
-            where TFilter : SearchFilterDto
+        private static TEnum MapFromStateDto<TEnum>(string dtoStatus) where TEnum : struct
         {
+            var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperfirstLetter());
 
-            if (string.IsNullOrEmpty(searchForm?.Filter?.Search)) return query;
-
-                var properties = typeof(TFilter).GetProperties()
-                .Where(i => i.CustomAttributes.Any(attr => attr.AttributeType == typeof(FilterFieldAttribute)));
-
-            if (!properties.Any()) return query;
-
-            var expressions = new List<Expression<Func<TModel, bool>>>();
-            ParameterExpression param = Expression.Parameter(typeof(TModel), string.Empty);
-
-            foreach (var property in properties)
-            {
-                var attr = (FilterFieldAttribute)property.GetCustomAttributes(typeof(FilterFieldAttribute), false).First();
-                
-                if (!attr.Searched) continue;
-
-                MemberExpression propertyExp = Expression.Property(param, property.Name);
-
-                switch (attr.Type)
-                {
-                    // String search
-                    case FilterFieldType.String:
-                        var lambdaStr = Expression.Lambda<Func<TModel, string>>(propertyExp, param);
-                        expressions.Add(GetStringFilterExpression(lambdaStr, searchForm.Filter.Search));
-                        break;
-
-                    // Integer search
-                    case FilterFieldType.Integer:
-                        if (!int.TryParse(searchForm.Filter.Search, out int intValue)) continue;
-
-                        var lambdaInt = Expression.Lambda<Func<TModel, int?>>(propertyExp, param);
-                        expressions.Add(GetPropertyEqualExpression(lambdaInt, intValue));
-                        break;
-
-                    // Decimal search
-                    case FilterFieldType.Decimal:
-                        if (!decimal.TryParse(searchForm.Filter.Search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decValue)) continue;
-
-                        var lambdaDec = Expression.Lambda<Func<TModel, decimal?>>(propertyExp, param);
-                        expressions.Add(GetPropertyEqualExpression(lambdaDec, decValue));
-                        break;
-
-                    // Decimal search
-                    //case FilterFieldType.DateRange:
-                    //    if (!decimal.TryParse(searchForm.Filter.Search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal decValue)) continue;
-
-                    //    var lambdaDec = Expression.Lambda<Func<TModel, decimal?>>(propertyExp, param);
-                    //    expressions.Add(GetPropertyEqualExpression(lambdaDec, decValue));
-                    //    break;
-                }
-            }
-
-            return query.Where(GetOrExpressions(expressions));
+            return mapFromStateDto;
         }
 
-        private static Expression<Func<TModel, bool>> GetOrExpressions<TModel>(IEnumerable<Expression<Func<TModel, bool>>> expressions)
+        private static string GetPropertyName<TModel, TValue>(this Expression<Func<TModel, TValue>> property)
         {
-            Expression orExpressions = null;
-            var param = expressions.First().Parameters.First();
-
-            foreach (var expression in expressions)
+            var propertyBody = property?.Body as MemberExpression;
+            if (propertyBody != null)
             {
-                if (orExpressions == null)
+                var propertyInfo = propertyBody.Member as PropertyInfo;
+                if (propertyInfo != null)
                 {
-                    orExpressions = Expression.Invoke(expression);
-                    continue;
+                    return propertyInfo.Name;
                 }
-
-                orExpressions = Expression.OrElse(orExpressions, Expression.Invoke(expression));
             }
-
-            return Expression.Lambda<Func<TModel, bool>>(orExpressions, param);
+            return null;
         }
 
-        public static IQueryable<TModel> WhereOr<TModel>(this IQueryable<TModel> query, params Expression<Func<TModel, bool>>[] conditions)
+        public static string ApplyOptionsFilterBase<TModel, TValue>(this string search,
+            Expression<Func<TModel, TValue>> property,
+            ref List<object> parameters,
+            Func<string, object> parameterValueLookup)
         {
-            var exp = GetOrExpressions(conditions);
+            if (string.IsNullOrEmpty(search)) return string.Empty;
 
-            return query.Where(exp);
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
+
+            var values = search.Split("|", StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (!values.Any()) return string.Empty;
+
+            StringBuilder inValue = new StringBuilder();
+            foreach (string value in values)
+            {
+                if (inValue.Length > 0)
+                {
+                    inValue.Append(',');
+                }
+                int paramInd = parameters.Count();
+                parameters.Add(parameterValueLookup(value));
+                inValue.Append($"{{{paramInd}}}");
+            }
+
+            return $@"""{fieldName}"" in ({inValue})";
+        }
+
+        private static string ApplyTimeRangeFilterBase<TModel>(this string search, string field, ref List<object> parameters)
+        {
+            var times = search.Split("-");
+
+            var fromTimeStr = times.FirstOrDefault();
+            var toTimeStr = times.ElementAtOrDefault(1);
+
+            StringBuilder result = new StringBuilder();
+
+            if (TimeSpan.TryParse(fromTimeStr, out TimeSpan fromTime))
+            {
+                int paramInd = parameters.Count();
+                parameters.Add(fromTime);
+                result.Append($@"{field} >= {{{paramInd}}}");
+            }
+
+            if (TimeSpan.TryParse(toTimeStr, out TimeSpan toTime))
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(" AND ");
+                }
+                int paramInd = parameters.Count();
+                parameters.Add(toTime);
+                result.Append($@"{field} <= {{{paramInd}}}");
+            }
+
+            return result.ToString();
+        }
+
+        private static bool TryExtractDateTime(string value, out DateTime result)
+        {
+            if (!DateTime.TryParseExact(
+                value, 
+                new[] {
+                    "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy HH:mm",
+                    "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy HH:mm"
+                }, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out result))
+            {
+                if (!DateTime.TryParse(value, out result))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
