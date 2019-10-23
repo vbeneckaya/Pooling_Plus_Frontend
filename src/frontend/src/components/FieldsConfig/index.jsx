@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {Button, Confirm, Form, Input, Label, Message, Modal, Search} from 'semantic-ui-react';
+import { Button, Confirm, Form, Input, Label, Message, Modal, Search } from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -62,7 +62,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
         setModalOpen(false);
         setError(null);
         setEmpty(false);
-        setConfirmation({open: false});
+        setConfirmation({ open: false });
         setSearch('');
     };
 
@@ -75,7 +75,6 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
         console.log('list[name]', list[name]);
         return Boolean(list[name]);
     };
-
 
     const handleSave = () => {
         console.log('ss', selectedFields);
@@ -191,9 +190,7 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                             name="name"
                             value={name}
                             error={error}
-                            errorText={
-                                error && t(error)
-                            }
+                            errorText={error && t(error)}
                             onChange={(e, { value }) => setName(value)}
                         />
                         <Input
@@ -212,15 +209,19 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
                         search={search}
                         onChange={onChange}
                     />
-                    {isEmpty ? <Message negative>{t('Добавьте поля в представление')}</Message> : null}
+                    {isEmpty ? (
+                        <Message negative>{t('Добавьте поля в представление')}</Message>
+                    ) : null}
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">
-               {/* <div>
-                    <Button color="red" onClick={handleDelete}>
-                        {t('delete')}
-                    </Button>
-                </div>*/}
+                <div>
+                    {!isNew ? (
+                        <Button color="red" onClick={handleDelete}>
+                            {t('delete')}
+                        </Button>
+                    ) : null}
+                </div>
                 <div>
                     <Button color="grey" onClick={onClose}>
                         {t('CancelButton')}
