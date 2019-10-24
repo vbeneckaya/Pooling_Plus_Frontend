@@ -4,7 +4,10 @@ using System.Linq;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.Permissions;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -31,6 +34,21 @@ namespace Application.Services.Roles
 
                 return new ValidateResult(null, entity.Id.ToString());
             }
+        }
+
+        public ValidateResult SetPermissions(Guid roleId, IEnumerable<RolePermissions> permissions)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            var entity = _dataService.GetDbSet<Role>().GetById(roleId);
+            if (entity == null)
+            {
+                return new ValidateResult("roleNotFound".translate(user.Language));
+            }
+
+            entity.Permissions = permissions.ToArray();
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -61,7 +79,12 @@ namespace Application.Services.Roles
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                Permissions = entity.Permissions.Select(i => new PermissionInfo
+                {
+                    Code = i,
+                    Name = i.GetPermissionName()
+                })
             };
         }
     }

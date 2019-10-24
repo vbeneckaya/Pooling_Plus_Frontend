@@ -16,6 +16,7 @@ using Domain.Persistables;
 using Domain.Enums;
 using Domain.Services.Permissions;
 using Domain.Services.Translations;
+using Domain.Services.Roles;
 
 namespace Application.Services.Identity
 {
@@ -27,15 +28,15 @@ namespace Application.Services.Identity
         
         private readonly ICommonDataService _dataService;
 
-        private readonly IPermissionsService _permissionsService;
-
         private readonly ITranslationsService _translationsService;
 
-        public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService, IPermissionsService permissionsService, ITranslationsService translationsService)
+        private readonly IRolesService _rolesService;
+
+        public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService, IRolesService rolesService, ITranslationsService translationsService)
         {
             this._userIdProvider = userIdProvider;
             this._dataService = dataService;
-            this._permissionsService = permissionsService;
+            this._rolesService = rolesService;
             this._translationsService = translationsService;
         }
 
@@ -53,9 +54,9 @@ namespace Application.Services.Identity
 
             var now = DateTime.Now;
 
-            var userPermissions = _dataService.GetDbSet<RolePermission>()
-                .Where(i => i.RoleId == user.RoleId)
-                .Select(i => new Claim("Permission", $"Permission.{ i.PermissionCode }"));
+            var userPermissions = this._dataService.GetDbSet<Role>().GetById(user.RoleId)
+                .Permissions
+                .Select(i => new Claim("Permission", i.GetPermissionName()));
 
             var claims = identity.Claims.Union(userPermissions);
 
@@ -75,14 +76,14 @@ namespace Application.Services.Identity
         public UserInfo GetUserInfo()
         {
             var user = _userIdProvider.GetCurrentUser();
-            var permissions = _permissionsService.GetPermissionsInfoForRole(user.RoleId);
+            var role = user.RoleId.HasValue ? this._dataService.GetDbSet<Role>().GetById(user.RoleId.Value) : null;
 
             //TODO Получать имя пользователя и роль
             return new UserInfo
             {   
                 UserName = user.Name,
                 UserRole = user.RoleId.HasValue ? _dataService.GetDbSet<Role>().GetById(user.RoleId.Value)?.Name : null,
-                Permissions = permissions
+                Role = role != null ? _rolesService.MapFromEntityToDto(role) : null
             };
         }
 

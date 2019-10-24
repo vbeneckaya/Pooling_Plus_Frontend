@@ -12,7 +12,6 @@ using Application.Services.History;
 using Application.Services.Identity;
 using Application.Services.Injections;
 using Application.Services.Orders;
-using Application.Services.Permissions;
 using Application.Services.PickingTypes;
 using Application.Services.Roles;
 using Application.Services.Shippings;
@@ -61,7 +60,6 @@ namespace Infrastructure.Installers
             services.AddScoped<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IPermissionsService, PermissionsService>();
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<ITranslationsService, TranslationsService>();

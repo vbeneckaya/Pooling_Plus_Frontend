@@ -11,7 +11,5 @@ namespace Domain.Services.Permissions
         public RolePermissions Code { get; set; }
 
         public string Name { get; set; }
-
-        public TranslationDto Translations { get; set; }
     }
 }

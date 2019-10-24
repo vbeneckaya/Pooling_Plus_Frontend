@@ -105,6 +105,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.Invoice), FiledType.Boolean),
                             new UserConfigurationGridColumn(nameof(OrderDto.DocumentsReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualDocumentsReturnDate), FiledType.DateTime),
+
                             /*end of add field for Orders*/
                         }
                     },
@@ -158,6 +159,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(ShippingDto.InvoiceNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(ShippingDto.CostsConfirmedByShipper), FiledType.Boolean),
                             new UserConfigurationGridColumn(nameof(ShippingDto.CostsConfirmedByCarrier), FiledType.Boolean),
+
                             /*end of add field for Shippings*/
                         }
                     },
