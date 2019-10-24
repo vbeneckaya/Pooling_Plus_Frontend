@@ -71,12 +71,10 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
     };
 
     const isNotUniqueName = () => {
-        console.log('list[name]', list[name]);
         return Boolean(list[name]);
     };
 
     const handleSave = () => {
-        console.log('ss', selectedFields);
         if (!name) {
             setError('required_field');
         } else if (isNotUniqueName()) {
@@ -91,13 +89,15 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                     name,
                     value: selectedFields,
                     callbackSuccess: () => {
+
                         onClose(() => {
-                            dispatch(
+                            changeRepresentation(name);
+                           /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
                                     value: name,
                                 }),
-                            );
+                            );*/
                         });
                     },
                 }),
@@ -122,12 +122,13 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                     value: selectedFields,
                     callbackSuccess: () => {
                         onClose(() => {
-                            dispatch(
+                            changeRepresentation(name);
+                           /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
                                     value: name,
                                 }),
-                            );
+                            );*/
                         });
                     },
                 }),
@@ -143,12 +144,13 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                     name: currName,
                     callbackSuccess: () => {
                         onClose(() => {
-                            dispatch(
+                            changeRepresentation(null);
+                            /*dispatch(
                                 setRepresentationRequest({
                                     gridName,
                                     value: null,
                                 }),
-                            );
+                            );*/
                         });
                     },
                 }),
