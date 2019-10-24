@@ -11,7 +11,7 @@ namespace DAL.Migrations
         {
             Database.ExecuteNonQuery(
                 @"ALTER TABLE public.""Roles""
-                ADD COLUMN ""Permissions"" inet[];");
+                ADD COLUMN ""Permissions"" integer[];");
         }
     }
 }

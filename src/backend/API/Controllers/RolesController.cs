@@ -35,26 +35,6 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("setRolePermissions")]
-        public IActionResult SetRolePermissions(Guid roleId, RolePermissions[] permissions)
-        {
-            try
-            {
-                _service.SetPermissions(roleId, permissions);
-
-                return Ok();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Failed to update permissions for role");
-                return StatusCode(500, ex.Message);
-            }
-        }
-
         public RolesController(IRolesService rolesService) : base(rolesService)
         {
         }

@@ -458,7 +458,7 @@ namespace Application.Services.Orders
                 || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg >= searchDecimal + precision
                 || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg >= searchDecimal + precision
                 || isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT >= searchDecimal + precision
-                || !string.IsNullOrEmpty(i.BDFInvoiceNumber) && i.BDFInvoiceNumber.Contains(search)
+                || !string.IsNullOrEmpty(i.BdfInvoiceNumber) && i.BdfInvoiceNumber.Contains(search)
                 || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
                 || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
                 || i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
