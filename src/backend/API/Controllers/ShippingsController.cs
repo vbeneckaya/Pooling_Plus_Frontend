@@ -10,7 +10,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/shippings")]
-    public class ShippingsController : GridWithDocumentsController<IShippingsService, Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<ShippingFilterDto>> 
+    public class ShippingsController : GridWithDocumentsController<IShippingsService, Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto> 
     {
         public ShippingsController(IShippingsService shippingsService, IDocumentService documentService) : base(shippingsService, documentService)
         {

@@ -13,14 +13,14 @@ using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Domain.Shared.FormFilters;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.Shippings
 {
-    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, FilterFormDto<ShippingFilterDto>>, IShippingsService
+    public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IHistoryService _historyService;
 
@@ -318,48 +318,54 @@ namespace Application.Services.Shippings
 
         public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {
-            query = query
-                .ApplyStringFilter(i => i.ShippingNumber, searchForm.Filter.ShippingNumber)
-                .ApplyOptionsFilter(i => i.CarrierId.Value.ToString(), searchForm.Filter.CarrierId)
-                .ApplyEnumFilter(i => i.TarifficationType, searchForm.Filter.TarifficationType)
-                .ApplyEnumFilter(i => i.DeliveryType, searchForm.Filter.DeliveryType)
-                .ApplyDateRangeFilter(i => i.ShippingCreationDate.Value, searchForm.Filter.ShippingCreationDate)
-                .ApplyNumericFilter(i => i.TemperatureMin.Value, searchForm.Filter.TemperatureMin)
-                .ApplyNumericFilter(i => i.TemperatureMax.Value, searchForm.Filter.TemperatureMax)
-                .ApplyOptionsFilter(i => i.VehicleTypeId, searchForm.Filter.VehicleTypeId, i => new Guid(i))
-                .ApplyNumericFilter(i => i.PalletsCount.Value, searchForm.Filter.PalletsCount)
-                .ApplyNumericFilter(i => i.ActualPalletsCount.Value, searchForm.Filter.ActualPalletsCount)
-                .ApplyNumericFilter(i => i.ConfirmedPalletsCount.Value, searchForm.Filter.ConfirmedPalletsCount)
-                .ApplyNumericFilter(i => i.WeightKg.Value, searchForm.Filter.WeightKg)
-                .ApplyNumericFilter(i => i.ActualWeightKg.Value, searchForm.Filter.ActualWeightKg)
-                .ApplyDateRangeFilter(i => i.LoadingArrivalTime.Value, searchForm.Filter.LoadingArrivalTime)
-                .ApplyDateRangeFilter(i => i.LoadingDepartureTime.Value, searchForm.Filter.LoadingDepartureTime)
-                .ApplyStringFilter(i => i.DeliveryInvoiceNumber,searchForm.Filter.DeliveryInvoiceNumber)
-                .ApplyStringFilter(i => i.DeviationReasonsComments, searchForm.Filter.DeviationReasonsComments)
-                .ApplyNumericFilter(i => i.TotalDeliveryCost.Value, searchForm.Filter.TotalDeliveryCost)
-                .ApplyNumericFilter(i => i.OtherCosts.Value, searchForm.Filter.OtherCosts)
-                .ApplyNumericFilter(i => i.DeliveryCostWithoutVAT.Value, searchForm.Filter.DeliveryCostWithoutVAT)
-                .ApplyNumericFilter(i => i.ReturnCostWithoutVAT.Value, searchForm.Filter.ReturnCostWithoutVAT)
-                .ApplyNumericFilter(i => i.InvoiceAmountWithoutVAT.Value, searchForm.Filter.InvoiceAmountWithoutVAT)
-                .ApplyNumericFilter(i => i.AdditionalCostsWithoutVAT.Value, searchForm.Filter.AdditionalCostsWithoutVAT)
-                .ApplyStringFilter(i => i.AdditionalCostsComments, searchForm.Filter.AdditionalCostsComments)
-                .ApplyNumericFilter(i => i.TrucksDowntime.Value, searchForm.Filter.TrucksDowntime)
-                .ApplyNumericFilter(i => i.ReturnRate.Value, searchForm.Filter.ReturnRate)
-                .ApplyNumericFilter(i => i.AdditionalPointRate.Value, searchForm.Filter.AdditionalPointRate)
-                .ApplyNumericFilter(i => i.DowntimeRate.Value, searchForm.Filter.DowntimeRate)
-                .ApplyNumericFilter(i => i.BlankArrivalRate.Value, searchForm.Filter.BlankArrivalRate)
-                .ApplyBooleanFilter(i => i.BlankArrival, searchForm.Filter.BlankArrival)
-                .ApplyBooleanFilter(i => i.Waybill, searchForm.Filter.Waybill)
-                .ApplyBooleanFilter(i => i.WaybillTorg12, searchForm.Filter.WaybillTorg12)
-                .ApplyBooleanFilter(i => i.TransportWaybill, searchForm.Filter.TransportWaybill)
-                .ApplyBooleanFilter(i => i.Invoice, searchForm.Filter.Invoice)
-                .ApplyDateRangeFilter(i => i.DocumentsReturnDate.Value, searchForm.Filter.DocumentsReturnDate)
-                .ApplyDateRangeFilter(i => i.ActualDocumentsReturnDate.Value, searchForm.Filter.ActualDocumentsReturnDate)
-                .ApplyStringFilter(i => i.InvoiceNumber, searchForm.Filter.InvoiceNumber)
-                .ApplyBooleanFilter(i => i.CostsConfirmedByShipper, searchForm.Filter.CostsConfirmedByShipper)
-                .ApplyBooleanFilter(i => i.CostsConfirmedByCarrier, searchForm.Filter.CostsConfirmedByCarrier);
+            List<object> parameters = new List<object>();
+            string where = string.Empty;
 
-            return query.OrderBy(searchForm.Sort.Name, searchForm.Sort.Desc)
+            where = where
+                         .WhereAnd(searchForm.Filter.ActualDocumentsReturnDate.ApplyDateRangeFilter<Shipping>(i => i.ActualDocumentsReturnDate, ref parameters))
+                         .WhereAnd(searchForm.Filter.ActualPalletsCount.ApplyNumericFilter<Shipping>(i => i.ActualPalletsCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.ActualWeightKg.ApplyNumericFilter<Shipping>(i => i.ActualWeightKg, ref parameters))
+                         .WhereAnd(searchForm.Filter.AdditionalCostsComments.ApplyStringFilter<Shipping>(i => i.AdditionalCostsComments, ref parameters))
+                         .WhereAnd(searchForm.Filter.AdditionalCostsWithoutVAT.ApplyNumericFilter<Shipping>(i => i.AdditionalCostsWithoutVAT, ref parameters))
+                         .WhereAnd(searchForm.Filter.AdditionalPointRate.ApplyNumericFilter<Shipping>(i => i.AdditionalPointRate, ref parameters))
+                         .WhereAnd(searchForm.Filter.BlankArrival.ApplyBooleanFilter<Shipping>(i => i.BlankArrival, ref parameters))
+                         .WhereAnd(searchForm.Filter.BlankArrivalRate.ApplyNumericFilter<Shipping>(i => i.BlankArrivalRate, ref parameters))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Shipping, Guid?>(i => i.CarrierId, ref parameters))
+                         .WhereAnd(searchForm.Filter.ConfirmedPalletsCount.ApplyNumericFilter<Shipping>(i => i.ConfirmedPalletsCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.CostsConfirmedByCarrier.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByCarrier, ref parameters))
+                         .WhereAnd(searchForm.Filter.CostsConfirmedByShipper.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByShipper, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeliveryInvoiceNumber.ApplyStringFilter<Shipping>(i => i.DeliveryInvoiceNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Shipping, DeliveryType>(i => i.DeliveryType, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeliveryCostWithoutVAT.ApplyNumericFilter<Shipping>(i => i.DeliveryCostWithoutVAT, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeviationReasonsComments.ApplyStringFilter<Shipping>(i => i.DeviationReasonsComments, ref parameters))
+                         .WhereAnd(searchForm.Filter.DocumentsReturnDate.ApplyDateRangeFilter<Shipping>(i => i.DocumentsReturnDate, ref parameters))
+                         .WhereAnd(searchForm.Filter.DowntimeRate.ApplyNumericFilter<Shipping>(i => i.DowntimeRate, ref parameters))
+                         .WhereAnd(searchForm.Filter.Invoice.ApplyBooleanFilter<Shipping>(i => i.Invoice, ref parameters))
+                         .WhereAnd(searchForm.Filter.InvoiceAmountWithoutVAT.ApplyNumericFilter<Shipping>(i => i.InvoiceAmountWithoutVAT, ref parameters))
+                         .WhereAnd(searchForm.Filter.InvoiceNumber.ApplyStringFilter<Shipping>(i => i.InvoiceNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.LoadingArrivalTime.ApplyDateRangeFilter<Shipping>(i => i.LoadingArrivalTime, ref parameters))
+                         .WhereAnd(searchForm.Filter.LoadingDepartureTime.ApplyDateRangeFilter<Shipping>(i => i.LoadingDepartureTime, ref parameters))
+                         .WhereAnd(searchForm.Filter.OtherCosts.ApplyNumericFilter<Shipping>(i => i.OtherCosts, ref parameters))
+                         .WhereAnd(searchForm.Filter.PalletsCount.ApplyNumericFilter<Shipping>(i => i.PalletsCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.ReturnCostWithoutVAT.ApplyNumericFilter<Shipping>(i => i.ReturnCostWithoutVAT, ref parameters))
+                         .WhereAnd(searchForm.Filter.ReturnRate.ApplyNumericFilter<Shipping>(i => i.ReturnRate, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingCreationDate.ApplyDateRangeFilter<Shipping>(i => i.ShippingCreationDate, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Shipping>(i => i.ShippingNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Shipping, TarifficationType>(i => i.TarifficationType, ref parameters))
+                         .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Shipping>(i => i.TemperatureMax, ref parameters))
+                         .WhereAnd(searchForm.Filter.TemperatureMin.ApplyNumericFilter<Shipping>(i => i.TemperatureMin, ref parameters))
+                         .WhereAnd(searchForm.Filter.TotalDeliveryCost.ApplyNumericFilter<Shipping>(i => i.TotalDeliveryCost, ref parameters))
+                         .WhereAnd(searchForm.Filter.TransportWaybill.ApplyBooleanFilter<Shipping>(i => i.TransportWaybill, ref parameters))
+                         .WhereAnd(searchForm.Filter.TrucksDowntime.ApplyNumericFilter<Shipping>(i => i.TrucksDowntime, ref parameters))
+                         .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Shipping, Guid?>(i => i.VehicleTypeId, ref parameters))
+                         .WhereAnd(searchForm.Filter.Waybill.ApplyBooleanFilter<Shipping>(i => i.Waybill, ref parameters))
+                         .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Shipping>(i => i.WaybillTorg12, ref parameters))
+                         .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Shipping>(i => i.WeightKg, ref parameters));
+
+            string sql = $@"SELECT * FROM ""Shippings"" {where}";
+            query = query.FromSql(sql, parameters.ToArray());
+
+            return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
                 .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
         }
     }
