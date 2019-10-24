@@ -16,4 +16,4 @@ RUN chmod +x /app/cron.sh
 RUN touch /var/log/cron.log
 
 RUN dotnet publish Tasks/ -c Release -o /app/build/
-CMD sh task.sh
+ENTRYPOINT ["tail", "-f", "/var/log/cron.log"]
