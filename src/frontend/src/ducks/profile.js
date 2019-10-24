@@ -101,7 +101,7 @@ function* getUserProfileSaga({ payload = {} }) {
     try {
         const userInfo = yield postman.get('/identity/userInfo');
         const config = yield postman.get('/appConfiguration');
-        const { url } = payload;
+        const { url = '/' } = payload;
 
         yield put({
             type: GET_USER_PROFILE_SUCCESS,

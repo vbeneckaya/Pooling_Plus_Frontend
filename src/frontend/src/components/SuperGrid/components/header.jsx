@@ -91,7 +91,8 @@ const Header = ({
                 gridName: name,
                 value: key,
                 callbackSuccess: () => {
-                    setSelected(new Set())
+                    setSelected(new Set());
+                    clearFilter();
                 }
             }),
         );
