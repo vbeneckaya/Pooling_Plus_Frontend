@@ -118,7 +118,7 @@ export const representationFromGridSelector = createSelector(
     [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name)],
     (state, gridName, list) => {
         const representationName = state.representation[gridName];
-        if (representationName) {
+        if (representationName && state.list[representationName]) {
             return state.list[representationName] || [];
         }
         return list.filter(item => item.isDefault);

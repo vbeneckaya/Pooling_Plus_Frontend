@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Confirm, Form, Input, Label, Message, Modal, Search } from 'semantic-ui-react';
+import { Button, Confirm, Form, Input, Label, Message, Modal, Search, Dropdown, Grid } from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -15,10 +15,10 @@ import {
     setRepresentationRequest,
 } from '../../ducks/representations';
 
-const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) => {
+const FieldsConfig = ({ title, gridName, getRepresentations, representation, changeRepresentation, representations }) => {
     const currName = useSelector(state => representationNameSelector(state, gridName));
     const currRepresentation = useSelector(state => representationSelector(state, gridName)) || [];
-
+    let [isNew, setIsNew] = useState(true);
     let [modalOpen, setModalOpen] = useState(false);
     let [selectedFields, setSelectedFields] = useState(isNew ? [] : currRepresentation);
     let [name, setName] = useState(isNew ? '' : currName);
@@ -29,8 +29,6 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
-    console.log('children', children);
 
     const fieldsList = useSelector(state => columnsGridSelector(state, gridName)).filter(column => {
         return !selectedFields.map(item => item.name).includes(column.name);
@@ -51,7 +49,8 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
         [currRepresentation],
     );
 
-    const onOpen = () => {
+    const onOpen = (isNew) => {
+        setIsNew(isNew);
         !isNew ? setName(currName) : setName('');
         !isNew ? setSelectedFields(currRepresentation) : setSelectedFields([]);
         setModalOpen(true);
@@ -170,76 +169,106 @@ const FieldsConfig = ({ children, title, gridName, isNew, getRepresentations }) 
     };
 
     return (
-        <Modal
-            dimmer="blurring"
-            id="fieldModal"
-            trigger={children}
-            open={modalOpen}
-            onOpen={onOpen}
-            onClose={onClose}
-            closeOnEscape
-            closeOnDimmerClick={false}
-            className="representation-modal"
-            closeIcon
-        >
-            <Modal.Header>{title}</Modal.Header>
-            <Modal.Content>
-                <Modal.Description>
-                    <Form style={{ marginBottom: '16px' }}>
-                        <Text
-                            name="name"
-                            value={name}
-                            error={error}
-                            errorText={error && t(error)}
-                            onChange={(e, { value }) => setName(value)}
-                        />
-                        <Input
-                            icon="search"
-                            iconPosition="left"
-                            placeholder={t('search_field')}
-                            value={search}
-                            clearable
-                            onChange={(e, { value }) => setSearch(value)}
-                        />
-                    </Form>
-                    <DragAndDropFields
-                        type={gridName}
-                        fieldsConfig={selectedFields}
-                        fieldsList={fieldsList}
-                        search={search}
-                        onChange={onChange}
-                    />
-                    {isEmpty ? (
-                        <Message negative>{t('Добавьте поля в представление')}</Message>
-                    ) : null}
-                </Modal.Description>
-            </Modal.Content>
-            <Modal.Actions className="grid-card-actions">
-                <div>
-                    {!isNew ? (
-                        <Button color="red" onClick={handleDelete}>
-                            {t('delete')}
-                        </Button>
-                    ) : null}
-                </div>
-                <div>
-                    <Button color="grey" onClick={onClose}>
-                        {t('CancelButton')}
-                    </Button>
-                    <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
-                        {t('SaveButton')}
-                    </Button>
-                </div>
-            </Modal.Actions>
-            <Confirm
+        <>
+            <div className="representation">
+                <label>{t('representation')}</label>
+                <Form.Field>
+                    <Dropdown
+                        selection
+                        text={representation || t('default_representation')}
+                        fluid
+                    >
+                        <Dropdown.Menu>
+                            <Dropdown.Item
+                                text={t('default_representation')}
+                                onClick={() => changeRepresentation(null)}
+                            />
+                            {representations && Object.keys(representations).length ? (
+                                <>
+                                    {Object.keys(representations)
+                                        .sort()
+                                        .map(key => (
+                                            <Dropdown.Item
+                                                text={key}
+                                                onClick={() => changeRepresentation(key)}
+                                            />
+                                        ))}
+                                </>
+                            ) : null}
+                            <Dropdown.Divider />
+                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={() => onOpen(true)}/>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Form.Field>
+                    <Button icon="cogs" disabled={!representation} onClick={() => onOpen(false)}/>
+            </div>
+            <Modal
                 dimmer="blurring"
-                open={confirmation.open}
-                onCancel={closeConfirmation}
-                cancelButton={t('cancelConfirm')}
-                onConfirm={confirmation.onConfirm}
-                content={confirmation.content}
-            />
-        </Modal>
+                id="fieldModal"
+                open={modalOpen}
+                onClose={onClose}
+                className="representation-modal"
+                closeIcon
+            >
+                <Modal.Header>{isNew ? t('Create representation') : t('Edit representation', { name: representation })}</Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        <Form style={{ marginBottom: '16px' }}>
+                            <Text
+                                name="name"
+                                value={name}
+                                error={error}
+                                errorText={error && t(error)}
+                                onChange={(e, { value }) => setName(value)}
+                            />
+                            <Input
+                                icon="search"
+                                iconPosition="left"
+                                placeholder={t('search_field')}
+                                value={search}
+                                clearable
+                                onChange={(e, { value }) => setSearch(value)}
+                            />
+                        </Form>
+                        <DragAndDropFields
+                            type={gridName}
+                            fieldsConfig={selectedFields}
+                            fieldsList={fieldsList}
+                            search={search}
+                            onChange={onChange}
+                        />
+                        {isEmpty ? (
+                            <Message negative>{t('Добавьте поля в представление')}</Message>
+                        ) : null}
+                    </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions className="grid-card-actions">
+                    <div>
+                        {!isNew ? (
+                            <Button color="red" onClick={handleDelete}>
+                                {t('delete')}
+                            </Button>
+                        ) : null}
+                    </div>
+                    <div>
+                        <Button color="grey" onClick={onClose}>
+                            {t('CancelButton')}
+                        </Button>
+                        <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
+                            {t('SaveButton')}
+                        </Button>
+                    </div>
+                </Modal.Actions>
+                <Confirm
+                    dimmer="blurring"
+                    open={confirmation.open}
+                    onCancel={closeConfirmation}
+                    cancelButton={t('cancelConfirm')}
+                    onConfirm={confirmation.onConfirm}
+                    content={confirmation.content}
+                />
+            </Modal>
+        </>
     );
 };
 

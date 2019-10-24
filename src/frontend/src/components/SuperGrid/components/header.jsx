@@ -82,7 +82,6 @@ const Header = ({
         },
         [name],
     );
-
     const representation = useSelector(state => representationNameSelector(state, name));
 
     const changeRepresentation = key => {
@@ -113,51 +112,7 @@ const Header = ({
                         style={{ display: 'none' }}
                         onInput={onFilePicked}
                     />
-                    <div className="representation">
-                        <label>{t('representation')}</label>
-                        <Form.Field>
-                            <Dropdown
-                                selection
-                                text={representation || t('default_representation')}
-                                fluid
-                            >
-                                <Dropdown.Menu>
-                                    <Dropdown.Item
-                                        text={t('default_representation')}
-                                        onClick={() => changeRepresentation(null)}
-                                    />
-                                    {representations && Object.keys(representations).length ? (
-                                        <>
-                                            {Object.keys(representations)
-                                                .sort()
-                                                .map(key => (
-                                                    <Dropdown.Item
-                                                        text={key}
-                                                        onClick={() => changeRepresentation(key)}
-                                                    />
-                                                ))}
-                                        </>
-                                    ) : null}
-                                    <Dropdown.Divider />
-                                    <FieldsConfig
-                                        title={t('Create representation')}
-                                        gridName={name}
-                                        isNew={true}
-                                        getRepresentations={getRepresentations}
-                                    >
-                                        <Dropdown.Item icon="add" text={t('create_btn')} />
-                                    </FieldsConfig>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </Form.Field>
-                        <FieldsConfig
-                            title={t('Edit representation', { name: representation })}
-                            gridName={name}
-                            getRepresentations={getRepresentations}
-                        >
-                            <Button icon="cogs" disabled={!representation} />
-                        </FieldsConfig>
-                    </div>
+                    <FieldsConfig gridName={name} representation={representation} getRepresentations={getRepresentations} changeRepresentation={changeRepresentation} representations={representations}/>
                     <Popup
                         content={t('reset_filters')}
                         position="bottom right"
