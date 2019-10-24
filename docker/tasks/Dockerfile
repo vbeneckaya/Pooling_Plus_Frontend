@@ -1,4 +1,3 @@
-
 #Build image
 FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 
@@ -11,7 +10,7 @@ WORKDIR /app
 COPY /src/backend/ .
 
 COPY /docker/tasks/cron/cron.d /etc/cron.d
-
+COPY /docker/tasks/cron/cron.sh /app/
 RUN touch /var/log/cron.log
 
 RUN dotnet publish Tasks/ -c Release -o /app/build/
