@@ -20,7 +20,7 @@ const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange })
 
     return (
         <div className="flex-container-justify">
-            {fieldsList && fieldsList.length > 0 || fieldsConfig && fieldsConfig.length ? (
+            {(fieldsList && fieldsList.length > 0) || (fieldsConfig && fieldsConfig.length) ? (
                 <DnDList
                     key={'dnd' + type}
                     type={type}
@@ -89,7 +89,7 @@ const sortFunc = (item, t) => {
 };
 
 class DnDList extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
             items: sortFunc(this.props.left.map(x => ({ id: x.name, content: x })), props.t),
@@ -132,7 +132,7 @@ class DnDList extends React.Component {
                 this.getList(destination.droppableId),
                 source,
                 destination,
-                this.props.search
+                this.props.search,
             );
             console.log('result', result);
             state = {

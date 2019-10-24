@@ -14,16 +14,13 @@ import { homePageSelector } from '../ducks/profile';
 const MainRoute = withRouter(props => {
     const homePage = useSelector(state => homePageSelector(state));
 
-    useEffect(
-        () => {
-            const { history, location } = props;
-            const { pathname } = location;
-            if (pathname === '/grid/' && homePage) {
-                history.push(`/grid/${homePage}`);
-            }
-        },
-        [homePage],
-    );
+    useEffect(() => {
+        const { history, location } = props;
+        const { pathname } = location;
+        if (pathname === '/grid/' && homePage) {
+            history.push(`/grid/${homePage}`);
+        }
+    }, [homePage]);
 
     return (
         <Switch>

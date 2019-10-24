@@ -14,10 +14,10 @@ const InfiniteScrollTable = ({
     selectable,
     className,
     context,
-    style
+    style,
 }) => {
     return (
-        <div style={{ position: 'relative', ...style}}>
+        <div style={{ position: 'relative', ...style }}>
             <Table
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}

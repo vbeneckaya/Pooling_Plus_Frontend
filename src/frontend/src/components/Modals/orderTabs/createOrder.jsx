@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import Text from '../../BaseComponents/Text';
 import Date from '../../BaseComponents/Date';
 import TextArea from '../../BaseComponents/TextArea';
@@ -12,21 +12,15 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
     const { t } = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
+    useEffect(() => {
+        const item = valuesList.find(item => item.value === form.soldTo) || {};
+        onChange(null, { name: 'clientName', value: item.warehouseName });
+    }, [form.soldTo]);
 
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'deliveryAddress', value: item.address });
-        },
-        [form.clientName],
-    );
+    useEffect(() => {
+        const item = valuesList.find(item => item.value === form.soldTo) || {};
+        onChange(null, { name: 'deliveryAddress', value: item.address });
+    }, [form.clientName]);
 
     return (
         <Form className="tabs-card">

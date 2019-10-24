@@ -58,8 +58,8 @@ const List = ({
 
     const handleExportToExcel = () => {
         exportFromExcel({
-            name
-        })
+            name,
+        });
     };
 
     return (

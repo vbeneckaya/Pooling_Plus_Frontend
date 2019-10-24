@@ -1,9 +1,19 @@
 import React from 'react';
 import { Form, Input } from 'semantic-ui-react';
-import {useTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
-const Number = ({ value, name, onChange, isDisabled, noLabel, className, text, error, placeholder }) => {
-    const {t }=useTranslation();
+const Number = ({
+    value,
+    name,
+    onChange,
+    isDisabled,
+    noLabel,
+    className,
+    text,
+    error,
+    placeholder,
+}) => {
+    const { t } = useTranslation();
 
     return (
         <Form.Field>

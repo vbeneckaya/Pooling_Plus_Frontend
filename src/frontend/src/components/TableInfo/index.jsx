@@ -88,7 +88,6 @@ class TableInfo extends Component {
         this.fileUploader && this.fileUploader.click();
     };
 
-
     onFilePicked = e => {
         const file = e.target.files[0];
 
@@ -121,7 +120,7 @@ class TableInfo extends Component {
             isExportBtn,
             importLoader,
             exportLoader,
-            exportToExcel
+            exportToExcel,
         } = this.props;
 
         const { filter } = this.state;
@@ -153,13 +152,21 @@ class TableInfo extends Component {
                                 />
 
                                 {isImportBtn ? (
-                                    <Button color="green" loading={importLoader} onClick={this.importFromExcel}>
+                                    <Button
+                                        color="green"
+                                        loading={importLoader}
+                                        onClick={this.importFromExcel}
+                                    >
                                         <Icon name="upload" />
                                         {t('importFromExcel')}
                                     </Button>
                                 ) : null}
                                 {isExportBtn ? (
-                                    <Button color="green" loading={exportLoader} onClick={exportToExcel}>
+                                    <Button
+                                        color="green"
+                                        loading={exportLoader}
+                                        onClick={exportToExcel}
+                                    >
                                         <Icon name="download" />
                                         {t('exportToExcel')}
                                     </Button>
@@ -214,7 +221,16 @@ class TableInfo extends Component {
                                                           {...column}
                                                           key_id={`${row.id}_${column.name}_${index}`}
                                                           id={row.id}
-                                                          toggleIsActive={(event, { itemID, checked }) => toggleIsActive(event, { itemID, checked }, this.load)}
+                                                          toggleIsActive={(
+                                                              event,
+                                                              { itemID, checked },
+                                                          ) =>
+                                                              toggleIsActive(
+                                                                  event,
+                                                                  { itemID, checked },
+                                                                  this.load,
+                                                              )
+                                                          }
                                                           indexRow={i}
                                                           value={row[column.name]}
                                                       />

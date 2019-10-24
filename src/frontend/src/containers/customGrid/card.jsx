@@ -171,7 +171,7 @@ const Card = props => {
                 number: form.orderNumber,
                 callbackSuccess: number => {
                     if (number && number !== card.orderNumber) {
-                        setIsNotUnqueNumber(true)
+                        setIsNotUnqueNumber(true);
                     } else {
                         setIsNotUnqueNumber(false);
                         callbackFunc && callbackFunc();

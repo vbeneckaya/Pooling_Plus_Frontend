@@ -32,8 +32,8 @@
     position: relative;
 }
 
-.blurring.dimmed.dimmable>:not(.dimmer) {
-    filter: none!important;
+.blurring.dimmed.dimmable > :not(.dimmer) {
+    filter: none !important;
 }
 
 .file-item-add {
@@ -79,8 +79,7 @@
 
 .file-item:hover .uploaded-image-delete-button,
 .file-item:hover .uploaded-image-edit-button,
-.file-item:hover .uploaded-image-download-button
-{
+.file-item:hover .uploaded-image-download-button {
     display: block !important;
 }
 
@@ -163,7 +162,7 @@
 .uploader,
 .uploader .icon {
     transition: all 100ms ease-in;
-    margin-bottom: 16px!important;
+    margin-bottom: 16px !important;
 }
 .uploader .icon {
     color: #eee;

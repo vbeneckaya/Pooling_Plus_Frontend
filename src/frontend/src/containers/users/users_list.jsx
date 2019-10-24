@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import TableInfo from '../../components/TableInfo';
-import {usersColumns} from '../../constants/usersColumns';
+import { usersColumns } from '../../constants/usersColumns';
 import {
     getUsersRequest,
     progressSelector,
@@ -10,10 +10,9 @@ import {
     totalCountSelector,
     usersListSelector,
 } from '../../ducks/users';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
-import {Button, Icon} from 'semantic-ui-react';
-
+import { Button, Icon } from 'semantic-ui-react';
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
@@ -25,19 +24,19 @@ const newModal = (t, load) => (
 
 export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }, load) => {
-        const {toggleActive} = this.props;
+        const { toggleActive } = this.props;
         toggleActive({
             id: itemID,
             active: checked,
             callbackSuccess: () => {
                 load();
-            }
-        })
+            },
+        });
     };
 
     getActions = (row, load, t) => {
         return [
-            <UserCard id={row.id} title={t('edit_user', {name: row.userName})} loadList={load}>
+            <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
                     <Icon name="edit" /> {t('edit_btn')}
                 </Button>
@@ -80,12 +79,14 @@ const mapDispatchToProps = dispatch => {
             dispatch(getUsersRequest(params));
         },
         toggleActive: params => {
-            dispatch(toggleUserActiveRequest(params))
-        }
+            dispatch(toggleUserActiveRequest(params));
+        },
     };
 };
 
-export default withTranslation()(connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(UsersList));
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(UsersList),
+);

@@ -44,12 +44,9 @@ const Header = () => {
 
     let [activeItem, setActiveItem] = useState(location.pathname);
 
-    useEffect(
-        () => {
-            setActiveItem(location.pathname);
-        },
-        [location.pathname],
-    );
+    useEffect(() => {
+        setActiveItem(location.pathname);
+    }, [location.pathname]);
 
     return (
         <>
@@ -70,30 +67,29 @@ const Header = () => {
                                     {t(item)}
                                 </Menu.Item>
                             ))}
-                        {
-                            dictionariesMenu && dictionariesMenu
-                            ?
-                                dictionariesMenu.map(item => (
-                                    <Menu.Item
-                                        className="large"
-                                        key={item}
-                                        as={Link}
-                                        to={DICTIONARY_LINK.replace(':name', item)}
-                                        name={item}
-                                        active={activeItem.includes(item)}
-                                    >
-                                        {t(item)}
-                                    </Menu.Item>
-                                ))
-                                : null
-                        }
+                        {dictionariesMenu && dictionariesMenu
+                            ? dictionariesMenu.map(item => (
+                                  <Menu.Item
+                                      className="large"
+                                      key={item}
+                                      as={Link}
+                                      to={DICTIONARY_LINK.replace(':name', item)}
+                                      name={item}
+                                      active={activeItem.includes(item)}
+                                  >
+                                      {t(item)}
+                                  </Menu.Item>
+                              ))
+                            : null}
                         {dictionariesList && (
                             <Menu.Menu>
                                 <Dropdown
                                     text={t('dictionaries')}
                                     item
-                                    className={`${[...dictionariesList, ...usersAndRoles.map(item => item.name)].some(x => activeItem.includes(x)) &&
-                                        'superActive'}`}
+                                    className={`${[
+                                        ...dictionariesList,
+                                        ...usersAndRoles.map(item => item.name),
+                                    ].some(x => activeItem.includes(x)) && 'superActive'}`}
                                 >
                                     <Dropdown.Menu>
                                         {dictionariesList.map(item => {

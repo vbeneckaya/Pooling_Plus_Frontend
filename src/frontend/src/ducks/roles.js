@@ -124,22 +124,37 @@ export const toggleRoleActiveRequest = payload => {
 
 const stateSelector = state => state.roles;
 
-export const rolesListSelector = createSelector(stateSelector, state => state.list);
+export const rolesListSelector = createSelector(
+    stateSelector,
+    state => state.list,
+);
 
-export const rolesFromUserSelector = createSelector(stateSelector, state => {
-    return (
-        state.list &&
-        state.list.map(item => ({
-            name: item.name,
-            value: item.id,
-            isActive: true,
-        }))
-    );
-});
+export const rolesFromUserSelector = createSelector(
+    stateSelector,
+    state => {
+        return (
+            state.list &&
+            state.list.map(item => ({
+                name: item.name,
+                value: item.id,
+                isActive: true,
+            }))
+        );
+    },
+);
 
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
-export const roleCardSelector = createSelector(stateSelector, state => state.card);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
+export const totalCountSelector = createSelector(
+    stateSelector,
+    state => state.totalCount,
+);
+export const roleCardSelector = createSelector(
+    stateSelector,
+    state => state.card,
+);
 
 //*  SAGA  *//
 

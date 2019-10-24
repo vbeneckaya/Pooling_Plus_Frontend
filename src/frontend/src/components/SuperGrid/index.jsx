@@ -62,7 +62,7 @@ class SuperGrid extends Component {
     }
 
     componentWillUnmount() {
-        this.props.autoUpdateStop({isClear: true});
+        this.props.autoUpdateStop({ isClear: true });
     }
 
     componentDidUpdate(prevProps) {

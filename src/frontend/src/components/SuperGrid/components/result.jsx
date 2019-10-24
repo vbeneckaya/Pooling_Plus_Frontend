@@ -43,7 +43,6 @@ class Result extends Component {
             progress,
         } = this.props;
 
-
         console.log('rows', rows);
         console.log('columns', columns);
 

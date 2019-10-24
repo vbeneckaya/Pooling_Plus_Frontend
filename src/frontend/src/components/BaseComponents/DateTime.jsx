@@ -1,11 +1,21 @@
 import React from 'react';
-import {useTranslation} from "react-i18next";
-import {Form} from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+import { Form } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 
-import {formatDate, parseDateTime} from "../../utils/dateTimeFormater";
+import { formatDate, parseDateTime } from '../../utils/dateTimeFormater';
 
-const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement="bottom-end", className, text, placeholder }) => {
+const DateTime = ({
+    value,
+    name,
+    onChange,
+    isDisabled,
+    noLabel,
+    popperPlacement = 'bottom-end',
+    className,
+    text,
+    placeholder,
+}) => {
     const { t } = useTranslation();
 
     return (
@@ -26,7 +36,10 @@ const DateTime = ({ value, name, onChange, isDisabled, noLabel, popperPlacement=
                 timeIntervals={15}
                 timeCaption={t('Time')}
                 onChange={(date, e) => {
-                    onChange(e, { name: name, value: date ? formatDate(date, 'dd.MM.yyyy HH:mm') : null });
+                    onChange(e, {
+                        name: name,
+                        value: date ? formatDate(date, 'dd.MM.yyyy HH:mm') : null,
+                    });
                 }}
                 popperPlacement={popperPlacement}
                 onChangeRaw={e => onChange(e, { name, value: e.target.value })}

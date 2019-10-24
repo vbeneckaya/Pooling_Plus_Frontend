@@ -3,7 +3,7 @@ import { Button, Form, Icon, Input, Popup } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import { dateToString, parseDate } from '../../utils/dateTimeFormater';
 import { useTranslation } from 'react-i18next';
-import Text from "../BaseComponents/Text";
+import Text from '../BaseComponents/Text';
 
 const Facet = ({ name, text, value, onChange, sort, setSort }) => {
     const { t } = useTranslation();
@@ -23,13 +23,13 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
         if (onChange !== undefined) onChange(new Event('change'), { name, value });
     };
 
-    const toggleStart = (e, {value}) => {
+    const toggleStart = (e, { value }) => {
         let start = value;
         if (start == getStringItem(0)) start = null;
         callbackOnChange(start, getStringItem(1));
     };
 
-    const toggleEnd = (e, {value}) => {
+    const toggleEnd = (e, { value }) => {
         let end = value;
         if (end == getStringItem(1)) end = null;
         callbackOnChange(getStringItem(0), end);
@@ -57,7 +57,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
                 </Form.Field>
                 <span className="separator">-</span>
                 <Form.Field width={8}>
-                    <Text type="time" value={getDateItem(1) || null} onChange={toggleEnd}/>
+                    <Text type="time" value={getDateItem(1) || null} onChange={toggleEnd} />
                 </Form.Field>
             </Form.Group>
         </Form>
@@ -76,7 +76,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             <Button
                 className={`sort-button sort-button-up ${
                     sort === 'asc' ? 'sort-button-active' : ''
-                    }`}
+                }`}
                 name={name}
                 value="asc"
                 onClick={setSort}
@@ -86,7 +86,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             <Button
                 className={`sort-button sort-button-down ${
                     sort === 'desc' ? 'sort-button-active' : ''
-                    }`}
+                }`}
                 name={name}
                 value="desc"
                 onClick={setSort}

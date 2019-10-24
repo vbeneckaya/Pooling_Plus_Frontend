@@ -1,15 +1,17 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Modal, Image, Container, Icon } from 'semantic-ui-react';
-import {documentTypesSelector, getDocumentTypesRequest} from "../../ducks/documents";
+import { documentTypesSelector, getDocumentTypesRequest } from '../../ducks/documents';
 
 const DocView = ({ onClick, children, document }) => {
     let [modalOpen, setModalOpen] = useState(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
-    useEffect(() => {dispatch(getDocumentTypesRequest())}, [])
+    useEffect(() => {
+        dispatch(getDocumentTypesRequest());
+    }, []);
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
 

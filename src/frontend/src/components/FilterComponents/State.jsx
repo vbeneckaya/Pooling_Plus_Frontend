@@ -1,8 +1,8 @@
 import React from 'react';
-import {Button, Popup, Checkbox, Icon, Form, Loader, Dimmer} from 'semantic-ui-react';
+import { Button, Popup, Checkbox, Icon, Form, Loader, Dimmer } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {clearLookup, getLookupRequest, listSelector, progressSelector} from "../../ducks/lookup";
+import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
 
 const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
     const { t } = useTranslation();
@@ -21,11 +21,13 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
     };
 
     const handleOpen = () => {
-        dispatch(getLookupRequest({
-            name: source,
-            isSearch: true,
-            params: {}
-        }));
+        dispatch(
+            getLookupRequest({
+                name: source,
+                isSearch: true,
+                params: {},
+            }),
+        );
     };
 
     const handleClose = () => {
@@ -36,14 +38,18 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
     const loading = useSelector(state => progressSelector(state));
 
     let content = (
-        <Form style={{minWidth: "50px", minHeight: "50px"}}>
+        <Form style={{ minWidth: '50px', minHeight: '50px' }}>
             <Dimmer active={loading} inverted>
                 <Loader size="small">Loading</Loader>
             </Dimmer>
             {stateColors.map(x => {
                 let label = (
                     <label>
-                        <Icon color={x.color ? x.color.toLowerCase() : 'grey'} inverted={x.inverted} name="circle" />
+                        <Icon
+                            color={x.color ? x.color.toLowerCase() : 'grey'}
+                            inverted={x.inverted}
+                            name="circle"
+                        />
                         {t(x.name)}
                     </label>
                 );
@@ -66,7 +72,9 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
             <Popup
                 trigger={
                     <Button size="small" style={{ lineHeight: '1.1rem' }} fluid>
-                        {values.length > 0 ? t('selected_count', {count: values.length}) : t('All')}
+                        {values.length > 0
+                            ? t('selected_count', { count: values.length })
+                            : t('All')}
                     </Button>
                 }
                 content={content}

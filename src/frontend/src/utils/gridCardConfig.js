@@ -1,8 +1,4 @@
 export default {
-    orders: {
-
-    },
-    shippings: {
-
-    }
-}
+    orders: {},
+    shippings: {},
+};

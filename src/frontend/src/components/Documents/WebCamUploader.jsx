@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Modal, Form, Button, Icon, Input } from 'semantic-ui-react';
 import Webcam from 'react-webcam';
-import {uploadFileRequest} from "../../ducks/documents";
-import {toast} from "react-toastify";
+import { uploadFileRequest } from '../../ducks/documents';
+import { toast } from 'react-toastify';
 
 const DocWithEditor = ({ children, onChange }) => {
     let [modalOpen, setModalOpen] = useState(false);
@@ -39,13 +39,13 @@ const DocWithEditor = ({ children, onChange }) => {
             dispatch(
                 uploadFileRequest({
                     form: {
-                        name: "WebCamPhoto.jpg",
-                        body: imageSrc.split(',')[1]
+                        name: 'WebCamPhoto.jpg',
+                        body: imageSrc.split(',')[1],
                     },
-                    fileName: "WebCamPhoto.jpg",
+                    fileName: 'WebCamPhoto.jpg',
                     isBase64: true,
-                    callbackSuccess: (id) => {
-                        onChange(id, "WebCamPhoto.jpg");
+                    callbackSuccess: id => {
+                        onChange(id, 'WebCamPhoto.jpg');
                         handleClose();
                     },
                 }),

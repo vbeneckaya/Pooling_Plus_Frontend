@@ -28,12 +28,12 @@ body {
     line-height: 1.4285em;
     color: rgba(0, 0, 0, 0.87);
     -webkit-transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
-    -webkit-box-shadow 0.1s ease;
+        -webkit-box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
-    -webkit-box-shadow 0.1s ease;
+        -webkit-box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
     transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease,
-    -webkit-box-shadow 0.1s ease;
+        -webkit-box-shadow 0.1s ease;
     border-radius: 0.28571429rem !important;
     -webkit-box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
     box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
@@ -150,7 +150,7 @@ body {
     margin-top: 58px !important;
 
     &-big {
-        height: calc(100vh - 180px)!important;
+        height: calc(100vh - 180px) !important;
     }
 }
 
@@ -275,7 +275,7 @@ body {
     height: 36px;
 
     label {
-        font-size: .92857143em;
+        font-size: 0.92857143em;
     }
 
     .field {
@@ -320,6 +320,6 @@ input::-webkit-calendar-picker-indicator {
 
 .representation-modal {
     .ui.message {
-        margin: 0!important;
+        margin: 0 !important;
     }
 }

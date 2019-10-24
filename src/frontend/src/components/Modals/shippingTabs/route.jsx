@@ -7,7 +7,7 @@ import DateTime from '../../BaseComponents/DateTime';
 import Date from '../../BaseComponents/Date';
 import State from '../../BaseComponents/State';
 import Text from '../../BaseComponents/Text';
-import Number from "../../BaseComponents/Number";
+import Number from '../../BaseComponents/Number';
 
 const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) => {
     const { t } = useTranslation();

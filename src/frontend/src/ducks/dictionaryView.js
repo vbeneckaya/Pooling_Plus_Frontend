@@ -2,8 +2,8 @@ import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import {formatDate} from "../utils/dateTimeFormater";
-import {representationFromGridSelector} from "./representations";
+import { formatDate } from '../utils/dateTimeFormater';
+import { representationFromGridSelector } from './representations';
 
 //*  TYPES  *//
 
@@ -153,8 +153,8 @@ export const importFromExcelRequest = payload => {
 export const exportToExcelRequest = payload => {
     return {
         type: DICTIONARY_EXPORT_TO_EXCEL_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -164,14 +164,30 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const dictionaryName = (state, name) => name;
 
-export const columnsSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
-    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
-    return dictionary ? dictionary.columns : [];
-});
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
-export const listSelector = createSelector(stateSelector, state => state.list);
-export const cardSelector = createSelector(stateSelector, state => state.card);
+export const columnsSelector = createSelector(
+    [stateProfile, dictionaryName],
+    (state, name) => {
+        const dictionary =
+            state.dictionaries && state.dictionaries.find(item => item.name === name);
+        return dictionary ? dictionary.columns : [];
+    },
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
+export const totalCountSelector = createSelector(
+    stateSelector,
+    state => state.totalCount,
+);
+export const listSelector = createSelector(
+    stateSelector,
+    state => state.list,
+);
+export const cardSelector = createSelector(
+    stateSelector,
+    state => state.card,
+);
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
@@ -200,8 +216,14 @@ export const canExportToExcelSelector = createSelector(
     },
 );
 
-export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
-export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
+export const importProgressSelector = createSelector(
+    stateSelector,
+    state => state.importProgress,
+);
+export const exportProgressSelector = createSelector(
+    stateSelector,
+    state => state.exportProgress,
+);
 
 //*  SAGA  *//
 
@@ -278,11 +300,7 @@ function* exportToExcelSaga({ payload }) {
     try {
         const { name } = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
-        const result = yield postman.post(
-            `/${name}/exportToExcel`,
-            {},
-            { responseType: 'blob' },
-        );
+        const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
@@ -292,8 +310,8 @@ function* exportToExcelSaga({ payload }) {
     } catch (e) {
         yield put({
             type: DICTIONARY_EXPORT_TO_EXCEL_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 

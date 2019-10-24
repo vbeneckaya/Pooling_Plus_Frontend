@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 
@@ -8,7 +8,8 @@ import { rolesColumns } from '../../constants/rolesColumns';
 import {
     getRolesRequest,
     progressSelector,
-    rolesListSelector, toggleRoleActiveRequest,
+    rolesListSelector,
+    toggleRoleActiveRequest,
     totalCountSelector,
 } from '../../ducks/roles';
 import { Button, Icon } from 'semantic-ui-react';
@@ -24,20 +25,20 @@ const newModal = (t, load) => (
 
 export class RolesList extends Component {
     handleToggleIsActive = (event, { itemID, checked }, load) => {
-        const {toggleActive} = this.props;
+        const { toggleActive } = this.props;
 
         toggleActive({
             id: itemID,
             active: checked,
             callbackSuccess: () => {
                 load();
-            }
-        })
+            },
+        });
     };
 
     getActions = (row, load, t) => {
         return [
-            <RoleCard id={row.id} title={t('edit_role', {name: row.name})} loadList={load}>
+            <RoleCard id={row.id} title={t('edit_role', { name: row.name })} loadList={load}>
                 <Button size="mini" className="grid-action-btn">
                     <Icon name="edit" /> {t('edit_btn')}
                 </Button>
@@ -80,12 +81,14 @@ const mapDispatchToProps = dispatch => {
             dispatch(getRolesRequest(params));
         },
         toggleActive: params => {
-            dispatch(toggleRoleActiveRequest(params))
-        }
+            dispatch(toggleRoleActiveRequest(params));
+        },
     };
 };
 
-export default withTranslation()(connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(RolesList));
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(RolesList),
+);

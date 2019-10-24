@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { Segment, Header, Icon, Loader, Dimmer } from 'semantic-ui-react';
 import { uploadFileRequest, uploadProgressSelector } from '../../ducks/documents';
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify';
 
 const FileUploader = ({ document, onChange }) => {
     const [active, setActive] = useState(false);
@@ -41,7 +41,7 @@ const FileUploader = ({ document, onChange }) => {
                 uploadFileRequest({
                     form,
                     fileName: file.name,
-                    callbackSuccess: (id) => {
+                    callbackSuccess: id => {
                         onChange(id, file.name);
                     },
                 }),

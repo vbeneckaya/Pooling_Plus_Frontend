@@ -108,10 +108,22 @@ export const logoutRequest = () => {
 
 const stateSelector = state => state.login;
 const getKey = (state, key) => key;
-export const loginPageSelector = createSelector(stateSelector, state => state.page);
-export const progressSelector = createSelector([stateSelector, getKey], (state, key) => state[key]);
-export const errorSelector = createSelector(stateSelector, state => state.error);
-export const isAuthSelector = createSelector(stateSelector, state => state.isAuth);
+export const loginPageSelector = createSelector(
+    stateSelector,
+    state => state.page,
+);
+export const progressSelector = createSelector(
+    [stateSelector, getKey],
+    (state, key) => state[key],
+);
+export const errorSelector = createSelector(
+    stateSelector,
+    state => state.error,
+);
+export const isAuthSelector = createSelector(
+    stateSelector,
+    state => state.isAuth,
+);
 
 //*  SAGA  *//
 
@@ -143,7 +155,7 @@ function* loginSaga({ payload }) {
         });
         yield put({
             type: GET_USER_PROFILE_REQUEST,
-            payload: {url: '/'},
+            payload: { url: '/' },
         });
     } catch ({ response }) {
         yield put({

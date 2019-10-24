@@ -66,15 +66,22 @@ export const getLookupRequest = payload => {
 export const clearLookup = payload => {
     return {
         type: CLEAR_LOOKUP,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
 
 const stateSelector = state => state.lookup;
-export const listSelector = createSelector(stateSelector, state => state.list) || [];
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const listSelector =
+    createSelector(
+        stateSelector,
+        state => state.list,
+    ) || [];
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
@@ -87,7 +94,8 @@ function* getLookupSaga({ payload }) {
     try {
         const { name, isForm, isSearch } = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
-            `/${name}/${isSearch ? 'search' : 'forSelect'}`, {}
+            `/${name}/${isSearch ? 'search' : 'forSelect'}`,
+            {},
         );
 
         if (isForm) {

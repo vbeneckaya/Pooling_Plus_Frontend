@@ -1,9 +1,9 @@
-import {all, put, takeEvery} from 'redux-saga/effects';
-import {createSelector} from 'reselect';
-import {postman} from '../utils/postman';
-import {push as historyPush} from 'connected-react-router';
-import {ROLES_LINK, USERS_LINK} from '../router/links';
-import {logoutRequest} from "./login";
+import { all, put, takeEvery } from 'redux-saga/effects';
+import { createSelector } from 'reselect';
+import { postman } from '../utils/postman';
+import { push as historyPush } from 'connected-react-router';
+import { ROLES_LINK, USERS_LINK } from '../router/links';
+import { logoutRequest } from './login';
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -59,36 +59,53 @@ export const gridsMenuSelector = createSelector(
 );
 export const dictionariesMenuSelector = createSelector(
     stateSelector,
-    state => state.dictionaries && state.dictionaries.filter(dictionary => !dictionary.showOnHeader).map(dictionary => dictionary.name),
+    state =>
+        state.dictionaries &&
+        state.dictionaries
+            .filter(dictionary => !dictionary.showOnHeader)
+            .map(dictionary => dictionary.name),
 );
 
 export const dictionariesHeaderSelector = createSelector(
     stateSelector,
-    state => state.dictionaries && state.dictionaries.filter(dictionary => dictionary.showOnHeader).map(dictionary => dictionary.name),
+    state =>
+        state.dictionaries &&
+        state.dictionaries
+            .filter(dictionary => dictionary.showOnHeader)
+            .map(dictionary => dictionary.name),
 );
 
-export const userNameSelector = createSelector(stateSelector, state => state.userName);
-export const roleSelector = createSelector(stateSelector, state => state.userRole);
+export const userNameSelector = createSelector(
+    stateSelector,
+    state => state.userName,
+);
+export const roleSelector = createSelector(
+    stateSelector,
+    state => state.userRole,
+);
 
-export const rolesAndUsersMenu = createSelector(stateSelector, state => {
-    let menu = [];
+export const rolesAndUsersMenu = createSelector(
+    stateSelector,
+    state => {
+        let menu = [];
 
-    if (state.editRoles) {
-        menu.push({
-            name: 'roles',
-            link: ROLES_LINK,
-        });
-    }
+        if (state.editRoles) {
+            menu.push({
+                name: 'roles',
+                link: ROLES_LINK,
+            });
+        }
 
-    if (state.editUsers) {
-        menu.push({
-            name: 'users',
-            link: USERS_LINK,
-        });
-    }
+        if (state.editUsers) {
+            menu.push({
+                name: 'users',
+                link: USERS_LINK,
+            });
+        }
 
-    return menu;
-});
+        return menu;
+    },
+);
 
 export const homePageSelector = createSelector(
     stateSelector,
@@ -116,7 +133,7 @@ function* getUserProfileSaga({ payload = {} }) {
             payload: e,
         });
 
-        yield put(logoutRequest()) // todo
+        yield put(logoutRequest()); // todo
     }
 }
 

@@ -2,22 +2,27 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import DocWithEditor from '../../Documents/DocWithEditor';
-import {clearDocuments, documentsSelector, getDocumentsRequest, progressSelector} from "../../../ducks/documents";
-import {Dimmer, Loader} from "semantic-ui-react";
+import {
+    clearDocuments,
+    documentsSelector,
+    getDocumentsRequest,
+    progressSelector,
+} from '../../../ducks/documents';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 const Documents = ({ gridName, cardId }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
     const getDocuments = () => {
-        dispatch(getDocumentsRequest({gridName, cardId}))
+        dispatch(getDocumentsRequest({ gridName, cardId }));
     };
 
     useEffect(() => {
         getDocuments();
         return () => {
-            dispatch(clearDocuments())
-        }
+            dispatch(clearDocuments());
+        };
     }, []);
 
     const documents = useSelector(state => documentsSelector(state));

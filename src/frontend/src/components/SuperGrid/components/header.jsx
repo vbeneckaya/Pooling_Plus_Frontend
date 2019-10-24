@@ -31,7 +31,7 @@ const Header = ({
     loadList,
     name,
     setSelected,
-    filter
+    filter,
 }) => {
     const { t } = useTranslation();
 
@@ -76,12 +76,9 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(
-        () => {
-            getRepresentations();
-        },
-        [name],
-    );
+    useEffect(() => {
+        getRepresentations();
+    }, [name]);
 
     const changeRepresentation = key => {
         dispatch(
@@ -91,7 +88,7 @@ const Header = ({
                 callbackSuccess: () => {
                     setSelected(new Set());
                     clearFilter();
-                }
+                },
             }),
         );
     };
@@ -111,7 +108,12 @@ const Header = ({
                         style={{ display: 'none' }}
                         onInput={onFilePicked}
                     />
-                    <FieldsConfig gridName={name} getRepresentations={getRepresentations} changeRepresentation={changeRepresentation} representations={representations}/>
+                    <FieldsConfig
+                        gridName={name}
+                        getRepresentations={getRepresentations}
+                        changeRepresentation={changeRepresentation}
+                        representations={representations}
+                    />
                     <Popup
                         content={t('reset_filters')}
                         position="bottom right"

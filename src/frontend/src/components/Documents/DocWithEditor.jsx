@@ -230,7 +230,9 @@ const DocWithEditor = ({
                                 search
                                 value={document ? document.typeId : null}
                                 options={documentTypes}
-                                additionLabel={<i style={{ color: 'blue' }}>{`${t('add value')}: `} </i>}
+                                additionLabel={
+                                    <i style={{ color: 'blue' }}>{`${t('add value')}: `} </i>
+                                }
                                 onAddItem={handleAddition}
                                 onChange={handleTypeChange}
                             />
