@@ -15,5 +15,5 @@ RUN chmod +x /app/cron.sh
 RUN touch /var/log/cron.log
 
 RUN dotnet publish Tasks/ -c Release -o /app/build/
-
-CMD nohup sh -c 'while true; do sh cron.sh; sleep 60; done;' &
+RUN nohup sh -c 'while true; do sh cron.sh; sleep 60; done;' &
+CMD ping 8.8.8.8
