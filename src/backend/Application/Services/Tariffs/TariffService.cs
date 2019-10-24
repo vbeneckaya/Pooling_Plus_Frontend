@@ -113,7 +113,7 @@ namespace Application.Services.Tariffs
 
         protected override ExcelMapper<TariffDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TariffDto>(_dataService)
+            return new ExcelMapper<TariffDto>(_dataService, _userProvider)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>())
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
