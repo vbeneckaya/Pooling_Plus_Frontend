@@ -11,9 +11,9 @@ COPY /src/backend/ .
 
 COPY /docker/tasks/cron/cron.d /etc/cron.d
 COPY /docker/tasks/cron/cron.sh /app/
-RUN chmod +x /app/cron.sh && nohup sh -c 'while true; do sh cron.sh; sleep 60; done;' &
+RUN chmod +x /app/cron.sh
 RUN touch /var/log/cron.log
 
 RUN dotnet publish Tasks/ -c Release -o /app/build/
 
-ENTRYPOINT ["tail", "-f", "/var/log/cron.log"]
+CMD nohup sh -c 'while true; do sh cron.sh; sleep 60; done;' &
