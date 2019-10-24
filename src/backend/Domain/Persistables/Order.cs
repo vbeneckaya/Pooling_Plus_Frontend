@@ -63,7 +63,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Номер накладной BDF
         /// </summary>
-        public string BDFInvoiceNumber { get; set; }
+        public string BdfInvoiceNumber { get; set; }
         /// <summary>
         /// Кол-во арт.
         /// </summary>
@@ -80,6 +80,10 @@ namespace Domain.Persistables
         /// Предварительное кол-во паллет
         /// </summary>
         public int? PalletsCount { get; set; }
+        /// <summary>
+        /// Предварительное кол-во паллет введено вручную
+        /// </summary>
+        public bool ManualPalletsCount { get; set; }
         /// <summary>
         /// Подтвежденное кол-во паллет
         /// </summary>

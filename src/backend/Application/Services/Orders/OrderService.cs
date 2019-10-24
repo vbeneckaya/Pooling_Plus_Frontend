@@ -69,12 +69,14 @@ namespace Application.Services.Orders
 
         public OrderFormDto GetFormByNumber(string orderNumber)
         {
-            var entity = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
+            var entity = _dataService.GetDbSet<Order>().Where(x => x.BdfInvoiceNumber == orderNumber).FirstOrDefault();
             return MapFromEntityToFormDto(entity);
         }
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
+            bool isInjection = dto.AdditionalInfo == "INJECTION";
+
             var setter = new FieldSetter<Order>(entity, _historyService);
 
             if (!string.IsNullOrEmpty(dto.Id))
@@ -96,11 +98,11 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.BDFInvoiceNumber, dto.BDFInvoiceNumber);
+            setter.UpdateField(e => e.BdfInvoiceNumber, dto.BdfInvoiceNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1));
             setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1));
-            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService, !isInjection));
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(_dataService, _historyService));
@@ -354,7 +356,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ActualReturnDate.ApplyDateRangeFilter<Order>(i => i.ActualReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualWeightKg.ApplyNumericFilter<Order>(i => i.ActualWeightKg, ref parameters))
                          .WhereAnd(searchForm.Filter.ArticlesCount.ApplyNumericFilter<Order>(i => i.ArticlesCount, ref parameters))
-                         .WhereAnd(searchForm.Filter.BdfInvoiceNumber.ApplyStringFilter<Order>(i => i.BDFInvoiceNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.BdfInvoiceNumber.ApplyStringFilter<Order>(i => i.BdfInvoiceNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
@@ -448,7 +450,7 @@ namespace Application.Services.Orders
                 || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg >= searchDecimal + precision
                 || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg >= searchDecimal + precision
                 || isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT >= searchDecimal + precision
-                || !string.IsNullOrEmpty(i.BDFInvoiceNumber) && i.BDFInvoiceNumber.Contains(search)
+                || !string.IsNullOrEmpty(i.BdfInvoiceNumber) && i.BdfInvoiceNumber.Contains(search)
                 || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
                 || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
                 || i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)

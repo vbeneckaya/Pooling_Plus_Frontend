@@ -17,11 +17,12 @@ namespace Domain.Services.Orders
         public string ShippingDate { get; set; }
         public int? TransitDays { get; set; }
         public string DeliveryDate { get; set; }
-        public string BDFInvoiceNumber { get; set; }
+        public string BdfInvoiceNumber { get; set; }
         public int? ArticlesCount { get; set; }
         public decimal? BoxesCount { get; set; }
         public decimal? ConfirmedBoxesCount { get; set; }
         public int? PalletsCount { get; set; }
+        public bool? ManualPalletsCount { get; set; }
         public int? ConfirmedPalletsCount { get; set; }
         public int? ActualPalletsCount { get; set; }
         public decimal? WeightKg { get; set; }
@@ -59,6 +60,7 @@ namespace Domain.Services.Orders
         public string ShippingNumber { get; set; }
         public string OrderShippingStatus { get; set; }
         public bool? IsActive { get; set; }
+        public string AdditionalInfo { get; set; }
 
         /*end of fields*/
     }

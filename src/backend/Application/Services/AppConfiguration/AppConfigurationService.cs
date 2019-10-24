@@ -86,7 +86,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.WeightKg), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualWeightKg), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderAmountExcludingVAT), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(OrderDto.BDFInvoiceNumber), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.BdfInvoiceNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.LoadingArrivalTime), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.LoadingDepartureTime), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.UnloadingArrivalDate), FiledType.DateTime),

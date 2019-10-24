@@ -1,10 +1,7 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Shared;
-using DAL;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using System.Linq;
 
@@ -16,8 +13,22 @@ namespace Application.BusinessModels.Orders.Handlers
 
         private readonly IHistoryService _historyService;
 
+        private readonly bool _isManual;
+
+        public PalletsCountHandler(ICommonDataService dataService, IHistoryService historyService, bool isManual)
+        {
+            this._dataService = dataService;
+            _historyService = historyService;
+            _isManual = isManual;
+        }
+
         public void AfterChange(Order order, int? oldValue, int? newValue)
         {
+            if (_isManual)
+            {
+                order.ManualPalletsCount = true;
+            }
+
             if (order.ShippingId.HasValue)
             {
                 var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
@@ -41,13 +52,5 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             return null;
         }
-
-        public PalletsCountHandler(ICommonDataService dataService, IHistoryService historyService)
-        {
-            this._dataService = dataService;
-            _historyService = historyService;
-        }
-
-
     }
 }
