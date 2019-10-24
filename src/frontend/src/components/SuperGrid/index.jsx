@@ -62,8 +62,7 @@ class SuperGrid extends Component {
     }
 
     componentWillUnmount() {
-        this.props.autoUpdateStop();
-        this.props.clearStore();
+        this.props.autoUpdateStop({isClear: true});
     }
 
     componentDidUpdate(prevProps) {
@@ -84,25 +83,6 @@ class SuperGrid extends Component {
             }
 
             this.setSelected(newSelectedRow);
-        }
-
-        if (this.props.name !== prevProps.name) {
-            const {
-                autoUpdateStop,
-                clearStore,
-                storageFilterItem,
-                storageSortItem,
-                autoUpdateStart,
-            } = this.props;
-
-            autoUpdateStop({isClear: true});
-            clearStore();
-            this.setState(
-                {
-                    ...initState(storageFilterItem, storageSortItem),
-                },
-                () => autoUpdateStart(this.mapData()),
-            );
         }
     }
 
