@@ -82,7 +82,6 @@ const Header = ({
         },
         [name],
     );
-    const representation = useSelector(state => representationNameSelector(state, name));
 
     const changeRepresentation = key => {
         dispatch(
@@ -112,7 +111,7 @@ const Header = ({
                         style={{ display: 'none' }}
                         onInput={onFilePicked}
                     />
-                    <FieldsConfig gridName={name} representation={representation} getRepresentations={getRepresentations} changeRepresentation={changeRepresentation} representations={representations}/>
+                    <FieldsConfig gridName={name} getRepresentations={getRepresentations} changeRepresentation={changeRepresentation} representations={representations}/>
                     <Popup
                         content={t('reset_filters')}
                         position="bottom right"
