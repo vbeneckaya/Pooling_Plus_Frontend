@@ -9,7 +9,7 @@ import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
-const OrderModal = ({ form, onChangeForm, name, id, load }) => {
+const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uniquenessNumberCheck }) => {
     const { t } = useTranslation();
 
     const getPanes = [
@@ -17,7 +17,7 @@ const OrderModal = ({ form, onChangeForm, name, id, load }) => {
             menuItem: t('information'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Information form={form} onChange={onChangeForm} />
+                    <Information form={form} isNotUniqueNumber={isNotUniqueNumber} uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
         },
@@ -55,7 +55,7 @@ const OrderModal = ({ form, onChangeForm, name, id, load }) => {
         },
     ];
 
-    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} onChange={onChangeForm}/>}</>;
+    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} isNotUniqueNumber={isNotUniqueNumber} uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>}</>;
 };
 
 export default OrderModal;

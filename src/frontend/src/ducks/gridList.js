@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { all, takeEvery, put, cancelled, delay, fork, cancel, select } from 'redux-saga/effects';
 import { IS_AUTO_UPDATE } from '../constants/settings';
 import { formatDate } from '../utils/dateTimeFormater';
 import { toast } from 'react-toastify';
+import { representationFromGridSelector } from './representations';
 
 let task = null;
 let filters = {};
@@ -26,8 +27,8 @@ const GRID_EXPORT_TO_EXCEL_REQUEST = 'GRID_EXPORT_TO_EXCEL_REQUEST';
 const GRID_EXPORT_TO_EXCEL_SUCCESS = 'GRID_EXPORT_TO_EXCEL_SUCCESS';
 const GRID_EXPORT_TO_EXCEL_ERROR = 'GRID_EXPORT_TO_EXCEL_ERROR';
 
-const GRID_AUTO_UPDATE_START = 'ROUTES_AUTO_UPDATE_START';
-const GRID_AUTO_UPDATE_STOP = 'ROUTES_AUTO_UPDATE_STOP';
+const GRID_AUTO_UPDATE_START = 'GRID_AUTO_UPDATE_START';
+const GRID_AUTO_UPDATE_STOP = 'GRID_AUTO_UPDATE_STOP';
 
 const CLEAR_GRID_INFO = 'CLEAR_GRID_INFO';
 
@@ -50,7 +51,7 @@ export default (state = initial, { type, payload }) => {
         case GET_GRID_LIST_REQUEST:
             return {
                 ...state,
-                progress: true,
+                progress: !payload.notLoader,
             };
         case GET_GRID_LIST_SUCCESS:
             return {
@@ -135,8 +136,8 @@ export const autoUpdateStart = payload => {
     return { type: GRID_AUTO_UPDATE_START, payload };
 };
 
-export const autoUpdateStop = () => {
-    return { type: GRID_AUTO_UPDATE_STOP };
+export const autoUpdateStop = payload => {
+    return { type: GRID_AUTO_UPDATE_STOP, payload };
 };
 
 export const importFromExcelRequest = payload => {
@@ -189,13 +190,10 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canExportToExcel : false;
-    },
-);
+export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canExportToExcel : false;
+});
 
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
@@ -226,6 +224,7 @@ export function* autoUpdateStartSaga({ payload }) {
             filters = {
                 ...filters,
                 isConcat: false,
+                notLoader: true,
                 filter: {
                     ...filters.filter,
                     take: payload.filter.take + payload.filter.skip,
@@ -238,8 +237,10 @@ export function* autoUpdateStartSaga({ payload }) {
     }
 }
 
-export function* autoUpdateStopSaga() {
+export function* autoUpdateStopSaga({ payload = {} }) {
     if (task) {
+        const { isClear } = payload;
+        if (isClear) yield put(clearGridInfo());
         yield cancel(task);
         task = null;
         filters = {};
@@ -250,7 +251,7 @@ export const backgroundSyncListSaga = function*() {
     try {
         while (true) {
             yield put(getListRequest(filters));
-            yield delay(60000);
+            yield delay(30000);
         }
     } finally {
         if (yield cancelled()) {
@@ -300,9 +301,15 @@ function* importFromExcelSaga({ payload }) {
 
 function* exportToExcelSaga({ payload }) {
     try {
-        const { name } = payload;
+        const { name, filter } = payload;
         const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
-        const result = yield postman.get(`/${name}/exportToExcel`, { responseType: 'blob' });
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+        const result = yield postman.post(
+            `/${name}/exportToExcel`,
+            { columns, filter },
+            { responseType: 'blob' },
+        );
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);

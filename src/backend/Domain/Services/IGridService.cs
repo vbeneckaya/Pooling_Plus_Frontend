@@ -5,10 +5,10 @@ using Domain.Shared;
 
 namespace Domain.Services
 {
-    public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : IService
+    public interface IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter> : IService
     {
-        SearchResult<TDto> Search(TSearchForm form);
-        IEnumerable<string> SearchIds(TSearchForm form);
+        SearchResult<TDto> Search(FilterFormDto<TFilter> form);
+        IEnumerable<string> SearchIds(FilterFormDto<TFilter> form);
         IEnumerable<LookUpDto> ForSelect();
         ValidateResult SaveOrCreate(TFormDto entityFrom);
         TDto Get(Guid id);
@@ -24,6 +24,6 @@ namespace Domain.Services
 
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
         ValidateResult ImportFromExcel(Stream fileStream);
-        Stream ExportToExcel();
+        Stream ExportToExcel(ExportExcelFormDto<TFilter> dto);
     }
 }

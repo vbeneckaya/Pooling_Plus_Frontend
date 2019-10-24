@@ -55,7 +55,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Orders*/
-                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(OrderDto.OrderNumber), FiledType.Link, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.Status), FiledType.State, nameof(OrderState), isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.ShippingNumber), FiledType.Text, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderShippingStatus), FiledType.State, nameof(ShippingState), isDefault: true),
@@ -65,7 +65,7 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderCreationDate), FiledType.DateTime, isDefault: true),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderDate), FiledType.DateTime),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.OrderType), FiledType.Enum, nameof(OrderType)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService)),
+                            new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.SoldTo), FiledType.Select, nameof(SoldToService), showRawValue: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(OrderDto.PickingTypeId), FiledType.Select, nameof(PickingTypesService)),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMin), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.TemperatureMax), FiledType.Number),
@@ -86,20 +86,20 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(OrderDto.WeightKg), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualWeightKg), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderAmountExcludingVAT), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(OrderDto.BDFInvoiceNumber), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.BdfInvoiceNumber), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.LoadingArrivalTime), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.LoadingDepartureTime), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.UnloadingArrivalDate), FiledType.DateTime),
-                            new UserConfigurationGridColumn(nameof(OrderDto.UnloadingArrivalTime), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.UnloadingArrivalTime), FiledType.Time),
                             new UserConfigurationGridColumn(nameof(OrderDto.UnloadingDepartureDate), FiledType.DateTime),
-                            new UserConfigurationGridColumn(nameof(OrderDto.UnloadingDepartureTime), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.UnloadingDepartureTime), FiledType.Time),
                             new UserConfigurationGridColumn(nameof(OrderDto.TrucksDowntime), FiledType.Number),
                             new UserConfigurationGridColumn(nameof(OrderDto.ReturnInformation), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.ReturnShippingAccountNo), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.PlannedReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.ActualReturnDate), FiledType.DateTime),
                             new UserConfigurationGridColumn(nameof(OrderDto.MajorAdoptionNumber), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Text),
+                            new UserConfigurationGridColumn(nameof(OrderDto.ClientAvisationTime), FiledType.Time),
                             new UserConfigurationGridColumn(nameof(OrderDto.OrderComments), FiledType.Text),
                             new UserConfigurationGridColumn(nameof(OrderDto.WaybillTorg12), FiledType.Boolean),
                             new UserConfigurationGridColumn(nameof(OrderDto.Invoice), FiledType.Boolean),
@@ -119,7 +119,7 @@ namespace Application.Services.AppConfiguration
                         Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Shippings*/
-                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Text, isDefault: true),
+                            new UserConfigurationGridColumn(nameof(ShippingDto.ShippingNumber), FiledType.Link, isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.Status), FiledType.State, nameof(ShippingState), isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService), isDefault: true),
                             new UserConfigurationGridColumnWhitchSource(nameof(ShippingDto.DeliveryType), FiledType.Enum, nameof(DeliveryType), isDefault: true),
@@ -170,10 +170,10 @@ namespace Application.Services.AppConfiguration
                     /*start of add dictionaries*/
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<TariffsService>(), 
+                        Name = GetName<TariffsService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = true,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -222,22 +222,10 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<PickingTypesService>(),
+                        Name = GetName<WarehousesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
-                        }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<WarehousesService>(), 
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -255,10 +243,10 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
-                        Name = GetName<ArticlesService>(), 
+                        Name = GetName<ArticlesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -310,7 +298,7 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<TransportCompaniesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -323,10 +311,22 @@ namespace Application.Services.AppConfiguration
                     },
                     new UserConfigurationDictionaryItem
                     {
+                        Name = GetName<PickingTypesService>(),
+                        CanCreateByForm = true,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true,
+                        ShowOnHeader = false,
+                        Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
+                        }
+                    },
+                    new UserConfigurationDictionaryItem
+                    {
                         Name = GetName<VehicleTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {
@@ -338,7 +338,7 @@ namespace Application.Services.AppConfiguration
                         Name = GetName<DocumentTypesService>(),
                         CanCreateByForm = true,
                         CanExportToExcel = true,
-                        CanImportFromExcel = true, 
+                        CanImportFromExcel = true,
                         ShowOnHeader = false,
                         Columns = new List<UserConfigurationGridColumn>
                         {

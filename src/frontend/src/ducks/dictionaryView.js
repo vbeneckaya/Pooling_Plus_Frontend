@@ -2,6 +2,8 @@ import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import {formatDate} from "../utils/dateTimeFormater";
+import {representationFromGridSelector} from "./representations";
 
 //*  TYPES  *//
 
@@ -17,6 +19,10 @@ const DICTIONARY_IMPORT_FROM_EXCEL_REQUEST = 'DICTIONARY_IMPORT_FROM_EXCEL_REQUE
 const DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS = 'DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS';
 const DICTIONARY_IMPORT_FROM_EXCEL_ERROR = 'DICTIONARY_IMPORT_FROM_EXCEL_ERROR';
 
+const DICTIONARY_EXPORT_TO_EXCEL_REQUEST = 'DICTIONARY_EXPORT_TO_EXCEL_REQUEST';
+const DICTIONARY_EXPORT_TO_EXCEL_SUCCESS = 'DICTIONARY_EXPORT_TO_EXCEL_SUCCESS';
+const DICTIONARY_EXPORT_TO_EXCEL_ERROR = 'DICTIONARY_EXPORT_TO_EXCEL_ERROR';
+
 const SAVE_DICTIONARY_CARD_REQUEST = 'SAVE_DICTIONARY_CARD_REQUEST';
 const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
@@ -31,6 +37,7 @@ const initial = {
     totalCount: 0,
     progress: false,
     importProgress: false,
+    exportProgress: false,
 };
 
 //*  REDUCER  *//
@@ -91,6 +98,17 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 importProgress: false,
             };
+        case DICTIONARY_EXPORT_TO_EXCEL_REQUEST:
+            return {
+                ...state,
+                exportProgress: true,
+            };
+        case DICTIONARY_EXPORT_TO_EXCEL_SUCCESS:
+        case DICTIONARY_EXPORT_TO_EXCEL_ERROR:
+            return {
+                ...state,
+                exportProgress: false,
+            };
         default:
             return state;
     }
@@ -132,6 +150,13 @@ export const importFromExcelRequest = payload => {
     };
 };
 
+export const exportToExcelRequest = payload => {
+    return {
+        type: DICTIONARY_EXPORT_TO_EXCEL_REQUEST,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.dictionaryView;
@@ -166,7 +191,17 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
+export const canExportToExcelSelector = createSelector(
+    [stateProfile, dictionaryName],
+    (state, name) => {
+        const dictionary =
+            state.dictionaries && state.dictionaries.find(item => item.name === name);
+        return dictionary ? dictionary.canExportToExcel : false;
+    },
+);
+
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 
@@ -224,7 +259,7 @@ function* importFromExcelSaga({ payload }) {
         });
 
         if (result.isError) {
-            toast.error(result.error)
+            toast.error(result.error);
         } else {
             yield put({
                 type: DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS,
@@ -239,11 +274,35 @@ function* importFromExcelSaga({ payload }) {
     }
 }
 
+function* exportToExcelSaga({ payload }) {
+    try {
+        const { name } = payload;
+        const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
+        const result = yield postman.post(
+            `/${name}/exportToExcel`,
+            {},
+            { responseType: 'blob' },
+        );
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        yield put({ type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS });
+    } catch (e) {
+        yield put({
+            type: DICTIONARY_EXPORT_TO_EXCEL_ERROR,
+            payload: e
+        })
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_DICTIONARY_LIST_REQUEST, getListSaga),
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
         takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
         takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
+        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
     ]);
 }

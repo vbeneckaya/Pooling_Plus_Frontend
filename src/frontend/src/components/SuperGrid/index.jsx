@@ -95,13 +95,13 @@ class SuperGrid extends Component {
                 autoUpdateStart,
             } = this.props;
 
-            autoUpdateStop();
+            autoUpdateStop({isClear: true});
             clearStore();
             this.setState(
                 {
                     ...initState(storageFilterItem, storageSortItem),
                 },
-                autoUpdateStart(this.mapData()),
+                () => autoUpdateStart(this.mapData()),
             );
         }
     }
@@ -326,9 +326,6 @@ class SuperGrid extends Component {
 
         return (
             <>
-                <Dimmer active={progress} inverted className="table-loader">
-                    <Loader size="huge">Loading</Loader>
-                </Dimmer>
                 <HeaderSearchGrid
                     createButton={
                         createButton && (
@@ -348,6 +345,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    filter={filters}
                     setSelected={this.setSelected}
                 />
                 <div
@@ -382,6 +380,7 @@ class SuperGrid extends Component {
                         <Result
                             columns={columns}
                             rows={rows}
+                            progress={progress}
                             name={name}
                             modalCard={modalCard}
                             actions={actions}

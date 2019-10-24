@@ -41,6 +41,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             order.ShippingId = null;
             order.ShippingNumber = null;
+            order.OrderShippingStatus = null;
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
             setter.SaveHistoryLog();

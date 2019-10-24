@@ -44,13 +44,14 @@ const reorder = (list, startIndex, endIndex) => {
     return result;
 };
 
-const move = (source, destination, droppableSource, droppableDestination) => {
+const move = (source, destination, droppableSource, droppableDestination, search) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
-    console.log(sourceClone);
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
-    destClone.splice(droppableDestination.index, 0, removed);
+    destClone.splice(search ? destClone.length : droppableDestination.index, 0, removed);
+
+    console.log('destClone', droppableDestination, destClone);
 
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
@@ -75,7 +76,6 @@ const getItemStyle = (isDragging, draggableStyle) => {
 
 const sortFunc = (item, t) => {
     item.sort(function(a, b) {
-        console.log('!!', a, b);
         const nameA = t(a.id).toLowerCase();
         const nameB = t(b.id).toLowerCase();
         if (nameA < nameB)
@@ -97,23 +97,6 @@ class DnDList extends React.Component {
         };
     }
 
-
-    /*componentDidUpdate (prevProps) {
-        if (prevProps.left !== this.props.left) {
-            this.setState(
-                {
-                    items: this.props.left.map(x => ({ id: x.name, content: x })),
-                }
-            )
-        }
-
-        if (prevProps.right !== this.props.right) {
-            this.setState({
-                selected: this.props.right.map(x => ({ id: x.name, content: x }))
-            })
-        }
-    }*/
-
     id2List = {
         droppable: 'items',
         droppable2: 'selected',
@@ -122,7 +105,6 @@ class DnDList extends React.Component {
     getList = id => this.state[this.id2List[id]];
 
     onDragEnd = result => {
-        console.log('result', result);
         const { source, destination } = result;
         let state = {
             items: sortFunc(this.state.items, this.props.t),
@@ -145,14 +127,14 @@ class DnDList extends React.Component {
                 state.items = sortFunc(items, this.props.t);
             }
         } else {
-            console.log('&&', this.getList(source.droppableId));
             const result = move(
                 this.getList(source.droppableId),
                 this.getList(destination.droppableId),
                 source,
                 destination,
+                this.props.search
             );
-            console.log('%%%%', result);
+            console.log('result', result);
             state = {
                 items: sortFunc(result.droppable, this.props.t),
                 selected: result.droppable2,

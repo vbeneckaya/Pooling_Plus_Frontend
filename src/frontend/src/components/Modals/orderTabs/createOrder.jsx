@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
+import {useTranslation} from "react-i18next";
 import Text from '../../BaseComponents/Text';
 import Date from '../../BaseComponents/Date';
 import TextArea from '../../BaseComponents/TextArea';
@@ -7,7 +8,8 @@ import Select from '../../BaseComponents/Select';
 import { useSelector } from 'react-redux';
 import { valuesListSelector } from '../../../ducks/lookup';
 
-const CreateOrder = ({ form = {}, onChange }) => {
+const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck }) => {
+    const { t } = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
     useEffect(
@@ -21,7 +23,7 @@ const CreateOrder = ({ form = {}, onChange }) => {
     useEffect(
         () => {
             const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, {name: 'deliveryAddress', value: item.address});
+            onChange(null, { name: 'deliveryAddress', value: item.address });
         },
         [form.clientName],
     );
@@ -31,7 +33,14 @@ const CreateOrder = ({ form = {}, onChange }) => {
             <Grid>
                 <Grid.Row columns={3}>
                     <Grid.Column>
-                        <Text name="orderNumber" value={form['orderNumber']} onChange={onChange} />
+                        <Text
+                            name="orderNumber"
+                            value={form['orderNumber']}
+                            error={isNotUniqueNumber}
+                            errorText={isNotUniqueNumber && t('number_already_exists')}
+                            onBlur={uniquenessNumberCheck}
+                            onChange={onChange}
+                        />
                     </Grid.Column>
                     <Grid.Column>
                         <Date name="orderDate" value={form['orderDate']} onChange={onChange} />

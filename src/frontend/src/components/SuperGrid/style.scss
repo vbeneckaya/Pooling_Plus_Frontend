@@ -42,6 +42,7 @@
 
     th {
         min-width: 100px;
+        max-width: 100px;
         position: sticky !important;
         position: -webkit-sticky !important;
         top: 0;
@@ -65,9 +66,9 @@
         left: -15px;
         width: 15px;
         background: linear-gradient(
-                to right,
-                rgba(249, 250, 251, 0) 0%,
-                rgba(249, 250, 251, 1) 100%
+            to right,
+            rgba(249, 250, 251, 0) 0%,
+            rgba(249, 250, 251, 1) 100%
         );
     }
     .small-column {
@@ -139,8 +140,6 @@
 
 .grid-row > td > div {
     max-height: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     -webkit-line-clamp: 7;
     -webkit-box-orient: vertical;
     width: inherit;
@@ -149,6 +148,24 @@
 .grid-row td {
     cursor: pointer;
     background-color: #fbfdff;
+}
+
+.grid-row {
+    .link-cell {
+        color: #2185d0;
+        text-decoration-line: underline;
+    }
+    .address-cell {
+        max-width: 100px;
+    }
+}
+.column-address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: inherit;
+    display: block;
+    position: relative;
 }
 
 .grid-row .checkbox,
@@ -199,14 +216,14 @@
     bottom: 0;
     padding: 15px 15px 0 15px !important;
     width: calc(100% + 14px);
-    border-top: 1px solid rgba(34,36,38,.15);
-    flex-wrap: nowrap!important;
+    border-top: 1px solid rgba(34, 36, 38, 0.15);
+    flex-wrap: nowrap !important;
     height: max-content;
     top: calc(100% - 90px);
 
     .row {
         padding-top: 0 !important;
-        flex-wrap: nowrap!important;
+        flex-wrap: nowrap !important;
     }
 
     .grid-right-elements {
@@ -229,6 +246,11 @@
 
 .from-popup {
     filter: none !important;
+
+    .separator {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .label-margin {
@@ -338,19 +360,19 @@ $teal: #b5eae7;
 
     .ui.grid {
         width: 100%;
-        flex-wrap: nowrap!important;
+        flex-wrap: nowrap !important;
     }
-    .ui.grid>.row {
+    .ui.grid > .row {
         flex-wrap: nowrap;
     }
 
     label {
         padding-right: 8px;
-        margin: 0!important;
+        margin: 0 !important;
     }
 
     &-fields {
-        display: inline-flex!important;
+        display: inline-flex !important;
         align-items: center;
         .field {
             margin: 0 !important;

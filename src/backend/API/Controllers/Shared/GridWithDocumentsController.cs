@@ -17,10 +17,10 @@ namespace API.Controllers.Shared
     /// <typeparam name="TDto"></typeparam>
     /// <typeparam name="TFormDto"></typeparam>
     /// <typeparam name="TSummaryDto"></typeparam>
-    /// <typeparam name="TSearchForm"></typeparam>
-    public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
-        : GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
-        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> 
+    /// <typeparam name="TFilter"></typeparam>
+    public abstract class GridWithDocumentsController<TService, TEntity, TDto, TFormDto, TSummaryDto, TFilter> 
+        : GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TFilter>
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter> 
         where TEntity : IWithDocumentsPersistable, IPersistable
     {
         private readonly IDocumentService documentService;

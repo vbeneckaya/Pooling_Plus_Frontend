@@ -12,8 +12,8 @@ using Serilog;
 
 namespace API.Controllers.Shared
 {
-    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TSearchForm> : Controller 
-        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TSearchForm>
+    public abstract class GridController<TService, TEntity, TDto, TFormDto, TSummaryDto, TFilter> : Controller 
+        where TService : IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
     {
         protected readonly TService service;
 
@@ -27,7 +27,7 @@ namespace API.Controllers.Shared
         /// </summary>
         [HasPermission(RolePermissions.OrdersRead)]
         [HttpPost("search")]
-        public IActionResult Search([FromBody]TSearchForm form)
+        public IActionResult Search([FromBody]FilterFormDto<TFilter> form)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace API.Controllers.Shared
         /// Получение Id сущностей, подходящих под фильтр
         /// </summary>
         [HttpPost("ids")]
-        public IActionResult SearchIds([FromBody]TSearchForm form)
+        public IActionResult SearchIds([FromBody]FilterFormDto<TFilter> form)
         {
             try
             {
@@ -115,16 +115,16 @@ namespace API.Controllers.Shared
         {
             var file = HttpContext.Request.Form.Files.ElementAt(0);
             return service.ImportFromExcel(file.OpenReadStream());            
-        }      
-        
+        }
+
         /// <summary>
         /// Экспортировать в excel
         /// </summary>
-        [HttpGet("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel() {
+        [HttpPost("exportToExcel"), DisableRequestSizeLimit]
+        public IActionResult ExportToExcel([FromBody]ExportExcelFormDto<TFilter> dto) {
             
-            var memoryStream = service.ExportToExcel();
-            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Today.ToString("dd.MM.yy HH.mm")}.xlsx");
+            var memoryStream = service.ExportToExcel(dto);
+            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
 
         /// <summary>

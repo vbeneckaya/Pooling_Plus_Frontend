@@ -18,22 +18,22 @@ namespace Application.Shared.Excel
             _columns[columnKey] = column;
         }
 
-        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang)
+        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang, List<string> columns = null)
         {
-            FillDefaultColumnOrder();
+            FillDefaultColumnOrder(columns);
             FillColumnTitles(lang);
 
-            foreach(var column in _columns.Values)
+            foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
             {
                 worksheet.Cells[1, column.ColumnIndex].Value = column.Title;
                 worksheet.Cells[1, column.ColumnIndex].Style.Font.Bold = true;
             };
 
             int rowIndex = 1;
-            foreach(var entry in entries)
+            foreach (var entry in entries)
             {
                 ++rowIndex;
-                foreach(var column in _columns.Values)
+                foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
                 {
                     var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
                     column.FillValue(entry, cell);
@@ -96,29 +96,32 @@ namespace Application.Shared.Excel
 
         private void FillColumnTitles(string lang)
         {
-            foreach (var column in _columns)
+            foreach (var column in _columns.Where(c => c.Value.ColumnIndex >= 0))
             {
                 Translation local = _translations.FirstOrDefault(t => t.Name?.ToLower() == column.Key);
                 column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key;
             }
         }
 
-        private void FillDefaultColumnOrder()
+        private void FillDefaultColumnOrder(List<string> columns)
         {
-            var propNames = typeof(TDto).GetProperties().Select(p => p.Name.ToLower()).ToList();
+            List<string> propNames;
+            if (columns != null && columns.Any())
+            {
+                propNames = columns.Select(s => s.ToLower()).ToList();
+            }
+            else
+            {
+                propNames = typeof(TDto).GetProperties().Select(p => p.Name.ToLower()).ToList();
+            }
 
             foreach (var column in _columns)
             {
-                int orderIndex = propNames.IndexOf(column.Key);
-                if (orderIndex < 0)
-                {
-                    orderIndex = int.MaxValue;
-                }
-                column.Value.ColumnIndex = orderIndex;
+                column.Value.ColumnIndex = propNames.IndexOf(column.Key);
             }
 
             int columnIndex = 0;
-            foreach (var column in _columns.Values.OrderBy(c => c.ColumnIndex))
+            foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0).OrderBy(c => c.ColumnIndex))
             {
                 ++columnIndex;
                 column.ColumnIndex = columnIndex;

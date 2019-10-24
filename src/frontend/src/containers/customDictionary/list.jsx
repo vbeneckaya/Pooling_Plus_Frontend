@@ -6,8 +6,11 @@ import { useTranslation } from 'react-i18next';
 import TableInfo from '../../components/TableInfo';
 import {
     canCreateByFormSelector,
+    canExportToExcelSelector,
     canImportFromExcelSelector,
     columnsSelector,
+    exportProgressSelector,
+    exportToExcelRequest,
     getListRequest,
     importFromExcelRequest,
     importProgressSelector,
@@ -35,8 +38,11 @@ const List = ({
     list,
     isCreateBtn,
     isImportBtn,
+    isExportBtn,
     importFromExcel,
+    exportFromExcel,
     importLoader,
+    exportLoader,
 }) => {
     const { params = {} } = match;
     const { name = '' } = params;
@@ -46,8 +52,14 @@ const List = ({
         importFromExcel({
             form,
             name,
-            callbackSuccess
+            callbackSuccess,
         });
+    };
+
+    const handleExportToExcel = () => {
+        exportFromExcel({
+            name
+        })
     };
 
     return (
@@ -61,8 +73,11 @@ const List = ({
             title={name}
             list={list}
             isImportBtn={isImportBtn}
+            isExportBtn={isExportBtn}
             importFromExcel={handleImportFromExcel}
+            exportToExcel={handleExportToExcel}
             importLoader={importLoader}
+            exportLoader={exportLoader}
             newModal={isCreateBtn ? newModal : null}
             modalCard={<Card title={t('editCard', { name: t(name) })} />}
         />
@@ -81,7 +96,9 @@ const mapStateToProps = (state, ownProps) => {
         list: listSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         isImportBtn: canImportFromExcelSelector(state, name),
+        isExportBtn: canExportToExcelSelector(state, name),
         importLoader: importProgressSelector(state),
+        exportLoader: exportProgressSelector(state),
     };
 };
 
@@ -92,6 +109,9 @@ const mapDispatchToProps = dispatch => {
         },
         importFromExcel: params => {
             dispatch(importFromExcelRequest(params));
+        },
+        exportFromExcel: params => {
+            dispatch(exportToExcelRequest(params));
         },
     };
 };
