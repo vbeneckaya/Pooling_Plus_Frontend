@@ -25,7 +25,6 @@ namespace API.Controllers.Shared
         /// <summary>
         /// Поиск по вхождению с пагинацией
         /// </summary>
-        [HasPermission(RolePermissions.OrdersRead)]
         [HttpPost("search")]
         public IActionResult Search([FromBody]FilterFormDto<TFilter> form)
         {

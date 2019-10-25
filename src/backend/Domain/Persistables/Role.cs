@@ -10,6 +10,6 @@ namespace Domain.Persistables
         public string Name { get; set; }
         public bool IsActive { get; set; }
 
-        public RolePermissions[] Permissions { get; set; }
+        public int[] Permissions { get; set; }
     }
 }

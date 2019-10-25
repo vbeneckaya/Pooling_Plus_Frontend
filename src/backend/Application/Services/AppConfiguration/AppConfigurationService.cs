@@ -24,6 +24,7 @@ using Application.Services.PickingTypes;
 using Application.Services.VehicleTypes;
 using Domain.Services.VehicleTypes;
 using Domain.Services.PickingTypes;
+using Domain.Services.Identity;
 /*end of using domain service*/
 
 namespace Application.Services.AppConfiguration
@@ -31,24 +32,40 @@ namespace Application.Services.AppConfiguration
     
     public class AppConfigurationService : AppConfigurationServiceBase ,IAppConfigurationService 
     {
-        
-        public AppConfigurationService()
+
+        private readonly IIdentityService _identityService;
+
+        public AppConfigurationService(IIdentityService identityService)
         {
+            _identityService = identityService;
         }
         
         public AppConfigurationDto GetConfiguration()
         {
             return new AppConfigurationDto
             {
-                EditUsers = true,
-                EditRoles = true,
-                Grids = new List<UserConfigurationGridItem>
-                {
-                    /*start of add grids*/
+                EditUsers = _identityService.HasPermissions(RolePermissions.UsersEdit),
+                EditRoles = _identityService.HasPermissions(RolePermissions.RolesEdit),
+                Grids = GetGridsConfiguration(), 
+                Dictionaries = GetDictionariesConfiguration()                
+            };
+        }
+
+        public IEnumerable<UserConfigurationGridItem> GetGridsConfiguration()
+        {
+            var grids = new List<UserConfigurationGridItem>();
+
+            var user = _identityService.GetUserInfo();
+
+            // Orders
+
+            if (_identityService.HasPermissions(RolePermissions.OrdersView))
+            {
+                grids.Add(
                     new UserConfigurationGridItem
                     {
-                        Name = GetName<OrdersService>(), 
-                        CanCreateByForm = true,
+                        Name = GetName<OrdersService>(),
+                        CanCreateByForm = _identityService.HasPermissions(RolePermissions.OrdersCreate),
                         CanViewAdditionSummary = true,
                         CanExportToExcel = true,
                         CanImportFromExcel = false,
@@ -108,11 +125,15 @@ namespace Application.Services.AppConfiguration
 
                             /*end of add field for Orders*/
                         }
-                    },
-                    new UserConfigurationGridItem
+                    });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.ShippingsView)) 
+            {
+                grids.Add(new UserConfigurationGridItem
                     {
-                        Name = GetName<ShippingsService>(), 
-                        CanCreateByForm = false,
+                        Name = GetName<ShippingsService>(),
+                        CanCreateByForm = _identityService.HasPermissions(RolePermissions.ShippingsCreate),
                         CanViewAdditionSummary = true,
                         CanExportToExcel = true,
                         CanImportFromExcel = false,
@@ -162,72 +183,82 @@ namespace Application.Services.AppConfiguration
 
                             /*end of add field for Shippings*/
                         }
-                    },
-                    /*end of add grids*/
-                }, 
-                Dictionaries = new List<UserConfigurationDictionaryItem>
+                });
+            }
+
+            return grids;
+        }
+
+        public IEnumerable<UserConfigurationDictionaryItem> GetDictionariesConfiguration()
+        {
+            var dicts = new List<UserConfigurationDictionaryItem>();
+
+            if (_identityService.HasPermissions(RolePermissions.TariffsView))
+            {
+                dicts.Add(new UserConfigurationDictionaryItem
                 {
-                    /*start of add dictionaries*/
-                    new UserConfigurationDictionaryItem
+                    Name = GetName<TariffsService>(),
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.TariffsEdit),
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = true,
+                    Columns = new List<UserConfigurationGridColumn>
                     {
-                        Name = GetName<TariffsService>(),
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = true,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            /*start of add field for Tariffs*/
-                            new UserConfigurationGridColumn(nameof(TariffDto.ShipmentCity), FiledType.Text),
-                            new UserConfigurationGridColumn(nameof(TariffDto.DeliveryCity), FiledType.Text),
-                            new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.TarifficationType), FiledType.Enum, nameof(TarifficationType)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService)),
-                            new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.VehicleTypeId), FiledType.Select, nameof(VehicleTypesService)),
-                            new UserConfigurationGridColumn(nameof(TariffDto.FtlRate), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate1), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate2), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate3), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate4), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate5), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate6), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate7), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate8), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate9), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate10), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate11), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate12), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate13), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate14), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate15), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate16), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate17), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate18), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate19), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate20), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate21), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate22), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate23), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate24), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate25), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate26), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate27), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate28), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate29), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate30), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate31), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate32), FiledType.Number),
-                            new UserConfigurationGridColumn(nameof(TariffDto.LtlRate33), FiledType.Number),
-                            /*end of add field for Tariffs*/
-                        }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<WarehousesService>(),
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
+                        /*start of add field for Tariffs*/
+                        new UserConfigurationGridColumn(nameof(TariffDto.ShipmentCity), FiledType.Text),
+                        new UserConfigurationGridColumn(nameof(TariffDto.DeliveryCity), FiledType.Text),
+                        new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.TarifficationType), FiledType.Enum, nameof(TarifficationType)),
+                        new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.CarrierId), FiledType.Select, nameof(TransportCompaniesService)),
+                        new UserConfigurationGridColumnWhitchSource(nameof(TariffDto.VehicleTypeId), FiledType.Select, nameof(VehicleTypesService)),
+                        new UserConfigurationGridColumn(nameof(TariffDto.FtlRate), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate1), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate2), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate3), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate4), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate5), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate6), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate7), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate8), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate9), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate10), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate11), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate12), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate13), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate14), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate15), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate16), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate17), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate18), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate19), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate20), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate21), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate22), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate23), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate24), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate25), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate26), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate27), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate28), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate29), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate30), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate31), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate32), FiledType.Number),
+                        new UserConfigurationGridColumn(nameof(TariffDto.LtlRate33), FiledType.Number),
+                        /*end of add field for Tariffs*/
+                    }
+                });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.WarehousesEdit))
+            {
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<WarehousesService>(),
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.WarehousesEdit),
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = new List<UserConfigurationGridColumn>
                         {
                             /*start of add field for Warehouses*/
                             new UserConfigurationGridColumn(nameof(WarehouseDto.WarehouseName), FiledType.Text),
@@ -240,11 +271,16 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(WarehouseDto.CustomerWarehouse), FiledType.Boolean),
                             /*end of add field for Warehouses*/
                         }
-                    },
+                });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.ArticlesEdit))
+            {
+                dicts.Add(
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<ArticlesService>(),
-                        CanCreateByForm = true,
+                        CanCreateByForm = _identityService.HasPermissions(RolePermissions.ArticlesEdit),
                         CanExportToExcel = true,
                         CanImportFromExcel = true,
                         ShowOnHeader = false,
@@ -292,11 +328,33 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(ArticleDto.NetWeightPalletsG), FiledType.Number),
                             /*end of add field for Articles*/
                         }
-                    },
+                    }
+                    );
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.PickingTypesEdit))
+            {
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<PickingTypesService>(),
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.PickingTypesEdit),
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = new List<UserConfigurationGridColumn>
+                        {
+                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
+                        }
+                });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.TransportCompaniesEdit))
+            {
+                dicts.Add(
                     new UserConfigurationDictionaryItem
                     {
                         Name = GetName<TransportCompaniesService>(),
-                        CanCreateByForm = true,
+                        CanCreateByForm = _identityService.HasPermissions(RolePermissions.TransportCompaniesEdit),
                         CanExportToExcel = true,
                         CanImportFromExcel = true,
                         ShowOnHeader = false,
@@ -308,46 +366,43 @@ namespace Application.Services.AppConfiguration
                             new UserConfigurationGridColumn(nameof(TransportCompanyDto.DateOfPowerOfAttorney), FiledType.Text),
                             /*end of add field for TransportCompanies*/
                         }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<PickingTypesService>(),
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
-                        {
-                            new UserConfigurationGridColumn(nameof(PickingTypeDto.Name), FiledType.Text)
-                        }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<VehicleTypesService>(),
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
+                });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.VehicleTypesEdit))
+            {
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<VehicleTypesService>(),
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit),
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(VehicleTypeDto.Name), FiledType.Text)
                         }
-                    },
-                    new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<DocumentTypesService>(),
-                        CanCreateByForm = true,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = new List<UserConfigurationGridColumn>
+                });
+            }
+
+            if (_identityService.HasPermissions(RolePermissions.DocumentTypesEdit))
+            {
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<DocumentTypesService>(),
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.DocumentTypesEdit),
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = new List<UserConfigurationGridColumn>
                         {
                             new UserConfigurationGridColumn(nameof(DocumentTypeDto.Name), FiledType.Text)
                         }
-                    },
-                    /*end of add dictionaries*/
-                }                
-            };
+                });
+            }
+                
+            return dicts;
         }
+
     }
 }

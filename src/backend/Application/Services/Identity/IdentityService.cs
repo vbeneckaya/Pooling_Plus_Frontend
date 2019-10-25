@@ -54,11 +54,19 @@ namespace Application.Services.Identity
 
             var now = DateTime.Now;
 
-            var userPermissions = this._dataService.GetDbSet<Role>().GetById(user.RoleId)
+            var claims = identity.Claims;
+
+            var role = this._dataService.GetDbSet<Role>().GetById(user.RoleId);
+
+            if (role?.Permissions != null)
+            {
+                var userPermissions = role
                 .Permissions
+                .Cast<RolePermissions>()
                 .Select(i => new Claim("Permission", i.GetPermissionName()));
 
-            var claims = identity.Claims.Union(userPermissions);
+                claims = claims.Union(userPermissions);
+            }
 
             // Creating JWT
             var jwt = new JwtSecurityToken(
@@ -110,6 +118,25 @@ namespace Application.Services.Identity
             };
 
             return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+        }
+
+        public bool HasPermissions(User user, RolePermissions permission)
+        {
+            return user?.Role?.Permissions
+                ?.Cast<RolePermissions>()
+                ?.Any(i => i == permission || i == RolePermissions.Admin) ?? false;
+        }
+
+
+        public bool HasPermissions(RolePermissions permission)
+        {
+            var userId = this._userIdProvider.GetCurrentUserId();
+
+            if (!userId.HasValue) return false;
+
+            var user = _dataService.GetById<User>(userId.Value);
+
+            return HasPermissions(user, permission);
         }
     }
 }

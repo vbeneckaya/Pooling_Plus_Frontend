@@ -46,7 +46,7 @@ namespace Application.Services.Roles
                 return new ValidateResult("roleNotFound".translate(user.Language));
             }
 
-            entity.Permissions = permissions.ToArray();
+            entity.Permissions = permissions.Cast<int>().ToArray();
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -71,7 +71,7 @@ namespace Application.Services.Roles
             
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
-            entity.Permissions = dto.Permissions.Select(i => i.Code).ToArray();
+            entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
@@ -81,7 +81,7 @@ namespace Application.Services.Roles
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
-                Permissions = entity.Permissions.Select(i => new PermissionInfo
+                Permissions = entity?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
                 {
                     Code = i,
                     Name = i.GetPermissionName()
