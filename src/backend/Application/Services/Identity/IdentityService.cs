@@ -17,6 +17,7 @@ using Domain.Enums;
 using Domain.Services.Permissions;
 using Domain.Services.Translations;
 using Domain.Services.Roles;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Identity
 {
@@ -134,7 +135,10 @@ namespace Application.Services.Identity
 
             if (!userId.HasValue) return false;
 
-            var user = _dataService.GetById<User>(userId.Value);
+            var user = _dataService
+                .GetDbSet<User>()
+                .Include(i => i.Role)
+                .First(i => i.Id == userId);
 
             return HasPermissions(user, permission);
         }
