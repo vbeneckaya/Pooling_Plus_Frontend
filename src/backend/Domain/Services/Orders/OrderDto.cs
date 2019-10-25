@@ -1,10 +1,13 @@
 using System;
+using Domain.Enums;
 
 namespace Domain.Services.Orders
 {
+    //TODO Собирать поля ленивым рефлекшеном(сохранять как кеш после первого обращения)
     public class OrderDto : IDto
     {
         public string Id { get; set; }
+        [FieldTypeState(nameof(OrderState)), IsDefault]
         public string Status { get; set; }
         public string OrderNumber { get; set; }
         public string OrderDate { get; set; }
@@ -63,5 +66,17 @@ namespace Domain.Services.Orders
         public string AdditionalInfo { get; set; }
 
         /*end of fields*/
+    }
+
+    public class IsDefaultAttribute : Attribute
+    {
+    }
+
+    public class FieldTypeStateAttribute : Attribute
+    {
+        public FieldTypeStateAttribute(string orderStateName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
