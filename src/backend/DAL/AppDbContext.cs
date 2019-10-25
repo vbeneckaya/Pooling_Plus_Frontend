@@ -61,6 +61,7 @@ namespace DAL
                         {
                             var migration = migrationAssembly.InstantiateMigration(migrationInfo, migrator.Provider);
                             migration.Apply();
+                            migrator.Provider.MigrationApplied(migrationInfo.Version, migrationAssembly.Key);
                         }
                     }
                 }
