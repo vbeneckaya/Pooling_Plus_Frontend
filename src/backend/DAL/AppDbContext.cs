@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ThinkingHome.Migrator;
+using ThinkingHome.Migrator.Loader;
 
 namespace DAL
 {
@@ -47,9 +50,19 @@ namespace DAL
             {
                 var logger = loggerFactory.CreateLogger("Migration");
 
-                using (var migrator = new Migrator("postgres", connectionString, Assembly.GetAssembly(typeof(AppDbContext)), logger))
+                Assembly dalAssembly = Assembly.GetAssembly(typeof(AppDbContext));
+                using (var migrator = new Migrator("postgres", connectionString, dalAssembly, logger))
                 {
-                    migrator.Migrate(-1);
+                    MigrationAssembly migrationAssembly = new MigrationAssembly(dalAssembly);
+                    HashSet<long> applied = new HashSet<long>(migrator.GetAppliedMigrations());
+                    foreach (var migrationInfo in migrator.AvailableMigrations.OrderBy(m => m.Version))
+                    {
+                        if (!applied.Contains(migrationInfo.Version))
+                        {
+                            var migration = migrationAssembly.InstantiateMigration(migrationInfo, migrator.Provider);
+                            migration.Apply();
+                        }
+                    }
                 }
             }
         }
