@@ -194,7 +194,7 @@ namespace Application.Extensions
             }
         }
 
-        public static IQueryable<TModel> OrderBy<TModel>(this IQueryable<TModel> query, string propertyName, bool descending)
+        public static IQueryable<TModel> OrderBy<TModel>(this IQueryable<TModel> query, string propertyName, bool? descending)
         {
             if (string.IsNullOrEmpty(propertyName)) return query;
 
@@ -208,7 +208,7 @@ namespace Application.Extensions
             LambdaExpression sort = Expression.Lambda(property, param);
             MethodCallExpression call = Expression.Call(
                 typeof(Queryable),
-                 "OrderBy" + (descending ? "Descending" : string.Empty),
+                 "OrderBy" + (descending.GetValueOrDefault() ? "Descending" : string.Empty),
                 new[] { typeof(TModel), property.Type },
                 query.Expression,
                 Expression.Quote(sort));

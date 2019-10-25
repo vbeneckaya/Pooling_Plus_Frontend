@@ -403,7 +403,6 @@ namespace Application.Services.Orders
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-
             query = this.ApplySearch(query, searchForm);
 
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
@@ -414,6 +413,8 @@ namespace Application.Services.Orders
         {
             var search = searchForm.Filter.Search;
 
+            var searchDateFormat = "dd.MM.yyyy HH:mm";
+
             if (string.IsNullOrEmpty(search)) return query;
 
             var isInt = int.TryParse(search, out int searchInt);
@@ -421,27 +422,34 @@ namespace Application.Services.Orders
             decimal precision = 0.01M;
 
             var pickingTypes = this._dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search));
-            var orderType = Enum.GetNames(typeof(OrderType))
-                .Where(i => i.Contains(search))
-                .Select(i => (OrderType?)MapFromStateDto<OrderType>(i))
-                .FirstOrDefault();
+            var orderTypes = Enum.GetNames(typeof(OrderType))
+                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => (OrderType?)MapFromStateDto<OrderType>(i));
+
+            var orderShippingStates = Enum.GetNames(typeof(ShippingState))
+                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => (ShippingState?)MapFromStateDto<ShippingState>(i));
+
+            var vehicleStates = Enum.GetNames(typeof(VehicleState))
+                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => (VehicleState?)MapFromStateDto<VehicleState>(i));
 
             return query.Where(i =>
                    !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search)
                 || !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
                 || !string.IsNullOrEmpty(i.ClientName) && i.ClientName.Contains(search)
                 || !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.Contains(search)
-                || i.OrderDate.HasValue && i.OrderDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.OrderDate.HasValue && i.OrderDate.Value.ToString(searchDateFormat).Contains(search)
                 || !string.IsNullOrEmpty(i.Payer) && i.Payer.Contains(search)
                 || isInt && i.TemperatureMin == searchInt
                 || isInt && i.TemperatureMax == searchInt
-                || i.ShippingDate.HasValue && i.ShippingDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
                 || !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search)
                 || isInt && i.TransitDays == searchInt
                 || !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search)
                 || !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search)
                 || !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search)
-                || i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString(searchDateFormat).Contains(search)
                 || isInt && i.ArticlesCount == searchInt
                 || isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount >= searchDecimal + precision
                 || isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount >= searchDecimal + precision
@@ -451,21 +459,24 @@ namespace Application.Services.Orders
                 || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg >= searchDecimal + precision
                 || isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT >= searchDecimal + precision
                 || !string.IsNullOrEmpty(i.BdfInvoiceNumber) && i.BdfInvoiceNumber.Contains(search)
-                || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
-                || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
-                || i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
-                || i.UnloadingDepartureTime.HasValue && i.UnloadingDepartureTime.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
+                || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
+                || i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
+                || i.UnloadingDepartureTime.HasValue && i.UnloadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
                 || isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime >= searchDecimal + precision
                 || !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.Contains(search)
                 || !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.Contains(search)
-                || i.PlannedReturnDate.HasValue && i.PlannedReturnDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
-                || i.ActualReturnDate.HasValue && i.ActualReturnDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.PlannedReturnDate.HasValue && i.PlannedReturnDate.Value.ToString(searchDateFormat).Contains(search)
+                || i.ActualReturnDate.HasValue && i.ActualReturnDate.Value.ToString(searchDateFormat).Contains(search)
                 || !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search)
                 || !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search)
-                || i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString("dd.MM.yyyy HH:mm").Contains(search)
+                || i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
 
                 || pickingTypes.Any(p => p.Id == i.PickingTypeId)
-                || orderType.HasValue && i.OrderType == orderType
+                || orderTypes.Contains(i.OrderType)
+                || orderShippingStates.Contains(i.OrderShippingStatus)
+                || vehicleStates.Contains(i.DeliveryStatus)
+                || vehicleStates.Contains(i.ShippingStatus)
                 );
         }
     }
