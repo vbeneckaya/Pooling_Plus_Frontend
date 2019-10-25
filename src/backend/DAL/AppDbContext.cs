@@ -64,6 +64,7 @@ namespace DAL
                             migrator.Provider.MigrationApplied(migrationInfo.Version, migrationAssembly.Key);
                         }
                     }
+                    migrator.Provider.Commit();
                 }
             }
         }
