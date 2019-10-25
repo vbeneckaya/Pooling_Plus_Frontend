@@ -32,6 +32,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     const representationName = useSelector(state => representationNameSelector(state, gridName));
 
     let [modalOpen, setModalOpen] = useState(false);
+    let [isNew, setIsNew] = useState(true);
     let [selectedFields, setSelectedFields] = useState([]);
     let [name, setName] = useState('');
     let [error, setError] = useState(false);
@@ -49,12 +50,14 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     const list = useSelector(state => representationsSelector(state));
 
     const newOpen = () => {
+        setIsNew(true);
         setName('');
         setSelectedFields([]);
         onOpen();
     };
 
     const editOpen = () => {
+        setIsNew(false);
         setName(representationName);
         setSelectedFields(representationFields);
         onOpen();
@@ -177,6 +180,8 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
         });
     };
 
+    console.log('rr', representationName)
+
     return (
         <>
             <div className="representation">
@@ -220,9 +225,9 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                 closeIcon
             >
                 <Modal.Header>
-                    {representationName
-                        ? t('Create representation')
-                        : t('Edit representation', { name: representationName })}
+                    {!isNew
+                        ? t('Edit representation', { name: representationName })
+                        : t('Create representation')}
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
@@ -257,7 +262,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                 </Modal.Content>
                 <Modal.Actions className="grid-card-actions">
                     <div>
-                        {!representationName ? (
+                        {!isNew ? (
                             <Button color="red" onClick={handleDelete}>
                                 {t('delete')}
                             </Button>
@@ -267,7 +272,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         <Button color="grey" onClick={onClose}>
                             {t('CancelButton')}
                         </Button>
-                        <Button color="blue" onClick={representationName ? handleSave : handleEdit}>
+                        <Button color="blue" onClick={!isNew ? handleEdit : handleSave }>
                             {t('SaveButton')}
                         </Button>
                     </div>
