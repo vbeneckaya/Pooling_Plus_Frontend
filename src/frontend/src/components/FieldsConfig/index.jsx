@@ -205,11 +205,11 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                                 </>
                             ) : null}
                             <Dropdown.Divider />
-                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={editOpen} />
+                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={newOpen} />
                         </Dropdown.Menu>
                     </Dropdown>
                 </Form.Field>
-                <Button icon="cogs" disabled={!representationName} onClick={newOpen} />
+                <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
             </div>
             <Modal
                 dimmer="blurring"
