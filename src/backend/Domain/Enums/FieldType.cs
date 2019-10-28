@@ -1,6 +1,6 @@
 namespace Domain.Enums
 {
-    public enum FiledType
+    public enum FieldType
     {
         Text,
         State,

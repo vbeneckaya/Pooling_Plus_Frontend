@@ -24,7 +24,7 @@ namespace Application.BusinessModels.Orders.BulkUpdates
         }
 
         public string FieldName => nameof(Order.ShippingDate);
-        public FiledType FieldType => FiledType.Date;
+        public FieldType FieldType => FieldType.Date;
 
         public AppActionResult Update(CurrentUserDto user, Order order, string value)
         {

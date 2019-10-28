@@ -8,7 +8,7 @@ namespace Application.BusinessModels.Shared.BulkUpdates
     public interface IBulkUpdate<T>
     {
         string FieldName { get; }
-        FiledType FieldType { get; }
+        FieldType FieldType { get; }
 
         AppActionResult Update(CurrentUserDto user, T target, string value);
         bool IsAvailable(Role role, T target);
