@@ -8,7 +8,7 @@ import {
     dictionariesHeaderSelector,
     dictionariesMenuSelector,
     getUserProfile,
-    gridsMenuSelector,
+    gridsMenuSelector, otherMenuSelector,
     rolesAndUsersMenu,
     roleSelector,
     userNameSelector,
@@ -23,6 +23,7 @@ const Header = () => {
     const grids = useSelector(state => gridsMenuSelector(state));
     const dictionariesList = useSelector(state => dictionariesMenuSelector(state));
     const dictionariesMenu = useSelector(state => dictionariesHeaderSelector(state));
+    const otherMenu = useSelector(state => otherMenuSelector(state));
     const usersAndRoles = useSelector(state => rolesAndUsersMenu(state));
     const userName = useSelector(state => userNameSelector(state));
     const userRole = useSelector(state => roleSelector(state));
@@ -67,7 +68,7 @@ const Header = () => {
                                     {t(item)}
                                 </Menu.Item>
                             ))}
-                        {dictionariesMenu && dictionariesMenu
+                        {dictionariesMenu && dictionariesMenu.length
                             ? dictionariesMenu.map(item => (
                                   <Menu.Item
                                       className="large"
@@ -81,6 +82,22 @@ const Header = () => {
                                   </Menu.Item>
                               ))
                             : null}
+                        {
+                            otherMenu && otherMenu.length
+                            ? otherMenu.map(item => (
+                                    <Menu.Item
+                                        className="large"
+                                        key={item.name}
+                                        as={Link}
+                                        to={item.link}
+                                        name={item.name}
+                                        active={activeItem.includes(item.name)}
+                                    >
+                                        {t(item.name)}
+                                    </Menu.Item>
+                                ))
+                                : null
+                        }
                         {dictionariesList && (
                             <Menu.Menu>
                                 <Dropdown

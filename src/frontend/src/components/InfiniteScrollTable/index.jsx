@@ -15,6 +15,7 @@ const InfiniteScrollTable = ({
     className,
     context,
     style,
+    structured,
 }) => {
     return (
         <div style={{ position: 'relative', ...style }}>
@@ -22,6 +23,7 @@ const InfiniteScrollTable = ({
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}
                 unstackable={unstackable || false}
+                structured={structured}
                 className={className || ''}
             >
                 <Table.Header>{headerRow}</Table.Header>
