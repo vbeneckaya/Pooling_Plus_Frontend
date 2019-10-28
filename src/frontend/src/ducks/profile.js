@@ -2,7 +2,7 @@ import { all, put, takeEvery } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { push as historyPush } from 'connected-react-router';
-import { ROLES_LINK, USERS_LINK } from '../router/links';
+import {FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK} from '../router/links';
 import { logoutRequest } from './login';
 
 //*  TYPES  *//
@@ -74,6 +74,18 @@ export const dictionariesHeaderSelector = createSelector(
             .filter(dictionary => dictionary.showOnHeader)
             .map(dictionary => dictionary.name),
 );
+
+export const otherMenuSelector = createSelector(stateSelector, state => {
+    const menu = []
+   if (true) {
+       menu.push({
+           name: 'fields_setting',
+           link: FIELDS_SETTING_LINK
+       })
+   }
+
+   return menu;
+});
 
 export const userNameSelector = createSelector(
     stateSelector,
