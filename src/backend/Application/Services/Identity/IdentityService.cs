@@ -125,7 +125,7 @@ namespace Application.Services.Identity
         {
             return user?.Role?.Permissions
                 ?.Cast<RolePermissions>()
-                ?.Any(i => i == permission || i == RolePermissions.Admin) ?? false;
+                ?.Any(i => i == permission) ?? false;
         }
 
 
