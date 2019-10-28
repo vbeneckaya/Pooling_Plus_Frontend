@@ -171,6 +171,16 @@ namespace Domain.Shared.FormFilters
         public string UnloadingDepartureTime { get; set; }
 
         /// <summary>
+        /// Documents Return Date
+        /// </summary>
+        public string DocumentsReturnDate { get; set; }
+
+        /// <summary>
+        /// Actual Documents Return Date
+        /// </summary>
+        public string ActualDocumentsReturnDate { get; set; }
+
+        /// <summary>
         /// Trucks Downtime
         /// </summary>
         public string TrucksDowntime { get; set; }
@@ -240,5 +250,19 @@ namespace Domain.Shared.FormFilters
         /// </summary>
         public string ShippingStatus { get; set; }
 
+        /// <summary>
+        /// Confirmed Pallets Count
+        /// </summary>
+        public string ConfirmedPalletsCount { get; set; }
+
+        /// <summary>
+        /// Invoice
+        /// </summary>
+        public string Invoice { get; set; }
+
+        /// <summary>
+        /// Invoice
+        /// </summary>
+        public string WaybillTorg12 { get; set; }
     }
 }
