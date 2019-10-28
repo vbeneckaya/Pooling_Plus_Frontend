@@ -1,4 +1,5 @@
 ﻿using Domain.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,6 +31,21 @@ namespace Application.Extensions
             int paramInd = parameters.Count();
             parameters.Add(searchValue);
             return $@"ROUND(""{fieldName}"",3) = ROUND({{{paramInd}}},3)";
+        }
+
+        public static string ApplyBoolenFilter<TModel>(this string search, Expression<Func<TModel, bool?>> property, ref List<object> parameters)
+        {
+            if (string.IsNullOrEmpty(search)) return string.Empty;
+
+            string fieldName = property.GetPropertyName();
+            if (string.IsNullOrEmpty(fieldName)) return string.Empty;
+
+            bool searchValue;
+            if (!bool.TryParse(search, out searchValue)) return string.Empty;
+
+            int paramInd = parameters.Count();
+            parameters.Add(searchValue);
+            return $@"""{fieldName}"" = {{{paramInd}}}";
         }
 
         /// <summary>
@@ -155,6 +171,14 @@ namespace Application.Extensions
         public static string ApplyOptionsFilter<TModel, TValue>(this string search, Expression<Func<TModel, TValue>> property, ref List<object> parameters)
         {
             return search.ApplyOptionsFilterBase(property, ref parameters, x => x);
+        }
+
+        /// <summary>
+        /// Apply options filter
+        /// </summary>
+        public static string ApplyOptionsFilter<TModel, TValue>(this string search, Expression<Func<TModel, TValue>> property, ref List<object> parameters, Func<string, object> selection)
+        {
+            return search.ApplyOptionsFilterBase(property, ref parameters, selection);
         }
 
         /// <summary>
@@ -315,13 +339,14 @@ namespace Application.Extensions
                 value, 
                 new[] {
                     "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy HH:mm",
-                    "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy HH:mm"
+                    "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy HH:mm",
+                    "dd.MM.yyyy", "MM/dd/yyyy"
                 }, 
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
                 out result))
             {
-                if (!DateTime.TryParse(value, out result))
+                if (!DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                 {
                     return false;
                 }
