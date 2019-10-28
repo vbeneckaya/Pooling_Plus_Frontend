@@ -9,7 +9,7 @@ export const usersColumns = [
     },
     {
         name: 'role',
-        isTranslate: true
+        isTranslate: true,
     },
     {
         name: 'isActive',

@@ -163,7 +163,10 @@ export const clearDocuments = () => {
 
 const stateSelector = state => state.documents;
 
-export const uploadProgressSelector = createSelector(stateSelector, state => state.uploadProgress);
+export const uploadProgressSelector = createSelector(
+    stateSelector,
+    state => state.uploadProgress,
+);
 
 export const documentTypesSelector = createSelector(
     stateSelector,
@@ -176,8 +179,14 @@ export const documentTypesSelector = createSelector(
         })),
 );
 
-export const documentsSelector = createSelector(stateSelector, state => state.documents);
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const documentsSelector = createSelector(
+    stateSelector,
+    state => state.documents,
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
 //*  SAGA  *//
 

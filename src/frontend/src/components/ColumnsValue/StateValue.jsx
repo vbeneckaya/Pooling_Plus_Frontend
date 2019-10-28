@@ -21,17 +21,21 @@ const StateValue = ({ value, source, indexRow }) => {
                 }),
             );
         }
-    }, [])
+    }, []);
 
     const state = stateColors.find(x => x.name === value);
     const color = state ? state.color : 'grey';
 
-    return <div className="status-value">
-            {value && <>
+    return (
+        <div className="status-value">
+            {value && (
+                <>
                     <Icon color={color.toLowerCase()} name="circle" />
                     {t(value)}
-                </>}
-        </div>;
+                </>
+            )}
+        </div>
+    );
 };
 
 export default StateValue;

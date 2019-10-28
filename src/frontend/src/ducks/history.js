@@ -66,17 +66,21 @@ export const clearHistory = () => {
 
 const stateSelector = state => state.historyList;
 
-export const historySelector = createSelector(stateSelector, state => state.data);
+export const historySelector = createSelector(
+    stateSelector,
+    state => state.data,
+);
 
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
 //*  SAGA  *//
 
 function* getHistorySaga({ payload }) {
     try {
-        const result = yield postman.get(
-            `/history/${payload}`,
-        );
+        const result = yield postman.get(`/history/${payload}`);
         yield put({
             type: GET_HISTORY_SUCCESS,
             payload: result.entries,

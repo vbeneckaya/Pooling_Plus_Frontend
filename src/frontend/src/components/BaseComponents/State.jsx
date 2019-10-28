@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Dropdown, Form, Icon } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { stateColorsSelector } from '../../ducks/gridList';
 import { useTranslation } from 'react-i18next';
-import {getLookupRequest, valuesListSelector} from "../../ducks/lookup";
+import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
 const State = ({ value, name, isDisabled, onChange, className, source, placeholder }) => {
     const { t } = useTranslation();
@@ -23,13 +23,18 @@ const State = ({ value, name, isDisabled, onChange, className, source, placehold
     const state = stateColors.find(x => x.name === value);
     const color = state ? state.color : 'grey';
     const items = (stateColors || []).map(x => {
-        return { key: x.name, value: x.name, text: t(x.name), label:{ color: x.color, empty: true, circular: true } };
+        return {
+            key: x.name,
+            value: x.name,
+            text: t(x.name),
+            label: { color: x.color, empty: true, circular: true },
+        };
     });
 
     if (!isDisabled)
         return (
             <Form.Field>
-                <label className={isDisabled ? "label-disabled" : null}>{t(name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{t(name)}</label>
                 <Dropdown
                     placeholder={placeholder}
                     className={className}
@@ -41,8 +46,7 @@ const State = ({ value, name, isDisabled, onChange, className, source, placehold
                     fluid
                     options={items}
                     onChange={onChange}
-                >
-                </Dropdown>
+                ></Dropdown>
             </Form.Field>
         );
     else

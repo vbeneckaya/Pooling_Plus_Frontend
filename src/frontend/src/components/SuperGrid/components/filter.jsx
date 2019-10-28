@@ -18,7 +18,8 @@ import {
     BOOLEAN_TYPE,
     DATE_TYPE,
     ENUM_TYPE,
-    TIME_TYPE, LINK_TYPE,
+    TIME_TYPE,
+    LINK_TYPE,
 } from '../../../constants/columnTypes';
 
 const getTypeFacet = {
@@ -31,7 +32,7 @@ const getTypeFacet = {
     [STATE_TYPE]: <StateFacet />,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <SelectFacet />,
-    [LINK_TYPE]: <TextFacet/>
+    [LINK_TYPE]: <TextFacet />,
 };
 
 const Control = props => {

@@ -35,7 +35,7 @@ const initial = {
     config: {},
     data: {},
     progress: false,
-    editProgress: false
+    editProgress: false,
 };
 
 //*  REDUCER  *//
@@ -92,17 +92,17 @@ export default (state = initial, { type, payload }) => {
         case EDI_GRID_CARD_REQUEST:
             return {
                 ...state,
-                editProgress: true
+                editProgress: true,
             };
         case EDIT_GRID_CARD_SUCCESS:
             return {
                 ...state,
-                editProgress: false
+                editProgress: false,
             };
         case EDIT_GRID_CARD_ERROR:
             return {
                 ...state,
-                editProgress: false
+                editProgress: false,
             };
         default:
             return state;
@@ -142,15 +142,15 @@ export const getCardConfigRequest = payload => {
 export const editCardRequest = payload => {
     return {
         type: EDI_GRID_CARD_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 export const isUniqueNumberRequest = payload => {
     return {
         type: IS_UNIQUE_NUMBER_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -159,11 +159,20 @@ const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(stateSelector, state => state.data.id);
+const idSelector = createSelector(
+    stateSelector,
+    state => state.data.id,
+);
 
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
-export const cardSelector = createSelector(stateSelector, state => state.data);
+export const cardSelector = createSelector(
+    stateSelector,
+    state => state.data,
+);
 
 //*  SAGA  *//
 
@@ -215,7 +224,7 @@ function* editCardSaga({ payload }) {
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
 
         if (result.isError) {
-            toast.error(result.error)
+            toast.error(result.error);
         } else {
             yield put({
                 type: EDIT_GRID_CARD_SUCCESS,
@@ -260,21 +269,20 @@ function* getCardSaga({ payload }) {
     }
 }
 
-function* isUniqueNumberSaga ({ payload }) {
+function* isUniqueNumberSaga({ payload }) {
     try {
-        const {number, callbackSuccess} = payload;
-        const result = yield postman.post('/orders/findNumber', {number, isPartial: false});
+        const { number, callbackSuccess } = payload;
+        const result = yield postman.post('/orders/findNumber', { number, isPartial: false });
 
         yield put({
-            type: IS_UNIQUE_NUMBER_SUCCESS
+            type: IS_UNIQUE_NUMBER_SUCCESS,
         });
 
-        callbackSuccess && callbackSuccess(result.length ? result[0].name : null)
-
+        callbackSuccess && callbackSuccess(result.length ? result[0].name : null);
     } catch (e) {
         yield put({
-            type: IS_UNIQUE_NUMBER_ERROR
-        })
+            type: IS_UNIQUE_NUMBER_ERROR,
+        });
     }
 }
 
@@ -285,6 +293,6 @@ export function* saga() {
         takeEvery(GET_CARD_CONFIG_REQUEST, getCardConfigSaga),
         takeEvery(GET_GRID_CARD_REQUEST, getCardSaga),
         takeEvery(EDI_GRID_CARD_REQUEST, editCardSaga),
-        takeEvery(IS_UNIQUE_NUMBER_REQUEST, isUniqueNumberSaga)
+        takeEvery(IS_UNIQUE_NUMBER_REQUEST, isUniqueNumberSaga),
     ]);
 }

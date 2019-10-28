@@ -9,7 +9,15 @@ import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
-const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uniquenessNumberCheck }) => {
+const OrderModal = ({
+    form,
+    onChangeForm,
+    name,
+    id,
+    load,
+    isNotUniqueNumber,
+    uniquenessNumberCheck,
+}) => {
     const { t } = useTranslation();
 
     const getPanes = [
@@ -17,7 +25,12 @@ const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uni
             menuItem: t('information'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Information form={form} isNotUniqueNumber={isNotUniqueNumber} uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm} />
+                    <Information
+                        form={form}
+                        isNotUniqueNumber={isNotUniqueNumber}
+                        uniquenessNumberCheck={uniquenessNumberCheck}
+                        onChange={onChangeForm}
+                    />
                 </Tab.Pane>
             ),
         },
@@ -25,7 +38,7 @@ const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uni
             menuItem: t('position'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Position form={form} onChange={onChangeForm} gridName={name} load={load}/>
+                    <Position form={form} onChange={onChangeForm} gridName={name} load={load} />
                 </Tab.Pane>
             ),
         },
@@ -49,13 +62,26 @@ const OrderModal = ({ form, onChangeForm, name, id, load, isNotUniqueNumber, uni
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <History cardId={id} status={form.status}/>
+                    <History cardId={id} status={form.status} />
                 </Tab.Pane>
             ),
         },
     ];
 
-    return <>{form.id ? <Tab panes={getPanes} /> : <CreateOrder form={form} isNotUniqueNumber={isNotUniqueNumber} uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>}</>;
+    return (
+        <>
+            {form.id ? (
+                <Tab panes={getPanes} />
+            ) : (
+                <CreateOrder
+                    form={form}
+                    isNotUniqueNumber={isNotUniqueNumber}
+                    uniquenessNumberCheck={uniquenessNumberCheck}
+                    onChange={onChangeForm}
+                />
+            )}
+        </>
+    );
 };
 
 export default OrderModal;

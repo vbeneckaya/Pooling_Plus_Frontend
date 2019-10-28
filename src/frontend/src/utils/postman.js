@@ -1,14 +1,13 @@
 ﻿import axios from 'axios';
 import qs from 'qs';
 import { toast } from 'react-toastify';
-import store from "../store/configureStore";
-import {ACCESS_TOKEN, logoutRequest} from "../ducks/login";
+import store from '../store/configureStore';
+import { ACCESS_TOKEN, logoutRequest } from '../ducks/login';
 
 export const postman = axios.create({
     baseURL: '/api',
     paramsSerializer: params => qs.stringify(params, { indices: false }),
 });
-
 
 export const downloader = axios.create({
     baseURL: '/api',

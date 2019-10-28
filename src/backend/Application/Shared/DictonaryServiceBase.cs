@@ -125,7 +125,7 @@ namespace Application.Shared
 
             var user = _userProvider.GetCurrentUser();
 
-            var excelMapper = new ExcelMapper<TListDto>(_dataService);
+            var excelMapper = CreateExcelMapper();
             excelMapper.FillSheet(workSheet, dtos, user.Language);
 
             return new MemoryStream(excel.GetAsByteArray());
@@ -165,7 +165,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TListDto>(_dataService);
+            return new ExcelMapper<TListDto>(_dataService, _userProvider);
         }
     }
 }

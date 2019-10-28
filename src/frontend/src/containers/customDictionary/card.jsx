@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
     clearDictionaryInfo,
     columnsSelector,
     getCardRequest,
-    saveDictionaryCardRequest
+    saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
 import FormField from '../../components/BaseComponents';
 
@@ -18,25 +18,25 @@ const initialState = {
 
 class Card extends Component {
     state = {
-        ...initialState
+        ...initialState,
     };
 
     componentDidUpdate(prevProps) {
         if (prevProps.card !== this.props.card) {
-            const {user = {}} = this.props;
+            const { user = {} } = this.props;
 
             this.setState({
                 form: {
-                    ...this.props.card
+                    ...this.props.card,
                 },
             });
         }
-    };
+    }
 
     loadCard = () => {
-        const { id , getCard, name } = this.props;
+        const { id, getCard, name } = this.props;
 
-        id && getCard({id, name});
+        id && getCard({ id, name });
     };
 
     onOpen = () => {
@@ -50,7 +50,7 @@ class Card extends Component {
         const { loadList, clear } = this.props;
 
         this.setState({
-            ...initialState
+            ...initialState,
         });
         clear();
         loadList(false, true);
@@ -145,18 +145,20 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
     return {
         getCard: params => {
-            dispatch(getCardRequest(params))
+            dispatch(getCardRequest(params));
         },
         save: params => {
             dispatch(saveDictionaryCardRequest(params));
         },
         clear: () => {
-            dispatch(clearDictionaryInfo())
-        }
+            dispatch(clearDictionaryInfo());
+        },
     };
 };
 
-export default withTranslation()(connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(Card));
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(Card),
+);

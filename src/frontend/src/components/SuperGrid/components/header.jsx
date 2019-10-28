@@ -13,7 +13,7 @@ import {
     importProgressSelector,
 } from '../../../ducks/gridList';
 
-import FieldsConfig from '../../FieldsConfig/index';
+import FieldsConfig from '../../Representations/index';
 import {
     getRepresentationsRequest,
     representationNameSelector,
@@ -31,7 +31,7 @@ const Header = ({
     loadList,
     name,
     setSelected,
-    filter
+    filter,
 }) => {
     const { t } = useTranslation();
 
@@ -76,13 +76,9 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(
-        () => {
-            getRepresentations();
-        },
-        [name],
-    );
-    const representation = useSelector(state => representationNameSelector(state, name));
+    useEffect(() => {
+        getRepresentations();
+    }, [name]);
 
     const changeRepresentation = key => {
         dispatch(
@@ -92,7 +88,7 @@ const Header = ({
                 callbackSuccess: () => {
                     setSelected(new Set());
                     clearFilter();
-                }
+                },
             }),
         );
     };
@@ -112,7 +108,12 @@ const Header = ({
                         style={{ display: 'none' }}
                         onInput={onFilePicked}
                     />
-                    <FieldsConfig gridName={name} representation={representation} getRepresentations={getRepresentations} changeRepresentation={changeRepresentation} representations={representations}/>
+                    <FieldsConfig
+                        gridName={name}
+                        getRepresentations={getRepresentations}
+                        changeRepresentation={changeRepresentation}
+                        representations={representations}
+                    />
                     <Popup
                         content={t('reset_filters')}
                         position="bottom right"

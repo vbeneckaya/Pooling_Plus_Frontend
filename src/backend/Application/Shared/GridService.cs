@@ -425,7 +425,7 @@ namespace Application.Shared
 
             var user = _userIdProvider.GetCurrentUser();
 
-            var excelMapper = new ExcelMapper<TDto>(_dataService);
+            var excelMapper = new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
             
             return new MemoryStream(excel.GetAsByteArray());
@@ -433,7 +433,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TFormDto>(_dataService);
+            return new ExcelMapper<TFormDto>(_dataService, _userIdProvider);
         }
 
         protected TimeSpan? ParseTime(string value)

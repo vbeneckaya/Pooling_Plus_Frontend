@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +51,14 @@ namespace DAL
 
                 using (var migrator = new Migrator("postgres", connectionString, Assembly.GetAssembly(typeof(AppDbContext)), logger))
                 {
-                    migrator.Migrate(-1);
+                    HashSet<long> applied = new HashSet<long>(migrator.GetAppliedMigrations());
+                    foreach (var migrationInfo in migrator.AvailableMigrations.OrderBy(m => m.Version))
+                    {
+                        if (!applied.Contains(migrationInfo.Version))
+                        {
+                            migrator.ExecuteMigration(migrationInfo.Version, migrationInfo.Version - 1);
+                        }
+                    }
                 }
             }
         }

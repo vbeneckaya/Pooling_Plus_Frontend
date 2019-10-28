@@ -1,0 +1,1 @@
+nohup sh -c 'while true; do sh cron.sh; sleep 60; done;' &

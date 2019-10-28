@@ -10,10 +10,12 @@ import { saga as lookupSaga } from '../ducks/lookup';
 import { saga as documentsSaga } from '../ducks/documents';
 import { saga as representationsSaga } from '../ducks/representations';
 import { saga as historySaga } from '../ducks/history';
+import { saga as fieldsSettingSaga } from '../ducks/fieldsSetting';
 import { saga as usersSaga } from '../ducks/users';
 
 export default function* rootSaga() {
     yield all([
+        fieldsSettingSaga(),
         historySaga(),
         representationsSaga(),
         documentsSaga(),

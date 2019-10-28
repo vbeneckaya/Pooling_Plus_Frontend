@@ -151,18 +151,22 @@ export const invokeMassUpdateRequest = payload => {
 
 const stateSelector = state => state.gridActions;
 
-export const actionsSelector = createSelector(stateSelector, state =>
-    state.actions.map(item => ({
-        ...item,
-        ids: item.ids || [],
-    })),
+export const actionsSelector = createSelector(
+    stateSelector,
+    state =>
+        state.actions.map(item => ({
+            ...item,
+            ids: item.ids || [],
+        })),
 );
 
-export const actionsCardSelector = createSelector(stateSelector, state =>
-    (state.actionsCard || []).map(item => ({
-        ...item,
-        ids: item.ids || [],
-    })),
+export const actionsCardSelector = createSelector(
+    stateSelector,
+    state =>
+        (state.actionsCard || []).map(item => ({
+            ...item,
+            ids: item.ids || [],
+        })),
 );
 
 export const progressActionNameSelector = createSelector(
@@ -170,8 +174,14 @@ export const progressActionNameSelector = createSelector(
     state => state.progressActionName,
 );
 
-export const infoSelector = createSelector(stateSelector, state => state.info);
-export const updatesSelector = createSelector(stateSelector, state => state.updates);
+export const infoSelector = createSelector(
+    stateSelector,
+    state => state.info,
+);
+export const updatesSelector = createSelector(
+    stateSelector,
+    state => state.updates,
+);
 export const progressMassUpdateSelector = createSelector(
     stateSelector,
     state => state.progressMassUpdate,

@@ -14,14 +14,16 @@ const InfiniteScrollTable = ({
     selectable,
     className,
     context,
-    style
+    style,
+    structured,
 }) => {
     return (
-        <div style={{ position: 'relative', ...style}}>
+        <div style={{ position: 'relative', ...style }}>
             <Table
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}
                 unstackable={unstackable || false}
+                structured={structured}
                 className={className || ''}
             >
                 <Table.Header>{headerRow}</Table.Header>

@@ -69,7 +69,7 @@ namespace Application.Services.Warehouses
 
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
-            return new ExcelMapper<WarehouseDto>(_dataService)
+            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
                 .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById));
         }
 

@@ -1,12 +1,12 @@
 import React from 'react';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Popup, Input, Button, Icon, Form, Dropdown } from 'semantic-ui-react';
 
 const Bool = ({ value, sort, name, setSort, text, onChange }) => {
     let items = [
         {
             text: 'Не выбрано',
-            value: undefined
+            value: undefined,
         },
         {
             text: 'Да',
@@ -14,17 +14,15 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
         },
         {
             text: 'Нет',
-            value: false
+            value: false,
         },
     ];
 
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const handleChange = value => {
-
         if (onChange !== undefined) onChange(null, { name: name, value: value });
     };
-
 
     let content = (
         <Form.Field>
@@ -59,7 +57,12 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
                         onKeyPress={e => {
                             e.preventDefault();
                         }}
-                        placeholder={value !== undefined ? items.find(item => item.value === value) && items.find(item => item.value === value).text : t(name)}
+                        placeholder={
+                            value !== undefined
+                                ? items.find(item => item.value === value) &&
+                                  items.find(item => item.value === value).text
+                                : t(name)
+                        }
                     />
                 }
                 content={content}

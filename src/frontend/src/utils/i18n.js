@@ -20,7 +20,7 @@ i18n.use(LanguageDetector)
         keySeparator: false, // we use content as keys
         react: {
             wait: true,
-            defaultTransParent: 'div' // a valid react element - required before react 16
+            defaultTransParent: 'div', // a valid react element - required before react 16
         },
     });
 

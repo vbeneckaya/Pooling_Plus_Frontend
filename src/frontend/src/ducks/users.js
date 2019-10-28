@@ -24,7 +24,6 @@ const TOGGLE_USER_ACTIVE_REQUEST = 'TOGGLE_USER_ACTIVE_REQUEST';
 const TOGGLE_USER_ACTIVE_SUCCESS = 'TOGGLE_USER_ACTIVE_SUCCESS';
 const TOGGLE_USER_ACTIVE_ERROR = 'TOGGLE_USER_ACTIVE_ERROR';
 
-
 const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
 
 //*  INITIAL STATE  *//
@@ -65,7 +64,7 @@ export default (state = initial, { type, payload }) => {
         case CREATE_USER_SUCCESS:
             return {
                 ...state,
-                progress: false
+                progress: false,
             };
         case GET_USERS_LIST_ERROR:
         case GET_USER_CARD_ERROR:
@@ -78,7 +77,7 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_USERS_INFO:
             return {
                 ...state,
-                ...initial
+                ...initial,
             };
         default:
             return state;
@@ -104,14 +103,14 @@ export const getUserCardRequest = payload => {
 export const createUserRequest = payload => {
     return {
         type: CREATE_USER_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 export const clearUsersInfo = () => {
     return {
-        type: CLEAR_USERS_INFO
-    }
+        type: CLEAR_USERS_INFO,
+    };
 };
 
 export const toggleUserActiveRequest = payload => {
@@ -189,10 +188,10 @@ function* createUserSaga({ payload }) {
             type: CREATE_USER_SUCCESS,
         });
         callbackFunc();
-    }catch (error) {
+    } catch (error) {
         yield put({
-            type: CREATE_USER_ERROR
-        })
+            type: CREATE_USER_ERROR,
+        });
     }
 }
 

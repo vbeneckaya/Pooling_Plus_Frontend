@@ -97,12 +97,17 @@ export const deleteRepresentationRequest = payload => {
 
 export const stateSelector = state => state.representations;
 
-export const representationsSelector = createSelector(stateSelector, state => state.list);
+export const representationsSelector = createSelector(
+    stateSelector,
+    state => state.list,
+);
 
 export const representationNameSelector = createSelector(
-    [stateSelector, (state, name) => name],
-    (state, gridName) => {
-        return state.representation[gridName];
+    [stateSelector, (state, name) => name, state => representationsSelector(state)],
+    (state, gridName, list) => {
+        const name = state.representation[gridName];
+
+        return list[name] ? name : null;
     },
 );
 

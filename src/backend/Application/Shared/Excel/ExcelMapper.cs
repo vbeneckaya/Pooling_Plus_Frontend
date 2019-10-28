@@ -1,6 +1,7 @@
 ﻿using Application.Shared.Excel.Columns;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
 using System;
@@ -198,20 +199,24 @@ namespace Application.Shared.Excel
                 typeof(bool?),
             };
 
+            string lang = _userProvider.GetCurrentUser()?.Language;
+
             typeof(TDto)
                 .GetProperties()
                 .Where(x => avalibleTypes.Contains(x.PropertyType))
-                .Select((p, index) => new BaseExcelColumn { Property = p })
+                .Select((p, index) => new BaseExcelColumn { Property = p, Language = lang })
                 .ToList()
                 .ForEach(AddColumn);
         }
 
-        public ExcelMapper(ICommonDataService dataService)
+        public ExcelMapper(ICommonDataService dataService, IUserProvider userProvider)
         {
+            _userProvider = userProvider;
             _translations = dataService.GetDbSet<Translation>().ToList();
             InitColumns();
         }
 
+        private readonly IUserProvider _userProvider;
         private readonly List<Translation> _translations;
         private readonly Dictionary<string, IExcelColumn> _columns = new Dictionary<string, IExcelColumn>();
         private readonly List<ValidateResult> _errors = new List<ValidateResult>();

@@ -16,19 +16,16 @@ const MassChanges = ({ gridName, load }) => {
 
     const fieldParams = updates.find(item => item.name === field);
 
-    useEffect(
-        () => {
-            console.log('gg', fieldParams);
-            setColumn({
-                name: field,
-                type: fieldParams ? fieldParams.type : TEXT_TYPE,
-                noLabel: true,
-                isDisabled: !field,
-                placeholder: t('new_value'),
-            });
-        },
-        [field],
-    );
+    useEffect(() => {
+        console.log('gg', fieldParams);
+        setColumn({
+            name: field,
+            type: fieldParams ? fieldParams.type : TEXT_TYPE,
+            noLabel: true,
+            isDisabled: !field,
+            placeholder: t('new_value'),
+        });
+    }, [field]);
 
     const handleSave = () => {
         dispatch(
@@ -68,7 +65,12 @@ const MassChanges = ({ gridName, load }) => {
                                 value={changValue}
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
-                            <Button icon disabled={!changValue} className="grid-mass-updates-save" onClick={handleSave}>
+                            <Button
+                                icon
+                                disabled={!changValue}
+                                className="grid-mass-updates-save"
+                                onClick={handleSave}
+                            >
                                 <Icon name="save" />
                             </Button>
                         </Grid.Column>

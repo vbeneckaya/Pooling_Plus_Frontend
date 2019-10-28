@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Grid, Segment } from 'semantic-ui-react';
 import Text from '../../BaseComponents/Text';
@@ -6,9 +6,9 @@ import State from '../../BaseComponents/State';
 import Date from '../../BaseComponents/Date';
 import Select from '../../BaseComponents/Select';
 import TextArea from '../../BaseComponents/TextArea';
-import {useSelector} from "react-redux";
-import {valuesListSelector} from "../../../ducks/lookup";
-import Number from "../../BaseComponents/Number";
+import { useSelector } from 'react-redux';
+import { valuesListSelector } from '../../../ducks/lookup';
+import Number from '../../BaseComponents/Number';
 
 const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck }) => {
     const { t } = useTranslation();
@@ -16,30 +16,23 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck 
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
+    useEffect(() => {
+        const item = valuesList.find(item => item.value === form.soldTo) || {};
+        onChange(null, { name: 'clientName', value: item.warehouseName });
+    }, [form.soldTo]);
 
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, {name: 'deliveryAddress', value: item.address});
-        },
-        [form.clientName],
-    );
+    useEffect(() => {
+        const item = valuesList.find(item => item.value === form.soldTo) || {};
+        onChange(null, { name: 'deliveryAddress', value: item.address });
+    }, [form.clientName]);
 
     useEffect(() => {
         if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
-            setError(true)
+            setError(true);
         } else {
-            setError(false)
+            setError(false);
         }
     }, [valuesList, form.soldTo]);
-
 
     return (
         <Form>
@@ -56,7 +49,9 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck 
                                                 name="orderNumber"
                                                 value={form['orderNumber']}
                                                 error={isNotUniqueNumber}
-                                                errorText={isNotUniqueNumber && t('number_already_exists')}
+                                                errorText={
+                                                    isNotUniqueNumber && t('number_already_exists')
+                                                }
                                                 onChange={onChange}
                                                 onBlur={uniquenessNumberCheck}
                                             />

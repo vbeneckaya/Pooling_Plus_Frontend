@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml;
+﻿using Domain.Services.Translations;
+using OfficeOpenXml;
 using System;
 using System.Reflection;
 
@@ -9,6 +10,7 @@ namespace Application.Shared.Excel.Columns
         public PropertyInfo Property { get; set; }
         public string Title { get; set; }
         public int ColumnIndex { get; set; }
+        public string Language { get; set; }
 
         public void FillValue(object entity, ExcelRange cell)
         {
@@ -17,9 +19,17 @@ namespace Application.Shared.Excel.Columns
                 var numberformatFormat = "dd.MM.yyyy HH:mm:ss";
 
                 cell.Style.Numberformat.Format = numberformatFormat;
-                var dateTime = ((DateTime?)Property.GetValue(entity));
+                var dateTime = (DateTime?)Property.GetValue(entity);
                 if (dateTime.HasValue)
                     cell.Value = dateTime.Value.ToString(numberformatFormat);
+            }
+            else if (Property.PropertyType == typeof(bool) || Property.PropertyType == typeof(bool?))
+            {
+                bool? value = (bool?)Property.GetValue(entity);
+                if (value.HasValue)
+                {
+                    cell.Value = (value == true ? "Yes" : "No").translate(Language);
+                }
             }
             else
             {
@@ -81,7 +91,7 @@ namespace Application.Shared.Excel.Columns
             }
             else
             {
-                Property.SetValue(entity, cell.GetValue<string>());
+                Property.SetValue(entity, cell.Value?.ToString());
             }
         }
     }

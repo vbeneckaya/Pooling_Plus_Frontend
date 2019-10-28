@@ -105,9 +105,8 @@
         font-weight: bold;
     }
 
-
     div {
-        padding: 8px 0!important;
+        padding: 8px 0 !important;
         &:hover {
             cursor: pointer;
         }
@@ -116,5 +115,4 @@
             font-size: 13px !important;
         }
     }
-
 }

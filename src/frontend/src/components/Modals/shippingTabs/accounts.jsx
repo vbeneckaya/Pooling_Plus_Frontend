@@ -3,7 +3,7 @@ import { Checkbox, Form, Grid, Segment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import Text from '../../BaseComponents/Text';
 import TextArea from '../../BaseComponents/TextArea';
-import Number from "../../BaseComponents/Number";
+import Number from '../../BaseComponents/Number';
 
 const Accounts = ({ form = {}, onChange }) => {
     const { t } = useTranslation();
@@ -28,7 +28,7 @@ const Accounts = ({ form = {}, onChange }) => {
                             value={form['returnCostWithoutVAT']}
                             onChange={onChange}
                         />
-                       {/* <Text
+                        {/* <Text
                             name="invoiceNumber"
                             value={form['invoiceNumber']}
                             onChange={onChange}
@@ -50,31 +50,35 @@ const Accounts = ({ form = {}, onChange }) => {
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column>
-                    <Form.Field>
-                        <label>{t('reconciliation of expenses')}</label>
-                        <Segment style={{height: "calc(100% - 22px)"}}>
-                            <Grid>
-                                <Grid.Row columns={2}>
-                                    <Grid.Column>
-                                        <Checkbox
-                                            checked={form['costsConfirmedByCarrier']}
-                                            label={t('costsConfirmedByCarrier')}
-                                            name="costsConfirmedByCarrier"
-                                            onClick={(event, {name, checked}) => onChange(event, {name, value: checked})}
-                                        />
-                                    </Grid.Column>
-                                    <Grid.Column>
-                                        <Checkbox
-                                            checked={form['costsConfirmedByShipper']}
-                                            label={t('costsConfirmedByShipper')}
-                                            name="costsConfirmedByShipper"
-                                            onClick={(event, {name, checked}) => onChange(event, {name, value: checked})}
-                                        />
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Segment>
-                    </Form.Field>
+                        <Form.Field>
+                            <label>{t('reconciliation of expenses')}</label>
+                            <Segment style={{ height: 'calc(100% - 22px)' }}>
+                                <Grid>
+                                    <Grid.Row columns={2}>
+                                        <Grid.Column>
+                                            <Checkbox
+                                                checked={form['costsConfirmedByCarrier']}
+                                                label={t('costsConfirmedByCarrier')}
+                                                name="costsConfirmedByCarrier"
+                                                onClick={(event, { name, checked }) =>
+                                                    onChange(event, { name, value: checked })
+                                                }
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Checkbox
+                                                checked={form['costsConfirmedByShipper']}
+                                                label={t('costsConfirmedByShipper')}
+                                                name="costsConfirmedByShipper"
+                                                onClick={(event, { name, checked }) =>
+                                                    onChange(event, { name, value: checked })
+                                                }
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+                        </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

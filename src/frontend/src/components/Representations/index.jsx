@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Confirm, Form, Input, Label, Message, Modal, Search, Dropdown, Grid } from 'semantic-ui-react';
+import {
+    Button,
+    Confirm,
+    Form,
+    Input,
+    Label,
+    Message,
+    Modal,
+    Search,
+    Dropdown,
+    Grid,
+} from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -15,13 +26,15 @@ import {
     setRepresentationRequest,
 } from '../../ducks/representations';
 
-const FieldsConfig = ({ title, gridName, getRepresentations, representation, changeRepresentation, representations }) => {
-    const currName = useSelector(state => representationNameSelector(state, gridName));
-    const currRepresentation = useSelector(state => representationSelector(state, gridName)) || [];
-    let [isNew, setIsNew] = useState(true);
+const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, representations }) => {
+    const representationFields =
+        useSelector(state => representationSelector(state, gridName)) || [];
+    const representationName = useSelector(state => representationNameSelector(state, gridName));
+
     let [modalOpen, setModalOpen] = useState(false);
-    let [selectedFields, setSelectedFields] = useState(isNew ? [] : currRepresentation);
-    let [name, setName] = useState(isNew ? '' : currName);
+    let [isNew, setIsNew] = useState(true);
+    let [selectedFields, setSelectedFields] = useState([]);
+    let [name, setName] = useState('');
     let [error, setError] = useState(false);
     let [isEmpty, setEmpty] = useState(false);
     let [search, setSearch] = useState('');
@@ -36,23 +49,21 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
 
     const list = useSelector(state => representationsSelector(state));
 
-    useEffect(
-        () => {
-            !isNew ? setName(currName) : setName('');
-        },
-        [currName],
-    );
-    useEffect(
-        () => {
-            !isNew ? setSelectedFields(currRepresentation) : setSelectedFields([]);
-        },
-        [currRepresentation],
-    );
+    const newOpen = () => {
+        setIsNew(true);
+        setName('');
+        setSelectedFields([]);
+        onOpen();
+    };
 
-    const onOpen = (isNew) => {
-        setIsNew(isNew);
-        !isNew ? setName(currName) : setName('');
-        !isNew ? setSelectedFields(currRepresentation) : setSelectedFields([]);
+    const editOpen = () => {
+        setIsNew(false);
+        setName(representationName);
+        setSelectedFields(representationFields);
+        onOpen();
+    };
+
+    const onOpen = () => {
         setModalOpen(true);
     };
 
@@ -89,10 +100,9 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                     name,
                     value: selectedFields,
                     callbackSuccess: () => {
-
                         onClose(() => {
                             changeRepresentation(name);
-                           /* dispatch(
+                            /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
                                     value: name,
@@ -108,7 +118,7 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
     const handleEdit = () => {
         if (!name) {
             setError('required_field');
-        } else if (isNotUniqueName() && name !== currName) {
+        } else if (isNotUniqueName() && name !== representationName) {
             setError('representation_already_exists');
         } else if (!selectedFields.length) {
             setError(null);
@@ -118,12 +128,12 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                 editRepresentationRequest({
                     key: gridName,
                     name,
-                    oldName: currName,
+                    oldName: representationName,
                     value: selectedFields,
                     callbackSuccess: () => {
                         onClose(() => {
                             changeRepresentation(name);
-                           /* dispatch(
+                            /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
                                     value: name,
@@ -141,7 +151,7 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
             dispatch(
                 deleteRepresentationRequest({
                     key: gridName,
-                    name: currName,
+                    name: representationName,
                     callbackSuccess: () => {
                         onClose(() => {
                             changeRepresentation(null);
@@ -170,6 +180,8 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
         });
     };
 
+    console.log('rr', representationName)
+
     return (
         <>
             <div className="representation">
@@ -177,7 +189,7 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                 <Form.Field>
                     <Dropdown
                         selection
-                        text={representation || t('default_representation')}
+                        text={representationName || t('default_representation')}
                         fluid
                     >
                         <Dropdown.Menu>
@@ -198,11 +210,11 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                                 </>
                             ) : null}
                             <Dropdown.Divider />
-                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={() => onOpen(true)}/>
+                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={newOpen} />
                         </Dropdown.Menu>
                     </Dropdown>
                 </Form.Field>
-                    <Button icon="cogs" disabled={!representation} onClick={() => onOpen(false)}/>
+                <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
             </div>
             <Modal
                 dimmer="blurring"
@@ -212,7 +224,11 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                 className="representation-modal"
                 closeIcon
             >
-                <Modal.Header>{isNew ? t('Create representation') : t('Edit representation', { name: representation })}</Modal.Header>
+                <Modal.Header>
+                    {!isNew
+                        ? t('Edit representation', { name: representationName })
+                        : t('Create representation')}
+                </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         <Form style={{ marginBottom: '16px' }}>
@@ -256,7 +272,7 @@ const FieldsConfig = ({ title, gridName, getRepresentations, representation, cha
                         <Button color="grey" onClick={onClose}>
                             {t('CancelButton')}
                         </Button>
-                        <Button color="blue" onClick={isNew ? handleSave : handleEdit}>
+                        <Button color="blue" onClick={!isNew ? handleEdit : handleSave }>
                             {t('SaveButton')}
                         </Button>
                     </div>

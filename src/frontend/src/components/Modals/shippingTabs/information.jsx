@@ -6,7 +6,7 @@ import State from '../../BaseComponents/State';
 import Date from '../../BaseComponents/Date';
 import Text from '../../BaseComponents/Text';
 import TextArea from '../../BaseComponents/TextArea';
-import Number from "../../BaseComponents/Number";
+import Number from '../../BaseComponents/Number';
 
 const Information = ({ form = {}, onChange }) => {
     const { t } = useTranslation();
@@ -14,79 +14,79 @@ const Information = ({ form = {}, onChange }) => {
     return (
         <Form>
             <Grid>
-               {/* <Grid.Row>
+                {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('general info')}</label>
                             <Segment>
                                 <Grid>*/}
-                                    <Grid.Row columns={3}>
-                                        <Grid.Column>
-                                            <Select
-                                                name="carrierId"
-                                                value={form['carrierId']}
-                                                source="transportCompanies"
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Select
-                                                name="deliveryType"
-                                                value={form['deliveryType']}
-                                                isTranslate
-                                                source="deliveryType"
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Select
-                                                name="tarifficationType"
-                                                value={form['tarifficationType']}
-                                                isTranslate
-                                                source="tarifficationType"
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                    <Grid.Row columns={3}>
-                                        <Grid.Column>
-                                            <Select
-                                                name="vehicleTypeId"
-                                                value={form['vehicleTypeId']}
-                                                source="vehicleTypes"
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Form.Field>
-                                                <label>{t('temperature')}</label>
-                                                <div className="temperature-fields">
-                                                    <label>{t('from')}</label>
-                                                    <Number
-                                                        noLabel
-                                                        name="temperatureMin"
-                                                        value={form['temperatureMin']}
-                                                        onChange={onChange}
-                                                    />
-                                                    <label>{t('to')}</label>
-                                                    <Number
-                                                        noLabel
-                                                        name="temperatureMax"
-                                                        value={form['temperatureMax']}
-                                                        onChange={onChange}
-                                                    />
-                                                </div>
-                                            </Form.Field>
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Number
-                                                name="totalDeliveryCost"
-                                                value={form['totalDeliveryCost']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                              {/*  </Grid>
+                <Grid.Row columns={3}>
+                    <Grid.Column>
+                        <Select
+                            name="carrierId"
+                            value={form['carrierId']}
+                            source="transportCompanies"
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Select
+                            name="deliveryType"
+                            value={form['deliveryType']}
+                            isTranslate
+                            source="deliveryType"
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Select
+                            name="tarifficationType"
+                            value={form['tarifficationType']}
+                            isTranslate
+                            source="tarifficationType"
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row columns={3}>
+                    <Grid.Column>
+                        <Select
+                            name="vehicleTypeId"
+                            value={form['vehicleTypeId']}
+                            source="vehicleTypes"
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Form.Field>
+                            <label>{t('temperature')}</label>
+                            <div className="temperature-fields">
+                                <label>{t('from')}</label>
+                                <Number
+                                    noLabel
+                                    name="temperatureMin"
+                                    value={form['temperatureMin']}
+                                    onChange={onChange}
+                                />
+                                <label>{t('to')}</label>
+                                <Number
+                                    noLabel
+                                    name="temperatureMax"
+                                    value={form['temperatureMax']}
+                                    onChange={onChange}
+                                />
+                            </div>
+                        </Form.Field>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Number
+                            name="totalDeliveryCost"
+                            value={form['totalDeliveryCost']}
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+                {/*  </Grid>
                             </Segment>
                         </Form.Field>
                     </Grid.Column>
@@ -157,7 +157,7 @@ const Information = ({ form = {}, onChange }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-               {/* <Grid.Row>
+                {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('documents')}</label>
