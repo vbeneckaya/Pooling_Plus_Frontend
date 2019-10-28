@@ -385,28 +385,28 @@ ru:
   soldTo_error: "SoldTo не найден. Выберите значение из списка"
   quantity: "Кол-во(шт)"
 
-  Permission.Admin: "Администратор",
-  Permission.OrdersView: "Просмотр заказов",
-  Permission.OrdersCreate: "Создание заказов",
-  Permission.OrdersViewAndAttachDocument: "Просмотр и прикрепление документов к заказу",
-  Permission.OrdersEditAndDeleteDocument: "Редактирование и удаление документов из заказа",
-  Permission.OrdersViewHistory: "Просмотр истории заказов",
+  Permission.Admin: "Администратор"
+  Permission.OrdersView: "Просмотр заказов"
+  Permission.OrdersCreate: "Создание заказов"
+  Permission.OrdersViewAndAttachDocument: "Просмотр и прикрепление документов к заказу"
+  Permission.OrdersEditAndDeleteDocument: "Редактирование и удаление документов из заказа"
+  Permission.OrdersViewHistory: "Просмотр истории заказов"
 
-  Permission.ShippingsView: "Просмотр перевозок",
-  Permission.ShippingsViewAndAttachDocument: "Просмотр и прикрепление документов к перевозке",
-  Permission.ShippingsEditAndDeleteDocument: "Редактирование и удаление документов из перевозки",
-  Permission.ShippingsViewHistory: "Просмотр истории перевозок",
+  Permission.ShippingsView: "Просмотр перевозок"
+  Permission.ShippingsViewAndAttachDocument: "Просмотр и прикрепление документов к перевозке"
+  Permission.ShippingsEditAndDeleteDocument: "Редактирование и удаление документов из перевозки"
+  Permission.ShippingsViewHistory: "Просмотр истории перевозок"
 
-  Permission.TariffsView: "Просмотр тарифов",
-  Permission.TariffsEdit: "Редактирование тарифов",
-  Permission.WarehousesEdit: "Редактирование складов",
-  Permission.ArticlesEdit: "Редактирование артикулов",
-  Permission.PickingTypesEdit: "Редактирование типов комплектаций",
-  Permission.TransportCompaniesEdit: "Редактирование транспортных компаний",
-  Permission.VehicleTypesEdit: "Редактирование типов ТС",
-  Permission.DocumentTypesEdit: "Редактирование типов документов",
-  Permission.RolesEdit: "Редактирование ролей",
-  Permission.UsersEdit: "Редактирование пользователей",
+  Permission.TariffsView: "Просмотр тарифов"
+  Permission.TariffsEdit: "Редактирование тарифов"
+  Permission.WarehousesEdit: "Редактирование складов"
+  Permission.ArticlesEdit: "Редактирование артикулов"
+  Permission.PickingTypesEdit: "Редактирование типов комплектаций"
+  Permission.TransportCompaniesEdit: "Редактирование транспортных компаний"
+  Permission.VehicleTypesEdit: "Редактирование типов ТС"
+  Permission.DocumentTypesEdit: "Редактирование типов документов"
+  Permission.RolesEdit: "Редактирование ролей"
+  Permission.UsersEdit: "Редактирование пользователей"
   Permission.FieldsSettings: "Настройка полей"
    
 en:
@@ -796,26 +796,26 @@ en:
   soldTo_error: "SoldTo not found. Select a value from the list"
   quantity: "Quantity"
 
-  Permission.Admin: "Administrator",
-  Permission.OrdersView: "View orders",
-  Permission.OrdersCreate: "Create order",
-  Permission.OrdersViewAndAttachDocument: "View and attach order documents",
-  Permission.OrdersEditAndDeleteDocument: "Edit and delete order documents",
-  Permission.OrdersViewHistory: "View orders history",
+  Permission.Admin: "Administrator"
+  Permission.OrdersView: "View orders"
+  Permission.OrdersCreate: "Create order"
+  Permission.OrdersViewAndAttachDocument: "View and attach order documents"
+  Permission.OrdersEditAndDeleteDocument: "Edit and delete order documents"
+  Permission.OrdersViewHistory: "View orders history"
 
-  Permission.ShippingsView: "View shippings",
-  Permission.ShippingsViewAndAttachDocument: "View and attach shipping documents",
-  Permission.ShippingsEditAndDeleteDocument: "Edit and delete shppings documents",
-  Permission.ShippingsViewHistory: "View shipping history",
+  Permission.ShippingsView: "View shippings"
+  Permission.ShippingsViewAndAttachDocument: "View and attach shipping documents"
+  Permission.ShippingsEditAndDeleteDocument: "Edit and delete shppings documents"
+  Permission.ShippingsViewHistory: "View shipping history"
 
-  Permission.TariffsView: "View tariffs",
-  Permission.TariffsEdit: "Edit tariffs",
-  Permission.WarehousesEdit: "Edit warehouses",
-  Permission.ArticlesEdit: "Edit acticles",
-  Permission.PickingTypesEdit: "Edit picking types",
-  Permission.TransportCompaniesEdit: "Edit transport companies",
-  Permission.VehicleTypesEdit: "Edit vehicle types",
-  Permission.DocumentTypesEdit: "Edit document types",
-  Permission.RolesEdit: "Edit roles",
-  Permission.UsersEdit: "Увше users",
+  Permission.TariffsView: "View tariffs"
+  Permission.TariffsEdit: "Edit tariffs"
+  Permission.WarehousesEdit: "Edit warehouses"
+  Permission.ArticlesEdit: "Edit acticles"
+  Permission.PickingTypesEdit: "Edit picking types"
+  Permission.TransportCompaniesEdit: "Edit transport companies"
+  Permission.VehicleTypesEdit: "Edit vehicle types"
+  Permission.DocumentTypesEdit: "Edit document types"
+  Permission.RolesEdit: "Edit roles"
+  Permission.UsersEdit: "Увше users"
   Permission.FieldsSettings: "Fields settings"
