@@ -74,6 +74,11 @@
             Получение данных для выпадающего списка в 
             </summary>
         </member>
+        <member name="M:API.Controllers.RolesController.GetAllPermissions">
+            <summary>
+            Получение данных для выпадающего списка в 
+            </summary>
+        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь
