@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Services.FieldProperties;
+using Domain.Services.Orders;
 
 namespace Application.Services.FieldProperties
 {
@@ -12,13 +15,14 @@ namespace Application.Services.FieldProperties
             switch (forEntityType)
             {
                 case FieldPropertiesForEntityType.Order:
-                    return new List<FieldForFieldProperties>
-                    {
-                        new FieldForFieldProperties
-                        {
-                            
-                        }
-                    };
+                    var props = typeof(OrderDto).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(FieldTypeAttribute)));
+
+                    return props.Select(prop => 
+                            new FieldForFieldProperties
+                            {
+                            }
+                         )
+                         .ToList();
             }
             
             return new List<FieldForFieldProperties>();

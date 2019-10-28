@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Domain.Enums;
 
 namespace Domain.Persistables
@@ -10,13 +9,12 @@ namespace Domain.Persistables
         
         public FieldPropertiesForEntityType ForEntity { get; set; }
 
-
         public Guid? CompanyId { get; set; }
 
         public Guid? RoleId { get; set; }
 
         public string FieldName { get; set; }
-        public string State { get; set; }
+        public int State { get; set; }
         public FieldPropertiesAccessType AccessType { get; set; }
         
         public int CompareTo(object o)

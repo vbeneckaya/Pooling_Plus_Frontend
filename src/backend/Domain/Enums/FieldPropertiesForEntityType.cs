@@ -4,6 +4,6 @@ namespace Domain.Enums
     {
         Order,
         Shipping,
-        Article
+        OrderItem
     }
 }

@@ -9,6 +9,21 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
+        <member name="T:API.Controllers.FieldPropertiesController">
+            <summary>
+            Настройка полей
+            </summary>    
+        </member>
+        <member name="M:API.Controllers.FieldPropertiesController.GetFor(Domain.Services.FieldProperties.FieldPropertiesGetForParams)">
+            <summary>
+            Получить список полей и отображения по статусам
+            </summary>
+        </member>
+        <member name="M:API.Controllers.FieldPropertiesController.Save(Domain.Services.FieldProperties.FieldPropertyDto)">
+            <summary>
+            Сохранить
+            </summary>
+        </member>
         <member name="T:API.Controllers.FilesController">
             <summary>
             Файлы

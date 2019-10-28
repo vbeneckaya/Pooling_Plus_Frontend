@@ -1,147 +1,164 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DAL;
-using DAL.Queries;
+using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.FieldProperties;
 using Domain.Services.Orders;
+using Domain.Services.Shippings;
 using Domain.Shared;
 
 namespace Application.Services.FieldProperties
 {
     public class FieldPropertiesService : IFieldPropertiesService
     {
-        private readonly AppDbContext dbContext;
-        private readonly IFieldDispatcherService fieldDispatcherService;
+        private readonly ICommonDataService _dataService;
+        private readonly IFieldDispatcherService _fieldDispatcherService;
 
-        public FieldPropertiesService(AppDbContext dbContext, IFieldDispatcherService fieldDispatcherService)
+        public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService)
         {
-            this.dbContext = dbContext;
-            this.fieldDispatcherService = fieldDispatcherService;
-        }
-        public FieldPropertiesSelectors GetSelectors(Guid? companyId, Guid? roleId)
-        {
-            var companies = dbContext.TransportCompanies.ToList().Select(x => new FieldMatrixSelectorItem { Id = x.Id.ToString(), Name = x.Title }).ToList();
-            var roles = dbContext.Roles.ToList().Select(x => new FieldMatrixSelectorItem { Id = x.Id.ToString(), Name = x.Name }).ToList();
-
-            companies.Insert(0, new FieldMatrixSelectorItem { Id = "all", Name = "any_company" });
-            roles.Insert(0, new FieldMatrixSelectorItem { Id = "all", Name = "any_role" });
-
-            return new FieldPropertiesSelectors
-            {
-                
-                Companies = companies,
-                Roles = roles,
-                CompanyId = companyId == null ? "all" : companyId.ToString(),
-                RoleId = roleId == null ? "all" : roleId.ToString(),
-            };
+            _dataService = dataService;
+            _fieldDispatcherService = fieldDispatcherService;
         }
 
         public IEnumerable<FieldForFieldProperties> GetFor(string forEntity, Guid? companyId, Guid? roleId, Guid? userId)
         {
             var result = new List<FieldForFieldProperties>();
 
-            var forEntityType = Enum.Parse<FieldPropertiesForEntityType>(forEntity);
+            var forEntityType = Enum.Parse<FieldPropertiesForEntityType>(forEntity, true);
 
-            IEnumerable<FieldForFieldProperties> allAvailableFieldsDto = new List<FieldForFieldProperties>();
-            
-            allAvailableFieldsDto = fieldDispatcherService.GetAllAvailableFieldsFor(forEntityType, companyId, roleId, userId);
+            var fieldNames = GetFieldNames(forEntityType);
 
-            Array states = forEntityType == FieldPropertiesForEntityType.Order
-                ? Enum.GetValues(typeof(OrderState))
-                : Enum.GetValues(typeof(ShippingState));
+            Array states = forEntityType == FieldPropertiesForEntityType.Shipping
+                ? Enum.GetValues(typeof(ShippingState))
+                : Enum.GetValues(typeof(OrderState));
 
             if (userId != null)
-                roleId = dbContext.Users.GetById(userId.Value).RoleId;
+                roleId = _dataService.GetById<User>(userId.Value)?.RoleId;
 
-            var fieldMatrixItems = dbContext.FieldPropertyItems.Where(x => x.ForEntity == forEntityType);
+            var fieldMatrixItems = _dataService.GetDbSet<FieldPropertyItem>().Where(x => x.ForEntity == forEntityType);
 
-            foreach (FieldForFieldProperties availableFieldsDto in allAvailableFieldsDto)
+            foreach (string fieldName in fieldNames)
             {
-                var accessTypes = new List<FieldPropertiesAccessTypeDto>();
+                var accessTypes = new Dictionary<string, string>();
                 foreach (var state in states)
                 {
+                    var stateId = (int)state;
                     var fieldMatrixItem =
-                        fieldMatrixItems.Where(x =>
-                            x.State == state &&
-                            x.FieldName == availableFieldsDto.Name
-                            && (x.RoleId == roleId || x.RoleId == null)
-                            && (x.CompanyId == companyId || x.CompanyId == null)
-                            ).OrderBy(x => x).FirstOrDefault();
+                        fieldMatrixItems.Where(x => x.State == stateId
+                                                    && x.FieldName == fieldName
+                                                    && (x.RoleId == roleId || x.RoleId == null)
+                                                    && (x.CompanyId == companyId || x.CompanyId == null))
+                                        .OrderBy(x => x)
+                                        .FirstOrDefault();
 
-                    accessTypes.Add(new FieldPropertiesAccessTypeDto
+                    var stateName = state.ToString()?.ToLowerfirstLetter();
+                    var accessType = fieldMatrixItem?.AccessType.ToString()?.ToLowerfirstLetter()
+                                        ?? FieldPropertiesAccessType.Show.ToString().ToLowerfirstLetter();
+
+                    if (!string.IsNullOrEmpty(stateName))
                     {
-                        State = state.ToString(),
-                        AccessType = fieldMatrixItem?.AccessType.ToString() ?? FieldPropertiesAccessType.Show.ToString()
-                    });
-
+                        accessTypes[stateName] = accessType;
+                    }
                 }
-                availableFieldsDto.FieldPropertiesAccessTypes = accessTypes;
-                result.Add(availableFieldsDto);
+                result.Add(new FieldForFieldProperties
+                {
+                    FieldName = fieldName,
+                    AccessTypes = accessTypes
+                });
             }
 
             return result;
         }
 
-        public ValidateResult Save(FieldPropertiesDto dto)
+        public ValidateResult Save(FieldPropertyDto dto)
         {
-            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity);
+            var dbSet = _dataService.GetDbSet<FieldPropertyItem>();
 
-            var fieldMatrixItems = dbContext.FieldPropertyItems.ToList()
-                .Where(x => x.ForEntity == forEntity);
+            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
 
-            var companyId = dto.CompanyId == "all"
+            var companyId = string.IsNullOrEmpty(dto.CompanyId)
                 ? (Guid?)null
                 : Guid.Parse(dto.CompanyId);
 
-            var roleId = dto.RoleId == "all"
+            var roleId = string.IsNullOrEmpty(dto.RoleId)
                 ? (Guid?)null
                 : Guid.Parse(dto.RoleId);
 
-            foreach (var fieldMatrixAccessType in dto.Fields.ElementAt(0).FieldPropertiesAccessTypes)
+            var entities = dbSet.Where(x => x.ForEntity == forEntity
+                                        && x.RoleId == roleId
+                                        && x.CompanyId == companyId
+                                        && x.FieldName == dto.FieldName)
+                                .ToList();
+
+            Array states;
+            if (string.IsNullOrEmpty(dto.State))
             {
-                var fieldName = dto.Fields.ElementAt(0).Name;
-
-                var candidate = fieldMatrixItems.FirstOrDefault(x =>
-                    x.CompanyId == companyId &&
-                    x.RoleId == roleId &&
-                    x.FieldName == fieldName &&
-                    x.ForEntity == forEntity &&
-                    (
-                        forEntity == FieldPropertiesForEntityType.Order ? 
-                            x.State == Enum.Parse<OrderState>(fieldMatrixAccessType.State).ToString() : 
-                            x.State == Enum.Parse<ShippingState>(fieldMatrixAccessType.State).ToString())
-                    );
-
-                FieldPropertyItem fieldPropertyItem;
-                if (candidate != null)
-                {
-                    fieldPropertyItem = candidate;
-                }
-                else
-                {
-                    fieldPropertyItem = new FieldPropertyItem
-                    {
-                        CompanyId = companyId,
-                        RoleId = roleId,
-                        FieldName = fieldName,
-                        ForEntity = forEntity
-                    };
-                    if (forEntity == FieldPropertiesForEntityType.Order)
-                        fieldPropertyItem.State = Enum.Parse<OrderState>(fieldMatrixAccessType.State).ToString();
-                    else
-                        fieldPropertyItem.State = Enum.Parse<ShippingState>(fieldMatrixAccessType.State).ToString();
-                }
-
-                fieldPropertyItem.AccessType = Enum.Parse<FieldPropertiesAccessType>(fieldMatrixAccessType.AccessType);
-
-                dbContext.FieldPropertyItems.Add(fieldPropertyItem);
-                dbContext.SaveChanges();
+                states = forEntity == FieldPropertiesForEntityType.Shipping
+                        ? Enum.GetValues(typeof(ShippingState))
+                        : Enum.GetValues(typeof(OrderState));
+            }
+            else
+            {
+                int state = forEntity == FieldPropertiesForEntityType.Shipping
+                    ? (int)Enum.Parse<ShippingState>(dto.State, true)
+                    : (int)Enum.Parse<OrderState>(dto.State, true);
+                states = new[] { state };
             }
 
-            return new ValidateResult { Error = "" };
+            foreach (var state in states)
+            {
+                var stateId = (int)state;
+                var entity = entities.Where(x => x.State == stateId).FirstOrDefault();
+
+                if (entity == null)
+                {
+                    entity = new FieldPropertyItem
+                    {
+                        Id = Guid.NewGuid(),
+                        ForEntity = forEntity,
+                        CompanyId = companyId,
+                        RoleId = roleId,
+                        FieldName = dto.FieldName,
+                        State = stateId
+                    };
+                    dbSet.Add(entity);
+                }
+
+                entity.AccessType = Enum.Parse<FieldPropertiesAccessType>(dto.AccessType, true);
+            }
+
+            _dataService.SaveChanges();
+
+            return new ValidateResult();
+        }
+
+        private List<string> GetFieldNames(FieldPropertiesForEntityType entityType)
+        {
+            switch(entityType)
+            {
+                case FieldPropertiesForEntityType.Order:
+                    return ExtractFieldsFromDto<OrderDto>();
+                case FieldPropertiesForEntityType.OrderItem:
+                    return ExtractFieldsFromDto<OrderItemDto>();
+                case FieldPropertiesForEntityType.Shipping:
+                    return ExtractFieldsFromDto<ShippingDto>();
+                default:
+                    return new List<string>();
+            }
+        }
+
+        private List<string> ExtractFieldsFromDto<TDto>()
+        {
+            var props = typeof(TDto).GetProperties()
+                                    .Where(prop => Attribute.IsDefined(prop, typeof(FieldTypeAttribute)))
+                                    .OrderBy(prop => Attribute.IsDefined(prop, typeof(IsDefaultAttribute))
+                                                    ? ((IsDefaultAttribute)Attribute.GetCustomAttribute(prop, typeof(IsDefaultAttribute))).OrderNumber
+                                                    : int.MaxValue);
+            var fields = props.Select(x => x.Name?.ToLowerfirstLetter()).ToList();
+            return fields;
         }
     }
 }
