@@ -19,6 +19,9 @@ using Infrastructure.Logging;
 using Domain.Services.UserProvider;
 using Application.Services.UserProvider;
 using Infrastructure.Translations;
+using Domain.Enums;
+using System.Linq;
+using Domain.Extensions;
 
 namespace API
 {
@@ -49,8 +52,19 @@ namespace API
                         ValidateIssuerSigningKey = true,
                         ClockSkew = TimeSpan.Zero
                     };
-                });            
-            
+                });
+
+            var permissions = (RolePermissions[])Enum.GetValues(typeof(RolePermissions));
+
+            services.AddAuthorization(options =>
+            {
+                permissions.ToList().ForEach(permission =>
+                {
+                    options.AddPolicy(permission.GetPermissionName(),
+                        policy => policy.RequireClaim(RolePermissionExtension.ClaimType, permission.GetPermissionName()));
+                });
+            });
+
             string version = GetMajorVersion();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

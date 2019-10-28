@@ -35,6 +35,7 @@ using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Domain.Services.Permissions;
 using Domain.Services.PickingTypes;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;

@@ -4,7 +4,10 @@ using System.Linq;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.Permissions;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -33,6 +36,21 @@ namespace Application.Services.Roles
             }
         }
 
+        public ValidateResult SetPermissions(Guid roleId, IEnumerable<RolePermissions> permissions)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            var entity = _dataService.GetDbSet<Role>().GetById(roleId);
+            if (entity == null)
+            {
+                return new ValidateResult("roleNotFound".translate(user.Language));
+            }
+
+            entity.Permissions = permissions.Cast<int>().ToArray();
+
+            return new ValidateResult(null, entity.Id.ToString());
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<Role>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
@@ -53,6 +71,7 @@ namespace Application.Services.Roles
             
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
+            entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
@@ -61,7 +80,12 @@ namespace Application.Services.Roles
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                Permissions = entity?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
+                {
+                    Code = i,
+                    Name = i.GetPermissionName()
+                })
             };
         }
     }

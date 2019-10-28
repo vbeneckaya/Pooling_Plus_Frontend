@@ -32,6 +32,11 @@ namespace Application.Services.Translations
             return _dataService.GetDbSet<Translation>().Where(x => x.Name == dto.Name).FirstOrDefault();
         }
 
+        public Translation FindByKey(string name)
+        {
+            return _dataService.GetDbSet<Translation>().Where(x => x.Name == name).FirstOrDefault();
+        }
+
         public override void MapFromDtoToEntity(Translation entity, TranslationDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))

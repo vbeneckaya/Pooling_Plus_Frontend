@@ -1,3 +1,4 @@
+using Domain.Enums;
 using System;
 
 namespace Domain.Persistables
@@ -8,5 +9,7 @@ namespace Domain.Persistables
         //public List<PermissionType> Permissions { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }
+
+        public int[] Permissions { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace Domain.Persistables
         public string FieldsConfig { get; set; }
         public string PasswordHash { get; set; }
         public string Name { get; set; }
+
+        public Role Role { get; set; }
     }
 }

@@ -6,5 +6,7 @@ namespace Domain.Services.Translations
     public interface ITranslationsService : IDictonaryService<Translation, TranslationDto>
     {
         IEnumerable<TranslationDto> GetAll();
+
+        Translation FindByKey(string name);
     }
 }
