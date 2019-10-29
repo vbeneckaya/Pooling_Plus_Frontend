@@ -38,5 +38,28 @@ namespace API.Controllers
         public RolesController(IRolesService rolesService) : base(rolesService)
         {
         }
+
+        /// <summary>
+        /// ѕолучение данных дл€ выпадающего списка в 
+        /// </summary>
+        [HttpGet("allPermissions")]
+        public IActionResult GetAllPermissions()
+        {
+            try
+            {
+                var result = _service.GetAllPermissions();
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to get permissions list");
+                return StatusCode(500);
+            }
+        }
     }
 }

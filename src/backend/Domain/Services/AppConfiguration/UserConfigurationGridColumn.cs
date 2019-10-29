@@ -6,7 +6,7 @@ namespace Domain.Services.AppConfiguration
     public class UserConfigurationGridColumn
     {
 
-        public UserConfigurationGridColumn(string name, FiledType type, bool isDefault = false)
+        public UserConfigurationGridColumn(string name, FieldType type, bool isDefault = false)
         {
             Name = name.ToLowerfirstLetter();
             Type = type.ToString();
@@ -23,10 +23,10 @@ namespace Domain.Services.AppConfiguration
         public string Source { get; }
         public bool ShowRawValue { get; set; }
 
-        public UserConfigurationGridColumnWhitchSource(string name, FiledType type, string source, bool isDefault = false, bool showRawValue = false) 
+        public UserConfigurationGridColumnWhitchSource(string name, FieldType type, string source, bool isDefault = false, bool showRawValue = false) 
             : base(name, type, isDefault)
         {
-            Source = source.Replace("Service", "").ToLowerfirstLetter();
+            Source = source?.Replace("Service", "").ToLowerfirstLetter();
             ShowRawValue = showRawValue;
         }
     }

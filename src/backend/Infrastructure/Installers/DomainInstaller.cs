@@ -7,6 +7,7 @@ using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.Documents;
 using Application.Services.DocumentTypes;
+using Application.Services.FieldProperties;
 using Application.Services.Files;
 using Application.Services.History;
 using Application.Services.Identity;
@@ -30,6 +31,7 @@ using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
+using Domain.Services.FieldProperties;
 using Domain.Services.Files;
 using Domain.Services.History;
 using Domain.Services.Identity;
@@ -83,6 +85,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IDocumentTypesService, DocumentTypesService>();
             services.AddScoped<IPickingTypesService, PickingTypesService>();
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
+            services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
+            services.AddScoped<IFieldDispatcherService, FieldDispatcherService>();
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);
