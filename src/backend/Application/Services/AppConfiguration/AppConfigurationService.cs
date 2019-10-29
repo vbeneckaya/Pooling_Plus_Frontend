@@ -51,6 +51,7 @@ namespace Application.Services.AppConfiguration
             {
                 EditUsers = _identityService.HasPermissions(RolePermissions.UsersEdit),
                 EditRoles = _identityService.HasPermissions(RolePermissions.RolesEdit),
+                EditFieldProperties = _identityService.HasPermissions(RolePermissions.FieldsSettings),
                 Grids = GetGridsConfiguration(roleId), 
                 Dictionaries = GetDictionariesConfiguration(roleId)                
             };

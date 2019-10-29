@@ -31,7 +31,7 @@ namespace Application.Services.FieldProperties
 
             var fieldNames = GetFieldNames(forEntityType);
 
-            Array states = forEntityType == FieldPropertiesForEntityType.Shipping
+            Array states = forEntityType == FieldPropertiesForEntityType.Shippings
                 ? Enum.GetValues(typeof(ShippingState))
                 : Enum.GetValues(typeof(OrderState));
 
@@ -96,13 +96,13 @@ namespace Application.Services.FieldProperties
             Array states;
             if (string.IsNullOrEmpty(dto.State))
             {
-                states = forEntity == FieldPropertiesForEntityType.Shipping
+                states = forEntity == FieldPropertiesForEntityType.Shippings
                         ? Enum.GetValues(typeof(ShippingState))
                         : Enum.GetValues(typeof(OrderState));
             }
             else
             {
-                int state = forEntity == FieldPropertiesForEntityType.Shipping
+                int state = forEntity == FieldPropertiesForEntityType.Shippings
                     ? (int)Enum.Parse<ShippingState>(dto.State, true)
                     : (int)Enum.Parse<OrderState>(dto.State, true);
                 states = new[] { state };
@@ -139,11 +139,11 @@ namespace Application.Services.FieldProperties
         {
             switch(entityType)
             {
-                case FieldPropertiesForEntityType.Order:
+                case FieldPropertiesForEntityType.Orders:
                     return ExtractFieldNamesFromDto<OrderDto>();
-                case FieldPropertiesForEntityType.OrderItem:
+                case FieldPropertiesForEntityType.OrderItems:
                     return ExtractFieldNamesFromDto<OrderItemDto>();
-                case FieldPropertiesForEntityType.Shipping:
+                case FieldPropertiesForEntityType.Shippings:
                     return ExtractFieldNamesFromDto<ShippingDto>();
                 default:
                     return new List<string>();
