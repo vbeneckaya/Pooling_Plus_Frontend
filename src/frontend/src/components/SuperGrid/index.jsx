@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 
-import { debounce } from 'throttle-debounce';
+import {debounce} from 'throttle-debounce';
 
 import './style.scss';
 import Filter from './components/filter';
@@ -10,20 +10,10 @@ import HeaderSearchGrid from './components/header';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
-import { PAGE_SIZE } from '../../constants/settings';
-import {
-    Button,
-    Confirm,
-    Grid,
-    Dimmer,
-    Loader,
-    Popup,
-    Icon,
-    Form,
-    Dropdown,
-} from 'semantic-ui-react';
-import Select from '../BaseComponents/Select';
+import {PAGE_SIZE} from '../../constants/settings';
+import {Button, Confirm, Grid, Icon, Popup,} from 'semantic-ui-react';
 import MassChanges from './components/massChanges';
+import {ORDERS_GRID} from "../../constants/grids";
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -376,7 +366,7 @@ class SuperGrid extends Component {
                         <Grid className="grid-footer-panel" columns="2">
                             <Grid.Row>
                                 <Grid.Column>
-                                    {name === 'orders' ? (
+                                    {name === ORDERS_GRID ? (
                                         <Popup
                                             trigger={
                                                 <div

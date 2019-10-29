@@ -77,7 +77,7 @@ export const dictionariesHeaderSelector = createSelector(
 
 export const otherMenuSelector = createSelector(stateSelector, state => {
     const menu = [];
-    if (true) {
+    if (state.editFieldProperties) {
         menu.push({
             name: 'fields_setting',
             link: FIELDS_SETTING_LINK,

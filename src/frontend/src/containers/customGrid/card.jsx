@@ -21,6 +21,7 @@ import {
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
+import {ORDERS_GRID} from "../../constants/grids";
 
 const getModal = {
     orders: <OrderModal />,
@@ -124,7 +125,7 @@ const Card = props => {
     };
 
     const handleSave = () => {
-        if (name === 'orders') {
+        if (name === ORDERS_GRID) {
             handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
@@ -199,7 +200,7 @@ const Card = props => {
         >
             <Modal.Header>
                 {t(title, {
-                    number: name === 'orders' ? form.orderNumber : form.shippingNumber,
+                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
                     status: t(form.status),
                 })}
             </Modal.Header>
@@ -221,7 +222,7 @@ const Card = props => {
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">
                 <div>
-                    {name === 'orders' && form.shippingId ? (
+                    {name === ORDERS_GRID && form.shippingId ? (
                         <SelfComponent
                             {...props}
                             name="shippings"
