@@ -2,7 +2,7 @@ import { all, put, takeEvery } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { push as historyPush } from 'connected-react-router';
-import {FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK} from '../router/links';
+import { FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK } from '../router/links';
 import { logoutRequest } from './login';
 
 //*  TYPES  *//
@@ -76,52 +76,61 @@ export const dictionariesHeaderSelector = createSelector(
 );
 
 export const otherMenuSelector = createSelector(stateSelector, state => {
-    const menu = []
-   if (true) {
-       menu.push({
-           name: 'fields_setting',
-           link: FIELDS_SETTING_LINK
-       })
-   }
+    const menu = [];
+    if (true) {
+        menu.push({
+            name: 'fields_setting',
+            link: FIELDS_SETTING_LINK,
+        });
+    }
 
-   return menu;
+    return menu;
 });
 
-export const userNameSelector = createSelector(
-    stateSelector,
-    state => state.userName,
-);
-export const roleSelector = createSelector(
-    stateSelector,
-    state => state.userRole,
-);
+export const userNameSelector = createSelector(stateSelector, state => state.userName);
+export const roleSelector = createSelector(stateSelector, state => state.userRole);
 
-export const rolesAndUsersMenu = createSelector(
+export const rolesAndUsersMenu = createSelector(stateSelector, state => {
+    let menu = [];
+
+    if (state.editRoles) {
+        menu.push({
+            name: 'roles',
+            link: ROLES_LINK,
+        });
+    }
+
+    if (state.editUsers) {
+        menu.push({
+            name: 'users',
+            link: USERS_LINK,
+        });
+    }
+
+    return menu;
+});
+
+export const homePageSelector = createSelector(stateSelector, state => {
+    let homePage = '/grid';
+    if (state.grids && state.grids.length) {
+        homePage = `/grid/${state.grids[0].name}`;
+    } else if (state.dictionaries && state.dictionaries.length) {
+        homePage = `/dictionary/${state.dictionaries[0].name}`;
+    } else if (state.editRoles) {
+        homePage = '/roles';
+    } else if (state.editUsers) {
+        homePage = '/users';
+    }
+
+    return homePage;
+});
+
+export const userPermissionsSelector = createSelector(
     stateSelector,
     state => {
-        let menu = [];
-
-        if (state.editRoles) {
-            menu.push({
-                name: 'roles',
-                link: ROLES_LINK,
-            });
-        }
-
-        if (state.editUsers) {
-            menu.push({
-                name: 'users',
-                link: USERS_LINK,
-            });
-        }
-
-        return menu;
+        console.log('role', state.role)
+        return state.role ? state.role.permissions : []
     },
-);
-
-export const homePageSelector = createSelector(
-    stateSelector,
-    state => (state.grids && state.grids.length ? state.grids[0].name : ''),
 );
 
 //*  SAGA  *//

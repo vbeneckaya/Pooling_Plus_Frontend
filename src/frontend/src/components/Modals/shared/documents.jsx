@@ -10,7 +10,7 @@ import {
 } from '../../../ducks/documents';
 import { Dimmer, Loader } from 'semantic-ui-react';
 
-const Documents = ({ gridName, cardId }) => {
+const Documents = ({ gridName, cardId, isEditPermissions }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -39,6 +39,7 @@ const Documents = ({ gridName, cardId }) => {
                     gridName={gridName}
                     cardId={cardId}
                     document={document}
+                    isEditPermissions={isEditPermissions}
                     getDocuments={getDocuments}
                     titleText={t('Edit document')}
                     okButtonText={t('SaveButton')}
@@ -47,6 +48,7 @@ const Documents = ({ gridName, cardId }) => {
             <DocWithEditor
                 gridName={gridName}
                 cardId={cardId}
+                isEditPermissions={isEditPermissions}
                 getDocuments={getDocuments}
                 titleText={t('Add document')}
                 okButtonText={t('AddButton')}

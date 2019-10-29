@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { useSelector } from 'react-redux';
 import { Tab } from 'semantic-ui-react';
 import Information from './orderTabs/information';
 import Position from './orderTabs/position';
@@ -8,6 +8,7 @@ import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
+import {userPermissionsSelector} from "../../ducks/profile";
 
 const OrderModal = ({
     form,
@@ -19,6 +20,9 @@ const OrderModal = ({
     uniquenessNumberCheck,
 }) => {
     const { t } = useTranslation();
+    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(item => item.code);
+
+    console.log('userPermissions', userPermissions);
 
     const getPanes = [
         {
@@ -50,23 +54,29 @@ const OrderModal = ({
                 </Tab.Pane>
             ),
         },
-        {
+    ];
+
+    if (userPermissions.includes(4) || userPermissions.includes(5)) {
+        getPanes.push({
             menuItem: t('documents'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Documents gridName={name} cardId={id} />
+                    <Documents gridName={name} cardId={id} isEditPermissions={userPermissions.includes(5)} />
                 </Tab.Pane>
             ),
-        },
-        {
+        })
+    }
+
+    if (userPermissions.includes(6)) {
+        getPanes.push({
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
                     <History cardId={id} status={form.status} />
                 </Tab.Pane>
             ),
-        },
-    ];
+        },)
+    }
 
     return (
         <>

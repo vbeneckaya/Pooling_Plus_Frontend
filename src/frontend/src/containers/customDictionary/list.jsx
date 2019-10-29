@@ -79,7 +79,7 @@ const List = ({
             importLoader={importLoader}
             exportLoader={exportLoader}
             newModal={isCreateBtn ? newModal : null}
-            modalCard={<Card title={t('editCard', { name: t(name) })} />}
+            modalCard={isCreateBtn ? <Card title={t('editCard', { name: t(name) })} /> : null}
         />
     );
 };

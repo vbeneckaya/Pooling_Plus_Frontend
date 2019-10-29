@@ -18,17 +18,19 @@ const MainRoute = withRouter(props => {
     useEffect(() => {
         const { history, location } = props;
         const { pathname } = location;
-        if (pathname === '/grid/' && homePage) {
-            history.push(`/grid/${homePage}`);
+        if (pathname === '/grid' && homePage) {
+            history.push(homePage);
         }
     }, [homePage]);
+
+    console.log('homePage', homePage);
 
     return (
         <Switch>
             <PrivateRoute
                 exact
                 path="/"
-                component={() => <Redirect to={GRID_LINK.replace(':name', homePage)} />}
+                component={() => <Redirect to={homePage} />}
             />
             <PrivateRoute exact path="/grid/:name" component={() => <CustomGrid />} />
             <PrivateRoute exact path="/dictionary/:name" component={() => <CustomDictionary />} />

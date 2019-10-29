@@ -8,9 +8,14 @@ import Documents from './shared/documents';
 import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import Card from '../../containers/customGrid/card';
+import { useSelector } from 'react-redux';
+import { userPermissionsSelector } from '../../ducks/profile';
 
 const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) => {
     const { t } = useTranslation();
+    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
+        item => item.code,
+    );
     const { orders = [] } = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
@@ -47,24 +52,30 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) =
                     <Accounts form={form} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
-        },
-        {
+        }
+    ];
+
+    if (userPermissions.includes(10) || userPermissions.includes(11)) {
+        getPanes.push({
             menuItem: t('documents'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Documents gridName={name} cardId={id} />
+                    <Documents gridName={name} cardId={id} isEditPermissions={userPermissions.includes(11)} />
                 </Tab.Pane>
             ),
-        },
-        {
+        })
+    }
+
+    if (userPermissions.includes(12)) {
+        getPanes.push( {
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
                     <History cardId={id} status={form.status} />
                 </Tab.Pane>
             ),
-        },
-    ];
+        },)
+    }
 
     return (
         <div className="vertical-menu-card">

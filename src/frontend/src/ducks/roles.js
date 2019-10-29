@@ -24,6 +24,10 @@ const TOGGLE_ROLE_ACTIVE_REQUEST = 'TOGGLE_ROLE_ACTIVE_REQUEST';
 const TOGGLE_ROLE_ACTIVE_SUCCESS = 'TOGGLE_ROLE_ACTIVE_SUCCESS';
 const TOGGLE_ROLE_ACTIVE_ERROR = 'TOGGLE_ROLE_ACTIVE_ERROR';
 
+const GET_ALL_PERMISSIONS_REQUEST = 'GET_ALL_PERMISSIONS_REQUEST';
+const GET_ALL_PERMISSIONS_SUCCESS = 'GET_ALL_PERMISSIONS_SUCCESS';
+const GET_ALL_PERMISSIONS_ERROR = 'GET_ALL_PERMISSIONS_ERROR';
+
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 
 //*  INITIAL STATE  *//
@@ -31,6 +35,7 @@ const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 const initial = {
     list: [],
     card: {},
+    permissions: [],
     totalCount: 0,
     progress: false,
 };
@@ -79,6 +84,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 ...initial,
             };
+        case GET_ALL_PERMISSIONS_SUCCESS:
+            return {
+                ...state,
+                permissions: payload
+            };
         default:
             return state;
     }
@@ -120,6 +130,13 @@ export const toggleRoleActiveRequest = payload => {
     };
 };
 
+export const getAllPermissionsRequest = payload => {
+    return {
+        type: GET_ALL_PERMISSIONS_REQUEST,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.roles;
@@ -155,6 +172,8 @@ export const roleCardSelector = createSelector(
     stateSelector,
     state => state.card,
 );
+
+export const allPermissionsSelector = createSelector(stateSelector, state=> state.permissions);
 
 //*  SAGA  *//
 
@@ -228,11 +247,28 @@ function* toggleRoleActiveSaga({ payload }) {
     }
 }
 
+function* getAllPermissionsSaga({ payload }) {
+    try {
+        const result = yield postman.get('/roles/allPermissions');
+
+        yield put({
+            type: GET_ALL_PERMISSIONS_SUCCESS,
+            payload: result
+        })
+    } catch (e) {
+        yield put({
+            type: GET_ALL_PERMISSIONS_ERROR,
+            payload: e
+        })
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
         takeEvery(GET_ROLE_CARD_REQUEST, getRoleCardSaga),
         takeEvery(CREATE_ROLE_REQUEST, createRoleSaga),
         takeEvery(TOGGLE_ROLE_ACTIVE_REQUEST, toggleRoleActiveSaga),
+        takeEvery(GET_ALL_PERMISSIONS_REQUEST, getAllPermissionsSaga),
     ]);
 }

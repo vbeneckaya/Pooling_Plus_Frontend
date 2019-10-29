@@ -23,6 +23,7 @@ const DocWithEditor = ({
     gridName,
     cardId,
     getDocuments,
+    isEditPermissions,
 }) => {
     let [modalOpen, setModalOpen] = useState(false);
     let [confirmation, setConfirmation] = useState({ open: false });
@@ -160,28 +161,34 @@ const DocWithEditor = ({
         <DocView document={currentDocument}>
             {currentDocument ? (
                 <div>
-                    <Popup
-                        content={t('delete')}
-                        position="bottom right"
-                        trigger={
-                            <Icon
-                                name="times"
-                                className="uploaded-image-delete-button"
-                                onClick={() => handleDelete(currentDocument)}
-                            />
-                        }
-                    />
-                    <Popup
-                        content={t('edit')}
-                        position="bottom right"
-                        trigger={
-                            <Icon
-                                name="pencil alternate"
-                                className="uploaded-image-edit-button"
-                                onClick={handleOpen}
-                            />
-                        }
-                    />
+                    {isEditPermissions ? (
+                        <Popup
+                            content={t('delete')}
+                            position="bottom right"
+                            trigger={
+                                <Icon
+                                    name="times"
+                                    className="uploaded-image-delete-button"
+                                    onClick={() => handleDelete(currentDocument)}
+                                />
+                            }
+                        />
+                    ) : null}
+
+                    {isEditPermissions ? (
+                        <Popup
+                            content={t('edit')}
+                            position="bottom right"
+                            trigger={
+                                <Icon
+                                    name="pencil alternate"
+                                    className="uploaded-image-edit-button"
+                                    onClick={handleOpen}
+                                />
+                            }
+                        />
+                    ) : null}
+
                     <Popup
                         content={t('download')}
                         position="bottom right"

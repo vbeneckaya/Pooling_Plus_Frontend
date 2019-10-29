@@ -98,7 +98,7 @@ const Header = () => {
                                 ))
                                 : null
                         }
-                        {dictionariesList && (
+                        {dictionariesList && dictionariesList.length || usersAndRoles.length ? (
                             <Menu.Menu>
                                 <Dropdown
                                     text={t('dictionaries')}
@@ -136,7 +136,7 @@ const Header = () => {
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </Menu.Menu>
-                        )}
+                        ) : null}
                         {userName && userRole ? (
                             <Menu.Menu position="right">
                                 <Dropdown text={`${userName} (${t(userRole)})`} item>
