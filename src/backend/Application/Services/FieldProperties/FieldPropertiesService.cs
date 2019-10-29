@@ -73,7 +73,11 @@ namespace Application.Services.FieldProperties
             return result;
         }
 
-        public IEnumerable<string> GetAvailableFields(FieldPropertiesForEntityType forEntityType, Guid? companyId, Guid? roleId, Guid? userId)
+        public IEnumerable<string> GetAvailableFields(
+            FieldPropertiesForEntityType forEntityType, 
+            Guid? companyId, 
+            Guid? roleId, 
+            Guid? userId)
         {
             var hiddenAccessType = FieldPropertiesAccessType.Hidden.ToString().ToLowerFirstLetter();
             var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId);
@@ -87,7 +91,12 @@ namespace Application.Services.FieldProperties
             }
         }
 
-        public IEnumerable<string> GetReadOnlyFields(FieldPropertiesForEntityType forEntityType, string stateName, Guid? companyId, Guid? roleId, Guid? userId)
+        public IEnumerable<string> GetReadOnlyFields(
+            FieldPropertiesForEntityType forEntityType, 
+            string stateName, 
+            Guid? companyId, 
+            Guid? roleId, 
+            Guid? userId)
         {
             var editAccessType = FieldPropertiesAccessType.Edit.ToString().ToLowerFirstLetter();
             var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId);
@@ -103,6 +112,25 @@ namespace Application.Services.FieldProperties
                     yield return prop.FieldName;
                 }
             }
+        }
+
+        public FieldPropertiesAccessType GetFieldAccess(
+            FieldPropertiesForEntityType forEntityType,
+            int state, 
+            string fieldName,
+            Guid? companyId, 
+            Guid? roleId, 
+            Guid? userId)
+        {
+            var fieldMatrixItem = _dataService.GetDbSet<FieldPropertyItem>()
+                                              .Where(x => x.ForEntity == forEntityType
+                                                        && x.FieldName == fieldName
+                                                        && x.State == state
+                                                        && (x.RoleId == roleId || x.RoleId == null)
+                                                        && (x.CompanyId == companyId || x.CompanyId == null))
+                                              .OrderBy(x => x)
+                                              .FirstOrDefault();
+            return fieldMatrixItem?.AccessType ?? FieldPropertiesAccessType.Show;
         }
 
         public ValidateResult Save(FieldPropertyDto dto)

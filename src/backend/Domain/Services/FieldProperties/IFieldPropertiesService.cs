@@ -12,5 +12,6 @@ namespace Domain.Services.FieldProperties
 
         IEnumerable<string> GetAvailableFields(FieldPropertiesForEntityType forEntityType, Guid? companyId, Guid? roleId, Guid? userId);
         IEnumerable<string> GetReadOnlyFields(FieldPropertiesForEntityType forEntityType, string stateName, Guid? companyId, Guid? roleId, Guid? userId);
+        FieldPropertiesAccessType GetFieldAccess(FieldPropertiesForEntityType forEntityType, int state, string fieldName, Guid? companyId, Guid? roleId, Guid? userId);
     }
 }

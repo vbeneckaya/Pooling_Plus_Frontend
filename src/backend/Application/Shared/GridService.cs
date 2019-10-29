@@ -296,7 +296,7 @@ namespace Application.Shared
 
             var result = new List<BulkUpdateDto>();
 
-            var entities = dbSet.Where(x => ids.Contains(x.Id));
+            var entities = dbSet.Where(x => ids.Contains(x.Id)).ToArray();
 
             foreach (var bulkUpdate in _bulkUpdates)
             {
