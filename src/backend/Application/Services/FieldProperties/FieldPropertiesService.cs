@@ -54,9 +54,9 @@ namespace Application.Services.FieldProperties
                                         .OrderBy(x => x)
                                         .FirstOrDefault();
 
-                    var stateName = state.ToString()?.ToLowerfirstLetter();
-                    var accessType = fieldMatrixItem?.AccessType.ToString()?.ToLowerfirstLetter()
-                                        ?? FieldPropertiesAccessType.Show.ToString().ToLowerfirstLetter();
+                    var stateName = state.ToString()?.ToLowerFirstLetter();
+                    var accessType = fieldMatrixItem?.AccessType.ToString()?.ToLowerFirstLetter()
+                                        ?? FieldPropertiesAccessType.Show.ToString().ToLowerFirstLetter();
 
                     if (!string.IsNullOrEmpty(stateName))
                     {
@@ -140,25 +140,21 @@ namespace Application.Services.FieldProperties
             switch(entityType)
             {
                 case FieldPropertiesForEntityType.Order:
-                    return ExtractFieldsFromDto<OrderDto>();
+                    return ExtractFieldNamesFromDto<OrderDto>();
                 case FieldPropertiesForEntityType.OrderItem:
-                    return ExtractFieldsFromDto<OrderItemDto>();
+                    return ExtractFieldNamesFromDto<OrderItemDto>();
                 case FieldPropertiesForEntityType.Shipping:
-                    return ExtractFieldsFromDto<ShippingDto>();
+                    return ExtractFieldNamesFromDto<ShippingDto>();
                 default:
                     return new List<string>();
             }
         }
 
-        private List<string> ExtractFieldsFromDto<TDto>()
+        private List<string> ExtractFieldNamesFromDto<TDto>()
         {
-            var props = typeof(TDto).GetProperties()
-                                    .Where(prop => Attribute.IsDefined(prop, typeof(FieldTypeAttribute)))
-                                    .OrderBy(prop => Attribute.IsDefined(prop, typeof(IsDefaultAttribute))
-                                                    ? ((IsDefaultAttribute)Attribute.GetCustomAttribute(prop, typeof(IsDefaultAttribute))).OrderNumber
-                                                    : int.MaxValue);
-            var fields = props.Select(x => x.Name?.ToLowerfirstLetter()).ToList();
-            return fields;
+            var fields = _fieldDispatcherService.GetDtoFields<TDto>();
+            var result = fields.Select(x => x.Name?.ToLowerFirstLetter()).ToList();
+            return result;
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Domain.Extensions
 {
     public static class Extensions
     {
-        public static string ToUpperfirstLetter(this string input)
+        public static string ToUpperFirstLetter(this string input)
         {
             return Char.ToUpperInvariant(input[0]) + input.Substring(1);
         }
         
-        public static string ToLowerfirstLetter(this string input)
+        public static string ToLowerFirstLetter(this string input)
         {
             return Char.ToLowerInvariant(input[0]) + input.Substring(1);
         }

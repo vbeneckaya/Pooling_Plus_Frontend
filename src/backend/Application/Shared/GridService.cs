@@ -173,13 +173,13 @@ namespace Application.Shared
                 var validEntities = entities.Where(e => action.IsAvailable(role, e));
                 if (validEntities.Any())
                 {
-                    var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
+                    var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerFirstLetter());
                     if (actionDto == null)
                     {
                         result.Add(new ActionDto
                         {
-                            Color = action.Color.ToString().ToLowerfirstLetter(),
-                            Name = action.GetType().Name.ToLowerfirstLetter(),
+                            Color = action.Color.ToString().ToLowerFirstLetter(),
+                            Name = action.GetType().Name.ToLowerFirstLetter(),
                             Ids = validEntities.Select(x => x.Id.ToString())
                         });
                     }
@@ -192,13 +192,13 @@ namespace Application.Shared
                 {
                     if (action.IsAvailable(role, entities))
                     {
-                        var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerfirstLetter());
+                        var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerFirstLetter());
                         if (actionDto == null)
                         {
                             result.Add(new ActionDto
                             {
-                                Color = action.Color.ToString().ToLowerfirstLetter(),
-                                Name = action.GetType().Name.ToLowerfirstLetter(),
+                                Color = action.Color.ToString().ToLowerFirstLetter(),
+                                Name = action.GetType().Name.ToLowerFirstLetter(),
                                 Ids = ids.Select(x=>x.ToString())
                             });                        
                         }
@@ -211,7 +211,7 @@ namespace Application.Shared
 
         public AppActionResult InvokeAction(string name, Guid id)
         {
-            var action = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var action = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -236,8 +236,8 @@ namespace Application.Shared
         
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
-            var singleAction = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
-            var groupAction = _groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerfirstLetter() == name);
+            var singleAction = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+            var groupAction = _groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
 
             if (singleAction == null && groupAction == null)
                 return new AppActionResult
@@ -303,12 +303,12 @@ namespace Application.Shared
                 var validEntities = entities.Where(e => bulkUpdate.IsAvailable(role, e));
                 if (validEntities.Any())
                 {
-                    var dto = result.FirstOrDefault(x => x.Name == bulkUpdate.FieldName.ToLowerfirstLetter());
+                    var dto = result.FirstOrDefault(x => x.Name == bulkUpdate.FieldName.ToLowerFirstLetter());
                     if (dto == null)
                     {
                         result.Add(new BulkUpdateDto
                         {
-                            Name = bulkUpdate.FieldName.ToLowerfirstLetter(),
+                            Name = bulkUpdate.FieldName.ToLowerFirstLetter(),
                             Type = bulkUpdate.FieldType.ToString(),
                             Ids = validEntities.Select(x => x.Id.ToString())
                         });
@@ -321,7 +321,7 @@ namespace Application.Shared
 
         public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
         {
-            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName.ToLowerfirstLetter() == fieldName);
+            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName.ToLowerFirstLetter() == fieldName);
 
             if (bulkUpdate == null)
                 return new AppActionResult
@@ -374,7 +374,7 @@ namespace Application.Shared
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
-            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperfirstLetter());
+            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperFirstLetter());
             
             return mapFromStateDto;
         }

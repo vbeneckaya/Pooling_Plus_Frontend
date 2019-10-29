@@ -226,7 +226,7 @@ namespace Application.Services.Shippings
                 {
                     Id = order.Id.ToString(),
                     OrderNumber = order.OrderNumber,
-                    Status = order.Status.ToString().ToLowerfirstLetter()
+                    Status = order.Status.ToString().ToLowerFirstLetter()
                 };
                 result.Add(dto);
             }
@@ -251,7 +251,7 @@ namespace Application.Services.Shippings
                             PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
-                            VehicleStatus = order.ShippingStatus.ToString().ToLowerfirstLetter(),
+                            VehicleStatus = order.ShippingStatus.ToString().ToLowerFirstLetter(),
                             TrucksDowntime = null,
                             IsLoading = true,
                             OrderIds = new List<string>()
@@ -274,7 +274,7 @@ namespace Application.Services.Shippings
                             PlannedDate = order.DeliveryDate?.ToString("dd.MM.yyyy HH:mm"),
                             ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
-                            VehicleStatus = order.DeliveryStatus.ToString().ToLowerfirstLetter(),
+                            VehicleStatus = order.DeliveryStatus.ToString().ToLowerFirstLetter(),
                             TrucksDowntime = order.TrucksDowntime,
                             IsLoading = false,
                             OrderIds = new List<string>()
@@ -301,11 +301,11 @@ namespace Application.Services.Shippings
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerfirstLetter()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerfirstLetter()))
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId?.ToString()))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerfirstLetter()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))

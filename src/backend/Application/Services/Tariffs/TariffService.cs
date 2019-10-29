@@ -23,7 +23,7 @@ namespace Application.Services.Tariffs
                 entity.Id = Guid.Parse(dto.Id);
             entity.ShipmentCity = dto.ShipmentCity;
             entity.DeliveryCity = dto.DeliveryCity;
-            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : Enum.Parse<TarifficationType>(dto.TarifficationType.ToUpperfirstLetter());
+            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : Enum.Parse<TarifficationType>(dto.TarifficationType.ToUpperFirstLetter());
             entity.CarrierId = string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId);
             entity.VehicleTypeId = string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId);
             entity.FtlRate = dto.FtlRate;
@@ -70,7 +70,7 @@ namespace Application.Services.Tariffs
                 Id = entity.Id.ToString(),
                 ShipmentCity = entity.ShipmentCity,
                 DeliveryCity = entity.DeliveryCity,
-                TarifficationType = entity.TarifficationType?.ToString().ToLowerfirstLetter(),
+                TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
                 CarrierId = entity.CarrierId?.ToString(),
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
                 FtlRate = entity.FtlRate,

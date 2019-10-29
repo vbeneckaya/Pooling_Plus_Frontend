@@ -7,10 +7,10 @@ namespace Domain.Services.Shippings
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(DeliveryType)), IsDefault(4)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(4)]
         public string DeliveryType { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -19,13 +19,13 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(TarifficationType)), IsDefault(5)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), IsDefault, OrderNumber(5)]
         public string TarifficationType { get; set; }
 
-        [FieldType(FieldType.Select, source: "TransportCompanies"), IsDefault(3)]
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
         public string CarrierId { get; set; }
 
-        [FieldType(FieldType.Select, source: "VehicleTypes")]
+        [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
         public string VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -117,7 +117,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Text)]
         public string InvoiceNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault(2)]
+        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2)]
         public string Status { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -126,7 +126,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByCarrier { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault(6)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6)]
         public string ShippingCreationDate { get; set; }
         /*end of fields*/
     }

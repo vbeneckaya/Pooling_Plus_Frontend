@@ -18,7 +18,7 @@ namespace API.Controllers
             var result = new List<LookUpDto>();
             foreach (var value in values)
             {
-                string name = value.ToString().ToLowerfirstLetter();
+                string name = value.ToString().ToLowerFirstLetter();
                 result.Add(new LookUpDto
                 {
                     Name = name, 

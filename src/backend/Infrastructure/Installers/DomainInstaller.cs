@@ -86,7 +86,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IPickingTypesService, PickingTypesService>();
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
-            services.AddScoped<IFieldDispatcherService, FieldDispatcherService>();
+            services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);

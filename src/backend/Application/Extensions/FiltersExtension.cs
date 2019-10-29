@@ -256,7 +256,7 @@ namespace Application.Extensions
 
         private static TEnum MapFromStateDto<TEnum>(string dtoStatus) where TEnum : struct
         {
-            var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperfirstLetter());
+            var mapFromStateDto = Enum.Parse<TEnum>(dtoStatus.ToUpperFirstLetter());
 
             return mapFromStateDto;
         }

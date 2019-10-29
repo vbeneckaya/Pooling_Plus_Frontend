@@ -20,8 +20,8 @@ namespace API.Controllers
             {
                 result.Add(new StateDto
                 {
-                    Name = value.ToString().ToLowerfirstLetter(),
-                    Color = value.GetColor().ToString().ToLowerfirstLetter()                    
+                    Name = value.ToString().ToLowerFirstLetter(),
+                    Color = value.GetColor().ToString().ToLowerFirstLetter()                    
                 });
             }
 
@@ -40,7 +40,7 @@ namespace API.Controllers
             {
                 result.Add(new LookUpDto
                 {
-                    Name = value.ToString().ToLowerfirstLetter(), 
+                    Name = value.ToString().ToLowerFirstLetter(), 
                     Value = value.ToString()
                 });
             }

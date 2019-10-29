@@ -1,31 +1,59 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.FieldProperties;
-using Domain.Services.Orders;
 
 namespace Application.Services.FieldProperties
 {
     public class FieldDispatcherService : IFieldDispatcherService
     {
-        public IEnumerable<FieldForFieldProperties> GetAllAvailableFieldsFor(FieldPropertiesForEntityType forEntityType, Guid? companyId, Guid? roleId, Guid? userId)
-        {
-            switch (forEntityType)
-            {
-                case FieldPropertiesForEntityType.Order:
-                    var props = typeof(OrderDto).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(FieldTypeAttribute)));
+        private readonly Dictionary<Type, IEnumerable<FieldInfo>> _fieldsCache;
 
-                    return props.Select(prop => 
-                            new FieldForFieldProperties
-                            {
-                            }
-                         )
-                         .ToList();
+        public FieldDispatcherService()
+        {
+            _fieldsCache = new Dictionary<Type, IEnumerable<FieldInfo>>();
+        }
+
+        public IEnumerable<FieldInfo> GetDtoFields<TDto>()
+        {
+            Type dtoType = typeof(TDto);
+            IEnumerable<FieldInfo> result;
+            if (!_fieldsCache.TryGetValue(dtoType, out result))
+            {
+                result = GetDtoFieldsInner<TDto>();
+                _fieldsCache[dtoType] = result;
             }
-            
-            return new List<FieldForFieldProperties>();
+            return result;
+        }
+
+        private IEnumerable<FieldInfo> GetDtoFieldsInner<TDto>()
+        {
+            var props = typeof(TDto).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(FieldTypeAttribute)));
+            foreach (var prop in props)
+            {
+                var fieldTypeAttr = (FieldTypeAttribute)Attribute.GetCustomAttribute(prop, typeof(FieldTypeAttribute));
+
+                bool isDefault = Attribute.IsDefined(prop, typeof(IsDefaultAttribute));
+
+                int orderNumber = int.MaxValue;
+                if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
+                {
+                    var orderNumberAttr = (OrderNumberAttribute)Attribute.GetCustomAttribute(prop, typeof(OrderNumberAttribute));
+                    orderNumber = orderNumberAttr.Value;
+                }
+
+                var fieldInfo = new FieldInfo
+                {
+                    Name = prop.Name,
+                    FieldType = fieldTypeAttr.Type,
+                    ReferenceSource = fieldTypeAttr.Source,
+                    ShowRawReferenceValue = fieldTypeAttr.ShowRawValue,
+                    OrderNumber = orderNumber,
+                    IsDefault = isDefault
+                };
+                yield return fieldInfo;
+            }
         }
     }
 }

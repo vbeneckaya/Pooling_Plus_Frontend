@@ -84,7 +84,7 @@ namespace Application.Shared
 
         private void SaveHistory(string fieldName, object oldValue, object newValue)
         {
-            _historyService.Save(Entity.Id, "fieldChanged", fieldName?.ToLowerfirstLetter(), oldValue, newValue);
+            _historyService.Save(Entity.Id, "fieldChanged", fieldName?.ToLowerFirstLetter(), oldValue, newValue);
         }
 
         public FieldSetter(TEntity entity, IHistoryService historyService)

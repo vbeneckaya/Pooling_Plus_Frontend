@@ -75,7 +75,7 @@ namespace Application.Services.History
             }
             else if (value is Enum)
             {
-                return Enum.GetName(value.GetType(), value).ToLowerfirstLetter();
+                return Enum.GetName(value.GetType(), value).ToLowerFirstLetter();
             }
             else
             {

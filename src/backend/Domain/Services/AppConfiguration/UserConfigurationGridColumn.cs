@@ -8,7 +8,7 @@ namespace Domain.Services.AppConfiguration
 
         public UserConfigurationGridColumn(string name, FieldType type, bool isDefault = false)
         {
-            Name = name.ToLowerfirstLetter();
+            Name = name.ToLowerFirstLetter();
             Type = type.ToString();
             IsDefault = isDefault;
         }
@@ -26,7 +26,7 @@ namespace Domain.Services.AppConfiguration
         public UserConfigurationGridColumnWhitchSource(string name, FieldType type, string source, bool isDefault = false, bool showRawValue = false) 
             : base(name, type, isDefault)
         {
-            Source = source?.Replace("Service", "").ToLowerfirstLetter();
+            Source = source.Replace("Service", "").ToLowerFirstLetter();
             ShowRawValue = showRawValue;
         }
     }

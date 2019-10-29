@@ -1,30 +1,28 @@
-using System;
 using Domain.Enums;
 using Domain.Extensions;
 
 namespace Domain.Services.Orders
 {
-    //TODO Собирать поля ленивым рефлекшеном(сохранять как кеш после первого обращения)
     public class OrderDto : IDto
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault(2)]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2)]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
         public string OrderNumber { get; set; }
 
         [FieldType(FieldType.DateTime)]
         public string OrderDate { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(OrderType))]
+        [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
         public string OrderType { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault(6)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault(5)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(5)]
         public string ClientName { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true)]
@@ -42,7 +40,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault(7)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(7)]
         public string DeliveryDate { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -103,7 +101,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string OrderComments { get; set; }
 
-        [FieldType(FieldType.Select, source: "PickingTypes")]
+        [FieldType(FieldType.Select, source: nameof(PickingTypes))]
         public string PickingTypeId { get; set; }
 
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
@@ -144,7 +142,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault(8)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8)]
         public string OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -161,10 +159,10 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault(3)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(3)]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault(4)]
+        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4)]
         public string OrderShippingStatus { get; set; }
 
         public bool? IsActive { get; set; }
