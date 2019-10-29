@@ -88,5 +88,16 @@ namespace Application.Services.Roles
                 })
             };
         }
+
+        public IEnumerable<PermissionInfo> GetAllPermissions()
+        {
+            return Enum.GetValues(typeof(RolePermissions))
+                .Cast<RolePermissions>()
+                .Select(i => new PermissionInfo
+                {
+                    Code = i,
+                    Name = i.GetPermissionName()
+                });
+        }
     }
 }

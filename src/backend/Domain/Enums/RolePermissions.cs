@@ -6,17 +6,17 @@ namespace Domain.Enums
 {
     public enum RolePermissions
     {
-        Admin = 0,
+        //Admin = 0,
         OrdersView = 1,
         OrdersCreate = 2,
-        OrdersEditAndDelete = 3,
+        //OrdersEditAndDelete = 3,
         OrdersViewAndAttachDocument = 4,
         OrdersEditAndDeleteDocument = 5,
         OrdersViewHistory = 6,
 
         ShippingsView = 7,
-        ShippingsCreate = 8,
-        ShippingsEditAndDelete = 9,
+        //ShippingsCreate = 8,
+        //ShippingsEditAndDelete = 9,
         ShippingsViewAndAttachDocument = 10,
         ShippingsEditAndDeleteDocument = 11,
         ShippingsViewHistory = 12,
