@@ -19,7 +19,7 @@ build-frontend-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
   only:
-   - master   
+   - develop   
    
 build-tasks-dev:
   stage: build
@@ -28,7 +28,7 @@ build-tasks-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
   only:
-   - master   
+   - develop   
 
 build-frontend-prod:
   stage: build
@@ -37,7 +37,7 @@ build-frontend-prod:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod
   only:
-   - master 
+   - develop 
    
 
 build-backend-dev:
@@ -47,7 +47,7 @@ build-backend-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop
   only:
-   - master    
+   - develop    
   
 deploy-frontend-dev:
   variables:
