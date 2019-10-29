@@ -34,7 +34,7 @@ namespace Application.Shared
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
-        private readonly IUserProvider _userIdProvider;
+        protected readonly IUserProvider _userIdProvider;
 
         protected readonly ICommonDataService _dataService;
 

@@ -4,6 +4,7 @@ using Domain.Persistables;
 using Domain.Services.History;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -27,6 +28,13 @@ namespace Application.Shared
                     var propertyInfo = propertyBody.Member as PropertyInfo;
                     if (propertyInfo != null)
                     {
+                        string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
+                        if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
+                        {
+                            _validationErrors.Add($"{propertyInfo.Name} is Read Only");
+                            return false;
+                        }
+
                         if (fieldHandler != null)
                         {
                             string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
@@ -87,13 +95,15 @@ namespace Application.Shared
             _historyService.Save(Entity.Id, "fieldChanged", fieldName?.ToLowerFirstLetter(), oldValue, newValue);
         }
 
-        public FieldSetter(TEntity entity, IHistoryService historyService)
+        public FieldSetter(TEntity entity, IHistoryService historyService, IEnumerable<string> readOnlyFields = null)
         {
             Entity = entity;
             _historyService = historyService;
+            _readOnlyFields = readOnlyFields?.ToList();
         }
 
         private readonly IHistoryService _historyService;
+        private readonly List<string> _readOnlyFields;
         private readonly List<Action> _afterActions = new List<Action>();
         private readonly Dictionary<string, Action> _historyActions = new Dictionary<string, Action>();
         private readonly List<string> _validationErrors = new List<string>();
