@@ -75,6 +75,16 @@ export const dictionariesHeaderSelector = createSelector(
             .map(dictionary => dictionary.name),
 );
 
+export const dictionariesSelector = createSelector(stateSelector, state => state.dictionaries && state.dictionaries.map(dictionary => dictionary.name));
+
+export const isCustomPageSelector = createSelector(stateSelector, state => {
+    return {
+        editFieldProperties: state.editFieldProperties,
+        editRoles: state.editRoles,
+        editUsers: state.editUsers
+    }
+});
+
 export const otherMenuSelector = createSelector(stateSelector, state => {
     const menu = [];
     if (state.editFieldProperties) {

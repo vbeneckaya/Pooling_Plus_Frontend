@@ -34,9 +34,9 @@ const MainRoute = withRouter(props => {
             />
             <PrivateRoute exact path="/grid/:name" component={() => <CustomGrid />} />
             <PrivateRoute exact path="/dictionary/:name" component={() => <CustomDictionary />} />
-            <PrivateRoute exact path={ROLES_LINK} component={() => <RolesList />} />
-            <PrivateRoute exact path={USERS_LINK} component={() => <UsersList />} />
-            <PrivateRoute exact path={FIELDS_SETTING_LINK} component={() => <FieldsSetting />} />
+            <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={() => <RolesList />} />
+            <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={() => <UsersList />} />
+            <PrivateRoute exact path={FIELDS_SETTING_LINK} permission="editFieldProperties" component={() => <FieldsSetting />} />
             <Route exact path={LOGIN_LINK} component={Login} />
         </Switch>
     );
