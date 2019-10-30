@@ -17,6 +17,8 @@ namespace Domain.Services.Shippings
 
         public string ShippingCreationDate { get; set; }
 
+        public string Status { get; set; }
+
         public string TemperatureMin { get; set; }
 
         public string TemperatureMax { get; set; }
