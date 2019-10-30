@@ -22,7 +22,7 @@ const App = () => {
     const isAuth = useSelector(state => isAuthSelector(state));
 
     const getProfile = () => {
-        if (!userName && isAuth) {
+        if (!userName) {
             dispatch(getUserProfile());
         }
     };
@@ -32,7 +32,7 @@ const App = () => {
     return (
         <>
             <ConnectedRouter history={history}>
-                {userName ? (
+                {userName || !isAuth ? (
                     <>
                         <Header />
                         <MainRoute />
