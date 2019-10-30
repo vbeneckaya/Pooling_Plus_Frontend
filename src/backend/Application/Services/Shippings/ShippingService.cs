@@ -382,7 +382,8 @@ namespace Application.Services.Shippings
             query = this.ApplySearch(query, searchForm);
 
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc)
-                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
+                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name))
+                .DefaultOrderBy(i => i.Id, true);
         }
 
         private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)

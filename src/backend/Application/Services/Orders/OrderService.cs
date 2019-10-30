@@ -423,7 +423,8 @@ namespace Application.Services.Orders
             query = this.ApplySearch(query, searchForm);
 
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
-                .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
+                .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name))
+                .DefaultOrderBy(i => i.Id, true);
         }
 
         private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
