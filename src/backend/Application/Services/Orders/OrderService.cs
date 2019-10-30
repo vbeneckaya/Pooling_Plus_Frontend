@@ -8,6 +8,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Orders;
 using Domain.Services.UserProvider;
@@ -24,18 +25,21 @@ namespace Application.Services.Orders
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
+        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public OrdersService(
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Order>> singleActions,
             IEnumerable<IGroupAppAction<Order>> groupActions,
             IEnumerable<IBulkUpdate<Order>> bulkUpdates)
             : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
-            this._historyService = historyService;
+            _historyService = historyService;
+            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -77,7 +81,15 @@ namespace Application.Services.Orders
         {
             bool isInjection = dto.AdditionalInfo == "INJECTION";
 
-            var setter = new FieldSetter<Order>(entity, _historyService);
+            IEnumerable<string> readOnlyFields = null;
+            var userId = _userIdProvider.GetCurrentUserId();
+            if (userId != null)
+            {
+                string stateName = entity.Status.ToString().ToLowerFirstLetter();
+                readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Orders, stateName, null, null, userId);
+            }
+
+            var setter = new FieldSetter<Order>(entity, _historyService, readOnlyFields);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);

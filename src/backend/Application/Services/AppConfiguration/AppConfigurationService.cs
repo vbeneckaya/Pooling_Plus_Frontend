@@ -33,15 +33,18 @@ namespace Application.Services.AppConfiguration
         private readonly IIdentityService _identityService;
         private readonly IUserProvider _userProvider;
         private readonly IFieldDispatcherService _fieldDispatcherService;
+        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public AppConfigurationService(
             IIdentityService identityService, 
             IUserProvider userProvider, 
-            IFieldDispatcherService fieldDispatcherService)
+            IFieldDispatcherService fieldDispatcherService,
+            IFieldPropertiesService fieldPropertiesService)
         {
             _identityService = identityService;
             _userProvider = userProvider;
             _fieldDispatcherService = fieldDispatcherService;
+            _fieldPropertiesService = fieldPropertiesService;
         }
         
         public AppConfigurationDto GetConfiguration()
@@ -197,9 +200,33 @@ namespace Application.Services.AppConfiguration
             return dicts;
         }
 
+        private FieldPropertiesForEntityType? GetFieldPropertyForEntity<TDto>()
+        {
+            if (typeof(TDto) == typeof(OrderDto))
+            {
+                return FieldPropertiesForEntityType.Orders;
+            }
+            else if (typeof(TDto) == typeof(ShippingDto))
+            {
+                return FieldPropertiesForEntityType.Shippings;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private IEnumerable<UserConfigurationGridColumn> ExtractColumnsFromDto<TDto>(Guid? roleId)
         {
             var fields = _fieldDispatcherService.GetDtoFields<TDto>();
+
+            var forEntity = GetFieldPropertyForEntity<TDto>();
+            if (forEntity.HasValue)
+            {
+                var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
+                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
+            }
+
             foreach (var field in fields.OrderBy(f => f.OrderNumber))
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
@@ -212,6 +239,5 @@ namespace Application.Services.AppConfiguration
                 }
             }
         }
-
     }
 }

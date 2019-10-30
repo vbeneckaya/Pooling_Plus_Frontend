@@ -9,6 +9,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
@@ -24,18 +25,21 @@ namespace Application.Services.Shippings
     public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IHistoryService _historyService;
+        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public ShippingsService(
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Shipping>> singleActions,
             IEnumerable<IGroupAppAction<Shipping>> groupActions,
             IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
             : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
-            this._historyService = historyService;
+            _historyService = historyService;
+            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -70,7 +74,15 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
-            var setter = new FieldSetter<Shipping>(entity, _historyService);
+            IEnumerable<string> readOnlyFields = null;
+            var userId = _userIdProvider.GetCurrentUserId();
+            if (userId != null)
+            {
+                string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
+                readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings, stateName, null, null, userId);
+            }
+
+            var setter = new FieldSetter<Shipping>(entity, _historyService, readOnlyFields);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
