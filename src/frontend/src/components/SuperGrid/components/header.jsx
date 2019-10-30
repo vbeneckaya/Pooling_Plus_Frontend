@@ -27,6 +27,7 @@ const Header = ({
     searchOnChange,
     counter,
     clearFilter,
+    updatingFilter,
     disabledClearFilter,
     loadList,
     name,
@@ -76,18 +77,21 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(() => {
-        getRepresentations();
-    }, [name]);
+    useEffect(
+        () => {
+            getRepresentations();
+        },
+        [name],
+    );
 
-    const changeRepresentation = key => {
+    const changeRepresentation = (key, isEdit) => {
         dispatch(
             setRepresentationRequest({
                 gridName: name,
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    clearFilter();
+                    isEdit ? updatingFilter() : clearFilter();
                 },
             }),
         );

@@ -51,8 +51,6 @@ const move = (source, destination, droppableSource, droppableDestination, search
 
     destClone.splice(search ? destClone.length : droppableDestination.index, 0, removed);
 
-    console.log('destClone', droppableDestination, destClone);
-
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
@@ -134,7 +132,7 @@ class DnDList extends React.Component {
                 destination,
                 this.props.search,
             );
-            console.log('result', result);
+
             state = {
                 items: sortFunc(result.droppable, this.props.t),
                 selected: result.droppable2,
@@ -151,7 +149,7 @@ class DnDList extends React.Component {
 
     render() {
         const { t, search } = this.props;
-        console.log('search', this.state.selected);
+
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <DroppableLabel

@@ -132,7 +132,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                     value: selectedFields,
                     callbackSuccess: () => {
                         onClose(() => {
-                            changeRepresentation(name);
+                            changeRepresentation(name, true);
                             /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
@@ -179,8 +179,6 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
             onConfirm,
         });
     };
-
-    console.log('rr', representationName)
 
     return (
         <>

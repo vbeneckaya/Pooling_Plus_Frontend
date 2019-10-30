@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Dropdown } from 'semantic-ui-react';
+import {Menu, Dropdown, Icon} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -137,15 +137,22 @@ const Header = () => {
                                 </Dropdown>
                             </Menu.Menu>
                         ) : null}
-                        {userName && userRole ? (
-                            <Menu.Menu position="right">
-                                <Dropdown text={`${userName} (${t(userRole)})`} item>
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item onClick={logOut}>{t('exit')}</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </Menu.Menu>
-                        ) : null}
+                        <div className="header-support">
+                            <Icon name="question circle"/>
+                            <div className="header-support_contacts">
+                                <a href="mailto:support@artlogics.ru">support@artlogics.ru</a>
+                                <div>{t('support_work_time')}</div>
+                            </div>
+                            {userName && userRole ? (
+                                <Menu.Menu>
+                                    <Dropdown text={`${userName} (${t(userRole)})`} item>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={logOut}>{t('exit')}</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </Menu.Menu>
+                            ) : null}
+                        </div>
                     </Menu>
                 </header>
             ) : null}

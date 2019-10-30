@@ -138,7 +138,6 @@ export const homePageSelector = createSelector(stateSelector, state => {
 export const userPermissionsSelector = createSelector(
     stateSelector,
     state => {
-        console.log('role', state.role)
         return state.role ? state.role.permissions : []
     },
 );

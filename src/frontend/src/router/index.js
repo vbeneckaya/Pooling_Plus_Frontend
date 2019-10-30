@@ -23,8 +23,6 @@ const MainRoute = withRouter(props => {
         }
     }, [homePage]);
 
-    console.log('homePage', homePage);
-
     return (
         <Switch>
             <PrivateRoute

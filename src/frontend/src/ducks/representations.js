@@ -112,19 +112,27 @@ export const representationNameSelector = createSelector(
 );
 
 export const representationSelector = createSelector(
-    [stateSelector, (state, name) => name],
-    (state, gridName) => {
+    [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name)],
+    (state, gridName, columnList) => {
         const representationName = state.representation[gridName];
-        return representationName ? state.list[representationName] : [];
+        const representation = representationName ? state.list[representationName] : [];
+        const actualRepresentation = [];
+
+        representation && representation.forEach(item => {
+            const actualItem = columnList.find(column => column.name === item.name);
+            if (actualItem) {
+                actualRepresentation.push(actualItem)
+            }
+        });
+        return actualRepresentation;
     },
 );
 
 export const representationFromGridSelector = createSelector(
-    [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name)],
-    (state, gridName, list) => {
-        const representationName = state.representation[gridName];
-        if (representationName && state.list[representationName]) {
-            return state.list[representationName] || [];
+    [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name), (state, name) => representationSelector(state, name)],
+    (state, gridName, list, representation) => {
+        if (representation && representation.length) {
+            return representation;
         }
         return list.filter(item => item.isDefault);
     },

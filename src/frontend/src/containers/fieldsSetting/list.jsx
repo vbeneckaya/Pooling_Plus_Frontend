@@ -215,8 +215,6 @@ const List = () => {
         );
     };
 
-    console.log('settings', statusList);
-
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
     return (

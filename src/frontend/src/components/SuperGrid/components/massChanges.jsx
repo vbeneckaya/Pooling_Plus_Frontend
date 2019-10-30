@@ -17,7 +17,6 @@ const MassChanges = ({ gridName, load }) => {
     const fieldParams = updates.find(item => item.name === field);
 
     useEffect(() => {
-        console.log('gg', fieldParams);
         setColumn({
             name: field,
             type: fieldParams ? fieldParams.type : TEXT_TYPE,

@@ -96,7 +96,6 @@ const Card = props => {
     };
 
     const onChangeForm = (e, { name, value }) => {
-        console.log('va', value, name, card[name], value !== card[name]);
         setForm({
             ...form,
             [name]: value,

@@ -78,8 +78,6 @@ class RoleCard extends Component {
 
         const selectedPermissions = new Set(permissions);
 
-        console.log('111', selectedPermissions, value);
-
         selectedPermissions[selectedPermissions.has(value) ? 'delete' : 'add'](value);
 
         if (value === 1 && !selectedPermissions.has(value)) {

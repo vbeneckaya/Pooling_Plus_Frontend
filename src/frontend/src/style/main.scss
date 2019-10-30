@@ -323,3 +323,10 @@ input::-webkit-calendar-picker-indicator {
         margin: 0 !important;
     }
 }
+
+.ui.disabled.input,
+.ui.input:not(.disabled) input[disabled], .ui.disabled.search,
+.ui.form .disabled.field, .ui.form .disabled.fields .field, .ui.form .field :disabled {
+    opacity: .8!important;
+    background: rgba(1, 1, 1, .05);
+}

@@ -77,7 +77,6 @@ const CellValue = ({
     }
 
     if (type === ACTIVE_TYPE) {
-        console.log('id');
         return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
     }
 

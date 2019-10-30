@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
-import {debounce} from 'throttle-debounce';
+import { debounce } from 'throttle-debounce';
 
 import './style.scss';
 import Filter from './components/filter';
@@ -10,10 +10,10 @@ import HeaderSearchGrid from './components/header';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
-import {PAGE_SIZE} from '../../constants/settings';
-import {Button, Confirm, Grid, Icon, Popup,} from 'semantic-ui-react';
+import { PAGE_SIZE } from '../../constants/settings';
+import { Button, Confirm, Grid, Icon, Popup } from 'semantic-ui-react';
 import MassChanges from './components/massChanges';
-import {ORDERS_GRID} from "../../constants/grids";
+import { ORDERS_GRID } from '../../constants/grids';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -216,6 +216,26 @@ class SuperGrid extends Component {
         );
     };
 
+    updatingFilter = () => {
+        const { filters } = this.state;
+        const { columns, storageFilterItem } = this.props;
+
+
+        let newFilter = {};
+
+        Object.keys(filters).forEach(key => {
+            if (columns.find(item => item.name === key)) {
+                newFilter = {
+                    ...newFilter,
+                    [key]: filters[key],
+                };
+            }
+        });
+        this.setState({
+            filters: newFilter,
+        }, this.debounceSetFilterApiAndLoadList);
+    };
+
     setFilterApiAndLoadList = () => {
         const filtersJson = JSON.stringify(this.state.filters);
         const { storageFilterItem } = this.props;
@@ -292,8 +312,6 @@ class SuperGrid extends Component {
             t,
         } = this.props;
 
-        console.log('columns', columns);
-
         return (
             <>
                 <HeaderSearchGrid
@@ -315,6 +333,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    updatingFilter={this.updatingFilter}
                     filter={filters}
                     setSelected={this.setSelected}
                 />

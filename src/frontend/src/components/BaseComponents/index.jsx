@@ -30,7 +30,6 @@ const getTypeFacet = {
 };
 
 const FormField = props => {
-    console.log('props', props);
     let params = {
         ...props.column,
         name: props.column.name,

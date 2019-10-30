@@ -22,8 +22,6 @@ const OrderModal = ({
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(item => item.code);
 
-    console.log('userPermissions', userPermissions);
-
     const getPanes = [
         {
             menuItem: t('information'),
