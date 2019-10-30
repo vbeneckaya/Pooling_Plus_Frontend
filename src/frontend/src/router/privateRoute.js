@@ -16,6 +16,11 @@ function PrivateRoute({ component: Component, ...rest }) {
     const { computedMatch, location, permission = '' } = rest;
     const { path, params } = computedMatch;
 
+    console.log('path', path, isCustomPage, permission);
+    console.log('grid', path.includes('grid') && !gridsMenu.includes(params.name));
+    console.log('dictionary', path.includes('dictionary') && !dictionaryMenu.includes(params.name));
+    console.log('customPage', customPage.includes(path) && !isCustomPage[permission]);
+
     if (
         (path.includes('grid') && !gridsMenu.includes(params.name)) ||
         (path.includes('dictionary') && !dictionaryMenu.includes(params.name)) ||

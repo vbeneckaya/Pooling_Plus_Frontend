@@ -31,17 +31,13 @@ const Header = () => {
     const { t } = useTranslation();
     const { location } = useReactRouter();
 
-    const getProfile = () => {
-        if (!userName && isAuth) {
-            dispatch(getUserProfile());
-        }
-    };
+
 
     const logOut = () => {
         dispatch(logoutRequest());
     };
 
-    useEffect(getProfile, []);
+
 
     let [activeItem, setActiveItem] = useState(location.pathname);
 
