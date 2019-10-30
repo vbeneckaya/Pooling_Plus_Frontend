@@ -3,6 +3,7 @@ using Domain.Persistables;
 using Domain.Services.Articles;
 using Domain.Services.Injections;
 using Domain.Shared;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
@@ -13,16 +14,23 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Tasks.Common;
 using Tasks.Helpers;
 
 namespace Tasks.MasterData
 {
     [Description("Импорт инжекций MatMas на сихронизацию мастер-данных по продуктам")]
-    public class ImportProductsTask : TaskBase
+    public class ImportProductsTask : TaskBase<ImportProductsProperties>, IScheduledTask
     {
-        public void Execute(ImportProductsProperties props)
+        public ImportProductsTask(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider, configuration) { }
+
+        public string Schedule => "*/5 * * * *";
+
+        protected override async Task Execute(ImportProductsProperties props, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -53,7 +61,7 @@ namespace Tasks.MasterData
             try
             {
                 Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
-                IInjectionsService injectionsService = ServiceProvider.GetService<IInjectionsService>();
+                IInjectionsService injectionsService = _serviceProvider.GetService<IInjectionsService>();
 
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
@@ -124,7 +132,7 @@ namespace Tasks.MasterData
         private bool ProcessProductsFile(string fileName, string fileContent)
         {
             // Загружаем справочник стран
-            AppDbContext db = ServiceProvider.GetService<AppDbContext>();
+            AppDbContext db = _serviceProvider.GetService<AppDbContext>();
             var countries = db.Countries.ToList();
             Dictionary<string, string> countryNameLookup = new Dictionary<string, string>();
             foreach (var country in countries)
@@ -133,7 +141,7 @@ namespace Tasks.MasterData
             }
 
             // Загружаем текущий список продуктов из базы
-            IArticlesService articlesService = ServiceProvider.GetService<IArticlesService>();
+            IArticlesService articlesService = _serviceProvider.GetService<IArticlesService>();
             IEnumerable<ArticleDto> currentProducts = articlesService.Search(new SearchFormDto { Take = int.MaxValue }).Items;
 
             // Получаем список продуктов из файла, обновляем имеющиеся продукты

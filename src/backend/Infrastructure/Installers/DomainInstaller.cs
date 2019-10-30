@@ -59,6 +59,8 @@ namespace Infrastructure.Installers
     {
         public static void AddDomain(this IServiceCollection services, IConfiguration configuration, bool migrateDb)
         {
+            services.AddSingleton(configuration);
+
             services.AddScoped<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();

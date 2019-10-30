@@ -1,130 +1,110 @@
-﻿using DAL;
-using Domain.Services.TaskProperties;
-using Domain.Services.Translations;
-using Domain.Services.UserProvider;
-using Infrastructure.Installers;
-using Infrastructure.Logging;
+﻿using Domain.Services.TaskProperties;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
+using Newtonsoft.Json;
 using Serilog;
-using Serilog.Context;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using Tasks.Services;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Tasks
+namespace Tasks.Common
 {
-    public abstract class TaskBase : IDisposable
+    public abstract class TaskBase<TArgs> where TArgs : PropertiesBase
     {
-        private const string ExecuteMethodName = "Execute";
+        protected readonly IServiceProvider _serviceProvider;
+        protected readonly IConfiguration _configuration;
 
-        public string TaskName { get; }
-
-        public Guid RunId { get; } = Guid.NewGuid();
-
-        public bool IsCompleted { get; private set; }
-
-        [Test]
-        [TestCase((string)null)]
-        public void Run(string consoleParameters = null)
+        public TaskBase(IServiceProvider serviceProvider, IConfiguration configuration)
         {
-            if (IsCompleted)
-            {
-                throw new TaskRunException($"Попытка повторного выполнения уже выполненной задачи {TaskName}", this);
-            }
+            _serviceProvider = serviceProvider;
+            _configuration = configuration;
+        }
 
-            using (LogContext.PushProperty("TaskName", TaskName))
+        public string TaskName
+        {
+            get
             {
-                var stopwatch = Stopwatch.StartNew();
-
-                List<string> parametersList = LoadTaskParameters(consoleParameters);
-                foreach (string parameters in parametersList)
+                string taskSuffix = "Task";
+                string result = GetType().Name;
+                if (result.EndsWith(taskSuffix))
                 {
-                    try
-                    {
-                        var propertiesType = typeof(PropertiesBase);
-                        var methodInfo = GetType()
-                            .GetMethod(ExecuteMethodName, BindingFlags.Instance | BindingFlags.Public);
-                        var executeParameters = methodInfo.GetParameters()
-                            .Select(pi => propertiesType.IsAssignableFrom(pi.ParameterType)
-                                        ? CreateProperties(pi.ParameterType, parameters)
-                                        : ServiceProvider.GetService(pi.ParameterType))
-                            .ToArray();
-
-                        methodInfo.Invoke(this, executeParameters);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Failed to run {TaskName} with parameters {parameters}", TaskName, parameters);
-                    }
+                    result = result.Substring(0, result.Length - taskSuffix.Length);
                 }
-
-                IsCompleted = true;
-                stopwatch.Stop();
+                return result;
             }
         }
 
-        protected virtual void Initialize()
+        public async Task Execute(string consoleParameters, CancellationToken cancellationToken)
         {
-            var db = ServiceProvider.GetService<AppDbContext>();
-
-            var translations = db.Translations.ToList();
-            TranslationProvider.FillCache(translations);
-        }
-
-        protected virtual void CreateContainer()
-        {
-            IServiceCollection services = new ServiceCollection();
-
-            services.AddDomain(Configuration, false);
-
-            services.AddScoped<IUserProvider, TasksUserProvider>();
-
-            ServiceProvider = services.BuildServiceProvider();
-        }
-
-        protected virtual void CreateLogger()
-        {
-            Log.Logger = LoggerFactory.CreateLogger(Configuration, "Tasks");
-        }
-
-        private List<string> LoadTaskParameters(string consoleParameters)
-        {
-            List<string> parametersList;
-            if (string.IsNullOrEmpty(consoleParameters))
+            var parameters = LoadParameters(consoleParameters);
+            foreach (var param in parameters)
             {
-                ITaskPropertiesService propertiesService = ServiceProvider.GetService<ITaskPropertiesService>();
-                var propertiesEntries = propertiesService.GetByTaskName(TaskName);
-                parametersList = propertiesEntries.Select(p => p.Properties).ToList();
-            }
-            else
-            {
-                parametersList = new List<string> { consoleParameters };
-            }
+                string args = JsonConvert.SerializeObject(param);
+                Log.Logger.Information("Выполнение задачи {TaskName} с параметрами {args}...", TaskName, args);
 
-            if (!parametersList.Any())
-            {
-                parametersList.Add(null);
+                await Execute(param, cancellationToken);
             }
+        }
 
+        protected abstract Task Execute(TArgs parameters, CancellationToken cancellationToken);
+
+        private List<TArgs> LoadParameters(string consoleParameters)
+        { 
+            var parametersStrList = GetParameters(consoleParameters);
+            var parametersList = parametersStrList.Select(CreateProperties).ToList();
             return parametersList;
         }
 
-        private object CreateProperties(Type propertiesType, string parameters)
+        private List<string> GetParameters(string consoleParameters)
         {
+            var result = new List<string>();
+
+            // 1. Параметры из консоли
+            if (!string.IsNullOrEmpty(consoleParameters))
+            {
+                result.Add(consoleParameters);
+            }
+
+            // 2. Параметры из базы
+            if (!result.Any())
+            {
+                var propertiesService = _serviceProvider.GetService<ITaskPropertiesService>();
+                var propertiesEntries = propertiesService.GetByTaskName(TaskName);
+                result.AddRange(propertiesEntries.Select(p => p.Properties));
+            }
+
+            // 3. Параметры из конфига
+            if (!result.Any())
+            {
+                string configParameters = _configuration.GetValue<string>($"{TaskName}:Args", null);
+                if (!string.IsNullOrEmpty(configParameters))
+                {
+                    result.Add(configParameters);
+                }
+            }
+
+            // Хотя бы пустые передаем, если нигде ничего не указано
+            if (!result.Any())
+            {
+                result.Add(null);
+            }
+
+            return result;
+        }
+
+        private TArgs CreateProperties(string parameters)
+        {
+            Type propertiesType = typeof(TArgs);
             var propertiesTypeFields = propertiesType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var isPropertiesTypeValid = propertiesTypeFields.All(pi => pi.PropertyType == typeof(string));
             if (!isPropertiesTypeValid)
                 throw new NotSupportedException($"Тип параметров {propertiesType.Name} не " +
                                                 "должен содержать свойств, тип которых отличается от System.String");
 
-            var properties = Activator.CreateInstance(propertiesType);
+            var properties = (TArgs)Activator.CreateInstance(propertiesType);
             var propertiesDictionary = (parameters ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Split(new[] { '=' }, 2))
                 .ToDictionary(k => k[0], v => v[1]);
@@ -137,33 +117,5 @@ namespace Tasks
 
             return properties;
         }
-
-        public void Dispose()
-        {
-            if (!_isDisposed)
-            {
-                Log.CloseAndFlush();
-                _isDisposed = true;
-            }
-        }
-
-        protected TaskBase()
-        {
-            TaskName = Regex.Replace(GetType().Name, "Task$", string.Empty);
-            CreateLogger();
-            CreateContainer();
-            Initialize();
-        }
-
-        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
-
-        public static IServiceProvider ServiceProvider { get; set; }
-
-        private bool _isDisposed = false;
     }
 }
