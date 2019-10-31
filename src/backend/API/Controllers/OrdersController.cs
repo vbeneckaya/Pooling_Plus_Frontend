@@ -12,7 +12,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/orders")]
-    [GridPermissions(Search = RolePermissions.OrdersView)]
+    [GridPermissions(Search = RolePermissions.OrdersView, SaveOrCreate = RolePermissions.OrdersCreate)]
     public class OrdersController : GridWithDocumentsController<IOrdersService, Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto> 
     {
         public OrdersController(IOrdersService ordersService, IDocumentService documentService) : base(ordersService, documentService)

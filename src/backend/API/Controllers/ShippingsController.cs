@@ -1,4 +1,5 @@
 using API.Controllers.Shared;
+using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.Documents;
 using Domain.Services.Shippings;
@@ -10,6 +11,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/shippings")]
+    [GridPermissions(Search = RolePermissions.ShippingsView, SaveOrCreate = RolePermissions.ShippingsView)]
     public class ShippingsController : GridWithDocumentsController<IShippingsService, Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto> 
     {
         public ShippingsController(IShippingsService shippingsService, IDocumentService documentService) : base(shippingsService, documentService)
