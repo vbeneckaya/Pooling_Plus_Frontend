@@ -159,8 +159,8 @@ namespace Tasks.Orders
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
-                dto.BdfInvoiceNumber = orderNumber;
-                dto.OrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText ?? dto.OrderNumber;
+                dto.OrderNumber = orderNumber;
+                dto.ClientOrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText ?? dto.ClientOrderNumber;
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
                 dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.SoldTo;
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
@@ -217,13 +217,13 @@ namespace Tasks.Orders
 
                     if (isNew)
                     {
-                        Log.Information("Создан новый заказ {BdfInvoiceNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
-                                        dto.BdfInvoiceNumber, processedCount, totalCount, fileName);
+                        Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
                     }
                     else
                     {
-                        Log.Information("Обновлен заказ {BdfInvoiceNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
-                                        dto.BdfInvoiceNumber, processedCount, totalCount, fileName);
+                        Log.Information("Обновлен заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
                     }
 
                     orders.Add(dto);
@@ -242,6 +242,10 @@ namespace Tasks.Orders
         private IEnumerable<string> ValidateRequiredFields(OrderDto dto)
         {
             if (string.IsNullOrEmpty(dto.OrderNumber))
+            {
+                yield return "Номер накладной BDF";
+            }
+            if (string.IsNullOrEmpty(dto.ClientOrderNumber))
             {
                 yield return "Номер заказа клиента";
             }

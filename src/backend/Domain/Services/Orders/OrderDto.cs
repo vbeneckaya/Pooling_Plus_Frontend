@@ -13,6 +13,9 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
         public string OrderNumber { get; set; }
 
+        [FieldType(FieldType.Text)]
+        public string ClientOrderNumber { get; set; }
+
         [FieldType(FieldType.DateTime)]
         public string OrderDate { get; set; }
 
@@ -42,9 +45,6 @@ namespace Domain.Services.Orders
 
         [FieldType(FieldType.DateTime), IsDefault, OrderNumber(7)]
         public string DeliveryDate { get; set; }
-
-        [FieldType(FieldType.Text)]
-        public string BdfInvoiceNumber { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? ArticlesCount { get; set; }
