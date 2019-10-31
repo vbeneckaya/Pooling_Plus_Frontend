@@ -96,16 +96,17 @@ namespace Application.Services.AppConfiguration
             var dicts = new List<UserConfigurationDictionaryItem>();
 
             var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+            var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-            if (canEditTariffs)
+            if (canViewTariffs)
             {
                 var columns = ExtractColumnsFromDto<TariffDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TariffsService>(),
                     CanCreateByForm = canEditTariffs,
-                    CanExportToExcel = canEditTariffs,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditTariffs,
                     ShowOnHeader = true,
                     Columns = columns
                 });
@@ -120,8 +121,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<WarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
-                    CanExportToExcel = canEditWarehouses,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditWarehouses,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -136,8 +137,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<ArticlesService>(),
                     CanCreateByForm = canEditArticles,
-                    CanExportToExcel = canEditArticles,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditArticles,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -152,8 +153,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<PickingTypesService>(),
                     CanCreateByForm = canEditPickingTypes,
-                    CanExportToExcel = canEditPickingTypes,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditPickingTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -168,8 +169,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<TransportCompaniesService>(),
                     CanCreateByForm = canEditTransportCompanies,
-                    CanExportToExcel = canEditTransportCompanies,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditTransportCompanies,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -184,8 +185,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<VehicleTypesService>(),
                     CanCreateByForm = canEditVehicleTypes,
-                    CanExportToExcel = canEditVehicleTypes,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -200,8 +201,8 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<DocumentTypesService>(),
                     CanCreateByForm = canEditDocumentTypes,
-                    CanExportToExcel = canEditDocumentTypes,
-                    CanImportFromExcel = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
