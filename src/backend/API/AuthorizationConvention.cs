@@ -18,13 +18,12 @@ namespace API
             {
                 var attr = (GridPermissionsAttribute)action.Controller.Attributes.First(x => x.GetType() == typeof(GridPermissionsAttribute));
 
-                var actionPermissions = GetActionPermissions(attr);
+                var actionPermission = GetActionPermissions(attr, action.ActionName);
 
-                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser();
-
-                if (actionPermissions.ContainsKey(action.ActionName))
+                if (actionPermission.HasValue)
                 {
-                    policy = policy.RequireClaim("Permission", actionPermissions[action.ActionName].GetPermissionName());
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser();
+                    policy = policy.RequireClaim("Permission", actionPermission.Value.GetPermissionName());
                     action.Filters.Add(new AuthorizeFilter(policy.Build()));
                 }
             }
@@ -35,21 +34,14 @@ namespace API
             return action.Controller.Attributes.Any(x => x.GetType() == typeof(GridPermissionsAttribute));
         }
 
-        private Dictionary<string, RolePermissions> GetActionPermissions(GridPermissionsAttribute gridPermissions)
+        private RolePermissions? GetActionPermissions(GridPermissionsAttribute gridPermissions, string action)
         {
-            var dictionary = new Dictionary<string, RolePermissions>();
-
-            if (gridPermissions.SaveOrCreate != RolePermissions.None)
+            switch(action)
             {
-                dictionary.Add("SaveOrCreate", gridPermissions.SaveOrCreate);
+                case "SaveOrCreate": return gridPermissions.SaveOrCreate;
+                case "Search": return gridPermissions.Search;
+                default: return null;
             }
-
-            if (gridPermissions.Search != RolePermissions.None)
-            {
-                dictionary.Add("Search", gridPermissions.Search);
-            }
-
-            return dictionary;
         }
     }
 }
