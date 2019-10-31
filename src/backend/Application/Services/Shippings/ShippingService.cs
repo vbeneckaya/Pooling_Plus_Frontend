@@ -74,12 +74,17 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
+            bool isNew = string.IsNullOrEmpty(dto.Id);
+
             IEnumerable<string> readOnlyFields = null;
-            var userId = _userIdProvider.GetCurrentUserId();
-            if (userId != null)
+            if (!isNew)
             {
-                string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
-                readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings, stateName, null, null, userId);
+                var userId = _userIdProvider.GetCurrentUserId();
+                if (userId != null)
+                {
+                    string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
+                    readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings, stateName, null, null, userId);
+                }
             }
 
             var setter = new FieldSetter<Shipping>(entity, _historyService, readOnlyFields);

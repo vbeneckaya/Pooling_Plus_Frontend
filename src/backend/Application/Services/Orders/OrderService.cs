@@ -79,14 +79,18 @@ namespace Application.Services.Orders
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
+            bool isNew = string.IsNullOrEmpty(dto.Id);
             bool isInjection = dto.AdditionalInfo == "INJECTION";
 
             IEnumerable<string> readOnlyFields = null;
-            var userId = _userIdProvider.GetCurrentUserId();
-            if (userId != null)
+            if (!isNew)
             {
-                string stateName = entity.Status.ToString().ToLowerFirstLetter();
-                readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Orders, stateName, null, null, userId);
+                var userId = _userIdProvider.GetCurrentUserId();
+                if (userId != null)
+                {
+                    string stateName = entity.Status.ToString().ToLowerFirstLetter();
+                    readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Orders, stateName, null, null, userId);
+                }
             }
 
             var setter = new FieldSetter<Order>(entity, _historyService, readOnlyFields);
@@ -146,7 +150,6 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
             /*end of map dto to entity fields*/
 
-            bool isNew = string.IsNullOrEmpty(dto.Id);
             if (isNew)
             {
                 InitializeNewOrder(setter);
