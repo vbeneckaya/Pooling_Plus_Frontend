@@ -239,6 +239,14 @@ namespace Domain.Persistables
             return OrderNumber;
         }
 
+        /// <summary>
+        /// Дата изменения
+        /// </summary>
         public DateTime? OrderChangeDate { get; set; }
+
+        /// <summary>
+        /// Заказ подтвержден
+        /// </summary>
+        public bool OrderConfirmed { get; set; }
     }
 }
