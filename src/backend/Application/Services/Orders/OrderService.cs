@@ -148,6 +148,8 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
+            setter.UpdateField(e => e.OrderChangeDate, ParseDateTime(dto.OrderChangeDate));
+
             /*end of map dto to entity fields*/
 
             if (isNew)
