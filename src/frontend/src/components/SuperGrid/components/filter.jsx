@@ -64,16 +64,30 @@ class Filter extends Component {
     constructor(props) {
         super(props);
 
-        const widths = [];
+        /*const widths = [];
 
         props.columns.forEach(column => {
             column.name === 'status' ? widths.push(200) : widths.push(100);
-        });
+        });*/
 
         this.state = {
-            widths,
+            widths: [],
         };
     }
+
+    /*componentDidUpdate (prevProps) {
+        if(prevProps.columns !== this.props.columns) {
+            const widths = [];
+
+            this.props.columns.forEach(column => {
+                column.name === 'status' ? widths.push(200) : widths.push(100);
+            });
+
+            this.state = {
+                widths,
+            };
+        }
+    }*/
 
     handleResize = (e, { size, index }) => {
         this.setState(({ widths }) => {
@@ -113,7 +127,7 @@ class Filter extends Component {
                 {columns &&
                     columns.map((x, i) => (
                         <Resizable
-                            width={widths[i]}
+                            width={widths[i] || 100}
                             height={0}
                             onResize={(e, { size }) => this.handleResize(e, { size, index: i })}
                         >

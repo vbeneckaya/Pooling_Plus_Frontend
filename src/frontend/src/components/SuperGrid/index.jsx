@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 
-import { debounce } from 'throttle-debounce';
+import {debounce} from 'throttle-debounce';
 
 import './style.scss';
 import Filter from './components/filter';
@@ -10,10 +10,9 @@ import HeaderSearchGrid from './components/header';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
-import { PAGE_SIZE } from '../../constants/settings';
-import { Button, Confirm, Grid, Icon, Popup } from 'semantic-ui-react';
-import MassChanges from './components/massChanges';
-import { ORDERS_GRID } from '../../constants/grids';
+import {PAGE_SIZE} from '../../constants/settings';
+import {Confirm} from 'semantic-ui-react';
+import Footer from "./components/footer";
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -34,18 +33,10 @@ class SuperGrid extends Component {
         const { storageFilterItem, storageSortItem } = props;
 
         this.state = {
-            ...initState(storageFilterItem, storageSortItem),
-            isOpen: false,
+            ...initState(storageFilterItem, storageSortItem)
         };
     }
 
-    handleOpen = () => {
-        this.setState({ isOpen: true });
-    };
-
-    handleClose = () => {
-        this.setState({ isOpen: false });
-    };
 
     componentDidMount() {
         this.props.autoUpdateStart(this.mapData());
@@ -216,6 +207,15 @@ class SuperGrid extends Component {
         );
     };
 
+    clearSelectedRows = () => {
+        this.setState(
+            {
+                selectedRows: new Set(),
+            },
+            () => this.loadList(false, true),
+        );
+    };
+
     updatingFilter = () => {
         const { filters } = this.state;
         const { columns, storageFilterItem } = this.props;
@@ -251,43 +251,9 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
-    handleUnloadInExcel = () => {
-        const { getReport } = this.props;
-        const { filters: filter } = this.state;
-
-        getReport({ filter });
-    };
-
-    infoView = () => {
-        const { info, t } = this.props;
-
-        return (
-            <div className="footer-info">
-                <div className="footer-info-close" onClick={this.handleClose}>
-                    <Icon name="sort down" />
-                </div>
-                <div>
-                    {t('orders_selected')}
-                    <span className="footer-info-value">{info.count}</span>
-                </div>
-                <div>
-                    {t('number_of_boxes')}
-                    <span className="footer-info-value">{info.boxesCount}</span>
-                </div>
-                <div>
-                    {t('number_of_pallets')}
-                    <span className="footer-info-value">{info.palletsCount}</span>
-                </div>
-                <div>
-                    {t('target_weight')}
-                    <span className="footer-info-value">{info.weightKg}</span>
-                </div>
-            </div>
-        );
-    };
 
     render() {
-        const { filters, sort, fullText, selectedRows, isOpen } = this.state;
+        const {filters, sort, fullText, selectedRows} = this.state;
         const {
             totalCount: count = 0,
             columns,
@@ -305,7 +271,6 @@ class SuperGrid extends Component {
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
-            colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
             name,
@@ -382,71 +347,7 @@ class SuperGrid extends Component {
                         />
                     </InfiniteScrollTable>
                     {selectedRows.size ? (
-                        <Grid className="grid-footer-panel" columns="2">
-                            <Grid.Row>
-                                <Grid.Column>
-                                    {name === ORDERS_GRID ? (
-                                        <Popup
-                                            trigger={
-                                                <div
-                                                    className="footer-info-label"
-                                                    onClick={
-                                                        isOpen ? this.handleClose : this.handleOpen
-                                                    }
-                                                >
-                                                    <Icon name={isOpen ? 'sort up' : 'sort down'} />
-                                                    Данные по заказам
-                                                </div>
-                                            }
-                                            content={this.infoView()}
-                                            on="click"
-                                            open={isOpen}
-                                            onClose={this.handleClose}
-                                            onOpen={this.handleOpen}
-                                            hideOnScroll
-                                            className="from-popup"
-                                        />
-                                    ) : null}
-                                    <div style={{ paddingTop: '4px' }}>
-                                        {groupActions
-                                            ? groupActions().map(action => (
-                                                  <span key={action.name}>
-                                                      <Button
-                                                          color={action.color}
-                                                          content={action.name}
-                                                          loading={action.loading}
-                                                          disabled={action.loading}
-                                                          icon={action.icon}
-                                                          size="mini"
-                                                          compact
-                                                          onClick={() =>
-                                                              action.action(action.ids, () => {
-                                                                  this.setState(
-                                                                      {
-                                                                          selectedRows: new Set(),
-                                                                      },
-                                                                      () =>
-                                                                          this.loadList(
-                                                                              false,
-                                                                              true,
-                                                                          ),
-                                                                  );
-                                                              })
-                                                          }
-                                                      />
-                                                  </span>
-                                              ))
-                                            : null}
-                                    </div>
-                                </Grid.Column>
-                                <Grid.Column floated="right">
-                                    <MassChanges
-                                        gridName={name}
-                                        load={() => this.loadList(false, true)}
-                                    />
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
+                        <Footer gridName={name} groupActions={groupActions} clearSelectedRows={this.clearSelectedRows}/>
                     ) : null}
                 </div>
                 <Confirm

@@ -1,15 +1,7 @@
-import React, { Component } from 'react';
-import { withTranslation } from 'react-i18next';
-import {Button, Checkbox, Dimmer, Icon, Loader, Table} from 'semantic-ui-react';
-import CellValue from '../../../components/ColumnsValue';
-import {toast} from 'react-toastify';
-
-const ModalComponent = ({ element, props, children }) => {
-    if (!element) {
-        return <>{children}</>;
-    }
-    return React.cloneElement(element, props, children);
-};
+import React, {Component} from 'react';
+import {withTranslation} from 'react-i18next';
+import {Button, Checkbox, Dimmer, Loader, Table} from 'semantic-ui-react';
+import CellResult from "./result_cell";
 
 class Result extends Component {
     handleCheck = row => {
@@ -28,17 +20,6 @@ class Result extends Component {
         }
     };
 
-    copyToClipboard = text => {
-        navigator.clipboard && navigator.clipboard.writeText(text).then(
-            () => {
-                toast.info('Скопировано в буфер обмена');
-            },
-            (err) => {
-                toast.error(`При копировании произошла ошибка: ${err}`);
-            },
-        );
-    };
-
     render() {
         const {
             columns = [],
@@ -50,7 +31,6 @@ class Result extends Component {
             loadList,
             disabledCheck,
             name,
-            t,
             progress,
         } = this.props;
 
@@ -90,52 +70,15 @@ class Result extends Component {
                             </Table.Cell>
                             {columns &&
                                 columns.map(column => (
-                                    <Table.Cell
+                                    <CellResult
                                         key={`cell_${row.id}_${column.name}_${i}`}
-                                        className={
-                                            column.name.toLowerCase().includes('address')
-                                                ? 'address-cell'
-                                                : ''
-                                        }
-                                    >
-                                        {
-                                            <div className="cell-grid">
-                                                <div
-                                                    className={`cell-grid-value ${row[column.name] !== null ? '' : 'cell-grid-value_empty'}`}>
-                                                    <CellValue
-                                                        {...column}
-                                                        id={`${row.id}_${column.name}_${i}`}
-                                                        indexRow={i}
-                                                        value={row[column.name]}
-                                                        modalCard={
-                                                            <ModalComponent
-                                                                element={modalCard}
-                                                                props={{
-                                                                    ...row,
-                                                                    loadList,
-                                                                    title: `edit_${name}`,
-                                                                }}
-                                                                key={`modal_${row.id}`}
-                                                            />
-                                                        }
-                                                    />
-                                                </div>
-                                                {row[column.name] !== null ? (
-                                                    <div className="cell-grid-copy-btn">
-                                                        <Icon
-                                                            name="clone outline"
-                                                            size="small"
-                                                            onClick={() =>
-                                                                this.copyToClipboard(
-                                                                    row[column.name],
-                                                                )
-                                                            }
-                                                        />
-                                                    </div>
-                                                ) : null}
-                                            </div>
-                                        }
-                                    </Table.Cell>
+                                        row={row}
+                                        column={column}
+                                        indexRow={i}
+                                        loadList={loadList}
+                                        gridName={name}
+                                        modalCard={modalCard}
+                                    />
                                 ))}
                             {isShowActions ? (
                                 <Table.HeaderCell
