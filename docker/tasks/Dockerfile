@@ -9,11 +9,6 @@ WORKDIR /app
 
 COPY /src/backend/ .
 
-COPY /docker/tasks/cron/cron.d /etc/cron.d
-COPY /docker/tasks/cron/cron.sh /app/
-COPY /docker/tasks/cron/task.sh /app/
-RUN chmod +x /app/cron.sh
-RUN touch /var/log/cron.log
-
 RUN dotnet publish Tasks/ -c Release -o /app/build/
-ENTRYPOINT ["tail", "-f", "/var/log/cron.log"]
+
+ENTRYPOINT cd /app/build && dotnet Tasks.dll

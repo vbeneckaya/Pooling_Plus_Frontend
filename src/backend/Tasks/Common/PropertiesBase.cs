@@ -1,6 +1,6 @@
-﻿namespace Tasks
+﻿namespace Tasks.Common
 {
-    public abstract class PropertiesBase
+    public class PropertiesBase
     {
     }
 }

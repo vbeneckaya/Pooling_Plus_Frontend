@@ -1,6 +1,7 @@
 ﻿using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
@@ -11,16 +12,23 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Tasks.Common;
 using Tasks.Helpers;
 
 namespace Tasks.Orders
 {
     [Description("Импорт инжекций на создание нового заказа")]
-    public class ImportOrderTask : TaskBase
+    public class ImportOrderTask : TaskBase<ImportOrderProperties>, IScheduledTask
     {
-        public void Execute(ImportOrderProperties props)
+        public ImportOrderTask(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider, configuration) { }
+
+        public string Schedule => "*/5 * * * *";
+
+        protected override async Task Execute(ImportOrderProperties props, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -51,7 +59,7 @@ namespace Tasks.Orders
             try
             {
                 Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
-                IInjectionsService injectionsService = ServiceProvider.GetService<IInjectionsService>();
+                IInjectionsService injectionsService = _serviceProvider.GetService<IInjectionsService>();
 
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
@@ -121,7 +129,7 @@ namespace Tasks.Orders
 
         private bool ProcessOrderFile(string fileName, string fileContent)
         {
-            IOrdersService ordersService = ServiceProvider.GetService<IOrdersService>();
+            IOrdersService ordersService = _serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
             XmlDocument doc = new XmlDocument();
