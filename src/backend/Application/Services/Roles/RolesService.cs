@@ -30,6 +30,15 @@ namespace Application.Services.Roles
             else
             {
                 entity.IsActive = active;
+
+                if (!entity.IsActive)
+                {
+                    _dataService.GetDbSet<User>()
+                        .Where(i => i.RoleId == entity.Id)
+                        .ToList()
+                        .ForEach(i => i.IsActive = entity.IsActive);
+                }
+
                 _dataService.SaveChanges();
 
                 return new ValidateResult(null, entity.Id.ToString());
@@ -85,7 +94,8 @@ namespace Application.Services.Roles
                 {
                     Code = i,
                     Name = i.GetPermissionName()
-                })
+                }),
+                UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count()
             };
         }
 

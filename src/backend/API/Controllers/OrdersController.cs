@@ -1,4 +1,5 @@
 using API.Controllers.Shared;
+using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.Documents;
 using Domain.Services.Orders;
@@ -11,6 +12,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/orders")]
+    [GridPermissions(Search = RolePermissions.OrdersView, SaveOrCreate = RolePermissions.OrdersCreate)]
     public class OrdersController : GridWithDocumentsController<IOrdersService, Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto> 
     {
         public OrdersController(IOrdersService ordersService, IDocumentService documentService) : base(ordersService, documentService)

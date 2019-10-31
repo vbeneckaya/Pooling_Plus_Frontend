@@ -831,5 +831,5 @@ en:
   Permission.VehicleTypesEdit: "Edit vehicle types"
   Permission.DocumentTypesEdit: "Edit document types"
   Permission.RolesEdit: "Edit roles"
-  Permission.UsersEdit: "Увше users"
+  Permission.UsersEdit: "Edit users"
   Permission.FieldsSettings: "Fields settings"
