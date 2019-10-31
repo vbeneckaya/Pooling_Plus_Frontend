@@ -142,11 +142,12 @@
     max-height: 150px;
     -webkit-line-clamp: 7;
     -webkit-box-orient: vertical;
-    width: inherit;
+    width: max-content;
+    min-width: inherit;
 }
 
 .grid-row td {
-    cursor: pointer;
+    /*cursor: pointer;*/
     background-color: #fbfdff;
 }
 
@@ -157,6 +158,10 @@
     }
     .address-cell {
         max-width: 100px;
+
+        .cell-grid {
+            width: inherit;
+        }
     }
 }
 .column-address {
@@ -393,4 +398,36 @@ $teal: #b5eae7;
     //    display: flex;
     //    align-items: center;
     //}
+}
+
+.cell-grid {
+    display: flex;
+    position: relative;
+    &:hover .cell-grid-copy-btn {
+        -webkit-transition: opacity 1s ease-in-out;
+        -moz-transition: opacity 1s ease-in-out;
+        -o-transition: opacity 1s ease-in-out;
+        transition: opacity 1s ease-in-out;
+        opacity: 1;
+    }
+    &-value {
+        position: relative;
+        width: inherit;
+        min-width: 50%;
+        min-height: 18px;
+        &:hover {
+            cursor: pointer;
+        }
+        &_empty {
+            width: 100%;
+        }
+    }
+
+    &-copy-btn {
+        opacity: 0;
+        padding-left: 8px;
+        :hover {
+            cursor: pointer;
+        }
+    }
 }

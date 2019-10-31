@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Button, Checkbox, Dimmer, Loader, Table } from 'semantic-ui-react';
+import {Button, Checkbox, Dimmer, Icon, Loader, Table} from 'semantic-ui-react';
 import CellValue from '../../../components/ColumnsValue';
-import InfiniteScrollTable from '../../InfiniteScrollTable';
+import {toast} from 'react-toastify';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -26,6 +26,17 @@ class Result extends Component {
             newSelectedRows[!selectedRows.has(row.id) ? 'add' : 'delete'](row.id);
             setSelected(newSelectedRows);
         }
+    };
+
+    copyToClipboard = text => {
+        navigator.clipboard && navigator.clipboard.writeText(text).then(
+            () => {
+                toast.info('Скопировано в буфер обмена');
+            },
+            (err) => {
+                toast.error(`При копировании произошла ошибка: ${err}`);
+            },
+        );
     };
 
     render() {
@@ -88,23 +99,41 @@ class Result extends Component {
                                         }
                                     >
                                         {
-                                            <CellValue
-                                                {...column}
-                                                id={`${row.id}_${column.name}_${i}`}
-                                                indexRow={i}
-                                                value={row[column.name]}
-                                                modalCard={
-                                                    <ModalComponent
-                                                        element={modalCard}
-                                                        props={{
-                                                            ...row,
-                                                            loadList,
-                                                            title: `edit_${name}`,
-                                                        }}
-                                                        key={`modal_${row.id}`}
+                                            <div className="cell-grid">
+                                                <div
+                                                    className={`cell-grid-value ${row[column.name] !== null ? '' : 'cell-grid-value_empty'}`}>
+                                                    <CellValue
+                                                        {...column}
+                                                        id={`${row.id}_${column.name}_${i}`}
+                                                        indexRow={i}
+                                                        value={row[column.name]}
+                                                        modalCard={
+                                                            <ModalComponent
+                                                                element={modalCard}
+                                                                props={{
+                                                                    ...row,
+                                                                    loadList,
+                                                                    title: `edit_${name}`,
+                                                                }}
+                                                                key={`modal_${row.id}`}
+                                                            />
+                                                        }
                                                     />
-                                                }
-                                            />
+                                                </div>
+                                                {row[column.name] !== null ? (
+                                                    <div className="cell-grid-copy-btn">
+                                                        <Icon
+                                                            name="clone outline"
+                                                            size="small"
+                                                            onClick={() =>
+                                                                this.copyToClipboard(
+                                                                    row[column.name],
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                ) : null}
+                                            </div>
                                         }
                                     </Table.Cell>
                                 ))}
