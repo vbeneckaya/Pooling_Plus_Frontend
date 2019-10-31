@@ -67,7 +67,12 @@ namespace API
 
             string version = GetMajorVersion();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => 
+            {
+                options.Conventions.Add(new AuthorizeByDefaultConvention());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc($"v{version}", new Info
