@@ -238,5 +238,7 @@ namespace Domain.Persistables
         {
             return OrderNumber;
         }
+
+        public DateTime? OrderChangeDate { get; set; }
     }
 }
