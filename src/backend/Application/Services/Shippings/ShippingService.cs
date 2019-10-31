@@ -394,26 +394,47 @@ namespace Application.Services.Shippings
             if (string.IsNullOrEmpty(search)) return query;
 
             var isInt = int.TryParse(search, out int searchInt);
-            var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
+            var isDecimal = decimal.TryParse(search.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
-            var tarrificationTypes = Enum.GetNames(typeof(TarifficationType))
-                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => (TarifficationType?)MapFromStateDto<TarifficationType>(i));
+            //TarifficationType search
 
-            var deliveryTypes = Enum.GetNames(typeof(DeliveryType))
-            .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-            .Select(i => (DeliveryType?)MapFromStateDto<DeliveryType>(i));
+            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
+
+            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
+                .ToList();
+
+            //DeliveryType search
+
+            var deliveryTypeNames = Enum.GetNames(typeof(DeliveryType)).Select(i => i.ToLower());
+
+            var deliveryTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => deliveryTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (DeliveryType?)Enum.Parse<DeliveryType>(i.Name, true))
+                .ToList();
+
+
+            var statusNames = Enum.GetNames(typeof(ShippingState)).Select(i => i.ToLower());
+
+            var statuses = this._dataService.GetDbSet<Translation>()
+                .Where(i => statusNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
+                .ToList();
 
             var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => i.Title.Contains(search))
+                .Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id);
 
             var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
-                .Where(i => i.Name.Contains(search))
-                .Select(i => i.Id);
+                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
 
             return query.Where(i => 
                !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
@@ -440,15 +461,18 @@ namespace Application.Services.Shippings
             || isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
             || isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
             || isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
+            //|| boolean.HasValue && i.Ban >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
             || i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
             || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
             || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
             || i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
             || i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || tarrificationTypes.Contains(i.TarifficationType)
+            || tarifficationTypes.Contains(i.TarifficationType)
             || deliveryTypes.Contains(i.DeliveryType)
             || vehicleTypes.Any(v => v == i.VehicleTypeId)
             || transportCompanies.Any(t => t == i.CarrierId)
+            || statuses.Contains(i.Status)
+
             );
         }
     }

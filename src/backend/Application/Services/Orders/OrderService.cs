@@ -422,6 +422,17 @@ namespace Application.Services.Orders
             // Apply Search
             query = this.ApplySearch(query, searchForm);
 
+            var sortFieldMapping = new Dictionary<string, string>
+            {
+                { "unloadingArrivalDate", "unloadingArrivalTime" },
+                { "unloadingDepartureDate", "unloadingDepartureTime" }
+            };
+
+            if (!string.IsNullOrEmpty(searchForm.Sort?.Name) && sortFieldMapping.ContainsKey(searchForm.Sort?.Name))
+            {
+                searchForm.Sort.Name = sortFieldMapping[searchForm.Sort?.Name];
+            }
+
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc == true)
                 .DefaultOrderBy(i => i.OrderCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name))
                 .DefaultOrderBy(i => i.Id, true);
@@ -439,55 +450,79 @@ namespace Application.Services.Orders
             var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
-            var pickingTypes = this._dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search));
-            var orderTypes = Enum.GetNames(typeof(OrderType))
-                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => (OrderType?)MapFromStateDto<OrderType>(i));
+            var pickingTypes = this._dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+            
+            var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
-            var orderShippingStates = Enum.GetNames(typeof(ShippingState))
-                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => (ShippingState?)MapFromStateDto<ShippingState>(i));
+            var orderTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => orderTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (OrderType?)Enum.Parse<OrderType>(i.Name, true))
+                .ToList();
 
-            var vehicleStates = Enum.GetNames(typeof(VehicleState))
-                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => (VehicleState?)MapFromStateDto<VehicleState>(i));
+            var orderShippingStateNames = Enum.GetNames(typeof(ShippingState)).Select(i => i.ToLower());
+
+            var orderShippingStates = this._dataService.GetDbSet<Translation>()
+                .Where(i => orderShippingStateNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
+                .ToList();
+
+            var orderStateNames = Enum.GetNames(typeof(OrderState)).Select(i => i.ToLower());
+
+            var orderStates = this._dataService.GetDbSet<Translation>()
+                .Where(i => orderStateNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (OrderState?)Enum.Parse<OrderState>(i.Name, true))
+                .ToList();
+
+            var vehicleStateNames = Enum.GetNames(typeof(VehicleState)).Select(i => i.ToLower());
+
+            var vehicleStates = this._dataService.GetDbSet<Translation>()
+                .Where(i => vehicleStateNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (VehicleState?)Enum.Parse<VehicleState>(i.Name, true))
+                .ToList();
 
             return query.Where(i =>
-                   !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search)
-                || !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
-                || !string.IsNullOrEmpty(i.ClientName) && i.ClientName.Contains(search)
-                || !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.Contains(search)
+                   !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.ClientName) && i.ClientName.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || i.OrderDate.HasValue && i.OrderDate.Value.ToString(searchDateFormat).Contains(search)
-                || !string.IsNullOrEmpty(i.Payer) && i.Payer.Contains(search)
+                || !string.IsNullOrEmpty(i.Payer) && i.Payer.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || isInt && i.TemperatureMin == searchInt
                 || isInt && i.TemperatureMax == searchInt
                 || i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
-                || !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search)
+                || !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || isInt && i.TransitDays == searchInt
-                || !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search)
-                || !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search)
-                || !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search)
+                || !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString(searchDateFormat).Contains(search)
                 || isInt && i.ArticlesCount == searchInt
-                || isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount >= searchDecimal + precision
-                || isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount >= searchDecimal + precision
+                || isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount <= searchDecimal + precision
+                || isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount <= searchDecimal + precision
+                || isDecimal && i.ConfirmedPalletsCount >= searchDecimal - precision && i.ConfirmedPalletsCount <= searchDecimal + precision
                 || isInt && i.PalletsCount == searchInt
                 || isInt && i.ActualPalletsCount == searchInt
-                || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg >= searchDecimal + precision
-                || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg >= searchDecimal + precision
-                || isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT >= searchDecimal + precision
+                || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
+                || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
+                || isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT <= searchDecimal + precision
                 || !string.IsNullOrEmpty(i.BdfInvoiceNumber) && i.BdfInvoiceNumber.Contains(search)
                 || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
                 || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
                 || i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
                 || i.UnloadingDepartureTime.HasValue && i.UnloadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-                || isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime >= searchDecimal + precision
-                || !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.Contains(search)
-                || !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.Contains(search)
+                || isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
+                || !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || i.PlannedReturnDate.HasValue && i.PlannedReturnDate.Value.ToString(searchDateFormat).Contains(search)
                 || i.ActualReturnDate.HasValue && i.ActualReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search)
-                || !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search)
+                || i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+                || !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
                 || i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
 
                 || pickingTypes.Any(p => p.Id == i.PickingTypeId)
@@ -495,6 +530,7 @@ namespace Application.Services.Orders
                 || orderShippingStates.Contains(i.OrderShippingStatus)
                 || vehicleStates.Contains(i.DeliveryStatus)
                 || vehicleStates.Contains(i.ShippingStatus)
+                || orderStates.Contains(i.Status)
                 );
         }
     }
