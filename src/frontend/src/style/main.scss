@@ -151,6 +151,9 @@ body {
 
     &-big {
         height: calc(100vh - 180px) !important;
+        .ui.loader {
+            position: fixed !important;
+        }
     }
 }
 

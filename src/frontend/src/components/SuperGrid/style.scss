@@ -225,6 +225,7 @@
     flex-wrap: nowrap !important;
     height: max-content;
     top: calc(100% - 90px);
+    z-index: 2;
 
     .row {
         padding-top: 0 !important;
@@ -240,7 +241,9 @@
     }
 
     .column {
-        width: 100% !important;
+        width: max-content !important;
+        position: sticky !important;
+        left: 0;
     }
 }
 
