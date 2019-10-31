@@ -195,6 +195,14 @@ namespace Tasks.Orders
                     {
                         ++entryInd;
 
+                        string posex = itemRoot.SelectSingleNode("POSEX")?.InnerText ?? string.Empty;
+                        int posexNum = -1;
+                        int.TryParse(posex.TrimStart('0'), out posexNum);
+                        if ((posexNum % 10) != 0)
+                        {
+                            continue;
+                        }
+
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
                         OrderItemDto itemDto = dto.Items.Where(i => i.Nart == nart).FirstOrDefault();
 
