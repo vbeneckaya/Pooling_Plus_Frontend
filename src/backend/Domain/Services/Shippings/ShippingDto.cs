@@ -108,10 +108,10 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? Invoice { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string DocumentsReturnDate { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ActualDocumentsReturnDate { get; set; }
 
         [FieldType(FieldType.Text)]
