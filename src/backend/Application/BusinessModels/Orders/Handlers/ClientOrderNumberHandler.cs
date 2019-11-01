@@ -6,12 +6,12 @@ using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
-    public class OrderNumberHandler : IFieldHandler<Order, string>
+    public class ClientOrderNumberHandler : IFieldHandler<Order, string>
     {
         public void AfterChange(Order order, string oldValue, string newValue)
         {
             OrderType newOrderType;
-            if (order.OrderNumber.StartsWith("2"))
+            if (order.ClientOrderNumber.StartsWith("2"))
                 newOrderType = OrderType.FD;
             else
                 newOrderType = OrderType.OR;
@@ -26,7 +26,7 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public OrderNumberHandler(IHistoryService historyService)
+        public ClientOrderNumberHandler(IHistoryService historyService)
         {
             _historyService = historyService;
         }

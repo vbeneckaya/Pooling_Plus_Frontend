@@ -17,6 +17,12 @@ namespace Application.Services.Warehouses
     {
         public WarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
+        public WarehouseDto GetBySoldTo(string soldToNumber)
+        {
+            var entity = _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == soldToNumber).FirstOrDefault();
+            return MapFromEntityToDto(entity);
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<Warehouse>().OrderBy(x => x.WarehouseName).ToList();
@@ -52,6 +58,10 @@ namespace Application.Services.Warehouses
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
             return new WarehouseDto
             {
                 Id = entity.Id.ToString(),

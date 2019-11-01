@@ -6,7 +6,9 @@ namespace Domain.Enums
 {
     public enum RolePermissions
     {
-        //Admin = 0,
+        // Reserved value
+        None = 0,
+
         OrdersView = 1,
         OrdersCreate = 2,
         //OrdersEditAndDelete = 3,

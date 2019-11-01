@@ -99,99 +99,114 @@ namespace Application.Services.AppConfiguration
         {
             var dicts = new List<UserConfigurationDictionaryItem>();
 
-            if (_identityService.HasPermissions(RolePermissions.TariffsView))
+            var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+            var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+
+            if (canViewTariffs)
             {
                 var columns = ExtractColumnsFromDto<TariffDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TariffsService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.TariffsEdit),
+                    CanCreateByForm = canEditTariffs,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditTariffs,
                     ShowOnHeader = true,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.WarehousesEdit))
+            var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
+
+            if (canEditWarehouses)
             {
                 var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<WarehousesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.WarehousesEdit),
+                    CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditWarehouses,
                     ShowOnHeader = false,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.ArticlesEdit))
+            var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
+
+            if (canEditArticles)
             {
                 var columns = ExtractColumnsFromDto<ArticleDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ArticlesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.ArticlesEdit),
+                    CanCreateByForm = canEditArticles,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditArticles,
                     ShowOnHeader = false,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.PickingTypesEdit))
+            var canEditPickingTypes = _identityService.HasPermissions(RolePermissions.PickingTypesEdit);
+
+            if (canEditPickingTypes)
             {
                 var columns = ExtractColumnsFromDto<PickingTypeDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<PickingTypesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.PickingTypesEdit),
+                    CanCreateByForm = canEditPickingTypes,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditPickingTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.TransportCompaniesEdit))
+            var canEditTransportCompanies = _identityService.HasPermissions(RolePermissions.TransportCompaniesEdit);
+
+            if (canEditTransportCompanies)
             {
                 var columns = ExtractColumnsFromDto<TransportCompanyDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TransportCompaniesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.TransportCompaniesEdit),
+                    CanCreateByForm = canEditTransportCompanies,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditTransportCompanies,
                     ShowOnHeader = false,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.VehicleTypesEdit))
+            var canEditVehicleTypes = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit);
+
+            if (canEditVehicleTypes)
             {
                 var columns = ExtractColumnsFromDto<VehicleTypeDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<VehicleTypesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit),
+                    CanCreateByForm = canEditVehicleTypes,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
             }
 
-            if (_identityService.HasPermissions(RolePermissions.DocumentTypesEdit))
+            var canEditDocumentTypes = _identityService.HasPermissions(RolePermissions.DocumentTypesEdit);
+
+            if (canEditDocumentTypes)
             {
                 var columns = ExtractColumnsFromDto<DocumentTypeDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<DocumentTypesService>(),
-                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.DocumentTypesEdit),
+                    CanCreateByForm = canEditDocumentTypes,
                     CanExportToExcel = true,
-                    CanImportFromExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
                     ShowOnHeader = false,
                     Columns = columns
                 });
