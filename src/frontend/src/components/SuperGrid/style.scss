@@ -154,17 +154,18 @@
 .grid-row {
     .link-cell {
         color: #2185d0;
-        text-decoration-line: underline;
+        /* text-decoration-line: underline;*/
     }
-    .address-cell {
+    /*.address-cell {
         max-width: 100px;
 
         .cell-grid {
             width: inherit;
         }
-    }
+    }*/
 }
-.column-address {
+
+.column-overflow {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -185,6 +186,8 @@
 .grid-row td,
 .grid-row th {
     min-width: 100px;
+    max-width: 100px;
+    box-sizing: content-box;
     border-top: 1px solid #ddd !important;
 }
 
@@ -406,6 +409,7 @@ $teal: #b5eae7;
 .cell-grid {
     display: flex;
     position: relative;
+    width: inherit !important;
     &:hover .cell-grid-copy-btn {
         -webkit-transition: opacity 1s ease-in-out;
         -moz-transition: opacity 1s ease-in-out;
@@ -416,21 +420,27 @@ $teal: #b5eae7;
     &-value {
         position: relative;
         width: inherit;
-        min-width: 50%;
+        min-width: 0;
         min-height: 18px;
         &:hover {
             cursor: pointer;
         }
         &_empty {
-            width: 100%;
+            width: 50%;
         }
     }
 
     &-copy-btn {
         opacity: 0;
-        padding-left: 8px;
+        padding: 0 8px;
+        color: rgba(34, 36, 38, .15);
         :hover {
             cursor: pointer;
         }
+    }
+
+    .ui.loader {
+        position: relative !important;
+        padding: 0 8px;
     }
 }

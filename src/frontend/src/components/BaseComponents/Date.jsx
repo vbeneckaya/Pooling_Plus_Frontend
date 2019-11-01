@@ -21,6 +21,8 @@ const Date = ({ value, name, onChange, isDisabled, noLabel, required, placeholde
 
     const { t } = useTranslation();
 
+    console.log('value', value);
+
     return (
         <Form.Field>
             {!noLabel ? (

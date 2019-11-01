@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
+import TextCropping from "./TextCropping";
 
 const SelectValue = ({ value, source, indexRow, showRawValue }) => {
     const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const SelectValue = ({ value, source, indexRow, showRawValue }) => {
 
     const valueText = lookup.find(x => x.value === value);
 
-    return <>{showRawValue ? value : valueText && valueText.name}</>;
+    return <TextCropping>{showRawValue ? value : valueText ? valueText.name : ''}</TextCropping>;
 };
 
 export default SelectValue;

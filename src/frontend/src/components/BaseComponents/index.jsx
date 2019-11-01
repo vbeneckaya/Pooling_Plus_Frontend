@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    BIG_TEXT_TYPE,
     BOOLEAN_TYPE,
     DATE_TIME_TYPE,
     DATE_TYPE,
@@ -8,9 +9,10 @@ import {
     NUMBER_TYPE,
     SELECT_TYPE,
     STATE_TYPE,
-    TEXT_TYPE,
+    TEXT_TYPE, TIME_TYPE,
 } from '../../constants/columnTypes';
 import Text from './Text';
+import TextArea from './TextArea';
 import State from './State';
 import Date from './Date';
 import Select from './Select';
@@ -22,11 +24,13 @@ const getTypeFacet = {
     [STATE_TYPE]: <State />,
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
+    [TIME_TYPE]: <Text type="time"/>,
     [GROUP_TYPE]: <Text />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <Select isTranslate />,
+    [BIG_TEXT_TYPE]: <TextArea/>
 };
 
 const FormField = props => {

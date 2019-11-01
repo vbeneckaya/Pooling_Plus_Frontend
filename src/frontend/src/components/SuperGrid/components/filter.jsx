@@ -20,10 +20,12 @@ import {
     ENUM_TYPE,
     TIME_TYPE,
     LINK_TYPE,
+    BIG_TEXT_TYPE,
 } from '../../../constants/columnTypes';
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
+    [BIG_TEXT_TYPE]: <TextFacet/>,
     [NUMBER_TYPE]: <NumberFacet />,
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,

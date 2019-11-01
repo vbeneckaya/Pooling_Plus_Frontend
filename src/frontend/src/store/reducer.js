@@ -13,6 +13,7 @@ import { default as documents } from '../ducks/documents';
 import { default as representations } from '../ducks/representations';
 import { default as historyList } from '../ducks/history';
 import { default as fieldsSetting } from '../ducks/fieldsSetting';
+import {default as gridColumnEdit} from '../ducks/gridColumnEdit';
 import { default as users } from '../ducks/users';
 
 export default history =>
@@ -30,5 +31,6 @@ export default history =>
         representations,
         historyList,
         fieldsSetting,
+        gridColumnEdit,
         router: connectRouter(history),
     });
