@@ -150,7 +150,7 @@ deploy-tasks-demo:
    - master
   when: manual     
   
-  deploy-backend-prod:
+deploy-backend-prod:
   variables:
     SSH_USER:  root
     SSH_HOST:  bdf.tms.artlogics.ru
