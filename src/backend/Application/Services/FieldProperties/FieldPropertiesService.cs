@@ -82,15 +82,13 @@ namespace Application.Services.FieldProperties
 
             var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
 
-            var fieldName = dto.FieldName?.ToUpperFirstLetter();
-
             int state = forEntity == FieldPropertiesForEntityType.Shippings
                 ? (int)Enum.Parse<ShippingState>(dto.State, true)
                 : (int)Enum.Parse<OrderState>(dto.State, true);
 
             var fieldMatrixItem = _dataService.GetDbSet<FieldPropertyItem>()
                                               .Where(x => x.ForEntity == forEntity
-                                                        && x.FieldName == fieldName
+                                                        && x.FieldName == dto.FieldName
                                                         && x.State == state
                                                         && (x.RoleId == roleId || x.RoleId == null))
                                               .OrderBy(x => x)

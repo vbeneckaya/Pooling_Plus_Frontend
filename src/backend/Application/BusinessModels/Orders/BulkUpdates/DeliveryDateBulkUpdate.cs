@@ -30,7 +30,7 @@ namespace Application.BusinessModels.Orders.BulkUpdates
         public string FieldName => nameof(Order.DeliveryDate);
         public FieldType FieldType => FieldType.Date;
 
-        public AppActionResult Update(CurrentUserDto user, Order order, string value)
+        public AppActionResult Update(CurrentUserDto user, Order order, string fieldName, string value)
         {
             var setter = new FieldSetter<Order>(order, _historyService);
             setter.UpdateField(x => x.DeliveryDate, ParseDateTime(value), new DeliveryDateHandler(_dataService, _historyService));
