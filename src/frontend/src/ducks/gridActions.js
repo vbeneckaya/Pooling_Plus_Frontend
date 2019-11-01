@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import {all, takeEvery, put, select} from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import {representationFromGridSelector} from "./representations";
 
 //*  TYPES  *//
 
@@ -236,7 +237,15 @@ function* invokeActionSaga({ payload }) {
 function* getAllIdsSaga({ payload }) {
     try {
         const { filter, name, callbackSuccess } = payload;
-        const result = yield postman.post(`/${name}/ids`, filter.filter);
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+        const result = yield postman.post(`/${name}/ids`, {
+            ...filter,
+            filter: {
+                ...filter.filter,
+                columns
+            }
+        });
 
         yield put({
             type: GET_IDS_SUCCESS,
