@@ -24,7 +24,7 @@ const List = () => {
     const containerRef = useRef(null);
 
     const gridsList = useSelector(state => gridsMenuSelector(state)) || [];
-    const rolesList = useSelector(state => rolesListSelector(state)) || [];
+    const rolesList = useSelector(state => valuesListSelector(state, 'roles')) || [];
     const settings = useSelector(state => fieldsSettingSelector(state)) || [];
     const loading = useSelector(state => progressSelector(state));
     const editProgress = useSelector(state => editProgressSelector(state)) || false;
@@ -41,7 +41,10 @@ const List = () => {
 
     useEffect(() => {
         if (!(rolesList || []).length) {
-            dispatch(getRolesRequest({}));
+            dispatch(getLookupRequest({
+                name: 'roles',
+                isForm: true
+            }));
         }
     }, []);
 
@@ -104,7 +107,7 @@ const List = () => {
 
     const rolesListOptions = [
         { key: 'any_role', value: 'null', text: t('any_role') },
-        ...rolesList.map(x => ({ key: x.name, value: x.id, text: t(x.name) })),
+        ...rolesList.map(x => ({key: x.name, value: x.value, text: t(x.name)})),
     ];
 
     /* const companyListOptions = [
