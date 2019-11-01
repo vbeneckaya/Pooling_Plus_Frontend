@@ -1,6 +1,7 @@
 ﻿using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Domain.Services.Warehouses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
@@ -129,6 +130,7 @@ namespace Tasks.Orders
 
         private bool ProcessOrderFile(string fileName, string fileContent)
         {
+            IWarehousesService warehousesService = _serviceProvider.GetService<IWarehousesService>();
             IOrdersService ordersService = _serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
@@ -139,6 +141,7 @@ namespace Tasks.Orders
             }
 
             List<OrderFormDto> orders = new List<OrderFormDto>();
+            List<WarehouseDto> updWarehouses = new List<WarehouseDto>();
             var docRoots = doc.SelectNodes("//IDOC");
 
             int totalCount = docRoots.Count;
@@ -166,6 +169,27 @@ namespace Tasks.Orders
                 dto.BoxesCount = docRoot.ParseDecimal("E1EDK01/Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
                 dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME") ?? dto.OrderAmountExcludingVAT;
+
+                string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
+                string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
+                string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
+                if (!string.IsNullOrEmpty(deliveryAddress2))
+                {
+                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : " ") + deliveryAddress2;
+                }
+
+                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo);
+                if (deliveryWarehouse == null)
+                {
+                    dto.DeliveryCity = deliveryCity ?? dto.DeliveryCity;
+                    dto.DeliveryAddress = deliveryAddress ?? dto.DeliveryAddress;
+                }
+                else
+                {
+                    deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
+                    deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
+                    updWarehouses.Add(deliveryWarehouse);
+                }
 
                 if (isNew)
                 {
@@ -241,6 +265,7 @@ namespace Tasks.Orders
             bool isSuccess = orders.Any();
             if (isSuccess)
             {
+                warehousesService.Import(updWarehouses);
                 ordersService.Import(orders);
             }
 
