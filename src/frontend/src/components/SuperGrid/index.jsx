@@ -179,7 +179,7 @@ class SuperGrid extends Component {
         } else {
             getAllIds({
                 name,
-                filter: this.mapData(),
+                filter: this.mapData().filter,
                 callbackSuccess: ids => {
                     newSelectedRows = new Set(ids);
                     this.setSelected(newSelectedRows);

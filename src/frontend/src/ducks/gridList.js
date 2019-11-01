@@ -234,7 +234,16 @@ export function* getListSaga({ payload }) {
 
         yield delay(1000);
 
-        const result = yield postman.post(`/${name}/search`, filter);
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+
+        const result = yield postman.post(`/${name}/search`, {
+            ...filter,
+            filter: {
+                ...filter.filter,
+                columns
+            }
+        });
 
         yield put({ type: GET_GRID_LIST_SUCCESS, payload: { ...result, isConcat } });
     } catch (error) {
