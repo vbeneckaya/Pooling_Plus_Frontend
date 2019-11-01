@@ -72,7 +72,7 @@ namespace API.Controllers.Shared
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            return service.ForSelect();
+            return service.ForSelect().OrderBy(x => x.Name);
         }
 
         /// <summary>
