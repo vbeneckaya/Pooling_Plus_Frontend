@@ -39,10 +39,10 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
         navigator.clipboard &&
         navigator.clipboard.writeText(text).then(
             () => {
-                toast.info('Скопировано в буфер обмена');
+                toast.info(t('copied_to_clipboard_success'));
             },
-            err => {
-                toast.error(`При копировании произошла ошибка: ${err}`);
+            error => {
+                toast.error(t('copied_to_clipboard_error', {error}));
             },
         );
     };
