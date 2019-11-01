@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.DocumentTypes;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System.Collections.Generic;
@@ -38,6 +39,15 @@ namespace Application.Services.DocumentTypes
                 Id = entity.Id.ToString(),
                 Name = entity.Name
             };
+        }
+
+        protected override IQueryable<DocumentType> ApplySort(IQueryable<DocumentType> query, SearchFormDto form)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            return query
+                .OrderBy(i => i.Name.Translate(user.Language))
+                .ThenBy(i => i.Id);
         }
     }
 }

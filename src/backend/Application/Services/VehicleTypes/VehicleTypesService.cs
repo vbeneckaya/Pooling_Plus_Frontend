@@ -1,6 +1,7 @@
 ﻿using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Shared;
@@ -41,6 +42,15 @@ namespace Application.Services.VehicleTypes
                     Value = vehicleType.Id.ToString()
                 };
             }
+        }
+
+        protected override IQueryable<VehicleType> ApplySort(IQueryable<VehicleType> query, SearchFormDto form)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            return query
+                .OrderBy(i => i.Name.Translate(user.Language))
+                .ThenBy(i => i.Id);
         }
     }
 }
