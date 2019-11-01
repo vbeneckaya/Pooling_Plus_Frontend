@@ -11,7 +11,7 @@ before_script:
   - ssh-keyscan -t rsa 10.10.5.10 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa 10.10.5.15 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa bdf.tms.artlogics.ru >> ~/.ssh/known_hosts
- u
+ 
 
   
 build-frontend-dev:
