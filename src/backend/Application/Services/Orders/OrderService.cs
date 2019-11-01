@@ -261,7 +261,7 @@ namespace Application.Services.Orders
 
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderCreationDate, DateTime.Today, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderCreationDate, DateTime.Now, ignoreChanges: true);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(e => e.DeliveryStatus, VehicleState.VehicleEmpty);
         }
