@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using System;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -34,6 +35,10 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(s => s.WeightKg, shippingWeight);
                     setter.SaveHistoryLog();
                 }
+
+                var orderSetter = new FieldSetter<Order>(order, _historyService);
+                orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+                orderSetter.SaveHistoryLog();
             }
         }
 
