@@ -168,9 +168,9 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
                     </Modal.Description>
                 </Modal.Content>
                 <Modal.Actions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button color="primary" onClick={handleSave}>
-                        Ok
+                    <Button onClick={handleClose}>{t('cancelConfirm')}</Button>
+                    <Button color="primary" disabled={value === row[column.name]} onClick={handleSave}>
+                        {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
             </Modal>
