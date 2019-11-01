@@ -8,6 +8,7 @@ using Domain.Persistables;
 using Domain.Services.FieldProperties;
 using Domain.Services.Orders;
 using Domain.Services.Shippings;
+using Domain.Services.UserProvider;
 using Domain.Shared;
 
 namespace Application.Services.FieldProperties
@@ -16,11 +17,13 @@ namespace Application.Services.FieldProperties
     {
         private readonly ICommonDataService _dataService;
         private readonly IFieldDispatcherService _fieldDispatcherService;
+        private readonly IUserProvider _userProvider;
 
-        public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService)
+        public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService, IUserProvider userProvider)
         {
             _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
+            _userProvider = userProvider;
         }
 
         public IEnumerable<FieldForFieldProperties> GetFor(string forEntity, Guid? companyId, Guid? roleId, Guid? userId)
@@ -71,6 +74,30 @@ namespace Application.Services.FieldProperties
             }
 
             return result;
+        }
+
+        public string GetAccessTypeForField(GetForFieldPropertyParams dto)
+        {
+            var roleId = _userProvider.GetCurrentUser().RoleId;
+
+            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
+
+            var fieldName = dto.FieldName?.ToUpperFirstLetter();
+
+            int state = forEntity == FieldPropertiesForEntityType.Shippings
+                ? (int)Enum.Parse<ShippingState>(dto.State, true)
+                : (int)Enum.Parse<OrderState>(dto.State, true);
+
+            var fieldMatrixItem = _dataService.GetDbSet<FieldPropertyItem>()
+                                              .Where(x => x.ForEntity == forEntity
+                                                        && x.FieldName == fieldName
+                                                        && x.State == state
+                                                        && (x.RoleId == roleId || x.RoleId == null))
+                                              .OrderBy(x => x)
+                                              .FirstOrDefault();
+
+            var accessType = fieldMatrixItem?.AccessType ?? FieldPropertiesAccessType.Show;
+            return accessType.ToString().ToLowerFirstLetter();
         }
 
         public IEnumerable<string> GetAvailableFields(
