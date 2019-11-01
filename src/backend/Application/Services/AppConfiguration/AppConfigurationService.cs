@@ -102,7 +102,7 @@ namespace Application.Services.AppConfiguration
             var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
             var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-            if (canViewTariffs)
+            if (canViewTariffs || canEditTariffs)
             {
                 var columns = ExtractColumnsFromDto<TariffDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
