@@ -256,6 +256,12 @@
         /// </summary>
         public string Invoice { get; set; }
 
+
+        /// <summary>
+        /// OrderChangeDate
+        /// </summary>
+        public string OrderChangeDate { get; set; }
+
         /// <summary>
         /// Invoice
         /// </summary>

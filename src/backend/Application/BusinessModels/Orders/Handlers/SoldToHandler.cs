@@ -22,11 +22,11 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
+                var setter = new FieldSetter<Order>(order, _historyService);
+
                 var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    var setter = new FieldSetter<Order>(order, _historyService);
-
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
 
                     if (soldToWarehouse.PickingTypeId.HasValue)
@@ -39,13 +39,15 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(o => o.DeliveryAddress, soldToWarehouse.Address);
                     setter.UpdateField(o => o.DeliveryCity, soldToWarehouse.City);
                     setter.UpdateField(o => o.DeliveryRegion, soldToWarehouse.Region);
-
-                    setter.SaveHistoryLog();
                 }
                 else
                 {
                     order.DeliveryWarehouseId = null;
                 }
+
+                setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+
+                setter.SaveHistoryLog();
             }
         }
 

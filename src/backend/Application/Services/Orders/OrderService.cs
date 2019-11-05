@@ -115,23 +115,23 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber);
-            setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
-            setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1));
-            setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1));
+            setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount, new ArticlesCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1), new BoxesCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1), new ConfirmedBoxesCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService, !isInjection));
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT);
+            setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler(_dataService, _historyService));
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
-            setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime));
+            setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), nameLoader: GetPickingTypeNameById);
+            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
@@ -148,6 +148,8 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
+            setter.UpdateField(e => e.OrderChangeDate, ParseDateTime(dto.OrderChangeDate));
+
             /*end of map dto to entity fields*/
 
             if (isNew)
@@ -264,6 +266,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
             setter.UpdateField(e => e.OrderCreationDate, DateTime.Now, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderChangeDate, DateTime.Now);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(e => e.DeliveryStatus, VehicleState.VehicleEmpty);
         }
@@ -383,10 +386,12 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.DeliveryDate.ApplyDateRangeFilter<Order>(i => i.DeliveryDate, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryRegion.ApplyStringFilter<Order>(i => i.DeliveryRegion, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryStatus.ApplyEnumFilter<Order, VehicleState>(i => i.DeliveryStatus, ref parameters))
+                         .WhereAnd(searchForm.Filter.Invoice.ApplyBooleanFilter<Order>(i => i.Invoice, ref parameters))
                          .WhereAnd(searchForm.Filter.LoadingArrivalTime.ApplyDateRangeFilter<Order>(i => i.LoadingArrivalTime, ref parameters))
                          .WhereAnd(searchForm.Filter.LoadingDepartureTime.ApplyDateRangeFilter<Order>(i => i.LoadingDepartureTime, ref parameters))
                          .WhereAnd(searchForm.Filter.MajorAdoptionNumber.ApplyStringFilter<Order>(i => i.MajorAdoptionNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.OrderAmountExcludingVAT.ApplyNumericFilter<Order>(i => i.OrderAmountExcludingVAT, ref parameters))
+                         .WhereAnd(searchForm.Filter.OrderChangeDate.ApplyDateRangeFilter<Order>(i => i.OrderChangeDate, ref parameters))
                          .WhereAnd(searchForm.Filter.OrderComments.ApplyStringFilter<Order>(i => i.OrderComments, ref parameters))
                          .WhereAnd(searchForm.Filter.OrderCreationDate.ApplyDateRangeFilter<Order>(i => i.OrderCreationDate, ref parameters))
                          .WhereAnd(searchForm.Filter.OrderDate.ApplyDateRangeFilter<Order>(i => i.OrderDate, ref parameters))
@@ -418,7 +423,6 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.DocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.DocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualDocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.ActualDocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
-                         .WhereAnd(searchForm.Filter.Invoice.ApplyBooleanFilter<Order>(i => i.Invoice, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters));
 
             string sql = $@"SELECT * FROM ""Orders"" {where}";
@@ -529,6 +533,7 @@ namespace Application.Services.Orders
                 || !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
                 || i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
+                || i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
 
                 || pickingTypes.Any(p => p.Id == i.PickingTypeId)
                 || orderTypes.Contains(i.OrderType)
