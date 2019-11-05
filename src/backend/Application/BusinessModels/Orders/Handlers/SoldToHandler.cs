@@ -42,6 +42,10 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     setter.SaveHistoryLog();
                 }
+                else
+                {
+                    order.DeliveryWarehouseId = null;
+                }
             }
         }
 

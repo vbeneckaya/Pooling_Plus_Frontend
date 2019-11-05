@@ -175,14 +175,19 @@ namespace Tasks.Orders
                 string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
                 if (!string.IsNullOrEmpty(deliveryAddress2))
                 {
-                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : " ") + deliveryAddress2;
+                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
 
                 var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo);
                 if (deliveryWarehouse == null)
                 {
-                    dto.DeliveryCity = deliveryCity ?? dto.DeliveryCity;
-                    dto.DeliveryAddress = deliveryAddress ?? dto.DeliveryAddress;
+                    dto.ClientName = null;
+                    dto.DeliveryAddress = deliveryAddress;
+                    dto.DeliveryCity = deliveryCity;
+                    dto.DeliveryRegion = null;
+                    dto.PickingTypeId = null;
+                    dto.ShippingDate = null;
+                    dto.TransitDays = null;
                 }
                 else
                 {

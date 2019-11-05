@@ -113,7 +113,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
-            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber);
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount);
             setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1));
@@ -234,6 +234,8 @@ namespace Application.Services.Orders
                     && !string.IsNullOrEmpty(order.ShippingAddress)
                     && !string.IsNullOrEmpty(order.DeliveryAddress)
                     && !string.IsNullOrEmpty(order.Payer)
+                    && order.ShippingWarehouseId.HasValue
+                    && order.DeliveryWarehouseId.HasValue
                     && order.ShippingDate.HasValue
                     && order.DeliveryDate.HasValue;
 
