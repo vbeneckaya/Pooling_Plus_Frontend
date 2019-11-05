@@ -5,8 +5,10 @@ import TextArea from '../../BaseComponents/TextArea';
 import Text from '../../BaseComponents/Text';
 import Date from '../../BaseComponents/Date';
 import Number from '../../BaseComponents/Number';
+import FormField from "../../BaseComponents";
+import {BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE} from "../../../constants/columnTypes";
 
-const Returns = ({ form, onChange }) => {
+const Returns = ({form, onChange, settings}) => {
     const { t } = useTranslation();
 
     return (
@@ -14,38 +16,48 @@ const Returns = ({ form, onChange }) => {
             <Grid>
                 <Grid.Row columns={2} stretched>
                     <Grid.Column width={5}>
-                        <Text
+                        <FormField
                             name="returnShippingAccountNo"
                             value={form['returnShippingAccountNo']}
+                            type={TEXT_TYPE}
+                            settings={settings["returnShippingAccountNo"]}
                             onChange={onChange}
                         />
-                        <Date
+                        <FormField
                             name="plannedReturnDate"
                             value={form['plannedReturnDate']}
+                            type={DATE_TYPE}
+                            settings={settings["plannedReturnDate"]}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <TextArea
+                        <FormField
                             name="returnInformation"
                             value={form['returnInformation']}
                             rows={5}
+                            type={BIG_TEXT_TYPE}
+                            settings={settings["returnInformation"]}
                             onChange={onChange}
                         />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column width={5}>
-                        <Date
+                        <FormField
                             name="actualReturnDate"
                             value={form['actualReturnDate']}
+                            type={DATE_TYPE}
+                            settings={settings["actualReturnDate"]}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <Text
+                        <FormField
                             name="majorAdoptionNumber"
                             value={form['majorAdoptionNumber']}
+                            type={TEXT_TYPE}
+                            settings={settings["majorAdoptionNumber"]}
                             onChange={onChange}
                         />
                     </Grid.Column>

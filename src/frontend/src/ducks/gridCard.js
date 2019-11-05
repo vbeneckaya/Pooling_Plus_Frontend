@@ -1,7 +1,13 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, call, select } from 'redux-saga/effects';
+import {all, takeEvery, put, call, select, fork} from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import {roleSelector} from './profile';
+import {
+    fieldsSettingSelector,
+    getFieldsSettingRequest,
+    getFieldsSettingSaga,
+} from './fieldsSetting';
 
 //*  TYPES  *//
 
@@ -159,19 +165,46 @@ const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(
-    stateSelector,
-    state => state.data.id,
+const idSelector = createSelector(stateSelector, state => state.data.id);
+
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+
+export const cardSelector = createSelector(stateSelector, state => state.data);
+
+export const settingsFormSelector = createSelector(
+    [fieldsSettingSelector, (state, status) => status],
+    (state, status) => {
+        console.log('settings', state, status);
+        let settings = {};
+        const {base = []} = state;
+        base.forEach(item => {
+            settings = {
+                ...settings,
+                [item.fieldName]: item.accessTypes[status],
+            };
+        });
+
+        console.log('result', settings);
+        return settings;
+    },
 );
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const settingsExtSelector = createSelector(
+    [fieldsSettingSelector, (state, status) => status],
+    (state, status) => {
+        console.log('settings', state, status);
+        let settings = {};
+        const {ext = []} = state;
+        ext.forEach(item => {
+            settings = {
+                ...settings,
+                [item.fieldName]: item.accessTypes[status],
+            };
+        });
 
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.data,
+        console.log('result', settings);
+        return settings;
+    },
 );
 
 //*  SAGA  *//
@@ -261,6 +294,13 @@ function* getCardConfigSaga({ payload }) {
 function* getCardSaga({ payload }) {
     try {
         const { name, id, callbackSuccess } = payload;
+        const role = yield select(state => roleSelector(state));
+        yield fork(getFieldsSettingSaga, {
+            payload: {
+                forEntity: name,
+                role,
+            },
+        });
         const result = yield postman.get(`${name}/getById/${id}`);
         yield put({ type: GET_GRID_CARD_SUCCESS, payload: result });
         callbackSuccess && callbackSuccess(result);

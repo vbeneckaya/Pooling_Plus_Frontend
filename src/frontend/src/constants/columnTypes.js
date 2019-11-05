@@ -10,6 +10,7 @@ export const TIME_TYPE = 'Time';
 export const BOOLEAN_TYPE = 'Boolean';
 export const GROUP_TYPE = 'Group';
 export const LINK_TYPE = 'Link';
+export const CHECKBOX_TYPE = 'Checkbox';
 
 export const ENUM_TYPE = 'Enum';
 export const ACTIVE_TYPE = 'active';

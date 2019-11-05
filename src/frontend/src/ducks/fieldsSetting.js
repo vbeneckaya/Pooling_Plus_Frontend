@@ -102,7 +102,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
 
 //*  SAGA  *//
-function* getFieldsSettingSaga({ payload }) {
+export function* getFieldsSettingSaga({payload}) {
     try {
         const baseResult = yield postman.post('fieldProperties/get', payload);
         const extResult =

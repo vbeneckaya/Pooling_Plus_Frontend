@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { stateColorsSelector } from '../../../ducks/gridList';
 import { getLookupRequest, valuesListSelector } from '../../../ducks/lookup';
 
-const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
+const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     const dispatch = useDispatch();
     const { routePoints: points } = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
@@ -50,6 +50,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
                         index={i}
                         form={form}
                         point={point}
+                        settings={settings}
                         pointChange={handleChange}
                         onChange={onChange}
                     />

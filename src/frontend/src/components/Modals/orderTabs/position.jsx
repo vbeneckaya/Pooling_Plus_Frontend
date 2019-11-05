@@ -4,53 +4,28 @@ import { Button, Form, Grid, Icon, Table } from 'semantic-ui-react';
 import TableInfo from '../../TableInfo';
 import Text from '../../BaseComponents/Text';
 import { useSelector, useDispatch } from 'react-redux';
-import { cardSelector, editCardRequest } from '../../../ducks/gridCard';
+import {cardSelector, editCardRequest, settingsExtSelector} from '../../../ducks/gridCard';
 import { getLookupRequest, valuesListSelector } from '../../../ducks/lookup';
 import Number from '../../BaseComponents/Number';
+import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_SHOW} from "../../../constants/formTypes";
+import FormField from "../../BaseComponents";
+import {NUMBER_TYPE} from "../../../constants/columnTypes";
 
-const EditField = ({ value, name, onChange, datalist, error }) => {
+const EditField = ({value, name, onChange, datalist, error, isDisabled}) => {
     return (
         <>
             {name === 'nart' ? (
-                <Text value={value} name={name} onChange={onChange} noLabel datalist={datalist} />
+                <Text value={value} isDisabled={isDisabled} name={name} onChange={onChange} noLabel
+                      datalist={datalist}/>
             ) : (
-                <Number value={value} name={name} onChange={onChange} noLabel error={error} />
+                <Number value={value} isDisabled={isDisabled} name={name} onChange={onChange} noLabel error={error}/>
             )}
         </>
     );
 };
 
-const columns = [
-    {
-        name: 'nart',
-    },
-    {
-        name: 'description',
-    },
-    {
-        name: 'countryOfOrigin',
-    },
-    {
-        name: 'spgr',
-    },
-    {
-        name: 'ean',
-    },
-    {
-        name: 'shelfLife',
-    },
-    /* {
-        name: 'weight',
-    },
-    {
-        name: 'netWeight',
-    },*/
-    {
-        name: 'quantity',
-    },
-];
 
-const Position = ({ form, onChange, gridName, load }) => {
+const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     let [items, setItems] = useState([...form.items]);
@@ -59,6 +34,15 @@ const Position = ({ form, onChange, gridName, load }) => {
 
     const card = useSelector(state => cardSelector(state));
     const articles = useSelector(state => valuesListSelector(state, 'articles')) || [];
+    const settings = useSelector(state => settingsExtSelector(state, form.status));
+    const columns = [];
+    Object.keys(settings).forEach(key => {
+        if (settings[key] === SETTINGS_TYPE_SHOW || settings[key] === SETTINGS_TYPE_EDIT) {
+            columns.push({
+                name: key
+            })
+        }
+    });
 
     useEffect(() => {
         if (!articles.length) {
@@ -137,9 +121,11 @@ const Position = ({ form, onChange, gridName, load }) => {
                 <Grid.Row columns="equal">
                     <Grid.Column width={4}>
                         <Form>
-                            <Number
+                            <FormField
                                 name="orderAmountExcludingVAT"
                                 value={form['orderAmountExcludingVAT']}
+                                type={NUMBER_TYPE}
+                                settings={baseSettings["orderAmountExcludingVAT"]}
                                 onChange={onChange}
                             />
                         </Form>
@@ -163,7 +149,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {items.map((row, index) => (
+                            {columns.length && items.length ? items.map((row, index) => (
                                 <Table.Row key={row.id}>
                                     {columns.map(column => (
                                         <>
@@ -177,6 +163,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                                                     <EditField
                                                         value={row[column.name]}
                                                         name={column.name}
+                                                        isDisabled={settings[column.name] === SETTINGS_TYPE_SHOW}
                                                         datalist={
                                                             column.name === 'nart' && articles
                                                         }
@@ -226,7 +213,7 @@ const Position = ({ form, onChange, gridName, load }) => {
                                         )}
                                     </Table.Cell>
                                 </Table.Row>
-                            ))}
+                            )) : null}
                         </Table.Body>
                     </Table>
                 </Grid.Row>

@@ -10,6 +10,7 @@ import {
     isUniqueNumberRequest,
     openGridCardRequest,
     progressSelector,
+    settingsFormSelector,
 } from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
@@ -21,7 +22,7 @@ import {
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
-import {ORDERS_GRID} from "../../constants/grids";
+import {ORDERS_GRID} from '../../constants/grids';
 
 const getModal = {
     orders: <OrderModal />,
@@ -43,6 +44,7 @@ const Card = props => {
     const dispatch = useDispatch();
 
     const card = useSelector(state => cardSelector(state));
+    const settings = useSelector(state => settingsFormSelector(state, card.status));
 
     const loadCard = () => {
         dispatch(
@@ -212,6 +214,7 @@ const Card = props => {
                         ...props,
                         form,
                         load: loadCard,
+                        settings,
                         uniquenessNumberCheck: handleUniquenessCheck,
                         isNotUniqueNumber,
                         onClose,

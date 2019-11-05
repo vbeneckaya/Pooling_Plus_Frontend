@@ -17,6 +17,7 @@ import {
     progressSelector,
 } from '../../ducks/fieldsSetting';
 import { ORDERS_GRID } from '../../constants/grids';
+import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW} from "../../constants/formTypes";
 
 const List = () => {
     const { t } = useTranslation();
@@ -121,9 +122,9 @@ const List = () => {
     ];*/
 
     const availabilityListOptions = [
-        { key: 'hidden', value: 'hidden', text: t('hidden') },
-        { key: 'show', value: 'show', text: t('show') },
-        { key: 'edit', value: 'edit', text: t('edit') },
+        {key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE)},
+        {key: SETTINGS_TYPE_SHOW, value: SETTINGS_TYPE_SHOW, text: t(SETTINGS_TYPE_SHOW)},
+        {key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT)},
     ];
 
     const headerRowComponent = (
