@@ -155,7 +155,7 @@ namespace Tasks.Orders
                     dto = new OrderFormDto();
                 }
 
-                dto.AdditionalInfo = "INJECTION";
+                dto.AdditionalInfo = $"INJECTION - {fileName}";
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 

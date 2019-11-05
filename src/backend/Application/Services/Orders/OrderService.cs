@@ -151,8 +151,9 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderChangeDate, ParseDateTime(dto.OrderChangeDate));
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
 
-
             /*end of map dto to entity fields*/
+
+
 
             if (isNew)
             {
@@ -170,6 +171,12 @@ namespace Application.Services.Orders
             if (isNew && !isCreated)
             {
                 _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
+            }
+
+            if (dto.AdditionalInfo.Contains("INJECTION"))
+            {
+                var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
+                _historyService.Save(Guid.Parse(dto.Id), "orderCreatedFromInjection", dto.OrderNumber, file);
             }
 
             setter.SaveHistoryLog();
