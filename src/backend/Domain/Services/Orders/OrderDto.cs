@@ -171,6 +171,8 @@ namespace Domain.Services.Orders
 
         public string OrderChangeDate { get; set; }
 
+        public bool? OrderConfirmed { get; set; }
+
         /*end of fields*/
     }
 }
