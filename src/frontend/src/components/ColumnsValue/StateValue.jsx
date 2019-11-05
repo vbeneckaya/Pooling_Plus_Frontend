@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Icon } from 'semantic-ui-react';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
-import TextCropping from "./TextCropping";
+import TextCropping from './TextCropping';
 
 const StateValue = ({ value, source, indexRow }) => {
     const { t } = useTranslation();
@@ -31,7 +31,7 @@ const StateValue = ({ value, source, indexRow }) => {
         <div className="status-value">
             {value && (
                 <TextCropping>
-                    <Icon color={color && color.toLowerCase()} name="circle"/>
+                    <Icon color={color && color.toLowerCase()} name="circle" />
                     {t(value)}
                 </TextCropping>
             )}

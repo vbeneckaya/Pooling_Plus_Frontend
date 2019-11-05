@@ -1,19 +1,18 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
-import {ORDERS_GRID} from '../../../constants/grids';
-import {Button, Icon, Popup, Grid} from 'semantic-ui-react';
+import { ORDERS_GRID } from '../../../constants/grids';
+import { Button, Grid, Icon, Popup } from 'semantic-ui-react';
 import MassChanges from './mass-changes';
 
-import {useTranslation} from 'react-i18next';
-import {useSelector} from 'react-redux';
-import {infoSelector} from "../../../ducks/gridActions";
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { infoSelector } from '../../../ducks/gridActions';
 
-const InfoView = ({info, t, handleClose}) => {
-
+const InfoView = ({ info, t, handleClose }) => {
     return (
         <div className="footer-info">
             <div className="footer-info-close" onClick={handleClose}>
-                <Icon name="sort down"/>
+                <Icon name="sort down" />
             </div>
             <div>
                 {t('orders_selected')}
@@ -35,8 +34,8 @@ const InfoView = ({info, t, handleClose}) => {
     );
 };
 
-const Footer = ({groupActions, load, clearSelectedRows, gridName}) => {
-    const {t} = useTranslation();
+const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
+    const { t } = useTranslation();
     let [isOpen, setIsOpen] = useState(false);
 
     const info = useSelector(state => infoSelector(state));
@@ -60,11 +59,11 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName}) => {
                                     className="footer-info-label"
                                     onClick={isOpen ? handleClose : handleOpen}
                                 >
-                                    <Icon name={isOpen ? 'sort up' : 'sort down'}/>
+                                    <Icon name={isOpen ? 'sort up' : 'sort down'} />
                                     Данные по заказам
                                 </div>
                             }
-                            content={<InfoView info={info} t={t} handleClose={handleClose}/>}
+                            content={<InfoView info={info} t={t} handleClose={handleClose} />}
                             on="click"
                             open={isOpen}
                             onClose={handleClose}
@@ -73,10 +72,10 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName}) => {
                             className="from-popup"
                         />
                     ) : null}
-                    <div style={{paddingTop: '4px'}}>
+                    <div style={{ paddingTop: '4px' }}>
                         {groupActions
                             ? groupActions().map(action => (
-                                <span key={action.name}>
+                                  <span key={action.name}>
                                       <Button
                                           color={action.color}
                                           content={action.name}
@@ -90,12 +89,12 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName}) => {
                                           }
                                       />
                                   </span>
-                            ))
+                              ))
                             : null}
                     </div>
                 </Grid.Column>
                 <Grid.Column floated="right">
-                    <MassChanges gridName={gridName} load={() => load(false, true)}/>
+                    <MassChanges gridName={gridName} load={() => load(false, true)} />
                 </Grid.Column>
             </Grid.Row>
         </Grid>

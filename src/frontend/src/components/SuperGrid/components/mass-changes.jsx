@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Form, Grid, Icon } from 'semantic-ui-react';
 import { invokeMassUpdateRequest, updatesSelector } from '../../../ducks/gridActions';
 import FormField from '../../BaseComponents';
@@ -16,15 +16,18 @@ const MassChanges = ({ gridName, load }) => {
 
     const fieldParams = updates.find(item => item.name === field);
 
-    useEffect(() => {
-        setColumn({
-            name: field,
-            type: fieldParams ? fieldParams.type : TEXT_TYPE,
-            noLabel: true,
-            isDisabled: !field,
-            placeholder: t('new_value'),
-        });
-    }, [field]);
+    useEffect(
+        () => {
+            setColumn({
+                name: field,
+                type: fieldParams ? fieldParams.type : TEXT_TYPE,
+                noLabel: true,
+                isDisabled: !field,
+                placeholder: t('new_value'),
+            });
+        },
+        [field],
+    );
 
     const handleSave = () => {
         dispatch(

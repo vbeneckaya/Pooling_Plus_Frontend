@@ -1,17 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Grid, Tab, Table } from 'semantic-ui-react';
-import Select from '../../BaseComponents/Select';
-import TextArea from '../../BaseComponents/TextArea';
-import DateTime from '../../BaseComponents/DateTime';
-import Date from '../../BaseComponents/Date';
-import State from '../../BaseComponents/State';
-import Text from '../../BaseComponents/Text';
-import Number from '../../BaseComponents/Number';
-import FormField from "../../BaseComponents";
-import {BIG_TEXT_TYPE, DATE_TIME_TYPE, NUMBER_TYPE, STATE_TYPE} from "../../../constants/columnTypes";
+import { Form, Grid } from 'semantic-ui-react';
+import FormField from '../../BaseComponents';
+import {
+    BIG_TEXT_TYPE,
+    DATE_TIME_TYPE,
+    NUMBER_TYPE,
+    STATE_TYPE,
+} from '../../../constants/columnTypes';
 
-const Route = ({name, form = {}, point = {}, onChange, pointChange, index, settings}) => {
+const Route = ({ name, form = {}, point = {}, onChange, pointChange, index, settings }) => {
     const { t } = useTranslation();
 
     const handleChange = (e, { name, value }) => {
@@ -67,8 +65,12 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={16}>
-                        <FormField name="address" value={point['address']} type={BIG_TEXT_TYPE}
-                                   onChange={handleChange}/>
+                        <FormField
+                            name="address"
+                            value={point['address']}
+                            type={BIG_TEXT_TYPE}
+                            onChange={handleChange}
+                        />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
@@ -77,7 +79,7 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
                             name="deviationReasonsComments"
                             type={BIG_TEXT_TYPE}
                             value={form['deviationReasonsComments']}
-                            settings={settings["deviationReasonsComments"]}
+                            settings={settings['deviationReasonsComments']}
                             onChange={onChange}
                         />
                     </Grid.Column>

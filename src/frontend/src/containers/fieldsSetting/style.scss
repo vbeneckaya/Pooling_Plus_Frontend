@@ -2,12 +2,12 @@
     overflow: auto;
 
     &_name {
-        width: 100%!important;
+        width: 100% !important;
         white-space: nowrap;
     }
 
     .table-loader {
         margin-top: 95px !important;
-        height: calc(100vh - 300px)!important;
+        height: calc(100vh - 300px) !important;
     }
 }

@@ -1,16 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Form, Grid, Segment } from 'semantic-ui-react';
-import Select from '../../BaseComponents/Select';
-import State from '../../BaseComponents/State';
-import Date from '../../BaseComponents/Date';
-import Text from '../../BaseComponents/Text';
-import TextArea from '../../BaseComponents/TextArea';
-import Number from '../../BaseComponents/Number';
-import FormField from "../../BaseComponents";
-import {NUMBER_TYPE, SELECT_TYPE} from "../../../constants/columnTypes";
+import { Form, Grid, Segment } from 'semantic-ui-react';
+import FormField from '../../BaseComponents';
+import { NUMBER_TYPE, SELECT_TYPE } from '../../../constants/columnTypes';
 
-const Information = ({form = {}, onChange, settings}) => {
+const Information = ({ form = {}, onChange, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -28,7 +22,7 @@ const Information = ({form = {}, onChange, settings}) => {
                             name="carrierId"
                             value={form['carrierId']}
                             type={SELECT_TYPE}
-                            settings={settings["carrierId"]}
+                            settings={settings['carrierId']}
                             source="transportCompanies"
                             onChange={onChange}
                         />
@@ -39,7 +33,7 @@ const Information = ({form = {}, onChange, settings}) => {
                             value={form['deliveryType']}
                             isTranslate
                             type={SELECT_TYPE}
-                            settings={settings["deliveryType"]}
+                            settings={settings['deliveryType']}
                             source="deliveryType"
                             onChange={onChange}
                         />
@@ -50,7 +44,7 @@ const Information = ({form = {}, onChange, settings}) => {
                             value={form['tarifficationType']}
                             isTranslate
                             type={SELECT_TYPE}
-                            settings={settings["tarifficationType"]}
+                            settings={settings['tarifficationType']}
                             source="tarifficationType"
                             onChange={onChange}
                         />
@@ -63,7 +57,7 @@ const Information = ({form = {}, onChange, settings}) => {
                             value={form['vehicleTypeId']}
                             source="vehicleTypes"
                             type={SELECT_TYPE}
-                            settings={settings["vehicleTypeId"]}
+                            settings={settings['vehicleTypeId']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -77,7 +71,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                     name="temperatureMin"
                                     value={form['temperatureMin']}
                                     type={NUMBER_TYPE}
-                                    settings={settings["temperatureMin"]}
+                                    settings={settings['temperatureMin']}
                                     onChange={onChange}
                                 />
                                 <label>{t('to')}</label>
@@ -86,7 +80,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                     name="temperatureMax"
                                     value={form['temperatureMax']}
                                     type={NUMBER_TYPE}
-                                    settings={settings["temperatureMax"]}
+                                    settings={settings['temperatureMax']}
                                     onChange={onChange}
                                 />
                             </div>
@@ -97,7 +91,7 @@ const Information = ({form = {}, onChange, settings}) => {
                             name="totalDeliveryCost"
                             value={form['totalDeliveryCost']}
                             type={NUMBER_TYPE}
-                            settings={settings["totalDeliveryCost"]}
+                            settings={settings['totalDeliveryCost']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -120,7 +114,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                                 text="prepare"
                                                 value={form['palletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings["palletsCount"]}
+                                                settings={settings['palletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -130,7 +124,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                                 text="plan"
                                                 value={form['confirmedPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings["confirmedPalletsCount"]}
+                                                settings={settings['confirmedPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -140,7 +134,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                                 text="fact"
                                                 value={form['actualPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings["actualPalletsCount"]}
+                                                settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -163,7 +157,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                                 text="planWeigth"
                                                 value={form['weightKg']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings["weightKg"]}
+                                                settings={settings['weightKg']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -173,7 +167,7 @@ const Information = ({form = {}, onChange, settings}) => {
                                                 text="factWeigth"
                                                 value={form['actualWeightKg']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings["actualWeightKg"]}
+                                                settings={settings['actualWeightKg']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>

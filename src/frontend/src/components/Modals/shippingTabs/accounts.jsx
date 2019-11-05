@@ -1,13 +1,10 @@
 import React from 'react';
-import { Checkbox, Form, Grid, Segment } from 'semantic-ui-react';
+import { Form, Grid, Segment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import Text from '../../BaseComponents/Text';
-import TextArea from '../../BaseComponents/TextArea';
-import Number from '../../BaseComponents/Number';
-import {BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE} from '../../../constants/columnTypes';
+import { BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE } from '../../../constants/columnTypes';
 import FormField from '../../BaseComponents';
 
-const Accounts = ({form = {}, onChange, settings}) => {
+const Accounts = ({ form = {}, onChange, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -70,7 +67,7 @@ const Accounts = ({form = {}, onChange, settings}) => {
                                                 checked={form['costsConfirmedByCarrier']}
                                                 name="costsConfirmedByCarrier"
                                                 type={CHECKBOX_TYPE}
-                                                settings={settings["costsConfirmedByCarrier"]}
+                                                settings={settings['costsConfirmedByCarrier']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -78,7 +75,7 @@ const Accounts = ({form = {}, onChange, settings}) => {
                                             <FormField
                                                 checked={form['costsConfirmedByShipper']}
                                                 type={CHECKBOX_TYPE}
-                                                settings={settings["costsConfirmedByShipper"]}
+                                                settings={settings['costsConfirmedByShipper']}
                                                 name="costsConfirmedByShipper"
                                                 onChange={onChange}
                                             />

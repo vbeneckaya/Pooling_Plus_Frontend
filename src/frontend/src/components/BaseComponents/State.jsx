@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Dropdown, Form, Icon } from 'semantic-ui-react';
-import { useSelector, useDispatch } from 'react-redux';
-import { stateColorsSelector } from '../../ducks/gridList';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
@@ -46,7 +45,7 @@ const State = ({ value, name, isDisabled, onChange, className, source, placehold
                     fluid
                     options={items}
                     onChange={onChange}
-                ></Dropdown>
+                />
             </Form.Field>
         );
     else

@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import { Segment, Header, Icon, Loader, Dimmer } from 'semantic-ui-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Dimmer, Header, Icon, Loader, Segment } from 'semantic-ui-react';
 import { uploadFileRequest, uploadProgressSelector } from '../../ducks/documents';
 import { toast } from 'react-toastify';
 

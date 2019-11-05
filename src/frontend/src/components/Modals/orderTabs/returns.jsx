@@ -1,14 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Grid } from 'semantic-ui-react';
-import TextArea from '../../BaseComponents/TextArea';
-import Text from '../../BaseComponents/Text';
-import Date from '../../BaseComponents/Date';
-import Number from '../../BaseComponents/Number';
-import FormField from "../../BaseComponents";
-import {BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE} from "../../../constants/columnTypes";
+import FormField from '../../BaseComponents';
+import { BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE } from '../../../constants/columnTypes';
 
-const Returns = ({form, onChange, settings}) => {
+const Returns = ({ form, onChange, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -20,14 +16,14 @@ const Returns = ({form, onChange, settings}) => {
                             name="returnShippingAccountNo"
                             value={form['returnShippingAccountNo']}
                             type={TEXT_TYPE}
-                            settings={settings["returnShippingAccountNo"]}
+                            settings={settings['returnShippingAccountNo']}
                             onChange={onChange}
                         />
                         <FormField
                             name="plannedReturnDate"
                             value={form['plannedReturnDate']}
                             type={DATE_TYPE}
-                            settings={settings["plannedReturnDate"]}
+                            settings={settings['plannedReturnDate']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -37,7 +33,7 @@ const Returns = ({form, onChange, settings}) => {
                             value={form['returnInformation']}
                             rows={5}
                             type={BIG_TEXT_TYPE}
-                            settings={settings["returnInformation"]}
+                            settings={settings['returnInformation']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -48,7 +44,7 @@ const Returns = ({form, onChange, settings}) => {
                             name="actualReturnDate"
                             value={form['actualReturnDate']}
                             type={DATE_TYPE}
-                            settings={settings["actualReturnDate"]}
+                            settings={settings['actualReturnDate']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -57,7 +53,7 @@ const Returns = ({form, onChange, settings}) => {
                             name="majorAdoptionNumber"
                             value={form['majorAdoptionNumber']}
                             type={TEXT_TYPE}
-                            settings={settings["majorAdoptionNumber"]}
+                            settings={settings['majorAdoptionNumber']}
                             onChange={onChange}
                         />
                     </Grid.Column>

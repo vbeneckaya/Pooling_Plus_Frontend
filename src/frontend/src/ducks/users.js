@@ -1,7 +1,6 @@
-import { all, put, takeEvery, delay } from 'redux-saga/effects';
+import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
-import { toast } from 'react-toastify';
 import users from '../mocks/users';
 
 const TYPE_API = 'users';
@@ -123,22 +122,10 @@ export const toggleUserActiveRequest = payload => {
 //*  SELECTORS *//
 
 const stateSelector = state => state.users;
-export const usersListSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const userCardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
+export const usersListSelector = createSelector(stateSelector, state => state.list);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const userCardSelector = createSelector(stateSelector, state => state.card);
 
 //*  SAGA  *//
 

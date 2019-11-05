@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel, select } from 'redux-saga/effects';
+import { all, cancel, cancelled, delay, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { IS_AUTO_UPDATE } from '../constants/settings';
 import { formatDate } from '../utils/dateTimeFormater';
 import { toast } from 'react-toastify';
@@ -167,38 +167,20 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const gridName = (state, name) => name;
 
-export const columnsGridSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.columns : [];
-    },
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const listSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const columnsGridSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.columns : [];
+});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const listSelector = createSelector(stateSelector, state => state.data);
 
-export const stateColorsSelector = createSelector(
-    stateSelector,
-    state => state.stateColors,
-);
+export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
 
-export const canCreateByFormSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canCreateByForm : false;
-    },
-);
+export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canCreateByForm : false;
+});
 
 export const canImportFromExcelSelector = createSelector(
     [stateProfile, gridName],
@@ -208,23 +190,14 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canExportToExcel : false;
-    },
-);
+export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canExportToExcel : false;
+});
 
-export const importProgressSelector = createSelector(
-    stateSelector,
-    state => state.importProgress,
-);
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
-export const exportProgressSelector = createSelector(
-    stateSelector,
-    state => state.exportProgress,
-);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 
@@ -241,8 +214,8 @@ export function* getListSaga({ payload }) {
             ...filter,
             filter: {
                 ...filter.filter,
-                columns
-            }
+                columns,
+            },
         });
 
         yield put({ type: GET_GRID_LIST_SUCCESS, payload: { ...result, isConcat } });

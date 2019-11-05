@@ -1,9 +1,7 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {Icon, Popup} from 'semantic-ui-react';
-import {checkForEditingRequest} from '../../ducks/gridColumnEdit';
-import {toast} from 'react-toastify';
+import React, { useEffect, useRef, useState } from 'react';
+import { Popup } from 'semantic-ui-react';
 
-const TextCropping = ({children}) => {
+const TextCropping = ({ children }) => {
     const valueRef = useRef(null);
     let [width, setWidth] = useState({
         scrollWidth: 0,

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Icon, Form, Dropdown } from 'semantic-ui-react';
+import { Dropdown, Form } from 'semantic-ui-react';
 
 import './style.scss';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
@@ -11,7 +11,7 @@ const Select = ({
     value,
     onChange,
     placeholder = '',
-                    isDisabled,
+    isDisabled,
     label,
     name,
     text,

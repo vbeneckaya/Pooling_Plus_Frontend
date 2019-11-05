@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dimmer, Dropdown, Label, Loader, Menu, Popup, Table } from 'semantic-ui-react';
 import { gridsMenuSelector } from '../../ducks/profile';
-import { getRolesRequest, rolesListSelector } from '../../ducks/roles';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 import { columnsGridSelector } from '../../ducks/gridList';
 import './style.scss';
@@ -16,8 +15,11 @@ import {
     getFieldsSettingRequest,
     progressSelector,
 } from '../../ducks/fieldsSetting';
-import { ORDERS_GRID } from '../../constants/grids';
-import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW} from "../../constants/formTypes";
+import {
+    SETTINGS_TYPE_EDIT,
+    SETTINGS_TYPE_HIDE,
+    SETTINGS_TYPE_SHOW,
+} from '../../constants/formTypes';
 
 const List = () => {
     const { t } = useTranslation();
@@ -42,10 +44,12 @@ const List = () => {
 
     useEffect(() => {
         if (!(rolesList || []).length) {
-            dispatch(getLookupRequest({
-                name: 'roles',
-                isForm: true
-            }));
+            dispatch(
+                getLookupRequest({
+                    name: 'roles',
+                    isForm: true,
+                }),
+            );
         }
     }, []);
 
@@ -108,7 +112,7 @@ const List = () => {
 
     const rolesListOptions = [
         { key: 'any_role', value: 'null', text: t('any_role') },
-        ...rolesList.map(x => ({key: x.name, value: x.value, text: t(x.name)})),
+        ...rolesList.map(x => ({ key: x.name, value: x.value, text: t(x.name) })),
     ];
 
     /* const companyListOptions = [
@@ -122,9 +126,9 @@ const List = () => {
     ];*/
 
     const availabilityListOptions = [
-        {key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE)},
-        {key: SETTINGS_TYPE_SHOW, value: SETTINGS_TYPE_SHOW, text: t(SETTINGS_TYPE_SHOW)},
-        {key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT)},
+        { key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE) },
+        { key: SETTINGS_TYPE_SHOW, value: SETTINGS_TYPE_SHOW, text: t(SETTINGS_TYPE_SHOW) },
+        { key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT) },
     ];
 
     const headerRowComponent = (
@@ -296,7 +300,7 @@ const List = () => {
                                     ))}
                                 </Table.Row>
                                 {extSettings.map(column => (
-                                    <RowBody column={column} isExt/>
+                                    <RowBody column={column} isExt />
                                 ))}
                             </>
                         ) : null}

@@ -1,7 +1,6 @@
-import { all, put, takeEvery, delay } from 'redux-saga/effects';
+import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
-import { toast } from 'react-toastify';
 import roles from '../mocks/roles';
 
 const TYPE_API = 'roles';
@@ -87,7 +86,7 @@ export default (state = initial, { type, payload }) => {
         case GET_ALL_PERMISSIONS_SUCCESS:
             return {
                 ...state,
-                permissions: payload
+                permissions: payload,
             };
         default:
             return state;
@@ -133,47 +132,32 @@ export const toggleRoleActiveRequest = payload => {
 export const getAllPermissionsRequest = payload => {
     return {
         type: GET_ALL_PERMISSIONS_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
 
 const stateSelector = state => state.roles;
 
-export const rolesListSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
+export const rolesListSelector = createSelector(stateSelector, state => state.list);
 
-export const rolesFromUserSelector = createSelector(
-    stateSelector,
-    state => {
-        return (
-            state.list &&
-            state.list.map(item => ({
-                name: item.name,
-                value: item.id,
-                isActive: true,
-            }))
-        );
-    },
-);
+export const rolesFromUserSelector = createSelector(stateSelector, state => {
+    return (
+        state.list &&
+        state.list.map(item => ({
+            name: item.name,
+            value: item.id,
+            isActive: true,
+        }))
+    );
+});
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const roleCardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const roleCardSelector = createSelector(stateSelector, state => state.card);
 
-export const allPermissionsSelector = createSelector(stateSelector, state=> state.permissions);
+export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 
 //*  SAGA  *//
 
@@ -253,13 +237,13 @@ function* getAllPermissionsSaga({ payload }) {
 
         yield put({
             type: GET_ALL_PERMISSIONS_SUCCESS,
-            payload: result
-        })
+            payload: result,
+        });
     } catch (e) {
         yield put({
             type: GET_ALL_PERMISSIONS_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 

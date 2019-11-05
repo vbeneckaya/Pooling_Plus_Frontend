@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Label } from 'semantic-ui-react';
 
 const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange }) => {

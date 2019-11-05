@@ -1,10 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
     ACTIVE_TYPE,
     BOOLEAN_TYPE,
-    DATE_TIME_TYPE,
     ENUM_TYPE,
     LABELS_TYPE,
     LINK_TYPE,
@@ -12,10 +11,8 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
 } from '../../constants/columnTypes';
-import { formatDate } from '../../utils/dateTimeFormater';
 import { numbersFormat } from '../../utils/numbersFormat';
-import { Checkbox, Icon, Label, Popup } from 'semantic-ui-react';
-import { postman } from '../../utils/postman';
+import { Checkbox, Label } from 'semantic-ui-react';
 import StateValue from './StateValue';
 import SelectValue from './SelectValue';
 import TextCropping from './TextCropping';
@@ -45,7 +42,7 @@ const CellValue = React.forwardRef(
         },
         ref,
     ) => {
-        const {t} = useTranslation();
+        const { t } = useTranslation();
 
         if (type === SELECT_TYPE) {
             return (
@@ -61,9 +58,11 @@ const CellValue = React.forwardRef(
         }
 
         if (type === STATE_TYPE) {
-            return <div ref={ref}>
-                <StateValue value={value} source={source} indexRow={indexRow}/>
-            </div>;
+            return (
+                <div ref={ref}>
+                    <StateValue value={value} source={source} indexRow={indexRow} />
+                </div>
+            );
         }
 
         if (type === LABELS_TYPE) {
@@ -72,22 +71,24 @@ const CellValue = React.forwardRef(
                     {!value
                         ? t('All')
                         : value.map((n, i) => (
-                            <Label key={i} className="label-margin">
-                                {t(n.name)}
-                            </Label>
-                        ))}
+                              <Label key={i} className="label-margin">
+                                  {t(n.name)}
+                              </Label>
+                          ))}
                 </>
             );
         }
 
         if (type === ENUM_TYPE) {
-            return <div ref={ref}>
-                <TextCropping>{t(value)}</TextCropping>
-            </div>;
+            return (
+                <div ref={ref}>
+                    <TextCropping>{t(value)}</TextCropping>
+                </div>
+            );
         }
 
         if (type === ACTIVE_TYPE) {
-            return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive}/>;
+            return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive} />;
         }
 
         if (type === BOOLEAN_TYPE) {

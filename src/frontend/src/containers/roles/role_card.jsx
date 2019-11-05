@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Form, Input, Modal, Dimmer, Loader } from 'semantic-ui-react';
+import { Button, Dimmer, Form, Input, Loader, Modal } from 'semantic-ui-react';
 import {
     allPermissionsSelector,
     clearRolesInfo,
@@ -147,7 +147,12 @@ class RoleCard extends Component {
                                     label={t(permission.name)}
                                     value={permission.code}
                                     checked={permissions.includes(permission.code)}
-                                    disabled={([2, 4, 5, 6].includes(permission.code) && !permissions.includes(1)) || ([10, 11, 12].includes(permission.code) && !permissions.includes(7))}
+                                    disabled={
+                                        ([2, 4, 5, 6].includes(permission.code) &&
+                                            !permissions.includes(1)) ||
+                                        ([10, 11, 12].includes(permission.code) &&
+                                            !permissions.includes(7))
+                                    }
                                     onChange={this.handlePermissions}
                                 />
                             </Form.Field>

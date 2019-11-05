@@ -1,13 +1,9 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import {all, takeEvery, put, call, select, fork} from 'redux-saga/effects';
+import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import {roleSelector} from './profile';
-import {
-    fieldsSettingSelector,
-    getFieldsSettingRequest,
-    getFieldsSettingSaga,
-} from './fieldsSetting';
+import { roleSelector } from './profile';
+import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
 
 //*  TYPES  *//
 
@@ -176,7 +172,7 @@ export const settingsFormSelector = createSelector(
     (state, status) => {
         console.log('settings', state, status);
         let settings = {};
-        const {base = []} = state;
+        const { base = [] } = state;
         base.forEach(item => {
             settings = {
                 ...settings,
@@ -194,7 +190,7 @@ export const settingsExtSelector = createSelector(
     (state, status) => {
         console.log('settings', state, status);
         let settings = {};
-        const {ext = []} = state;
+        const { ext = [] } = state;
         ext.forEach(item => {
             settings = {
                 ...settings,

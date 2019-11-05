@@ -17,14 +17,9 @@ import {
     actionsSelector,
     getActionsRequest,
     getAllIdsRequest,
-    infoSelector,
     invokeActionRequest,
-    updatesSelector,
 } from '../../ducks/gridActions';
-import {
-    getRepresentationsRequest,
-    representationFromGridSelector,
-} from '../../ducks/representations';
+import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
     return (

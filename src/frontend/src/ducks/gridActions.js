@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import {all, takeEvery, put, select} from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import {representationFromGridSelector} from "./representations";
+import { representationFromGridSelector } from './representations';
 
 //*  TYPES  *//
 
@@ -152,22 +152,18 @@ export const invokeMassUpdateRequest = payload => {
 
 const stateSelector = state => state.gridActions;
 
-export const actionsSelector = createSelector(
-    stateSelector,
-    state =>
-        state.actions.map(item => ({
-            ...item,
-            ids: item.ids || [],
-        })),
+export const actionsSelector = createSelector(stateSelector, state =>
+    state.actions.map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
 );
 
-export const actionsCardSelector = createSelector(
-    stateSelector,
-    state =>
-        (state.actionsCard || []).map(item => ({
-            ...item,
-            ids: item.ids || [],
-        })),
+export const actionsCardSelector = createSelector(stateSelector, state =>
+    (state.actionsCard || []).map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
 );
 
 export const progressActionNameSelector = createSelector(
@@ -175,14 +171,8 @@ export const progressActionNameSelector = createSelector(
     state => state.progressActionName,
 );
 
-export const infoSelector = createSelector(
-    stateSelector,
-    state => state.info,
-);
-export const updatesSelector = createSelector(
-    stateSelector,
-    state => state.updates,
-);
+export const infoSelector = createSelector(stateSelector, state => state.info);
+export const updatesSelector = createSelector(stateSelector, state => state.updates);
 export const progressMassUpdateSelector = createSelector(
     stateSelector,
     state => state.progressMassUpdate,
@@ -243,8 +233,8 @@ function* getAllIdsSaga({ payload }) {
             ...filter,
             filter: {
                 ...filter.filter,
-                columns
-            }
+                columns,
+            },
         });
 
         yield put({

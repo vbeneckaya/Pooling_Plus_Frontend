@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
-import TextCropping from "./TextCropping";
+import TextCropping from './TextCropping';
 
 const SelectValue = ({ value, source, indexRow, showRawValue }) => {
     const dispatch = useDispatch();

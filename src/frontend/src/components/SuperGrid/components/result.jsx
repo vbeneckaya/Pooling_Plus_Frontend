@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {withTranslation} from 'react-i18next';
-import {Button, Checkbox, Dimmer, Icon, Loader, Table} from 'semantic-ui-react';
-import CellResult from "./result_cell";
+import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
+import { Button, Checkbox, Dimmer, Loader, Table } from 'semantic-ui-react';
+import CellResult from './result_cell';
 
 class Result extends Component {
     handleCheck = row => {
@@ -47,7 +47,7 @@ class Result extends Component {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 {rows &&
-                rows.map((row, indexRow) => (
+                    rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
                             className={'grid-row ' + row.color || ''}
@@ -69,7 +69,7 @@ class Result extends Component {
                                 />
                             </Table.Cell>
                             {columns &&
-                            columns.map((column, indexColumn) => (
+                                columns.map((column, indexColumn) => (
                                     <CellResult
                                         key={`cell_${row.id}_${column.name}_${indexRow}`}
                                         row={row}

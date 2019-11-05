@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
@@ -8,7 +8,6 @@ import {
     editCardRequest,
     getCardRequest,
     isUniqueNumberRequest,
-    openGridCardRequest,
     progressSelector,
     settingsFormSelector,
 } from '../../ducks/gridCard';
@@ -16,13 +15,12 @@ import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
 import {
     actionsCardSelector,
-    actionsSelector,
     clearActions,
     getActionsRequest,
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
-import {ORDERS_GRID} from '../../constants/grids';
+import { ORDERS_GRID } from '../../constants/grids';
 
 const getModal = {
     orders: <OrderModal />,

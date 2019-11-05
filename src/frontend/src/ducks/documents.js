@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
-import { postman, downloader } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { downloader, postman } from '../utils/postman';
+import { all, put, takeEvery } from 'redux-saga/effects';
 
 //*  TYPES  *//
 
@@ -163,10 +163,7 @@ export const clearDocuments = () => {
 
 const stateSelector = state => state.documents;
 
-export const uploadProgressSelector = createSelector(
-    stateSelector,
-    state => state.uploadProgress,
-);
+export const uploadProgressSelector = createSelector(stateSelector, state => state.uploadProgress);
 
 export const documentTypesSelector = createSelector(
     stateSelector,
@@ -179,14 +176,8 @@ export const documentTypesSelector = createSelector(
         })),
 );
 
-export const documentsSelector = createSelector(
-    stateSelector,
-    state => state.documents,
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const documentsSelector = createSelector(stateSelector, state => state.documents);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 //*  SAGA  *//
 

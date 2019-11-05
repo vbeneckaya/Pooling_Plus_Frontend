@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Popup, Checkbox, Icon, Form, Loader, Dimmer } from 'semantic-ui-react';
+import { Button, Checkbox, Dimmer, Form, Icon, Loader, Popup } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';

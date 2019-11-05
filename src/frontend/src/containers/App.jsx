@@ -4,7 +4,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import MainRoute from '../router';
 import Header from '../components/Header';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import 'semantic-ui-css/semantic.min.css';
 import 'react-datepicker/dist/react-datepicker.min.css';

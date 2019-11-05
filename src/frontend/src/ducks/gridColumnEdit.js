@@ -1,7 +1,7 @@
-import {createSelector} from 'reselect';
-import {postman} from '../utils/postman';
-import {all, takeEvery, put, call, select, delay} from 'redux-saga/effects';
-import {toast} from 'react-toastify';
+import { createSelector } from 'reselect';
+import { postman } from '../utils/postman';
+import { all, put, takeEvery } from 'redux-saga/effects';
+import { toast } from 'react-toastify';
 
 //*  TYPES  *//
 
@@ -18,7 +18,7 @@ const initial = {
 
 //*  REDUCER  *//
 
-export default (state = initial, {type, payload = {}}) => {
+export default (state = initial, { type, payload = {} }) => {
     switch (type) {
         case CHECK_FOR_EDITING_REQUEST:
             return {
@@ -27,19 +27,19 @@ export default (state = initial, {type, payload = {}}) => {
                     rowId: payload.rowId,
                     fieldName: payload.fieldName,
                 },
-                editModal: false
+                editModal: false,
             };
         case CHECK_FOR_EDITING_SUCCESS:
             return {
                 ...state,
                 checkProgress: false,
-                editModal: {...payload},
+                editModal: { ...payload },
             };
         case CHECK_FOR_EDITING_ERROR:
             return {
                 ...state,
                 checkProgress: false,
-                editModal: false
+                editModal: false,
             };
         default:
             return state;
@@ -63,13 +63,13 @@ export const editModalSelector = createSelector(stateSelector, state => state.ed
 
 //*  SAGA  *//
 
-function* checkForEditingSaga({payload}) {
+function* checkForEditingSaga({ payload }) {
     try {
-        const {forEntity, fieldName, state, callbackSuccess, t} = payload;
+        const { forEntity, fieldName, state, callbackSuccess, t } = payload;
         const result = yield postman.post('/fieldProperties/getField', {
             forEntity,
             fieldName,
-            state
+            state,
         });
 
         if (result.accessType === 'edit') {
@@ -80,7 +80,7 @@ function* checkForEditingSaga({payload}) {
 
             callbackSuccess && callbackSuccess();
         } else {
-            toast.error(t(`check_for_editing_failed_${forEntity}`, {fieldName: t(fieldName)}));
+            toast.error(t(`check_for_editing_failed_${forEntity}`, { fieldName: t(fieldName) }));
             yield put({
                 type: CHECK_FOR_EDITING_ERROR,
                 payload,

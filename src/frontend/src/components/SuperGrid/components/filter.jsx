@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Checkbox, Table, Input } from 'semantic-ui-react';
+import { Checkbox, Table } from 'semantic-ui-react';
 import { Resizable } from 'react-resizable';
 
 import DateFacet from '../../FilterComponents/Date';
@@ -10,22 +10,22 @@ import StateFacet from '../../FilterComponents/State';
 import Bool from '../../FilterComponents/Bool';
 import TimeFaset from '../../FilterComponents/Time';
 import {
+    BIG_TEXT_TYPE,
+    BOOLEAN_TYPE,
     DATE_TIME_TYPE,
+    DATE_TYPE,
+    ENUM_TYPE,
+    LINK_TYPE,
     NUMBER_TYPE,
     SELECT_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
-    BOOLEAN_TYPE,
-    DATE_TYPE,
-    ENUM_TYPE,
     TIME_TYPE,
-    LINK_TYPE,
-    BIG_TEXT_TYPE,
 } from '../../../constants/columnTypes';
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
-    [BIG_TEXT_TYPE]: <TextFacet/>,
+    [BIG_TEXT_TYPE]: <TextFacet />,
     [NUMBER_TYPE]: <NumberFacet />,
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,

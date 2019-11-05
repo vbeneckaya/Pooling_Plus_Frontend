@@ -1,7 +1,5 @@
 import React from 'react';
 import { Button, Form, Icon, Input, Popup } from 'semantic-ui-react';
-import DatePicker from 'react-datepicker';
-import { dateToString, parseDate } from '../../utils/dateTimeFormater';
 import { useTranslation } from 'react-i18next';
 import Text from '../BaseComponents/Text';
 

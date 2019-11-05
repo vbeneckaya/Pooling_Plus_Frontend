@@ -8,7 +8,7 @@ import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
-import {userPermissionsSelector} from '../../ducks/profile';
+import { userPermissionsSelector } from '../../ducks/profile';
 
 const OrderModal = ({
     form,
@@ -18,7 +18,7 @@ const OrderModal = ({
     load,
     isNotUniqueNumber,
     uniquenessNumberCheck,
-                        settings,
+    settings,
 }) => {
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
@@ -44,7 +44,13 @@ const OrderModal = ({
             menuItem: t('position'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Position form={form} onChange={onChangeForm} gridName={name} load={load} settings={settings}/>
+                    <Position
+                        form={form}
+                        onChange={onChangeForm}
+                        gridName={name}
+                        load={load}
+                        settings={settings}
+                    />
                 </Tab.Pane>
             ),
         },
@@ -52,7 +58,7 @@ const OrderModal = ({
             menuItem: t('returns'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Returns form={form} settings={settings} onChange={onChangeForm}/>
+                    <Returns form={form} settings={settings} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
         },

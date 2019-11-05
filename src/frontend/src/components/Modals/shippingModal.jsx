@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Grid, Menu, Tab } from 'semantic-ui-react';
+import { Menu, Tab } from 'semantic-ui-react';
 import Information from './shippingTabs/information';
 import Routes from './shippingTabs/routes';
 import Documents from './shared/documents';
@@ -11,7 +11,7 @@ import Card from '../../containers/customGrid/card';
 import { useSelector } from 'react-redux';
 import { userPermissionsSelector } from '../../ducks/profile';
 
-const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose, settings}) => {
+const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose, settings }) => {
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
         item => item.code,
@@ -28,7 +28,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose, sett
             menuItem: t('information'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Information form={form} onChange={onChangeForm} settings={settings}/>
+                    <Information form={form} onChange={onChangeForm} settings={settings} />
                 </Tab.Pane>
             ),
         },
@@ -50,7 +50,7 @@ const ShippingModal = ({form, onChangeForm, name, id, onClose: beforeClose, sett
             menuItem: t('accounts'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Accounts form={form} settings={settings} onChange={onChangeForm}/>
+                    <Accounts form={form} settings={settings} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
         },

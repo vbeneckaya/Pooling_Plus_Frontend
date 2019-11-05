@@ -1,9 +1,8 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
-import { representationFromGridSelector } from './representations';
 
 //*  TYPES  *//
 
@@ -164,30 +163,14 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const dictionaryName = (state, name) => name;
 
-export const columnsSelector = createSelector(
-    [stateProfile, dictionaryName],
-    (state, name) => {
-        const dictionary =
-            state.dictionaries && state.dictionaries.find(item => item.name === name);
-        return dictionary ? dictionary.columns : [];
-    },
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const listSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
+export const columnsSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.columns : [];
+});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const listSelector = createSelector(stateSelector, state => state.list);
+export const cardSelector = createSelector(stateSelector, state => state.card);
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
@@ -216,14 +199,8 @@ export const canExportToExcelSelector = createSelector(
     },
 );
 
-export const importProgressSelector = createSelector(
-    stateSelector,
-    state => state.importProgress,
-);
-export const exportProgressSelector = createSelector(
-    stateSelector,
-    state => state.exportProgress,
-);
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 

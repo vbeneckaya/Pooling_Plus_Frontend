@@ -1,9 +1,9 @@
-import React, {useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {useTranslation} from 'react-i18next';
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import CellValue from '../../ColumnsValue';
-import {Button, Form, Icon, Loader, Modal, Popup, Table} from 'semantic-ui-react';
-import {toast} from 'react-toastify';
+import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
+import { toast } from 'react-toastify';
 import {
     checkForEditingRequest,
     checkProgressSelector,
@@ -11,20 +11,20 @@ import {
 } from '../../../ducks/gridColumnEdit';
 
 import FormField from '../../BaseComponents';
-import {LINK_TYPE} from '../../../constants/columnTypes';
-import {ORDERS_GRID} from '../../../constants/grids';
-import {invokeMassUpdateRequest, progressMassUpdateSelector} from '../../../ducks/gridActions';
+import { LINK_TYPE } from '../../../constants/columnTypes';
+import { ORDERS_GRID } from '../../../constants/grids';
+import { invokeMassUpdateRequest, progressMassUpdateSelector } from '../../../ducks/gridActions';
 
-const ModalComponent = ({element, props, children}) => {
+const ModalComponent = ({ element, props, children }) => {
     if (!element) {
         return <>{children}</>;
     }
     return React.cloneElement(element, props, children);
 };
 
-const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gridName}) => {
+const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, gridName }) => {
     const dispatch = useDispatch();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const checkProgress = useSelector(state => checkProgressSelector(state));
     const editProgress = useSelector(state => progressMassUpdateSelector(state));
     const editModal = useSelector(state => editModalSelector(state));
@@ -37,14 +37,14 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
         console.log('contextRef', contextRef);
         const text = contextRef.current && contextRef.current.textContent;
         navigator.clipboard &&
-        navigator.clipboard.writeText(text).then(
-            () => {
-                toast.info(t('copied_to_clipboard_success'));
-            },
-            error => {
-                toast.error(t('copied_to_clipboard_error', {error}));
-            },
-        );
+            navigator.clipboard.writeText(text).then(
+                () => {
+                    toast.info(t('copied_to_clipboard_success'));
+                },
+                error => {
+                    toast.error(t('copied_to_clipboard_error', { error }));
+                },
+            );
     };
 
     const handleClick = (rowId, fieldName, state) => {
@@ -97,7 +97,7 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
                     <div
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
-                            }`}
+                        }`}
                         onClick={e =>
                             column.type !== LINK_TYPE
                                 ? handleClick(row.id, column.name, row.status)
@@ -130,7 +130,7 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
                         (editProgress &&
                             row.id === editModal.rowId &&
                             column.name === editModal.fieldName) ? (
-                            <Loader active={true} size="mini"/>
+                            <Loader active={true} size="mini" />
                         ) : (
                             <>
                                 {row[column.name] !== null ? (
@@ -160,7 +160,7 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
                             <FormField
                                 column={column}
                                 value={value}
-                                onChange={(e, {value}) => {
+                                onChange={(e, { value }) => {
                                     setValue(value);
                                 }}
                             />
@@ -169,7 +169,11 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={handleClose}>{t('cancelConfirm')}</Button>
-                    <Button color="primary" disabled={value === row[column.name]} onClick={handleSave}>
+                    <Button
+                        color="primary"
+                        disabled={value === row[column.name]}
+                        onClick={handleSave}
+                    >
                         {t('SaveButton')}
                     </Button>
                 </Modal.Actions>

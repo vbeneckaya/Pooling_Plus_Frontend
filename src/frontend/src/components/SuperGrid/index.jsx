@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {withTranslation} from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
-import {debounce} from 'throttle-debounce';
+import { debounce } from 'throttle-debounce';
 
 import './style.scss';
 import Filter from './components/filter';
@@ -10,9 +10,9 @@ import HeaderSearchGrid from './components/header';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
-import {PAGE_SIZE} from '../../constants/settings';
-import {Confirm} from 'semantic-ui-react';
-import Footer from "./components/footer";
+import { PAGE_SIZE } from '../../constants/settings';
+import { Confirm } from 'semantic-ui-react';
+import Footer from './components/footer';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -33,10 +33,9 @@ class SuperGrid extends Component {
         const { storageFilterItem, storageSortItem } = props;
 
         this.state = {
-            ...initState(storageFilterItem, storageSortItem)
+            ...initState(storageFilterItem, storageSortItem),
         };
     }
-
 
     componentDidMount() {
         this.props.autoUpdateStart(this.mapData());
@@ -220,7 +219,6 @@ class SuperGrid extends Component {
         const { filters } = this.state;
         const { columns, storageFilterItem } = this.props;
 
-
         let newFilter = {};
 
         Object.keys(filters).forEach(key => {
@@ -231,9 +229,12 @@ class SuperGrid extends Component {
                 };
             }
         });
-        this.setState({
-            filters: newFilter,
-        }, this.debounceSetFilterApiAndLoadList);
+        this.setState(
+            {
+                filters: newFilter,
+            },
+            this.debounceSetFilterApiAndLoadList,
+        );
     };
 
     setFilterApiAndLoadList = () => {
@@ -251,9 +252,8 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
-
     render() {
-        const {filters, sort, fullText, selectedRows} = this.state;
+        const { filters, sort, fullText, selectedRows } = this.state;
         const {
             totalCount: count = 0,
             columns,
@@ -347,7 +347,11 @@ class SuperGrid extends Component {
                         />
                     </InfiniteScrollTable>
                     {selectedRows.size ? (
-                        <Footer gridName={name} groupActions={groupActions} clearSelectedRows={this.clearSelectedRows}/>
+                        <Footer
+                            gridName={name}
+                            groupActions={groupActions}
+                            clearSelectedRows={this.clearSelectedRows}
+                        />
                     ) : null}
                 </div>
                 <Confirm

@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel, select } from 'redux-saga/effects';
+import { all, put, takeEvery } from 'redux-saga/effects';
 import { ORDERS_GRID } from '../constants/grids';
 //*  TYPES  *//
 
@@ -62,7 +62,7 @@ export default (state = initial, { type, payload = {} }) => {
         case CLEAR_FIELDS_SETTINGS:
             return {
                 ...state,
-                ...initial
+                ...initial,
             };
         default:
             return state;
@@ -87,8 +87,8 @@ export const editFieldsSettingRequest = payload => {
 
 export const clearFieldsSettings = () => {
     return {
-        type: CLEAR_FIELDS_SETTINGS
-    }
+        type: CLEAR_FIELDS_SETTINGS,
+    };
 };
 
 //*  SELECTORS *//
@@ -102,7 +102,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
 
 //*  SAGA  *//
-export function* getFieldsSettingSaga({payload}) {
+export function* getFieldsSettingSaga({ payload }) {
     try {
         const baseResult = yield postman.post('fieldProperties/get', payload);
         const extResult =
@@ -133,7 +133,7 @@ function* editFieldsSettingSaga({ payload }) {
         const { params, callbackSuccess, isExt } = payload;
         const result = yield postman.post('/fieldProperties/save', {
             ...params,
-            forEntity: isExt ? 'orderItems' : params.forEntity
+            forEntity: isExt ? 'orderItems' : params.forEntity,
         });
 
         yield put({
