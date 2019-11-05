@@ -11,5 +11,7 @@ namespace Domain.Services.Roles
         public bool IsActive { get; set; }
 
         public IEnumerable<PermissionInfo> Permissions { get; set; }
+
+        public int UsersCount { get; set; }
     }
 }

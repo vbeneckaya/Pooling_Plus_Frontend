@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel } from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import { representationFromGridSelector } from './representations';
 
 //*  TYPES  *//
 
@@ -151,22 +152,18 @@ export const invokeMassUpdateRequest = payload => {
 
 const stateSelector = state => state.gridActions;
 
-export const actionsSelector = createSelector(
-    stateSelector,
-    state =>
-        state.actions.map(item => ({
-            ...item,
-            ids: item.ids || [],
-        })),
+export const actionsSelector = createSelector(stateSelector, state =>
+    state.actions.map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
 );
 
-export const actionsCardSelector = createSelector(
-    stateSelector,
-    state =>
-        (state.actionsCard || []).map(item => ({
-            ...item,
-            ids: item.ids || [],
-        })),
+export const actionsCardSelector = createSelector(stateSelector, state =>
+    (state.actionsCard || []).map(item => ({
+        ...item,
+        ids: item.ids || [],
+    })),
 );
 
 export const progressActionNameSelector = createSelector(
@@ -174,14 +171,8 @@ export const progressActionNameSelector = createSelector(
     state => state.progressActionName,
 );
 
-export const infoSelector = createSelector(
-    stateSelector,
-    state => state.info,
-);
-export const updatesSelector = createSelector(
-    stateSelector,
-    state => state.updates,
-);
+export const infoSelector = createSelector(stateSelector, state => state.info);
+export const updatesSelector = createSelector(stateSelector, state => state.updates);
 export const progressMassUpdateSelector = createSelector(
     stateSelector,
     state => state.progressMassUpdate,
@@ -236,7 +227,15 @@ function* invokeActionSaga({ payload }) {
 function* getAllIdsSaga({ payload }) {
     try {
         const { filter, name, callbackSuccess } = payload;
-        const result = yield postman.post(`/${name}/ids`, filter.filter);
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+        const result = yield postman.post(`/${name}/ids`, {
+            ...filter,
+            filter: {
+                ...filter.filter,
+                columns,
+            },
+        });
 
         yield put({
             type: GET_IDS_SUCCESS,

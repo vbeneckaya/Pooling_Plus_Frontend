@@ -10,7 +10,7 @@ namespace Application.BusinessModels.Shared.BulkUpdates
         string FieldName { get; }
         FieldType FieldType { get; }
 
-        AppActionResult Update(CurrentUserDto user, T target, string value);
+        AppActionResult Update(CurrentUserDto user, T target, string fieldName, string value);
         bool IsAvailable(Role role, T target);
     }
 }

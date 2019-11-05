@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Popup, Input, Button, Icon, Form, Dropdown } from 'semantic-ui-react';
+import { Button, Form, Icon, Input, Popup } from 'semantic-ui-react';
 
 const Bool = ({ value, sort, name, setSort, text, onChange }) => {
     let items = [

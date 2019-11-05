@@ -9,6 +9,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
@@ -24,18 +25,21 @@ namespace Application.Services.Shippings
     public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IHistoryService _historyService;
+        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public ShippingsService(
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Shipping>> singleActions,
             IEnumerable<IGroupAppAction<Shipping>> groupActions,
             IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
             : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
         {
             _mapper = ConfigureMapper().CreateMapper();
-            this._historyService = historyService;
+            _historyService = historyService;
+            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -70,7 +74,20 @@ namespace Application.Services.Shippings
 
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
-            var setter = new FieldSetter<Shipping>(entity, _historyService);
+            bool isNew = string.IsNullOrEmpty(dto.Id);
+
+            IEnumerable<string> readOnlyFields = null;
+            if (!isNew)
+            {
+                var userId = _userIdProvider.GetCurrentUserId();
+                if (userId != null)
+                {
+                    string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
+                    readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings, stateName, null, null, userId);
+                }
+            }
+
+            var setter = new FieldSetter<Shipping>(entity, _historyService, readOnlyFields);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -331,7 +348,7 @@ namespace Application.Services.Shippings
                          .WhereAnd(searchForm.Filter.AdditionalPointRate.ApplyNumericFilter<Shipping>(i => i.AdditionalPointRate, ref parameters))
                          .WhereAnd(searchForm.Filter.BlankArrival.ApplyBooleanFilter<Shipping>(i => i.BlankArrival, ref parameters))
                          .WhereAnd(searchForm.Filter.BlankArrivalRate.ApplyNumericFilter<Shipping>(i => i.BlankArrivalRate, ref parameters))
-                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Shipping, Guid?>(i => i.CarrierId, ref parameters))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Shipping, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.ConfirmedPalletsCount.ApplyNumericFilter<Shipping>(i => i.ConfirmedPalletsCount, ref parameters))
                          .WhereAnd(searchForm.Filter.CostsConfirmedByCarrier.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByCarrier, ref parameters))
                          .WhereAnd(searchForm.Filter.CostsConfirmedByShipper.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByShipper, ref parameters))
@@ -352,13 +369,14 @@ namespace Application.Services.Shippings
                          .WhereAnd(searchForm.Filter.ReturnRate.ApplyNumericFilter<Shipping>(i => i.ReturnRate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingCreationDate.ApplyDateRangeFilter<Shipping>(i => i.ShippingCreationDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Shipping>(i => i.ShippingNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.Status.ApplyEnumFilter<Shipping, ShippingState>(i => i.Status, ref parameters))
                          .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Shipping, TarifficationType>(i => i.TarifficationType, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Shipping>(i => i.TemperatureMax, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMin.ApplyNumericFilter<Shipping>(i => i.TemperatureMin, ref parameters))
                          .WhereAnd(searchForm.Filter.TotalDeliveryCost.ApplyNumericFilter<Shipping>(i => i.TotalDeliveryCost, ref parameters))
                          .WhereAnd(searchForm.Filter.TransportWaybill.ApplyBooleanFilter<Shipping>(i => i.TransportWaybill, ref parameters))
                          .WhereAnd(searchForm.Filter.TrucksDowntime.ApplyNumericFilter<Shipping>(i => i.TrucksDowntime, ref parameters))
-                         .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Shipping, Guid?>(i => i.VehicleTypeId, ref parameters))
+                         .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Shipping, Guid?>(i => i.VehicleTypeId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.Waybill.ApplyBooleanFilter<Shipping>(i => i.Waybill, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Shipping>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Shipping>(i => i.WeightKg, ref parameters));
@@ -370,7 +388,8 @@ namespace Application.Services.Shippings
             query = this.ApplySearch(query, searchForm);
 
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc)
-                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name));
+                .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name))
+                .DefaultOrderBy(i => i.Id, true);
         }
 
         private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
@@ -380,26 +399,47 @@ namespace Application.Services.Shippings
             if (string.IsNullOrEmpty(search)) return query;
 
             var isInt = int.TryParse(search, out int searchInt);
-            var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
+            var isDecimal = decimal.TryParse(search.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
-            var tarrificationTypes = Enum.GetNames(typeof(TarifficationType))
-                .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => (TarifficationType?)MapFromStateDto<TarifficationType>(i));
+            //TarifficationType search
 
-            var deliveryTypes = Enum.GetNames(typeof(DeliveryType))
-            .Where(i => i.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-            .Select(i => (DeliveryType?)MapFromStateDto<DeliveryType>(i));
+            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
+
+            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
+                .ToList();
+
+            //DeliveryType search
+
+            var deliveryTypeNames = Enum.GetNames(typeof(DeliveryType)).Select(i => i.ToLower());
+
+            var deliveryTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => deliveryTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (DeliveryType?)Enum.Parse<DeliveryType>(i.Name, true))
+                .ToList();
+
+
+            var statusNames = Enum.GetNames(typeof(ShippingState)).Select(i => i.ToLower());
+
+            var statuses = this._dataService.GetDbSet<Translation>()
+                .Where(i => statusNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
+                .ToList();
 
             var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => i.Title.Contains(search))
+                .Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id);
 
             var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
-                .Where(i => i.Name.Contains(search))
-                .Select(i => i.Id);
+                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
 
             return query.Where(i => 
                !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
@@ -426,15 +466,18 @@ namespace Application.Services.Shippings
             || isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
             || isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
             || isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
+            //|| boolean.HasValue && i.Ban >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
             || i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
             || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
             || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
             || i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
             || i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || tarrificationTypes.Contains(i.TarifficationType)
+            || tarifficationTypes.Contains(i.TarifficationType)
             || deliveryTypes.Contains(i.DeliveryType)
             || vehicleTypes.Any(v => v == i.VehicleTypeId)
             || transportCompanies.Any(t => t == i.CarrierId)
+            || statuses.Contains(i.Status)
+
             );
         }
     }

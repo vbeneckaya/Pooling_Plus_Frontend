@@ -6,6 +6,7 @@ import { routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import reducer from './reducer';
 import rootSaga from './saga';
+import {getUserProfile} from '../ducks/profile';
 
 export const history = createBrowserHistory();
 

@@ -19,10 +19,12 @@
 .small-column {
     max-width: 50px !important;
     min-width: 50px !important;
+    width: 50px !important;
     padding-left: 15px !important;
     position: sticky;
     left: 0;
     top: 1px;
+    z-index: 1;
 }
 
 .sort-button {

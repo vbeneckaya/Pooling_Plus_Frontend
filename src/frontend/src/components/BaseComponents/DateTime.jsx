@@ -18,6 +18,8 @@ const DateTime = ({
 }) => {
     const { t } = useTranslation();
 
+    console.log('value', value);
+
     return (
         <Form.Field className={noLabel ? 'no-label-datepicker' : undefined}>
             {!noLabel ? (

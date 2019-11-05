@@ -75,9 +75,22 @@ export const dictionariesHeaderSelector = createSelector(
             .map(dictionary => dictionary.name),
 );
 
+export const dictionariesSelector = createSelector(
+    stateSelector,
+    state => state.dictionaries && state.dictionaries.map(dictionary => dictionary.name),
+);
+
+export const isCustomPageSelector = createSelector(stateSelector, state => {
+    return {
+        editFieldProperties: state.editFieldProperties,
+        editRoles: state.editRoles,
+        editUsers: state.editUsers,
+    };
+});
+
 export const otherMenuSelector = createSelector(stateSelector, state => {
     const menu = [];
-    if (true) {
+    if (state.editFieldProperties) {
         menu.push({
             name: 'fields_setting',
             link: FIELDS_SETTING_LINK,
@@ -125,13 +138,9 @@ export const homePageSelector = createSelector(stateSelector, state => {
     return homePage;
 });
 
-export const userPermissionsSelector = createSelector(
-    stateSelector,
-    state => {
-        console.log('role', state.role)
-        return state.role ? state.role.permissions : []
-    },
-);
+export const userPermissionsSelector = createSelector(stateSelector, state => {
+    return state.role ? state.role.permissions : [];
+});
 
 //*  SAGA  *//
 

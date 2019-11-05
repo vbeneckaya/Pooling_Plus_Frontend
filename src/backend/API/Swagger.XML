@@ -19,6 +19,11 @@
             Получить список полей и отображения по статусам
             </summary>
         </member>
+        <member name="M:API.Controllers.FieldPropertiesController.GetForField(Domain.Services.FieldProperties.GetForFieldPropertyParams)">
+            <summary>
+            Получить права доступа для поля
+            </summary>
+        </member>
         <member name="M:API.Controllers.FieldPropertiesController.Save(Domain.Services.FieldProperties.FieldPropertyDto)">
             <summary>
             Сохранить

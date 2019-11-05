@@ -34,7 +34,7 @@ namespace Application.Shared
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
-        private readonly IUserProvider _userIdProvider;
+        protected readonly IUserProvider _userIdProvider;
 
         protected readonly ICommonDataService _dataService;
 
@@ -296,10 +296,15 @@ namespace Application.Shared
 
             var result = new List<BulkUpdateDto>();
 
-            var entities = dbSet.Where(x => ids.Contains(x.Id));
+            var entities = dbSet.Where(x => ids.Contains(x.Id)).ToArray();
 
             foreach (var bulkUpdate in _bulkUpdates)
             {
+                if (string.IsNullOrEmpty(bulkUpdate.FieldName))
+                {
+                    continue;
+                }
+
                 var validEntities = entities.Where(e => bulkUpdate.IsAvailable(role, e));
                 if (validEntities.Any())
                 {
@@ -321,7 +326,12 @@ namespace Application.Shared
 
         public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
         {
-            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName.ToLowerFirstLetter() == fieldName);
+            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName?.ToLowerFirstLetter() == fieldName);
+
+            if (bulkUpdate == null)
+            {
+                bulkUpdate = _bulkUpdates.FirstOrDefault(x => string.IsNullOrEmpty(x.FieldName));
+            }
 
             if (bulkUpdate == null)
                 return new AppActionResult
@@ -342,7 +352,7 @@ namespace Application.Shared
             {
                 if (bulkUpdate.IsAvailable(role, entity))
                 {
-                    string message = bulkUpdate.Update(currentUser, entity, value)?.Message;
+                    string message = bulkUpdate.Update(currentUser, entity, fieldName, value)?.Message;
                     if (!string.IsNullOrEmpty(message))
                     {
                         List<string> numbers;

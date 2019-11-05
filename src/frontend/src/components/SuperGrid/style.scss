@@ -142,24 +142,30 @@
     max-height: 150px;
     -webkit-line-clamp: 7;
     -webkit-box-orient: vertical;
-    width: inherit;
+    width: max-content;
+    min-width: inherit;
 }
 
 .grid-row td {
-    cursor: pointer;
+    /*cursor: pointer;*/
     background-color: #fbfdff;
 }
 
 .grid-row {
     .link-cell {
         color: #2185d0;
-        text-decoration-line: underline;
+        /* text-decoration-line: underline;*/
     }
-    .address-cell {
+    /*.address-cell {
         max-width: 100px;
-    }
+
+        .cell-grid {
+            width: inherit;
+        }
+    }*/
 }
-.column-address {
+
+.column-overflow {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -180,6 +186,8 @@
 .grid-row td,
 .grid-row th {
     min-width: 100px;
+    max-width: 100px;
+    box-sizing: content-box;
     border-top: 1px solid #ddd !important;
 }
 
@@ -220,6 +228,7 @@
     flex-wrap: nowrap !important;
     height: max-content;
     top: calc(100% - 90px);
+    z-index: 2;
 
     .row {
         padding-top: 0 !important;
@@ -235,7 +244,9 @@
     }
 
     .column {
-        width: 100% !important;
+        width: max-content !important;
+        position: sticky !important;
+        left: 0;
     }
 }
 
@@ -393,4 +404,43 @@ $teal: #b5eae7;
     //    display: flex;
     //    align-items: center;
     //}
+}
+
+.cell-grid {
+    display: flex;
+    position: relative;
+    width: inherit !important;
+    &:hover .cell-grid-copy-btn {
+        -webkit-transition: opacity 1s ease-in-out;
+        -moz-transition: opacity 1s ease-in-out;
+        -o-transition: opacity 1s ease-in-out;
+        transition: opacity 1s ease-in-out;
+        opacity: 1;
+    }
+    &-value {
+        position: relative;
+        width: inherit;
+        min-width: 0;
+        min-height: 18px;
+        &:hover {
+            cursor: pointer;
+        }
+        &_empty {
+            width: 50%;
+        }
+    }
+
+    &-copy-btn {
+        opacity: 0;
+        padding: 0 8px;
+        color: rgba(34, 36, 38, 0.15);
+        :hover {
+            cursor: pointer;
+        }
+    }
+
+    .ui.loader {
+        position: relative !important;
+        padding: 0 8px;
+    }
 }

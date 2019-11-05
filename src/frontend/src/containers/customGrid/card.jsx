@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
@@ -8,19 +8,19 @@ import {
     editCardRequest,
     getCardRequest,
     isUniqueNumberRequest,
-    openGridCardRequest,
     progressSelector,
+    settingsFormSelector,
 } from '../../ducks/gridCard';
 import OrderModal from '../../components/Modals/orderModal';
 import ShippingModal from '../../components/Modals/shippingModal';
 import {
     actionsCardSelector,
-    actionsSelector,
     clearActions,
     getActionsRequest,
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
+import { ORDERS_GRID } from '../../constants/grids';
 
 const getModal = {
     orders: <OrderModal />,
@@ -42,6 +42,7 @@ const Card = props => {
     const dispatch = useDispatch();
 
     const card = useSelector(state => cardSelector(state));
+    const settings = useSelector(state => settingsFormSelector(state, card.status));
 
     const loadCard = () => {
         dispatch(
@@ -95,7 +96,6 @@ const Card = props => {
     };
 
     const onChangeForm = (e, { name, value }) => {
-        console.log('va', value, name, card[name], value !== card[name]);
         setForm({
             ...form,
             [name]: value,
@@ -124,7 +124,7 @@ const Card = props => {
     };
 
     const handleSave = () => {
-        if (name === 'orders') {
+        if (name === ORDERS_GRID) {
             handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
@@ -199,7 +199,7 @@ const Card = props => {
         >
             <Modal.Header>
                 {t(title, {
-                    number: name === 'orders' ? form.orderNumber : form.shippingNumber,
+                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
                     status: t(form.status),
                 })}
             </Modal.Header>
@@ -212,6 +212,7 @@ const Card = props => {
                         ...props,
                         form,
                         load: loadCard,
+                        settings,
                         uniquenessNumberCheck: handleUniquenessCheck,
                         isNotUniqueNumber,
                         onClose,
@@ -221,7 +222,7 @@ const Card = props => {
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">
                 <div>
-                    {name === 'orders' && form.shippingId ? (
+                    {name === ORDERS_GRID && form.shippingId ? (
                         <SelfComponent
                             {...props}
                             name="shippings"

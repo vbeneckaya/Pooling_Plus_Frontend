@@ -1,15 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { Button, Checkbox, Dimmer, Loader, Table } from 'semantic-ui-react';
-import CellValue from '../../../components/ColumnsValue';
-import InfiniteScrollTable from '../../InfiniteScrollTable';
-
-const ModalComponent = ({ element, props, children }) => {
-    if (!element) {
-        return <>{children}</>;
-    }
-    return React.cloneElement(element, props, children);
-};
+import CellResult from './result_cell';
 
 class Result extends Component {
     handleCheck = row => {
@@ -39,7 +31,6 @@ class Result extends Component {
             loadList,
             disabledCheck,
             name,
-            t,
             progress,
         } = this.props;
 
@@ -56,7 +47,7 @@ class Result extends Component {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 {rows &&
-                    rows.map((row, i) => (
+                    rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
                             className={'grid-row ' + row.color || ''}
@@ -78,35 +69,17 @@ class Result extends Component {
                                 />
                             </Table.Cell>
                             {columns &&
-                                columns.map(column => (
-                                    <Table.Cell
-                                        key={`cell_${row.id}_${column.name}_${i}`}
-                                        className={
-                                            column.name.toLowerCase().includes('address')
-                                                ? 'address-cell'
-                                                : ''
-                                        }
-                                    >
-                                        {
-                                            <CellValue
-                                                {...column}
-                                                id={`${row.id}_${column.name}_${i}`}
-                                                indexRow={i}
-                                                value={row[column.name]}
-                                                modalCard={
-                                                    <ModalComponent
-                                                        element={modalCard}
-                                                        props={{
-                                                            ...row,
-                                                            loadList,
-                                                            title: `edit_${name}`,
-                                                        }}
-                                                        key={`modal_${row.id}`}
-                                                    />
-                                                }
-                                            />
-                                        }
-                                    </Table.Cell>
+                                columns.map((column, indexColumn) => (
+                                    <CellResult
+                                        key={`cell_${row.id}_${column.name}_${indexRow}`}
+                                        row={row}
+                                        column={column}
+                                        indexRow={indexRow}
+                                        indexColumn={indexColumn}
+                                        loadList={loadList}
+                                        gridName={name}
+                                        modalCard={modalCard}
+                                    />
                                 ))}
                             {isShowActions ? (
                                 <Table.HeaderCell

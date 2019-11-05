@@ -11,19 +11,8 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import {
-    Button,
-    Confirm,
-    Grid,
-    Dimmer,
-    Loader,
-    Popup,
-    Icon,
-    Form,
-    Dropdown,
-} from 'semantic-ui-react';
-import Select from '../BaseComponents/Select';
-import MassChanges from './components/massChanges';
+import { Confirm } from 'semantic-ui-react';
+import Footer from './components/footer';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -45,17 +34,8 @@ class SuperGrid extends Component {
 
         this.state = {
             ...initState(storageFilterItem, storageSortItem),
-            isOpen: false,
         };
     }
-
-    handleOpen = () => {
-        this.setState({ isOpen: true });
-    };
-
-    handleClose = () => {
-        this.setState({ isOpen: false });
-    };
 
     componentDidMount() {
         this.props.autoUpdateStart(this.mapData());
@@ -198,7 +178,7 @@ class SuperGrid extends Component {
         } else {
             getAllIds({
                 name,
-                filter: this.mapData(),
+                filter: this.mapData().filter,
                 callbackSuccess: ids => {
                     newSelectedRows = new Set(ids);
                     this.setSelected(newSelectedRows);
@@ -226,6 +206,37 @@ class SuperGrid extends Component {
         );
     };
 
+    clearSelectedRows = () => {
+        this.setState(
+            {
+                selectedRows: new Set(),
+            },
+            () => this.loadList(false, true),
+        );
+    };
+
+    updatingFilter = () => {
+        const { filters } = this.state;
+        const { columns, storageFilterItem } = this.props;
+
+        let newFilter = {};
+
+        Object.keys(filters).forEach(key => {
+            if (columns.find(item => item.name === key)) {
+                newFilter = {
+                    ...newFilter,
+                    [key]: filters[key],
+                };
+            }
+        });
+        this.setState(
+            {
+                filters: newFilter,
+            },
+            this.debounceSetFilterApiAndLoadList,
+        );
+    };
+
     setFilterApiAndLoadList = () => {
         const filtersJson = JSON.stringify(this.state.filters);
         const { storageFilterItem } = this.props;
@@ -241,43 +252,8 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
-    handleUnloadInExcel = () => {
-        const { getReport } = this.props;
-        const { filters: filter } = this.state;
-
-        getReport({ filter });
-    };
-
-    infoView = () => {
-        const { info, t } = this.props;
-
-        return (
-            <div className="footer-info">
-                <div className="footer-info-close" onClick={this.handleClose}>
-                    <Icon name="sort down" />
-                </div>
-                <div>
-                    {t('orders_selected')}
-                    <span className="footer-info-value">{info.count}</span>
-                </div>
-                <div>
-                    {t('number_of_boxes')}
-                    <span className="footer-info-value">{info.boxesCount}</span>
-                </div>
-                <div>
-                    {t('number_of_pallets')}
-                    <span className="footer-info-value">{info.palletsCount}</span>
-                </div>
-                <div>
-                    {t('target_weight')}
-                    <span className="footer-info-value">{info.weightKg}</span>
-                </div>
-            </div>
-        );
-    };
-
     render() {
-        const { filters, sort, fullText, selectedRows, isOpen } = this.state;
+        const { filters, sort, fullText, selectedRows } = this.state;
         const {
             totalCount: count = 0,
             columns,
@@ -295,14 +271,11 @@ class SuperGrid extends Component {
             onlyOneCheck,
             checkAllDisabled,
             disabledCheck,
-            colorInfo,
             autoUpdateStop,
             storageRepresentationItems,
             name,
             t,
         } = this.props;
-
-        console.log('columns', columns);
 
         return (
             <>
@@ -325,6 +298,7 @@ class SuperGrid extends Component {
                     storageRepresentationItems={storageRepresentationItems}
                     disabledClearFilter={!Object.keys(filters).length && !fullText}
                     clearFilter={this.clearFilters}
+                    updatingFilter={this.updatingFilter}
                     filter={filters}
                     setSelected={this.setSelected}
                 />
@@ -373,71 +347,11 @@ class SuperGrid extends Component {
                         />
                     </InfiniteScrollTable>
                     {selectedRows.size ? (
-                        <Grid className="grid-footer-panel" columns="2">
-                            <Grid.Row>
-                                <Grid.Column>
-                                    {name === 'orders' ? (
-                                        <Popup
-                                            trigger={
-                                                <div
-                                                    className="footer-info-label"
-                                                    onClick={
-                                                        isOpen ? this.handleClose : this.handleOpen
-                                                    }
-                                                >
-                                                    <Icon name={isOpen ? 'sort up' : 'sort down'} />
-                                                    Данные по заказам
-                                                </div>
-                                            }
-                                            content={this.infoView()}
-                                            on="click"
-                                            open={isOpen}
-                                            onClose={this.handleClose}
-                                            onOpen={this.handleOpen}
-                                            hideOnScroll
-                                            className="from-popup"
-                                        />
-                                    ) : null}
-                                    <div style={{ paddingTop: '4px' }}>
-                                        {groupActions
-                                            ? groupActions().map(action => (
-                                                  <span key={action.name}>
-                                                      <Button
-                                                          color={action.color}
-                                                          content={action.name}
-                                                          loading={action.loading}
-                                                          disabled={action.loading}
-                                                          icon={action.icon}
-                                                          size="mini"
-                                                          compact
-                                                          onClick={() =>
-                                                              action.action(action.ids, () => {
-                                                                  this.setState(
-                                                                      {
-                                                                          selectedRows: new Set(),
-                                                                      },
-                                                                      () =>
-                                                                          this.loadList(
-                                                                              false,
-                                                                              true,
-                                                                          ),
-                                                                  );
-                                                              })
-                                                          }
-                                                      />
-                                                  </span>
-                                              ))
-                                            : null}
-                                    </div>
-                                </Grid.Column>
-                                <Grid.Column floated="right">
-                                    <MassChanges
-                                        gridName={name}
-                                        load={() => this.loadList(false, true)}
-                                    />
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
+                        <Footer
+                            gridName={name}
+                            groupActions={groupActions}
+                            clearSelectedRows={this.clearSelectedRows}
+                        />
                     ) : null}
                 </div>
                 <Confirm

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     clearHistory,
     getHistoryRequest,
@@ -7,18 +7,21 @@ import {
     progressSelector,
 } from '../../../ducks/history';
 import { Dimmer, Grid, Loader } from 'semantic-ui-react';
-import { dateToUTC, formatDate } from '../../../utils/dateTimeFormater';
+import { dateToUTC } from '../../../utils/dateTimeFormater';
 
 const History = ({ cardId, status }) => {
     const dispatch = useDispatch();
     const history = useSelector(state => historySelector(state));
 
-    useEffect(() => {
-        dispatch(getHistoryRequest(cardId));
-        return () => {
-            dispatch(clearHistory());
-        };
-    }, [status]);
+    useEffect(
+        () => {
+            dispatch(getHistoryRequest(cardId));
+            return () => {
+                dispatch(clearHistory());
+            };
+        },
+        [status],
+    );
 
     const loading = useSelector(state => progressSelector(state));
 

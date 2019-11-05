@@ -3,6 +3,7 @@ namespace Domain.Enums
     public enum FieldType
     {
         Text,
+        BigText,
         State,
         Number,
         Enum,

@@ -59,6 +59,8 @@ namespace Infrastructure.Installers
     {
         public static void AddDomain(this IServiceCollection services, IConfiguration configuration, bool migrateDb)
         {
+            services.AddSingleton(configuration);
+
             services.AddScoped<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -122,6 +124,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
 
+            services.AddScoped<IBulkUpdate<Order>, BaseBulkUpdate<Order>>();
             services.AddScoped<IBulkUpdate<Order>, ShippingDateBulkUpdate>();
             services.AddScoped<IBulkUpdate<Order>, DeliveryDateBulkUpdate>();
         }
@@ -137,6 +140,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
+
+            services.AddScoped<IBulkUpdate<Shipping>, BaseBulkUpdate<Shipping>>();
         }
     }
 }

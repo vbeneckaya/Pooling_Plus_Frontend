@@ -13,7 +13,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
         public string OrderNumber { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Text)]
+        public string ClientOrderNumber { get; set; }
+
+        [FieldType(FieldType.Date)]
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
@@ -34,17 +37,14 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ShippingDate { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(7)]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(7)]
         public string DeliveryDate { get; set; }
-
-        [FieldType(FieldType.Text)]
-        public string BdfInvoiceNumber { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? ArticlesCount { get; set; }
@@ -83,10 +83,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.BigText)]
         public string ShippingAddress { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.BigText)]
         public string DeliveryAddress { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
@@ -112,13 +112,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.DateTime)]
         public string LoadingDepartureTime { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string UnloadingArrivalDate { get; set; }
 
         [FieldType(FieldType.Time)]
         public string UnloadingArrivalTime { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string UnloadingDepartureDate { get; set; }
 
         [FieldType(FieldType.Time)]
@@ -133,10 +133,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string ReturnShippingAccountNo { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string PlannedReturnDate { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ActualReturnDate { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -151,10 +151,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? Invoice { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string DocumentsReturnDate { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ActualDocumentsReturnDate { get; set; }
 
         public string ShippingId { get; set; }

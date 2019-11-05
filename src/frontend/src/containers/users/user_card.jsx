@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Form, Grid, Input, Label, Loader, Modal } from 'semantic-ui-react';
+import { Button, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUsersInfo,
     createUserRequest,

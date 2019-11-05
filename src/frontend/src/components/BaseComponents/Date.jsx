@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid, Label, Dropdown, Input, Popup, Form } from 'semantic-ui-react';
+import { Form } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import { formatDate, parseDate } from '../../utils/dateTimeFormater';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,8 @@ const Date = ({ value, name, onChange, isDisabled, noLabel, required, placeholde
     };
 
     const { t } = useTranslation();
+
+    console.log('value', value);
 
     return (
         <Form.Field>

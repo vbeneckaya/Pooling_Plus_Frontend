@@ -1,9 +1,9 @@
-import { all, takeEvery, delay, put } from 'redux-saga/effects';
+import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import loginPage from '../mocks/loginPage';
 import { postman, setAccessToken } from '../utils/postman';
 
-import { GET_USER_PROFILE_REQUEST, getUserProfile } from './profile';
+import { GET_USER_PROFILE_REQUEST } from './profile';
 
 //*  TYPES  *//
 
@@ -108,22 +108,10 @@ export const logoutRequest = () => {
 
 const stateSelector = state => state.login;
 const getKey = (state, key) => key;
-export const loginPageSelector = createSelector(
-    stateSelector,
-    state => state.page,
-);
-export const progressSelector = createSelector(
-    [stateSelector, getKey],
-    (state, key) => state[key],
-);
-export const errorSelector = createSelector(
-    stateSelector,
-    state => state.error,
-);
-export const isAuthSelector = createSelector(
-    stateSelector,
-    state => state.isAuth,
-);
+export const loginPageSelector = createSelector(stateSelector, state => state.page);
+export const progressSelector = createSelector([stateSelector, getKey], (state, key) => state[key]);
+export const errorSelector = createSelector(stateSelector, state => state.error);
+export const isAuthSelector = createSelector(stateSelector, state => state.isAuth);
 
 //*  SAGA  *//
 

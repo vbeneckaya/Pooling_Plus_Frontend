@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Grid, Menu, Tab } from 'semantic-ui-react';
+import { Menu, Tab } from 'semantic-ui-react';
 import Information from './shippingTabs/information';
 import Routes from './shippingTabs/routes';
 import Documents from './shared/documents';
@@ -11,7 +11,7 @@ import Card from '../../containers/customGrid/card';
 import { useSelector } from 'react-redux';
 import { userPermissionsSelector } from '../../ducks/profile';
 
-const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) => {
+const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose, settings }) => {
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
         item => item.code,
@@ -28,7 +28,7 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) =
             menuItem: t('information'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Information form={form} onChange={onChangeForm} />
+                    <Information form={form} onChange={onChangeForm} settings={settings} />
                 </Tab.Pane>
             ),
         },
@@ -39,6 +39,7 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) =
                     <Routes
                         form={form}
                         routeActiveIndex={routeActiveIndex}
+                        settings={settings}
                         tabChange={handleTabChange}
                         onChange={onChangeForm}
                     />
@@ -49,10 +50,10 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) =
             menuItem: t('accounts'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Accounts form={form} onChange={onChangeForm} />
+                    <Accounts form={form} settings={settings} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
-        }
+        },
     ];
 
     if (userPermissions.includes(10) || userPermissions.includes(11)) {
@@ -60,21 +61,25 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose }) =
             menuItem: t('documents'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Documents gridName={name} cardId={id} isEditPermissions={userPermissions.includes(11)} />
+                    <Documents
+                        gridName={name}
+                        cardId={id}
+                        isEditPermissions={userPermissions.includes(11)}
+                    />
                 </Tab.Pane>
             ),
-        })
+        });
     }
 
     if (userPermissions.includes(12)) {
-        getPanes.push( {
+        getPanes.push({
             menuItem: t('history'),
             render: () => (
                 <Tab.Pane className="tabs-card">
                     <History cardId={id} status={form.status} />
                 </Tab.Pane>
             ),
-        },)
+        });
     }
 
     return (

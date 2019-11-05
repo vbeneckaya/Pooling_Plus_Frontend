@@ -3,8 +3,10 @@ using Application.BusinessModels.Shared.BulkUpdates;
 using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.UserProvider;
 using System;
@@ -16,17 +18,19 @@ namespace Application.BusinessModels.Orders.BulkUpdates
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
+        private readonly IFieldPropertiesService _fieldPropertiesService;
 
-        public DeliveryDateBulkUpdate(ICommonDataService dataService, IHistoryService historyService)
+        public DeliveryDateBulkUpdate(ICommonDataService dataService, IHistoryService historyService, IFieldPropertiesService fieldPropertiesService)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public string FieldName => nameof(Order.DeliveryDate);
         public FieldType FieldType => FieldType.Date;
 
-        public AppActionResult Update(CurrentUserDto user, Order order, string value)
+        public AppActionResult Update(CurrentUserDto user, Order order, string fieldName, string value)
         {
             var setter = new FieldSetter<Order>(order, _historyService);
             setter.UpdateField(x => x.DeliveryDate, ParseDateTime(value), new DeliveryDateHandler(_dataService, _historyService));
@@ -48,10 +52,11 @@ namespace Application.BusinessModels.Orders.BulkUpdates
 
         public bool IsAvailable(Role role, Order order)
         {
-            return (order.Status == OrderState.Created 
-                    || order.Status == OrderState.Draft 
-                    || (order.Status == OrderState.InShipping && order.OrderShippingStatus == ShippingState.ShippingCreated)) 
-                && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            string fieldName = nameof(order.DeliveryDate).ToLowerFirstLetter();
+            var fieldAccess = _fieldPropertiesService.GetFieldAccess(FieldPropertiesForEntityType.Orders,
+                                                                    (int)order.Status, fieldName,
+                                                                    null, role?.Id, null);
+            return fieldAccess == FieldPropertiesAccessType.Edit;
         }
 
         private DateTime? ParseDateTime(string value)

@@ -44,7 +44,7 @@ namespace API.Controllers.Shared
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            return _service.ForSelect();
+            return _service.ForSelect().OrderBy(x => x.Name);
         }
 
         /// <summary>

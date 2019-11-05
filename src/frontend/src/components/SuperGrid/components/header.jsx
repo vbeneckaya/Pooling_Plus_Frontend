@@ -1,9 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Button, Dropdown, Form, Grid, Popup } from 'semantic-ui-react';
+import React, { useEffect, useRef } from 'react';
+import { Button, Grid, Popup } from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import Select from '../../BaseComponents/Select';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     canExportToExcelSelector,
     canImportFromExcelSelector,
@@ -16,7 +15,6 @@ import {
 import FieldsConfig from '../../Representations/index';
 import {
     getRepresentationsRequest,
-    representationNameSelector,
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
@@ -27,6 +25,7 @@ const Header = ({
     searchOnChange,
     counter,
     clearFilter,
+    updatingFilter,
     disabledClearFilter,
     loadList,
     name,
@@ -76,18 +75,21 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(() => {
-        getRepresentations();
-    }, [name]);
+    useEffect(
+        () => {
+            getRepresentations();
+        },
+        [name],
+    );
 
-    const changeRepresentation = key => {
+    const changeRepresentation = (key, isEdit) => {
         dispatch(
             setRepresentationRequest({
                 gridName: name,
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    clearFilter();
+                    isEdit ? updatingFilter() : clearFilter();
                 },
             }),
         );

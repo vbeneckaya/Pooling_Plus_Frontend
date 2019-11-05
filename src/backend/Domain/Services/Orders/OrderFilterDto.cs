@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Shared.FormFilters
+﻿namespace Domain.Shared.FormFilters
 {
     /// <summary>
     /// Filter for Orders
@@ -13,6 +9,11 @@ namespace Domain.Shared.FormFilters
         /// Order Number
         /// </summary>
         public string OrderNumber { get; set; }
+
+        /// <summary>
+        /// Client Order Number
+        /// </summary>
+        public string ClientOrderNumber { get; set; }
 
         /// <summary>
         /// Shipping Number
@@ -134,11 +135,6 @@ namespace Domain.Shared.FormFilters
         /// OrderAmountExcludingVAT
         /// </summary>
         public string OrderAmountExcludingVAT { get; set; }
-
-        /// <summary>
-        /// Bdf Invoice Number
-        /// </summary>
-        public string BdfInvoiceNumber { get; set; }
 
         /// <summary>
         /// Loading Arrival Time

@@ -17,14 +17,9 @@ import {
     actionsSelector,
     getActionsRequest,
     getAllIdsRequest,
-    infoSelector,
     invokeActionRequest,
-    updatesSelector,
 } from '../../ducks/gridActions';
-import {
-    getRepresentationsRequest,
-    representationFromGridSelector,
-} from '../../ducks/representations';
+import { representationFromGridSelector } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -94,7 +89,6 @@ class List extends Component {
             t,
             isCreateBtn,
             getActions,
-            info,
             getAllIds,
         } = this.props;
         const { params = {} } = match;
@@ -107,7 +101,6 @@ class List extends Component {
                     columns={columns}
                     rows={list}
                     name={name}
-                    info={info}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -160,7 +153,6 @@ function mapStateToProps(state, ownProps) {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
-        info: infoSelector(state),
     };
 }
 
