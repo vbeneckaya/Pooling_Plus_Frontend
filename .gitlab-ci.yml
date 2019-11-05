@@ -162,7 +162,20 @@ deploy-backend-prod:
   only:
    - master
   when: manual    
- 
+
+deploy-frontend-prod:
+  variables:
+    SSH_USER:  root
+    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
+  only:
+   - master
+  when: manual 
+  
 deploy-tasks-prod:
   variables:
     SSH_USER:  root
