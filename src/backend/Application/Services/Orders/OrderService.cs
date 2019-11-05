@@ -114,7 +114,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
-            setter.UpdateField(e => e.OrderNumber, dto.OrderNumber);
+            setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService));
             setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount, new ArticlesCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1), new BoxesCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1), new ConfirmedBoxesCountHandler(_dataService, _historyService));
