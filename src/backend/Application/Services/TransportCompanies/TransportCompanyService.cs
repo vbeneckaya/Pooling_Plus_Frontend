@@ -7,6 +7,7 @@ using Domain.Shared;
 using System.Collections.Generic;
 using DAL.Services;
 using Domain.Services.UserProvider;
+using Domain.Services.Translations;
 
 namespace Application.Services.TransportCompanies
 {
@@ -52,6 +53,13 @@ namespace Application.Services.TransportCompanies
                 DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Title)
+                .ThenBy(i => i.Id);
         }
     }
 }

@@ -120,5 +120,12 @@ namespace Application.Services.Articles
                 /*end of map entity to dto fields*/
             };
         }
+
+        protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Spgr)
+                .ThenBy(i => i.Id);
+        }
     }
 }

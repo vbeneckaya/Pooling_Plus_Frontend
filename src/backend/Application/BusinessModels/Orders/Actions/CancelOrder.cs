@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetCancelled".translate(user.Language, order.OrderNumber)
+                Message = "orderSetCancelled".Translate(user.Language, order.OrderNumber)
             };
         }
 

@@ -25,7 +25,7 @@ namespace Application.Services.Roles
             var entity = _dataService.GetDbSet<Role>().GetById(id);
             if (entity == null)
             {
-                return new ValidateResult("roleNotFound".translate(user.Language));
+                return new ValidateResult("roleNotFound".Translate(user.Language));
             }
             else
             {
@@ -45,6 +45,15 @@ namespace Application.Services.Roles
             }
         }
 
+        protected override IQueryable<Role> ApplySort(IQueryable<Role> query, SearchFormDto form)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            return query
+                .OrderBy(i => i.Name.Translate(user.Language))
+                .ThenBy(i => i.Id);
+        }
+
         public ValidateResult SetPermissions(Guid roleId, IEnumerable<RolePermissions> permissions)
         {
             var user = _userProvider.GetCurrentUser();
@@ -52,7 +61,7 @@ namespace Application.Services.Roles
             var entity = _dataService.GetDbSet<Role>().GetById(roleId);
             if (entity == null)
             {
-                return new ValidateResult("roleNotFound".translate(user.Language));
+                return new ValidateResult("roleNotFound".Translate(user.Language));
             }
 
             entity.Permissions = permissions.Cast<int>().ToArray();

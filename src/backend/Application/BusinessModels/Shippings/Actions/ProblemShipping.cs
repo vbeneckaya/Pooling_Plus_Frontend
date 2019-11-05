@@ -41,7 +41,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetProblem".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetProblem".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 
