@@ -80,7 +80,7 @@ namespace Application.Services.Orders
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            bool isInjection = dto.AdditionalInfo == "INJECTION";
+            bool isInjection = dto.AdditionalInfo.Contains("INJECTION");
 
             IEnumerable<string> readOnlyFields = null;
             if (!isNew)
@@ -173,7 +173,7 @@ namespace Application.Services.Orders
                 _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
             }
 
-            if (dto.AdditionalInfo.Contains("INJECTION"))
+            if (isInjection)
             {
                 var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
                 _historyService.Save(Guid.Parse(dto.Id), "orderCreatedFromInjection", dto.OrderNumber, file);
