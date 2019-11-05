@@ -22,6 +22,7 @@ import {
     TEXT_TYPE,
     TIME_TYPE,
 } from '../../../constants/columnTypes';
+import FacetField from "../../FilterComponents";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <TextFacet />,
@@ -140,7 +141,12 @@ class Filter extends Component {
                                     .toLowerCase()
                                     .replace(' ', '-')}-facet`}
                             >
-                                <Control key={'facet' + x.name} column={x} {...this.props} />
+                                {/*<Control key={'facet' + x.name} column={x} {...this.props} />*/}
+                                <FacetField
+                                    key={'facet' + x.name}
+                                    {...x}
+                                    {...this.props}
+                                />
                             </Table.HeaderCell>
                         </Resizable>
                     ))}
