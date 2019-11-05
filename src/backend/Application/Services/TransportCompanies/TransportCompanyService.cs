@@ -57,10 +57,8 @@ namespace Application.Services.TransportCompanies
 
         protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return query
-                .OrderBy(i => i.Title.Translate(user.Language))
+                .OrderBy(i => i.Title)
                 .ThenBy(i => i.Id);
         }
     }

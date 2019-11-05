@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace Application.Services.DocumentTypes
 {
+
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
         public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
@@ -43,10 +44,8 @@ namespace Application.Services.DocumentTypes
 
         protected override IQueryable<DocumentType> ApplySort(IQueryable<DocumentType> query, SearchFormDto form)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return query
-                .OrderBy(i => i.Name.Translate(user.Language))
+                .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
     }

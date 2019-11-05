@@ -88,10 +88,8 @@ namespace Application.Services.Warehouses
 
         protected override IQueryable<Warehouse> ApplySort(IQueryable<Warehouse> query, SearchFormDto form)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return query
-                .OrderBy(i => i.WarehouseName.Translate(user.Language))
+                .OrderBy(i => i.WarehouseName)
                 .ThenBy(i => i.Id);
         }
     }

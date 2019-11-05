@@ -46,10 +46,8 @@ namespace Application.Services.VehicleTypes
 
         protected override IQueryable<VehicleType> ApplySort(IQueryable<VehicleType> query, SearchFormDto form)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return query
-                .OrderBy(i => i.Name.Translate(user.Language))
+                .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
     }
