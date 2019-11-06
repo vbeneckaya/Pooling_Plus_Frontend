@@ -190,7 +190,6 @@ class SuperGrid extends Component {
         this.setState(
             {
                 filters: {},
-                fullText: '',
                 sort: {},
                 page: 1,
                 selectedRows: new Set(),
@@ -289,7 +288,7 @@ class SuperGrid extends Component {
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
                     storageRepresentationItems={storageRepresentationItems}
-                    disabledClearFilter={!Object.keys(filters).length && !fullText}
+                    disabledClearFilter={!Object.keys(filters).length}
                     clearFilter={this.clearFilters}
                     updatingFilter={this.updatingFilter}
                     filter={filters}
