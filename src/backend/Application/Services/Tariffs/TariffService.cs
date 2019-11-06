@@ -10,6 +10,7 @@ using Application.Shared.Excel.Columns;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Services.UserProvider;
+using Domain.Shared;
 
 namespace Application.Services.Tariffs
 {
@@ -141,6 +142,37 @@ namespace Application.Services.Tariffs
         {
             var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
             return entry?.Name;
+        }
+
+        protected override IQueryable<Tariff> ApplySearch(IQueryable<Tariff> query, SearchFormDto form)
+        {
+            if (string.IsNullOrEmpty(form.Search)) return query;
+
+            var search = form.Search.ToLower();
+
+            var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
+                .Where(i => i.Title.ToLower().Contains(search))
+                .Select(i => i.Id);
+
+            var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
+                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
+
+            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
+
+            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
+                .ToList();
+
+            return query.Where(i =>
+                   transportCompanies.Any(t => t == i.CarrierId)
+                || vehicleTypes.Any(t => t == i.VehicleTypeId)
+                || tarifficationTypes.Contains(i.TarifficationType)
+                || i.ShipmentCity.ToLower().Contains(search)
+                || i.DeliveryCity.ToLower().Contains(search)
+                );
         }
     }
 }

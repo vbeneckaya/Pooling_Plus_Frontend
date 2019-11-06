@@ -54,17 +54,7 @@ namespace Application.Shared
         public SearchResult<TListDto> Search(SearchFormDto form)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var query = dbSet.AsQueryable();
-
-
-            if (!string.IsNullOrEmpty(form.Search))
-            {
-                var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
-                    prop.PropertyType == form.Search.GetType());
-                query = query.Where(customer =>
-                    stringProperties.Any(prop =>
-                        prop.GetValue(customer, null) == form.Search));
-            }
+            var query = this.ApplySearch(dbSet, form);
 
             if (form.Take == 0)
                 form.Take = 1000;
@@ -80,6 +70,18 @@ namespace Application.Shared
                 Items = entities.Select(entity => MapFromEntityToDto(entity))
             };
             return a;
+        }
+
+        protected virtual IQueryable<TEntity> ApplySearch(IQueryable<TEntity> query, SearchFormDto form)
+        {
+            if (string.IsNullOrEmpty(form.Search)) return query;
+
+            var stringProperties = typeof(TEntity).GetProperties()
+                .Where(prop => prop.PropertyType == form.Search.GetType());
+
+            return query.Where(customer =>
+                stringProperties.Any(prop =>
+                    (string)prop.GetValue(customer, null) == form.Search));
         }
 
         protected virtual IQueryable<TEntity> ApplySort(IQueryable<TEntity> query, SearchFormDto form)
