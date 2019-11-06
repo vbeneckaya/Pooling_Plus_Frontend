@@ -43,7 +43,7 @@ const Control = props => {
     return React.cloneElement(getTypeFacet[type], props);
 };
 
-const FacetField = ({ name, sort: sortObj, setSort, type, filters, setFilter, getLookup }) => {
+const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, source}) => {
     const { t } = useTranslation();
     let sort = null;
 
@@ -89,8 +89,8 @@ const FacetField = ({ name, sort: sortObj, setSort, type, filters, setFilter, ge
                                 type={type}
                                 name={name}
                                 value={filters[name]}
-                                getLookup={getLookup}
-                                setFilter={setFilter}
+                                source={source}
+                                onChange={setFilter}
                             />
                         }
                         className="from-popup"

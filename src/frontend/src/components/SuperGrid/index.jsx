@@ -180,7 +180,8 @@ class SuperGrid extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({ fullText: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
+        console.log('5555', value);
+        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {

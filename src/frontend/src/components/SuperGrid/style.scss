@@ -258,6 +258,7 @@
 .from-popup {
     filter: none !important;
     min-width: 250px!important;
+    max-width: 100% !important;
 
     .separator {
         display: flex;

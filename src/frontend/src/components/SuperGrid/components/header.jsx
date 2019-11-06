@@ -100,7 +100,7 @@ const Header = ({
             <Grid.Row>
                 <Grid.Column width={10}>
                     {createButton}
-                    <Search value={searchValue} onChange={searchOnChange} isAuto />
+                    <Search searchValue={searchValue} onChange={searchOnChange} isAuto/>
                     <span className="records-counter">{t('totalCount', { count: counter })}</span>
                 </Grid.Column>
                 <Grid.Column width={6} className="grid-right-elements">

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import './style.scss';
 
-const Facet = ({ name, text, value, setFilter, sort, setSort }) => {
+const Facet = ({name, text, value, onChange, sort, setSort}) => {
     const { t } = useTranslation();
 
     const input = (
@@ -16,9 +16,10 @@ const Facet = ({ name, text, value, setFilter, sort, setSort }) => {
             label={{ basic: true, content: '' }}
             labelPosition="right"
             placeholder={t(name)}
-            onChange={setFilter}
+            onChange={onChange}
         />
     );
+
 
     return (
         <div className="facet-input">
@@ -28,7 +29,7 @@ const Facet = ({ name, text, value, setFilter, sort, setSort }) => {
                 value={value || ''}
                 autoComplete="off"
                 placeholder={t(name)}
-                onChange={setFilter}
+                onChange={onChange}
             />
             {/*<Popup trigger={input} content={t(name)} className="from-popup" on="focus" />
             <Button
