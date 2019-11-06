@@ -29,6 +29,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 {
                     var setter = new FieldSetter<Order>(updOrder, _historyService);
                     setter.UpdateField(o => o.ShippingDate, newValue);
+                    setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
                     setter.SaveHistoryLog();
                 }
             }

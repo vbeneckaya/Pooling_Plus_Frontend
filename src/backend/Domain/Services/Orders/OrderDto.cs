@@ -169,6 +169,7 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.DateTime)]
         public string OrderChangeDate { get; set; }
 
         public bool? OrderConfirmed { get; set; }
