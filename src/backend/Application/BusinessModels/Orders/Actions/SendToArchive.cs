@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetArchived".translate(user.Language, order.OrderNumber)
+                Message = "orderSetArchived".Translate(user.Language, order.OrderNumber)
             };
         }
 

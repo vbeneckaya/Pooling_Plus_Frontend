@@ -70,7 +70,8 @@ namespace Application.Shared
                 form.Take = 1000;
             
             var totalCount = query.Count();
-            var entities = query.Skip(form.Skip)
+            var entities = ApplySort(query, form)
+                .Skip(form.Skip)
                 .Take(form.Take).ToList();
 
             var a = new SearchResult<TListDto>
@@ -79,6 +80,11 @@ namespace Application.Shared
                 Items = entities.Select(entity => MapFromEntityToDto(entity))
             };
             return a;
+        }
+
+        protected virtual IQueryable<TEntity> ApplySort(IQueryable<TEntity> query, SearchFormDto form)
+        {
+            return query.OrderBy(i => i.Id);
         }
 
         public IEnumerable<ValidateResult> Import(IEnumerable<TListDto> entitiesFrom)

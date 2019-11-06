@@ -51,9 +51,9 @@ namespace Application.Services.History
         private HistoryEntryDto ConvertEntityToDto(HistoryEntry entity, string lang)
         {
             string[] args = JsonConvert.DeserializeObject<string[]>(entity.MessageArgs ?? string.Empty);
-            string[] localArgs = args.Select(x => x.translate(lang)).ToArray();
+            string[] localArgs = args.Select(x => x.Translate(lang)).ToArray();
 
-            string message = entity.MessageKey.translate(lang, localArgs);
+            string message = entity.MessageKey.Translate(lang, localArgs);
 
             return new HistoryEntryDto
             {

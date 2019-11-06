@@ -37,7 +37,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetLost".translate(user.Language, order.OrderNumber)
+                Message = "orderSetLost".Translate(user.Language, order.OrderNumber)
             };
         }
 
