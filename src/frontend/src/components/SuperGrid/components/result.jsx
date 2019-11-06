@@ -11,7 +11,7 @@ class Result extends Component {
             return true
         }
 
-        if (this.props.progress !== nextProps.progress && nextProps.progress) {
+        if (this.props.progress !== nextProps.progress) {
             return true
         }
 

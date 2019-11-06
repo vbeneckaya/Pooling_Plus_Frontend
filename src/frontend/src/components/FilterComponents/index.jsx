@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Popup } from 'semantic-ui-react';
 import './style.scss';
@@ -67,9 +67,11 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
         }
     };
 
+    const contextRef = useRef(null);
+
     return (
         <div className="facet">
-            <div className="facet-field" onClick={handleSort}>
+            <div className="facet-field" onClick={handleSort} ref={contextRef}>
                 {t(name)}
             </div>
             <div className="facet-actions">
@@ -84,6 +86,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
                                 <Icon name="filter" />
                             </Button>
                         }
+                        context={contextRef}
                         content={
                             <Control
                                 type={type}
@@ -93,6 +96,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
                                 onChange={setFilter}
                             />
                         }
+                        position='bottom center'
                         className="from-popup"
                         on="click"
                     />
