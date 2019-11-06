@@ -176,7 +176,7 @@ namespace Application.Services.Orders
             if (isInjection)
             {
                 var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
-                _historyService.Save(Guid.Parse(dto.Id), "orderCreatedFromInjection", dto.OrderNumber, file);
+                _historyService.Save(entity.Id, "orderCreatedFromInjection", dto.OrderNumber, file);
             }
 
             setter.SaveHistoryLog();
