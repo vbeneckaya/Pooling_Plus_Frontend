@@ -372,7 +372,7 @@ namespace Application.Shared
             foreach (var error in errors)
             {
                 string numbers = string.Join(", ", error.Value);
-                messages.Add("bulkUpdateOrderErrors".translate(currentUser.Language, numbers, error.Key));
+                messages.Add("bulkUpdateOrderErrors".Translate(currentUser.Language, numbers, error.Key));
             }
 
             return new AppActionResult

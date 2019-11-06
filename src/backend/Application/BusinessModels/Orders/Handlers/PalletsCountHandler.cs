@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.History;
+using System;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -46,6 +47,10 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.SaveHistoryLog();
                 }
             }
+
+            var orderSetter = new FieldSetter<Order>(order, _historyService);
+            orderSetter.UpdateField(s => s.OrderChangeDate, DateTime.Now);
+            orderSetter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, int? oldValue, int? newValue)

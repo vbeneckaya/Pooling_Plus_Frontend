@@ -23,7 +23,7 @@ namespace Application.Services.Users
             var entity = _dataService.GetDbSet<User>().GetById(id);
             if (entity == null)
             {
-                return new ValidateResult("userNotFoundEntity".translate(user.Language));
+                return new ValidateResult("userNotFoundEntity".Translate(user.Language));
             }
             else
             {
@@ -76,6 +76,13 @@ namespace Application.Services.Users
             
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
+        }
+
+        protected override IQueryable<User> ApplySort(IQueryable<User> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Email)
+                .ThenBy(i => i.Id);
         }
     }
 }

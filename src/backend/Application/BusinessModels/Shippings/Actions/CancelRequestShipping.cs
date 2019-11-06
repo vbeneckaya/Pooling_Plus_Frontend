@@ -43,7 +43,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetCancelledRequest".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetCancelledRequest".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 

@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using System;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -33,6 +34,13 @@ namespace Application.BusinessModels.Orders.Handlers
                     var setter = new FieldSetter<Shipping>(shipping, _historyService);
                     setter.UpdateField(s => s.ConfirmedPalletsCount, shippingConfirmedPalletsCount);
                     setter.SaveHistoryLog();
+                }
+
+                if (newValue != order.PalletsCount)
+                {
+                    var orderSetter = new FieldSetter<Order>(order, _historyService);
+                    orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+                    orderSetter.SaveHistoryLog();
                 }
             }
         }

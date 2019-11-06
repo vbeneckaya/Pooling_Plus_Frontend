@@ -62,7 +62,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderRemovedFromShipping".translate(user.Language, order.OrderNumber, shipping.ShippingNumber)
+                Message = "orderRemovedFromShipping".Translate(user.Language, order.OrderNumber, shipping.ShippingNumber)
             };
         }
 

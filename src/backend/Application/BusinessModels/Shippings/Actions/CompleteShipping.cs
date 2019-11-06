@@ -40,7 +40,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetCompleted".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetCompleted".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 

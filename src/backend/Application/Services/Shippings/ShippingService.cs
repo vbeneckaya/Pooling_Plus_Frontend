@@ -395,6 +395,7 @@ namespace Application.Services.Shippings
         private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {
             var search = searchForm.Filter.Search;
+            var columns = searchForm.Filter.Columns;
 
             if (string.IsNullOrEmpty(search)) return query;
 
@@ -441,43 +442,40 @@ namespace Application.Services.Shippings
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id).ToList();
 
-            return query.Where(i => 
-               !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.Contains(search)
-            || !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.Contains(search)
-            || !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
-            || isInt && i.TemperatureMin == searchInt
-            || isInt && i.TemperatureMax == searchInt
-            || isInt && i.PalletsCount == searchInt
-            || isInt && i.ActualPalletsCount == searchInt
-            || isInt && i.ConfirmedPalletsCount == searchInt
-            || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
-            || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
-            || isDecimal && i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
-            || isDecimal && i.OtherCosts >= searchDecimal - precision && i.OtherCosts <= searchDecimal + precision
-            || isDecimal && i.DeliveryCostWithoutVAT >= searchDecimal - precision && i.DeliveryCostWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.ReturnCostWithoutVAT >= searchDecimal - precision && i.ReturnCostWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.InvoiceAmountWithoutVAT >= searchDecimal - precision && i.InvoiceAmountWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.AdditionalCostsWithoutVAT >= searchDecimal - precision && i.AdditionalCostsWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
-            || isDecimal && i.ReturnRate >= searchDecimal - precision && i.ReturnRate <= searchDecimal + precision
-            || isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
-            || isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
-            || isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
-            //|| boolean.HasValue && i.Ban >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
-            || i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
-            || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-            || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-            || i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || tarifficationTypes.Contains(i.TarifficationType)
-            || deliveryTypes.Contains(i.DeliveryType)
-            || vehicleTypes.Any(v => v == i.VehicleTypeId)
-            || transportCompanies.Any(t => t == i.CarrierId)
-            || statuses.Contains(i.Status)
-
+            return query.Where(i =>
+               columns.Contains("ShippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
+            || columns.Contains("DeliveryInvoiceNumber") && !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.Contains(search)
+            || columns.Contains("DeviationReasonsComments") && !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.Contains(search)
+            || columns.Contains("AdditionalCostsComments") && !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.Contains(search)
+            || columns.Contains("InvoiceNumber") && !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
+            || columns.Contains("TemperatureMin") && isInt && i.TemperatureMin == searchInt
+            || columns.Contains("TemperatureMax") && isInt && i.TemperatureMax == searchInt
+            || columns.Contains("PalletsCount") && isInt && i.PalletsCount == searchInt
+            || columns.Contains("ActualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
+            || columns.Contains("ConfirmedPalletsCount") && isInt && i.ConfirmedPalletsCount == searchInt
+            || columns.Contains("WeightKg") && isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
+            || columns.Contains("ActualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
+            || columns.Contains("TotalDeliveryCost") && isDecimal && i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
+            || columns.Contains("OtherCosts") && isDecimal && i.OtherCosts >= searchDecimal - precision && i.OtherCosts <= searchDecimal + precision
+            || columns.Contains("DeliveryCostWithoutVAT") && isDecimal && i.DeliveryCostWithoutVAT >= searchDecimal - precision && i.DeliveryCostWithoutVAT <= searchDecimal + precision
+            || columns.Contains("ReturnCostWithoutVAT") && isDecimal && i.ReturnCostWithoutVAT >= searchDecimal - precision && i.ReturnCostWithoutVAT <= searchDecimal + precision
+            || columns.Contains("InvoiceAmountWithoutVAT") && isDecimal && i.InvoiceAmountWithoutVAT >= searchDecimal - precision && i.InvoiceAmountWithoutVAT <= searchDecimal + precision
+            || columns.Contains("AdditionalCostsWithoutVAT") && isDecimal && i.AdditionalCostsWithoutVAT >= searchDecimal - precision && i.AdditionalCostsWithoutVAT <= searchDecimal + precision
+            || columns.Contains("TrucksDowntime") && isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
+            || columns.Contains("ReturnRate") && isDecimal && i.ReturnRate >= searchDecimal - precision && i.ReturnRate <= searchDecimal + precision
+            || columns.Contains("AdditionalPointRate") && isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
+            || columns.Contains("DowntimeRate") && isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
+            || columns.Contains("BlankArrivalRate") && isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
+            || columns.Contains("ShippingCreationDate") && i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("LoadingArrivalTime") && i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("LoadingDepartureTime") && i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("DocumentsReturnDate") && i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("ActualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("TarifficationType") && tarifficationTypes.Contains(i.TarifficationType)
+            || columns.Contains("DeliveryType") && deliveryTypes.Contains(i.DeliveryType)
+            || columns.Contains("VehicleTypeId") && vehicleTypes.Any(v => v == i.VehicleTypeId)
+            || columns.Contains("CarrierId") && transportCompanies.Any(t => t == i.CarrierId)
+            || columns.Contains("Status") && statuses.Contains(i.Status)
             );
         }
     }

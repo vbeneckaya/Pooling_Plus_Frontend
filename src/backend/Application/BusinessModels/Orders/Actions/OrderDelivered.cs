@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetDelivered".translate(user.Language, order.OrderNumber)
+                Message = "orderSetDelivered".Translate(user.Language, order.OrderNumber)
             };
         }
 

@@ -88,7 +88,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetCreated".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetCreated".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 

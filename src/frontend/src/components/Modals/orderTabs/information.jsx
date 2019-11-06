@@ -59,16 +59,11 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                     <Grid.Row columns={4}>
                                         <Grid.Column>
                                             <FormField
-                                                name="orderNumber"
+                                                name="clientOrderNumber"
                                                 type={TEXT_TYPE}
-                                                settings={settings['orderNumber']}
-                                                value={form['orderNumber']}
-                                                error={isNotUniqueNumber}
-                                                errorText={
-                                                    isNotUniqueNumber && t('number_already_exists')
-                                                }
+                                                settings={settings['clientOrderNumber']}
+                                                value={form['clientOrderNumber']}
                                                 onChange={onChange}
-                                                onBlur={uniquenessNumberCheck}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>

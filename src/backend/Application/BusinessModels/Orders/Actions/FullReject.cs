@@ -37,7 +37,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetFullReturn".translate(user.Language, order.OrderNumber)
+                Message = "orderSetFullReturn".Translate(user.Language, order.OrderNumber)
             };
         }
 

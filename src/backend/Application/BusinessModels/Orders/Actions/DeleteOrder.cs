@@ -39,7 +39,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderRemoved".translate(user.Language, orderNumber)
+                Message = "orderRemoved".Translate(user.Language, orderNumber)
             };
         }
 

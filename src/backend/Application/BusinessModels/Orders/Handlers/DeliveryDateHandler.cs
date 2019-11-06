@@ -25,8 +25,16 @@ namespace Application.BusinessModels.Orders.Handlers
                 {
                     var setter = new FieldSetter<Order>(updOrder, _historyService);
                     setter.UpdateField(o => o.DeliveryDate, newValue);
+                    setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
                     setter.SaveHistoryLog();
                 }
+            }
+
+            if (_isInjection)
+            {
+                var setter = new FieldSetter<Order>(order, _historyService);
+                setter.UpdateField(o => o.ShippingDate, newValue?.AddDays(0 - order.TransitDays ?? 0));
+                setter.SaveHistoryLog();
             }
         }
 
@@ -42,13 +50,15 @@ namespace Application.BusinessModels.Orders.Handlers
             }
         }
 
-        public DeliveryDateHandler(ICommonDataService dataService, IHistoryService historyService)
+        public DeliveryDateHandler(ICommonDataService dataService, IHistoryService historyService, bool isInjection)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _isInjection = isInjection;
         }
 
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
+        private readonly bool _isInjection;
     }
 }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Domain.Shared;
 using DAL.Services;
 using Domain.Services.UserProvider;
+using Domain.Services.Translations;
 
 namespace Application.Services.Warehouses
 {
@@ -93,6 +94,13 @@ namespace Application.Services.Warehouses
         {
             var entry = _dataService.GetDbSet<PickingType>().GetById(id);
             return entry?.Name;
+        }
+
+        protected override IQueryable<Warehouse> ApplySort(IQueryable<Warehouse> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.WarehouseName)
+                .ThenBy(i => i.Id);
         }
     }
 }
