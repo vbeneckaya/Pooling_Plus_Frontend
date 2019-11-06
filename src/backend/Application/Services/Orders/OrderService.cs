@@ -80,7 +80,7 @@ namespace Application.Services.Orders
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            bool isInjection = dto.AdditionalInfo.Contains("INJECTION");
+            bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
 
             IEnumerable<string> readOnlyFields = null;
             if (!isNew)
