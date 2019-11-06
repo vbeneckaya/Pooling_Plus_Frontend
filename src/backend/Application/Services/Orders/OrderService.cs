@@ -80,7 +80,7 @@ namespace Application.Services.Orders
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            bool isInjection = dto.AdditionalInfo == "INJECTION";
+            bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
 
             IEnumerable<string> readOnlyFields = null;
             if (!isNew)
@@ -151,8 +151,9 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderChangeDate, ParseDateTime(dto.OrderChangeDate));
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
 
-
             /*end of map dto to entity fields*/
+
+
 
             if (isNew)
             {
@@ -170,6 +171,12 @@ namespace Application.Services.Orders
             if (isNew && !isCreated)
             {
                 _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
+            }
+
+            if (isInjection)
+            {
+                var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
+                _historyService.Save(entity.Id, "orderCreatedFromInjection", dto.OrderNumber, file);
             }
 
             setter.SaveHistoryLog();
