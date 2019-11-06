@@ -240,7 +240,9 @@ namespace Application.Services.FieldProperties
         private List<string> ExtractFieldNamesFromDto<TDto>()
         {
             var fields = _fieldDispatcherService.GetDtoFields<TDto>();
-            var result = fields.Select(x => x.Name?.ToLowerFirstLetter()).ToList();
+            var result = fields.Where(x => !x.IsIgnoredForFieldSettings)
+                               .Select(x => x.Name?.ToLowerFirstLetter())
+                               .ToList();
             return result;
         }
     }

@@ -36,6 +36,8 @@ namespace Application.Services.FieldProperties
 
                 bool isDefault = Attribute.IsDefined(prop, typeof(IsDefaultAttribute));
 
+                bool isIgnoredForFieldSettings = Attribute.IsDefined(prop, typeof(IgnoreFieldSettingsAttribute));
+
                 int orderNumber = int.MaxValue;
                 if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
                 {
@@ -50,7 +52,8 @@ namespace Application.Services.FieldProperties
                     ReferenceSource = fieldTypeAttr.Source,
                     ShowRawReferenceValue = fieldTypeAttr.ShowRawValue,
                     OrderNumber = orderNumber,
-                    IsDefault = isDefault
+                    IsDefault = isDefault,
+                    IsIgnoredForFieldSettings = isIgnoredForFieldSettings
                 };
                 yield return fieldInfo;
             }
