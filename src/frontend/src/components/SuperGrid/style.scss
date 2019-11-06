@@ -257,6 +257,8 @@
 
 .from-popup {
     filter: none !important;
+    min-width: 250px!important;
+    max-width: 100% !important;
 
     .separator {
         display: flex;
@@ -443,4 +445,15 @@ $teal: #b5eae7;
         position: relative !important;
         padding: 0 8px;
     }
+}
+
+.all-filters-popup {
+    min-width: 250px;
+    max-width: 100%;
+}
+.all-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 12px;
 }

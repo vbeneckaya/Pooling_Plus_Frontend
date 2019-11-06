@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Input, Loader, Popup } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
@@ -25,6 +25,14 @@ class Facet extends React.Component {
             params: {},
         });
     };
+
+    componentDidMount() {
+        this.handleOpen();
+    }
+
+    componentWillUnmount() {
+        this.clearFilter();
+    }
 
     render() {
         const {
@@ -67,7 +75,7 @@ class Facet extends React.Component {
 
         let content = (
             <Form>
-                <label className="label-in-popup">{t(name)}</label>
+                {/*<label className="label-in-popup">{t(name)}</label>*/}
                 <div>
                     <Input
                         fluid
@@ -104,7 +112,8 @@ class Facet extends React.Component {
 
         return (
             <div className="facet-input">
-                <Popup
+                {content}
+                {/*<Popup
                     trigger={
                         <Input
                             fluid
@@ -145,7 +154,7 @@ class Facet extends React.Component {
                     onClick={setSort}
                 >
                     <Icon name="caret down" />
-                </Button>
+                </Button>*/}
             </div>
         );
     }

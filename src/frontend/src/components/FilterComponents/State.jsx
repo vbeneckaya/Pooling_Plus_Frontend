@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Loader, Popup } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,6 +11,8 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
 
     let values = value ? value.split('|') : [];
 
+    console.log('values', values);
+
     const toggle = (e, { value }) => {
         if (values.some(x => x === value)) {
             values.splice(values.indexOf(value), 1);
@@ -19,6 +21,11 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
         }
         if (onChange !== undefined) onChange(e, { name, value: values.join('|') });
     };
+
+    useEffect(() => {
+        handleOpen();
+        return handleClose;
+    }, []);
 
     const handleOpen = () => {
         dispatch(
@@ -69,7 +76,34 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
 
     return (
         <div className="facet-sortable facet-input">
-            <Popup
+            <Form style={{minWidth: '50px', minHeight: '50px'}}>
+                <Dimmer active={loading} inverted>
+                    <Loader size="small">Loading</Loader>
+                </Dimmer>
+                {stateColors.map(x => {
+                    let label = (
+                        <label>
+                            <Icon
+                                color={x.color ? x.color.toLowerCase() : 'grey'}
+                                inverted={x.inverted}
+                                name="circle"
+                            />
+                            {t(x.name)}
+                        </label>
+                    );
+                    return (
+                        <Form.Field key={x.name}>
+                            <Checkbox
+                                value={x.name}
+                                checked={values.includes(x.name)}
+                                onChange={toggle}
+                                label={label}
+                            />
+                        </Form.Field>
+                    );
+                })}
+            </Form>
+            {/* <Popup
                 trigger={
                     <Button size="small" style={{ lineHeight: '1.1rem' }} fluid>
                         {values.length > 0
@@ -104,7 +138,7 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
                 onClick={setSort}
             >
                 <Icon name="caret down" />
-            </Button>
+            </Button>*/}
         </div>
     );
 };

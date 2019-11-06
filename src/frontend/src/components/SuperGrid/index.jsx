@@ -131,15 +131,7 @@ class SuperGrid extends Component {
         }, this.debounceSetFilterApiAndLoadList);
     };
 
-    setSort = (e, { name, value }) => {
-        const isDesc = value === 'desc';
-        const sort =
-            this.state.sort.name === name && this.state.sort.desc === isDesc
-                ? {}
-                : {
-                      name: name,
-                      desc: isDesc,
-                  };
+    setSort = (sort) => {
         const { storageSortItem } = this.props;
 
         storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify(sort));
@@ -188,7 +180,8 @@ class SuperGrid extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({ fullText: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
+        console.log('5555', value);
+        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {

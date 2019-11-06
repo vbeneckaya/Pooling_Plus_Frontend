@@ -8,31 +8,52 @@ class Search extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: props.value,
+            value: '',
         };
     }
 
+    componentWillMount() {
+        this.timer = null;
+    }
+
+    triggerChange = () => {
+        const {value} = this.state;
+
+        this.props.onChange(null, {value});
+    }
+
+    handleChange = (e, {value}) => {
+        clearTimeout(this.timer);
+
+        this.setState({value});
+
+        this.timer = setTimeout(this.triggerChange, 300);
+    }
+
     handleKeyPress = e => {
-        if (e.keyCode === 13) this.props.onChange(e, { value: this.state.value });
+        if (e.keyCode === 13) {
+            clearTimeout(this.timer);
+            this.triggerChange();
+        }
     };
 
-    change = (e, { value }) => {
+    /*change = (e, { value }) => {
         const { isAuto } = this.props;
         this.setState({ value });
         if (isAuto || !value) this.props.onChange(e, { value });
-    };
+    };*/
 
     render() {
-        const { value, isAuto, t } = this.props;
+        const {t} = this.props;
 
         return (
             <Input
                 icon="search"
                 className="search-input"
                 onKeyDown={this.handleKeyPress}
-                onChange={this.change}
+                onChange={this.handleChange}
                 placeholder={t('search_all_fields')}
-                value={isAuto ? value : this.state.value}
+                value={this.state.value}
             />
         );
     }

@@ -67,7 +67,7 @@ class TableInfo extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({ filter: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
+        this.setState({filter: value, page: 1}, this.load);
     };
 
     debounceSetFilterApiAndLoadList = debounce(300, this.load);
