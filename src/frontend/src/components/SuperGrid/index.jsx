@@ -131,15 +131,7 @@ class SuperGrid extends Component {
         }, this.debounceSetFilterApiAndLoadList);
     };
 
-    setSort = (e, { name, value }) => {
-        const isDesc = value === 'desc';
-        const sort =
-            this.state.sort.name === name && this.state.sort.desc === isDesc
-                ? {}
-                : {
-                      name: name,
-                      desc: isDesc,
-                  };
+    setSort = (sort) => {
         const { storageSortItem } = this.props;
 
         storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify(sort));

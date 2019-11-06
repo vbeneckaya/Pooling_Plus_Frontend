@@ -122,6 +122,7 @@
 .facet {
     display: flex;
     align-items: center;
+    justify-content: space-around;
     &-field {
         -webkit-line-clamp: 2;
         overflow: hidden;
@@ -129,10 +130,15 @@
         display: -webkit-box;
         -webkit-box-orient: vertical;
         text-align: center;
+        color: rgba(0,0,0,.87) !important;
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 
     &-actions {
-        margin-left: 8px;
+        margin-left: 4px;
         button {
             height: 16px !important;
             min-height: 10px !important;
@@ -145,13 +151,33 @@
             font-size: 18px;
             text-align: center;
             overflow: hidden;
+
+            .icon {
+                display: block;
+                margin: 0 !important;
+                color: #ccc !important;
+            }
         }
         &__filter {
+            opacity: 0;
+             &_activae {
+                 opacity: 1!important;
+             }
         }
 
         &__sort {
             display: flex;
             flex-direction: column;
+            min-height: 15px;
+            color: rgb(155, 155, 155) !important;;
         }
+    }
+
+    &:hover .facet-actions__filter {
+        -webkit-transition: opacity 1s ease-in-out;
+        -moz-transition: opacity 1s ease-in-out;
+        -o-transition: opacity 1s ease-in-out;
+        transition: opacity 1s ease-in-out;
+        opacity: 1;
     }
 }
