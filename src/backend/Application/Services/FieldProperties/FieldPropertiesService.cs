@@ -32,7 +32,7 @@ namespace Application.Services.FieldProperties
 
             var forEntityType = Enum.Parse<FieldPropertiesForEntityType>(forEntity, true);
 
-            Array states = forEntityType == FieldPropertiesForEntityType.Shippings
+            Array states = forEntityType == FieldPropertiesForEntityType.Shippings || forEntityType == FieldPropertiesForEntityType.RoutePoints
                 ? Enum.GetValues(typeof(ShippingState))
                 : Enum.GetValues(typeof(OrderState));
 
@@ -82,7 +82,7 @@ namespace Application.Services.FieldProperties
 
             var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
 
-            int state = forEntity == FieldPropertiesForEntityType.Shippings
+            int state = forEntity == FieldPropertiesForEntityType.Shippings || forEntity == FieldPropertiesForEntityType.RoutePoints
                 ? (int)Enum.Parse<ShippingState>(dto.State, true)
                 : (int)Enum.Parse<OrderState>(dto.State, true);
 
@@ -181,13 +181,13 @@ namespace Application.Services.FieldProperties
             Array states;
             if (string.IsNullOrEmpty(dto.State))
             {
-                states = forEntity == FieldPropertiesForEntityType.Shippings
+                states = forEntity == FieldPropertiesForEntityType.Shippings || forEntity == FieldPropertiesForEntityType.RoutePoints
                         ? Enum.GetValues(typeof(ShippingState))
                         : Enum.GetValues(typeof(OrderState));
             }
             else
             {
-                int state = forEntity == FieldPropertiesForEntityType.Shippings
+                int state = forEntity == FieldPropertiesForEntityType.Shippings || forEntity == FieldPropertiesForEntityType.RoutePoints
                     ? (int)Enum.Parse<ShippingState>(dto.State, true)
                     : (int)Enum.Parse<OrderState>(dto.State, true);
                 states = new[] { state };
@@ -228,6 +228,8 @@ namespace Application.Services.FieldProperties
                     return ExtractFieldNamesFromDto<OrderDto>();
                 case FieldPropertiesForEntityType.OrderItems:
                     return ExtractFieldNamesFromDto<OrderItemDto>();
+                case FieldPropertiesForEntityType.RoutePoints:
+                    return ExtractFieldNamesFromDto<RoutePointDto>();
                 case FieldPropertiesForEntityType.Shippings:
                     return ExtractFieldNamesFromDto<ShippingDto>();
                 default:
