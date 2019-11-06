@@ -142,7 +142,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
         public string OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -169,7 +169,7 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.DateTime), IgnoreFieldSettings]
         public string OrderChangeDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
