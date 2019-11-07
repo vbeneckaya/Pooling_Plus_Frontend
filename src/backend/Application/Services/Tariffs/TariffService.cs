@@ -96,7 +96,7 @@ namespace Application.Services.Tariffs
 
             if (hasDuplicates)
             {
-                errors.Add("duplicateWarehouseCode".Translate(lang));
+                errors.Add("duplicateTariffs".Translate(lang));
             }
 
             return new ValidateResult(string.Join(' ', errors));
@@ -227,8 +227,8 @@ namespace Application.Services.Tariffs
                         i.CarrierId == dto.CarrierId.ToGuid()
                      && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
                      && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
-                     && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity.ToLower() == dto.ShipmentCity
-                     && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.ToLower() == dto.DeliveryCity)
+                     && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
+                     && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity)
                     .FirstOrDefault();
             }
         }

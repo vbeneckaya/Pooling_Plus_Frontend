@@ -204,6 +204,7 @@ namespace Application.Shared.Excel
             typeof(TDto)
                 .GetProperties()
                 .Where(x => avalibleTypes.Contains(x.PropertyType))
+                .Where(x => !x.GetCustomAttributes(typeof(ExcelIgnoreAttribute), false).Any())
                 .Select((p, index) => new BaseExcelColumn { Property = p, Language = lang })
                 .ToList()
                 .ForEach(AddColumn);
