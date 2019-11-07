@@ -37,13 +37,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.Date)]
+        [FieldType(FieldType.Date), AllowBulkUpdate]
         public string ShippingDate { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(7)]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(7), AllowBulkUpdate]
         public string DeliveryDate { get; set; }
 
         [FieldType(FieldType.Number)]

@@ -1,6 +1,5 @@
 using Application.BusinessModels.Orders.Handlers;
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
@@ -31,11 +30,11 @@ namespace Application.Services.Orders
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions,
-            IEnumerable<IBulkUpdate<Order>> bulkUpdates)
-            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
+            IEnumerable<IGroupAppAction<Order>> groupActions)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -75,6 +74,15 @@ namespace Application.Services.Orders
         {
             var entity = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == orderNumber).FirstOrDefault();
             return MapFromEntityToFormDto(entity);
+        }
+
+        public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
+        {
+            var result = _dataService.GetDbSet<Order>()
+                            .Where(x => ids.Contains(x.Id))
+                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                            .ToList();
+            return result;
         }
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
