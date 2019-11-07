@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
+import {downloader, postman} from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
@@ -276,11 +276,23 @@ function* importFromExcelSaga({ payload }) {
 function* exportToExcelSaga({ payload }) {
     try {
         const { name } = payload;
-        const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
+        /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();*/
+        const res = yield downloader.post(`/${name}/exportToExcel`,{}, { responseType: 'blob' });
+        const { data } = res;
+        let headerLine = res.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('filename=') + 10;
+        let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         yield put({ type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS });

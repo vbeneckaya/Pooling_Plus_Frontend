@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
+import { downloader, postman } from '../utils/postman';
 import { all, cancel, cancelled, delay, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { IS_AUTO_UPDATE } from '../constants/settings';
 import { formatDate } from '../utils/dateTimeFormater';
@@ -167,20 +167,38 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const gridName = (state, name) => name;
 
-export const columnsGridSelector = createSelector([stateProfile, gridName], (state, name) => {
-    const grid = state.grids && state.grids.find(item => item.name === name);
-    return grid ? grid.columns : [];
-});
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
-export const listSelector = createSelector(stateSelector, state => state.data);
+export const columnsGridSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.columns : [];
+    },
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
+export const totalCountSelector = createSelector(
+    stateSelector,
+    state => state.totalCount,
+);
+export const listSelector = createSelector(
+    stateSelector,
+    state => state.data,
+);
 
-export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
+export const stateColorsSelector = createSelector(
+    stateSelector,
+    state => state.stateColors,
+);
 
-export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
-    const grid = state.grids && state.grids.find(item => item.name === name);
-    return grid ? grid.canCreateByForm : false;
-});
+export const canCreateByFormSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.canCreateByForm : false;
+    },
+);
 
 export const canImportFromExcelSelector = createSelector(
     [stateProfile, gridName],
@@ -190,14 +208,23 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
-    const grid = state.grids && state.grids.find(item => item.name === name);
-    return grid ? grid.canExportToExcel : false;
-});
+export const canExportToExcelSelector = createSelector(
+    [stateProfile, gridName],
+    (state, name) => {
+        const grid = state.grids && state.grids.find(item => item.name === name);
+        return grid ? grid.canExportToExcel : false;
+    },
+);
 
-export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
+export const importProgressSelector = createSelector(
+    stateSelector,
+    state => state.importProgress,
+);
 
-export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
+export const exportProgressSelector = createSelector(
+    stateSelector,
+    state => state.exportProgress,
+);
 
 //*  SAGA  *//
 
@@ -311,10 +338,10 @@ function* importFromExcelSaga({ payload }) {
 function* exportToExcelSaga({ payload }) {
     try {
         const { name, filter } = payload;
-        const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const representation = yield select(state => representationFromGridSelector(state, name));
         const columns = representation ? representation.map(item => item.name) : [];
-        const result = yield postman.post(
+        /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
+       const result = yield postman.post(
             `/${name}/exportToExcel`,
             { columns, filter },
             { responseType: 'blob' },
@@ -322,6 +349,23 @@ function* exportToExcelSaga({ payload }) {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();*/
+
+        const res = yield downloader.post(
+            `/${name}/exportToExcel`,
+            { columns, filter },
+            { responseType: 'blob' },
+        );
+        const { data } = res;
+        let headerLine = res.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('filename=') + 10;
+        let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         yield put({ type: GRID_EXPORT_TO_EXCEL_SUCCESS });
