@@ -20,6 +20,7 @@ import {
     SETTINGS_TYPE_HIDE,
     SETTINGS_TYPE_SHOW,
 } from '../../constants/formTypes';
+import {ORDERS_GRID} from "../../constants/grids";
 
 const List = () => {
     const { t } = useTranslation();
@@ -294,7 +295,8 @@ const List = () => {
                             <>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <div className="ui ribbon label">{t('articles')}</div>
+                                        <div
+                                            className="ui ribbon label">{activeItem === ORDERS_GRID ? t('articles') : t('route')}</div>
                                     </Table.Cell>
                                     {/* <Table.Cell />*/}
                                     {statusList.map((state, i) => (
