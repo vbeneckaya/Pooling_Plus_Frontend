@@ -2,6 +2,7 @@
   "profiles": {
     "Tasks": {
       "commandName": "Project",
+      "commandLineArgs": "--run ImportOrder --args ConnectionString=sftp://tms-lite-injections:gMAjqr75daNS@213.189.208.101/;Folder=/beiersdorf",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Debug"
       }
