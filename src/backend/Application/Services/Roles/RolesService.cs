@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -12,6 +9,9 @@ using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Roles
 {
@@ -80,7 +80,7 @@ namespace Application.Services.Roles
             }
         }
 
-        public override void MapFromDtoToEntity(Role entity, RoleDto dto)
+        public override ValidateResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -88,6 +88,8 @@ namespace Application.Services.Roles
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)

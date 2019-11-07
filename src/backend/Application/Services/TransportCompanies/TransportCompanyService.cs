@@ -1,13 +1,12 @@
-using System;
 using Application.Shared;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.TransportCompanies;
-using System.Linq;
-using Domain.Shared;
-using System.Collections.Generic;
-using DAL.Services;
 using Domain.Services.UserProvider;
-using Domain.Services.Translations;
+using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.TransportCompanies
 {
@@ -28,14 +27,15 @@ namespace Application.Services.TransportCompanies
             }
         }
 
-        public override void MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
+        public override ValidateResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
-            /*end of map dto to entity fields*/
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)

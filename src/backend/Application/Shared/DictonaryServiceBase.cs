@@ -15,7 +15,7 @@ namespace Application.Shared
 {
     public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
-        public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
+        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
@@ -40,15 +40,7 @@ namespace Application.Shared
 
         public virtual TEntity FindByKey(TListDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
-            {
-                var dbSet = _dataService.GetDbSet<TEntity>();
-                return dbSet.GetById(id);
-            }
-            else
-            {
-                return null;
-            }
+            return FindById(dto);
         }
 
         public SearchResult<TListDto> Search(SearchFormDto form)
@@ -94,7 +86,7 @@ namespace Application.Shared
             var result = new List<ValidateResult>();
             
             foreach (var dto in entitiesFrom) 
-                result.Add(SaveOrCreate(dto));
+                result.Add(SaveOrCreateInner(dto, true));
 
             return result;
         }
@@ -141,34 +133,54 @@ namespace Application.Shared
 
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
-            var dbSet = _dataService.GetDbSet<TEntity>();
-            var entityFromDb = FindByKey(entityFrom);
-            if (entityFromDb != null)
+            return SaveOrCreateInner(entityFrom, false);
+        }
+
+        protected TEntity FindById(TListDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
             {
-                MapFromDtoToEntity(entityFromDb, entityFrom);
-
-                dbSet.Update(entityFromDb);
-
-                _dataService.SaveChanges();
-                return new ValidateResult
-                {
-                    Id = entityFromDb.Id.ToString()
-                };
+                var dbSet = _dataService.GetDbSet<TEntity>();
+                return dbSet.GetById(id);
             }
             else
             {
-                var entity = new TEntity
+                return null;
+            }
+        }
+
+        protected ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        {
+            var dbSet = _dataService.GetDbSet<TEntity>();
+
+            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
+            var isNew = entityFromDb == null;
+
+            if (isNew)
+            {
+                entityFromDb = new TEntity
                 {
                     Id = Guid.NewGuid()
                 };
-                MapFromDtoToEntity(entity, entityFrom);
-                dbSet.Add(entity);
-                _dataService.SaveChanges();
-                return new ValidateResult
-                {
-                    Id = entity.Id.ToString()
-                };
             }
+
+            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
+
+            if (!result.IsError)
+            {
+                if (isNew)
+                {
+                    dbSet.Add(entityFromDb);
+                }
+                else
+                {
+                    dbSet.Update(entityFromDb);
+                }
+
+                _dataService.SaveChanges();
+            }
+
+            return result;
         }
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()

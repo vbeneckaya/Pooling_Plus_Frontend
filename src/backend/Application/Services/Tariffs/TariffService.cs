@@ -1,16 +1,16 @@
-using System;
 using Application.Shared;
-using Domain.Persistables;
-using Domain.Extensions;
-using Domain.Services.Tariffs;
-using Domain.Enums;
-using System.Linq;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Enums;
+using Domain.Extensions;
+using Domain.Persistables;
+using Domain.Services.Tariffs;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using System;
+using System.Linq;
 
 namespace Application.Services.Tariffs
 {
@@ -18,7 +18,7 @@ namespace Application.Services.Tariffs
     {
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(Tariff entity, TariffDto dto)
+        public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -61,7 +61,8 @@ namespace Application.Services.Tariffs
             entity.LtlRate31 = dto.LtlRate31;
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
-            /*end of map dto to entity fields*/
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)

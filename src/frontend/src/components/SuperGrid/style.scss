@@ -447,6 +447,9 @@ $teal: #b5eae7;
     }
 }
 
+.value-cell {
+    padding-left: 0 !important;
+}
 .all-filters-popup {
     min-width: 250px;
     max-width: 100%;
@@ -456,4 +459,11 @@ $teal: #b5eae7;
     justify-content: space-between;
     align-items: end;
     margin-bottom: 12px;
+}
+
+i.icon.clear-filter {
+    &:before {
+        content: url("../../image/clear-filter.svg");
+
+    }
 }

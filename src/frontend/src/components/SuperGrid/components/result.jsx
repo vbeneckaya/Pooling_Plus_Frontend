@@ -15,6 +15,10 @@ class Result extends Component {
             return true
         }
 
+        if (!_.isEqual(Array.from(nextProps.selectedRows), Array.from(this.props.selectedRows))) {
+            return true
+        }
+
         if (_.isEqual(nextProps.rows, this.props.rows)) {
             return false
         }
