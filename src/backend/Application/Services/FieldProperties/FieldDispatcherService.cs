@@ -38,6 +38,8 @@ namespace Application.Services.FieldProperties
 
                 bool isIgnoredForFieldSettings = Attribute.IsDefined(prop, typeof(IgnoreFieldSettingsAttribute));
 
+                bool isBulkUpdateAllowed = Attribute.IsDefined(prop, typeof(AllowBulkUpdateAttribute));
+
                 int orderNumber = int.MaxValue;
                 if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
                 {
@@ -53,7 +55,8 @@ namespace Application.Services.FieldProperties
                     ShowRawReferenceValue = fieldTypeAttr.ShowRawValue,
                     OrderNumber = orderNumber,
                     IsDefault = isDefault,
-                    IsIgnoredForFieldSettings = isIgnoredForFieldSettings
+                    IsIgnoredForFieldSettings = isIgnoredForFieldSettings,
+                    IsBulkUpdateAllowed = isBulkUpdateAllowed
                 };
                 yield return fieldInfo;
             }

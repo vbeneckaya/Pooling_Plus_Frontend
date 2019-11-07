@@ -1,6 +1,5 @@
 using Application.BusinessModels.Orders.Handlers;
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
@@ -31,11 +30,11 @@ namespace Application.Services.Orders
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions,
-            IEnumerable<IBulkUpdate<Order>> bulkUpdates)
-            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
+            IEnumerable<IGroupAppAction<Order>> groupActions)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -77,6 +76,15 @@ namespace Application.Services.Orders
             return MapFromEntityToFormDto(entity);
         }
 
+        public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
+        {
+            var result = _dataService.GetDbSet<Order>()
+                            .Where(x => ids.Contains(x.Id))
+                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                            .ToList();
+            return result;
+        }
+
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
@@ -97,6 +105,8 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
+            if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
@@ -157,7 +167,7 @@ namespace Application.Services.Orders
 
             if (isNew)
             {
-                InitializeNewOrder(setter);
+                InitializeNewOrder(setter, isInjection);
             }
 
             setter.ApplyAfterActions();
@@ -260,9 +270,9 @@ namespace Application.Services.Orders
             return false;
         }
 
-        private void InitializeNewOrder(FieldSetter<Order> setter)
+        private void InitializeNewOrder(FieldSetter<Order> setter, bool isInjection)
         {
-            if (string.IsNullOrEmpty(setter.Entity.ShippingAddress))
+            if (!isInjection && string.IsNullOrEmpty(setter.Entity.ShippingAddress))
             {
                 var fromWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
                 if (fromWarehouse != null)
@@ -347,6 +357,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId?.ToString()))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => s.DeliveryDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
@@ -359,7 +370,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")));
+                    .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.OrderChangeDate, e => e.MapFrom((s, t) => s.OrderChangeDate?.ToString("dd.MM.yyyy HH:mm")));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));

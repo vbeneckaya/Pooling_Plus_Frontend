@@ -17,6 +17,11 @@ namespace Application.Services.ShippingWarehouses
         {
         }
 
+        public ShippingWarehouse GetByCode(string code)
+        {
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Code == code && x.IsActive);
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<ShippingWarehouse>().OrderBy(x => x.WarehouseName).ToList();

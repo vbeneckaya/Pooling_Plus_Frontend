@@ -1,12 +1,12 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
-using Domain.Services.Translations;
+using Domain.Services.FieldProperties;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
@@ -29,6 +29,8 @@ namespace Application.Shared
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
+        public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
+
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
         public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm);
 
@@ -38,24 +40,28 @@ namespace Application.Shared
 
         protected readonly ICommonDataService _dataService;
 
+        protected readonly IFieldDispatcherService _fieldDispatcherService;
+
+        protected readonly IFieldPropertiesService _fieldPropertiesService;
+
         protected readonly IEnumerable<IAppAction<TEntity>> _singleActions;
 
         protected readonly IEnumerable<IGroupAppAction<TEntity>> _groupActions;
 
-        protected readonly IEnumerable<IBulkUpdate<TEntity>> _bulkUpdates;
-
         protected GridService(
             ICommonDataService dataService, 
             IUserProvider userIdProvider,
+            IFieldDispatcherService fieldDispatcherService,
+            IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<TEntity>> singleActions,
-            IEnumerable<IGroupAppAction<TEntity>> groupActions,
-            IEnumerable<IBulkUpdate<TEntity>> bulkUpdates)
+            IEnumerable<IGroupAppAction<TEntity>> groupActions)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
+            _fieldDispatcherService = fieldDispatcherService;
+            _fieldPropertiesService = fieldPropertiesService;
             _singleActions = singleActions;
             _groupActions = groupActions;
-            _bulkUpdates = bulkUpdates;
         }
 
         public TDto Get(Guid id)
@@ -294,28 +300,31 @@ namespace Application.Shared
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
 
+            var fields = _fieldDispatcherService.GetDtoFields<TDto>();
+
+            string forEntity = typeof(TEntity) == typeof(Order) 
+                ? FieldPropertiesForEntityType.Orders.ToString() 
+                : FieldPropertiesForEntityType.Shippings.ToString();
+            var fieldsProperties = _fieldPropertiesService.GetFor(forEntity, null, role?.Id, null);
+
             var result = new List<BulkUpdateDto>();
 
-            var entities = dbSet.Where(x => ids.Contains(x.Id)).ToArray();
+            var entities = LoadStatusData(ids);
 
-            foreach (var bulkUpdate in _bulkUpdates)
+            foreach (var field in fields.Where(x => x.IsBulkUpdateAllowed))
             {
-                if (string.IsNullOrEmpty(bulkUpdate.FieldName))
-                {
-                    continue;
-                }
-
-                var validEntities = entities.Where(e => bulkUpdate.IsAvailable(role, e));
+                var fieldProperties = fieldsProperties.FirstOrDefault(x => string.Compare(x.FieldName, field.Name, true) == 0);
+                var validEntities = entities.Where(e => CanEdit(e, fieldProperties));
                 if (validEntities.Any())
                 {
-                    var dto = result.FirstOrDefault(x => x.Name == bulkUpdate.FieldName.ToLowerFirstLetter());
+                    var dto = result.FirstOrDefault(x => x.Name == field.Name.ToLowerFirstLetter());
                     if (dto == null)
                     {
                         result.Add(new BulkUpdateDto
                         {
-                            Name = bulkUpdate.FieldName.ToLowerFirstLetter(),
-                            Type = bulkUpdate.FieldType.ToString(),
-                            Ids = validEntities.Select(x => x.Id.ToString())
+                            Name = field.Name.ToLowerFirstLetter(),
+                            Type = field.FieldType.ToString(),
+                            Ids = validEntities.Select(x => x.Id)
                         });
                     }
                 }
@@ -326,59 +335,44 @@ namespace Application.Shared
 
         public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
         {
-            var bulkUpdate = _bulkUpdates.FirstOrDefault(x => x.FieldName?.ToLowerFirstLetter() == fieldName);
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
 
-            if (bulkUpdate == null)
-            {
-                bulkUpdate = _bulkUpdates.FirstOrDefault(x => string.IsNullOrEmpty(x.FieldName));
-            }
+            var propertyType = typeof(TFormDto).GetProperty(fieldName?.ToUpperFirstLetter());
+            if (propertyType == null)
+                throw new ArgumentException("Unknown field", nameof(fieldName));
 
-            if (bulkUpdate == null)
-                return new AppActionResult
-                {
-                    IsError = true,
-                    Message = $"Bulk update {fieldName} not found"
-                };
-
-            var currentUser = _userIdProvider.GetCurrentUser();
-            var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var dbSet = _dataService.GetDbSet<TEntity>();
 
             var entities = dbSet.Where(x => ids.Contains(x.Id));
+            var dtos = entities.Select(MapFromEntityToFormDto).ToArray();
 
-            Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
-
-            foreach (var entity in entities)
+            object validValue = value;
+            if (propertyType.PropertyType == typeof(int?))
             {
-                if (bulkUpdate.IsAvailable(role, entity))
-                {
-                    string message = bulkUpdate.Update(currentUser, entity, fieldName, value)?.Message;
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        List<string> numbers;
-                        if (!errors.TryGetValue(message, out numbers))
-                        {
-                            numbers = new List<string>();
-                            errors[message] = numbers;
-                        }
-                        numbers.Add(entity.ToString());
-                    }
-                }
+                validValue = ParseInt(value);
+            }
+            if (propertyType.PropertyType == typeof(decimal?))
+            {
+                validValue = ParseDecimal(value);
+            }
+            if (propertyType.PropertyType == typeof(bool?))
+            {
+                validValue = ParseBool(value);
             }
 
-            _dataService.SaveChanges();
-
-            List<string> messages = new List<string>();
-            foreach (var error in errors)
+            foreach (var dto in dtos)
             {
-                string numbers = string.Join(", ", error.Value);
-                messages.Add("bulkUpdateOrderErrors".Translate(currentUser.Language, numbers, error.Key));
+                propertyType.SetValue(dto, validValue);
             }
 
+            var importResult = Import(dtos);
+
+            string errors = string.Join(" ", importResult.Where(x => x.IsError).Select(x => x.Error));
             return new AppActionResult
             {
-                IsError = false,
-                Message = string.Join(" ", messages)
+                IsError = !string.IsNullOrWhiteSpace(errors),
+                Message = errors
             };
         }
 
@@ -464,6 +458,33 @@ namespace Application.Shared
             return null;
         }
 
+        protected decimal? ParseDecimal(string value)
+        {
+            if (decimal.TryParse((value ?? string.Empty).Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out decimal decValue))
+            {
+                return decValue;
+            }
+            return null;
+        }
+
+        protected int? ParseInt(string value)
+        {
+            if (int.TryParse(value ?? string.Empty, NumberStyles.Integer, CultureInfo.InvariantCulture, out int intValue))
+            {
+                return intValue;
+            }
+            return null;
+        }
+
+        protected bool? ParseBool(string value)
+        {
+            if (bool.TryParse(value ?? string.Empty, out bool boolValue))
+            {
+                return boolValue;
+            }
+            return null;
+        }
+
         protected DateTime? ParseDateTime(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -500,6 +521,16 @@ namespace Application.Shared
             {
                 return decimal.Round(value.Value, decimals);
             }
+        }
+
+        private bool CanEdit(EntityStatusDto dto, FieldForFieldProperties fieldProperties)
+        {
+            string editValue = FieldPropertiesAccessType.Edit.ToString();
+            string accessType = fieldProperties?.AccessTypes?
+                                                .Where(x => string.Compare(x.Key, dto.Status, true) == 0)
+                                                .Select(x => x.Value)
+                                                .FirstOrDefault();
+            return string.Compare(accessType, editValue, true) == 0;
         }
     }
 }
