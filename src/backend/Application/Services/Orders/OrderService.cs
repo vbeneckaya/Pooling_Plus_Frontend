@@ -105,6 +105,8 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
+            if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
@@ -165,7 +167,7 @@ namespace Application.Services.Orders
 
             if (isNew)
             {
-                InitializeNewOrder(setter);
+                InitializeNewOrder(setter, isInjection);
             }
 
             setter.ApplyAfterActions();
@@ -268,9 +270,9 @@ namespace Application.Services.Orders
             return false;
         }
 
-        private void InitializeNewOrder(FieldSetter<Order> setter)
+        private void InitializeNewOrder(FieldSetter<Order> setter, bool isInjection)
         {
-            if (string.IsNullOrEmpty(setter.Entity.ShippingAddress))
+            if (!isInjection && string.IsNullOrEmpty(setter.Entity.ShippingAddress))
             {
                 var fromWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
                 if (fromWarehouse != null)
@@ -355,6 +357,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId?.ToString()))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => s.DeliveryDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))

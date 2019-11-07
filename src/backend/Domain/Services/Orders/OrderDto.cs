@@ -169,6 +169,8 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
+        public string ShippingWarehouseId { get; set; }
+
         [FieldType(FieldType.DateTime), IgnoreFieldSettings]
         public string OrderChangeDate { get; set; }
 
