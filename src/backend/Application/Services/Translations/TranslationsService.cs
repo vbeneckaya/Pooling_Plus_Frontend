@@ -27,11 +27,6 @@ namespace Application.Services.Translations
             } );
         }
 
-        public override Translation FindByKey(TranslationDto dto)
-        {
-            return _dataService.GetDbSet<Translation>().Where(x => x.Name == dto.Name).FirstOrDefault();
-        }
-
         public Translation FindByKey(string name)
         {
             return _dataService.GetDbSet<Translation>().Where(x => x.Name == name).FirstOrDefault();

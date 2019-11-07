@@ -3,6 +3,7 @@ using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Shippings;
+using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
@@ -16,6 +17,7 @@ using Domain.Services.Identity;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
@@ -120,7 +122,18 @@ namespace Application.Services.AppConfiguration
 
             if (canEditWarehouses)
             {
-                var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
+                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ShippingWarehousesService>(),
+                    CanCreateByForm = canEditWarehouses,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditWarehouses,
+                    ShowOnHeader = false,
+                    Columns = columns
+                });
+
+                columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<WarehousesService>(),

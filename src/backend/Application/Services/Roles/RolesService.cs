@@ -110,6 +110,7 @@ namespace Application.Services.Roles
         {
             return Enum.GetValues(typeof(RolePermissions))
                 .Cast<RolePermissions>()
+                .Where(x => x != RolePermissions.None)
                 .Select(i => new PermissionInfo
                 {
                     Code = i,

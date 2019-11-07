@@ -29,6 +29,7 @@ namespace DAL
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
         public DbSet<Tariff> Tariffs { get; set; }
+        public DbSet<ShippingWarehouse> ShippingWarehouses { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<TransportCompany> TransportCompanies { get; set; }
