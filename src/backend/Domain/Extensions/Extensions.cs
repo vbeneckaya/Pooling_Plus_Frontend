@@ -178,5 +178,17 @@ namespace Domain.Extensions
             TimeZoneInfo.ConvertTimeToUtc(date, tz);
         public static DateTime FromUtc(this DateTime date, TimeZoneInfo tz) =>
             TimeZoneInfo.ConvertTimeFromUtc(date, tz);
+
+        public static Guid? ToGuid(this string guidString)
+        {
+            return Guid.TryParse(guidString, out Guid guid) ? guid : (Guid?)null;
+        }
+
+        public static TEnum? Parse<TEnum>(this string value) where TEnum: struct, Enum
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+
+            return (TEnum?)Enum.Parse(typeof(TEnum), value);
+        }
     }
 }

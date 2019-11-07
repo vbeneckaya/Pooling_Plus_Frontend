@@ -183,6 +183,38 @@ namespace Application.Shared
             return result;
         }
 
+        private ValidateResult SaveOrCreateEntity(TEntity entity)
+        {
+            var dbSet = _dataService.GetDbSet<TEntity>();
+            var entityFromDb = FindByKey(entityFrom);
+            if (entityFromDb != null)
+            {
+                MapFromDtoToEntity(entityFromDb, entityFrom);
+
+                dbSet.Update(entityFromDb);
+
+                _dataService.SaveChanges();
+                return new ValidateResult
+                {
+                    Id = entityFromDb.Id.ToString()
+                };
+            }
+            else
+            {
+                var entity = new TEntity
+                {
+                    Id = Guid.NewGuid()
+                };
+                MapFromDtoToEntity(entity, entityFrom);
+                dbSet.Add(entity);
+                _dataService.SaveChanges();
+                return new ValidateResult
+                {
+                    Id = entity.Id.ToString()
+                };
+            }
+        }
+
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
             return new ExcelMapper<TListDto>(_dataService, _userProvider);
