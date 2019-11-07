@@ -91,7 +91,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     return (
         <>
             <Table.Cell
-                className={column.name.toLowerCase().includes('address') ? 'address-cell' : ''}
+                className="value-cell"
             >
                 <div className="cell-grid">
                     <div

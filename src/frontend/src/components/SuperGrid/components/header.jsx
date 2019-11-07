@@ -122,7 +122,8 @@ const Header = ({
                         position="bottom right"
                         trigger={
                             <Button
-                                icon="times"
+                                icon="clear-filter"
+                                className={`clear-filter-btn`}
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
                             />
