@@ -128,7 +128,7 @@ export function* getFieldsSettingSaga({ payload }) {
     }
 }
 
-function* editFieldsSettingSaga({ payload }) {
+function* editFieldsSettingSaga({ payload = {} }) {
     try {
         const { params, callbackSuccess, isExt } = payload;
         const result = yield postman.post('/fieldProperties/save', {
@@ -137,7 +137,7 @@ function* editFieldsSettingSaga({ payload }) {
         });
 
         yield put({
-            type: EDIT_FIELDS_SETTINGS_REQUEST,
+            type: EDIT_FIELDS_SETTINGS_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();

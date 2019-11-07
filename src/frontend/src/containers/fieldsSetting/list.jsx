@@ -112,7 +112,7 @@ const List = () => {
 
     const rolesListOptions = [
         { key: 'any_role', value: 'null', text: t('any_role') },
-        ...rolesList.map(x => ({ key: x.name, value: x.value, text: t(x.name) })),
+        ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
     ];
 
     /* const companyListOptions = [
@@ -225,6 +225,8 @@ const List = () => {
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
+    console.log('settings');
+
     return (
         <div className="container">
             <Menu>
@@ -286,7 +288,7 @@ const List = () => {
                             ))}
                         </Table.Row>
                         {baseSettings.map(column => (
-                            <RowBody column={column} />
+                            <RowBody key={column.name} column={column} />
                         ))}
                         {extSettings.length ? (
                             <>

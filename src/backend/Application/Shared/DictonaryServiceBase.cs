@@ -142,33 +142,33 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
-            if (!string.IsNullOrEmpty(entityFrom.Id))
+            var entityFromDb = FindByKey(entityFrom);
+            if (entityFromDb != null)
             {
-                var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
-                if (entityFromDb != null)
+                MapFromDtoToEntity(entityFromDb, entityFrom);
+
+                dbSet.Update(entityFromDb);
+
+                _dataService.SaveChanges();
+                return new ValidateResult
                 {
-                    MapFromDtoToEntity(entityFromDb, entityFrom);
-                    
-                    dbSet.Update(entityFromDb);
-                    
-                    _dataService.SaveChanges();
-                    return new ValidateResult
-                    {
-                        Id = entityFromDb.Id.ToString()
-                    };
-                }
+                    Id = entityFromDb.Id.ToString()
+                };
             }
-            var entity = new TEntity
+            else
             {
-                Id = Guid.NewGuid()
-            };
-            MapFromDtoToEntity(entity, entityFrom);
-            dbSet.Add(entity);
-            _dataService.SaveChanges();
-            return new ValidateResult
-            {
-                Id = entity.Id.ToString()
-            };
+                var entity = new TEntity
+                {
+                    Id = Guid.NewGuid()
+                };
+                MapFromDtoToEntity(entity, entityFrom);
+                dbSet.Add(entity);
+                _dataService.SaveChanges();
+                return new ValidateResult
+                {
+                    Id = entity.Id.ToString()
+                };
+            }
         }
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()

@@ -37,11 +37,6 @@ namespace Application.Services.Warehouses
             }
         }
 
-        public override Warehouse FindByKey(WarehouseDto dto)
-        {
-            return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
-        }
-
         public override void MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))

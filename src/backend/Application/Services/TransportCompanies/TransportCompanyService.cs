@@ -15,11 +15,6 @@ namespace Application.Services.TransportCompanies
     {
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override TransportCompany FindByKey(TransportCompanyDto dto)
-        {
-            return _dataService.GetDbSet<TransportCompany>().Where(x => x.Title == dto.Title).FirstOrDefault();
-        }
-
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var carriers = _dataService.GetDbSet<TransportCompany>().OrderBy(c => c.Title).ToList();
