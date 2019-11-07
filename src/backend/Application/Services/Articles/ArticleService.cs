@@ -125,7 +125,7 @@ namespace Application.Services.Articles
         protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
         {
             return query
-                .OrderBy(i => i.Spgr)
+                .OrderBy(i => i.Description)
                 .ThenBy(i => i.Id);
         }
     }
