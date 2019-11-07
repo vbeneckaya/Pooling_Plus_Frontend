@@ -2,7 +2,6 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.PickingTypes;
-using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
@@ -15,11 +14,13 @@ namespace Application.Services.PickingTypes
     {
         public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Name = dto.Name;
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override PickingTypeDto MapFromEntityToDto(PickingType entity)

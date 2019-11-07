@@ -1,11 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
+using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Translations
 {
@@ -32,7 +33,7 @@ namespace Application.Services.Translations
             return _dataService.GetDbSet<Translation>().Where(x => x.Name == name).FirstOrDefault();
         }
 
-        public override void MapFromDtoToEntity(Translation entity, TranslationDto dto)
+        public override ValidateResult MapFromDtoToEntity(Translation entity, TranslationDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -40,6 +41,7 @@ namespace Application.Services.Translations
             entity.En = dto.En;
             entity.Ru = dto.Ru;
 
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override TranslationDto MapFromEntityToDto(Translation entity)
