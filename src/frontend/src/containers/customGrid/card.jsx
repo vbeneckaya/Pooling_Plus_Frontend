@@ -95,11 +95,19 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = (e, { name, value }) => {
+    const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
         setForm({
             ...form,
             [name]: value,
         });
+
+        if (name === 'soldTo') {
+            setForm({
+                ...form,
+                clientName,
+                deliveryAddress
+            })
+        }
 
         if (
             notChangeForm &&
