@@ -53,6 +53,7 @@ const Mass_changes = ({ gridName, load }) => {
                                 fluid
                                 selection
                                 value={field}
+                                upward
                                 options={updates.map(item => ({
                                     key: item.name,
                                     value: item.name,

@@ -93,7 +93,7 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                             : null}
                     </div>
                 </Grid.Column>
-                <Grid.Column floated="right">
+                <Grid.Column floated="right" width={5}>
                     <Mass_changes gridName={gridName} load={() => load(false, true)} />
                 </Grid.Column>
             </Grid.Row>

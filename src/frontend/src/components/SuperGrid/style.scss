@@ -222,8 +222,9 @@
     position: -webkit-sticky;
     position: sticky;
     bottom: 0;
+    left: 0;
     padding: 15px 15px 0 15px !important;
-    width: calc(100% + 14px);
+    width: calc(100vw - 28px);
     border-top: 1px solid rgba(34, 36, 38, 0.15);
     flex-wrap: nowrap !important;
     height: max-content;
@@ -244,9 +245,7 @@
     }
 
     .column {
-        width: max-content !important;
-        position: sticky !important;
-        left: 0;
+
     }
 }
 
