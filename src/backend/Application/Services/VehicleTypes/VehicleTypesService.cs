@@ -20,7 +20,7 @@ namespace Application.Services.VehicleTypes
                 entity.Id = Guid.Parse(dto.Id);
             entity.Name = dto.Name;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)

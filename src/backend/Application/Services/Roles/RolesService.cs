@@ -89,7 +89,7 @@ namespace Application.Services.Roles
             entity.IsActive = dto.IsActive;
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)

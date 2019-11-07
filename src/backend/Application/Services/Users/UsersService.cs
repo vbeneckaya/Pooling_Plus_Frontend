@@ -77,7 +77,7 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         protected override IQueryable<User> ApplySort(IQueryable<User> query, SearchFormDto form)

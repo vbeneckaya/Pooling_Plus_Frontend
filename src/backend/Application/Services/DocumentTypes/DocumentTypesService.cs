@@ -18,7 +18,7 @@ namespace Application.Services.DocumentTypes
         {
             entity.Name = dto.Name;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override IEnumerable<LookUpDto> ForSelect()

@@ -62,7 +62,7 @@ namespace Application.Services.Tariffs
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
