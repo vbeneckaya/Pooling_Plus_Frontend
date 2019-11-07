@@ -4,6 +4,7 @@ using Domain.Persistables;
 using Domain.Services.Articles;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Application.Services.Articles
 {
     public class ArticlesService : DictonaryServiceBase<Article, ArticleDto>, IArticlesService
     {
-        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<ArticlesService> logger) : base(dataService, userProvider, logger) { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {

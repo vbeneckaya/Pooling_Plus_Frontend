@@ -4,6 +4,7 @@ using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
-        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ILogger<InjectionsService> logger) : base(dataService, userProvider, logger) { }
 
         public override ValidateResult MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {

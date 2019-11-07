@@ -5,6 +5,7 @@ using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Application.Services.ShippingWarehouses
 {
     public class ShippingWarehousesService : DictonaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
     {
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider)
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<ShippingWarehousesService> logger) : base(dataService, userProvider, logger)
         {
         }
 

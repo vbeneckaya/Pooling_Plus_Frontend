@@ -9,6 +9,7 @@ using Domain.Services.Roles;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<RolesService> logger) : base(dataService, userProvider, logger) { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {

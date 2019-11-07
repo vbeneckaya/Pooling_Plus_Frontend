@@ -9,6 +9,7 @@ using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 
 namespace Application.Shared
@@ -21,10 +22,13 @@ namespace Application.Shared
         protected readonly ICommonDataService _dataService;
         protected readonly IUserProvider _userProvider;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider)
+        protected readonly ILogger _logger;
+
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ILogger logger)
         {
             _dataService = dataService;
             _userProvider = userProvider;
+            _logger = logger;
         }
 
         public TListDto Get(Guid id)
@@ -178,7 +182,14 @@ namespace Application.Shared
                 }
 
                 _dataService.SaveChanges();
+
+                _logger.LogInformation($"«апись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
             }
+            else
+            {
+                _logger.LogInformation($"Ќе удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+            }
+
 
             return result;
         }

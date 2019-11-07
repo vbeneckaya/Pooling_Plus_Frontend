@@ -10,6 +10,7 @@ using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ILogger<TariffsService> logger) : base(dataService, userProvider, logger) { }
 
         public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
