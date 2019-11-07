@@ -1,8 +1,8 @@
 ﻿using Application.Shared;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.ShippingWarehouses;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
@@ -32,19 +32,17 @@ namespace Application.Services.ShippingWarehouses
 
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
-            {
-                var dbSet = _dataService.GetDbSet<ShippingWarehouse>();
-                return dbSet.GetById(id);
-            }
-            else
-            {
-                return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
-            }
+            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
         }
 
-        public override void MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
+        public override ValidateResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Code = dto.Code;
@@ -58,6 +56,8 @@ namespace Application.Services.ShippingWarehouses
             entity.Street = dto.Street;
             entity.House = dto.House;
             entity.IsActive = dto.IsActive ?? false;
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override ShippingWarehouseDto MapFromEntityToDto(ShippingWarehouse entity)
@@ -88,6 +88,33 @@ namespace Application.Services.ShippingWarehouses
             return query
                 .OrderBy(i => i.WarehouseName)
                 .ThenBy(i => i.Id);
+        }
+
+        private ValidateResult ValidateDto(ShippingWarehouseDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            List<string> errors = new List<string>();
+
+            if (string.IsNullOrEmpty(dto.Code))
+            {
+                errors.Add("emptyCode".Translate(lang));
+            }
+
+            if (string.IsNullOrEmpty(dto.WarehouseName))
+            {
+                errors.Add("emptyWarehouseName".Translate(lang));
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<ShippingWarehouse>()
+                                            .Where(x => x.Code == dto.Code && x.Id.ToString() != dto.Id)
+                                            .Any();
+            if (hasDuplicates)
+            {
+                errors.Add("duplicateWarehouseCode".Translate(lang));
+            }
+
+            return new ValidateResult(string.Join(' ', errors));
         }
     }
 }

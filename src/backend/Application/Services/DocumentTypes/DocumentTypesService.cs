@@ -2,7 +2,6 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.DocumentTypes;
-using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System.Collections.Generic;
@@ -15,9 +14,11 @@ namespace Application.Services.DocumentTypes
     {
         public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             entity.Name = dto.Name;
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override IEnumerable<LookUpDto> ForSelect()

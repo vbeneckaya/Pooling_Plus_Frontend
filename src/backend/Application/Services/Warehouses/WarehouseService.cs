@@ -1,16 +1,15 @@
-using System;
 using Application.Shared;
-using Domain.Persistables;
-using Domain.Services.Warehouses;
-using System.Linq;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Queries;
-using System.Collections.Generic;
-using Domain.Shared;
 using DAL.Services;
+using Domain.Persistables;
 using Domain.Services.UserProvider;
-using Domain.Services.Translations;
+using Domain.Services.Warehouses;
+using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Warehouses
 {
@@ -37,7 +36,7 @@ namespace Application.Services.Warehouses
             }
         }
 
-        public override void MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
+        public override ValidateResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -49,7 +48,8 @@ namespace Application.Services.Warehouses
             entity.PickingTypeId = string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId);
             entity.LeadtimeDays = dto.LeadtimeDays;
             entity.CustomerWarehouse = dto.CustomerWarehouse;
-            /*end of map dto to entity fields*/
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)

@@ -3,6 +3,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.UserProvider;
+using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Application.Services.Injections
     {
         public InjectionsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(Injection entity, InjectionDto dto)
+        public override ValidateResult MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -21,6 +22,8 @@ namespace Application.Services.Injections
             entity.FileName = dto.FileName;
             entity.Status = dto.Status;
             entity.ProcessTimeUtc = dto.ProcessTimeUtc;
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override InjectionDto MapFromEntityToDto(Injection entity)

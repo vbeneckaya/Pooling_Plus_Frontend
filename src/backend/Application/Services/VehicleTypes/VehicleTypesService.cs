@@ -1,7 +1,6 @@
 ﻿using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Shared;
@@ -15,11 +14,13 @@ namespace Application.Services.VehicleTypes
     {
         public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Name = dto.Name;
+
+            return new ValidateResult(entity.Id.ToString());
         }
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)
