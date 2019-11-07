@@ -18,7 +18,12 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    useEffect(
+    const handleChangeSoldTo = (e, {name, value}) => {
+        const item = valuesList.find(item => item.value === value) || {};
+        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+    };
+
+    /*useEffect(
         () => {
             const item = valuesList.find(item => item.value === form.soldTo) || {};
             onChange(null, { name: 'clientName', value: item.warehouseName });
@@ -32,7 +37,7 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
             onChange(null, { name: 'deliveryAddress', value: item.address });
         },
         [form.clientName],
-    );
+    );*/
 
     useEffect(
         () => {
@@ -128,7 +133,7 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                                 textValue={error && form['soldTo']}
                                                 error={error}
                                                 source="soldTo"
-                                                onChange={onChange}
+                                                onChange={handleChangeSoldTo}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
