@@ -1,4 +1,5 @@
 ﻿using Application.Shared;
+using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.ShippingWarehouses;
@@ -31,7 +32,15 @@ namespace Application.Services.ShippingWarehouses
 
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
+            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
+            {
+                var dbSet = _dataService.GetDbSet<ShippingWarehouse>();
+                return dbSet.GetById(id);
+            }
+            else
+            {
+                return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
+            }
         }
 
         public override void MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
