@@ -183,13 +183,12 @@ namespace Application.Shared
 
                 _dataService.SaveChanges();
 
-                _logger.LogInformation($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+                _logger.LogInformation($"Р—Р°РїРёСЃСЊ {entityFromDb.Id} РІ СЃРїСЂР°РІРѕС‡РЅРёРєРµ {typeof(TEntity)} {(isNew ? "СЃРѕР·РґР°РЅР°" : "РѕР±РЅРѕРІР»РµРЅР°")}.");
             }
             else
             {
-                _logger.LogInformation($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+                _logger.LogInformation($"РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ Р·Р°РїРёСЃСЊ РІ СЃРїСЂР°РІРѕС‡РЅРёРє {typeof(TEntity)}: {result.Error}.");
             }
-
 
             return result;
         }
