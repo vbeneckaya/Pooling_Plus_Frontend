@@ -112,6 +112,7 @@ class Card extends Component {
                                 return (
                                     <FormField
                                         column={column}
+                                        key={column.name}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />

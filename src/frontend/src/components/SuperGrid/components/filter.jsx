@@ -130,6 +130,7 @@ class Filter extends Component {
                 {columns &&
                     columns.map((x, i) => (
                         <Resizable
+                            key={`resizable_${x.name}`}
                             width={widths[i] || 100}
                             height={0}
                             onResize={(e, { size }) => this.handleResize(e, { size, index: i })}
