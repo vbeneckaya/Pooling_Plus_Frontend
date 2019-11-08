@@ -92,6 +92,8 @@ namespace API
             services.SyncTranslations();
 
             services.AddScoped<IUserProvider, UserProvider>();
+
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger, dispose: true));
         }
 
         private static string GetXmlCommentsPath()

@@ -188,7 +188,7 @@ namespace Domain.Extensions
         {
             if (string.IsNullOrEmpty(value)) return null;
 
-            return (TEnum?)Enum.Parse(typeof(TEnum), value);
+            return (TEnum?)Enum.Parse(typeof(TEnum), value, true);
         }
     }
 }
