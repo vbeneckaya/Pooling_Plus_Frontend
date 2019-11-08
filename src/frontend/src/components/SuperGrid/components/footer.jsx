@@ -51,7 +51,7 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
     return (
         <Grid className="grid-footer-panel" columns="2">
             <Grid.Row>
-                <Grid.Column>
+                <Grid.Column width={10}>
                     {gridName === ORDERS_GRID ? (
                         <Popup
                             trigger={
@@ -72,11 +72,11 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                             className="from-popup"
                         />
                     ) : null}
-                    <div style={{ paddingTop: '4px' }}>
+                    <div className="footer_actions">
                         {groupActions
                             ? groupActions().map(action => (
-                                  <span key={action.name}>
                                       <Button
+                                          key={action.name}
                                           color={action.color}
                                           content={action.name}
                                           loading={action.loading}
@@ -88,12 +88,11 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                                               action.action(action.ids, clearSelectedRows)
                                           }
                                       />
-                                  </span>
                               ))
                             : null}
                     </div>
                 </Grid.Column>
-                <Grid.Column floated="right" width={5}>
+                <Grid.Column floated="right">
                     <Mass_changes gridName={gridName} load={() => load(false, true)} />
                 </Grid.Column>
             </Grid.Row>
