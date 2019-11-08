@@ -85,17 +85,17 @@ namespace Application.Shared
             return query.OrderBy(i => i.Id);
         }
 
-        public IEnumerable<ValidateResult> Import(IEnumerable<TListDto> entitiesFrom)
+        public ImportResult Import(IEnumerable<TListDto> entitiesFrom)
         {
-            var result = new List<ValidateResult>();
+            var result = new ImportResult();
             
-            foreach (var dto in entitiesFrom) 
-                result.Add(SaveOrCreateInner(dto, true));
+            foreach (var dto in entitiesFrom)
+                result.Results.Add(SaveOrCreateInner(dto, true));
 
             return result;
         }
         
-        public ValidateResult ImportFromExcel(Stream fileStream)
+        public ImportResult ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
@@ -106,17 +106,15 @@ namespace Application.Shared
             if (excelMapper.Errors.Any(e => e.IsError))
             {
                 string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
+                var result = new ImportResult();
+                result.Results.AddRange(excelMapper.Errors);
+
+                return result;
             }
 
             var importResult = Import(dtos);
-            if (importResult.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
-            }
 
-            return new ValidateResult();
+            return importResult;
         }
 
         public Stream ExportToExcel()
@@ -175,10 +173,12 @@ namespace Application.Shared
                 if (isNew)
                 {
                     dbSet.Add(entityFromDb);
+                    result.ResultType = ValidateResultType.Created;
                 }
                 else
                 {
                     dbSet.Update(entityFromDb);
+                    result.ResultType = ValidateResultType.Updated;
                 }
 
                 _dataService.SaveChanges();

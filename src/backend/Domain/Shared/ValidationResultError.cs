@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Domain.Shared
 {
-    public class ValidationResultError
+    public class ValidationResultItem
     {
         public string Name { get; set; }
 
         public string Message {get; set; }
 
-        public ValidationErrorType ErrorType { get; set; }
+        public ValidationErrorType ResultType { get; set; }
     }
 
     public enum ValidationErrorType

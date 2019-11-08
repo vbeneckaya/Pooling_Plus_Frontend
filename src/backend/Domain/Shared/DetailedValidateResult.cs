@@ -7,12 +7,12 @@ namespace Domain.Shared
     {
         public DetailedValidattionResult() { }
 
-        public List<ValidationResultError> Errors { get; set; } = new List<ValidationResultError>();
+        public List<ValidationResultItem> Errors { get; set; } = new List<ValidationResultItem>();
 
         public override string Error {
             get 
             {
-                return this.Errors.SelectMany(i => i.Message).Join(", ");
+                return string.Join(", ", this.Errors.SelectMany(i => i.Message));
             }
             set {  }
         }
@@ -27,11 +27,11 @@ namespace Domain.Shared
 
         public void AddError(string name, string message, ValidationErrorType errorType)
         {
-            this.Errors.Add(new ValidationResultError
+            this.Errors.Add(new ValidationResultItem
             { 
                 Name = name,
                 Message = message,
-                ErrorType = errorType
+                ResultType = errorType
             });
         }
     }
