@@ -21,9 +21,11 @@ namespace Domain.Shared
             Id = id;
         }
 
-        public string Error { get; set; }
+        public virtual string Error { get; set; }
+
         public string Id { get; set; }
-        public bool IsError
+
+        public virtual bool IsError
         {
             get
             {

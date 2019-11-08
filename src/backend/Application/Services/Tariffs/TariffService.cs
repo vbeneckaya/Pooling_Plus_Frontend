@@ -80,16 +80,16 @@ namespace Application.Services.Tariffs
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            List<string> errors = new List<string>();
+            DetailedValidattionResult result = new DetailedValidattionResult();
 
             if (string.IsNullOrEmpty(dto.ShipmentCity))
             {
-                errors.Add("emptyShipmentCity".Translate(lang));
+                result.AddError("ShipmentCity", "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.DeliveryCity))
             {
-                errors.Add("emptyDeliveryCity".Translate(lang));
+                result.AddError("DeliveryCity", "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var existingRecord = this.FindByKey(dto);
@@ -97,10 +97,10 @@ namespace Application.Services.Tariffs
 
             if (hasDuplicates)
             {
-                errors.Add("duplicateTariffs".Translate(lang));
+                result.AddError("duplicateTariffs", "duplicateTariffs".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return new ValidateResult(string.Join(' ', errors));
+            return result;
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
