@@ -27,6 +27,7 @@ namespace Domain.Shared
 
         public void AddError(string name, string message, ValidationErrorType errorType)
         {
+            this.ResultType = ValidateResultType.Error;
             this.Errors.Add(new ValidationResultItem
             { 
                 Name = name,

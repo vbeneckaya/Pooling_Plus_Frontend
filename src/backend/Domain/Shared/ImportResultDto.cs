@@ -8,16 +8,6 @@ namespace Domain.Shared
 {
     public class ImportResultDto
     {
-        public string CreatedCountMessage { get; set; }
-
-        public string UpdatedCountMessage { get; set; }
-
-        public string RequiredErrorMessage { get; set; }
-
-        public string InvalidDictionaryValueErrorMessage { get; set; }
-
-        public string DuplicatedRecordErrorMessage { get; set; }
-
-        public string InvalidFormatErrorCountMessage { get; set; }
+        public string Message { get; set; }
     }
 }

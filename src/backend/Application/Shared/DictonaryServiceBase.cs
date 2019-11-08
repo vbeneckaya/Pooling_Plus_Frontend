@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -121,14 +122,35 @@ namespace Application.Shared
         private ImportResultDto MapFromImportResult(ImportResult importResult)
         {
             var user = _userProvider.GetCurrentUser();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("validation.createdCountMessage".Translate(user.Language, importResult.CreatedCount));
+            sb.AppendLine("validation.updatedCountMessage".Translate(user.Language, importResult.UpdatedCount));
+
+            if (importResult.DuplicatedRecordErrorsCount > 0)
+            { 
+                sb.AppendLine("validation.duplicatedRecordErrorMessage".Translate(user.Language, importResult.DuplicatedRecordErrorsCount));
+            }
+
+            if (importResult.InvalidDictionaryValueErrorsCount > 0)
+            {
+                sb.AppendLine("validation.invalidDictionaryValueErrorMessage".Translate(user.Language, importResult.InvalidDictionaryValueErrorsCount));
+            }
+
+            if (importResult.InvalidValueFormatErrorsCount > 0)
+            {
+                sb.AppendLine("validation.invalidFormatErrorCountMessage".Translate(user.Language, importResult.InvalidValueFormatErrorsCount));
+            }
+
+            if (importResult.RequiredErrorsCount > 0)
+            {
+                sb.AppendLine("validation.requiredErrorMessage".Translate(user.Language, importResult.RequiredErrorsCount));
+            }
+
             return new ImportResultDto
             {
-                CreatedCountMessage = "createdCountMessage".Translate(user.Language, importResult.CreatedCount),
-                UpdatedCountMessage = "updatedCountMessage".Translate(user.Language, importResult.UpdatedCount),
-                DuplicatedRecordErrorMessage = "duplicatedRecordErrorMessage".Translate(user.Language, importResult.DuplicatedRecordErrorsCount),
-                InvalidDictionaryValueErrorMessage = "invalidDictionaryValueErrorMessage".Translate(user.Language, importResult.InvalidDictionaryValueErrorsCount),
-                InvalidFormatErrorCountMessage = "invalidFormatErrorCountMessage".Translate(user.Language, importResult.InvalidValueFormatErrorsCount),
-                RequiredErrorMessage = "requiredErrorMessage".Translate(user.Language, importResult.RequiredErrorsCount)
+                Message = sb.ToString()
             };
         }
 
