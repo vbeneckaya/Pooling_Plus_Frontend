@@ -7,6 +7,7 @@ using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using Microsoft.Extensions.Logging;
@@ -85,17 +86,17 @@ namespace Application.Shared
             return query.OrderBy(i => i.Id);
         }
 
-        public ImportResult Import(IEnumerable<TListDto> entitiesFrom)
+        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
         {
             var result = new ImportResult();
             
             foreach (var dto in entitiesFrom)
                 result.Results.Add(SaveOrCreateInner(dto, true));
 
-            return result;
+            return MapFromImportResult(result);
         }
         
-        public ImportResult ImportFromExcel(Stream fileStream)
+        public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
@@ -109,12 +110,26 @@ namespace Application.Shared
                 var result = new ImportResult();
                 result.Results.AddRange(excelMapper.Errors);
 
-                return result;
+                return MapFromImportResult(result);
             }
 
             var importResult = Import(dtos);
 
             return importResult;
+        }
+
+        private ImportResultDto MapFromImportResult(ImportResult importResult)
+        {
+            var user = _userProvider.GetCurrentUser();
+            return new ImportResultDto
+            {
+                CreatedCountMessage = "createdCountMessage".Translate(user.Language, importResult.CreatedCount),
+                UpdatedCountMessage = "updatedCountMessage".Translate(user.Language, importResult.UpdatedCount),
+                DuplicatedRecordErrorMessage = "duplicatedRecordErrorMessage".Translate(user.Language, importResult.DuplicatedRecordErrorsCount),
+                InvalidDictionaryValueErrorMessage = "invalidDictionaryValueErrorMessage".Translate(user.Language, importResult.InvalidDictionaryValueErrorsCount),
+                InvalidFormatErrorCountMessage = "invalidFormatErrorCountMessage".Translate(user.Language, importResult.InvalidValueFormatErrorsCount),
+                RequiredErrorMessage = "requiredErrorMessage".Translate(user.Language, importResult.RequiredErrorsCount)
+            };
         }
 
         public Stream ExportToExcel()

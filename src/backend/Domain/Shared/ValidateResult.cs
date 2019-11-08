@@ -16,7 +16,7 @@ namespace Domain.Shared
 
         public ValidateResult(string error)
         {
-            Error = error;
+            ResultType = string.IsNullOrEmpty(Error) ? ValidateResultType.Updated : ValidateResultType.Error;
             ResultType = ValidateResultType.Error;
         }
 

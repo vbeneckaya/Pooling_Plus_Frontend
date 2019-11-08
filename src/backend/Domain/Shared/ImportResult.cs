@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Services.Translations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,8 @@ namespace Domain.Shared
 {
     public class ImportResult
     {
+        private readonly string _locale;
+
         public List<ValidateResult> Results { get; } = new List<ValidateResult>();
 
         public int ErrorsCount
@@ -81,12 +84,48 @@ namespace Domain.Shared
             }
         }
 
+        public int InvalidValueFormatErrorsCount
+        {
+            get
+            {
+                return this.DetailedResults
+                    .Where(i => i.Errors.Any(e => e.ResultType == ValidationErrorType.InvalidValueFormat))
+                    .Count();
+            }
+        }
+
+        public string RequiredErrorsMessage
+        {
+            get
+            {
+                return "requiredErrorsMessage".Translate(_locale, RequiredErrorsCount);
+            }
+        }
+
+        public string InvalidDictionaryValueErrorsMessage
+        {
+            get
+            {
+                return "invalidDictionaryValueErrorsMessage".Translate(_locale, InvalidDictionaryValueErrorsCount);
+            }
+        }
+
+        public string DuplicatedRecordErrorsMEssage
+        {
+            get
+            {
+                return "invalidDictionaryValueErrorsMessage".Translate(_locale, RequiredErrorsCount);
+            }
+        }
+
+
+
         public bool IsError 
         {
             get 
             {
                 return Results.Any(i => i.IsError);
-            } 
+            }
         }
     }
 }
