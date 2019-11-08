@@ -442,8 +442,8 @@ namespace Application.Services.Shippings
                 .ToList();
 
             var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id);
+                .Where(i => !string.IsNullOrEmpty(i.Title) && i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
 
             var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
