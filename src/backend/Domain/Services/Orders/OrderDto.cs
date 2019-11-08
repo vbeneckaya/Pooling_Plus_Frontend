@@ -7,7 +7,7 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2)]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
         public string Status { get; set; }
 
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
