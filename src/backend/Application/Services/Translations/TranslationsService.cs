@@ -4,6 +4,7 @@ using Domain.Persistables;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ILogger<TranslationsService> logger) : base(dataService, userProvider, logger) { }
 
         public IEnumerable<TranslationDto> GetAll()
         {

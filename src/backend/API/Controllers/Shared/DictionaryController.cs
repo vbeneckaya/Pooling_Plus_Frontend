@@ -61,7 +61,7 @@ namespace API.Controllers.Shared
         /// Импортировать
         /// </summary>
         [HttpPost("import")]
-        public IEnumerable<ValidateResult> Import([FromBody] IEnumerable<TDto> form)
+        public ImportResultDto Import([FromBody] IEnumerable<TDto> form)
         {
             return _service.Import(form);
         }
@@ -70,7 +70,7 @@ namespace API.Controllers.Shared
         /// Импортировать из excel
         /// </summary>
         [HttpPost("importFromExcel")]
-        public ValidateResult ImportFromExcel()
+        public ImportResultDto ImportFromExcel()
         {
             var file = HttpContext.Request.Form.Files.FirstOrDefault();
             using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))

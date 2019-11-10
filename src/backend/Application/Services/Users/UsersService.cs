@@ -7,6 +7,7 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
 using Domain.Shared;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ILogger<UsersService> logger) : base(dataService, userProvider, logger) { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
