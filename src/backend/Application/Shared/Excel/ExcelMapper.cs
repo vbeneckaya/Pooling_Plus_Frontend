@@ -62,7 +62,7 @@ namespace Application.Shared.Excel
                 columnTitles.Add(worksheet.Cells[headRowIndex, colIndex]?.Value?.ToString());
             }
 
-            columnTitles = Unlocalize(columnTitles).ToList();
+            columnTitles = Unlocalize(columnTitles, _columns.Keys).ToList();
 
             FillColumnOrder(columnTitles);
 
@@ -146,8 +146,9 @@ namespace Application.Shared.Excel
             }
         }
 
-        private IEnumerable<string> Unlocalize(IEnumerable<string> titles)
+        private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<string> fields)
         {
+            var fieldNamesSet = new HashSet<string>(fields.Select(x => x.ToLower()));
             foreach (string title in titles)
             {
                 if (string.IsNullOrEmpty(title))
@@ -156,7 +157,7 @@ namespace Application.Shared.Excel
                 }
                 else
                 {
-                    Translation local = _translations.FirstOrDefault(t => t.Ru == title || t.En == title);
+                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.Contains(t.Name.ToLower()));
                     yield return (local?.Name ?? title)?.ToLower();
                 }
             }
