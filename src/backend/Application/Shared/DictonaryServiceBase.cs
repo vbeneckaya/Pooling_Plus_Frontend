@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -11,8 +6,13 @@ using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Application.Shared
 {
@@ -24,13 +24,10 @@ namespace Application.Shared
         protected readonly ICommonDataService _dataService;
         protected readonly IUserProvider _userProvider;
 
-        protected readonly ILogger _logger;
-
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ILogger logger)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider)
         {
             _dataService = dataService;
             _userProvider = userProvider;
-            _logger = logger;
         }
 
         public TListDto Get(Guid id)
@@ -220,11 +217,11 @@ namespace Application.Shared
 
                 _dataService.SaveChanges();
 
-                _logger.LogInformation($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+                Log.Information($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
             }
             else
             {
-                _logger.LogInformation($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
             }
 
             return result;

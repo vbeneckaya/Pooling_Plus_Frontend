@@ -12,7 +12,7 @@ namespace Domain.Shared
         public override string Error {
             get 
             {
-                return string.Join(", ", this.Errors.SelectMany(i => i.Message));
+                return string.Join(", ", this.Errors.Select(i => i.Message));
             }
             set {  }
         }

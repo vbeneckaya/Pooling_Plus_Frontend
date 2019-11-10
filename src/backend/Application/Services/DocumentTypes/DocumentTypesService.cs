@@ -4,7 +4,6 @@ using Domain.Persistables;
 using Domain.Services.DocumentTypes;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace Application.Services.DocumentTypes
 
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
-        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<DocumentTypesService> logger) : base(dataService, userProvider, logger) { }
+        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {

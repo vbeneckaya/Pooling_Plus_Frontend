@@ -10,16 +10,14 @@ using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ILogger<TariffsService> logger) : base(dataService, userProvider, logger) { }
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
@@ -84,12 +82,12 @@ namespace Application.Services.Tariffs
 
             if (string.IsNullOrEmpty(dto.ShipmentCity))
             {
-                result.AddError("ShipmentCity", "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.DeliveryCity))
             {
-                result.AddError("DeliveryCity", "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var existingRecord = this.FindByKey(dto);
@@ -216,22 +214,14 @@ namespace Application.Services.Tariffs
 
         public override Tariff FindByKey(TariffDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
-            {
-                var dbSet = _dataService.GetDbSet<Tariff>();
-                return dbSet.GetById(id);
-            }
-            else
-            {
-                return _dataService.GetDbSet<Tariff>()
-                    .Where(i =>
-                        i.CarrierId == dto.CarrierId.ToGuid()
-                     && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
-                     && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
-                     && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
-                     && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity)
-                    .FirstOrDefault();
-            }
+            return _dataService.GetDbSet<Tariff>()
+                .Where(i =>
+                    i.CarrierId == dto.CarrierId.ToGuid()
+                    && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
+                    && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
+                    && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
+                    && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity)
+                .FirstOrDefault();
         }
     }
 }

@@ -5,7 +5,6 @@ using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace Application.Services.ShippingWarehouses
 {
     public class ShippingWarehousesService : DictonaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
     {
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<ShippingWarehousesService> logger) : base(dataService, userProvider, logger)
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider)
         {
         }
 
@@ -100,16 +99,16 @@ namespace Application.Services.ShippingWarehouses
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            List<string> errors = new List<string>();
+            DetailedValidattionResult result = new DetailedValidattionResult();
 
             if (string.IsNullOrEmpty(dto.Code))
             {
-                errors.Add("emptyCode".Translate(lang));
+                result.AddError(nameof(dto.Code), "emptyCode".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.WarehouseName))
             {
-                errors.Add("emptyWarehouseName".Translate(lang));
+                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var hasDuplicates = _dataService.GetDbSet<ShippingWarehouse>()
@@ -117,10 +116,10 @@ namespace Application.Services.ShippingWarehouses
                                             .Any();
             if (hasDuplicates)
             {
-                errors.Add("duplicateWarehouseCode".Translate(lang));
+                result.AddError(nameof(dto.Code), "duplicateWarehouseCode".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return new ValidateResult(string.Join(' ', errors));
+            return result;
         }
     }
 }

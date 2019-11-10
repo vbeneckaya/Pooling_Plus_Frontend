@@ -4,7 +4,6 @@ using Domain.Persistables;
 using Domain.Services.TaskProperties;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Application.Services.TaskProperties
 {
     public class TaskPropertiesService : DictonaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
     {
-        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<TaskPropertiesService> logger) : base(dataService, userProvider, logger) { }
+        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override ValidateResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
         {

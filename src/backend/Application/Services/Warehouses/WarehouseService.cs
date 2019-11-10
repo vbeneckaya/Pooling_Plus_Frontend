@@ -7,7 +7,6 @@ using Domain.Persistables;
 using Domain.Services.UserProvider;
 using Domain.Services.Warehouses;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace Application.Services.Warehouses
 {
     public class WarehousesService : DictonaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
     {
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<WarehousesService> logger) : base(dataService, userProvider, logger) { }
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public WarehouseDto GetBySoldTo(string soldToNumber)
         {

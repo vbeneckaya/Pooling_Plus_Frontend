@@ -4,7 +4,6 @@ using Domain.Persistables;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Shared;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ILogger<VehicleTypesService> logger) : base(dataService, userProvider, logger) { }
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
         public override ValidateResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
