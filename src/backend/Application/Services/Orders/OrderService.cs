@@ -70,6 +70,11 @@ namespace Application.Services.Orders
             return result;
         }
 
+        public override string GetNumber(OrderFormDto dto)
+        {
+            return dto?.OrderNumber;
+        }
+
         public OrderFormDto GetFormByNumber(string orderNumber)
         {
             var entity = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == orderNumber).FirstOrDefault();

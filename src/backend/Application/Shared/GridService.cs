@@ -7,6 +7,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.FieldProperties;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
@@ -30,6 +31,8 @@ namespace Application.Shared
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
         public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
+
+        public abstract string GetNumber(TFormDto dto);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
         public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm);
@@ -369,11 +372,21 @@ namespace Application.Shared
             var importResult = Import(dtos);
 
             string errors = string.Join(" ", importResult.Where(x => x.IsError).Select(x => x.Error));
-            return new AppActionResult
+            var result = new AppActionResult
             {
                 IsError = !string.IsNullOrWhiteSpace(errors),
                 Message = errors
             };
+
+            if (!result.IsError)
+            {
+                string lang = _userIdProvider.GetCurrentUser()?.Language;
+                string entityType = typeof(TEntity).Name.ToLower();
+                string numbers = string.Join(", ", dtos.Select(GetNumber));
+                result.Message = $"field_bulk_updated_{entityType}".Translate(lang, numbers);
+            }
+
+            return result;
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct

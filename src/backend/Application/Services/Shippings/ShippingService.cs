@@ -70,6 +70,11 @@ namespace Application.Services.Shippings
             return result;
         }
 
+        public override string GetNumber(ShippingFormDto dto)
+        {
+            return dto?.ShippingNumber;
+        }
+
         public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
         {
             var result = _dataService.GetDbSet<Shipping>()
