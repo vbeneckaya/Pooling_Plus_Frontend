@@ -35,13 +35,13 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(s => s.ConfirmedPalletsCount, shippingConfirmedPalletsCount);
                     setter.SaveHistoryLog();
                 }
+            }
 
-                if (newValue != order.PalletsCount)
-                {
-                    var orderSetter = new FieldSetter<Order>(order, _historyService);
-                    orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
-                    orderSetter.SaveHistoryLog();
-                }
+            if (newValue != order.PalletsCount)
+            {
+                var orderSetter = new FieldSetter<Order>(order, _historyService);
+                orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+                orderSetter.SaveHistoryLog();
             }
         }
 

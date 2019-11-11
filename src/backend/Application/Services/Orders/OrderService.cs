@@ -202,6 +202,8 @@ namespace Application.Services.Orders
 
         public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
         {
+            dto.ArticlesCount = (dto.Items?.Count).GetValueOrDefault();
+
             ValidateResult result = MapFromDtoToEntity(entity, dto);
             if (!result.IsError)
             {
