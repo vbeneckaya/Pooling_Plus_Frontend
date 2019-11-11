@@ -12,7 +12,7 @@ namespace Domain.Services.Roles
 
         IEnumerable<PermissionInfo> GetAllPermissions();
 
-        IEnumerable<string> GetAllActions();
+        RoleActionsDto GetAllActions();
 
         RoleDto MapFromEntityToDto(Role entity);
     }

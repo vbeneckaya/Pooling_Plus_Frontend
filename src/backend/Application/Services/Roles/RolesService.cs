@@ -108,14 +108,23 @@ namespace Application.Services.Roles
                 });
         }
 
-        public IEnumerable<string> GetAllActions()
+        public RoleActionsDto GetAllActions()
         {
-            var orderAction = typeof(IAction<Order>);
-            var shippingAction = typeof(IAction<Shipping>);
+            var result = new RoleActionsDto
+            {
+                OrderActions = GetActions<Order>(),
+                ShippingActions = GetActions<Shipping>()
+            };
+            return result;
+        }
+
+        private IEnumerable<string> GetActions<TEntity>()
+        {
+            var actionType = typeof(IAction<TEntity>);
             var actions = AppDomain.CurrentDomain
                                    .GetAssemblies()
                                    .SelectMany(s => s.GetTypes())
-                                   .Where(p => orderAction.IsAssignableFrom(p) || shippingAction.IsAssignableFrom(p));
+                                   .Where(p => actionType.IsAssignableFrom(p));
             return actions.Select(x => x.Name.ToLowerFirstLetter());
         }
     }
