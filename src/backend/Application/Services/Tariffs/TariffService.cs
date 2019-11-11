@@ -90,6 +90,11 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
+            if (string.IsNullOrEmpty(dto.CarrierId))
+            {
+                result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
             var existingRecord = this.FindByKey(dto);
             var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
 
@@ -203,9 +208,14 @@ namespace Application.Services.Tariffs
                 .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
                 .ToList();
 
+            var searchDateFormat = "dd.MM.yyyy HH:mm";
+
             return query.Where(i =>
                    transportCompanies.Any(t => t == i.CarrierId)
                 || vehicleTypes.Any(t => t == i.VehicleTypeId)
+                || tarifficationTypes.Contains(i.TarifficationType)
+                || i.StartWinterPeriod.HasValue && i.StartWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
+                || i.EndWinterPeriod.HasValue && i.EndWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
                 || tarifficationTypes.Contains(i.TarifficationType)
                 || i.ShipmentCity.ToLower().Contains(search)
                 || i.DeliveryCity.ToLower().Contains(search)
