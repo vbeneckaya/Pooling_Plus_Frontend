@@ -50,6 +50,7 @@
         border-bottom: 1px solid #ddd !important;
         font-size: 12.5px !important;
         background-attachment: local !important;
+        word-break: break-word;
     }
 
     .actions-column {
@@ -266,6 +267,7 @@
     filter: none !important;
     min-width: 250px!important;
     max-width: 100% !important;
+    position: absolute !important;
 
     .separator {
         display: flex;

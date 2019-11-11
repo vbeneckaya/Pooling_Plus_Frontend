@@ -43,7 +43,7 @@ const Control = props => {
     return React.cloneElement(getTypeFacet[type], props);
 };
 
-const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, source}) => {
+const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, source, index}) => {
     const { t } = useTranslation();
     let sort = null;
 
@@ -96,7 +96,8 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
                                 onChange={setFilter}
                             />
                         }
-                        position='bottom center'
+                        pinned
+                        position={index === 0 ? "bottom left" : "bottom right"}
                         className="from-popup"
                         on="click"
                     />

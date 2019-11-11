@@ -145,6 +145,7 @@ class Filter extends Component {
                                 {/*<Control key={'facet' + x.name} column={x} {...this.props} />*/}
                                 <FacetField
                                     key={'facet' + x.name}
+                                    index={i}
                                     {...x}
                                     {...this.props}
                                 />
