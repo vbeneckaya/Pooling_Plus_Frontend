@@ -18,7 +18,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public PalletsCountHandler(ICommonDataService dataService, IHistoryService historyService, bool isManual)
         {
-            this._dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             _isManual = isManual;
         }
@@ -48,9 +48,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            var orderSetter = new FieldSetter<Order>(order, _historyService);
-            orderSetter.UpdateField(s => s.OrderChangeDate, DateTime.Now);
-            orderSetter.SaveHistoryLog();
+            order.OrderChangeDate = DateTime.Now;
         }
 
         public string ValidateChange(Order order, int? oldValue, int? newValue)

@@ -193,7 +193,6 @@ namespace Tasks.Orders
                     dto.DeliveryCity = deliveryCity;
                     dto.DeliveryRegion = null;
                     dto.PickingTypeId = null;
-                    dto.ShippingDate = null;
                     dto.TransitDays = null;
                 }
                 else
@@ -201,6 +200,9 @@ namespace Tasks.Orders
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
                     updWarehouses.Add(deliveryWarehouse);
+
+                    dto.DeliveryCity = deliveryWarehouse.City;
+                    dto.DeliveryAddress = deliveryWarehouse.Address;
                 }
 
                 if (isNew)

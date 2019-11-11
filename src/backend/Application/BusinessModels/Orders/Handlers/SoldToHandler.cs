@@ -1,10 +1,8 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Shared;
-using DAL;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using System;
 using System.Linq;
@@ -34,7 +32,6 @@ namespace Application.BusinessModels.Orders.Handlers
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
 
                     setter.UpdateField(o => o.TransitDays, soldToWarehouse.LeadtimeDays);
-                    setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
 
                     setter.UpdateField(o => o.DeliveryWarehouseId, soldToWarehouse.Id, ignoreChanges: true);
                     setter.UpdateField(o => o.DeliveryAddress, soldToWarehouse.Address);
@@ -45,10 +42,10 @@ namespace Application.BusinessModels.Orders.Handlers
                 {
                     order.DeliveryWarehouseId = null;
                 }
-
             }
 
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+            setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
 
             setter.SaveHistoryLog();
         }

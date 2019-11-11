@@ -36,7 +36,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 setter.UpdateField(o => o.ShippingDate, newValue?.AddDays(0 - order.TransitDays ?? 0));
             }
             
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
             setter.SaveHistoryLog();
         }
 

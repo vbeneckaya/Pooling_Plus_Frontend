@@ -130,23 +130,23 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService));
-            setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount, new ArticlesCountHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1), new BoxesCountHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1), new ConfirmedBoxesCountHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ArticlesCount, dto.ArticlesCount, new ArticlesCountHandler());
+            setter.UpdateField(e => e.BoxesCount, Round(dto.BoxesCount, 1), new BoxesCountHandler());
+            setter.UpdateField(e => e.ConfirmedBoxesCount, Round(dto.ConfirmedBoxesCount, 1), new ConfirmedBoxesCountHandler());
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler(_dataService, _historyService, !isInjection));
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService));
             setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler());
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
-            setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
+            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
@@ -162,8 +162,6 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.PlannedReturnDate, ParseDateTime(dto.PlannedReturnDate));
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
-            setter.UpdateField(e => e.OrderCreationDate, ParseDateTime(dto.OrderCreationDate));
-            setter.UpdateField(e => e.OrderChangeDate, ParseDateTime(dto.OrderChangeDate));
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
 
             /*end of map dto to entity fields*/
@@ -292,7 +290,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
             setter.UpdateField(e => e.OrderCreationDate, DateTime.Now, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderChangeDate, DateTime.Now);
+            setter.UpdateField(e => e.OrderChangeDate, DateTime.Now, ignoreChanges: true);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(e => e.DeliveryStatus, VehicleState.VehicleEmpty);
         }
