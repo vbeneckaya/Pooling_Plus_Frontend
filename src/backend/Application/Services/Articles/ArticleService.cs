@@ -71,7 +71,7 @@ namespace Application.Services.Articles
             entity.GrossPalletWeightG = dto.GrossPalletWeightG;
             entity.NetWeightPalletsG = dto.NetWeightPalletsG;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override ArticleDto MapFromEntityToDto(Article entity)
@@ -125,7 +125,7 @@ namespace Application.Services.Articles
         protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
         {
             return query
-                .OrderBy(i => i.Spgr)
+                .OrderBy(i => i.Description)
                 .ThenBy(i => i.Id);
         }
     }

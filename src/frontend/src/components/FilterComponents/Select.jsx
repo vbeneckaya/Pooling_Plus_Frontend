@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Input, Loader, Popup } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
@@ -34,14 +34,27 @@ class Facet extends React.Component {
         this.clearFilter();
     }
 
+    handleRestClick = () => {
+        const {name, onChange} = this.props;
+
+        if (onChange !== undefined) onChange(null, { name: name, value: null });
+    };
+
+    toggle = (e, { value }) => {
+        const {name, onChange} = this.props;
+        let values = this.props.value ? this.props.value.split('|') : [];
+
+        if (values.some(x => x === value)) {
+            values.splice(values.indexOf(value), 1);
+        } else {
+            values.push(value);
+        }
+        if (onChange !== undefined) onChange(e, { name: name, value: values.join('|') });
+    };
+
     render() {
         const {
-            name,
-            text,
             value,
-            onChange,
-            sort,
-            setSort,
             valuesList = [],
             loading,
             t,
@@ -64,32 +77,28 @@ class Facet extends React.Component {
                 x => values.includes(x.value) || x.name.toLowerCase().includes(this.state.filter),
             );
 
-        const toggle = (e, { value }) => {
-            if (values.some(x => x === value)) {
-                values.splice(values.indexOf(value), 1);
-            } else {
-                values.push(value);
-            }
-            if (onChange !== undefined) onChange(e, { name: name, value: values.join('|') });
-        };
 
-        let content = (
-            <Form>
-                {/*<label className="label-in-popup">{t(name)}</label>*/}
-                <div>
-                    <Input
-                        fluid
-                        size="mini"
-                        icon="search"
-                        value={this.state.filter}
-                        onChange={this.setFilter}
-                    />
-                </div>
-                <div className="select-facet-values">
-                    <Dimmer active={loading} inverted>
-                        <Loader size="small">Loading</Loader>
-                    </Dimmer>
-                    {items &&
+        return (
+            <div className="facet-input">
+                <Form>
+                    {/*<label className="label-in-popup">{t(name)}</label>*/}
+                    <div>
+                        <Input
+                            fluid
+                            size="mini"
+                            icon="search"
+                            value={this.state.filter}
+                            onChange={this.setFilter}
+                        />
+                    </div>
+                    <div className="reset-selected">
+                        <span onClick={this.handleRestClick}>{t('reset_selected')}</span>
+                    </div>
+                    <div className="select-facet-values">
+                        <Dimmer active={loading} inverted>
+                            <Loader size="small">Loading</Loader>
+                        </Dimmer>
+                        {items &&
                         items.map(x => {
                             let label = <label>{x.name}</label>;
                             return (
@@ -100,61 +109,14 @@ class Facet extends React.Component {
                                     <Checkbox
                                         value={x.value}
                                         checked={values.includes(x.value)}
-                                        onChange={toggle}
+                                        onChange={this.toggle}
                                         label={label}
                                     />
                                 </Form.Field>
                             );
                         })}
-                </div>
-            </Form>
-        );
-
-        return (
-            <div className="facet-input">
-                {content}
-                {/*<Popup
-                    trigger={
-                        <Input
-                            fluid
-                            label={{ basic: true, content: '' }}
-                            labelPosition="right"
-                            onKeyPress={e => {
-                                e.preventDefault();
-                            }}
-                            placeholder={
-                                values.length > 0 ? values.length + ' ' + 'выбрано' : t(name)
-                            }
-                        />
-                    }
-                    content={content}
-                    on="click"
-                    hoverable
-                    className="from-popup"
-                    position="bottom left"
-                    onOpen={this.handleOpen}
-                    onClose={this.clearFilter}
-                />
-                <Button
-                    className={`sort-button sort-button-up ${
-                        sort === 'asc' ? 'sort-button-active' : ''
-                    }`}
-                    name={name}
-                    value="asc"
-                    onClick={setSort}
-                >
-                    <Icon name="caret up" />
-                </Button>
-                <Button
-                    className={`sort-button sort-button-down ${
-                        sort === 'desc' ? 'sort-button-active' : ''
-                    }`}
-                    name={name}
-                    value="desc"
-                    onClick={setSort}
-                >
-                    <Icon name="caret down" />
-                </Button>*/}
+                    </div>
+                </Form>
             </div>
         );
     }

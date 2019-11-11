@@ -21,7 +21,7 @@ namespace Application.Services.TaskProperties
             entity.TaskName = dto.TaskName;
             entity.Properties = dto.Properties;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TaskPropertyDto MapFromEntityToDto(TaskProperty entity)

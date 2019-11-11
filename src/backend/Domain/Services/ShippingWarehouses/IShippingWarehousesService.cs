@@ -4,5 +4,6 @@ namespace Domain.Services.ShippingWarehouses
 {
     public interface IShippingWarehousesService : IDictonaryService<ShippingWarehouse, ShippingWarehouseDto>
     {
+        ShippingWarehouse GetByCode(string code);
     }
 }

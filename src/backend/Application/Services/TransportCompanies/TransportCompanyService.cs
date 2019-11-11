@@ -35,7 +35,7 @@ namespace Application.Services.TransportCompanies
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)

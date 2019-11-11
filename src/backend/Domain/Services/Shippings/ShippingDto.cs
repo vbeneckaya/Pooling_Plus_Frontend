@@ -117,7 +117,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Text)]
         public string InvoiceNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2)]
+        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
         public string Status { get; set; }
 
         [FieldType(FieldType.Boolean)]

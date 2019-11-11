@@ -17,6 +17,11 @@ namespace Application.Services.ShippingWarehouses
         {
         }
 
+        public ShippingWarehouse GetByCode(string code)
+        {
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Code == code && x.IsActive);
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<ShippingWarehouse>().OrderBy(x => x.WarehouseName).ToList();
@@ -94,16 +99,16 @@ namespace Application.Services.ShippingWarehouses
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            List<string> errors = new List<string>();
+            DetailedValidattionResult result = new DetailedValidattionResult();
 
             if (string.IsNullOrEmpty(dto.Code))
             {
-                errors.Add("emptyCode".Translate(lang));
+                result.AddError(nameof(dto.Code), "emptyCode".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.WarehouseName))
             {
-                errors.Add("emptyWarehouseName".Translate(lang));
+                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var hasDuplicates = _dataService.GetDbSet<ShippingWarehouse>()
@@ -111,10 +116,10 @@ namespace Application.Services.ShippingWarehouses
                                             .Any();
             if (hasDuplicates)
             {
-                errors.Add("duplicateWarehouseCode".Translate(lang));
+                result.AddError(nameof(dto.Code), "duplicateWarehouseCode".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return new ValidateResult(string.Join(' ', errors));
+            return result;
         }
     }
 }

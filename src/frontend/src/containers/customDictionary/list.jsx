@@ -7,7 +7,7 @@ import TableInfo from '../../components/TableInfo';
 import {
     canCreateByFormSelector,
     canExportToExcelSelector,
-    canImportFromExcelSelector,
+    canImportFromExcelSelector, clearDictionaryInfo,
     columnsSelector,
     exportProgressSelector,
     exportToExcelRequest,
@@ -43,6 +43,7 @@ const List = ({
     exportFromExcel,
     importLoader,
     exportLoader,
+    clear
 }) => {
     const { params = {} } = match;
     const { name = '' } = params;
@@ -72,6 +73,7 @@ const List = ({
             totalCount={totalCount}
             title={name}
             list={list}
+            clear={clear}
             isImportBtn={isImportBtn}
             isExportBtn={isExportBtn}
             importFromExcel={handleImportFromExcel}
@@ -113,6 +115,9 @@ const mapDispatchToProps = dispatch => {
         exportFromExcel: params => {
             dispatch(exportToExcelRequest(params));
         },
+        clear: () => {
+            dispatch(clearDictionaryInfo())
+        }
     };
 };
 

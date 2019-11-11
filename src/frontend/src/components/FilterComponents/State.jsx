@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Loader, Popup } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -41,45 +41,22 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
         dispatch(clearLookup());
     };
 
+    const handleRestClick = () => {
+        if (onChange !== undefined) onChange(null, { name: name, value: null });
+    };
+
     const stateColors = useSelector(state => listSelector(state)) || [];
     const loading = useSelector(state => progressSelector(state));
 
-    let content = (
-        <Form style={{ minWidth: '50px', minHeight: '50px' }}>
-            <Dimmer active={loading} inverted>
-                <Loader size="small">Loading</Loader>
-            </Dimmer>
-            {stateColors.map(x => {
-                let label = (
-                    <label>
-                        <Icon
-                            color={x.color ? x.color.toLowerCase() : 'grey'}
-                            inverted={x.inverted}
-                            name="circle"
-                        />
-                        {t(x.name)}
-                    </label>
-                );
-                return (
-                    <Form.Field key={x.name}>
-                        <Checkbox
-                            value={x.name}
-                            checked={values.includes(x.name)}
-                            onChange={toggle}
-                            label={label}
-                        />
-                    </Form.Field>
-                );
-            })}
-        </Form>
-    );
-
     return (
         <div className="facet-sortable facet-input">
-            <Form style={{minWidth: '50px', minHeight: '50px'}}>
+            <Form style={{ minWidth: '50px', minHeight: '50px' }}>
                 <Dimmer active={loading} inverted>
                     <Loader size="small">Loading</Loader>
                 </Dimmer>
+                <div className="reset-selected">
+                    <span onClick={handleRestClick}>{t('reset_selected')}</span>
+                </div>
                 {stateColors.map(x => {
                     let label = (
                         <label>

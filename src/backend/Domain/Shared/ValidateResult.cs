@@ -4,31 +4,49 @@ namespace Domain.Shared
     {
         public string Value { get; set; }
         public string Name { get; set; }
+
     }
 
     public class ValidateResult
     {
-        public ValidateResult() { }
+        public ValidateResult() 
+        {
+            ResultType = ValidateResultType.Updated;
+        }
 
         public ValidateResult(string error)
         {
-            Error = error;
+            ResultType = string.IsNullOrEmpty(Error) ? ValidateResultType.Updated : ValidateResultType.Error;
         }
 
         public ValidateResult(string error, string id)
         {
             Error = error;
             Id = id;
+
+            ResultType = string.IsNullOrEmpty(Error) ? ValidateResultType.Updated : ValidateResultType.Error;
         }
 
-        public string Error { get; set; }
+        public virtual string Error { get; set; }
+
         public string Id { get; set; }
-        public bool IsError
+
+        public virtual bool IsError
         {
             get
             {
-                return !string.IsNullOrWhiteSpace(Error);
+                return ResultType == ValidateResultType.Error;
             }
         }
+
+        public ValidateResultType ResultType { get; set; }
+
+    }
+
+    public enum ValidateResultType
+    { 
+        Updated,
+        Created,
+        Error
     }
 }

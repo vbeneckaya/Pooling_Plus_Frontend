@@ -41,7 +41,7 @@ namespace Application.Services.Translations
             entity.En = dto.En;
             entity.Ru = dto.Ru;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TranslationDto MapFromEntityToDto(Translation entity)

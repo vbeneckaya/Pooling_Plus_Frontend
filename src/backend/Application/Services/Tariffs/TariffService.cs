@@ -7,6 +7,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Tariffs;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
@@ -20,13 +21,21 @@ namespace Application.Services.Tariffs
 
         public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
-            if(!string.IsNullOrEmpty(dto.Id))
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
+            if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
+
             entity.ShipmentCity = dto.ShipmentCity;
             entity.DeliveryCity = dto.DeliveryCity;
-            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : Enum.Parse<TarifficationType>(dto.TarifficationType.ToUpperFirstLetter());
-            entity.CarrierId = string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId);
-            entity.VehicleTypeId = string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId);
+            entity.TarifficationType = dto.TarifficationType.Parse<TarifficationType>();
+            entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
+            entity.CarrierId = dto.CarrierId.ToGuid();
+
             entity.FtlRate = dto.FtlRate;
             entity.LtlRate1 = dto.LtlRate1;
             entity.LtlRate2 = dto.LtlRate2;
@@ -62,7 +71,34 @@ namespace Application.Services.Tariffs
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
+        }
+
+        private ValidateResult ValidateDto(TariffDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.ShipmentCity))
+            {
+                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.DeliveryCity))
+            {
+                result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var existingRecord = this.FindByKey(dto);
+            var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
+
+            if (hasDuplicates)
+            {
+                result.AddError("duplicateTariffs", "duplicateTariffs".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
@@ -143,6 +179,49 @@ namespace Application.Services.Tariffs
         {
             var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
             return entry?.Name;
+        }
+
+        protected override IQueryable<Tariff> ApplySearch(IQueryable<Tariff> query, SearchFormDto form)
+        {
+            if (string.IsNullOrEmpty(form.Search)) return query;
+
+            var search = form.Search.ToLower();
+
+            var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
+                .Where(i => i.Title.ToLower().Contains(search))
+                .Select(i => i.Id);
+
+            var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
+                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
+
+            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
+
+            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
+                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
+                .ToList();
+
+            return query.Where(i =>
+                   transportCompanies.Any(t => t == i.CarrierId)
+                || vehicleTypes.Any(t => t == i.VehicleTypeId)
+                || tarifficationTypes.Contains(i.TarifficationType)
+                || i.ShipmentCity.ToLower().Contains(search)
+                || i.DeliveryCity.ToLower().Contains(search)
+                );
+        }
+
+        public override Tariff FindByKey(TariffDto dto)
+        {
+            return _dataService.GetDbSet<Tariff>()
+                .Where(i =>
+                    i.CarrierId == dto.CarrierId.ToGuid()
+                    && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
+                    && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
+                    && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
+                    && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity)
+                .FirstOrDefault();
         }
     }
 }

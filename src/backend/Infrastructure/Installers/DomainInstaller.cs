@@ -1,7 +1,5 @@
 using Application.BusinessModels.Orders.Actions;
-using Application.BusinessModels.Orders.BulkUpdates;
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Actions;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -125,10 +123,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
-
-            services.AddScoped<IBulkUpdate<Order>, BaseBulkUpdate<Order>>();
-            services.AddScoped<IBulkUpdate<Order>, ShippingDateBulkUpdate>();
-            services.AddScoped<IBulkUpdate<Order>, DeliveryDateBulkUpdate>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -142,8 +136,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
-
-            services.AddScoped<IBulkUpdate<Shipping>, BaseBulkUpdate<Shipping>>();
         }
     }
 }

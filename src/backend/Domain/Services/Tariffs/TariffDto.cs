@@ -1,3 +1,4 @@
+using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 
@@ -5,6 +6,7 @@ namespace Domain.Services.Tariffs
 {
     public class TariffDto : IDto
     {
+        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(1)]

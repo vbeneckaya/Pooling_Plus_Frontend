@@ -23,7 +23,7 @@ namespace Application.Services.Injections
             entity.Status = dto.Status;
             entity.ProcessTimeUtc = dto.ProcessTimeUtc;
 
-            return new ValidateResult(entity.Id.ToString());
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override InjectionDto MapFromEntityToDto(Injection entity)

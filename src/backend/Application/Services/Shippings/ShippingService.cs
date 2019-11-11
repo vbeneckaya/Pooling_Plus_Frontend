@@ -1,10 +1,8 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
-using DAL;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -31,11 +29,11 @@ namespace Application.Services.Shippings
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Shipping>> singleActions,
-            IEnumerable<IGroupAppAction<Shipping>> groupActions,
-            IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
-            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
+            IEnumerable<IGroupAppAction<Shipping>> groupActions)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -69,6 +67,20 @@ namespace Application.Services.Shippings
                 entities = dbSet.Where(x => x.ShippingNumber == dto.Number).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
+            return result;
+        }
+
+        public override string GetNumber(ShippingFormDto dto)
+        {
+            return dto?.ShippingNumber;
+        }
+
+        public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
+        {
+            var result = _dataService.GetDbSet<Shipping>()
+                            .Where(x => ids.Contains(x.Id))
+                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                            .ToList();
             return result;
         }
 
@@ -435,8 +447,8 @@ namespace Application.Services.Shippings
                 .ToList();
 
             var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id);
+                .Where(i => !string.IsNullOrEmpty(i.Title) && i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
 
             var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))

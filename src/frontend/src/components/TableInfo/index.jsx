@@ -31,6 +31,12 @@ class TableInfo extends Component {
         }
     }
 
+    componentWillUnmount () {
+        const { clear } = this.props;
+
+        clear && clear();
+    }
+
     mapData = (isConcat, isReload) => {
         const { filter, page } = this.state;
         const { name } = this.props;
@@ -127,9 +133,6 @@ class TableInfo extends Component {
 
         return (
             <Container className={className}>
-                <Dimmer active={loading} inverted className="table-loader">
-                    <Loader size="huge">Loading</Loader>
-                </Dimmer>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
                     <Grid>
@@ -202,6 +205,9 @@ class TableInfo extends Component {
                         context={this.container}
                         headerRow={this.headerRowComponent()}
                     >
+                        <Dimmer active={loading && !list.length} inverted className="table-loader table-loader-big">
+                            <Loader size="huge">Loading</Loader>
+                        </Dimmer>
                         <Table.Body>
                             {customRowComponent
                                 ? customRowComponent
@@ -255,6 +261,9 @@ class TableInfo extends Component {
                                           </Table.Row>
                                       </ModalComponent>
                                   ))}
+                            <div className="table-bottom-loader">
+                                <Loader active={loading && list.length} />
+                            </div>
                         </Table.Body>
                     </InfiniteScrollTable>
                 </div>
