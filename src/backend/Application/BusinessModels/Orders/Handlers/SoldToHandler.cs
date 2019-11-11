@@ -20,9 +20,10 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, string oldValue, string newValue)
         {
+            var setter = new FieldSetter<Order>(order, _historyService);
+
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
-                var setter = new FieldSetter<Order>(order, _historyService);
 
                 var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
@@ -45,10 +46,11 @@ namespace Application.BusinessModels.Orders.Handlers
                     order.DeliveryWarehouseId = null;
                 }
 
-                setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
-
-                setter.SaveHistoryLog();
             }
+
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+
+            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)

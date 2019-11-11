@@ -23,19 +23,21 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
-                    setter.UpdateField(o => o.DeliveryDate, newValue);
-                    setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
-                    setter.SaveHistoryLog();
+                    var updSetter = new FieldSetter<Order>(updOrder, _historyService);
+                    updSetter.UpdateField(o => o.DeliveryDate, newValue);
+                    updSetter.SaveHistoryLog();
                 }
             }
 
+            var setter = new FieldSetter<Order>(order, _historyService);
+
             if (_isInjection)
             {
-                var setter = new FieldSetter<Order>(order, _historyService);
                 setter.UpdateField(o => o.ShippingDate, newValue?.AddDays(0 - order.TransitDays ?? 0));
-                setter.SaveHistoryLog();
             }
+            
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
