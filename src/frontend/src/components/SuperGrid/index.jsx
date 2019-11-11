@@ -314,6 +314,7 @@ class SuperGrid extends Component {
                                 catalogs={catalogsFromGrid}
                                 isShowActions={isShowActions}
                                 sort={sort}
+                                gridName={name}
                                 checkAllDisabled={checkAllDisabled || onlyOneCheck}
                                 setFilter={this.setFilter}
                                 setSort={this.setSort}

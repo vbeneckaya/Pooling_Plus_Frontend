@@ -119,7 +119,10 @@ export const representationSelector = createSelector(
             representation.forEach(item => {
                 const actualItem = columnList.find(column => column.name === item.name);
                 if (actualItem) {
-                    actualRepresentation.push(actualItem);
+                    actualRepresentation.push({
+                        ...actualItem,
+                        width: item.width || 100
+                    });
                 }
             });
         return actualRepresentation;
@@ -168,7 +171,10 @@ function* saveRepresentationSaga({ payload }) {
 
         const params = {
             ...list,
-            [name]: value,
+            [name]: value.map(item => ({
+                ...item,
+                width: 100
+            })),
         };
 
         const result = yield postman.post(`/userSettings/${key}`, {

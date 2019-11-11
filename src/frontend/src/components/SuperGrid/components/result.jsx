@@ -19,6 +19,11 @@ class Result extends Component {
             return true
         }
 
+        if (!_.isEqual(Array.from(nextProps.columns), Array.from(this.props.columns))) {
+            console.log('55555555');
+            return true
+        }
+
         if (_.isEqual(nextProps.rows, this.props.rows)) {
             return false
         }

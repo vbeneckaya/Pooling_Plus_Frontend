@@ -6,7 +6,7 @@ import { Icon } from 'semantic-ui-react';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 import TextCropping from './TextCropping';
 
-const StateValue = ({ value, source, indexRow }) => {
+const StateValue = ({value, source, indexRow, indexColumn, width}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ const StateValue = ({ value, source, indexRow }) => {
     return (
         <div className="status-value">
             {value && (
-                <TextCropping>
+                <TextCropping width={width} indexColumn={indexColumn}>
                     <Icon color={color && color.toLowerCase()} name="circle" />
                     {t(value)}
                 </TextCropping>
