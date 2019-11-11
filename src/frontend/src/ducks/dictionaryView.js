@@ -260,6 +260,8 @@ function* importFromExcelSaga({ payload }) {
         if (result.isError) {
             toast.error(result.error);
         } else {
+            result.message && toast.info(result.message);
+
             yield put({
                 type: DICTIONARY_IMPORT_FROM_EXCEL_SUCCESS,
             });
