@@ -25,10 +25,13 @@ namespace Application.BusinessModels.Orders.Handlers
                 {
                     var setter = new FieldSetter<Order>(updOrder, _historyService);
                     setter.UpdateField(o => o.DeliveryDate, newValue);
-                    setter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
                     setter.SaveHistoryLog();
                 }
             }
+
+            var chDatesetter = new FieldSetter<Order>(order, _historyService);
+            chDatesetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+            chDatesetter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)

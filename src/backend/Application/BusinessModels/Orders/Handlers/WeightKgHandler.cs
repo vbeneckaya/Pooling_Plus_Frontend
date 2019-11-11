@@ -35,11 +35,11 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(s => s.WeightKg, shippingWeight);
                     setter.SaveHistoryLog();
                 }
-
-                var orderSetter = new FieldSetter<Order>(order, _historyService);
-                orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
-                orderSetter.SaveHistoryLog();
             }
+
+            var orderSetter = new FieldSetter<Order>(order, _historyService);
+            orderSetter.UpdateField(o => o.OrderChangeDate, DateTime.Now);
+            orderSetter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, decimal? oldValue, decimal? newValue)
