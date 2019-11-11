@@ -7,6 +7,8 @@ import Search from '../Search';
 import './style.scss';
 import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
+import HeaderCellComponent from "./components/header-cell";
+import BodyCellComponent from "./components/body-cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -81,10 +83,8 @@ class TableInfo extends Component {
     headerRowComponent = () => (
         <Table.Row>
             {this.props.headerRow &&
-                this.props.headerRow.map(row => (
-                    <Table.HeaderCell className="table-header-cell" key={row.name}>
-                        {this.props.t(row.name)}
-                    </Table.HeaderCell>
+            this.props.headerRow.map((row, index) => (
+                <HeaderCellComponent row={row}/>
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>
@@ -127,6 +127,7 @@ class TableInfo extends Component {
             importLoader,
             exportLoader,
             exportToExcel,
+            totalCount
         } = this.props;
 
         const { filter } = this.state;
@@ -143,6 +144,7 @@ class TableInfo extends Component {
                                     value={filter}
                                     onChange={this.changeFullTextFilter}
                                 />
+                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
                                 <input
@@ -220,8 +222,9 @@ class TableInfo extends Component {
                                       >
                                           <Table.Row key={row.id}>
                                               {headerRow.map((column, index) => (
-                                                  <Table.Cell
+                                                  <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
+                                                      column={column}
                                                   >
                                                       <CellValue
                                                           {...column}
@@ -242,7 +245,7 @@ class TableInfo extends Component {
                                                           indexRow={i}
                                                           value={row[column.name]}
                                                       />
-                                                  </Table.Cell>
+                                                  </BodyCellComponent>
                                               ))}
                                               {isShowActions ? (
                                                   <Table.Cell textAlign="center">

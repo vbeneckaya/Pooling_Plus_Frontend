@@ -34,6 +34,7 @@ const initial = {
     list: [],
     card: {},
     totalCount: 0,
+    error: null,
     progress: false,
     importProgress: false,
     exportProgress: false,
@@ -81,9 +82,15 @@ export default (state = initial, { type, payload }) => {
                 ...initial,
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
+            return {
+                ...state,
+                error: null,
+                progress: false,
+            };
         case SAVE_DICTIONARY_CARD_ERROR:
             return {
                 ...state,
+                error: payload,
                 progress: false,
             };
         case DICTIONARY_IMPORT_FROM_EXCEL_REQUEST:
@@ -171,6 +178,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const listSelector = createSelector(stateSelector, state => state.list);
 export const cardSelector = createSelector(stateSelector, state => state.card);
+export const errorSelector = createSelector(stateSelector, state => state.error);
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
@@ -235,6 +243,10 @@ function* saveDictionaryCardSaga({ payload }) {
 
         if (result.isError) {
             toast.error(result.error);
+            yield put({
+                type: SAVE_DICTIONARY_CARD_ERROR,
+                payload: result.errors
+            })
         } else {
             yield put({
                 type: SAVE_DICTIONARY_CARD_SUCCESS,

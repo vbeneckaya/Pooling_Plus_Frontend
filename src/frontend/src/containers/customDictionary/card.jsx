@@ -5,7 +5,7 @@ import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
     clearDictionaryInfo,
-    columnsSelector,
+    columnsSelector, errorSelector,
     getCardRequest,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
@@ -88,7 +88,7 @@ class Card extends Component {
     };
 
     render() {
-        const { title, loading, children, progress, columns, t } = this.props;
+        const {title, loading, children, progress, columns, t, error} = this.props;
         const { modalOpen, form } = this.state;
 
         return (
@@ -109,10 +109,14 @@ class Card extends Component {
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
                             {columns.map(column => {
+                                const err = error && error.find(error => error.name === column.name);
                                 return (
                                     <FormField
                                         column={column}
+                                        noScrollColumn={column}
                                         key={column.name}
+                                        error={err}
+                                        errorText={err && err.message}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />
@@ -140,6 +144,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         columns: columnsSelector(state, name),
         card: cardSelector(state),
+        error: errorSelector(state)
     };
 };
 
