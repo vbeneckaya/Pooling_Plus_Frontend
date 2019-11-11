@@ -66,9 +66,9 @@ namespace Application.BusinessModels.Orders.Actions
             };
         }
 
-        public bool IsAvailable(Role role, Order order)
+        public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.InShipping && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.InShipping;
         }
     }
 }

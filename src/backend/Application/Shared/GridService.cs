@@ -179,16 +179,22 @@ namespace Application.Shared
 
             foreach (var action in _singleActions)
             {
-                var validEntities = entities.Where(e => action.IsAvailable(role, e));
+                string actionName = action.GetType().Name.ToLowerFirstLetter();
+                if (role?.Actions != null && !role.Actions.Contains(actionName))
+                {
+                    continue;
+                }
+
+                var validEntities = entities.Where(e => action.IsAvailable(e));
                 if (validEntities.Any())
                 {
-                    var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerFirstLetter());
+                    var actionDto = result.FirstOrDefault(x => x.Name == actionName);
                     if (actionDto == null)
                     {
                         result.Add(new ActionDto
                         {
                             Color = action.Color.ToString().ToLowerFirstLetter(),
-                            Name = action.GetType().Name.ToLowerFirstLetter(),
+                            Name = actionName,
                             Ids = validEntities.Select(x => x.Id.ToString())
                         });
                     }
@@ -199,15 +205,21 @@ namespace Application.Shared
             {
                 foreach (var action in _groupActions)
                 {
-                    if (action.IsAvailable(role, entities))
+                    string actionName = action.GetType().Name.ToLowerFirstLetter();
+                    if (role?.Actions != null && !role.Actions.Contains(actionName))
                     {
-                        var actionDto = result.FirstOrDefault(x => x.Name == action.GetType().Name.ToLowerFirstLetter());
+                        continue;
+                    }
+
+                    if (action.IsAvailable(entities))
+                    {
+                        var actionDto = result.FirstOrDefault(x => x.Name == actionName);
                         if (actionDto == null)
                         {
                             result.Add(new ActionDto
                             {
                                 Color = action.Color.ToString().ToLowerFirstLetter(),
-                                Name = action.GetType().Name.ToLowerFirstLetter(),
+                                Name = actionName,
                                 Ids = ids.Select(x=>x.ToString())
                             });                        
                         }
@@ -232,8 +244,12 @@ namespace Application.Shared
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var entity = _dataService.GetById<TEntity>(id);
+
+            string actionName = action.GetType().Name.ToLowerFirstLetter();
+            bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
+
             var message = "";
-            if (action.IsAvailable(role, entity)) 
+            if (isActionAllowed && action.IsAvailable(entity)) 
                 message += action.Run(currentUser, entity).Message;
             
             return new AppActionResult
@@ -263,20 +279,27 @@ namespace Application.Shared
 
             if (groupAction != null)
             {
-                if (groupAction.IsAvailable(role, entities))
+                string actionName = groupAction.GetType().Name.ToLowerFirstLetter();
+                bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
+                if (isActionAllowed && groupAction.IsAvailable(entities))
                     return groupAction.Run(currentUser, entities);
             }
             else
             {
                 List<string> messages = new List<string>();
-                foreach (var entity in entities)
+                string actionName = singleAction.GetType().Name.ToLowerFirstLetter();
+                bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
+                if (isActionAllowed)
                 {
-                    if (singleAction.IsAvailable(role, entity))
+                    foreach (var entity in entities)
                     {
-                        string message = singleAction.Run(currentUser, entity)?.Message;
-                        if (!string.IsNullOrEmpty(message))
+                        if (isActionAllowed && singleAction.IsAvailable(entity))
                         {
-                            messages.Add(message);
+                            string message = singleAction.Run(currentUser, entity)?.Message;
+                            if (!string.IsNullOrEmpty(message))
+                            {
+                                messages.Add(message);
+                            }
                         }
                     }
                 }
