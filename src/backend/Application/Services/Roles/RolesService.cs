@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Actions;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -52,21 +53,6 @@ namespace Application.Services.Roles
                 .ThenBy(i => i.Id);
         }
 
-        public ValidateResult SetPermissions(Guid roleId, IEnumerable<RolePermissions> permissions)
-        {
-            var user = _userProvider.GetCurrentUser();
-
-            var entity = _dataService.GetDbSet<Role>().GetById(roleId);
-            if (entity == null)
-            {
-                return new ValidateResult("roleNotFound".Translate(user.Language));
-            }
-
-            entity.Permissions = permissions.Cast<int>().ToArray();
-
-            return new ValidateResult(null, entity.Id.ToString());
-        }
-
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<Role>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
@@ -87,6 +73,7 @@ namespace Application.Services.Roles
             
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
+            entity.Actions = dto.Actions.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
             return new ValidateResult(null, entity.Id.ToString());
@@ -99,6 +86,7 @@ namespace Application.Services.Roles
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
+                Actions = entity.Actions,
                 Permissions = entity?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
                 {
                     Code = i,
@@ -118,6 +106,17 @@ namespace Application.Services.Roles
                     Code = i,
                     Name = i.GetPermissionName()
                 });
+        }
+
+        public IEnumerable<string> GetAllActions()
+        {
+            var orderAction = typeof(IAction<Order>);
+            var shippingAction = typeof(IAction<Shipping>);
+            var actions = AppDomain.CurrentDomain
+                                   .GetAssemblies()
+                                   .SelectMany(s => s.GetTypes())
+                                   .Where(p => orderAction.IsAssignableFrom(p) || shippingAction.IsAssignableFrom(p));
+            return actions.Select(x => x.Name.ToLowerFirstLetter());
         }
     }
 }

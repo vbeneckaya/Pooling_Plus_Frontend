@@ -32,9 +32,9 @@ namespace Application.BusinessModels.Orders.Actions
             return unionOrders.Run(user, new[] { order });
         }
 
-        public bool IsAvailable(Role role, Order order)
+        public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Created && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Created;
         }
     }
 }

@@ -91,7 +91,7 @@ namespace Application.Services.Identity
             return new UserInfo
             {   
                 UserName = user.Name,
-                UserRole = user.RoleId.HasValue ? _dataService.GetDbSet<Role>().GetById(user.RoleId.Value)?.Name : null,
+                UserRole = role?.Name,
                 Role = role != null ? _rolesService.MapFromEntityToDto(role) : null
             };
         }

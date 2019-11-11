@@ -1,17 +1,19 @@
 using API.Controllers.Shared;
-using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.Roles;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
-using System.Collections.Generic;
 
 namespace API.Controllers
 {
     [Route("api/roles")]
     public class RolesController : DictionaryController<IRolesService, Role, RoleDto>
     {
+        public RolesController(IRolesService rolesService) : base(rolesService)
+        {
+        }
+
         /// <summary>
         /// ѕолучение данных дл€ выпадающего списка в 
         /// </summary>
@@ -35,12 +37,8 @@ namespace API.Controllers
             }
         }
 
-        public RolesController(IRolesService rolesService) : base(rolesService)
-        {
-        }
-
         /// <summary>
-        /// ѕолучение данных дл€ выпадающего списка в 
+        /// ѕолучение списка всех доступных разрешений
         /// </summary>
         [HttpGet("allPermissions")]
         public IActionResult GetAllPermissions()
@@ -58,6 +56,29 @@ namespace API.Controllers
             catch (Exception e)
             {
                 Log.Error(e, $"Failed to get permissions list");
+                return StatusCode(500);
+            }
+        }
+
+        /// <summary>
+        /// ѕолучение списка всех доступных действий
+        /// </summary>
+        [HttpGet("allActions")]
+        public IActionResult GetAllActions()
+        {
+            try
+            {
+                var result = _service.GetAllActions();
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to get actions list");
                 return StatusCode(500);
             }
         }

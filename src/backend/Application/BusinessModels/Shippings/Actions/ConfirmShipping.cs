@@ -50,9 +50,9 @@ namespace Application.BusinessModels.Shippings.Actions
             };
         }
 
-        public bool IsAvailable(Role role, Shipping shipping)
+        public bool IsAvailable(Shipping shipping)
         {
-            return shipping.Status == ShippingState.ShippingRequestSent && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return shipping.Status == ShippingState.ShippingRequestSent;
         }
     }
 }

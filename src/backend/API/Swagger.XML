@@ -96,7 +96,12 @@
         </member>
         <member name="M:API.Controllers.RolesController.GetAllPermissions">
             <summary>
-            Получение данных для выпадающего списка в 
+            Получение списка всех доступных разрешений
+            </summary>
+        </member>
+        <member name="M:API.Controllers.RolesController.GetAllActions">
+            <summary>
+            Получение списка всех доступных действий
             </summary>
         </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">

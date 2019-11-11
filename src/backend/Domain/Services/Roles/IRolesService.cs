@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
-using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.Permissions;
 using Domain.Shared;
+using System;
+using System.Collections.Generic;
 
 namespace Domain.Services.Roles
 {
@@ -11,9 +10,9 @@ namespace Domain.Services.Roles
     {
         ValidateResult SetActive(Guid id, bool active);
 
-        ValidateResult SetPermissions(Guid roleId, IEnumerable<RolePermissions> permissions);
-
         IEnumerable<PermissionInfo> GetAllPermissions();
+
+        IEnumerable<string> GetAllActions();
 
         RoleDto MapFromEntityToDto(Role entity);
     }
