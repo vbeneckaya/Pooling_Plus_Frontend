@@ -1,15 +1,15 @@
-using System;
-using System.Linq;
 using Application.Shared;
-using Domain.Persistables;
-using Domain.Services.Users;
-using Domain.Extensions;
-using System.Collections.Generic;
-using Domain.Shared;
 using DAL.Queries;
-using Domain.Services.UserProvider;
-using Domain.Services.Translations;
 using DAL.Services;
+using Domain.Extensions;
+using Domain.Persistables;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
+using Domain.Services.Users;
+using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.Users
 {
@@ -23,7 +23,7 @@ namespace Application.Services.Users
             var entity = _dataService.GetDbSet<User>().GetById(id);
             if (entity == null)
             {
-                return new ValidateResult("userNotFoundEntity".translate(user.Language));
+                return new ValidateResult("userNotFoundEntity".Translate(user.Language));
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Application.Services.Users
             };
         }
 
-        public override void MapFromDtoToEntity(User entity, UserDto dto)
+        public override ValidateResult MapFromDtoToEntity(User entity, UserDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id)) 
                 entity.Id = Guid.Parse(dto.Id);
@@ -76,6 +76,15 @@ namespace Application.Services.Users
             
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
+
+            return new ValidateResult(null, entity.Id.ToString());
+        }
+
+        protected override IQueryable<User> ApplySort(IQueryable<User> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Email)
+                .ThenBy(i => i.Id);
         }
     }
 }

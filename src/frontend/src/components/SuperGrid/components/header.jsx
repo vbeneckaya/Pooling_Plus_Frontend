@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, Grid, Popup } from 'semantic-ui-react';
+import {Button, Grid, Icon, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import {
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
+import AllFilters from "./all_filters";
 
 const Header = ({
     createButton,
@@ -100,7 +101,7 @@ const Header = ({
             <Grid.Row>
                 <Grid.Column width={10}>
                     {createButton}
-                    <Search value={searchValue} onChange={searchOnChange} isAuto />
+                    <Search searchValue={searchValue} onChange={searchOnChange} isAuto/>
                     <span className="records-counter">{t('totalCount', { count: counter })}</span>
                 </Grid.Column>
                 <Grid.Column width={6} className="grid-right-elements">
@@ -121,12 +122,27 @@ const Header = ({
                         position="bottom right"
                         trigger={
                             <Button
-                                icon="times"
+                                icon="clear-filter"
+                                className={`clear-filter-btn`}
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
                             />
                         }
                     />
+                    {/*{
+                        <Popup
+                            content={<AllFilters gridName={name} filter={filter}/>}
+                            position="bottom right"
+                            trigger={
+                                <Button
+                                    icon
+                                >
+                                    <Icon color="primary" name={"sliders horizontal"}/>
+                                </Button>
+                            }
+                            on="click"
+                        />
+                    }*/}
                     {isImportBtn && (
                         <Popup
                             content={t('importFromExcel')}

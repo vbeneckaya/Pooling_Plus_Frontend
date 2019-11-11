@@ -40,13 +40,13 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetBillSend".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetBillSend".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Shipping shipping)
+        public bool IsAvailable(Shipping shipping)
         {
-            return (shipping.Status == ShippingState.ShippingCompleted) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return shipping.Status == ShippingState.ShippingCompleted;
         }
     }
 }

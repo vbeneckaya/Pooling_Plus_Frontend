@@ -7,6 +7,8 @@ import Search from '../Search';
 import './style.scss';
 import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
+import HeaderCellComponent from "./components/header-cell";
+import BodyCellComponent from "./components/body-cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -29,6 +31,12 @@ class TableInfo extends Component {
         if (this.props.name !== prevProps.name) {
             this.load();
         }
+    }
+
+    componentWillUnmount () {
+        const { clear } = this.props;
+
+        clear && clear();
     }
 
     mapData = (isConcat, isReload) => {
@@ -67,7 +75,7 @@ class TableInfo extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({ filter: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
+        this.setState({filter: value, page: 1}, this.load);
     };
 
     debounceSetFilterApiAndLoadList = debounce(300, this.load);
@@ -75,10 +83,8 @@ class TableInfo extends Component {
     headerRowComponent = () => (
         <Table.Row>
             {this.props.headerRow &&
-                this.props.headerRow.map(row => (
-                    <Table.HeaderCell className="table-header-cell" key={row.name}>
-                        {this.props.t(row.name)}
-                    </Table.HeaderCell>
+            this.props.headerRow.map((row, index) => (
+                <HeaderCellComponent row={row}/>
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>
@@ -121,15 +127,13 @@ class TableInfo extends Component {
             importLoader,
             exportLoader,
             exportToExcel,
+            totalCount
         } = this.props;
 
         const { filter } = this.state;
 
         return (
             <Container className={className}>
-                <Dimmer active={loading} inverted className="table-loader">
-                    <Loader size="huge">Loading</Loader>
-                </Dimmer>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
                     <Grid>
@@ -140,6 +144,7 @@ class TableInfo extends Component {
                                     value={filter}
                                     onChange={this.changeFullTextFilter}
                                 />
+                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
                                 <input
@@ -202,6 +207,9 @@ class TableInfo extends Component {
                         context={this.container}
                         headerRow={this.headerRowComponent()}
                     >
+                        <Dimmer active={loading && !list.length} inverted className="table-loader table-loader-big">
+                            <Loader size="huge">Loading</Loader>
+                        </Dimmer>
                         <Table.Body>
                             {customRowComponent
                                 ? customRowComponent
@@ -214,8 +222,9 @@ class TableInfo extends Component {
                                       >
                                           <Table.Row key={row.id}>
                                               {headerRow.map((column, index) => (
-                                                  <Table.Cell
+                                                  <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
+                                                      column={column}
                                                   >
                                                       <CellValue
                                                           {...column}
@@ -236,7 +245,7 @@ class TableInfo extends Component {
                                                           indexRow={i}
                                                           value={row[column.name]}
                                                       />
-                                                  </Table.Cell>
+                                                  </BodyCellComponent>
                                               ))}
                                               {isShowActions ? (
                                                   <Table.Cell textAlign="center">
@@ -255,6 +264,9 @@ class TableInfo extends Component {
                                           </Table.Row>
                                       </ModalComponent>
                                   ))}
+                            <div className="table-bottom-loader">
+                                <Loader active={loading && list.length} />
+                            </div>
                         </Table.Body>
                     </InfiniteScrollTable>
                 </div>

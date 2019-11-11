@@ -18,7 +18,12 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    useEffect(
+    const handleChangeSoldTo = (e, {name, value}) => {
+        const item = valuesList.find(item => item.value === value) || {};
+        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+    };
+
+    /*useEffect(
         () => {
             const item = valuesList.find(item => item.value === form.soldTo) || {};
             onChange(null, { name: 'clientName', value: item.warehouseName });
@@ -32,7 +37,7 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
             onChange(null, { name: 'deliveryAddress', value: item.address });
         },
         [form.clientName],
-    );
+    );*/
 
     useEffect(
         () => {
@@ -59,16 +64,11 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                     <Grid.Row columns={4}>
                                         <Grid.Column>
                                             <FormField
-                                                name="orderNumber"
+                                                name="clientOrderNumber"
                                                 type={TEXT_TYPE}
-                                                settings={settings['orderNumber']}
-                                                value={form['orderNumber']}
-                                                error={isNotUniqueNumber}
-                                                errorText={
-                                                    isNotUniqueNumber && t('number_already_exists')
-                                                }
+                                                settings={settings['clientOrderNumber']}
+                                                value={form['clientOrderNumber']}
                                                 onChange={onChange}
-                                                onBlur={uniquenessNumberCheck}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -133,7 +133,7 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                                 textValue={error && form['soldTo']}
                                                 error={error}
                                                 source="soldTo"
-                                                onChange={onChange}
+                                                onChange={handleChangeSoldTo}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -241,21 +241,21 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="confirmedPalletsCount"
+                                                name="actualPalletsCount"
                                                 text="plan"
-                                                value={form['confirmedPalletsCount']}
+                                                value={form['actualPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['confirmedPalletsCount']}
+                                                settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="actualPalletsCount"
+                                                name="confirmedPalletsCount"
                                                 text="fact"
-                                                value={form['actualPalletsCount']}
+                                                value={form['confirmedPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['actualPalletsCount']}
+                                                settings={settings['confirmedPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>

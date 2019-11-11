@@ -6,7 +6,7 @@ import { invokeMassUpdateRequest, updatesSelector } from '../../../ducks/gridAct
 import FormField from '../../BaseComponents';
 import { TEXT_TYPE } from '../../../constants/columnTypes';
 
-const MassChanges = ({ gridName, load }) => {
+const Mass_changes = ({ gridName, load }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const updates = useSelector(state => updatesSelector(state)) || [];
@@ -53,6 +53,7 @@ const MassChanges = ({ gridName, load }) => {
                                 fluid
                                 selection
                                 value={field}
+                                upward
                                 options={updates.map(item => ({
                                     key: item.name,
                                     value: item.name,
@@ -83,4 +84,4 @@ const MassChanges = ({ gridName, load }) => {
     );
 };
 
-export default MassChanges;
+export default Mass_changes;

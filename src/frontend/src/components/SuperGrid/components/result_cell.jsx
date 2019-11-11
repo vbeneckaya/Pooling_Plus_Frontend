@@ -91,7 +91,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     return (
         <>
             <Table.Cell
-                className={column.name.toLowerCase().includes('address') ? 'address-cell' : ''}
+                className="value-cell"
             >
                 <div className="cell-grid">
                     <div
@@ -109,7 +109,9 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                             ref={contextRef}
                             id={`${row.id}_${column.name}_${indexRow}`}
                             indexRow={indexRow}
+                            indexColumn={indexColumn}
                             value={row[column.name]}
+                            width={column.width}
                             modalCard={
                                 <ModalComponent
                                     element={modalCard}

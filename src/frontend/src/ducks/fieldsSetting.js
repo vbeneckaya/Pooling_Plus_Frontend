@@ -105,13 +105,10 @@ export const editProgressSelector = createSelector(stateSelector, state => state
 export function* getFieldsSettingSaga({ payload }) {
     try {
         const baseResult = yield postman.post('fieldProperties/get', payload);
-        const extResult =
-            payload.forEntity === ORDERS_GRID
-                ? yield postman.post('fieldProperties/get', {
-                      ...payload,
-                      forEntity: 'orderItems',
-                  })
-                : [];
+        const extResult = yield postman.post('fieldProperties/get', {
+            ...payload,
+            forEntity: payload.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints',
+        });
 
         yield put({
             type: GET_FIELDS_SETTINGS_SUCCESS,
@@ -128,16 +125,16 @@ export function* getFieldsSettingSaga({ payload }) {
     }
 }
 
-function* editFieldsSettingSaga({ payload }) {
+function* editFieldsSettingSaga({ payload = {} }) {
     try {
         const { params, callbackSuccess, isExt } = payload;
         const result = yield postman.post('/fieldProperties/save', {
             ...params,
-            forEntity: isExt ? 'orderItems' : params.forEntity,
+            forEntity: isExt ? params.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints' : params.forEntity,
         });
 
         yield put({
-            type: EDIT_FIELDS_SETTINGS_REQUEST,
+            type: EDIT_FIELDS_SETTINGS_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();

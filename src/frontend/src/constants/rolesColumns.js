@@ -5,7 +5,7 @@ export const rolesColumns = [
         name: 'name',
     },
     {
-        name: 'UsersCount',
+        name: 'usersCount',
     },
     {
         name: 'permissions',

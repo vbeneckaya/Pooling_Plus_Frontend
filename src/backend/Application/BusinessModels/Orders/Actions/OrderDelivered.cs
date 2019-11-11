@@ -38,13 +38,13 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetDelivered".translate(user.Language, order.OrderNumber)
+                Message = "orderSetDelivered".Translate(user.Language, order.OrderNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Order order)
+        public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Shipped && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Shipped;
         }
     }
 }

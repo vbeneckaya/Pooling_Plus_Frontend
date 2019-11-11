@@ -70,6 +70,7 @@ const Select = ({
                 value={value}
                 options={items}
                 onChange={handleChange}
+                selectOnBlur={false}
             />
             {errorText && <span className="label-error">{errorText}</span>}
         </Form.Field>

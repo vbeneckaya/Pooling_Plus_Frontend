@@ -88,7 +88,7 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetCreated".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetCreated".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 
@@ -114,9 +114,9 @@ namespace Application.BusinessModels.Orders.Actions
             return result;
         }
 
-        public bool IsAvailable(Role role, IEnumerable<Order> target)
+        public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(entity => entity.Status == OrderState.Created && (role.Name == "Administrator" || role.Name == "TransportCoordinator"));
+            return target.All(entity => entity.Status == OrderState.Created);
         }
     }
 }

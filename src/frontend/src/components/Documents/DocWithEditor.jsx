@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Confirm, Form, Icon, Modal, Popup } from 'semantic-ui-react';
@@ -35,6 +35,10 @@ const DocWithEditor = ({
     const dispatch = useDispatch();
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
+
+    useEffect(() => {
+        setDocument(currentDocument ? Object.assign({}, currentDocument) : null);
+    }, [currentDocument])
 
     const handleOpen = () => {
         dispatch(getDocumentTypesRequest());

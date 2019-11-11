@@ -1,7 +1,5 @@
 using Application.BusinessModels.Orders.Actions;
-using Application.BusinessModels.Orders.BulkUpdates;
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Actions;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -16,6 +14,7 @@ using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Roles;
 using Application.Services.Shippings;
+using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
 using Application.Services.TaskProperties;
 using Application.Services.Translations;
@@ -37,10 +36,10 @@ using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
-using Domain.Services.Permissions;
 using Domain.Services.PickingTypes;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
 using Domain.Services.Translations;
@@ -79,6 +78,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
+            services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
             services.AddScoped<IArticlesService, ArticlesService>();
@@ -123,10 +123,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
-
-            services.AddScoped<IBulkUpdate<Order>, BaseBulkUpdate<Order>>();
-            services.AddScoped<IBulkUpdate<Order>, ShippingDateBulkUpdate>();
-            services.AddScoped<IBulkUpdate<Order>, DeliveryDateBulkUpdate>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -140,8 +136,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
-
-            services.AddScoped<IBulkUpdate<Shipping>, BaseBulkUpdate<Shipping>>();
         }
     }
 }

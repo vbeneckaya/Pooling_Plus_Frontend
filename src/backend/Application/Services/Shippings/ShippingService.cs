@@ -1,10 +1,8 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
 using Application.Shared;
 using AutoMapper;
-using DAL;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -31,11 +29,11 @@ namespace Application.Services.Shippings
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
+            IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IEnumerable<IAppAction<Shipping>> singleActions,
-            IEnumerable<IGroupAppAction<Shipping>> groupActions,
-            IEnumerable<IBulkUpdate<Shipping>> bulkUpdates)
-            : base(dataService, userIdProvider, singleActions, groupActions, bulkUpdates)
+            IEnumerable<IGroupAppAction<Shipping>> groupActions)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -69,6 +67,20 @@ namespace Application.Services.Shippings
                 entities = dbSet.Where(x => x.ShippingNumber == dto.Number).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
+            return result;
+        }
+
+        public override string GetNumber(ShippingFormDto dto)
+        {
+            return dto?.ShippingNumber;
+        }
+
+        public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
+        {
+            var result = _dataService.GetDbSet<Shipping>()
+                            .Where(x => ids.Contains(x.Id))
+                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                            .ToList();
             return result;
         }
 
@@ -395,6 +407,7 @@ namespace Application.Services.Shippings
         private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {
             var search = searchForm.Filter.Search;
+            var columns = searchForm.Filter.Columns;
 
             if (string.IsNullOrEmpty(search)) return query;
 
@@ -434,50 +447,47 @@ namespace Application.Services.Shippings
                 .ToList();
 
             var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id);
+                .Where(i => !string.IsNullOrEmpty(i.Title) && i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
 
             var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id).ToList();
 
-            return query.Where(i => 
-               !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.Contains(search)
-            || !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.Contains(search)
-            || !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
-            || !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
-            || isInt && i.TemperatureMin == searchInt
-            || isInt && i.TemperatureMax == searchInt
-            || isInt && i.PalletsCount == searchInt
-            || isInt && i.ActualPalletsCount == searchInt
-            || isInt && i.ConfirmedPalletsCount == searchInt
-            || isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
-            || isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
-            || isDecimal && i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
-            || isDecimal && i.OtherCosts >= searchDecimal - precision && i.OtherCosts <= searchDecimal + precision
-            || isDecimal && i.DeliveryCostWithoutVAT >= searchDecimal - precision && i.DeliveryCostWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.ReturnCostWithoutVAT >= searchDecimal - precision && i.ReturnCostWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.InvoiceAmountWithoutVAT >= searchDecimal - precision && i.InvoiceAmountWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.AdditionalCostsWithoutVAT >= searchDecimal - precision && i.AdditionalCostsWithoutVAT <= searchDecimal + precision
-            || isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
-            || isDecimal && i.ReturnRate >= searchDecimal - precision && i.ReturnRate <= searchDecimal + precision
-            || isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
-            || isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
-            || isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
-            //|| boolean.HasValue && i.Ban >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
-            || i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
-            || i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-            || i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-            || i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || tarifficationTypes.Contains(i.TarifficationType)
-            || deliveryTypes.Contains(i.DeliveryType)
-            || vehicleTypes.Any(v => v == i.VehicleTypeId)
-            || transportCompanies.Any(t => t == i.CarrierId)
-            || statuses.Contains(i.Status)
-
+            return query.Where(i =>
+               columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
+            || columns.Contains("deliveryInvoiceNumber") && !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.Contains(search)
+            || columns.Contains("deviationReasonsComments") && !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.Contains(search)
+            || columns.Contains("additionalCostsComments") && !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.Contains(search)
+            || columns.Contains("invoiceNumber") && !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
+            || columns.Contains("temperatureMin") && isInt && i.TemperatureMin == searchInt
+            || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
+            || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
+            || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
+            || columns.Contains("confirmedPalletsCount") && isInt && i.ConfirmedPalletsCount == searchInt
+            || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
+            || columns.Contains("actualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
+            || columns.Contains("totalDeliveryCost") && isDecimal && i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
+            || columns.Contains("otherCosts") && isDecimal && i.OtherCosts >= searchDecimal - precision && i.OtherCosts <= searchDecimal + precision
+            || columns.Contains("deliveryCostWithoutVAT") && isDecimal && i.DeliveryCostWithoutVAT >= searchDecimal - precision && i.DeliveryCostWithoutVAT <= searchDecimal + precision
+            || columns.Contains("returnCostWithoutVAT") && isDecimal && i.ReturnCostWithoutVAT >= searchDecimal - precision && i.ReturnCostWithoutVAT <= searchDecimal + precision
+            || columns.Contains("invoiceAmountWithoutVAT") && isDecimal && i.InvoiceAmountWithoutVAT >= searchDecimal - precision && i.InvoiceAmountWithoutVAT <= searchDecimal + precision
+            || columns.Contains("additionalCostsWithoutVAT") && isDecimal && i.AdditionalCostsWithoutVAT >= searchDecimal - precision && i.AdditionalCostsWithoutVAT <= searchDecimal + precision
+            || columns.Contains("trucksDowntime") && isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
+            || columns.Contains("returnRate") && isDecimal && i.ReturnRate >= searchDecimal - precision && i.ReturnRate <= searchDecimal + precision
+            || columns.Contains("additionalPointRate") && isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
+            || columns.Contains("downtimeRate") && isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
+            || columns.Contains("blankArrivalRate") && isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
+            || columns.Contains("shippingCreationDate") && i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("documentsReturnDate") && i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+            || columns.Contains("tarifficationType") && tarifficationTypes.Contains(i.TarifficationType)
+            || columns.Contains("deliveryType") && deliveryTypes.Contains(i.DeliveryType)
+            || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v == i.VehicleTypeId)
+            || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
+            || columns.Contains("status") && statuses.Contains(i.Status)
             );
         }
     }

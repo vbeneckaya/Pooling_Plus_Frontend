@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import { roleSelector } from './profile';
+import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
 
 //*  TYPES  *//
@@ -161,11 +161,20 @@ const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(stateSelector, state => state.data.id);
+const idSelector = createSelector(
+    stateSelector,
+    state => state.data.id,
+);
 
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
-export const cardSelector = createSelector(stateSelector, state => state.data);
+export const cardSelector = createSelector(
+    stateSelector,
+    state => state.data,
+);
 
 export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
@@ -290,11 +299,11 @@ function* getCardConfigSaga({ payload }) {
 function* getCardSaga({ payload }) {
     try {
         const { name, id, callbackSuccess } = payload;
-        const role = yield select(state => roleSelector(state));
+        const roleId = yield select(state => roleIdSelector(state));
         yield fork(getFieldsSettingSaga, {
             payload: {
                 forEntity: name,
-                role,
+                roleId,
             },
         });
         const result = yield postman.get(`${name}/getById/${id}`);

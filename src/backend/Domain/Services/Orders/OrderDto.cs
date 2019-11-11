@@ -7,7 +7,7 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2)]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
         public string Status { get; set; }
 
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
@@ -37,13 +37,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.Date)]
+        [FieldType(FieldType.Date), AllowBulkUpdate]
         public string ShippingDate { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(7)]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(7), AllowBulkUpdate]
         public string DeliveryDate { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -142,7 +142,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
         public string OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -168,6 +168,14 @@ namespace Domain.Services.Orders
         public bool? IsActive { get; set; }
 
         public string AdditionalInfo { get; set; }
+
+        public string ShippingWarehouseId { get; set; }
+
+        [FieldType(FieldType.DateTime), IgnoreFieldSettings]
+        public string OrderChangeDate { get; set; }
+
+        [FieldType(FieldType.Boolean)]
+        public bool? OrderConfirmed { get; set; }
 
         /*end of fields*/
     }

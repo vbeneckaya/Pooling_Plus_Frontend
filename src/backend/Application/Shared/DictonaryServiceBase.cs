@@ -1,21 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Application.Shared
 {
     public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
-        public abstract void MapFromDtoToEntity(TEntity entity, TListDto dto);
+        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
@@ -40,37 +43,20 @@ namespace Application.Shared
 
         public virtual TEntity FindByKey(TListDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
-            {
-                var dbSet = _dataService.GetDbSet<TEntity>();
-                return dbSet.GetById(id);
-            }
-            else
-            {
-                return null;
-            }
+            return FindById(dto);
         }
 
         public SearchResult<TListDto> Search(SearchFormDto form)
         {
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var query = dbSet.AsQueryable();
-
-
-            if (!string.IsNullOrEmpty(form.Search))
-            {
-                var stringProperties = typeof(TEntity).GetProperties().Where(prop =>
-                    prop.PropertyType == form.Search.GetType());
-                query = query.Where(customer =>
-                    stringProperties.Any(prop =>
-                        prop.GetValue(customer, null) == form.Search));
-            }
+            var query = this.ApplySearch(dbSet, form);
 
             if (form.Take == 0)
                 form.Take = 1000;
             
             var totalCount = query.Count();
-            var entities = query.Skip(form.Skip)
+            var entities = ApplySort(query, form)
+                .Skip(form.Skip)
                 .Take(form.Take).ToList();
 
             var a = new SearchResult<TListDto>
@@ -81,17 +67,34 @@ namespace Application.Shared
             return a;
         }
 
-        public IEnumerable<ValidateResult> Import(IEnumerable<TListDto> entitiesFrom)
+        protected virtual IQueryable<TEntity> ApplySearch(IQueryable<TEntity> query, SearchFormDto form)
         {
-            var result = new List<ValidateResult>();
-            
-            foreach (var dto in entitiesFrom) 
-                result.Add(SaveOrCreate(dto));
+            if (string.IsNullOrEmpty(form.Search)) return query;
 
-            return result;
+            var stringProperties = typeof(TEntity).GetProperties()
+                .Where(prop => prop.PropertyType == form.Search.GetType());
+
+            return query.Where(customer =>
+                stringProperties.Any(prop =>
+                    (string)prop.GetValue(customer, null) == form.Search));
+        }
+
+        protected virtual IQueryable<TEntity> ApplySort(IQueryable<TEntity> query, SearchFormDto form)
+        {
+            return query.OrderBy(i => i.Id);
+        }
+
+        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
+        {
+            var result = new ImportResult();
+            
+            foreach (var dto in entitiesFrom)
+                result.Results.Add(SaveOrCreateInner(dto, true));
+
+            return MapFromImportResult(result);
         }
         
-        public ValidateResult ImportFromExcel(Stream fileStream)
+        public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
@@ -102,17 +105,50 @@ namespace Application.Shared
             if (excelMapper.Errors.Any(e => e.IsError))
             {
                 string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
+                var result = new ImportResult();
+                result.Results.AddRange(excelMapper.Errors);
+
+                return MapFromImportResult(result);
             }
 
             var importResult = Import(dtos);
-            if (importResult.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
+
+            return importResult;
+        }
+
+        private ImportResultDto MapFromImportResult(ImportResult importResult)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("validation.createdCountMessage".Translate(user.Language, importResult.CreatedCount));
+            sb.AppendLine("validation.updatedCountMessage".Translate(user.Language, importResult.UpdatedCount));
+
+            if (importResult.DuplicatedRecordErrorsCount > 0)
+            { 
+                sb.AppendLine("validation.duplicatedRecordErrorMessage".Translate(user.Language, importResult.DuplicatedRecordErrorsCount));
             }
 
-            return new ValidateResult();
+            if (importResult.InvalidDictionaryValueErrorsCount > 0)
+            {
+                sb.AppendLine("validation.invalidDictionaryValueErrorMessage".Translate(user.Language, importResult.InvalidDictionaryValueErrorsCount));
+            }
+
+            if (importResult.InvalidValueFormatErrorsCount > 0)
+            {
+                sb.AppendLine("validation.invalidFormatErrorCountMessage".Translate(user.Language, importResult.InvalidValueFormatErrorsCount));
+            }
+
+            if (importResult.RequiredErrorsCount > 0)
+            {
+                sb.AppendLine("validation.requiredErrorMessage".Translate(user.Language, importResult.RequiredErrorsCount));
+            }
+
+            return new ImportResultDto
+            {
+                Message = sb.ToString()
+            };
         }
 
         public Stream ExportToExcel()
@@ -133,34 +169,62 @@ namespace Application.Shared
 
         public ValidateResult SaveOrCreate(TListDto entityFrom)
         {
-            var dbSet = _dataService.GetDbSet<TEntity>();
-            if (!string.IsNullOrEmpty(entityFrom.Id))
+            return SaveOrCreateInner(entityFrom, false);
+        }
+
+        protected TEntity FindById(TListDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Id) && Guid.TryParse(dto.Id, out Guid id))
             {
-                var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
-                if (entityFromDb != null)
-                {
-                    MapFromDtoToEntity(entityFromDb, entityFrom);
-                    
-                    dbSet.Update(entityFromDb);
-                    
-                    _dataService.SaveChanges();
-                    return new ValidateResult
-                    {
-                        Id = entityFromDb.Id.ToString()
-                    };
-                }
+                var dbSet = _dataService.GetDbSet<TEntity>();
+                return dbSet.GetById(id);
             }
-            var entity = new TEntity
+            else
             {
-                Id = Guid.NewGuid()
-            };
-            MapFromDtoToEntity(entity, entityFrom);
-            dbSet.Add(entity);
-            _dataService.SaveChanges();
-            return new ValidateResult
+                return null;
+            }
+        }
+
+        protected ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        {
+            var dbSet = _dataService.GetDbSet<TEntity>();
+
+            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
+            var isNew = entityFromDb == null;
+
+            if (isNew)
             {
-                Id = entity.Id.ToString()
-            };
+                entityFromDb = new TEntity
+                {
+                    Id = Guid.NewGuid()
+                };
+            }
+
+            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
+
+            if (!result.IsError)
+            {
+                if (isNew)
+                {
+                    dbSet.Add(entityFromDb);
+                    result.ResultType = ValidateResultType.Created;
+                }
+                else
+                {
+                    dbSet.Update(entityFromDb);
+                    result.ResultType = ValidateResultType.Updated;
+                }
+
+                _dataService.SaveChanges();
+
+                Log.Information($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+            }
+            else
+            {
+                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+            }
+
+            return result;
         }
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()

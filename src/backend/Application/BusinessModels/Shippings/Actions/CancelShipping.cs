@@ -49,14 +49,13 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetCancelled".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetCancelled".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Shipping shipping)
+        public bool IsAvailable(Shipping shipping)
         {
-            return (shipping.Status == ShippingState.ShippingCreated || shipping.Status == ShippingState.ShippingRequestSent || shipping.Status == ShippingState.ShippingConfirmed) 
-                && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return shipping.Status == ShippingState.ShippingCreated || shipping.Status == ShippingState.ShippingRequestSent || shipping.Status == ShippingState.ShippingConfirmed;
         }
     }
 }

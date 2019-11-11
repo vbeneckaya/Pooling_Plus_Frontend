@@ -131,15 +131,7 @@ class SuperGrid extends Component {
         }, this.debounceSetFilterApiAndLoadList);
     };
 
-    setSort = (e, { name, value }) => {
-        const isDesc = value === 'desc';
-        const sort =
-            this.state.sort.name === name && this.state.sort.desc === isDesc
-                ? {}
-                : {
-                      name: name,
-                      desc: isDesc,
-                  };
+    setSort = (sort) => {
         const { storageSortItem } = this.props;
 
         storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify(sort));
@@ -188,7 +180,8 @@ class SuperGrid extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({ fullText: value, page: 1 }, this.debounceSetFilterApiAndLoadList);
+        console.log('5555', value);
+        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {
@@ -197,7 +190,6 @@ class SuperGrid extends Component {
         this.setState(
             {
                 filters: {},
-                fullText: '',
                 sort: {},
                 page: 1,
                 selectedRows: new Set(),
@@ -296,7 +288,7 @@ class SuperGrid extends Component {
                     searchOnChange={this.changeFullTextFilter}
                     counter={count}
                     storageRepresentationItems={storageRepresentationItems}
-                    disabledClearFilter={!Object.keys(filters).length && !fullText}
+                    disabledClearFilter={!Object.keys(filters).length}
                     clearFilter={this.clearFilters}
                     updatingFilter={this.updatingFilter}
                     filter={filters}
@@ -322,6 +314,7 @@ class SuperGrid extends Component {
                                 catalogs={catalogsFromGrid}
                                 isShowActions={isShowActions}
                                 sort={sort}
+                                gridName={name}
                                 checkAllDisabled={checkAllDisabled || onlyOneCheck}
                                 setFilter={this.setFilter}
                                 setSort={this.setSort}

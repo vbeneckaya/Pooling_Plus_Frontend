@@ -28,7 +28,7 @@ namespace Application.Shared.Excel.Columns
                 bool? value = (bool?)Property.GetValue(entity);
                 if (value.HasValue)
                 {
-                    cell.Value = (value == true ? "Yes" : "No").translate(Language);
+                    cell.Value = (value == true ? "Yes" : "No").Translate(Language);
                 }
             }
             else

@@ -1,6 +1,7 @@
 ﻿using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Warehouses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -131,6 +132,7 @@ namespace Tasks.Orders
         private bool ProcessOrderFile(string fileName, string fileContent)
         {
             IWarehousesService warehousesService = _serviceProvider.GetService<IWarehousesService>();
+            IShippingWarehousesService shippingWarehousesService = _serviceProvider.GetService<IShippingWarehousesService>();
             IOrdersService ordersService = _serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
@@ -158,7 +160,7 @@ namespace Tasks.Orders
                     dto = new OrderFormDto();
                 }
 
-                dto.AdditionalInfo = "INJECTION";
+                dto.AdditionalInfo = $"INJECTION - {fileName}";
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
@@ -170,25 +172,37 @@ namespace Tasks.Orders
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
                 dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME") ?? dto.OrderAmountExcludingVAT;
 
+                string shippingAddressCode = docRoot.SelectSingleNode("E1EDP01/WERKS")?.InnerText;
+                var shippingWarehouse = shippingWarehousesService.GetByCode(shippingAddressCode);
+                dto.ShippingAddress = shippingWarehouse?.Address ?? dto.ShippingAddress;
+                dto.ShippingWarehouseId = shippingWarehouse?.Id.ToString() ?? dto.ShippingWarehouseId;
+
                 string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
                 string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
                 string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
                 if (!string.IsNullOrEmpty(deliveryAddress2))
                 {
-                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : " ") + deliveryAddress2;
+                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
 
                 var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo);
                 if (deliveryWarehouse == null)
                 {
-                    dto.DeliveryCity = deliveryCity ?? dto.DeliveryCity;
-                    dto.DeliveryAddress = deliveryAddress ?? dto.DeliveryAddress;
+                    dto.ClientName = null;
+                    dto.DeliveryAddress = deliveryAddress;
+                    dto.DeliveryCity = deliveryCity;
+                    dto.DeliveryRegion = null;
+                    dto.PickingTypeId = null;
+                    dto.TransitDays = null;
                 }
                 else
                 {
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
                     updWarehouses.Add(deliveryWarehouse);
+
+                    dto.DeliveryCity = deliveryWarehouse.City;
+                    dto.DeliveryAddress = deliveryWarehouse.Address;
                 }
 
                 if (isNew)

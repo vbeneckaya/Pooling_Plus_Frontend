@@ -14,11 +14,13 @@ namespace Application.Services.PickingTypes
     {
         public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Name = dto.Name;
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override PickingTypeDto MapFromEntityToDto(PickingType entity)
@@ -41,6 +43,13 @@ namespace Application.Services.PickingTypes
                     Value = pickingType.Id.ToString()
                 };
             }
+        }
+
+        protected override IQueryable<PickingType> ApplySort(IQueryable<PickingType> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Name)
+                .ThenBy(i => i.Id);
         }
     }
 }

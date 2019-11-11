@@ -42,15 +42,13 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             autoComplete="off"
             value={value || ''}
             placeholder={t(name)}
-            label={{ basic: true, content: '' }}
-            labelPosition="right"
             onChange={onChange}
         />
     );
 
     const content = (
         <Form className="filter-popup">
-            <div>{t(name)}</div>
+            {/* <div>{t(name)}</div>*/}
             <Form.Group>
                 <Form.Field width={8}>
                     <DatePicker
@@ -78,7 +76,16 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     return (
         <div className="facet-input">
-            <Popup
+            {content}
+            {/*  <Popup
+                trigger={input}
+                content={content}
+                on="click"
+                hideOnScroll
+                className="from-popup"
+                position="bottom center"
+            />*/}
+            {/*<Popup
                 trigger={input}
                 content={content}
                 on="click"
@@ -105,7 +112,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
                 onClick={setSort}
             >
                 <Icon name="caret down" />
-            </Button>
+            </Button>*/}
         </div>
     );
 };

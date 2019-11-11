@@ -9,6 +9,9 @@ namespace Domain.Services.FieldProperties
         public string ReferenceSource { get; set; }
         public bool ShowRawReferenceValue { get; set; }
         public bool IsDefault { get; set; }
+        public bool IsIgnoredForFieldSettings { get; set; }
+        public bool IsBulkUpdateAllowed { get; set; }
+        public bool IsFixedPosition { get; set; }
         public int OrderNumber { get; set; }
     }
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { ORDERS_GRID } from '../../../constants/grids';
 import { Button, Grid, Icon, Popup } from 'semantic-ui-react';
-import MassChanges from './mass-changes';
+import Mass_changes from './mass_changes';
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -51,7 +51,7 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
     return (
         <Grid className="grid-footer-panel" columns="2">
             <Grid.Row>
-                <Grid.Column>
+                <Grid.Column width={10}>
                     {gridName === ORDERS_GRID ? (
                         <Popup
                             trigger={
@@ -72,11 +72,11 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                             className="from-popup"
                         />
                     ) : null}
-                    <div style={{ paddingTop: '4px' }}>
+                    <div className="footer_actions">
                         {groupActions
                             ? groupActions().map(action => (
-                                  <span key={action.name}>
                                       <Button
+                                          key={action.name}
                                           color={action.color}
                                           content={action.name}
                                           loading={action.loading}
@@ -88,13 +88,12 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                                               action.action(action.ids, clearSelectedRows)
                                           }
                                       />
-                                  </span>
                               ))
                             : null}
                     </div>
                 </Grid.Column>
                 <Grid.Column floated="right">
-                    <MassChanges gridName={gridName} load={() => load(false, true)} />
+                    <Mass_changes gridName={gridName} load={() => load(false, true)} />
                 </Grid.Column>
             </Grid.Row>
         </Grid>

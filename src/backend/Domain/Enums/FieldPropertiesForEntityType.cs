@@ -4,6 +4,7 @@ namespace Domain.Enums
     {
         Orders,
         Shippings,
-        OrderItems
+        OrderItems,
+        RoutePoints
     }
 }

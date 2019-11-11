@@ -39,13 +39,13 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderRemoved".translate(user.Language, orderNumber)
+                Message = "orderRemoved".Translate(user.Language, orderNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Order order)
+        public bool IsAvailable(Order order)
         {
-            return (order.Status == OrderState.Created || order.Status == OrderState.Draft) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Created || order.Status == OrderState.Draft;
         }
     }
 }

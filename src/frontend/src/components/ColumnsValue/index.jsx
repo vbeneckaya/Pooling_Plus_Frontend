@@ -36,9 +36,11 @@ const CellValue = React.forwardRef(
             isTranslate,
             source,
             indexRow,
+            indexColumn,
             name,
             modalCard,
             showRawValue,
+            width
         },
         ref,
     ) => {
@@ -48,9 +50,11 @@ const CellValue = React.forwardRef(
             return (
                 <div ref={ref}>
                     <SelectValue
+                        width={width}
                         value={value}
                         source={source}
                         indexRow={indexRow}
+                        indexColumn={indexColumn}
                         showRawValue={showRawValue}
                     />
                 </div>
@@ -60,7 +64,8 @@ const CellValue = React.forwardRef(
         if (type === STATE_TYPE) {
             return (
                 <div ref={ref}>
-                    <StateValue value={value} source={source} indexRow={indexRow} />
+                    <StateValue width={width} value={value} source={source} indexRow={indexRow}
+                                indexColumn={indexColumn}/>
                 </div>
             );
         }
@@ -82,7 +87,7 @@ const CellValue = React.forwardRef(
         if (type === ENUM_TYPE) {
             return (
                 <div ref={ref}>
-                    <TextCropping>{t(value)}</TextCropping>
+                    <TextCropping width={width} indexColumn={indexColumn}>{t(value)}</TextCropping>
                 </div>
             );
         }
@@ -106,7 +111,7 @@ const CellValue = React.forwardRef(
                 modalCard,
                 null,
                 <div className="link-cell" ref={ref}>
-                    <TextCropping>{value}</TextCropping>
+                    <TextCropping width={width} indexColumn={indexColumn}>{value}</TextCropping>
                 </div>,
             );
         }
@@ -123,7 +128,7 @@ const CellValue = React.forwardRef(
 
         return (
             <div ref={ref}>
-                <TextCropping>{value}</TextCropping>
+                <TextCropping width={width} indexColumn={indexColumn}>{value}</TextCropping>
             </div>
         );
     },

@@ -38,13 +38,13 @@ namespace Application.BusinessModels.Orders.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "orderSetCancelled".translate(user.Language, order.OrderNumber)
+                Message = "orderSetCancelled".Translate(user.Language, order.OrderNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Order order)
+        public bool IsAvailable(Order order)
         {
-            return (order.Status == OrderState.Created || order.Status == OrderState.Draft) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return order.Status == OrderState.Created || order.Status == OrderState.Draft;
         }
     }
 }

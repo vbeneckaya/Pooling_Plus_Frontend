@@ -20,6 +20,7 @@ import {
     SETTINGS_TYPE_HIDE,
     SETTINGS_TYPE_SHOW,
 } from '../../constants/formTypes';
+import {ORDERS_GRID} from "../../constants/grids";
 
 const List = () => {
     const { t } = useTranslation();
@@ -112,7 +113,7 @@ const List = () => {
 
     const rolesListOptions = [
         { key: 'any_role', value: 'null', text: t('any_role') },
-        ...rolesList.map(x => ({ key: x.name, value: x.value, text: t(x.name) })),
+        ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
     ];
 
     /* const companyListOptions = [
@@ -225,6 +226,8 @@ const List = () => {
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
+    console.log('settings');
+
     return (
         <div className="container">
             <Menu>
@@ -286,13 +289,14 @@ const List = () => {
                             ))}
                         </Table.Row>
                         {baseSettings.map(column => (
-                            <RowBody column={column} />
+                            <RowBody key={column.name} column={column} />
                         ))}
                         {extSettings.length ? (
                             <>
                                 <Table.Row>
                                     <Table.Cell>
-                                        <div className="ui ribbon label">{t('articles')}</div>
+                                        <div
+                                            className="ui ribbon label">{activeItem === ORDERS_GRID ? t('articles') : t('route')}</div>
                                     </Table.Cell>
                                     {/* <Table.Cell />*/}
                                     {statusList.map((state, i) => (

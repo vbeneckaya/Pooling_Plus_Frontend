@@ -23,11 +23,21 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
-                    setter.UpdateField(o => o.DeliveryDate, newValue);
-                    setter.SaveHistoryLog();
+                    var updSetter = new FieldSetter<Order>(updOrder, _historyService);
+                    updSetter.UpdateField(o => o.DeliveryDate, newValue);
+                    updSetter.SaveHistoryLog();
                 }
             }
+
+            var setter = new FieldSetter<Order>(order, _historyService);
+
+            if (_isInjection)
+            {
+                setter.UpdateField(o => o.ShippingDate, newValue?.AddDays(0 - order.TransitDays ?? 0));
+            }
+            
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
@@ -42,13 +52,15 @@ namespace Application.BusinessModels.Orders.Handlers
             }
         }
 
-        public DeliveryDateHandler(ICommonDataService dataService, IHistoryService historyService)
+        public DeliveryDateHandler(ICommonDataService dataService, IHistoryService historyService, bool isInjection)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _isInjection = isInjection;
         }
 
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
+        private readonly bool _isInjection;
     }
 }

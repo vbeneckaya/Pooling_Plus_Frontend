@@ -3,6 +3,7 @@ using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Shippings;
+using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
@@ -16,6 +17,7 @@ using Domain.Services.Identity;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
@@ -120,7 +122,18 @@ namespace Application.Services.AppConfiguration
 
             if (canEditWarehouses)
             {
-                var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
+                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ShippingWarehousesService>(),
+                    CanCreateByForm = canEditWarehouses,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditWarehouses,
+                    ShowOnHeader = false,
+                    Columns = columns
+                });
+
+                columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
                     Name = GetName<WarehousesService>(),
@@ -239,18 +252,19 @@ namespace Application.Services.AppConfiguration
             if (forEntity.HasValue)
             {
                 var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
-                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
+                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0) || x.IsIgnoredForFieldSettings);
             }
 
             foreach (var field in fields.OrderBy(f => f.OrderNumber))
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
                 {
-                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault);
+                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition);
                 }
                 else
                 {
-                    yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, field.ShowRawReferenceValue);
+                    yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, 
+                                                                             field.ShowRawReferenceValue, field.IsFixedPosition);
                 }
             }
         }

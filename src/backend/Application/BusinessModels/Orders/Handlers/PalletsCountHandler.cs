@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.History;
+using System;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
@@ -17,7 +18,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public PalletsCountHandler(ICommonDataService dataService, IHistoryService historyService, bool isManual)
         {
-            this._dataService = dataService;
+            _dataService = dataService;
             _historyService = historyService;
             _isManual = isManual;
         }
@@ -46,6 +47,8 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.SaveHistoryLog();
                 }
             }
+
+            order.OrderChangeDate = DateTime.Now;
         }
 
         public string ValidateChange(Order order, int? oldValue, int? newValue)

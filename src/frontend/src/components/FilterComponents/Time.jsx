@@ -48,7 +48,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     const content = (
         <Form className="filter-popup">
-            <div>{t(name)}</div>
+            {/* <div>{t(name)}</div>*/}
             <Form.Group>
                 <Form.Field width={8}>
                     <Text type="time" value={getDateItem(0) || null} onChange={toggleStart} />
@@ -63,7 +63,8 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     return (
         <div className="facet-input">
-            <Popup
+            {content}
+            {/*<Popup
                 trigger={input}
                 content={content}
                 on="click"
@@ -90,7 +91,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
                 onClick={setSort}
             >
                 <Icon name="caret down" />
-            </Button>
+            </Button>*/}
         </div>
     );
 };
