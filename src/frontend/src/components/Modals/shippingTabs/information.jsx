@@ -120,21 +120,21 @@ const Information = ({ form = {}, onChange, settings }) => {
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="confirmedPalletsCount"
+                                                name="actualPalletsCount"
                                                 text="plan"
-                                                value={form['confirmedPalletsCount']}
+                                                value={form['actualPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['confirmedPalletsCount']}
+                                                settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="actualPalletsCount"
+                                                name="confirmedPalletsCount"
                                                 text="fact"
-                                                value={form['actualPalletsCount']}
+                                                value={form['confirmedPalletsCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['actualPalletsCount']}
+                                                settings={settings['confirmedPalletsCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
