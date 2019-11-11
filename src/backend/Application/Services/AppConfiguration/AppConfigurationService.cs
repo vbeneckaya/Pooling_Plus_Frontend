@@ -1,16 +1,19 @@
 using Application.Services.Articles;
+using Application.Services.BodyTypes;
 using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
+using Application.Services.Tonnages;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
 using Application.Services.Warehouses;
 using Domain.Enums;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
+using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
@@ -19,6 +22,7 @@ using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
+using Domain.Services.Tonnages;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
@@ -207,6 +211,28 @@ namespace Application.Services.AppConfiguration
                     ShowOnHeader = false,
                     Columns = columns
                 });
+
+                var bodyTypeColumns = ExtractColumnsFromDto<BodyTypeDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<BodyTypesService>(),
+                    CanCreateByForm = canEditVehicleTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
+                    ShowOnHeader = false,
+                    Columns = bodyTypeColumns
+                });
+
+                var tonnageColumns = ExtractColumnsFromDto<TonnageDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<TonnagesService>(),
+                    CanCreateByForm = canEditVehicleTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
+                    ShowOnHeader = false,
+                    Columns = tonnageColumns
+                });
             }
 
             var canEditDocumentTypes = _identityService.HasPermissions(RolePermissions.DocumentTypesEdit);
@@ -224,7 +250,7 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 });
             }
-                
+
             return dicts;
         }
 
