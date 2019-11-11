@@ -35,10 +35,9 @@ namespace Application.Services.FieldProperties
                 var fieldTypeAttr = (FieldTypeAttribute)Attribute.GetCustomAttribute(prop, typeof(FieldTypeAttribute));
 
                 bool isDefault = Attribute.IsDefined(prop, typeof(IsDefaultAttribute));
-
                 bool isIgnoredForFieldSettings = Attribute.IsDefined(prop, typeof(IgnoreFieldSettingsAttribute));
-
                 bool isBulkUpdateAllowed = Attribute.IsDefined(prop, typeof(AllowBulkUpdateAttribute));
+                bool isFixedPosition = Attribute.IsDefined(prop, typeof(IsFixedPositionAttribute));
 
                 int orderNumber = int.MaxValue;
                 if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
@@ -56,7 +55,8 @@ namespace Application.Services.FieldProperties
                     OrderNumber = orderNumber,
                     IsDefault = isDefault,
                     IsIgnoredForFieldSettings = isIgnoredForFieldSettings,
-                    IsBulkUpdateAllowed = isBulkUpdateAllowed
+                    IsBulkUpdateAllowed = isBulkUpdateAllowed,
+                    IsFixedPosition = isFixedPosition
                 };
                 yield return fieldInfo;
             }

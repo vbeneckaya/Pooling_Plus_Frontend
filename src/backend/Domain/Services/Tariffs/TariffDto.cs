@@ -9,19 +9,19 @@ namespace Domain.Services.Tariffs
         [ExcelIgnore]
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1)]
+        [FieldType(FieldType.Text), OrderNumber(1), IsFixedPosition]
         public string ShipmentCity { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(2)]
+        [FieldType(FieldType.Text), OrderNumber(2), IsFixedPosition]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(3)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
         public string TarifficationType { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(4)]
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition]
         public string CarrierId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(5)]
+        [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
         public string VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(6)]

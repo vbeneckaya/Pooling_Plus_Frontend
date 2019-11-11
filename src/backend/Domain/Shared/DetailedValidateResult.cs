@@ -1,3 +1,4 @@
+using Domain.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +31,7 @@ namespace Domain.Shared
             this.ResultType = ValidateResultType.Error;
             this.Errors.Add(new ValidationResultItem
             { 
-                Name = name,
+                Name = name?.ToLowerFirstLetter(),
                 Message = message,
                 ResultType = errorType
             });

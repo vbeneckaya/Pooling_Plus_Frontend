@@ -11,6 +11,7 @@ namespace Domain.Services.FieldProperties
         public bool IsDefault { get; set; }
         public bool IsIgnoredForFieldSettings { get; set; }
         public bool IsBulkUpdateAllowed { get; set; }
+        public bool IsFixedPosition { get; set; }
         public int OrderNumber { get; set; }
     }
 }

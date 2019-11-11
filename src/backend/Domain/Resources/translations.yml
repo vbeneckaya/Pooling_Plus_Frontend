@@ -245,7 +245,7 @@ ru:
   orderSetArchived: "Заказ {0} перенесен в архив"
   orderSetCancelled: "Заказ {0} отменен"
   ordersSetCancelled: "Отменены заказы: {0}"
-  orderSetCreated: "Создан заказ {0}"
+  orderSetCreated: "Заказ {0} переведен в статус создан"
   orderSetDelivered: "Заказ {0} доставлен"
   orderSetDraft: "Заказ {0} не проверен"
   orderSetFullReturn: "Полный возврат товара по заказу {0}"

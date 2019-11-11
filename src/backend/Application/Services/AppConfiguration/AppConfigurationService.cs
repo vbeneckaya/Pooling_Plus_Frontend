@@ -259,11 +259,12 @@ namespace Application.Services.AppConfiguration
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
                 {
-                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault);
+                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition);
                 }
                 else
                 {
-                    yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, field.ShowRawReferenceValue);
+                    yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, 
+                                                                             field.ShowRawReferenceValue, field.IsFixedPosition);
                 }
             }
         }
