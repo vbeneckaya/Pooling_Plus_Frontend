@@ -22,6 +22,7 @@ using Application.Services.TransportCompanies;
 using Application.Services.Users;
 using Application.Services.UserSettings;
 using Application.Services.VehicleTypes;
+using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
 using DAL;
 using DAL.Services;
@@ -39,6 +40,7 @@ using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
+using Domain.Services.ShippingWarehouseCity;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
@@ -47,6 +49,7 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.Users;
 using Domain.Services.UserSettings;
 using Domain.Services.VehicleTypes;
+using Domain.Services.WarehouseCity;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -89,6 +92,9 @@ namespace Infrastructure.Installers
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
+            services.AddSingleton<IWarehouseCityService, WarehouseCityService>();
+            services.AddSingleton<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);

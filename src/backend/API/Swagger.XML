@@ -281,6 +281,11 @@
             Поиск по номеру
             </summary>
         </member>
+        <member name="M:API.Controllers.ShippingWarehouseCity.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
         <member name="M:API.Controllers.SoldToController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
@@ -315,6 +320,11 @@
             <param name="key">Ключ для настроек</param>
             <param name="value">Новое значение</param>
             <returns></returns>
+        </member>
+        <member name="M:API.Controllers.WarehouseCity.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
         </member>
     </members>
 </doc>
