@@ -170,7 +170,7 @@ namespace Application.Services.Tariffs
 
         private string GetCarrierNameById(Guid id)
         {
-            var entry = _dataService.GetDbSet<TransportCompany>().GetById(id);
+            var entry = _dataService.GetDbSet<TransportCompany>().Find(id);
             return entry?.Title;
         }
 

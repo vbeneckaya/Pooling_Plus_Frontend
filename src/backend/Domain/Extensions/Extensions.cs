@@ -190,5 +190,10 @@ namespace Domain.Extensions
 
             return (TEnum?)Enum.Parse(typeof(TEnum), value, true);
         }
+
+        public static int? ToInt(this string intString)
+        {
+            return int.TryParse(intString, out int intValue) ? intValue : (int?)null;
+        }
     }
 }
