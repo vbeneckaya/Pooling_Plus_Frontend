@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Form, Input, Loader, Modal } from 'semantic-ui-react';
+import {Button, Dimmer, Form, Input, Loader, Modal, Tab} from 'semantic-ui-react';
 import {
+    allActionsSelector,
     allPermissionsSelector,
     clearRolesInfo,
     createRoleRequest,
+    getAllActionsRequest,
     getAllPermissionsRequest,
     getRoleCardRequest,
     progressSelector,
@@ -40,10 +42,11 @@ class RoleCard extends Component {
     }
 
     handleOpen = () => {
-        const { getRole, id, getAllPermissions } = this.props;
+        const {getRole, id, getAllPermissions, getAllActions} = this.props;
 
         id && getRole(id);
         getAllPermissions && getAllPermissions();
+        getAllActions && getAllActions();
 
         this.setState({
             modalOpen: true,
@@ -96,6 +99,16 @@ class RoleCard extends Component {
         this.handleChange(null, { name: 'permissions', value: Array.from(selectedPermissions) });
     };
 
+    handleActions = (e, {value}) => {
+        const {actions} = this.state.form;
+
+        const selectedActions = new Set(actions);
+
+        selectedActions[selectedActions.has(value) ? 'delete' : 'add'](value);
+
+        this.handleChange(null, {name: 'actions', value: Array.from(selectedActions)});
+    };
+
     mapData = () => {
         const { form } = this.state;
 
@@ -114,9 +127,10 @@ class RoleCard extends Component {
     };
 
     render() {
-        const { title, children, loading, t, allPermissions } = this.props;
+        const {title, children, loading, t, allPermissions, allActions} = this.props;
+        const {orderActions = [], shippingActions = []} = allActions;
         const { modalOpen, form } = this.state;
-        const { name, permissions = [] } = form;
+        const {name, permissions = [], actions = []} = form;
 
         return (
             <Modal
@@ -138,25 +152,86 @@ class RoleCard extends Component {
                             <label>{t('name')}</label>
                             <Input value={name} name="name" onChange={this.handleChange} />
                         </Form.Field>
-                        <Form.Field>
+                        {/*<Form.Field>
                             <label>{t('permissions')}</label>
-                        </Form.Field>
-                        {allPermissions.map(permission => (
-                            <Form.Field key={permission.code}>
-                                <Form.Checkbox
-                                    label={t(permission.name)}
-                                    value={permission.code}
-                                    checked={permissions.includes(permission.code)}
-                                    disabled={
-                                        ([2, 4, 5, 6].includes(permission.code) &&
-                                            !permissions.includes(1)) ||
-                                        ([10, 11, 12].includes(permission.code) &&
-                                            !permissions.includes(7))
-                                    }
-                                    onChange={this.handlePermissions}
-                                />
-                            </Form.Field>
-                        ))}
+                        </Form.Field>*/}
+                        <Tab
+                            panes={[
+                                {
+                                    menuItem: t('general'),
+                                    render: () => (
+                                        <Tab.Pane>
+                                            {allPermissions.map(permission => (
+                                                <Form.Field key={permission.code}>
+                                                    <Form.Checkbox
+                                                        label={t(permission.name)}
+                                                        value={permission.code}
+                                                        checked={permissions.includes(
+                                                            permission.code,
+                                                        )}
+                                                        disabled={
+                                                            ([2, 4, 5, 6].includes(
+                                                                permission.code,
+                                                                ) &&
+                                                                !permissions.includes(1)) ||
+                                                            ([10, 11, 12].includes(
+                                                                permission.code,
+                                                                ) &&
+                                                                !permissions.includes(7))
+                                                        }
+                                                        onChange={this.handlePermissions}
+                                                    />
+                                                </Form.Field>
+                                            ))}
+                                        </Tab.Pane>
+                                    ),
+                                },
+                                {
+                                    menuItem: t('order_actions'),
+                                    render: () => (
+                                        <Tab.Pane>
+                                            {
+                                                orderActions.map(action => (
+                                                    <Form.Field key={action}>
+                                                        <Form.Checkbox
+                                                            label={t(action)}
+                                                            value={action}
+                                                            checked={actions.includes(
+                                                                action,
+                                                            )}
+                                                            onChange={this.handleActions}
+                                                        />
+                                                    </Form.Field>
+                                                ))
+
+                                            }
+                                        </Tab.Pane>
+                                    ),
+                                },
+                                {
+                                    menuItem: t('shipping_actions'),
+                                    render: () => (
+                                        <Tab.Pane>
+                                            {
+                                                shippingActions.map(action => (
+                                                    <Form.Field key={action}>
+                                                        <Form.Checkbox
+                                                            label={t(action)}
+                                                            value={action}
+                                                            checked={actions.includes(
+                                                                action,
+                                                            )}
+                                                            onChange={this.handleActions}
+                                                        />
+                                                    </Form.Field>
+                                                ))
+
+                                            }
+                                        </Tab.Pane>
+                                    ),
+                                },
+                            ]}
+                        />
                     </Form>
                 </Modal.Content>
                 <Modal.Actions>
@@ -175,6 +250,7 @@ const mapStateToProps = state => {
         role: roleCardSelector(state),
         loading: progressSelector(state),
         allPermissions: allPermissionsSelector(state),
+        allActions: allActionsSelector(state),
     };
 };
 
@@ -191,6 +267,9 @@ const mapDispatchToProps = dispatch => {
         },
         getAllPermissions: () => {
             dispatch(getAllPermissionsRequest());
+        },
+        getAllActions: () => {
+            dispatch(getAllActionsRequest());
         },
     };
 };
