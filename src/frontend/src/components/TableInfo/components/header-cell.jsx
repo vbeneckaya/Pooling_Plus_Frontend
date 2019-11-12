@@ -7,9 +7,9 @@ const HeaderCellComponent = ({row}) => {
     let [position, setPosition] = useState(null);
 
     useEffect(() => {
-        console.log('cell', cellRef.current.offsetLeft);
-        setPosition(cellRef.current.offsetLeft)
-    }, [cellRef.current]);
+        setPosition(cellRef.current.offsetLeft);
+    }, []);
+
 
     return (
         <th

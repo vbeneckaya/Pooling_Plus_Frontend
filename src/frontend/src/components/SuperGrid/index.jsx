@@ -11,7 +11,7 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import { Confirm } from 'semantic-ui-react';
+import {Confirm, Loader} from 'semantic-ui-react';
 import Footer from './components/footer';
 
 const initState = (storageFilterItem, storageSortItem) => ({
@@ -271,6 +271,7 @@ class SuperGrid extends Component {
 
         return (
             <>
+                <Loader active={progress && !rows.length} size="huge" className="table-loader">Loading</Loader>
                 <HeaderSearchGrid
                     createButton={
                         createButton && (
