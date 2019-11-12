@@ -162,6 +162,9 @@
              &_activae {
                  opacity: 1!important;
              }
+            button:hover i {
+                color: rgba(34, 36, 38, 0.35) !important;
+            }
         }
 
         &__sort {
@@ -173,10 +176,10 @@
     }
 
     &:hover .facet-actions__filter {
-        -webkit-transition: opacity 1s ease-in-out;
-        -moz-transition: opacity 1s ease-in-out;
-        -o-transition: opacity 1s ease-in-out;
-        transition: opacity 1s ease-in-out;
+        -webkit-transition: opacity .8s ease-in-out;
+        -moz-transition: opacity .8s ease-in-out;
+        -o-transition: opacity .8s ease-in-out;
+        transition: opacity .8s ease-in-out;
         opacity: 1;
     }
 }

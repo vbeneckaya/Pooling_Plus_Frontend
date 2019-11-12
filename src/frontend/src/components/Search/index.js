@@ -13,22 +13,22 @@ class Search extends React.Component {
     }
 
     componentWillMount() {
-        this.timer = null;
+        //this.timer = null;
     }
 
     triggerChange = () => {
         const {value} = this.state;
 
         this.props.onChange(null, {value});
-    }
+    };
 
     handleChange = (e, {value}) => {
-        clearTimeout(this.timer);
+        //clearTimeout(this.timer);
 
         this.setState({value});
 
-        this.timer = setTimeout(this.triggerChange, 300);
-    }
+        //this.timer = setTimeout(this.triggerChange, 300);
+    };
 
     handleKeyPress = e => {
         if (e.keyCode === 13) {
