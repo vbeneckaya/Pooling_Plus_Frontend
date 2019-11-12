@@ -190,21 +190,16 @@ class RoleCard extends Component {
                                     menuItem: t('order_actions'),
                                     render: () => (
                                         <Tab.Pane>
-                                            {
-                                                orderActions.map(action => (
-                                                    <Form.Field key={action}>
-                                                        <Form.Checkbox
-                                                            label={t(action)}
-                                                            value={action}
-                                                            checked={actions.includes(
-                                                                action,
-                                                            )}
-                                                            onChange={this.handleActions}
-                                                        />
-                                                    </Form.Field>
-                                                ))
-
-                                            }
+                                            {orderActions.map(action => (
+                                                <Form.Field key={action}>
+                                                    <Form.Checkbox
+                                                        label={t(action)}
+                                                        value={action}
+                                                        checked={actions.includes(action)}
+                                                        onChange={this.handleActions}
+                                                    />
+                                                </Form.Field>
+                                            ))}
                                         </Tab.Pane>
                                     ),
                                 },
@@ -212,21 +207,16 @@ class RoleCard extends Component {
                                     menuItem: t('shipping_actions'),
                                     render: () => (
                                         <Tab.Pane>
-                                            {
-                                                shippingActions.map(action => (
-                                                    <Form.Field key={action}>
-                                                        <Form.Checkbox
-                                                            label={t(action)}
-                                                            value={action}
-                                                            checked={actions.includes(
-                                                                action,
-                                                            )}
-                                                            onChange={this.handleActions}
-                                                        />
-                                                    </Form.Field>
-                                                ))
-
-                                            }
+                                            {shippingActions.map(action => (
+                                                <Form.Field key={action}>
+                                                    <Form.Checkbox
+                                                        label={t(action)}
+                                                        value={action}
+                                                        checked={actions.includes(action)}
+                                                        onChange={this.handleActions}
+                                                    />
+                                                </Form.Field>
+                                            ))}
                                         </Tab.Pane>
                                     ),
                                 },
