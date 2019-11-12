@@ -281,7 +281,7 @@
             Поиск по номеру
             </summary>
         </member>
-        <member name="M:API.Controllers.ShippingWarehouseCity.ForSelect">
+        <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
             </summary>
@@ -321,7 +321,7 @@
             <param name="value">Новое значение</param>
             <returns></returns>
         </member>
-        <member name="M:API.Controllers.WarehouseCity.ForSelect">
+        <member name="M:API.Controllers.WarehouseCityController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
             </summary>

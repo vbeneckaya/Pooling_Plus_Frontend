@@ -10,7 +10,7 @@ namespace DAL.Migrations
         {
             Database.AddColumn("Tariffs", new Column("StartWinterPeriod", DbType.DateTime, property: ColumnProperty.Null));
             Database.AddColumn("Tariffs", new Column("EndWinterPeriod", DbType.DateTime, property: ColumnProperty.Null));
-            Database.AddColumn("Tariffs", new Column("WinterAllowance", DbType.Decimal, defaultValue: 0));
+            Database.AddColumn("Tariffs", new Column("WinterAllowance", DbType.Decimal, property: ColumnProperty.Null));
         }
     }
 }

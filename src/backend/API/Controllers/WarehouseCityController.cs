@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace API.Controllers
 {
     [Route("api/warehouseCity")]
-    public class WarehouseCity : Controller
+    public class WarehouseCityController : Controller
     {
         /// <summary>
         /// Получение данных для выпадающего списка
@@ -18,7 +18,7 @@ namespace API.Controllers
             return _service.ForSelect();
         }
 
-        public WarehouseCity(IWarehouseCityService service)
+        public WarehouseCityController(IWarehouseCityService service)
         {
             _service = service;
         }

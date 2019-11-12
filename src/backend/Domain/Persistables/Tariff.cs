@@ -48,7 +48,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Зимняя надбавка
         /// </summary>
-        public decimal WinterAllowance { get; set; }
+        public decimal? WinterAllowance { get; set; }
 
         /// <summary>
         /// Ставка FTL
