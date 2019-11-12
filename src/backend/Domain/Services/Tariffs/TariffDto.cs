@@ -9,10 +9,11 @@ namespace Domain.Services.Tariffs
         [ExcelIgnore]
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1), IsFixedPosition]
+        [FieldType(FieldType.Select, source: nameof(Warehouses), showRawValue: true), OrderNumber(1), IsFixedPosition]
         public string ShipmentCity { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(2), IsFixedPosition]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses), showRawValue: true), OrderNumber(2), IsFixedPosition]
+
         public string DeliveryCity { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
