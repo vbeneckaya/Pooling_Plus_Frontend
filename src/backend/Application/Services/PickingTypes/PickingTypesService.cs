@@ -18,7 +18,9 @@ namespace Application.Services.PickingTypes
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
+            
             entity.Name = dto.Name;
+            entity.IsActive = dto.IsActive;
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -28,13 +30,17 @@ namespace Application.Services.PickingTypes
             return new PickingTypeDto
             {
                 Id = entity.Id.ToString(),
-                Name = entity.Name
+                Name = entity.Name,
+                IsActive = entity.IsActive
             };
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var pickingTypes = _dataService.GetDbSet<PickingType>().OrderBy(c => c.Name).ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                .Where(i => i.IsActive)
+                .OrderBy(c => c.Name).ToList();
+
             foreach (PickingType pickingType in pickingTypes)
             {
                 yield return new LookUpDto

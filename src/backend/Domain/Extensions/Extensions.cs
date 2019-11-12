@@ -190,5 +190,10 @@ namespace Domain.Extensions
 
             return (TEnum?)Enum.Parse(typeof(TEnum), value, true);
         }
+
+        public static bool? ToBool(this string boolString)
+        {
+            return bool.TryParse(boolString, out bool boolValue) ? boolValue : (bool?)null;
+        }
     }
 }
