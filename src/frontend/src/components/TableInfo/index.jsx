@@ -10,6 +10,7 @@ import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
 import CellResult from "../SuperGrid/components/result_cell";
+import _ from "lodash";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -24,20 +25,42 @@ class TableInfo extends Component {
         filter: '',
     };
 
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.list.length !== this.props.list.length) {
+            return true
+        }
+
+        if (this.props.loading !== nextProps.loading) {
+            return true
+        }
+
+        if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
+            return true
+        }
+
+        if (_.isEqual(nextProps.list, this.props.list)) {
+            return false
+        }
+
+        return true
+    }
+
     componentDidMount() {
+        console.log('this.props.name', this.props.name);
         this.load();
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.name !== prevProps.name) {
-            this.load();
+            console.log('listupdate')
         }
     }
 
-    componentWillUnmount () {
-        const { clear } = this.props;
+    componentWillUnmount() {
+        /* const { clear } = this.props;
 
-        clear && clear();
+         clear && clear();*/
+        console.log('clear');
     }
 
     mapData = (isConcat, isReload) => {
@@ -133,6 +156,8 @@ class TableInfo extends Component {
 
         const { filter } = this.state;
 
+        console.log('list', list);
+
         return (
             <Container className={className}>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
@@ -224,8 +249,8 @@ class TableInfo extends Component {
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
-                                                      value={row[column.name]}
                                                       column={column}
+                                                      value={row[column.name]}
                                                   >
                                                       <CellValue
                                                           {...column}

@@ -1,6 +1,6 @@
 import React, {useRef, useEffect, useState} from 'react';
 
-const BodyCellComponent = ({column, children, value}) => {
+const BodyCellComponent = ({column, children}) => {
     const cellRef = useRef(null);
     let [position, setPosition] = useState(null);
     let [width, setWidth] = useState(null);
@@ -8,6 +8,9 @@ const BodyCellComponent = ({column, children, value}) => {
     useEffect(() => {
         setPosition(cellRef.current.offsetLeft);
         setWidth(cellRef.current.offsetWidth);
+        return () => {
+            console.log('clercell')
+        }
     }, []);
 
     return (
@@ -27,4 +30,4 @@ const BodyCellComponent = ({column, children, value}) => {
     );
 };
 
-export default BodyCellComponent;
+export default React.memo(BodyCellComponent);

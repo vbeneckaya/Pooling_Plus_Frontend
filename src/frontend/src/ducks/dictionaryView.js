@@ -79,7 +79,7 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_DICTIONARY_INFO:
             return {
                 ...state,
-                ...initial,
+                ...initial
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -216,8 +216,6 @@ export function* getListSaga({ payload }) {
     try {
         const { filter = {}, name, isConcat } = payload;
 
-        yield delay(1000);
-
         const result = yield postman.post(`/${name}/search`, filter);
 
         yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { ...result, isConcat } });
@@ -324,6 +322,6 @@ export function* saga() {
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
         takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
         takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
-        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
+        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga)
     ]);
 }
