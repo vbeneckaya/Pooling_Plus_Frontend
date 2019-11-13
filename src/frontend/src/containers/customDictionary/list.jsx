@@ -22,7 +22,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
 
 const newModal = (t, load, name) => (
-    <Card title={t('createCard', { name: t(name) })} id={null} loadList={load} name={name}>
+    <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> {t('create_btn')}
         </Button>
@@ -81,7 +81,7 @@ const List = ({
             importLoader={importLoader}
             exportLoader={exportLoader}
             newModal={isCreateBtn ? newModal : null}
-            modalCard={isCreateBtn ? <Card title={t('editCard', { name: t(name) })} /> : null}
+            modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
         />
     );
 };

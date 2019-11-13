@@ -20,7 +20,6 @@ class Result extends Component {
         }
 
         if (!_.isEqual(Array.from(nextProps.columns), Array.from(this.props.columns))) {
-            console.log('55555555');
             return true
         }
 
@@ -60,9 +59,6 @@ class Result extends Component {
             name,
             progress,
         } = this.props;
-
-        console.log('rows', rows);
-        console.log('columns', columns);
 
         return (
             <Table.Body>

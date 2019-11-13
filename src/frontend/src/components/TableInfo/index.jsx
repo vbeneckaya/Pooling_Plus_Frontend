@@ -85,7 +85,7 @@ class TableInfo extends Component {
         <Table.Row>
             {this.props.headerRow &&
             this.props.headerRow.map((row, index) => (
-                <HeaderCellComponent row={row}/>
+                <HeaderCellComponent key={row.name} row={row}/>
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>

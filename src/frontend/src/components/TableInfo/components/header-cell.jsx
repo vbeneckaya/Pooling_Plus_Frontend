@@ -14,7 +14,6 @@ const HeaderCellComponent = ({row}) => {
     return (
         <th
             className={row.isFixedPosition ? 'no-scroll table-header-cell' : 'table-header-cell'}
-            key={row.name}
             ref={cellRef}
             style={row.isFixedPosition ? {left: position} : null}
         >

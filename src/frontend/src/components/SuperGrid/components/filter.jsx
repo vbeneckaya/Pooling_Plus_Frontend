@@ -50,8 +50,6 @@ const Filter = props => {
         }, 500)
     };
 
-    console.log('width', customColumns);
-
     return (
         <Table.Row className="sticky-header">
             <Table.HeaderCell className="small-column">

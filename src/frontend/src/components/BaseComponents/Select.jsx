@@ -43,7 +43,7 @@ const Select = ({
         onChange(e, { value, name });
     };
 
-    let items = valuesList.map((x, index) => ({
+    let items = valuesList && valuesList.map((x, index) => ({
         key: `${x.value}_${index}`,
         value: x.value,
         text: isTranslate ? t(x.name) : x.name,

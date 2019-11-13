@@ -19,7 +19,9 @@ const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width}
         }
     }, []);
 
-    const valueText = lookup.find(x => x.value === value);
+    const valueText = lookup && lookup.length && lookup.find(x => x.value === value);
+
+    /* console.log('777', width, lookup);*/
 
     return <TextCropping width={width}
                          indexColumn={indexColumn}>{showRawValue ? value : valueText ? valueText.name : ''}</TextCropping>;
