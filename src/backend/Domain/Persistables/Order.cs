@@ -248,5 +248,15 @@ namespace Domain.Persistables
         /// Заказ подтвержден
         /// </summary>
         public bool OrderConfirmed { get; set; }
+
+        /// <summary>
+        /// Склад отгрузки
+        /// </summary>
+        public Guid? WarehouseId { get; set; }
+
+        /// <summary>
+        /// Статус возврата документов
+        /// </summary>
+        public bool DocumentReturnStatus { get; set; }
     }
 }

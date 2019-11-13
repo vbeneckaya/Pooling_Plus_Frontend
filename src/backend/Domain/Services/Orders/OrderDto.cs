@@ -177,6 +177,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? OrderConfirmed { get; set; }
 
-        /*end of fields*/
+        [FieldType(FieldType.Select, source: nameof(Warehouses))]
+        public string WarehouseId { get; set; }
+
+        [FieldType(FieldType.Boolean)]
+        public bool? DocumentReturnStatus { get; set; }
+
+        public string PickingFeatures { get; set; }
+
     }
 }
