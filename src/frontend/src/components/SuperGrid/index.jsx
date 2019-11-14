@@ -248,7 +248,7 @@ class SuperGrid extends Component {
         const {
             totalCount: count = 0,
             columns,
-            rows,
+            rows = [],
             progress,
             modalCard,
             catalogsFromGrid,
