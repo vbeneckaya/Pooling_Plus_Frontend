@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Label } from 'semantic-ui-react';
+import {sortFunc} from "../../utils/sort";
 
 const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange }) => {
     /* let showed = (fieldsConfig.order || [])
@@ -72,25 +73,13 @@ const getItemStyle = (isDragging, draggableStyle) => {
     };
 };
 
-const sortFunc = (item, t) => {
-    item.sort(function(a, b) {
-        const nameA = t(a.id).toLowerCase();
-        const nameB = t(b.id).toLowerCase();
-        if (nameA < nameB)
-            //сортируем строки по возрастанию
-            return -1;
-        if (nameA > nameB) return 1;
-        return 0; // Никакой сортировки
-    });
 
-    return item;
-};
 
 class DnDList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: sortFunc(this.props.left.map(x => ({ id: x.name, content: x })), props.t),
+            items: sortFunc(this.props.left.map(x => ({ id: x.name, content: x })), props.t, 'id'),
             selected: this.props.right.map(x => ({ id: x.name, content: x })),
         };
     }
@@ -105,7 +94,7 @@ class DnDList extends React.Component {
     onDragEnd = result => {
         const { source, destination } = result;
         let state = {
-            items: sortFunc(this.state.items, this.props.t),
+            items: sortFunc(this.state.items, this.props.t, 'id'),
             selected: this.state.selected,
         };
         // dropped outside the list
@@ -122,7 +111,7 @@ class DnDList extends React.Component {
             if (source.droppableId === 'droppable2') {
                 state.selected = items;
             } else {
-                state.items = sortFunc(items, this.props.t);
+                state.items = sortFunc(items, this.props.t, 'id');
             }
         } else {
             const result = move(
@@ -134,7 +123,7 @@ class DnDList extends React.Component {
             );
 
             state = {
-                items: sortFunc(result.droppable, this.props.t),
+                items: sortFunc(result.droppable, this.props.t, 'id'),
                 selected: result.droppable2,
             };
         }
