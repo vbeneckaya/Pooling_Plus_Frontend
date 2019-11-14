@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
 import {Button, Checkbox, Dimmer, Loader, Table} from 'semantic-ui-react';
-import CellResult from './result_cell';
+import BodyCell from './body_cell';
 import _ from 'lodash'
 
 class Result extends Component {
@@ -87,7 +87,7 @@ class Result extends Component {
                         </Table.Cell>
                         {columns &&
                         columns.map((column, indexColumn) => (
-                            <CellResult
+                            <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
                                 row={row}
                                 column={column}

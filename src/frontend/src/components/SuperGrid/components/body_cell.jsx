@@ -21,7 +21,7 @@ const ModalComponent = ({ element, props, children }) => {
     return React.cloneElement(element, props, children);
 };
 
-const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gridName, t}) => {
+const BodyCell = ({row, column, loadList, indexRow, indexColumn, modalCard, gridName, t}) => {
     const dispatch = useDispatch();
     const checkProgress = useSelector(state => checkProgressSelector(state));
     const editProgress = useSelector(state => progressMassUpdateSelector(state));
@@ -83,8 +83,6 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
             }),
         );
     };
-
-    console.log('cell');
 
     return (
         <>
@@ -182,6 +180,6 @@ const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gr
     );
 };
 
-export default React.memo(CellResult, (prevProps = {}, nextProps = {}) => {
+export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
     return prevProps.value === nextProps.value && prevProps.column.width === nextProps.column.width;
 });

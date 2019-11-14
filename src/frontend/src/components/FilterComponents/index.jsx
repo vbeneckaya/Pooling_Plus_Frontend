@@ -1,6 +1,6 @@
 import React, {useRef} from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, Icon, Popup } from 'semantic-ui-react';
+import {useTranslation} from 'react-i18next';
+import {Button, Icon, Popup} from 'semantic-ui-react';
 import './style.scss';
 import {
     BIG_TEXT_TYPE,
@@ -19,7 +19,7 @@ import TextFacet from './Text';
 import NumberFacet from './Number';
 import SelectFacet from './Select';
 import DateFacet from './Date';
-import TimeFaset from './Time';
+import TimeFacet from './Time';
 import StateFacet from './State';
 import Bool from './Bool';
 
@@ -30,7 +30,7 @@ const getTypeFacet = {
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,
     [DATE_TYPE]: <DateFacet />,
-    [TIME_TYPE]: <TimeFaset />,
+    [TIME_TYPE]: <TimeFacet/>,
     [STATE_TYPE]: <StateFacet />,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <SelectFacet />,
@@ -43,7 +43,7 @@ const Control = props => {
     return React.cloneElement(getTypeFacet[type], props);
 };
 
-const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, source, index}) => {
+const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, source, index}) => {
     const { t } = useTranslation();
     let sort = null;
 
@@ -68,6 +68,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
     };
 
     const contextRef = useRef(null);
+    console.log('filter');
 
     return (
         <div className="facet">
@@ -77,7 +78,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
             <div className="facet-actions">
                 <div
                     className={
-                        filters[name] ? 'facet-actions__filter_active' : 'facet-actions__filter'
+                        value ? 'facet-actions__filter_active' : 'facet-actions__filter'
                     }
                 >
                     <Popup
@@ -91,7 +92,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
                             <Control
                                 type={type}
                                 name={name}
-                                value={filters[name]}
+                                value={value}
                                 source={source}
                                 onChange={setFilter}
                             />
@@ -106,30 +107,12 @@ const FacetField = ({name, sort: sortObj, setSort, type, filters, setFilter, sou
                 <div className="facet-actions__sort">
                     {sort && sort === 'asc' ? <Icon name="sort amount up" /> : null}
                     {sort && sort === 'desc' ? <Icon name="sort amount down" /> : null}
-                    {/*<  <Button
-                        className={`sort-button sort-button-up ${
-                            sort === 'asc' ? 'sort-button-active' : ''
-                            }`}
-                        name={name}
-                        value="asc"
-                        onClick={setSort}
-                    >
-                        <Icon name="caret up"/>
-                    </Button>
-                    <Button
-                        className={`sort-button sort-button-down ${
-                            sort === 'desc' ? 'sort-button-active' : ''
-                            }`}
-                        name={name}
-                        value="desc"
-                        onClick={setSort}
-                    >
-                        <Icon name="caret down"/>
-                    </Button>*/}
                 </div>
             </div>
         </div>
     );
 };
 
-export default FacetField;
+export default React.memo(FacetField, (prevProps, nextProps) => {
+    return prevProps.value === nextProps.value && prevProps.sort.name === nextProps.sort.name && prevProps.sort.desc === nextProps.sort.desc;
+});

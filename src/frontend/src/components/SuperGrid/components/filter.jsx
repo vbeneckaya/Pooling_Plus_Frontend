@@ -79,7 +79,17 @@ const Filter = props => {
                             .toLowerCase()
                             .replace(' ', '-')}-facet`}
                     >
-                        <FacetField key={'facet' + x.name} index={i} {...x} {...props} />
+                        <FacetField
+                            key={'facet' + x.name}
+                            index={i}
+                            name={x.name}
+                            sort={props.sort}
+                            setSort={props.setSort}
+                            type={x.type}
+                            value={props.filters[x.name]}
+                            setFilter={props.setFilter}
+                            source={x.source}
+                        />
                     </Table.HeaderCell>
                 </Resizable>
             ))}
