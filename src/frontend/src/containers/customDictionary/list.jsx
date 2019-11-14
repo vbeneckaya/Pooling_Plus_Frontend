@@ -32,12 +32,15 @@ const newModal = (t, load, name) => (
 
 class List extends Component {
 
+    state = {};
+
     componentDidMount() {
         console.log('dictionary');
     }
 
     componentWillUnmount() {
         console.log('clear dictionary');
+        this.props.clear();
     }
 
     handleImportFromExcel = (form, callbackSuccess) => {

@@ -48,4 +48,4 @@ const InfiniteScrollTable = ({
     );
 };
 
-export default InfiniteScrollTable;
+export default React.memo(InfiniteScrollTable);

@@ -90,6 +90,7 @@ class Result extends Component {
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
                                 row={row}
                                 column={column}
+                                value={row[column.name]}
                                 indexRow={indexRow}
                                 indexColumn={indexColumn}
                                 loadList={loadList}

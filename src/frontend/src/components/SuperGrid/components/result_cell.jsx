@@ -86,6 +86,8 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
         );
     };
 
+    console.log('cell');
+
     return (
         <>
             <Table.Cell
@@ -96,6 +98,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
                         }`}
+                        ref={contextRef}
                         onClick={e =>
                             column.type !== LINK_TYPE
                                 ? handleClick(row.id, column.name, row.status)
@@ -104,8 +107,6 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                     >
                         <CellValue
                             {...column}
-                            ref={contextRef}
-                            id={`${row.id}_${column.name}_${indexRow}`}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
                             value={row[column.name]}
@@ -182,4 +183,6 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     );
 };
 
-export default CellResult;
+export default React.memo(CellResult, (prevProps = {}, nextProps = {}) => {
+    return prevProps.value === nextProps.value && prevProps.column.width === nextProps.column.width;
+});

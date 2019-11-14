@@ -19,6 +19,10 @@ const Filter = props => {
 
     useEffect(() => {
         setColumns(columns);
+
+        return () => {
+            timer.current = null;
+        }
     }, [columns]);
 
 

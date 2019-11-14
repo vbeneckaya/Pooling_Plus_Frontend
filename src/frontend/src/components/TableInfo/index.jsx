@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { Button, Container, Dimmer, Grid, Icon, Loader, Table } from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import { debounce } from 'throttle-debounce';
@@ -9,7 +10,6 @@ import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
-import CellResult from "../SuperGrid/components/result_cell";
 import _ from "lodash";
 
 const ModalComponent = ({ element, props, children }) => {
@@ -251,28 +251,19 @@ class TableInfo extends Component {
                                                       key={`cell_${row.id}_${column.name}_${index}`}
                                                       column={column}
                                                       value={row[column.name]}
-                                                  >
-                                                      <CellValue
-                                                          {...column}
-                                                          key_id={`${row.id}_${
-                                                              column.name
-                                                          }_${index}`}
-                                                          id={row.id}
-                                                          toggleIsActive={(
+                                                      toggleIsActive={(
+                                                          event,
+                                                          {itemID, checked},
+                                                      ) =>
+                                                          toggleIsActive(
                                                               event,
-                                                              { itemID, checked },
-                                                          ) =>
-                                                              toggleIsActive(
-                                                                  event,
-                                                                  { itemID, checked },
-                                                                  this.load,
-                                                              )
-                                                          }
-                                                          indexRow={i}
-                                                          indexColumn={index}
-                                                          value={row[column.name]}
-                                                      />
-                                                  </BodyCellComponent>
+                                                              {itemID, checked},
+                                                              this.load,
+                                                          )
+                                                      }
+                                                      indexRow={i}
+                                                      indexColumn={index}
+                                                  />
                                               ))}
                                               {isShowActions ? (
                                                   <Table.Cell textAlign="center">
