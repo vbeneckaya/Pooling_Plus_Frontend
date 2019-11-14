@@ -344,6 +344,7 @@ class SuperGrid extends Component {
                             gridName={name}
                             groupActions={groupActions}
                             clearSelectedRows={this.clearSelectedRows}
+                            load={this.loadList}
                         />
                     ) : null}
                 </div>
