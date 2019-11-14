@@ -17,6 +17,6 @@ namespace Domain.Services.TransportCompanies
         public string DateOfPowerOfAttorney { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(4)]
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

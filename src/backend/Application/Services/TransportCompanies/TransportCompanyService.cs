@@ -38,7 +38,7 @@ namespace Application.Services.TransportCompanies
             entity.Title = dto.Title;
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
-            entity.IsActive = dto.IsActive;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -60,6 +60,11 @@ namespace Application.Services.TransportCompanies
             return query
                 .OrderBy(i => i.Title)
                 .ThenBy(i => i.Id);
+        }
+        public override TransportCompany FindByKey(TransportCompanyDto dto)
+        {
+            return _dataService.GetDbSet<TransportCompany>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
     }
 }
