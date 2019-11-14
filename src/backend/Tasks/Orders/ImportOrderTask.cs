@@ -240,6 +240,11 @@ namespace Tasks.Orders
                         }
 
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
+                        if (string.IsNullOrEmpty(nart))
+                        {
+                            continue;
+                        }
+
                         OrderItemDto itemDto = dto.Items.Where(i => i.Nart == nart).FirstOrDefault();
 
                         if (itemDto == null)

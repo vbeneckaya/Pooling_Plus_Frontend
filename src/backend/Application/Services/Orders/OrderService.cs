@@ -297,6 +297,7 @@ namespace Application.Services.Orders
 
         private void SaveItems(Order entity, OrderFormDto dto)
         {
+            bool isManual = !(dto.AdditionalInfo?.Contains("INJECTION") ?? false);
             if (dto.Items != null)
             {
                 HashSet<Guid> updatedItems = new HashSet<Guid>();
@@ -311,7 +312,7 @@ namespace Application.Services.Orders
                         {
                             OrderId = entity.Id
                         };
-                        MapFromItemDtoToEntity(item, itemDto, true);
+                        MapFromItemDtoToEntity(item, itemDto, true, isManual);
                         _dataService.GetDbSet<OrderItem>().Add(item);
 
                         _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
@@ -319,12 +320,12 @@ namespace Application.Services.Orders
                     else
                     {
                         updatedItems.Add(item.Id);
-                        MapFromItemDtoToEntity(item, itemDto, false);
+                        MapFromItemDtoToEntity(item, itemDto, false, isManual);
                         _dataService.GetDbSet<OrderItem>().Update(item);
                     }
                 }
 
-                var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id));
+                var itemsToRemove = entityItems.Where(i => !updatedItems.Contains(i.Id) && (isManual || !i.IsManualEdited));
                 foreach (var item in itemsToRemove)
                 {
                     _historyService.Save(entity.Id, "orderItemRemoved", item.Nart, item.Quantity);
@@ -335,7 +336,7 @@ namespace Application.Services.Orders
             }
         }
 
-        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto, bool isNew)
+        private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto, bool isNew, bool isManual)
         {
             var setter = new FieldSetter<OrderItem>(entity, _historyService);
 
@@ -345,6 +346,11 @@ namespace Application.Services.Orders
             setter.UpdateField(x => x.Quantity, dto.Quantity ?? 0, new OrderItemQuantityHandler(_historyService, isNew));
 
             setter.ApplyAfterActions();
+
+            if (isManual && setter.HasChanges)
+            {
+                entity.IsManualEdited = true;
+            }
         }
 
         private MapperConfiguration ConfigureMapper()

@@ -39,11 +39,11 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetDbSet<TEntity>().GetById(id);
-            Log.Debug("{entityName}.Get (Load from DB): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToDto(entity);
-            Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -66,7 +66,7 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearch(dbSet, form);
-            Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (form.Take == 0)
@@ -76,7 +76,7 @@ namespace Application.Shared
             var entities = ApplySort(query, form)
                 .Skip(form.Skip)
                 .Take(form.Take).ToList();
-            Log.Debug("{entityName}.Search (Load from DB): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var a = new SearchResult<TListDto>
@@ -84,7 +84,7 @@ namespace Application.Shared
                 TotalCount = totalCount,
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
-            Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -116,11 +116,11 @@ namespace Application.Shared
             
             foreach (var dto in entitiesFrom)
                 importResult.Results.Add(SaveOrCreateInner(dto, true));
-            Log.Debug("{entityName}.Import (Import): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Import (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromImportResult(importResult);
-            Log.Debug("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -136,7 +136,7 @@ namespace Application.Shared
 
             var excelMapper = CreateExcelMapper();
             var dtos = excelMapper.LoadEntries(workSheet).ToList();
-            Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (excelMapper.Errors.Any(e => e.IsError))
@@ -149,7 +149,7 @@ namespace Application.Shared
             }
 
             var importResult = Import(dtos);
-            Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return importResult;
         }
@@ -204,16 +204,16 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var entities = dbSet.ToList();
-            Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var dtos = entities.Select(MapFromEntityToDto);
-            Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var excelMapper = CreateExcelMapper();
             excelMapper.FillSheet(workSheet, dtos, user.Language);
-            Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new MemoryStream(excel.GetAsByteArray());
         }
@@ -246,7 +246,7 @@ namespace Application.Shared
 
             var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
             var isNew = entityFromDb == null;
-            Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (isNew)
@@ -262,7 +262,7 @@ namespace Application.Shared
             }
 
             var result = MapFromDtoToEntity(entityFromDb, entityFrom);
-            Log.Debug("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+            Log.Debug("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (!result.IsError)
@@ -279,7 +279,7 @@ namespace Application.Shared
                 }
 
                 _dataService.SaveChanges();
-                Log.Debug("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}", entityName, sw.ElapsedMilliseconds);
+                Log.Debug("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
                 Log.Information($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
             }
