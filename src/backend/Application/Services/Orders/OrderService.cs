@@ -111,7 +111,7 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService), ignoreChanges: true);
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
