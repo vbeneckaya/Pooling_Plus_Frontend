@@ -60,7 +60,7 @@ namespace Application.Services.ShippingWarehouses
             entity.City = dto.City;
             entity.Street = dto.Street;
             entity.House = dto.House;
-            entity.IsActive = dto.IsActive ?? false;
+            entity.IsActive = dto.IsActive ?? true;
 
             return new ValidateResult(null, entity.Id.ToString());
         }

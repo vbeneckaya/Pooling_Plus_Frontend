@@ -148,7 +148,8 @@ body {
 
 .table-loader {
     margin-top: 58px !important;
-
+    left: 50%;
+    top: calc(100vh / 2) !important;
     &-big {
         height: calc(100vh - 180px) !important;
         .ui.loader {

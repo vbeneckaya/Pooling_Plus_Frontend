@@ -26,11 +26,9 @@ namespace Tasks.Orders
     [Description("Импорт инжекций на создание нового заказа")]
     public class ImportOrderTask : TaskBase<ImportOrderProperties>, IScheduledTask
     {
-        public ImportOrderTask(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider, configuration) { }
-
         public string Schedule => "*/5 * * * *";
 
-        protected override async Task Execute(ImportOrderProperties props, CancellationToken cancellationToken)
+        protected override async Task Execute(IServiceProvider serviceProvider, ImportOrderProperties props, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -61,7 +59,7 @@ namespace Tasks.Orders
             try
             {
                 Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
-                IInjectionsService injectionsService = _serviceProvider.GetService<IInjectionsService>();
+                IInjectionsService injectionsService = serviceProvider.GetService<IInjectionsService>();
 
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
@@ -97,7 +95,7 @@ namespace Tasks.Orders
                             try
                             {
                                 string content = sftpClient.ReadAllText(file.FullName);
-                                bool isSuccess = ProcessOrderFile(file.Name, content);
+                                bool isSuccess = ProcessOrderFile(serviceProvider, file.Name, content);
                                 injection.Status = isSuccess ? InjectionStatus.Success : InjectionStatus.Failed;
                             }
                             catch (Exception ex)
@@ -129,11 +127,11 @@ namespace Tasks.Orders
             return result;
         }
 
-        private bool ProcessOrderFile(string fileName, string fileContent)
+        private bool ProcessOrderFile(IServiceProvider serviceProvider, string fileName, string fileContent)
         {
-            IWarehousesService warehousesService = _serviceProvider.GetService<IWarehousesService>();
-            IShippingWarehousesService shippingWarehousesService = _serviceProvider.GetService<IShippingWarehousesService>();
-            IOrdersService ordersService = _serviceProvider.GetService<IOrdersService>();
+            IWarehousesService warehousesService = serviceProvider.GetService<IWarehousesService>();
+            IShippingWarehousesService shippingWarehousesService = serviceProvider.GetService<IShippingWarehousesService>();
+            IOrdersService ordersService = serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
             XmlDocument doc = new XmlDocument();

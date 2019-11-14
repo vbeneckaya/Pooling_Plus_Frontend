@@ -23,6 +23,7 @@ class RoleCard extends Component {
             form: {
                 name: '',
                 permissions: [],
+                actions: []
             },
         };
     }

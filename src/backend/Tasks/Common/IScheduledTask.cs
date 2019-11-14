@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tasks.Common
@@ -7,6 +8,6 @@ namespace Tasks.Common
     {
         string Schedule { get; }
         string TaskName { get; }
-        Task Execute(string consoleParameters, CancellationToken cancellationToken);
+        Task Execute(IServiceProvider serviceProvider, string consoleParameters, CancellationToken cancellationToken);
     }
 }

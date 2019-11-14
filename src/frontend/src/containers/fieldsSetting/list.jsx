@@ -226,8 +226,6 @@ const List = () => {
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
-    console.log('settings');
-
     return (
         <div className="container">
             <Menu>

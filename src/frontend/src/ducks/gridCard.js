@@ -179,7 +179,6 @@ export const cardSelector = createSelector(
 export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
-        console.log('settings', state, status);
         let settings = {};
         const { base = [] } = state;
         base.forEach(item => {
@@ -189,7 +188,6 @@ export const settingsFormSelector = createSelector(
             };
         });
 
-        console.log('result', settings);
         return settings;
     },
 );
@@ -197,7 +195,6 @@ export const settingsFormSelector = createSelector(
 export const settingsExtSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
-        console.log('settings', state, status);
         let settings = {};
         const { ext = [] } = state;
         ext.forEach(item => {
@@ -206,8 +203,6 @@ export const settingsExtSelector = createSelector(
                 [item.fieldName]: item.accessTypes[status],
             };
         });
-
-        console.log('result', settings);
         return settings;
     },
 );

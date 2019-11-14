@@ -1,8 +1,6 @@
-﻿using DAL;
-using DAL.Services;
+﻿using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.WarehouseCity;
-using Domain.Services.Warehouses;
 using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +20,14 @@ namespace Application.Services.WarehouseCity
         {
             return _dataService.GetDbSet<Warehouse>()
                 .Select(i => i.City)
+                .Where(i => !string.IsNullOrWhiteSpace(i))
                 .Distinct()
                 .Select(i => new LookUpDto
                 { 
                     Value = i,
                     Name = i
-                });
+                })
+                .ToList();
         }
     }
 }

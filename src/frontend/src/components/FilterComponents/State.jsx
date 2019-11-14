@@ -11,8 +11,6 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
 
     let values = value ? value.split('|') : [];
 
-    console.log('values', values);
-
     const toggle = (e, { value }) => {
         if (values.some(x => x === value)) {
             values.splice(values.indexOf(value), 1);

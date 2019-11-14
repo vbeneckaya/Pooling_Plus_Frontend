@@ -260,7 +260,7 @@ namespace Application.Services.Orders
                     && !string.IsNullOrEmpty(order.ShippingAddress)
                     && !string.IsNullOrEmpty(order.DeliveryAddress)
                     && !string.IsNullOrEmpty(order.Payer)
-                    && order.ShippingWarehouseId.HasValue
+                    //&& order.ShippingWarehouseId.HasValue
                     && order.DeliveryWarehouseId.HasValue
                     && order.ShippingDate.HasValue
                     && order.DeliveryDate.HasValue;
@@ -375,6 +375,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString("HH:mm")))
                     .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.OrderChangeDate, e => e.MapFrom((s, t) => s.OrderChangeDate?.ToString("dd.MM.yyyy HH:mm")));
 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 
-const State = ({ value, name, isDisabled, onChange, className, source, placeholder }) => {
+const State = ({value, name, isDisabled, onChange, className, source, placeholder, isRequired}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     let stateColors = useSelector(state => valuesListSelector(state, source)) || [];
@@ -33,7 +33,7 @@ const State = ({ value, name, isDisabled, onChange, className, source, placehold
     if (!isDisabled)
         return (
             <Form.Field>
-                <label className={isDisabled ? 'label-disabled' : null}>{t(name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${isRequired ? " *" : ""}`}</label>
                 <Dropdown
                     placeholder={placeholder}
                     className={className}

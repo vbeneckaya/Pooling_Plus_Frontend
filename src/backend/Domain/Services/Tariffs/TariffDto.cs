@@ -9,26 +9,26 @@ namespace Domain.Services.Tariffs
         [ExcelIgnore]
         public string Id { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), OrderNumber(1), IsFixedPosition]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), OrderNumber(1), IsFixedPosition, IsRequired]
         public string ShipmentCity { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), OrderNumber(2), IsFixedPosition]
+        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), OrderNumber(2), IsFixedPosition, IsRequired]
 
         public string DeliveryCity { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
         public string TarifficationType { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition]
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition, IsRequired]
         public string CarrierId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
         public string VehicleTypeId { get; set; }
 
-        [FieldType(FieldType.DateTime), OrderNumber(6)]
+        [FieldType(FieldType.Date), OrderNumber(6)]
         public string StartWinterPeriod { get; set; }
 
-        [FieldType(FieldType.DateTime), OrderNumber(7)]
+        [FieldType(FieldType.Date), OrderNumber(7)]
         public string EndWinterPeriod { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(8)]

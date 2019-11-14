@@ -9,6 +9,7 @@ import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
+import CellResult from "../SuperGrid/components/result_cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -84,7 +85,7 @@ class TableInfo extends Component {
         <Table.Row>
             {this.props.headerRow &&
             this.props.headerRow.map((row, index) => (
-                <HeaderCellComponent row={row}/>
+                <HeaderCellComponent key={row.name} row={row}/>
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>
@@ -134,6 +135,7 @@ class TableInfo extends Component {
 
         return (
             <Container className={className}>
+                <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
                     <Grid>
@@ -204,12 +206,10 @@ class TableInfo extends Component {
                     <InfiniteScrollTable
                         className="grid-table table-info"
                         onBottomVisible={this.nextPage}
+                        unstackable
                         context={this.container}
                         headerRow={this.headerRowComponent()}
                     >
-                        <Dimmer active={loading && !list.length} inverted className="table-loader table-loader-big">
-                            <Loader size="huge">Loading</Loader>
-                        </Dimmer>
                         <Table.Body>
                             {customRowComponent
                                 ? customRowComponent
@@ -224,6 +224,7 @@ class TableInfo extends Component {
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
+                                                      value={row[column.name]}
                                                       column={column}
                                                   >
                                                       <CellValue
@@ -243,6 +244,7 @@ class TableInfo extends Component {
                                                               )
                                                           }
                                                           indexRow={i}
+                                                          indexColumn={index}
                                                           value={row[column.name]}
                                                       />
                                                   </BodyCellComponent>
