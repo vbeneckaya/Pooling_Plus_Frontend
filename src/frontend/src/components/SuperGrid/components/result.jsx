@@ -7,7 +7,7 @@ import _ from 'lodash'
 class Result extends Component {
 
     shouldComponentUpdate(nextProps) {
-        if (nextProps.rows.length !== this.props.rows.length) {
+        if (nextProps.rows && this.props.rows && nextProps.rows.length !== this.props.rows.length) {
             return true
         }
 
