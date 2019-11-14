@@ -29,7 +29,7 @@ export class UsersList extends Component {
             id: itemID,
             active: checked,
             callbackSuccess: () => {
-                load();
+                load(false, true);
             },
         });
     };
