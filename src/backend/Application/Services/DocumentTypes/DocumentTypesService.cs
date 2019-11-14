@@ -17,7 +17,7 @@ namespace Application.Services.DocumentTypes
         public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             entity.Name = dto.Name;
-            entity.IsActive = dto.IsActive;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -54,6 +54,12 @@ namespace Application.Services.DocumentTypes
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+
+        public override DocumentType FindByKey(DocumentTypeDto dto)
+        {
+            return _dataService.GetDbSet<DocumentType>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
     }
 }

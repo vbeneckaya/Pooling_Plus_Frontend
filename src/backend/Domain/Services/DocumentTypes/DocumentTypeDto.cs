@@ -11,6 +11,6 @@ namespace Domain.Services.DocumentTypes
         public string Name { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(4)]
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

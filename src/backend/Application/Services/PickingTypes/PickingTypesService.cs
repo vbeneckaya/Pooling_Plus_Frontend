@@ -20,7 +20,7 @@ namespace Application.Services.PickingTypes
                 entity.Id = Guid.Parse(dto.Id);
             
             entity.Name = dto.Name;
-            entity.IsActive = dto.IsActive;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -46,7 +46,7 @@ namespace Application.Services.PickingTypes
                 yield return new LookUpDto
                 {
                     Name = pickingType.Name,
-                    Value = pickingType.Id.ToString()
+                    Value = pickingType.Id.ToString(),
                 };
             }
         }
@@ -56,6 +56,11 @@ namespace Application.Services.PickingTypes
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+        public override PickingType FindByKey(PickingTypeDto dto)
+        {
+            return _dataService.GetDbSet<PickingType>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
     }
 }
