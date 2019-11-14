@@ -14,15 +14,6 @@ namespace Tasks.Common
 {
     public abstract class TaskBase<TArgs> where TArgs : PropertiesBase
     {
-        protected readonly IServiceProvider _serviceProvider;
-        protected readonly IConfiguration _configuration;
-
-        public TaskBase(IServiceProvider serviceProvider, IConfiguration configuration)
-        {
-            _serviceProvider = serviceProvider;
-            _configuration = configuration;
-        }
-
         public string TaskName
         {
             get
@@ -37,28 +28,28 @@ namespace Tasks.Common
             }
         }
 
-        public async Task Execute(string consoleParameters, CancellationToken cancellationToken)
+        public async Task Execute(IServiceProvider serviceProvider, string consoleParameters, CancellationToken cancellationToken)
         {
-            var parameters = LoadParameters(consoleParameters);
+            var parameters = LoadParameters(serviceProvider, consoleParameters);
             foreach (var param in parameters)
             {
                 string args = JsonConvert.SerializeObject(param);
                 Log.Logger.Information("Выполнение задачи {TaskName} с параметрами {args}...", TaskName, args);
 
-                await Execute(param, cancellationToken);
+                await Execute(serviceProvider, param, cancellationToken);
             }
         }
 
-        protected abstract Task Execute(TArgs parameters, CancellationToken cancellationToken);
+        protected abstract Task Execute(IServiceProvider serviceProvider, TArgs parameters, CancellationToken cancellationToken);
 
-        private List<TArgs> LoadParameters(string consoleParameters)
+        private List<TArgs> LoadParameters(IServiceProvider serviceProvider, string consoleParameters)
         { 
-            var parametersStrList = GetParameters(consoleParameters);
+            var parametersStrList = GetParameters(serviceProvider, consoleParameters);
             var parametersList = parametersStrList.Select(CreateProperties).ToList();
             return parametersList;
         }
 
-        private List<string> GetParameters(string consoleParameters)
+        private List<string> GetParameters(IServiceProvider serviceProvider, string consoleParameters)
         {
             var result = new List<string>();
 
@@ -71,7 +62,7 @@ namespace Tasks.Common
             // 2. Параметры из базы
             if (!result.Any())
             {
-                var propertiesService = _serviceProvider.GetService<ITaskPropertiesService>();
+                var propertiesService = serviceProvider.GetService<ITaskPropertiesService>();
                 var propertiesEntries = propertiesService.GetByTaskName(TaskName);
                 result.AddRange(propertiesEntries.Select(p => p.Properties));
             }
@@ -79,7 +70,8 @@ namespace Tasks.Common
             // 3. Параметры из конфига
             if (!result.Any())
             {
-                string configParameters = _configuration.GetValue<string>($"{TaskName}:Args", null);
+                var configuration = serviceProvider.GetService<IConfiguration>();
+                string configParameters = configuration.GetValue<string>($"{TaskName}:Args", null);
                 if (!string.IsNullOrEmpty(configParameters))
                 {
                     result.Add(configParameters);

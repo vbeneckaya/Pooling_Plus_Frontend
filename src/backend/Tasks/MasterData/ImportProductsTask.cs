@@ -26,11 +26,9 @@ namespace Tasks.MasterData
     [Description("Импорт инжекций MatMas на сихронизацию мастер-данных по продуктам")]
     public class ImportProductsTask : TaskBase<ImportProductsProperties>, IScheduledTask
     {
-        public ImportProductsTask(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider, configuration) { }
-
         public string Schedule => "*/5 * * * *";
 
-        protected override async Task Execute(ImportProductsProperties props, CancellationToken cancellationToken)
+        protected override async Task Execute(IServiceProvider serviceProvider, ImportProductsProperties props, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -61,7 +59,7 @@ namespace Tasks.MasterData
             try
             {
                 Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
-                IInjectionsService injectionsService = _serviceProvider.GetService<IInjectionsService>();
+                IInjectionsService injectionsService = serviceProvider.GetService<IInjectionsService>();
 
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
@@ -97,7 +95,7 @@ namespace Tasks.MasterData
                             try
                             {
                                 string content = sftpClient.ReadAllText(file.FullName);
-                                bool isSuccess = ProcessProductsFile(file.Name, content);
+                                bool isSuccess = ProcessProductsFile(serviceProvider, file.Name, content);
                                 injection.Status = isSuccess ? InjectionStatus.Success : InjectionStatus.Failed;
                             }
                             catch (Exception ex)
@@ -129,10 +127,10 @@ namespace Tasks.MasterData
             return result;
         }
 
-        private bool ProcessProductsFile(string fileName, string fileContent)
+        private bool ProcessProductsFile(IServiceProvider serviceProvider, string fileName, string fileContent)
         {
             // Загружаем справочник стран
-            AppDbContext db = _serviceProvider.GetService<AppDbContext>();
+            AppDbContext db = serviceProvider.GetService<AppDbContext>();
             var countries = db.Countries.ToList();
             Dictionary<string, string> countryNameLookup = new Dictionary<string, string>();
             foreach (var country in countries)
@@ -141,7 +139,7 @@ namespace Tasks.MasterData
             }
 
             // Загружаем текущий список продуктов из базы
-            IArticlesService articlesService = _serviceProvider.GetService<IArticlesService>();
+            IArticlesService articlesService = serviceProvider.GetService<IArticlesService>();
             IEnumerable<ArticleDto> currentProducts = articlesService.Search(new SearchFormDto { Take = int.MaxValue }).Items;
 
             // Получаем список продуктов из файла, обновляем имеющиеся продукты
