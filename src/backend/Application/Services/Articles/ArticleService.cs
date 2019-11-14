@@ -1,12 +1,12 @@
-using System;
 using Application.Shared;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Articles;
+using Domain.Services.UserProvider;
 using Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DAL.Services;
-using Domain.Services.UserProvider;
 
 namespace Application.Services.Articles
 {
@@ -27,7 +27,7 @@ namespace Application.Services.Articles
             }
         }
 
-        public override void MapFromDtoToEntity(Article entity, ArticleDto dto)
+        public override ValidateResult MapFromDtoToEntity(Article entity, ArticleDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -70,7 +70,8 @@ namespace Application.Services.Articles
             entity.PalletHeightMm = dto.PalletHeightMm;
             entity.GrossPalletWeightG = dto.GrossPalletWeightG;
             entity.NetWeightPalletsG = dto.NetWeightPalletsG;
-            /*end of map dto to entity fields*/
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override ArticleDto MapFromEntityToDto(Article entity)
@@ -119,6 +120,13 @@ namespace Application.Services.Articles
                 NetWeightPalletsG = entity.NetWeightPalletsG,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Description)
+                .ThenBy(i => i.Id);
         }
     }
 }

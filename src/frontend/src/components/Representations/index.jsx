@@ -1,18 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    Button,
-    Confirm,
-    Form,
-    Input,
-    Label,
-    Message,
-    Modal,
-    Search,
-    Dropdown,
-    Grid,
-} from 'semantic-ui-react';
+import { Button, Confirm, Dropdown, Form, Input, Message, Modal } from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -23,7 +12,6 @@ import {
     representationSelector,
     representationsSelector,
     saveRepresentationRequest,
-    setRepresentationRequest,
 } from '../../ducks/representations';
 
 const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, representations }) => {
@@ -132,7 +120,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                     value: selectedFields,
                     callbackSuccess: () => {
                         onClose(() => {
-                            changeRepresentation(name);
+                            changeRepresentation(name, true);
                             /* dispatch(
                                 setRepresentationRequest({
                                     gridName,
@@ -179,8 +167,6 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
             onConfirm,
         });
     };
-
-    console.log('rr', representationName)
 
     return (
         <>
@@ -272,7 +258,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         <Button color="grey" onClick={onClose}>
                             {t('CancelButton')}
                         </Button>
-                        <Button color="blue" onClick={!isNew ? handleEdit : handleSave }>
+                        <Button color="blue" onClick={!isNew ? handleEdit : handleSave}>
                             {t('SaveButton')}
                         </Button>
                     </div>

@@ -16,13 +16,15 @@ const Text = ({
     datalist: valuesList = [],
     errorText,
     placeholder,
+                  isRequired,
 }) => {
     const { t } = useTranslation();
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label
+                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}

@@ -3,6 +3,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.TaskProperties;
 using Domain.Services.UserProvider;
+using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,14 @@ namespace Application.Services.TaskProperties
     {
         public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
+        public override ValidateResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.TaskName = dto.TaskName;
             entity.Properties = dto.Properties;
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TaskPropertyDto MapFromEntityToDto(TaskProperty entity)

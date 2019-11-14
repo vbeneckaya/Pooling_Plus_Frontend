@@ -1,8 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
-using Application.Shared;
-using Domain.Enums;
+using DAL.Services;
 using Domain.Persistables;
-using Domain.Services.History;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
+using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
@@ -10,27 +11,22 @@ namespace Application.BusinessModels.Orders.Handlers
     {
         public void AfterChange(Order order, string oldValue, string newValue)
         {
-            OrderType newOrderType;
-            if (order.OrderNumber.StartsWith("2"))
-                newOrderType = OrderType.FD;
-            else
-                newOrderType = OrderType.OR;
-
-            var setter = new FieldSetter<Order>(order, _historyService);
-            setter.UpdateField(o => o.OrderType, newOrderType);
-            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)
         {
-            return null;
+            string lang = _userProvider.GetCurrentUser()?.Language;
+            var hasSame = _dataService.GetDbSet<Order>().Where(x => x.OrderNumber == newValue && x.Id != order.Id).Any();
+            return hasSame ? "duplicateOrderNumber".Translate(lang) : null;
         }
 
-        public OrderNumberHandler(IHistoryService historyService)
+        public OrderNumberHandler(IUserProvider userProvider, ICommonDataService dataService)
         {
-            _historyService = historyService;
+            _userProvider = userProvider;
+            _dataService = dataService;
         }
 
-        private readonly IHistoryService _historyService;
+        private readonly IUserProvider _userProvider;
+        private readonly ICommonDataService _dataService;
     }
 }

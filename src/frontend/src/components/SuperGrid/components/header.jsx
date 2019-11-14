@@ -1,9 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Button, Dropdown, Form, Grid, Popup } from 'semantic-ui-react';
+import React, { useEffect, useRef } from 'react';
+import {Button, Grid, Icon, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import Select from '../../BaseComponents/Select';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     canExportToExcelSelector,
     canImportFromExcelSelector,
@@ -16,10 +15,10 @@ import {
 import FieldsConfig from '../../Representations/index';
 import {
     getRepresentationsRequest,
-    representationNameSelector,
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
+import AllFilters from "./all_filters";
 
 const Header = ({
     createButton,
@@ -27,6 +26,7 @@ const Header = ({
     searchOnChange,
     counter,
     clearFilter,
+    updatingFilter,
     disabledClearFilter,
     loadList,
     name,
@@ -76,18 +76,21 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(() => {
-        getRepresentations();
-    }, [name]);
+    useEffect(
+        () => {
+            getRepresentations();
+        },
+        [name],
+    );
 
-    const changeRepresentation = key => {
+    const changeRepresentation = (key, isEdit) => {
         dispatch(
             setRepresentationRequest({
                 gridName: name,
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    clearFilter();
+                    isEdit ? updatingFilter() : clearFilter();
                 },
             }),
         );
@@ -98,7 +101,7 @@ const Header = ({
             <Grid.Row>
                 <Grid.Column width={10}>
                     {createButton}
-                    <Search value={searchValue} onChange={searchOnChange} isAuto />
+                    <Search searchValue={searchValue} onChange={searchOnChange} isAuto/>
                     <span className="records-counter">{t('totalCount', { count: counter })}</span>
                 </Grid.Column>
                 <Grid.Column width={6} className="grid-right-elements">
@@ -119,12 +122,27 @@ const Header = ({
                         position="bottom right"
                         trigger={
                             <Button
-                                icon="times"
+                                icon="clear-filter"
+                                className={`clear-filter-btn`}
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
                             />
                         }
                     />
+                    {/*{
+                        <Popup
+                            content={<AllFilters gridName={name} filter={filter}/>}
+                            position="bottom right"
+                            trigger={
+                                <Button
+                                    icon
+                                >
+                                    <Icon color="primary" name={"sliders horizontal"}/>
+                                </Button>
+                            }
+                            on="click"
+                        />
+                    }*/}
                     {isImportBtn && (
                         <Popup
                             content={t('importFromExcel')}

@@ -10,6 +10,8 @@ before_script:
   - chmod 700 ~/.ssh
   - ssh-keyscan -t rsa 10.10.5.10 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa 10.10.5.15 >> ~/.ssh/known_hosts
+  - ssh-keyscan -t rsa bdf.tms.artlogics.ru >> ~/.ssh/known_hosts
+ 
 
   
 build-frontend-dev:
@@ -119,7 +121,7 @@ deploy-frontend-demo:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
   only:
-   - master
+   - demo
   when: manual    
  
 deploy-backend-demo:
@@ -132,7 +134,7 @@ deploy-backend-demo:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
   only:
-   - master
+   - demo
   when: manual    
  
 deploy-tasks-demo:
@@ -145,5 +147,44 @@ deploy-tasks-demo:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
   only:
-   - master
+   - demo
   when: manual     
+  
+deploy-backend-prod:
+  variables:
+    SSH_USER:  root
+    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
+  only:
+   - master
+  when: manual    
+
+deploy-frontend-prod:
+  variables:
+    SSH_USER:  root
+    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
+  only:
+   - master
+  when: manual 
+  
+deploy-tasks-prod:
+  variables:
+    SSH_USER:  root
+    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+  only:
+   - master
+  when: manual   

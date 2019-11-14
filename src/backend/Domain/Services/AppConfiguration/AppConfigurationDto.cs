@@ -8,5 +8,6 @@ namespace Domain.Services.AppConfiguration
         public IEnumerable<UserConfigurationDictionaryItem> Dictionaries { get; set; }
         public bool EditUsers { get; set; }
         public bool EditRoles { get; set; }
+        public bool EditFieldProperties { get; set; }
     }
 }

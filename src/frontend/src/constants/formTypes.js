@@ -1,2 +1,3 @@
-export const TABLE_TAB_TYPE = 'table';
-export const ROW_TAB_TYPE = 'ROW_TAB_TYPE';
+export const SETTINGS_TYPE_HIDE = 'hidden';
+export const SETTINGS_TYPE_SHOW = 'show';
+export const SETTINGS_TYPE_EDIT = 'edit';

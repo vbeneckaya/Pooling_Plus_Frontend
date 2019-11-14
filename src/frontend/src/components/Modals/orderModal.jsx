@@ -8,7 +8,7 @@ import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
-import {userPermissionsSelector} from "../../ducks/profile";
+import { userPermissionsSelector } from '../../ducks/profile';
 
 const OrderModal = ({
     form,
@@ -18,11 +18,12 @@ const OrderModal = ({
     load,
     isNotUniqueNumber,
     uniquenessNumberCheck,
+    settings,
 }) => {
     const { t } = useTranslation();
-    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(item => item.code);
-
-    console.log('userPermissions', userPermissions);
+    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
+        item => item.code,
+    );
 
     const getPanes = [
         {
@@ -31,6 +32,7 @@ const OrderModal = ({
                 <Tab.Pane className="tabs-card">
                     <Information
                         form={form}
+                        settings={settings}
                         isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
@@ -42,7 +44,13 @@ const OrderModal = ({
             menuItem: t('position'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Position form={form} onChange={onChangeForm} gridName={name} load={load} />
+                    <Position
+                        form={form}
+                        onChange={onChangeForm}
+                        gridName={name}
+                        load={load}
+                        settings={settings}
+                    />
                 </Tab.Pane>
             ),
         },
@@ -50,7 +58,7 @@ const OrderModal = ({
             menuItem: t('returns'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Returns form={form} onChange={onChangeForm} />
+                    <Returns form={form} settings={settings} onChange={onChangeForm} />
                 </Tab.Pane>
             ),
         },
@@ -61,10 +69,14 @@ const OrderModal = ({
             menuItem: t('documents'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Documents gridName={name} cardId={id} isEditPermissions={userPermissions.includes(5)} />
+                    <Documents
+                        gridName={name}
+                        cardId={id}
+                        isEditPermissions={userPermissions.includes(5)}
+                    />
                 </Tab.Pane>
             ),
-        })
+        });
     }
 
     if (userPermissions.includes(6)) {
@@ -75,7 +87,7 @@ const OrderModal = ({
                     <History cardId={id} status={form.status} />
                 </Tab.Pane>
             ),
-        },)
+        });
     }
 
     return (

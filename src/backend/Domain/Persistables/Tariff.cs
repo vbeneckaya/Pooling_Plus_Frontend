@@ -24,14 +24,32 @@ namespace Domain.Persistables
         /// Способ тарификации
         /// </summary>
         public TarifficationType? TarifficationType { get; set; }
+
         /// <summary>
         /// Транспортная компания
         /// </summary>
         public Guid? CarrierId { get; set; }
+
         /// <summary>
-        /// Тип ТС
+        /// Тип кузова
         /// </summary>
         public Guid? VehicleTypeId { get; set; }
+
+        /// <summary>
+        /// Начало зимнего периода
+        /// </summary>
+        public DateTime? StartWinterPeriod { get; set; }
+
+        /// <summary>
+        /// Окончание зимнего периода
+        /// </summary>
+        public DateTime? EndWinterPeriod { get; set; }
+
+        /// <summary>
+        /// Зимняя надбавка
+        /// </summary>
+        public decimal? WinterAllowance { get; set; }
+
         /// <summary>
         /// Ставка FTL
         /// </summary>

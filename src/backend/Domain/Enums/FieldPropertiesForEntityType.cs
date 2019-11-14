@@ -2,8 +2,9 @@ namespace Domain.Enums
 {
     public enum FieldPropertiesForEntityType
     {
-        Order,
-        Shipping,
-        OrderItem
+        Orders,
+        Shippings,
+        OrderItems,
+        RoutePoints
     }
 }

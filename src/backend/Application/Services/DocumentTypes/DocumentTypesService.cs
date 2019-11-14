@@ -9,13 +9,16 @@ using System.Linq;
 
 namespace Application.Services.DocumentTypes
 {
+
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
         public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             entity.Name = dto.Name;
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -38,6 +41,13 @@ namespace Application.Services.DocumentTypes
                 Id = entity.Id.ToString(),
                 Name = entity.Name
             };
+        }
+
+        protected override IQueryable<DocumentType> ApplySort(IQueryable<DocumentType> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Name)
+                .ThenBy(i => i.Id);
         }
     }
 }

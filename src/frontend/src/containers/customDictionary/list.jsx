@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import TableInfo from '../../components/TableInfo';
 import {
     canCreateByFormSelector,
     canExportToExcelSelector,
-    canImportFromExcelSelector,
+    canImportFromExcelSelector, clearDictionaryInfo,
     columnsSelector,
     exportProgressSelector,
     exportToExcelRequest,
@@ -22,7 +22,7 @@ import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
 
 const newModal = (t, load, name) => (
-    <Card title={t('createCard', { name: t(name) })} id={null} loadList={load} name={name}>
+    <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
         <Button size="small" color="blue" className="grid-action-btn">
             <Icon name="plus" /> {t('create_btn')}
         </Button>
@@ -43,6 +43,7 @@ const List = ({
     exportFromExcel,
     importLoader,
     exportLoader,
+    clear
 }) => {
     const { params = {} } = match;
     const { name = '' } = params;
@@ -72,6 +73,7 @@ const List = ({
             totalCount={totalCount}
             title={name}
             list={list}
+            clear={clear}
             isImportBtn={isImportBtn}
             isExportBtn={isExportBtn}
             importFromExcel={handleImportFromExcel}
@@ -79,7 +81,7 @@ const List = ({
             importLoader={importLoader}
             exportLoader={exportLoader}
             newModal={isCreateBtn ? newModal : null}
-            modalCard={isCreateBtn ? <Card title={t('editCard', { name: t(name) })} /> : null}
+            modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
         />
     );
 };
@@ -113,6 +115,9 @@ const mapDispatchToProps = dispatch => {
         exportFromExcel: params => {
             dispatch(exportToExcelRequest(params));
         },
+        clear: () => {
+            dispatch(clearDictionaryInfo())
+        }
     };
 };
 

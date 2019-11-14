@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Label } from 'semantic-ui-react';
 
 const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange }) => {
@@ -50,8 +50,6 @@ const move = (source, destination, droppableSource, droppableDestination, search
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
     destClone.splice(search ? destClone.length : droppableDestination.index, 0, removed);
-
-    console.log('destClone', droppableDestination, destClone);
 
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
@@ -134,7 +132,7 @@ class DnDList extends React.Component {
                 destination,
                 this.props.search,
             );
-            console.log('result', result);
+
             state = {
                 items: sortFunc(result.droppable, this.props.t),
                 selected: result.droppable2,
@@ -151,7 +149,7 @@ class DnDList extends React.Component {
 
     render() {
         const { t, search } = this.props;
-        console.log('search', this.state.selected);
+
         return (
             <DragDropContext onDragEnd={this.onDragEnd}>
                 <DroppableLabel

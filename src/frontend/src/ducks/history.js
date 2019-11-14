@@ -66,15 +66,9 @@ export const clearHistory = () => {
 
 const stateSelector = state => state.historyList;
 
-export const historySelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const historySelector = createSelector(stateSelector, state => state.data);
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 //*  SAGA  *//
 

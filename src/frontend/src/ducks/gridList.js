@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
-import { all, takeEvery, put, cancelled, delay, fork, cancel, select } from 'redux-saga/effects';
+import { downloader, postman } from '../utils/postman';
+import { all, cancel, cancelled, delay, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { IS_AUTO_UPDATE } from '../constants/settings';
 import { formatDate } from '../utils/dateTimeFormater';
 import { toast } from 'react-toastify';
@@ -234,7 +234,16 @@ export function* getListSaga({ payload }) {
 
         yield delay(1000);
 
-        const result = yield postman.post(`/${name}/search`, filter);
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const columns = representation ? representation.map(item => item.name) : [];
+
+        const result = yield postman.post(`/${name}/search`, {
+            ...filter,
+            filter: {
+                ...filter.filter,
+                columns,
+            },
+        });
 
         yield put({ type: GET_GRID_LIST_SUCCESS, payload: { ...result, isConcat } });
     } catch (error) {
@@ -329,10 +338,10 @@ function* importFromExcelSaga({ payload }) {
 function* exportToExcelSaga({ payload }) {
     try {
         const { name, filter } = payload;
-        const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const representation = yield select(state => representationFromGridSelector(state, name));
         const columns = representation ? representation.map(item => item.name) : [];
-        const result = yield postman.post(
+        /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
+       const result = yield postman.post(
             `/${name}/exportToExcel`,
             { columns, filter },
             { responseType: 'blob' },
@@ -340,6 +349,23 @@ function* exportToExcelSaga({ payload }) {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([result], { type: result.type }));
         link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();*/
+
+        const res = yield downloader.post(
+            `/${name}/exportToExcel`,
+            { columns, filter },
+            { responseType: 'blob' },
+        );
+        const { data } = res;
+        let headerLine = res.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('filename=') + 10;
+        let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
         yield put({ type: GRID_EXPORT_TO_EXCEL_SUCCESS });

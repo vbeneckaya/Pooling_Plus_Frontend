@@ -43,13 +43,13 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetRejected".translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetRejected".Translate(user.Language, shipping.ShippingNumber)
             };
         }
 
-        public bool IsAvailable(Role role, Shipping shipping)
+        public bool IsAvailable(Shipping shipping)
         {
-            return (shipping.Status == ShippingState.ShippingRequestSent) && (role.Name == "Administrator" || role.Name == "TransportCoordinator");
+            return shipping.Status == ShippingState.ShippingRequestSent;
         }
     }
 }

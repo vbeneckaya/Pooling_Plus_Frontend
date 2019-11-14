@@ -1,7 +1,5 @@
 import React from 'react';
 import { Button, Form, Icon, Input, Popup } from 'semantic-ui-react';
-import DatePicker from 'react-datepicker';
-import { dateToString, parseDate } from '../../utils/dateTimeFormater';
 import { useTranslation } from 'react-i18next';
 import Text from '../BaseComponents/Text';
 
@@ -50,7 +48,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     const content = (
         <Form className="filter-popup">
-            <div>{t(name)}</div>
+            {/* <div>{t(name)}</div>*/}
             <Form.Group>
                 <Form.Field width={8}>
                     <Text type="time" value={getDateItem(0) || null} onChange={toggleStart} />
@@ -65,7 +63,8 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
 
     return (
         <div className="facet-input">
-            <Popup
+            {content}
+            {/*<Popup
                 trigger={input}
                 content={content}
                 on="click"
@@ -92,7 +91,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
                 onClick={setSort}
             >
                 <Icon name="caret down" />
-            </Button>
+            </Button>*/}
         </div>
     );
 };

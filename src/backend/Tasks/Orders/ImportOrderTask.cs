@@ -1,6 +1,9 @@
 ﻿using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Domain.Services.ShippingWarehouses;
+using Domain.Services.Warehouses;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
@@ -11,16 +14,21 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Tasks.Common;
 using Tasks.Helpers;
 
 namespace Tasks.Orders
 {
     [Description("Импорт инжекций на создание нового заказа")]
-    public class ImportOrderTask : TaskBase
+    public class ImportOrderTask : TaskBase<ImportOrderProperties>, IScheduledTask
     {
-        public void Execute(ImportOrderProperties props)
+        public string Schedule => "*/5 * * * *";
+
+        protected override async Task Execute(IServiceProvider serviceProvider, ImportOrderProperties props, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(props.ConnectionString))
             {
@@ -51,7 +59,7 @@ namespace Tasks.Orders
             try
             {
                 Regex fileNameRe = new Regex(props.FileNamePattern, RegexOptions.IgnoreCase);
-                IInjectionsService injectionsService = ServiceProvider.GetService<IInjectionsService>();
+                IInjectionsService injectionsService = serviceProvider.GetService<IInjectionsService>();
 
                 ConnectionInfo sftpConnection = GetSftpConnection(props.ConnectionString);
                 using (SftpClient sftpClient = new SftpClient(sftpConnection))
@@ -87,7 +95,7 @@ namespace Tasks.Orders
                             try
                             {
                                 string content = sftpClient.ReadAllText(file.FullName);
-                                bool isSuccess = ProcessOrderFile(file.Name, content);
+                                bool isSuccess = ProcessOrderFile(serviceProvider, file.Name, content);
                                 injection.Status = isSuccess ? InjectionStatus.Success : InjectionStatus.Failed;
                             }
                             catch (Exception ex)
@@ -119,9 +127,11 @@ namespace Tasks.Orders
             return result;
         }
 
-        private bool ProcessOrderFile(string fileName, string fileContent)
+        private bool ProcessOrderFile(IServiceProvider serviceProvider, string fileName, string fileContent)
         {
-            IOrdersService ordersService = ServiceProvider.GetService<IOrdersService>();
+            IWarehousesService warehousesService = serviceProvider.GetService<IWarehousesService>();
+            IShippingWarehousesService shippingWarehousesService = serviceProvider.GetService<IShippingWarehousesService>();
+            IOrdersService ordersService = serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
             XmlDocument doc = new XmlDocument();
@@ -131,6 +141,7 @@ namespace Tasks.Orders
             }
 
             List<OrderFormDto> orders = new List<OrderFormDto>();
+            List<WarehouseDto> updWarehouses = new List<WarehouseDto>();
             var docRoots = doc.SelectNodes("//IDOC");
 
             int totalCount = docRoots.Count;
@@ -147,12 +158,11 @@ namespace Tasks.Orders
                     dto = new OrderFormDto();
                 }
 
-                dto.AdditionalInfo = "INJECTION";
+                dto.AdditionalInfo = $"INJECTION - {fileName}";
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
-                dto.BdfInvoiceNumber = orderNumber;
-                dto.OrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText ?? dto.OrderNumber;
+                dto.OrderNumber = orderNumber;
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
                 dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.SoldTo;
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
@@ -160,8 +170,42 @@ namespace Tasks.Orders
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
                 dto.OrderAmountExcludingVAT = docRoot.ParseDecimal("E1EDS01[SUMID='002']/SUMME") ?? dto.OrderAmountExcludingVAT;
 
+                string shippingAddressCode = docRoot.SelectSingleNode("E1EDP01/WERKS")?.InnerText;
+                var shippingWarehouse = shippingWarehousesService.GetByCode(shippingAddressCode);
+                dto.ShippingAddress = shippingWarehouse?.Address ?? dto.ShippingAddress;
+                dto.ShippingWarehouseId = shippingWarehouse?.Id.ToString() ?? dto.ShippingWarehouseId;
+
+                string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
+                string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
+                string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
+                if (!string.IsNullOrEmpty(deliveryAddress2))
+                {
+                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
+                }
+
+                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo);
+                if (deliveryWarehouse == null)
+                {
+                    dto.ClientName = null;
+                    dto.DeliveryAddress = deliveryAddress;
+                    dto.DeliveryCity = deliveryCity;
+                    dto.DeliveryRegion = null;
+                    dto.PickingTypeId = null;
+                    dto.TransitDays = null;
+                }
+                else
+                {
+                    deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
+                    deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
+                    updWarehouses.Add(deliveryWarehouse);
+
+                    dto.DeliveryCity = deliveryWarehouse.City;
+                    dto.DeliveryAddress = deliveryWarehouse.Address;
+                }
+
                 if (isNew)
                 {
+                    dto.ClientOrderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='001']/BELNR")?.InnerText ?? dto.ClientOrderNumber;
                     dto.Payer = docRoot.SelectSingleNode("E1EDKA1[PARVW='RG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.Payer;
                 }
 
@@ -187,6 +231,14 @@ namespace Tasks.Orders
                     {
                         ++entryInd;
 
+                        string posex = itemRoot.SelectSingleNode("POSEX")?.InnerText ?? string.Empty;
+                        int posexNum = -1;
+                        int.TryParse(posex.TrimStart('0'), out posexNum);
+                        if ((posexNum % 10) != 0)
+                        {
+                            continue;
+                        }
+
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
                         OrderItemDto itemDto = dto.Items.Where(i => i.Nart == nart).FirstOrDefault();
 
@@ -209,13 +261,13 @@ namespace Tasks.Orders
 
                     if (isNew)
                     {
-                        Log.Information("Создан новый заказ {BdfInvoiceNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
-                                        dto.BdfInvoiceNumber, processedCount, totalCount, fileName);
+                        Log.Information("Создан новый заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
                     }
                     else
                     {
-                        Log.Information("Обновлен заказ {BdfInvoiceNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
-                                        dto.BdfInvoiceNumber, processedCount, totalCount, fileName);
+                        Log.Information("Обновлен заказ {OrderNumber} ({processedCount}/{totalCount}) на основании файла {fileName}.",
+                                        dto.OrderNumber, processedCount, totalCount, fileName);
                     }
 
                     orders.Add(dto);
@@ -225,6 +277,7 @@ namespace Tasks.Orders
             bool isSuccess = orders.Any();
             if (isSuccess)
             {
+                warehousesService.Import(updWarehouses);
                 ordersService.Import(orders);
             }
 
@@ -234,6 +287,10 @@ namespace Tasks.Orders
         private IEnumerable<string> ValidateRequiredFields(OrderDto dto)
         {
             if (string.IsNullOrEmpty(dto.OrderNumber))
+            {
+                yield return "Номер накладной BDF";
+            }
+            if (string.IsNullOrEmpty(dto.ClientOrderNumber))
             {
                 yield return "Номер заказа клиента";
             }

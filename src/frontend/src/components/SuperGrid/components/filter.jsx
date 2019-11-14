@@ -1,137 +1,87 @@
-import React, { Component } from 'react';
-import { Checkbox, Table, Input } from 'semantic-ui-react';
+import React, {useState, useEffect, useRef} from 'react';
+import { Checkbox, Table } from 'semantic-ui-react';
 import { Resizable } from 'react-resizable';
-
-import DateFacet from '../../FilterComponents/Date';
-import TextFacet from '../../FilterComponents/Text';
-import NumberFacet from '../../FilterComponents/Number';
-import SelectFacet from '../../FilterComponents/Select';
-import StateFacet from '../../FilterComponents/State';
-import Bool from '../../FilterComponents/Bool';
-import TimeFaset from '../../FilterComponents/Time';
+import FacetField from '../../FilterComponents';
+import {debounce} from 'throttle-debounce';
 import {
-    DATE_TIME_TYPE,
-    NUMBER_TYPE,
-    SELECT_TYPE,
-    STATE_TYPE,
-    TEXT_TYPE,
-    BOOLEAN_TYPE,
-    DATE_TYPE,
-    ENUM_TYPE,
-    TIME_TYPE,
-    LINK_TYPE,
-} from '../../../constants/columnTypes';
+    editRepresentationRequest,
+    getRepresentationsRequest,
+    representationNameSelector
+} from "../../../ducks/representations";
+import {useDispatch, useSelector} from 'react-redux';
 
-const getTypeFacet = {
-    [TEXT_TYPE]: <TextFacet />,
-    [NUMBER_TYPE]: <NumberFacet />,
-    [SELECT_TYPE]: <SelectFacet />,
-    [DATE_TIME_TYPE]: <DateFacet />,
-    [DATE_TYPE]: <DateFacet />,
-    [TIME_TYPE]: <TimeFaset />,
-    [STATE_TYPE]: <StateFacet />,
-    [BOOLEAN_TYPE]: <Bool />,
-    [ENUM_TYPE]: <SelectFacet />,
-    [LINK_TYPE]: <TextFacet />,
-};
+const Filter = props => {
+    const {isShowActions, indeterminate, all, checkAllDisabled, setSelectedAll, columns, gridName} = props;
+    const dispatch = useDispatch();
+    let [customColumns, setColumns] = useState(columns);
+    const representationName = useSelector(state => representationNameSelector(state, gridName));
+    let timer = useRef(null);
 
-const Control = props => {
-    let params = {
-        ...props.column,
-        name: props.column.name,
-        value: props.filters[props.column.name],
-        setSort: props.setSort,
-        onChange: props.setFilter,
+    useEffect(() => {
+        setColumns(columns);
+    }, [columns]);
+
+
+    const handleResize = (e, {size, index}) => {
+        clearTimeout(timer.current);
+        const nextColumns = [...customColumns];
+        nextColumns[index] = {
+            ... nextColumns[index],
+            width: size.width
+        };
+        setColumns(nextColumns);
+
+        /* debounce(300, dispatch(editRepresentationRequest({
+             key: gridName,
+             name: representationName,
+             oldName: representationName,
+             value: nextColumns,
+         })))*/
+        timer.current = setTimeout(() => {
+            dispatch(editRepresentationRequest({
+                key: gridName,
+                name: representationName,
+                oldName: representationName,
+                value: nextColumns,
+                callbackSuccess: () => {
+                    dispatch(getRepresentationsRequest({key: gridName}));
+                }
+            }))
+        }, 500)
     };
 
-    if (props.sort && props.sort.name === props.column.name)
-        params = {
-            ...params,
-            sort: props.sort.desc ? 'desc' : 'asc',
-        };
-
-    if (props.column.type === SELECT_TYPE) {
-        params = {
-            ...params,
-            getLookup: props.getLookup,
-        };
-    }
-
-    return React.cloneElement(getTypeFacet[props.column.type], params);
+    return (
+        <Table.Row className="sticky-header">
+            <Table.HeaderCell className="small-column">
+                <Checkbox
+                    indeterminate={indeterminate}
+                    checked={all}
+                    disabled={checkAllDisabled}
+                    onChange={setSelectedAll}
+                />
+            </Table.HeaderCell>
+            {customColumns &&
+            customColumns.map((x, i) => (
+                <Resizable
+                    key={`resizable_${x.name}`}
+                    width={x.width}
+                    height={0}
+                    onResize={(e, {size}) => handleResize(e, {size, index: i})}
+                >
+                    <Table.HeaderCell
+                        key={'th' + x.name + i}
+                        style={{maxWidth: `${x.width}px`, minWidth: `${x.width}px`}}
+                        className={`column-facet column-${x.name
+                            .toLowerCase()
+                            .replace(' ', '-')}-facet`}
+                    >
+                        <FacetField key={'facet' + x.name} index={i} {...x} {...props} />
+                    </Table.HeaderCell>
+                </Resizable>
+            ))}
+            {isShowActions ? <Table.HeaderCell className="actions-column"/> : null}
+        </Table.Row>
+    );
 };
-
-class Filter extends Component {
-    constructor(props) {
-        super(props);
-
-        const widths = [];
-
-        props.columns.forEach(column => {
-            column.name === 'status' ? widths.push(200) : widths.push(100);
-        });
-
-        this.state = {
-            widths,
-        };
-    }
-
-    handleResize = (e, { size, index }) => {
-        this.setState(({ widths }) => {
-            const nextColumns = [...widths];
-            nextColumns[index] = size.width;
-            return { widths: nextColumns };
-        });
-    };
-
-    render() {
-        const {
-            isShowActions,
-            indeterminate,
-            all,
-            checkAllDisabled,
-            setSelectedAll,
-            columns,
-        } = this.props;
-
-        const { widths } = this.state;
-
-        /*const columnStyle = column => ({
-            maxWidth: column.width || 100 + 'px',
-            minWidth: column.width || 100 + 'px',
-        });*/
-
-        return (
-            <Table.Row className="sticky-header">
-                <Table.HeaderCell className="small-column">
-                    <Checkbox
-                        indeterminate={indeterminate}
-                        checked={all}
-                        disabled={checkAllDisabled}
-                        onChange={setSelectedAll}
-                    />
-                </Table.HeaderCell>
-                {columns &&
-                    columns.map((x, i) => (
-                        <Resizable
-                            width={widths[i]}
-                            height={0}
-                            onResize={(e, { size }) => this.handleResize(e, { size, index: i })}
-                        >
-                            <Table.HeaderCell
-                                key={'th' + x.name + i}
-                                style={{ maxWidth: `${widths[i]}px`, minWidth: `${widths[i]}px` }}
-                                className={`column-facet column-${x.name
-                                    .toLowerCase()
-                                    .replace(' ', '-')}-facet`}
-                            >
-                                <Control key={'facet' + x.name} column={x} {...this.props} />
-                            </Table.HeaderCell>
-                        </Resizable>
-                    ))}
-                {isShowActions ? <Table.HeaderCell className="actions-column" /> : null}
-            </Table.Row>
-        );
-    }
-}
 
 export default Filter;

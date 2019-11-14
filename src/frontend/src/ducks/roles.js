@@ -1,7 +1,6 @@
-import { all, put, takeEvery, delay } from 'redux-saga/effects';
+import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
-import { toast } from 'react-toastify';
 import roles from '../mocks/roles';
 
 const TYPE_API = 'roles';
@@ -28,6 +27,10 @@ const GET_ALL_PERMISSIONS_REQUEST = 'GET_ALL_PERMISSIONS_REQUEST';
 const GET_ALL_PERMISSIONS_SUCCESS = 'GET_ALL_PERMISSIONS_SUCCESS';
 const GET_ALL_PERMISSIONS_ERROR = 'GET_ALL_PERMISSIONS_ERROR';
 
+const GET_ALL_ACTIONS_REQUEST = 'GET_ALL_ACTIONS_REQUEST';
+const GET_ALL_ACTIONS_SUCCESS = 'GET_ALL_ACTIONS_SUCCESS';
+const GET_ALL_ACTIONS_ERROR = 'GET_ALL_ACTIONS_ERROR';
+
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 
 //*  INITIAL STATE  *//
@@ -36,6 +39,7 @@ const initial = {
     list: [],
     card: {},
     permissions: [],
+    actions: {},
     totalCount: 0,
     progress: false,
 };
@@ -87,7 +91,17 @@ export default (state = initial, { type, payload }) => {
         case GET_ALL_PERMISSIONS_SUCCESS:
             return {
                 ...state,
-                permissions: payload
+                permissions: payload,
+            };
+        case GET_ALL_ACTIONS_SUCCESS:
+            return {
+                ...state,
+                actions: payload
+            };
+        case GET_ALL_ACTIONS_ERROR:
+            return {
+                ...state,
+                actions: {}
             };
         default:
             return state;
@@ -133,6 +147,13 @@ export const toggleRoleActiveRequest = payload => {
 export const getAllPermissionsRequest = payload => {
     return {
         type: GET_ALL_PERMISSIONS_REQUEST,
+        payload,
+    };
+};
+
+export const getAllActionsRequest = payload => {
+    return {
+        type: GET_ALL_ACTIONS_REQUEST,
         payload
     }
 };
@@ -141,46 +162,32 @@ export const getAllPermissionsRequest = payload => {
 
 const stateSelector = state => state.roles;
 
-export const rolesListSelector = createSelector(
-    stateSelector,
-    state => state.list,
-);
+export const rolesListSelector = createSelector(stateSelector, state => state.list);
 
-export const rolesFromUserSelector = createSelector(
-    stateSelector,
-    state => {
-        return (
-            state.list &&
-            state.list.map(item => ({
-                name: item.name,
-                value: item.id,
-                isActive: true,
-            }))
-        );
-    },
-);
+export const rolesFromUserSelector = createSelector(stateSelector, state => {
+    return (
+        state.list &&
+        state.list.map(item => ({
+            name: item.name,
+            value: item.id,
+            isActive: true,
+        }))
+    );
+});
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const roleCardSelector = createSelector(
-    stateSelector,
-    state => state.card,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const roleCardSelector = createSelector(stateSelector, state => state.card);
 
-export const allPermissionsSelector = createSelector(stateSelector, state=> state.permissions);
+export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
+export const allActionsSelector = createSelector(stateSelector, state => state.actions);
 
 //*  SAGA  *//
 
 function* getRolesListSaga({ payload }) {
     try {
         const { filter = {}, isConcat } = payload;
-        const result = yield postman.post('/roles/search', filter);
+        const result = yield postman.post(`/${TYPE_API}/search`, filter);
 
         yield put({
             type: GET_ROLES_LIST_SUCCESS,
@@ -199,7 +206,7 @@ function* getRolesListSaga({ payload }) {
 
 function* getRoleCardSaga({ payload }) {
     try {
-        const result = yield postman.get(`/roles/getById/${payload}`);
+        const result = yield postman.get(`/${TYPE_API}/getById/${payload}`);
 
         yield put({
             type: GET_ROLE_CARD_SUCCESS,
@@ -217,7 +224,7 @@ function* createRoleSaga({ payload }) {
     try {
         const { params, callbackFunc } = payload;
 
-        const result = yield postman.post('/roles/saveOrCreate', params);
+        const result = yield postman.post(`/${TYPE_API}/saveOrCreate`, params);
 
         yield put({
             type: CREATE_ROLE_SUCCESS,
@@ -233,7 +240,7 @@ function* createRoleSaga({ payload }) {
 function* toggleRoleActiveSaga({ payload }) {
     try {
         const { id, active, callbackSuccess } = payload;
-        const result = yield postman.post(`/roles/setActive/${id}/${active}`);
+        const result = yield postman.post(`/${TYPE_API}/setActive/${id}/${active}`);
 
         yield put({
             type: TOGGLE_ROLE_ACTIVE_SUCCESS,
@@ -249,17 +256,33 @@ function* toggleRoleActiveSaga({ payload }) {
 
 function* getAllPermissionsSaga({ payload }) {
     try {
-        const result = yield postman.get('/roles/allPermissions');
+        const result = yield postman.get(`/${TYPE_API}/allPermissions`);
 
         yield put({
             type: GET_ALL_PERMISSIONS_SUCCESS,
-            payload: result
-        })
+            payload: result,
+        });
     } catch (e) {
         yield put({
             type: GET_ALL_PERMISSIONS_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
+    }
+}
+
+function* getAllActionsSaga({payload}) {
+    try {
+        const result = yield postman.get(`/${TYPE_API}/allActions`);
+
+        yield put({
+            type: GET_ALL_ACTIONS_SUCCESS,
+            payload: result,
+        });
+    } catch (e) {
+        yield put({
+            type: GET_ALL_ACTIONS_ERROR,
+            payload: e,
+        });
     }
 }
 
@@ -270,5 +293,6 @@ export function* saga() {
         takeEvery(CREATE_ROLE_REQUEST, createRoleSaga),
         takeEvery(TOGGLE_ROLE_ACTIVE_REQUEST, toggleRoleActiveSaga),
         takeEvery(GET_ALL_PERMISSIONS_REQUEST, getAllPermissionsSaga),
+        takeEvery(GET_ALL_ACTIONS_REQUEST, getAllActionsSaga),
     ]);
 }

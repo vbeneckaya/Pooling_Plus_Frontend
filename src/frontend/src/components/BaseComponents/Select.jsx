@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Button, Icon, Form, Dropdown } from 'semantic-ui-react';
+import { Dropdown, Form } from 'semantic-ui-react';
 
 import './style.scss';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
@@ -11,7 +11,7 @@ const Select = ({
     value,
     onChange,
     placeholder = '',
-    disabled,
+    isDisabled,
     label,
     name,
     text,
@@ -43,7 +43,7 @@ const Select = ({
         onChange(e, { value, name });
     };
 
-    let items = valuesList.map((x, index) => ({
+    let items = valuesList && valuesList.map((x, index) => ({
         key: `${x.value}_${index}`,
         value: x.value,
         text: isTranslate ? t(x.name) : x.name,
@@ -54,7 +54,7 @@ const Select = ({
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={disabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
             ) : null}
             <Dropdown
                 placeholder={placeholder}
@@ -66,10 +66,11 @@ const Select = ({
                 text={textValue}
                 error={error}
                 multiple={multiple}
-                disabled={disabled}
+                disabled={isDisabled}
                 value={value}
                 options={items}
                 onChange={handleChange}
+                selectOnBlur={false}
             />
             {errorText && <span className="label-error">{errorText}</span>}
         </Form.Field>

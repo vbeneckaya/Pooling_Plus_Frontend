@@ -1,7 +1,5 @@
 using Application.BusinessModels.Orders.Actions;
-using Application.BusinessModels.Orders.BulkUpdates;
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.BulkUpdates;
 using Application.BusinessModels.Shippings.Actions;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -16,6 +14,7 @@ using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Roles;
 using Application.Services.Shippings;
+using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
 using Application.Services.TaskProperties;
 using Application.Services.Translations;
@@ -23,6 +22,7 @@ using Application.Services.TransportCompanies;
 using Application.Services.Users;
 using Application.Services.UserSettings;
 using Application.Services.VehicleTypes;
+using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
 using DAL;
 using DAL.Services;
@@ -37,10 +37,11 @@ using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
-using Domain.Services.Permissions;
 using Domain.Services.PickingTypes;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
+using Domain.Services.ShippingWarehouseCity;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
 using Domain.Services.Translations;
@@ -48,6 +49,7 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.Users;
 using Domain.Services.UserSettings;
 using Domain.Services.VehicleTypes;
+using Domain.Services.WarehouseCity;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +61,8 @@ namespace Infrastructure.Installers
     {
         public static void AddDomain(this IServiceCollection services, IConfiguration configuration, bool migrateDb)
         {
+            services.AddSingleton(configuration);
+
             services.AddScoped<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -77,6 +81,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
+            services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
             services.AddScoped<IArticlesService, ArticlesService>();
@@ -87,6 +92,9 @@ namespace Infrastructure.Installers
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
+            services.AddSingleton<IWarehouseCityService, WarehouseCityService>();
+            services.AddSingleton<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);
@@ -121,9 +129,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
-
-            services.AddScoped<IBulkUpdate<Order>, ShippingDateBulkUpdate>();
-            services.AddScoped<IBulkUpdate<Order>, DeliveryDateBulkUpdate>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)

@@ -14,11 +14,13 @@ namespace Application.Services.VehicleTypes
     {
         public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override void MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
+        public override ValidateResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Name = dto.Name;
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)
@@ -41,6 +43,13 @@ namespace Application.Services.VehicleTypes
                     Value = vehicleType.Id.ToString()
                 };
             }
+        }
+
+        protected override IQueryable<VehicleType> ApplySort(IQueryable<VehicleType> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Name)
+                .ThenBy(i => i.Id);
         }
     }
 }

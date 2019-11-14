@@ -1,11 +1,10 @@
 import React from 'react';
-import { Checkbox, Form, Grid, Segment } from 'semantic-ui-react';
+import { Form, Grid, Segment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import Text from '../../BaseComponents/Text';
-import TextArea from '../../BaseComponents/TextArea';
-import Number from '../../BaseComponents/Number';
+import { BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE } from '../../../constants/columnTypes';
+import FormField from '../../BaseComponents';
 
-const Accounts = ({ form = {}, onChange }) => {
+const Accounts = ({ form = {}, onChange, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -13,19 +12,25 @@ const Accounts = ({ form = {}, onChange }) => {
             <Grid>
                 <Grid.Row columns={2} stretched>
                     <Grid.Column>
-                        <Number
+                        <FormField
                             name="deliveryCostWithoutVAT"
                             value={form['deliveryCostWithoutVAT']}
+                            type={NUMBER_TYPE}
+                            settings={settings['deliveryCostWithoutVAT']}
                             onChange={onChange}
                         />
-                        <Number
+                        <FormField
                             name="additionalCostsWithoutVAT"
                             value={form['additionalCostsWithoutVAT']}
+                            type={NUMBER_TYPE}
+                            settings={settings['additionalCostsWithoutVAT']}
                             onChange={onChange}
                         />
-                        <Number
+                        <FormField
                             name="returnCostWithoutVAT"
                             value={form['returnCostWithoutVAT']}
+                            type={NUMBER_TYPE}
+                            settings={settings['returnCostWithoutVAT']}
                             onChange={onChange}
                         />
                         {/* <Text
@@ -40,9 +45,11 @@ const Accounts = ({ form = {}, onChange }) => {
                         />*/}
                     </Grid.Column>
                     <Grid.Column>
-                        <TextArea
+                        <FormField
                             name="additionalCostsComments"
                             rows={10}
+                            type={BIG_TEXT_TYPE}
+                            settings={settings['additionalCostsComments']}
                             value={form['additionalCostsComments']}
                             onChange={onChange}
                         />
@@ -56,23 +63,21 @@ const Accounts = ({ form = {}, onChange }) => {
                                 <Grid>
                                     <Grid.Row columns={2}>
                                         <Grid.Column>
-                                            <Checkbox
+                                            <FormField
                                                 checked={form['costsConfirmedByCarrier']}
-                                                label={t('costsConfirmedByCarrier')}
                                                 name="costsConfirmedByCarrier"
-                                                onClick={(event, { name, checked }) =>
-                                                    onChange(event, { name, value: checked })
-                                                }
+                                                type={CHECKBOX_TYPE}
+                                                settings={settings['costsConfirmedByCarrier']}
+                                                onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <Checkbox
+                                            <FormField
                                                 checked={form['costsConfirmedByShipper']}
-                                                label={t('costsConfirmedByShipper')}
+                                                type={CHECKBOX_TYPE}
+                                                settings={settings['costsConfirmedByShipper']}
                                                 name="costsConfirmedByShipper"
-                                                onClick={(event, { name, checked }) =>
-                                                    onChange(event, { name, value: checked })
-                                                }
+                                                onChange={onChange}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>

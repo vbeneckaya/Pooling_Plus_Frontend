@@ -1,16 +1,20 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Grid, Tab, Table } from 'semantic-ui-react';
-import Select from '../../BaseComponents/Select';
-import TextArea from '../../BaseComponents/TextArea';
-import DateTime from '../../BaseComponents/DateTime';
-import Date from '../../BaseComponents/Date';
-import State from '../../BaseComponents/State';
-import Text from '../../BaseComponents/Text';
-import Number from '../../BaseComponents/Number';
+import {useSelector} from 'react-redux';
+import { Form, Grid } from 'semantic-ui-react';
+import FormField from '../../BaseComponents';
+import {
+    BIG_TEXT_TYPE,
+    DATE_TIME_TYPE,
+    NUMBER_TYPE,
+    STATE_TYPE,
+} from '../../../constants/columnTypes';
+import {settingsExtSelector} from "../../../ducks/gridCard";
 
-const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) => {
+const Route = ({name, form = {}, point = {}, onChange, pointChange, index, settings: baseSettings}) => {
     const { t } = useTranslation();
+
+    const settings = useSelector(state => settingsExtSelector(state, form.status));
 
     const handleChange = (e, { name, value }) => {
         pointChange(
@@ -27,57 +31,75 @@ const Route = ({ name, form = {}, point = {}, onChange, pointChange, index }) =>
             <Grid>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <DateTime
+                        <FormField
                             name="plannedDate"
                             text={index === 0 ? 'plannedDate_loading' : 'plannedDate_delivery'}
                             value={point['plannedDate']}
+                            type={DATE_TIME_TYPE}
+                            settings={settings['plannedDate']}
                             onChange={handleChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <State
+                        <FormField
                             name="vehicleStatus"
                             value={point['vehicleStatus']}
                             source="vehicleState"
+                            type={STATE_TYPE}
+                            settings={settings['vehicleStatus']}
                             onChange={handleChange}
                         />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={2}>
                     <Grid.Column>
-                        <DateTime
+                        <FormField
                             name="arrivalTime"
                             value={point['arrivalTime']}
+                            settings={settings['arrivalTime']}
+                            type={DATE_TIME_TYPE}
                             onChange={handleChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
-                        <DateTime
+                        <FormField
                             name="departureTime"
                             value={point['departureTime']}
+                            settings={settings['departureTime']}
+                            type={DATE_TIME_TYPE}
                             onChange={handleChange}
                         />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={16}>
-                        <TextArea name="address" value={point['address']} onChange={handleChange} />
+                        <FormField
+                            name="address"
+                            value={point['address']}
+                            settings={settings['address']}
+                            type={BIG_TEXT_TYPE}
+                            onChange={handleChange}
+                        />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={18}>
-                        <TextArea
+                        <FormField
                             name="deviationReasonsComments"
+                            type={BIG_TEXT_TYPE}
                             value={form['deviationReasonsComments']}
+                            settings={baseSettings['deviationReasonsComments']}
                             onChange={onChange}
                         />
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row columns={1}>
                     <Grid.Column width={8}>
-                        <Number
+                        <FormField
                             name="trucksDowntime"
                             value={point['trucksDowntime']}
+                            settings={settings['trucksDowntime']}
+                            type={NUMBER_TYPE}
                             onChange={handleChange}
                         />
                     </Grid.Column>

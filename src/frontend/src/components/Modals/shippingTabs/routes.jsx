@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Form, Grid, Icon, Tab } from 'semantic-ui-react';
+import React from 'react';
+import { Icon, Tab } from 'semantic-ui-react';
 import Route from './route';
-import { useSelector, useDispatch } from 'react-redux';
-import { stateColorsSelector } from '../../../ducks/gridList';
+import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../../ducks/lookup';
 
-const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
+const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
     const dispatch = useDispatch();
     const { routePoints: points } = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
@@ -50,6 +49,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange }) => {
                         index={i}
                         form={form}
                         point={point}
+                        settings={settings}
                         pointChange={handleChange}
                         onChange={onChange}
                     />

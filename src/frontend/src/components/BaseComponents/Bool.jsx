@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Radio } from 'semantic-ui-react';
+import { Form, Radio } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
 const Bool = ({ value, name, onChange, isDisabled, noLabel, className, text, error }) => {

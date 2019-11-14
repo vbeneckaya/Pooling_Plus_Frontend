@@ -1,26 +1,49 @@
-﻿using System;
-using System.Globalization;
+﻿using Domain.Services.UserProvider;
+using Infrastructure.Installers;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.IO;
-using System.Threading;
+using System.Threading.Tasks;
+using Tasks.Common;
+using Tasks.MasterData;
+using Tasks.Orders;
+using Tasks.Services;
 
 namespace Tasks
 {
     class Program
     {
-        static int Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var culture = new CultureInfo("ru-RU");
-            Thread.CurrentThread.CurrentCulture = culture;
+            await CreateHostBuilder(args).Build().RunAsync();
+        }
 
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-            if (env != "Debug")
-            {
-                //disable console
-                Console.SetOut(TextWriter.Null);
-                Console.SetError(TextWriter.Null);
-            }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            new HostBuilder()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    var configuration = CreateConfiguration(args);
 
-            return ConsoleShell.ForTasksInThisAssembly().Run(args);
+                    services.AddDomain(configuration, false);
+                    services.AddScoped<IUserProvider, TasksUserProvider>();
+
+                    services.AddHostedService<ScheduleWorker>();
+
+                    services.AddScoped<IScheduledTask, ImportOrderTask>();
+                    services.AddScoped<IScheduledTask, ImportProductsTask>();
+                });
+
+        private static IConfiguration CreateConfiguration(string[] args)
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args)
+                .Build();
         }
     }
 }

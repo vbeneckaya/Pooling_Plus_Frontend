@@ -12,15 +12,26 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
     const { t } = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    useEffect(() => {
-        const item = valuesList.find(item => item.value === form.soldTo) || {};
-        onChange(null, { name: 'clientName', value: item.warehouseName });
-    }, [form.soldTo]);
+    const handleChangeSoldTo = (e, {name, value}) => {
+        const item = valuesList.find(item => item.value === value) || {};
+        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+    };
 
-    useEffect(() => {
-        const item = valuesList.find(item => item.value === form.soldTo) || {};
-        onChange(null, { name: 'deliveryAddress', value: item.address });
-    }, [form.clientName]);
+    /*useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, { name: 'clientName', value: item.warehouseName });
+        },
+        [form.soldTo],
+    );
+
+    useEffect(
+        () => {
+            const item = valuesList.find(item => item.value === form.soldTo) || {};
+            onChange(null, { name: 'deliveryAddress', value: item.address });
+        },
+        [form.clientName],
+    );*/
 
     return (
         <Form className="tabs-card">
@@ -49,7 +60,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="soldTo"
                             value={form['soldTo']}
                             source="soldTo"
-                            onChange={onChange}
+                            onChange={handleChangeSoldTo}
                         />
                     </Grid.Column>
                     <Grid.Column>

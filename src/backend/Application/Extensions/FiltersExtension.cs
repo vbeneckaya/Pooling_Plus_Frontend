@@ -25,12 +25,20 @@ namespace Application.Extensions
             string fieldName = property.GetPropertyName();
             if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
+            var precision = GetPrecision(search);
+
             decimal searchValue;
             if (!decimal.TryParse(search.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out searchValue)) return string.Empty;
 
             int paramInd = parameters.Count();
             parameters.Add(searchValue);
-            return $@"ROUND(""{fieldName}"",3) = ROUND({{{paramInd}}},3)";
+            return $@"ROUND(""{fieldName}"",{precision}) = ROUND({{{paramInd}}},{precision})";
+        }
+
+        private static int GetPrecision(string number)
+        {
+            var dotPos = number.IndexOf('.');
+            return dotPos > 0 ? number.Length - dotPos - 1 : 0;
         }
 
         public static string ApplyBoolenFilter<TModel>(this string search, Expression<Func<TModel, bool?>> property, ref List<object> parameters)

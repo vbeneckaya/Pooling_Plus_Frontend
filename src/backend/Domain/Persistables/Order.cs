@@ -17,9 +17,13 @@ namespace Domain.Persistables
         /// </summary>
         public OrderState Status { get; set; }
         /// <summary>
-        /// Номер заказ клиента
+        /// Номер накладной BDF
         /// </summary>
         public string OrderNumber { get; set; }
+        /// <summary>
+        /// Номер заказ клиента
+        /// </summary>
+        public string ClientOrderNumber { get; set; }
         /// <summary>
         /// Дата заказа
         /// </summary>
@@ -60,10 +64,6 @@ namespace Domain.Persistables
         /// Дата доставки
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
-        /// <summary>
-        /// Номер накладной BDF
-        /// </summary>
-        public string BdfInvoiceNumber { get; set; }
         /// <summary>
         /// Кол-во арт.
         /// </summary>
@@ -238,5 +238,15 @@ namespace Domain.Persistables
         {
             return OrderNumber;
         }
+
+        /// <summary>
+        /// Дата изменения
+        /// </summary>
+        public DateTime? OrderChangeDate { get; set; }
+
+        /// <summary>
+        /// Заказ подтвержден
+        /// </summary>
+        public bool OrderConfirmed { get; set; }
     }
 }

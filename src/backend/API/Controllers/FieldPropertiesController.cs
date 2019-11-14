@@ -37,6 +37,16 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Получить права доступа для поля
+        /// </summary>
+        [HttpPost("getField")]
+        public IActionResult GetForField([FromBody] GetForFieldPropertyParams dto)
+        {
+            var accessType = fieldPropertiesService.GetAccessTypeForField(dto);
+            return Ok(new { accessType });
+        }
+
+        /// <summary>
         /// Сохранить
         /// </summary>
         [HttpPost("save")]

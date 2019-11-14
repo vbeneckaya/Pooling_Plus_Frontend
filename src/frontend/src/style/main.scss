@@ -148,15 +148,19 @@ body {
 
 .table-loader {
     margin-top: 58px !important;
-
+    left: 50%;
+    top: calc(100vh / 2) !important;
     &-big {
         height: calc(100vh - 180px) !important;
+        .ui.loader {
+            position: fixed !important;
+        }
     }
 }
 
 .table-bottom-loader {
     position: sticky;
-    left: calc(100vw / 2);
+    left: calc(100% / 2);
     bottom: 24px;
 }
 
@@ -188,6 +192,7 @@ body {
     .field {
         margin-bottom: 15px !important;
         padding: 0 15px !important;
+        min-height: 79px;
     }
 
     .field input[type='text'] {
@@ -322,4 +327,11 @@ input::-webkit-calendar-picker-indicator {
     .ui.message {
         margin: 0 !important;
     }
+}
+
+.ui.disabled.input,
+.ui.input:not(.disabled) input[disabled], .ui.disabled.search,
+.ui.form .disabled.field, .ui.form .disabled.fields .field, .ui.form .field :disabled {
+    opacity: .8!important;
+    background: rgba(1, 1, 1, .05);
 }

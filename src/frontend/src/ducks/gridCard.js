@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
-import { all, takeEvery, put, call, select } from 'redux-saga/effects';
+import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
+import { roleIdSelector } from './profile';
+import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
 
 //*  TYPES  *//
 
@@ -174,6 +176,37 @@ export const cardSelector = createSelector(
     state => state.data,
 );
 
+export const settingsFormSelector = createSelector(
+    [fieldsSettingSelector, (state, status) => status],
+    (state, status) => {
+        let settings = {};
+        const { base = [] } = state;
+        base.forEach(item => {
+            settings = {
+                ...settings,
+                [item.fieldName]: item.accessTypes[status],
+            };
+        });
+
+        return settings;
+    },
+);
+
+export const settingsExtSelector = createSelector(
+    [fieldsSettingSelector, (state, status) => status],
+    (state, status) => {
+        let settings = {};
+        const { ext = [] } = state;
+        ext.forEach(item => {
+            settings = {
+                ...settings,
+                [item.fieldName]: item.accessTypes[status],
+            };
+        });
+        return settings;
+    },
+);
+
 //*  SAGA  *//
 
 function* openGridCardSaga({ payload }) {
@@ -261,6 +294,13 @@ function* getCardConfigSaga({ payload }) {
 function* getCardSaga({ payload }) {
     try {
         const { name, id, callbackSuccess } = payload;
+        const roleId = yield select(state => roleIdSelector(state));
+        yield fork(getFieldsSettingSaga, {
+            payload: {
+                forEntity: name,
+                roleId,
+            },
+        });
         const result = yield postman.get(`${name}/getById/${id}`);
         yield put({ type: GET_GRID_CARD_SUCCESS, payload: result });
         callbackSuccess && callbackSuccess(result);

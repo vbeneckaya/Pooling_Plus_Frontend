@@ -1,10 +1,8 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Shared;
-using DAL;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using System;
 using System.Linq;
@@ -20,29 +18,36 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, string oldValue, string newValue)
         {
+            var setter = new FieldSetter<Order>(order, _historyService);
+
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
+
                 var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    var setter = new FieldSetter<Order>(order, _historyService);
-
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
 
                     if (soldToWarehouse.PickingTypeId.HasValue)
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
 
                     setter.UpdateField(o => o.TransitDays, soldToWarehouse.LeadtimeDays);
-                    setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
 
                     setter.UpdateField(o => o.DeliveryWarehouseId, soldToWarehouse.Id, ignoreChanges: true);
                     setter.UpdateField(o => o.DeliveryAddress, soldToWarehouse.Address);
                     setter.UpdateField(o => o.DeliveryCity, soldToWarehouse.City);
                     setter.UpdateField(o => o.DeliveryRegion, soldToWarehouse.Region);
-
-                    setter.SaveHistoryLog();
+                }
+                else
+                {
+                    order.DeliveryWarehouseId = null;
                 }
             }
+
+            setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+
+            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)

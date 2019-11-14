@@ -7,13 +7,16 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2)]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
         public string Status { get; set; }
 
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
         public string OrderNumber { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Text)]
+        public string ClientOrderNumber { get; set; }
+
+        [FieldType(FieldType.Date)]
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
@@ -34,17 +37,14 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date), AllowBulkUpdate]
         public string ShippingDate { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(7)]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(7), AllowBulkUpdate]
         public string DeliveryDate { get; set; }
-
-        [FieldType(FieldType.Text)]
-        public string BdfInvoiceNumber { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? ArticlesCount { get; set; }
@@ -83,10 +83,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.BigText)]
         public string ShippingAddress { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.BigText)]
         public string DeliveryAddress { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
@@ -112,13 +112,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.DateTime)]
         public string LoadingDepartureTime { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string UnloadingArrivalDate { get; set; }
 
         [FieldType(FieldType.Time)]
         public string UnloadingArrivalTime { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string UnloadingDepartureDate { get; set; }
 
         [FieldType(FieldType.Time)]
@@ -133,16 +133,16 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string ReturnShippingAccountNo { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string PlannedReturnDate { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ActualReturnDate { get; set; }
 
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8)]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
         public string OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -151,10 +151,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? Invoice { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string DocumentsReturnDate { get; set; }
 
-        [FieldType(FieldType.DateTime)]
+        [FieldType(FieldType.Date)]
         public string ActualDocumentsReturnDate { get; set; }
 
         public string ShippingId { get; set; }
@@ -168,6 +168,14 @@ namespace Domain.Services.Orders
         public bool? IsActive { get; set; }
 
         public string AdditionalInfo { get; set; }
+
+        public string ShippingWarehouseId { get; set; }
+
+        [FieldType(FieldType.DateTime), IgnoreFieldSettings]
+        public string OrderChangeDate { get; set; }
+
+        [FieldType(FieldType.Boolean)]
+        public bool? OrderConfirmed { get; set; }
 
         /*end of fields*/
     }

@@ -1,23 +1,18 @@
-using System;
 using Application.Shared;
+using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.TransportCompanies;
-using System.Linq;
-using Domain.Shared;
-using System.Collections.Generic;
-using DAL.Services;
 using Domain.Services.UserProvider;
+using Domain.Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
-
-        public override TransportCompany FindByKey(TransportCompanyDto dto)
-        {
-            return _dataService.GetDbSet<TransportCompany>().Where(x => x.Title == dto.Title).FirstOrDefault();
-        }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
@@ -32,14 +27,15 @@ namespace Application.Services.TransportCompanies
             }
         }
 
-        public override void MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
+        public override ValidateResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
-            /*end of map dto to entity fields*/
+
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
@@ -52,6 +48,13 @@ namespace Application.Services.TransportCompanies
                 DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
                 /*end of map entity to dto fields*/
             };
+        }
+
+        protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
+        {
+            return query
+                .OrderBy(i => i.Title)
+                .ThenBy(i => i.Id);
         }
     }
 }

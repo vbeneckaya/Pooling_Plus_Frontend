@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Form, Grid, Input, Label, Loader, Modal } from 'semantic-ui-react';
+import { Button, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUsersInfo,
     createUserRequest,
@@ -114,13 +114,12 @@ class UserCard extends Component {
                 trigger={children}
                 open={modalOpen}
                 dimmer="blurring"
-                className="card-modal"
                 closeIcon
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}
             >
                 <Modal.Header>{title}</Modal.Header>
-                <Modal.Content scrolling>
+                <Modal.Content>
                     <Dimmer active={loading} inverted className="table-loader">
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>

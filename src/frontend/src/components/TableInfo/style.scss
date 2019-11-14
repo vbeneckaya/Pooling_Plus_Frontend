@@ -6,9 +6,9 @@
     border: 1px solid #ddd;
     border-radius: 5px;
 
-        .ui.structured.table {
-            border-collapse: separate;
-        }
+    .ui.structured.table {
+        border-collapse: separate;
+    }
 }
 
 .cell-sticky {
@@ -22,6 +22,7 @@
 }
 
 .table-header-cell {
+    /* background-color: white;*/
 }
 
 .table-row-click {
@@ -50,8 +51,21 @@ thead th {
 
     td:hover {
         cursor: pointer;
+        /* background-color: rgba(0,0,0,.05)!important*/
     }
-
+    tr:hover .no-scroll-value {
+        background-color: #f2f2f2 !important
+    }
 }
 
+.no-scroll {
+    position: sticky;
+    background-color: inherit;
+    left: 0;
+    z-index: 7;
 
+    &-value {
+        background-color: white;
+        z-index: 5;
+    }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Popup, Input, Button, Icon, Form, Dropdown } from 'semantic-ui-react';
+import {Button, Checkbox, Form, Icon, Input, Popup} from 'semantic-ui-react';
 
 const Bool = ({ value, sort, name, setSort, text, onChange }) => {
     let items = [
@@ -25,30 +25,32 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
     };
 
     let content = (
-        <Form.Field>
-            <Form>
-                <label className="label-in-popup">{t(name)}</label>
-                <div className="boolean-facet-values">
-                    {items &&
-                        items.map(x => {
-                            return (
-                                <div
-                                    key={x.text}
-                                    className={x.value === value ? 'active-value' : ''}
-                                    onClick={() => handleChange(x.value)}
-                                >
-                                    <span>{x.text}</span>
-                                </div>
-                            );
-                        })}
-                </div>
-            </Form>
-        </Form.Field>
+        <Form>
+            {/* <label className="label-in-popup">{t(name)}</label>*/}
+            {/*  <div className="boolean-facet-values">*/}
+            {items &&
+            items.map(x => {
+                return (
+                    <Form.Field key={x.text}>
+                        <Checkbox
+                            radio
+                            label={x.text}
+                            name="checkboxRadioGroup"
+                            value={x.value}
+                            checked={x.value === value}
+                            onChange={() => handleChange(x.value)}
+                        />
+                    </Form.Field>
+                );
+            })}
+            {/*</div>*/}
+        </Form>
     );
 
     return (
         <div className="facet-input">
-            <Popup
+            {content}
+            {/* <Popup
                 trigger={
                     <Input
                         fluid
@@ -90,7 +92,7 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
                 onClick={setSort}
             >
                 <Icon name="caret down" />
-            </Button>
+            </Button>*/}
         </div>
     );
 };

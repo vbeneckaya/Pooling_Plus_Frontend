@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Grid, Button, Input, Form, Dropdown, Flag, Dimmer, Loader } from 'semantic-ui-react';
+import { Button, Dimmer, Dropdown, Flag, Form, Grid, Input, Loader } from 'semantic-ui-react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

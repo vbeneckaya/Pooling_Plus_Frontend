@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Domain.Persistables
 {
-    public class FieldPropertyItem : IPersistable
+    public class FieldPropertyItem : IPersistable, IComparable
     {
         public Guid Id { get; set; }
         

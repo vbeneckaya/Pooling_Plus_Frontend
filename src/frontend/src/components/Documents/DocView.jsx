@@ -1,7 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector, useDispatch } from 'react-redux';
-import { Modal, Image, Container, Icon } from 'semantic-ui-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Icon, Image, Modal } from 'semantic-ui-react';
 import { documentTypesSelector, getDocumentTypesRequest } from '../../ducks/documents';
 
 const DocView = ({ onClick, children, document }) => {

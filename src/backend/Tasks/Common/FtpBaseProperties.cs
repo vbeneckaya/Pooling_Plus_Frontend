@@ -1,4 +1,4 @@
-﻿namespace Tasks
+﻿namespace Tasks.Common
 {
     public class FtpBaseProperties : PropertiesBase
     {

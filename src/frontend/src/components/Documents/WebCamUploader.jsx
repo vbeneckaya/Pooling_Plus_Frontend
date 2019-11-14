@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Modal, Form, Button, Icon, Input } from 'semantic-ui-react';
+import { Button, Icon, Modal } from 'semantic-ui-react';
 import Webcam from 'react-webcam';
 import { uploadFileRequest } from '../../ducks/documents';
-import { toast } from 'react-toastify';
 
 const DocWithEditor = ({ children, onChange }) => {
     let [modalOpen, setModalOpen] = useState(false);

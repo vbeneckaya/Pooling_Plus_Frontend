@@ -1,5 +1,4 @@
 using Domain.Services.Permissions;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Domain.Services.Roles
@@ -11,5 +10,9 @@ namespace Domain.Services.Roles
         public bool IsActive { get; set; }
 
         public IEnumerable<PermissionInfo> Permissions { get; set; }
+
+        public IEnumerable<string> Actions { get; set; }
+
+        public int UsersCount { get; set; }
     }
 }
