@@ -169,7 +169,7 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Warehouses))]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses))]
         public string ShippingWarehouseId { get; set; }
 
         [FieldType(FieldType.DateTime), IgnoreFieldSettings]
