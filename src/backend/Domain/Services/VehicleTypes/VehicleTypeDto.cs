@@ -22,6 +22,6 @@ namespace Domain.Services.VehicleTypes
         public string PalletsCount { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(5)]
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

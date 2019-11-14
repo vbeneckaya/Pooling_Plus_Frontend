@@ -33,6 +33,7 @@ namespace Application.Services.VehicleTypes
             entity.TonnageId = dto.TonnageId.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId.ToGuid();
             entity.PalletsCount = dto.PalletsCount.ToInt();
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
         }
@@ -61,7 +62,8 @@ namespace Application.Services.VehicleTypes
 
         public override VehicleType FindByKey(VehicleTypeDto dto)
         {
-            return _dataService.GetDbSet<VehicleType>().FirstOrDefault(i => i.Name == dto.Name);
+            return _dataService.GetDbSet<VehicleType>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)
@@ -72,13 +74,18 @@ namespace Application.Services.VehicleTypes
                 Name = entity.Name,
                 TonnageId = entity.TonnageId?.ToString(),
                 BodyTypeId = entity.BodyTypeId?.ToString(),
-                PalletsCount = entity.PalletsCount?.ToString()
+                PalletsCount = entity.PalletsCount?.ToString(),
+                IsActive = entity.IsActive
             };
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var vehicleTypes = _dataService.GetDbSet<VehicleType>().OrderBy(c => c.Name).ToList();
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                .Where(i => i.IsActive)
+                .OrderBy(c => c.Name)
+                .ToList();
+
             foreach (VehicleType vehicleType in vehicleTypes)
             {
                 yield return new LookUpDto
