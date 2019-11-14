@@ -1,6 +1,7 @@
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Translations;
@@ -154,12 +155,16 @@ namespace Application.Shared
         public Stream ExportToExcel()
         {
             var excel = new ExcelPackage();
-            var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+
+            var user = _userProvider.GetCurrentUser();
+
+            string entityName = typeof(TEntity).Name.Pluralize().ToLowerFirstLetter();
+            string entityDisplayName = entityName.Translate(user.Language);
+            var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
+
             var dbSet = _dataService.GetDbSet<TEntity>();
             var entities = dbSet.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-
-            var user = _userProvider.GetCurrentUser();
 
             var excelMapper = CreateExcelMapper();
             excelMapper.FillSheet(workSheet, dtos, user.Language);
@@ -198,6 +203,10 @@ namespace Application.Shared
                 {
                     Id = Guid.NewGuid()
                 };
+            }
+            else if (isImport)
+            {
+                entityFrom.Id = entityFromDb.Id.ToString();
             }
 
             var result = MapFromDtoToEntity(entityFromDb, entityFrom);

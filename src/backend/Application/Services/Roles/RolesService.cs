@@ -73,7 +73,7 @@ namespace Application.Services.Roles
             
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
-            entity.Actions = dto.Actions.ToArray();
+            entity.Actions = dto.Actions?.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
             return new ValidateResult(null, entity.Id.ToString());

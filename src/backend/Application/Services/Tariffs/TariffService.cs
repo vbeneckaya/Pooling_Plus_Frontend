@@ -36,6 +36,24 @@ namespace Application.Services.Tariffs
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
 
+            if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
+            {
+                entity.StartWinterPeriod = swPeriod;
+            }
+            else
+            {
+                entity.StartWinterPeriod = null;
+            }
+
+            if (dto.EndWinterPeriod.TryParseDate(out DateTime ewPeriod))
+            {
+                entity.EndWinterPeriod = ewPeriod;
+            }
+            else
+            {
+                entity.EndWinterPeriod = null;
+            }
+
             entity.FtlRate = dto.FtlRate;
             entity.LtlRate1 = dto.LtlRate1;
             entity.LtlRate2 = dto.LtlRate2;
@@ -116,6 +134,8 @@ namespace Application.Services.Tariffs
                 TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
                 CarrierId = entity.CarrierId?.ToString(),
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
+                StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
+                EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
