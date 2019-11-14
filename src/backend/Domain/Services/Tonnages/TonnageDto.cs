@@ -10,7 +10,7 @@ namespace Domain.Services.Tonnages
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1)]
+        [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Name { get; set; }
 
         public bool IsActive { get; set; }
