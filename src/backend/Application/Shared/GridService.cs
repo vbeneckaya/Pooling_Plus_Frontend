@@ -456,14 +456,17 @@ namespace Application.Shared
         public Stream ExportToExcel(ExportExcelFormDto<TFilter> dto)
         {
             var excel = new ExcelPackage();
-            var workSheet = excel.Workbook.Worksheets.Add(typeof(TEntity).Name);
+
+            var user = _userIdProvider.GetCurrentUser();
+
+            string entityName = typeof(TEntity).Name.Pluralize().ToLowerFirstLetter();
+            string entityDisplayName = entityName.Translate(user.Language);
+            var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearchForm(dbSet, dto);
             var entities = query.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-
-            var user = _userIdProvider.GetCurrentUser();
 
             var excelMapper = new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
