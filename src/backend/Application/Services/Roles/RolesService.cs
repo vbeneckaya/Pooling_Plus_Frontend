@@ -120,11 +120,12 @@ namespace Application.Services.Roles
 
         private IEnumerable<string> GetActions<TEntity>()
         {
-            var actionType = typeof(IAction<TEntity>);
+            var actionSingleType = typeof(IAction<TEntity>);
+            var actionGroupType = typeof(IAction<IEnumerable<TEntity>>);
             var actions = AppDomain.CurrentDomain
                                    .GetAssemblies()
                                    .SelectMany(s => s.GetTypes())
-                                   .Where(p => actionType.IsAssignableFrom(p));
+                                   .Where(p => actionSingleType.IsAssignableFrom(p) || actionGroupType.IsAssignableFrom(p));
             return actions.Select(x => x.Name.ToLowerFirstLetter());
         }
     }
