@@ -9,7 +9,7 @@ namespace Domain.Services.VehicleTypes
         [ExcelIgnore]
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1)]
+        [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Name { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(Tonnages)), OrderNumber(2)]
