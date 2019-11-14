@@ -8,7 +8,6 @@ namespace DAL.Migrations
     {
         public override void Apply()
         {
-            Database.AddColumn("Orders", new Column("WarehouseId", DbType.Guid, property: ColumnProperty.Null));
             Database.AddColumn("Orders", new Column("DocumentReturnStatus", DbType.Boolean, defaultValue: false));
         }
     }
