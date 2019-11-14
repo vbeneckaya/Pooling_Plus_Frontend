@@ -163,7 +163,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
-            setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus);
+            setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
 
             /*end of map dto to entity fields*/
 
