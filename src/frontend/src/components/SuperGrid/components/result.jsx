@@ -58,6 +58,7 @@ class Result extends Component {
             disabledCheck,
             name,
             progress,
+            t
         } = this.props;
 
         return (
@@ -96,6 +97,7 @@ class Result extends Component {
                                 loadList={loadList}
                                 gridName={name}
                                 modalCard={modalCard}
+                                t={t}
                             />
                         ))}
                         {isShowActions ? (

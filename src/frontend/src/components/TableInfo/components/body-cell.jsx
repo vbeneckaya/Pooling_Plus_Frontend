@@ -2,7 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import CellValue from "../../ColumnsValue";
 import TextCropping from "../../ColumnsValue/TextCropping";
 
-const BodyCellComponent = ({column, children, value, indexColumn, indexRow, toggleIsActive}) => {
+const BodyCellComponent = ({column, children, value, indexColumn, indexRow, toggleIsActive, t}) => {
     const cellRef = useRef(null);
     let [position, setPosition] = useState(null);
     let [width, setWidth] = useState(null);
@@ -34,6 +34,7 @@ const BodyCellComponent = ({column, children, value, indexColumn, indexRow, togg
                 indexRow={indexRow}
                 indexColumn={indexColumn}
                 value={value}
+                t={t}
             />
             {/*<TextCropping width={width} indexColumn={indexColumn}>
                 {value}

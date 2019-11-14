@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
@@ -22,9 +21,8 @@ const ModalComponent = ({ element, props, children }) => {
     return React.cloneElement(element, props, children);
 };
 
-const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, gridName }) => {
+const CellResult = ({row, column, loadList, indexRow, indexColumn, modalCard, gridName, t}) => {
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const checkProgress = useSelector(state => checkProgressSelector(state));
     const editProgress = useSelector(state => progressMassUpdateSelector(state));
     const editModal = useSelector(state => editModalSelector(state));
@@ -111,6 +109,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                             indexColumn={indexColumn}
                             value={row[column.name]}
                             width={column.width}
+                            t={t}
                             modalCard={
                                 <ModalComponent
                                     element={modalCard}

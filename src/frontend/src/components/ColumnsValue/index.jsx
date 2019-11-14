@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 
 import {
     ACTIVE_TYPE,
@@ -33,9 +32,9 @@ const CellValue = (
         modalCard,
         showRawValue,
         width,
+        t
     }
 ) => {
-    const {t} = useTranslation();
 
     if (type === SELECT_TYPE) {
         return (

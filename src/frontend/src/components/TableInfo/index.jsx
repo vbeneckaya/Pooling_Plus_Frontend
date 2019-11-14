@@ -263,6 +263,7 @@ class TableInfo extends Component {
                                                       }
                                                       indexRow={i}
                                                       indexColumn={index}
+                                                      t={t}
                                                   />
                                               ))}
                                               {isShowActions ? (
