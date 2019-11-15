@@ -38,7 +38,7 @@ build-backend-demo:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
     only:
-   - demo
+     - demo
   
 build-frontend-dev:
   stage: build
