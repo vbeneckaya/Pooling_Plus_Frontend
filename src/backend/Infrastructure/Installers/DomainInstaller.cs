@@ -112,7 +112,6 @@ namespace Infrastructure.Installers
             if (migrateDb)
             {
                 var appDbContext = buildServiceProvider.GetService<AppDbContext>();
-                appDbContext.DropDb();
                 appDbContext.Migrate(connectionString);
             }
         }
