@@ -39,10 +39,6 @@ const getTypeFacet = {
 };
 
 const FormField = props => {
-    if (props.settings === SETTINGS_TYPE_HIDE) {
-        return null;
-    }
-
     let params = {
         ...props,
         ...props.column,
@@ -59,6 +55,14 @@ const FormField = props => {
         params = {
             ...params,
             isDisabled: true,
+        };
+    }
+
+    if (props.settings === SETTINGS_TYPE_HIDE) {
+        params = {
+            ...params,
+            isDisabled: true,
+            value: null
         };
     }
 

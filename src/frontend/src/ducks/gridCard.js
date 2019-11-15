@@ -4,6 +4,7 @@ import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
+import {SETTINGS_TYPE_HIDE} from "../constants/formTypes";
 
 //*  TYPES  *//
 
@@ -184,7 +185,7 @@ export const settingsFormSelector = createSelector(
         base.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
 
@@ -200,7 +201,7 @@ export const settingsExtSelector = createSelector(
         ext.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
         return settings;
