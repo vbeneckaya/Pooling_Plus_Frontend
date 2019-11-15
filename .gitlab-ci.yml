@@ -27,7 +27,7 @@ build-tasks-demo:
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo -f ./docker/tasks/Dockerfile .
-    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demop
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo
   only:
    - demo
 
@@ -37,7 +37,8 @@ build-backend-demo:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
-   - demo  
+    only:
+   - demo
   
 build-frontend-dev:
   stage: build
