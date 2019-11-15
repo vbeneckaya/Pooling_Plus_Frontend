@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Domain.Extensions;
@@ -7,6 +8,7 @@ using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace API.Controllers.Shared
 {
@@ -44,7 +46,14 @@ namespace API.Controllers.Shared
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            return _service.ForSelect().OrderBy(x => x.Name);
+            string entityName = typeof(TEntity).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var result = _service.ForSelect().OrderBy(x => x.Name).ToList();
+            Log.Debug("{entityName}.ForSelect: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            return result;
         }
 
         /// <summary>
