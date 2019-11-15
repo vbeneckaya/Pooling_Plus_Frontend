@@ -13,6 +13,7 @@ import {
     progressSelector,
     roleCardSelector,
 } from '../../ducks/roles';
+import {sortFunc} from "../../utils/sort";
 
 class RoleCard extends Component {
     constructor(props) {
@@ -191,7 +192,7 @@ class RoleCard extends Component {
                                     menuItem: t('order_actions'),
                                     render: () => (
                                         <Tab.Pane>
-                                            {orderActions.map(action => (
+                                            {sortFunc(orderActions, t).map(action => (
                                                 <Form.Field key={action}>
                                                     <Form.Checkbox
                                                         label={t(action)}
@@ -208,7 +209,7 @@ class RoleCard extends Component {
                                     menuItem: t('shipping_actions'),
                                     render: () => (
                                         <Tab.Pane>
-                                            {shippingActions.map(action => (
+                                            {sortFunc(shippingActions, t).map(action => (
                                                 <Form.Field key={action}>
                                                     <Form.Checkbox
                                                         label={t(action)}

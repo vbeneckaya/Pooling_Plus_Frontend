@@ -13,7 +13,7 @@ class Search extends React.Component {
     }
 
     componentWillMount() {
-        //this.timer = null;
+        this.timer = null;
     }
 
     triggerChange = () => {
@@ -23,11 +23,13 @@ class Search extends React.Component {
     };
 
     handleChange = (e, {value}) => {
-        //clearTimeout(this.timer);
+        clearTimeout(this.timer);
 
         this.setState({value});
 
-        //this.timer = setTimeout(this.triggerChange, 300);
+        if (!value) {
+            this.timer = setTimeout(this.triggerChange, 300);
+        }
     };
 
     handleKeyPress = e => {

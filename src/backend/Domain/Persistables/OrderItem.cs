@@ -51,5 +51,10 @@ namespace Domain.Persistables
         /// Количество единиц товара
         /// </summary>
         public int Quantity { get; set; }
+
+        /// <summary>
+        /// Вручную изменен?
+        /// </summary>
+        public bool IsManualEdited { get; set; }
     }
 }
