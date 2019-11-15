@@ -22,6 +22,7 @@ namespace Application.Services.Shippings
 {
     public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
+        private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
@@ -349,8 +350,6 @@ namespace Application.Services.Shippings
             });
             return result;
         }
-
-        private readonly IMapper _mapper;
 
         public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {

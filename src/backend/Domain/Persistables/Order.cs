@@ -57,6 +57,10 @@ namespace Domain.Persistables
         /// </summary>
         public DateTime? ShippingDate { get; set; }
         /// <summary>
+        /// Дата отгрузки введена вручную
+        /// </summary>
+        public bool ManualShippingDate { get; set; }
+        /// <summary>
         /// Дней в пути
         /// </summary>
         public int? TransitDays { get; set; }
@@ -64,6 +68,10 @@ namespace Domain.Persistables
         /// Дата доставки
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
+        /// <summary>
+        /// Дата доставки введена вручную
+        /// </summary>
+        public bool ManualDeliveryDate { get; set; }
         /// <summary>
         /// Кол-во арт.
         /// </summary>
@@ -144,6 +152,10 @@ namespace Domain.Persistables
         /// Тип комплектации
         /// </summary>
         public Guid? PickingTypeId { get; set; }
+        /// <summary>
+        /// Тип комплектации выбран вручную
+        /// </summary>
+        public bool ManualPickingTypeId { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
