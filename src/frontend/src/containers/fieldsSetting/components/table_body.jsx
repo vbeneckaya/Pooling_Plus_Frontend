@@ -5,20 +5,20 @@ import SettingCell from "./setting_cell";
 import CellValue from "../../../components/ColumnsValue";
 import {ACTIVE_TYPE} from "../../../constants/columnTypes";
 
-const TableBody = ({ column, statusList, changeSettings, isExt, editProgress, t}) => {
+const TableBody = ({column, statusList, changeSettings, isExt, editProgress, t, toggleHidden}) => {
     return (
         <Table.Row key={column.fieldName}>
             <Table.Cell className="table-fields-setting_name">
                 <FieldCell field={column.fieldName} isExt={isExt} t={t} changeSettings={changeSettings}/>
             </Table.Cell>
             <Table.Cell>
-                <CellValue value={column.isHidden} type={ACTIVE_TYPE} toggleIsActive={() => {
-                }}/>
+                <CellValue value={column.isHidden} type={ACTIVE_TYPE} toggleIsActive={toggleHidden}/>
             </Table.Cell>
             {statusList.map(status => (
                 <Table.Cell key={`${status.name}_${column.fieldName}`}>
                     <SettingCell
                         value={column.accessTypes[status.name]}
+                        isDisabled={column.isReadOnly}
                         loading={editProgress &&
                         (editProgress.field === column.fieldName &&
                             (!editProgress.state || editProgress.state === status.name))}

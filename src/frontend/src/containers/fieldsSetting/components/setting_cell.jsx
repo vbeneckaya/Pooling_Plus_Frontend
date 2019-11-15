@@ -2,7 +2,7 @@ import React from 'react';
 import {Dropdown} from "semantic-ui-react";
 import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW} from "../../../constants/formTypes";
 
-const SettingCell = ({ value, t, onChange, loading }) => {
+const SettingCell = ({value, t, onChange, loading, isDisabled}) => {
 
     const availabilityListOptions = [
         /* { key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE) },*/
@@ -16,6 +16,7 @@ const SettingCell = ({ value, t, onChange, loading }) => {
         <Dropdown
             options={availabilityListOptions}
             fluid
+            disabled={isDisabled}
             value={value}
             loading={loading}
             onChange={onChange}

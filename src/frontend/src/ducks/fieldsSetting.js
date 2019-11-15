@@ -162,7 +162,14 @@ function* editFieldsSettingSaga({ payload = {} }) {
 
 function* toggleHiddenStateSaga({payload}) {
     try {
-        const result = yield postman.post(`/${TYPE_API}/`)
+        const {params, callbackSuccess} = payload;
+        const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, params);
+
+        yield put({
+            type: TOGGLE_HIDDEN_STATE_SUCCESS
+        });
+
+        callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
             type: TOGGLE_HIDDEN_STATE_ERROR,
@@ -175,5 +182,6 @@ export function* saga() {
     yield all([
         takeEvery(GET_FIELDS_SETTINGS_REQUEST, getFieldsSettingSaga),
         takeEvery(EDIT_FIELDS_SETTINGS_REQUEST, editFieldsSettingSaga),
+        takeEvery(TOGGLE_HIDDEN_STATE_REQUEST, toggleHiddenStateSaga),
     ]);
 }

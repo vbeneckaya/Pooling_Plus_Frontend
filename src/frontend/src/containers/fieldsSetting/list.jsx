@@ -13,7 +13,7 @@ import {
     editProgressSelector,
     fieldsSettingSelector,
     getFieldsSettingRequest,
-    progressSelector,
+    progressSelector, toggleHidenStateRequest,
 } from '../../ducks/fieldsSetting';
 import { ORDERS_GRID } from '../../constants/grids';
 import Header from './components/header';
@@ -103,6 +103,19 @@ const List = () => {
         );
     };
 
+    const handleToggleHidden = (fieldName, isExt) => {
+        dispatch(
+            toggleHidenStateRequest({
+                params: {
+                    forEntity: activeItem,
+                    fieldName,
+                    isExt
+                },
+                callbackSuccess: getSettings
+            })
+        )
+    };
+
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
     console.log('base', baseSettings);
@@ -149,6 +162,7 @@ const List = () => {
                                         statusList={statusList}
                                         editProgress={editProgress}
                                         changeSettings={handleChangSettings}
+                                        toggleHidden={handleToggleHidden}
                                         t={t}
                                     />
                                 ))}
