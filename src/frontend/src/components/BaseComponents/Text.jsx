@@ -23,8 +23,9 @@ const Text = ({
     return (
         <Form.Field>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}

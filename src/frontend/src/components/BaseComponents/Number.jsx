@@ -11,16 +11,18 @@ const Number = ({
     className,
     text,
     error,
+                    errorText,
     placeholder,
-                    isRequired
+                    isRequired,
 }) => {
     const { t } = useTranslation();
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}
@@ -33,6 +35,7 @@ const Number = ({
                 onChange={onChange}
                 autoComplete="off"
             />
+            {error && errorText ? <span className="label-error">{errorText}</span> : null}
         </Form.Field>
     );
 };

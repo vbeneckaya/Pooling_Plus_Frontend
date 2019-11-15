@@ -24,6 +24,7 @@ const Select = ({
     textValue,
     errorText,
     noLabel,
+                    isRequired,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -43,18 +44,22 @@ const Select = ({
         onChange(e, { value, name });
     };
 
-    let items = valuesList && valuesList.map((x, index) => ({
-        key: `${x.value}_${index}`,
-        value: x.value,
-        text: isTranslate ? t(x.name) : x.name,
-        /* disabled: !x.isActive,
+    let items =
+        valuesList &&
+        valuesList.map((x, index) => ({
+            key: `${x.value}_${index}`,
+            value: x.value,
+            text: isTranslate ? t(x.name) : x.name,
+            /* disabled: !x.isActive,
         description: x.description,*/
-    }));
+        }));
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Dropdown
                 placeholder={placeholder}

@@ -16,23 +16,40 @@ const DateTime = ({
     text,
     placeholder,
                       isRequired,
+                      error,
+                      errorText
 }) => {
     const { t } = useTranslation();
+
+    const getClassNames = () => {
+        const classNames = [];
+
+        if (error || errorText) {
+            classNames.push('input-error');
+        }
+
+        if (className) {
+            classNames.push(className);
+        }
+
+        return classNames.join(' ');
+    };
 
     return (
         <Form.Field className={noLabel ? 'no-label-datepicker' : undefined}>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <DatePicker
                 placeholderText={placeholder}
+                className={getClassNames()}
                 locale={localStorage.getItem('i18nextLng')}
                 disabled={isDisabled || false}
                 isClearable={!(isDisabled || false)}
                 selected={parseDateTime(value || '')}
                 dateFormat="dd.MM.yyyy HH:mm"
-                className={className}
                 showTimeSelect
                 timeFormat="HH:mm"
                 timeIntervals={15}
@@ -46,6 +63,7 @@ const DateTime = ({
                 popperPlacement={popperPlacement}
                 onChangeRaw={e => onChange(e, { name, value: e.target.value })}
             />
+            {error && errorText ? <span className="label-error">{errorText}</span> : null}
         </Form.Field>
     );
 };
