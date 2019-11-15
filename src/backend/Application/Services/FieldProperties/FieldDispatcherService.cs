@@ -39,6 +39,7 @@ namespace Application.Services.FieldProperties
                 bool isBulkUpdateAllowed = Attribute.IsDefined(prop, typeof(AllowBulkUpdateAttribute));
                 bool isFixedPosition = Attribute.IsDefined(prop, typeof(IsFixedPositionAttribute));
                 bool isRequired = Attribute.IsDefined(prop, typeof(IsRequiredAttribute));
+                bool isReadOnly = Attribute.IsDefined(prop, typeof(IsReadOnlyAttribute));
 
                 int orderNumber = int.MaxValue;
                 if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
@@ -58,7 +59,8 @@ namespace Application.Services.FieldProperties
                     IsIgnoredForFieldSettings = isIgnoredForFieldSettings,
                     IsBulkUpdateAllowed = isBulkUpdateAllowed,
                     IsFixedPosition = isFixedPosition,
-                    IsRequired = isRequired
+                    IsRequired = isRequired,
+                    IsReadOnly = isReadOnly
                 };
                 yield return fieldInfo;
             }

@@ -7,10 +7,10 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings, IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
         public string OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -89,7 +89,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.BigText)]
         public string DeliveryAddress { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(VehicleState))]
+        [FieldType(FieldType.State, source: nameof(VehicleState)), IsReadOnly]
         public string ShippingStatus { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
@@ -159,7 +159,7 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(3), IsReadOnly]
         public string ShippingNumber { get; set; }
 
         [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4)]

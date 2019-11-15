@@ -29,6 +29,11 @@
             Сохранить
             </summary>
         </member>
+        <member name="M:API.Controllers.FieldPropertiesController.ToggleHiddenState(Domain.Services.FieldProperties.ToggleHiddenStateDto)">
+            <summary>
+            Переключить "Скрыто" у поля
+            </summary>
+        </member>
         <member name="T:API.Controllers.FilesController">
             <summary>
             Файлы

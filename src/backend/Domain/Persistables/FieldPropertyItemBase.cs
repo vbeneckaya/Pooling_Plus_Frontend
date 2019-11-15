@@ -3,21 +3,28 @@ using Domain.Enums;
 
 namespace Domain.Persistables
 {
-    public class FieldPropertyItem : FieldPropertyItemBase, IPersistable, IComparable
+    public class FieldPropertyItemBase : IComparable
     {
-        public int State { get; set; }
-        public FieldPropertiesAccessType AccessType { get; set; }
+        public Guid Id { get; set; }
+        
+        public FieldPropertiesForEntityType ForEntity { get; set; }
+
+        public Guid? CompanyId { get; set; }
+
+        public Guid? RoleId { get; set; }
+
+        public string FieldName { get; set; }
         
         public int CompareTo(object o)
         {
-            FieldPropertyItem nextItem = o as FieldPropertyItem;
+            var nextItem = o as FieldPropertyItemBase;
             if (nextItem != null)
                 return GetPoints(nextItem) - GetPoints(this);
             else
                 return -1;
         }
 
-        private int GetPoints(FieldPropertyItem item)
+        private int GetPoints(FieldPropertyItemBase item)
         {
             int result = 0;
             if (item.RoleId != null) result += 2;
