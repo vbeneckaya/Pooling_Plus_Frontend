@@ -13,6 +13,7 @@ namespace Domain.Services.FieldProperties
         public bool IsBulkUpdateAllowed { get; set; }
         public bool IsFixedPosition { get; set; }
         public bool IsRequired { get; set; }
+        public bool IsReadOnly { get; set; }
         public int OrderNumber { get; set; }
     }
 }
