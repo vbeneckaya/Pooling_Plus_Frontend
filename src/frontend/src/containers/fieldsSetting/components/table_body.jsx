@@ -12,13 +12,13 @@ const TableBody = ({column, statusList, changeSettings, isExt, editProgress, t, 
                 <FieldCell field={column.fieldName} isExt={isExt} t={t} changeSettings={changeSettings}/>
             </Table.Cell>
             <Table.Cell>
-                <CellValue value={column.isHidden} type={ACTIVE_TYPE} toggleIsActive={toggleHidden}/>
+                <CellValue value={column.isHidden} type={ACTIVE_TYPE} toggleIsActive={() => toggleHidden(column.fieldName, isExt)}/>
             </Table.Cell>
             {statusList.map(status => (
                 <Table.Cell key={`${status.name}_${column.fieldName}`}>
                     <SettingCell
                         value={column.accessTypes[status.name]}
-                        isDisabled={column.isReadOnly}
+                        isDisabled={column.isReadOnly || column.isHidden}
                         loading={editProgress &&
                         (editProgress.field === column.fieldName &&
                             (!editProgress.state || editProgress.state === status.name))}

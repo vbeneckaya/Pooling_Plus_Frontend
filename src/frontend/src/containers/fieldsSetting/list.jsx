@@ -109,8 +109,9 @@ const List = () => {
                 params: {
                     forEntity: activeItem,
                     fieldName,
-                    isExt
+                    roleId: role === 'null' ? undefined : role,
                 },
+                isExt,
                 callbackSuccess: getSettings
             })
         )
