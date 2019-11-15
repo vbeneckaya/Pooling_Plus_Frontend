@@ -129,6 +129,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
+            services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
