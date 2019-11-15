@@ -113,6 +113,17 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
+
+            if (string.IsNullOrEmpty(dto.StartWinterPeriod))
+            {
+                result.AddError(nameof(dto.StartWinterPeriod), "emptyStartWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.EndWinterPeriod))
+            {
+                result.AddError(nameof(dto.EndWinterPeriod), "emptyEndWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
             var existingRecord = this.FindByKey(dto);
             var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
 

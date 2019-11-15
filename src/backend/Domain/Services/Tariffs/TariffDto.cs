@@ -13,7 +13,6 @@ namespace Domain.Services.Tariffs
         public string ShipmentCity { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), OrderNumber(2), IsFixedPosition, IsRequired]
-
         public string DeliveryCity { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
