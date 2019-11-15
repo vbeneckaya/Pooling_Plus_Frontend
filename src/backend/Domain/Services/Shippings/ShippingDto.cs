@@ -117,7 +117,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Text)]
         public string InvoiceNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
+        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -126,7 +126,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByCarrier { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6), IgnoreFieldSettings]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6), IsReadOnly]
         public string ShippingCreationDate { get; set; }
         /*end of fields*/
     }

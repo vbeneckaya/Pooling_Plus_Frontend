@@ -7,7 +7,7 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings, IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
@@ -142,7 +142,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IsReadOnly]
         public string OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -171,7 +171,7 @@ namespace Domain.Services.Orders
 
         public string ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.DateTime), IgnoreFieldSettings]
+        [FieldType(FieldType.DateTime), IsReadOnly]
         public string OrderChangeDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
