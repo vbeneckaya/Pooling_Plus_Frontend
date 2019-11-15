@@ -174,7 +174,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.DateTime), IgnoreFieldSettings]
         public string OrderChangeDate { get; set; }
 
-        [FieldType(FieldType.Boolean)]
+        [FieldType(FieldType.Boolean), AllowBulkUpdate]
         public bool? OrderConfirmed { get; set; }
 
         /*end of fields*/
