@@ -106,7 +106,7 @@ class Card extends Component {
         save({
             params,
             name,
-            callbackSuccess: this.onClose,
+            callbackSuccess: this.confirmClose,
         });
     };
 
