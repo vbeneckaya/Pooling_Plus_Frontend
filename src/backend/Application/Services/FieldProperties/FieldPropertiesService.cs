@@ -309,8 +309,7 @@ namespace Application.Services.FieldProperties
 
         private List<FieldInfo> ExtractFieldNamesFromDto<TDto>()
         {
-            var fields = _fieldDispatcherService.GetDtoFields<TDto>();
-            var result = fields.Where(x => !x.IsIgnoredForFieldSettings)
+            var result = _fieldDispatcherService.GetDtoFields<TDto>()
                 .ToList();
             
             foreach (var fieldInfo in result) 
