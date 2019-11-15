@@ -25,5 +25,5 @@ const SettingCell = ({value, t, onChange, loading, isDisabled}) => {
 };
 
 export default React.memo(SettingCell, (prevProps, nextProps) => {
-    return prevProps.value === nextProps.value && nextProps.loading === prevProps.loading || nextProps.isDisabled === prevProps.isDisabled;
+    return prevProps.value === nextProps.value && nextProps.loading === prevProps.loading && nextProps.isDisabled === prevProps.isDisabled;
 });

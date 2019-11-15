@@ -32,7 +32,8 @@ const CellValue = (
         modalCard,
         showRawValue,
         width,
-        t
+        t,
+        isDisabled
     }
 ) => {
 
@@ -84,7 +85,7 @@ const CellValue = (
     }
 
     if (type === ACTIVE_TYPE) {
-        return <Checkbox toggle itemID={id} checked={value} onChange={toggleIsActive}/>;
+        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={toggleIsActive}/>;
     }
 
     if (type === BOOLEAN_TYPE) {

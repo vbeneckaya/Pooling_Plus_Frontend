@@ -191,6 +191,7 @@ const List = () => {
                                         statusList={statusList}
                                         changeSettings={handleChangSettings}
                                         editProgress={editProgress}
+                                        toggleHidden={handleToggleHidden}
                                         t={t}
                                         isExt
                                     />
