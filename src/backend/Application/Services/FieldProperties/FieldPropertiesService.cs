@@ -125,7 +125,8 @@ namespace Application.Services.FieldProperties
             Guid? userId)
         {
             var hiddenAccessType = FieldPropertiesAccessType.Hidden.ToString().ToLowerFirstLetter();
-            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId);
+            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId)
+                .Where(x=> !x.isHidden);
             foreach (var prop in fieldProperties)
             {
                 bool hasAccess = prop.AccessTypes.Any(x => x.Value != hiddenAccessType);
