@@ -19,6 +19,7 @@ import { ORDERS_GRID } from '../../constants/grids';
 import Header from './components/header';
 import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
+import {sortFunc} from "../../utils/sort";
 
 const List = () => {
     const { t } = useTranslation();
@@ -104,6 +105,8 @@ const List = () => {
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
+    console.log('base', baseSettings);
+
     return (
         <div className="container">
             <Loader active={loading && !baseSettings.length} size="huge" className="table-loader">
@@ -139,9 +142,9 @@ const List = () => {
                                         <Table.Cell key={i} />
                                     ))}
                                 </Table.Row>
-                                {baseSettings.map(column => (
+                                {sortFunc(baseSettings, t, 'fieldName').map(column => (
                                     <TableBody
-                                        key={column.name}
+                                        key={column.fieldName}
                                         column={column}
                                         statusList={statusList}
                                         editProgress={editProgress}
@@ -166,9 +169,9 @@ const List = () => {
                                         <Table.Cell key={i} />
                                     ))}
                                 </Table.Row>
-                                {extSettings.map(column => (
+                                {sortFunc(extSettings, t, 'fieldName').map(column => (
                                     <TableBody
-                                        key={column.name}
+                                        key={column.fieldName}
                                         column={column}
                                         statusList={statusList}
                                         changeSettings={handleChangSettings}

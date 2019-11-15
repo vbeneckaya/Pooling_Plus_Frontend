@@ -12,6 +12,10 @@ const EDIT_FIELDS_SETTINGS_REQUEST = 'EDIT_FIELDS_SETTINGS_REQUEST';
 const EDIT_FIELDS_SETTINGS_SUCCESS = 'EDIT_FIELDS_SETTINGS_SUCCESS';
 const EDIT_FIELDS_SETTINGS_ERROR = 'EDIT_FIELDS_SETTINGS_ERROR';
 
+const TOGGLE_HIDDEN_STATE_REQUEST = 'TOGGLE_HIDDEN_STATE_REQUEST';
+const TOGGLE_HIDDEN_STATE_SUCCESS = 'TOGGLE_HIDDEN_STATE_SUCCESS';
+const TOGGLE_HIDDEN_STATE_ERROR = 'TOGGLE_HIDDEN_STATE_ERROR';
+
 const CLEAR_FIELDS_SETTINGS = 'CLEAR_FIELDS_SETTINGS';
 
 //*  INITIAL STATE  *//
@@ -91,6 +95,13 @@ export const clearFieldsSettings = () => {
     };
 };
 
+export const toggleHidenStateRequest = payload => {
+    return {
+        type: TOGGLE_HIDDEN_STATE_REQUEST,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.fieldsSetting;
@@ -143,6 +154,17 @@ function* editFieldsSettingSaga({ payload = {} }) {
             type: EDIT_FIELDS_SETTINGS_ERROR,
             payload: e,
         });
+    }
+}
+
+function* toggleHiddenStateSaga({payload}) {
+    try {
+
+    } catch (e) {
+        yield put({
+            type: TOGGLE_HIDDEN_STATE_ERROR,
+            payload: e
+        })
     }
 }
 

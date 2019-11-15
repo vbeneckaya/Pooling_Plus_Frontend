@@ -2,22 +2,22 @@ import React from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 
 const FieldCell = ({ field, t, changeSettings, isExt }) => {
-   /* console.log('fieldCell');*/
+    /* console.log('fieldCell');*/
     return (
         <>
             <b>{t(field)}</b>
             <Popup
-                trigger={<Button size="mini">{t('All')}</Button>}
+                trigger={<Button size="mini" className="margin-left-8">{t('All')}</Button>}
                 content={
                     <Button.Group>
-                        <Button
+                        {/*<Button
                             size="mini"
                             onClick={() => {
                                 changeSettings(field, 'hidden', null, isExt);
                             }}
                         >
                             {t('hidden')}
-                        </Button>
+                        </Button>*/}
                         <Button
                             size="mini"
                             onClick={() => {

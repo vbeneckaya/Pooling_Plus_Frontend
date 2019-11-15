@@ -7,7 +7,7 @@ const TableHeader = ({ statusList, t }) => {
         <>
             <Table.Row>
                 <Table.HeaderCell rowSpan="2">{t('field')}</Table.HeaderCell>
-                {/*<Table.HeaderCell rowSpan="2">{t('Принадлежность')}</Table.HeaderCell>*/}
+                <Table.HeaderCell rowSpan="2">{t('hidden')}</Table.HeaderCell>
                 <Table.HeaderCell colSpan={statusList.length} textAlign="center">
                     {t('status')}
                 </Table.HeaderCell>

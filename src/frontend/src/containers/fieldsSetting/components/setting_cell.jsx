@@ -5,7 +5,7 @@ import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW} from "../../
 const SettingCell = ({ value, t, onChange, loading }) => {
 
     const availabilityListOptions = [
-        { key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE) },
+        /* { key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE) },*/
         { key: SETTINGS_TYPE_SHOW, value: SETTINGS_TYPE_SHOW, text: t(SETTINGS_TYPE_SHOW) },
         { key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT) },
     ];
