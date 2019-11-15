@@ -2,6 +2,9 @@ import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { all, put, takeEvery } from 'redux-saga/effects';
 import { ORDERS_GRID } from '../constants/grids';
+
+const TYPE_API = 'fieldProperties';
+
 //*  TYPES  *//
 
 const GET_FIELDS_SETTINGS_REQUEST = 'GET_FIELDS_SETTINGS_REQUEST';
@@ -115,8 +118,8 @@ export const editProgressSelector = createSelector(stateSelector, state => state
 //*  SAGA  *//
 export function* getFieldsSettingSaga({ payload }) {
     try {
-        const baseResult = yield postman.post('fieldProperties/get', payload);
-        const extResult = yield postman.post('fieldProperties/get', {
+        const baseResult = yield postman.post(`${TYPE_API}/get`, payload);
+        const extResult = yield postman.post(`${TYPE_API}/get`, {
             ...payload,
             forEntity: payload.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints',
         });
@@ -139,7 +142,7 @@ export function* getFieldsSettingSaga({ payload }) {
 function* editFieldsSettingSaga({ payload = {} }) {
     try {
         const { params, callbackSuccess, isExt } = payload;
-        const result = yield postman.post('/fieldProperties/save', {
+        const result = yield postman.post(`/${TYPE_API}/save`, {
             ...params,
             forEntity: isExt ? params.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints' : params.forEntity,
         });
@@ -159,7 +162,7 @@ function* editFieldsSettingSaga({ payload = {} }) {
 
 function* toggleHiddenStateSaga({payload}) {
     try {
-
+        const result = yield postman.post(`/${TYPE_API}/`)
     } catch (e) {
         yield put({
             type: TOGGLE_HIDDEN_STATE_ERROR,
