@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Button, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
+    clearUserCard,
     clearUsersInfo,
     createUserRequest,
     getUserCardRequest,
@@ -70,7 +71,7 @@ class UserCard extends Component {
 
         this.setState({ form: {} });
         clear();
-        loadList();
+        loadList(false, true);
     };
 
     handleChange = (event, { name, value }) => {
@@ -201,7 +202,7 @@ const mapDispatchToProps = dispatch => {
             dispatch(createUserRequest(params));
         },
         clear: () => {
-            dispatch(clearUsersInfo());
+            dispatch(clearUserCard());
         },
     };
 };

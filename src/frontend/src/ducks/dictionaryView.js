@@ -27,6 +27,7 @@ const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
+const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
 
 //*  INITIAL STATE  *//
 
@@ -80,6 +81,11 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 ...initial
+            };
+        case CLEAR_DICTIONARY_CARD:
+            return {
+                ...state,
+                card: {}
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -147,6 +153,12 @@ export const clearDictionaryInfo = () => {
     return {
         type: CLEAR_DICTIONARY_INFO,
     };
+};
+
+export const clearDictionaryCard = () => {
+    return {
+        type: CLEAR_DICTIONARY_CARD
+    }
 };
 
 export const importFromExcelRequest = payload => {

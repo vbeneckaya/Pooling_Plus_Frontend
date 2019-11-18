@@ -34,17 +34,14 @@ class List extends Component {
 
     state = {};
 
-    componentDidMount() {
-        console.log('dictionary');
-    }
-
     componentWillUnmount() {
-        console.log('clear dictionary');
         this.props.clear();
     }
 
     handleImportFromExcel = (form, callbackSuccess) => {
-        const {importFromExcel, name} = this.props;
+        const {importFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
 
         importFromExcel({
             form,
@@ -54,7 +51,9 @@ class List extends Component {
     };
 
     handleExportToExcel = () => {
-        const {exportFromExcel, name} = this.props;
+        const {exportFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
         exportFromExcel({
             name,
         });

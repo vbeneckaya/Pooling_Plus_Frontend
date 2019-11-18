@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
-    cardSelector,
+    cardSelector, clearDictionaryCard,
     clearDictionaryInfo,
     columnsSelector, errorSelector,
     getCardRequest,
@@ -48,12 +48,12 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clear } = this.props;
+        const {loadList, clearCard} = this.props;
 
         this.setState({
             ...initialState,
         });
-        clear();
+        clearCard();
         loadList(false, true);
     };
 
@@ -186,8 +186,8 @@ const mapDispatchToProps = dispatch => {
         save: params => {
             dispatch(saveDictionaryCardRequest(params));
         },
-        clear: () => {
-            dispatch(clearDictionaryInfo());
+        clearCard: () => {
+            dispatch(clearDictionaryCard());
         },
     };
 };

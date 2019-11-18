@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import {Button, Dimmer, Form, Input, Loader, Modal, Tab} from 'semantic-ui-react';
 import {
     allActionsSelector,
-    allPermissionsSelector,
+    allPermissionsSelector, clearRolesCard,
     clearRolesInfo,
     createRoleRequest,
     getAllActionsRequest,
@@ -66,7 +66,7 @@ class RoleCard extends Component {
 
         clear();
 
-        loadList();
+        loadList(false, true);
     };
 
     handleChange = (e, { name, value }) => {
@@ -254,7 +254,7 @@ const mapDispatchToProps = dispatch => {
             dispatch(createRoleRequest(params));
         },
         clear: () => {
-            dispatch(clearRolesInfo());
+            dispatch(clearRolesCard());
         },
         getAllPermissions: () => {
             dispatch(getAllPermissionsRequest());
