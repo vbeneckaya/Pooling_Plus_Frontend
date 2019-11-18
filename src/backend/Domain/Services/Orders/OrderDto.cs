@@ -175,7 +175,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.DateTime), IsReadOnly]
         public string OrderChangeDate { get; set; }
 
-        [FieldType(FieldType.Boolean)]
+        [FieldType(FieldType.Boolean), AllowBulkUpdate]
         public bool? OrderConfirmed { get; set; }
 
         [FieldType(FieldType.Boolean)]
