@@ -17,13 +17,18 @@ namespace Application.Services.DocumentTypes
         public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             entity.Name = dto.Name;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = _dataService.GetDbSet<DocumentType>().OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<DocumentType>()
+                .Where(i => i.IsActive)
+                .OrderBy(x => x.Name)
+                .ToList();
+
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -39,7 +44,8 @@ namespace Application.Services.DocumentTypes
             return new DocumentTypeDto
             {
                 Id = entity.Id.ToString(),
-                Name = entity.Name
+                Name = entity.Name,
+                IsActive = entity.IsActive
             };
         }
 
@@ -48,6 +54,12 @@ namespace Application.Services.DocumentTypes
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+
+        public override DocumentType FindByKey(DocumentTypeDto dto)
+        {
+            return _dataService.GetDbSet<DocumentType>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
     }
 }

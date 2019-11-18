@@ -7,7 +7,7 @@ namespace Domain.Services.TransportCompanies
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1)]
+        [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Title { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(2)]
@@ -15,6 +15,8 @@ namespace Domain.Services.TransportCompanies
 
         [FieldType(FieldType.Text), OrderNumber(3)]
         public string DateOfPowerOfAttorney { get; set; }
-        /*end of fields*/
+
+        [FieldType(FieldType.Boolean), OrderNumber(4)]
+        public bool? IsActive { get; set; }
     }
 }

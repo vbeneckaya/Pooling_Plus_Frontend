@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Domain.Persistables
 {
-    public class PickingType : IPersistableWithName
+    public class BodyType : IPersistableWithName
     {
         public Guid Id { get; set; }
 
