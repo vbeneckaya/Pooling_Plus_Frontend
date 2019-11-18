@@ -1,3 +1,4 @@
+using Application.BusinessModels.Articles.Handlers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -43,13 +44,13 @@ namespace Application.Services.Articles
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.Spgr, dto.Spgr);
-            setter.UpdateField(e => e.Description, dto.Description);
+            setter.UpdateField(e => e.Spgr, dto.Spgr, new SpgrHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Description, dto.Description, new DescriptionHandler(_dataService, _historyService));
             setter.UpdateField(e => e.Nart, dto.Nart);
-            setter.UpdateField(e => e.CountryOfOrigin, dto.CountryOfOrigin);
-            setter.UpdateField(e => e.ShelfLife, dto.ShelfLife);
+            setter.UpdateField(e => e.CountryOfOrigin, dto.CountryOfOrigin, new CountryOfOriginHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ShelfLife, dto.ShelfLife, new ShelfLifeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.Status, dto.Status);
-            setter.UpdateField(e => e.Ean, dto.Ean);
+            setter.UpdateField(e => e.Ean, dto.Ean, new EanHandler(_dataService, _historyService));
             setter.UpdateField(e => e.UnitLengthGoodsMm, dto.UnitLengthGoodsMm);
             setter.UpdateField(e => e.WidthUnitsGoodsMm, dto.WidthUnitsGoodsMm);
             setter.UpdateField(e => e.UnitHeightGoodsMm, dto.UnitHeightGoodsMm);
