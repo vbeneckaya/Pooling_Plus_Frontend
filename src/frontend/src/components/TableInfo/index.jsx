@@ -251,6 +251,7 @@ class TableInfo extends Component {
                                                       key={`cell_${row.id}_${column.name}_${index}`}
                                                       column={column}
                                                       value={row[column.name]}
+                                                      id={row.id}
                                                       toggleIsActive={(
                                                           event,
                                                           {itemID, checked},
