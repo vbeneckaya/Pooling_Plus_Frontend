@@ -9,5 +9,8 @@ namespace Domain.Services.DocumentTypes
 
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Name { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(4)]
+        public bool? IsActive { get; set; }
     }
 }
