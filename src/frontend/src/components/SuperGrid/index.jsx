@@ -305,6 +305,7 @@ class SuperGrid extends Component {
                         unstackable
                         celled={false}
                         selectable={false}
+                        style={{height: 'inherit'}}
                         headerRow={
                             <Filter
                                 columns={columns}
