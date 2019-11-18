@@ -13,6 +13,7 @@ namespace Domain.Services.BodyTypes
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Name { get; set; }
 
-        public bool IsActive { get; set; }
+        [FieldType(FieldType.Boolean), OrderNumber(2)]
+        public bool? IsActive { get; set; }
     }
 }
