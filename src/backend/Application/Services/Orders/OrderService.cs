@@ -111,7 +111,7 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService));
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService), nameLoader: GetShippingWarehouseNameById);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
@@ -164,6 +164,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
             setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
+            setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
             /*end of map dto to entity fields*/
 
@@ -189,6 +190,15 @@ namespace Application.Services.Orders
             {
                 var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
                 _historyService.Save(entity.Id, isNew ? "orderCreatedFromInjection" : "orderUpdatedFromInjection", dto.OrderNumber, file);
+
+                if (string.IsNullOrEmpty(entity.Source))
+                {
+                    entity.Source = file;
+                }
+                else
+                {
+                    entity.Source = $"{entity.Source};{file}";
+                }
             }
 
             setter.SaveHistoryLog();
@@ -256,6 +266,11 @@ namespace Application.Services.Orders
         private string GetPickingTypeNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
+        }
+
+        private string GetShippingWarehouseNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
         }
 
         private bool CheckRequiredFields(Order order)

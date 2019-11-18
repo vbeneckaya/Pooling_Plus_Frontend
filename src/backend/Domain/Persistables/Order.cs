@@ -265,5 +265,10 @@ namespace Domain.Persistables
         /// Статус возврата документов
         /// </summary>
         public bool DocumentReturnStatus { get; set; }
+
+        /// <summary>
+        /// Источник данных в заказе (список инжекций)
+        /// </summary>
+        public string Source { get; set; }
     }
 }

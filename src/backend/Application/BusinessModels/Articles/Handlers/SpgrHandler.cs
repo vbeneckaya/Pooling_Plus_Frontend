@@ -27,6 +27,7 @@ namespace Application.BusinessModels.Articles.Handlers
                                             .Include(x => x.Order)
                                             .Where(x => x.Nart == entity.Nart
                                                         && x.Order != null
+                                                        && x.Spgr != newValue
                                                         && validStatuses.Contains(x.Order.Status)
                                                         && (x.Order.ShippingId == null || x.Order.OrderShippingStatus == ShippingState.ShippingCreated))
                                             .ToList();
