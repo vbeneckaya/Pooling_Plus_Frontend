@@ -162,8 +162,11 @@ function* editFieldsSettingSaga({ payload = {} }) {
 
 function* toggleHiddenStateSaga({payload}) {
     try {
-        const {params, callbackSuccess} = payload;
-        const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, params);
+        const {params, callbackSuccess, isExt} = payload;
+        const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, {
+            ...params,
+            forEntity: isExt ? params.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints' : params.forEntity,
+        });
 
         yield put({
             type: TOGGLE_HIDDEN_STATE_SUCCESS

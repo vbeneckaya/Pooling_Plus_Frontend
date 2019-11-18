@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 
-const FieldCell = ({ field, t, changeSettings, isExt }) => {
+const FieldCell = ({ field, t, changeSettings, isExt, isDisabled }) => {
     /* console.log('fieldCell');*/
     return (
         <>
             <b>{t(field)}</b>
             <Popup
-                trigger={<Button size="mini" className="margin-left-8">{t('All')}</Button>}
+                trigger={<Button size="mini" disabled={isDisabled} className="margin-left-8">{t('All')}</Button>}
                 content={
                     <Button.Group>
                         {/*<Button
@@ -44,5 +44,5 @@ const FieldCell = ({ field, t, changeSettings, isExt }) => {
 };
 
 export default React.memo(FieldCell, (prevProps, nextProps) => {
-    return prevProps.field === nextProps.field;
+    return prevProps.field === nextProps.field && nextProps.isDisabled === prevProps.isDisabled;
 });

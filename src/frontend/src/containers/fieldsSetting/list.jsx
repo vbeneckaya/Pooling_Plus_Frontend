@@ -109,8 +109,9 @@ const List = () => {
                 params: {
                     forEntity: activeItem,
                     fieldName,
-                    isExt
+                    roleId: role === 'null' ? undefined : role,
                 },
+                isExt,
                 callbackSuccess: getSettings
             })
         )
@@ -190,6 +191,7 @@ const List = () => {
                                         statusList={statusList}
                                         changeSettings={handleChangSettings}
                                         editProgress={editProgress}
+                                        toggleHidden={handleToggleHidden}
                                         t={t}
                                         isExt
                                     />
