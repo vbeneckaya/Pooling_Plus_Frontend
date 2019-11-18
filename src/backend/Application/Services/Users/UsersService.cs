@@ -36,7 +36,11 @@ namespace Application.Services.Users
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = _dataService.GetDbSet<User>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<User>()
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
+                .ToList();
+
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -59,12 +63,19 @@ namespace Application.Services.Users
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
                 RoleId = entity.RoleId.ToString(),
                 FieldsConfig = entity.FieldsConfig,
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                CarrierId = entity.CarrierId?.ToString()
             };
         }
 
         public override ValidateResult MapFromDtoToEntity(User entity, UserDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             if (!string.IsNullOrEmpty(dto.Id)) 
                 entity.Id = Guid.Parse(dto.Id);
             
@@ -73,6 +84,7 @@ namespace Application.Services.Users
             entity.RoleId = Guid.Parse(dto.RoleId);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
+            entity.CarrierId = dto.CarrierId.ToGuid();
             
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
@@ -80,11 +92,56 @@ namespace Application.Services.Users
             return new ValidateResult(null, entity.Id.ToString());
         }
 
+        private ValidateResult ValidateDto(UserDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.Email))
+            {
+                result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.UserName))
+            {
+                result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.Password))
+            {
+                result.AddError(nameof(dto.Password), "users.emptyPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.RoleId))
+            {
+                result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = this._dataService.GetDbSet<User>()
+                .Where(i => i.Id != dto.Id.ToGuid())
+                .Where(i => i.Email == dto.Email)
+                .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError("duplicatedUser", "users.duplicatedUser".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
+        }
+
         protected override IQueryable<User> ApplySort(IQueryable<User> query, SearchFormDto form)
         {
             return query
                 .OrderBy(i => i.Email)
                 .ThenBy(i => i.Id);
+        }
+
+        public override User FindByKey(UserDto dto)
+        {
+            return _dataService.GetDbSet<User>()
+                .FirstOrDefault(i => i.Email == dto.Email);
         }
     }
 }

@@ -13,5 +13,10 @@ namespace Domain.Persistables
         public string Name { get; set; }
 
         public Role Role { get; set; }
+
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        public Guid? CarrierId { get; set; }
     }
 }
