@@ -28,6 +28,9 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
         public string VehicleTypeId { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(BodyTypes))]
+        public string BodyTypeId { get; set; }
+
         [FieldType(FieldType.Number)]
         public int? PalletsCount { get; set; }
 
@@ -128,6 +131,7 @@ namespace Domain.Services.Shippings
 
         [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6), IgnoreFieldSettings]
         public string ShippingCreationDate { get; set; }
+        
         /*end of fields*/
     }
 }
