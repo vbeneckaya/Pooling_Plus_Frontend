@@ -169,6 +169,7 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses))]
         public string ShippingWarehouseId { get; set; }
 
         [FieldType(FieldType.DateTime), IgnoreFieldSettings]
@@ -177,6 +178,11 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? OrderConfirmed { get; set; }
 
-        /*end of fields*/
+        [FieldType(FieldType.Boolean)]
+        public bool? DocumentReturnStatus { get; set; }
+
+        [FieldType(FieldType.Text)]
+        public string PickingFeatures { get; set; }
+
     }
 }
