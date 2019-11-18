@@ -7,7 +7,7 @@ namespace Domain.Services.TransportCompanies
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1)]
+        [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Title { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(2)]

@@ -51,6 +51,16 @@ namespace Domain.Persistables
         public decimal? WinterAllowance { get; set; }
 
         /// <summary>
+        /// Дата начала действия тарифов
+        /// </summary>
+        public DateTime? EffectiveDate { get; set; }
+
+        /// <summary>
+        /// Дата окончания действия тарифов
+        /// </summary>
+        public DateTime? ExpirationDate { get; set; }
+
+        /// <summary>
         /// Ставка FTL
         /// </summary>
         public decimal? FtlRate { get; set; }

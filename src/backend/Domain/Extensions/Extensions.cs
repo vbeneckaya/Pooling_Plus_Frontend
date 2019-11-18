@@ -185,7 +185,14 @@ namespace Domain.Extensions
 
             return Guid.TryParse(guidString, out Guid guid) ? guid : (Guid?)null;
         }
-        
+
+        public static DateTime? ToDateTime(this string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString)) return null;
+
+            return dateString.TryParseDateTime(out DateTime date) ? date : (DateTime?)null;
+        }
+
         public static decimal? ToDecimal(this string decimalString)
         {
             if (string.IsNullOrEmpty(decimalString)) return null;
@@ -198,6 +205,11 @@ namespace Domain.Extensions
             if (string.IsNullOrEmpty(value)) return null;
 
             return (TEnum?)Enum.Parse(typeof(TEnum), value, true);
+        }
+
+        public static int? ToInt(this string intString)
+        {
+            return int.TryParse(intString, out int intValue) ? intValue : (int?)null;
         }
     }
 }

@@ -41,6 +41,9 @@ namespace DAL
         public DbSet<HistoryEntry> HistoryEntries { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Tonnage> Tonnages { get; set; }
+        public DbSet<BodyType> BodyTypes { get; set; }
+
         public DbSet<FieldPropertyItem> FieldPropertyItems { get; set; }
         public DbSet<FieldPropertyItemVisibility> FieldPropertyVisibilityItems { get; set; }
         /*end of add DbSets*/

@@ -41,6 +41,12 @@ namespace Domain.Persistables
         /// Тип ТС
         /// </summary>
         public Guid? VehicleTypeId { get; set; }
+
+        /// <summary>
+        /// Тип кузова
+        /// </summary>
+        public Guid? BodyTypeId { get; set; }
+
         /// <summary>
         /// Предварительное кол-во паллет
         /// </summary>
@@ -205,6 +211,7 @@ namespace Domain.Persistables
         /// Дата создания перевозки
         /// </summary>
         public DateTime? ShippingCreationDate { get; set; }
+
         /*end of fields*/
 
         public override string ToString()
