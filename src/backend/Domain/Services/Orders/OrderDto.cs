@@ -184,5 +184,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string PickingFeatures { get; set; }
 
+        public string Source { get; set; }
+
     }
 }
