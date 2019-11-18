@@ -11,6 +11,7 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
+using System.Globalization;
 using System.Linq;
 
 namespace Application.Services.Tariffs
@@ -35,6 +36,7 @@ namespace Application.Services.Tariffs
             entity.TarifficationType = dto.TarifficationType.Parse<TarifficationType>();
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
+            entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
 
             if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
             {
@@ -113,6 +115,17 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
+
+            if (string.IsNullOrEmpty(dto.StartWinterPeriod))
+            {
+                result.AddError(nameof(dto.StartWinterPeriod), "emptyStartWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.EndWinterPeriod))
+            {
+                result.AddError(nameof(dto.EndWinterPeriod), "emptyEndWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
             var existingRecord = this.FindByKey(dto);
             var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
 
@@ -136,6 +149,8 @@ namespace Application.Services.Tariffs
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
                 StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
                 EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
+                WinterAllowance = entity.WinterAllowance.HasValue ? 
+                    entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,

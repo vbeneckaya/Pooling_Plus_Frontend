@@ -92,8 +92,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
-            services.AddSingleton<IWarehouseCityService, WarehouseCityService>();
-            services.AddSingleton<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+            services.AddScoped<IWarehouseCityService, WarehouseCityService>();
+            services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
 
             /*end of add service implementation*/
 

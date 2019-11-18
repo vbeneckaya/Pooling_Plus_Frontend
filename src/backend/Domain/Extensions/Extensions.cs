@@ -181,7 +181,16 @@ namespace Domain.Extensions
 
         public static Guid? ToGuid(this string guidString)
         {
+            if (string.IsNullOrEmpty(guidString)) return null;
+
             return Guid.TryParse(guidString, out Guid guid) ? guid : (Guid?)null;
+        }
+        
+        public static decimal? ToDecimal(this string decimalString)
+        {
+            if (string.IsNullOrEmpty(decimalString)) return null;
+
+            return decimal.TryParse(decimalString.Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : (decimal?)null;
         }
 
         public static TEnum? Parse<TEnum>(this string value) where TEnum: struct, Enum
