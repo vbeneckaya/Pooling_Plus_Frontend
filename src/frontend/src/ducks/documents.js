@@ -298,11 +298,12 @@ function* downloadDocumentSaga({ payload }) {
         const { id } = payload;
         const res = yield downloader.get(`/files/${id}/download`, { responseType: 'blob' });
         const { data } = res;
-        let headerLine = res.headers['content-disposition'];
-        let startFileNameIndex = headerLine.indexOf('filename=') + 9;
-        let endFileNameIndex = headerLine.lastIndexOf(';');
-        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
-
+        let headerLine = res.headers['content-disposition'].split('; ')[2];
+        // console.log('headerLine', headerLine.split('; ')[2]);
+        /*  let startFileNameIndex = headerLine[2].indexOf("''");
+          /!*let endFileNameIndex = headerLine[2].lastIndexOf('"');*!/*/
+        let filename = decodeURI(headerLine.substring(17));
+        console.log('filename', filename);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
         link.setAttribute('download', filename);
