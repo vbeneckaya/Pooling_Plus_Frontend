@@ -48,10 +48,10 @@ const Select = ({
         valuesList.map((x, index) => ({
             key: `${x.value}_${index}`,
             value: x.value,
-            text: isTranslate ? t(x.name) : x.name,
-            /* disabled: !x.isActive,
-        description: x.description,*/
+            text: isTranslate ? t(x.name) : x.name
         }));
+
+    console.log('select');
 
     return (
         <Form.Field>
@@ -81,4 +81,4 @@ const Select = ({
     );
 };
 
-export default Select;
+export default React.memo(Select);

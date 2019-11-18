@@ -72,4 +72,8 @@ const FormField = props => {
     );
 };
 
-export default FormField;
+export default React.memo(FormField, (prevProps, nextProps) => {
+    return prevProps.value === nextProps.value &&
+        prevProps.isDisabled === nextProps.isDisabled &&
+        prevProps.error === nextProps.error;
+});

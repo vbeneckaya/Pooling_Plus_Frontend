@@ -99,17 +99,17 @@ const Card = props => {
 
     const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
         if (name === 'soldTo') {
-            setForm({
-                ...form,
+            setForm(prevState => ({
+                ...prevState,
                 [name]: value,
                 clientName,
                 deliveryAddress
-            })
+            }))
         } else {
-            setForm({
-                ...form,
-                [name]: value,
-            });
+            setForm(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
         }
 
         if (
@@ -128,8 +128,11 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    // onClose();
-                    loadCard();
+                    if (form.id) {
+                        loadCard();
+                    } else {
+                        onClose();
+                    }
                 },
             }),
         );
@@ -220,17 +223,32 @@ const Card = props => {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <Modal.Description>
-                    {React.cloneElement(getModal[name], {
-                        ...props,
-                        form,
-                        load: loadCard,
-                        settings,
-                        uniquenessNumberCheck: handleUniquenessCheck,
-                        isNotUniqueNumber,
-                        error,
-                        onClose,
-                        onChangeForm,
-                    })}
+                    {
+                        name === ORDERS_GRID
+                        ?
+                            <OrderModal
+                                {...props}
+                                form={form}
+                                load={loadCard}
+                                settings={settings}
+                                uniquenessNumberCheck={handleUniquenessCheck}
+                                isNotUniqueNumber={isNotUniqueNumber}
+                                error={error}
+                                onClose={onClose}
+                                onChangeForm={onChangeForm}
+                            />
+                            : <ShippingModal
+                                {...props}
+                                form={form}
+                                load={loadCard}
+                                settings={settings}
+                                uniquenessNumberCheck={handleUniquenessCheck}
+                                isNotUniqueNumber={isNotUniqueNumber}
+                                error={error}
+                                onClose={onClose}
+                                onChangeForm={onChangeForm}
+                            />
+                    }
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">
