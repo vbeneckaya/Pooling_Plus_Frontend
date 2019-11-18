@@ -16,7 +16,10 @@ namespace Application.Services.TransportCompanies
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var carriers = _dataService.GetDbSet<TransportCompany>().OrderBy(c => c.Title).ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                .OrderBy(c => c.Title)
+                .ToList();
+                
             foreach (TransportCompany carrier in carriers)
             {
                 yield return new LookUpDto

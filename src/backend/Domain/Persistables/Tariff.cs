@@ -31,7 +31,7 @@ namespace Domain.Persistables
         public Guid? CarrierId { get; set; }
 
         /// <summary>
-        /// Тип кузова
+        /// Тип ТС
         /// </summary>
         public Guid? VehicleTypeId { get; set; }
 

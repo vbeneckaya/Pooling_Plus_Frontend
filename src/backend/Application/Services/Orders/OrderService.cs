@@ -111,7 +111,7 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), ignoreChanges: true);
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
@@ -163,10 +163,9 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
+            setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
 
             /*end of map dto to entity fields*/
-
-
 
             if (isNew)
             {
@@ -216,7 +215,15 @@ namespace Application.Services.Orders
             {
                 return null;
             }
-            return _mapper.Map<OrderDto>(entity);
+
+            var dto = _mapper.Map<OrderDto>(entity);
+            var warehouse = _dataService.GetDbSet<Warehouse>()
+                .Where(i => i.SoldToNumber == dto.SoldTo)
+                .FirstOrDefault();
+
+            dto.PickingFeatures = warehouse?.PickingFeatures;
+
+            return dto;
         }
 
         public override OrderFormDto MapFromEntityToFormDto(Order entity)
