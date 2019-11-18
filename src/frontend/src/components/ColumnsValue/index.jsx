@@ -5,7 +5,7 @@ import {
     BOOLEAN_TYPE,
     ENUM_TYPE,
     LABELS_TYPE,
-    LINK_TYPE,
+    LINK_TYPE, LOCAL_DATE_TIME,
     NUMBER_TYPE,
     SELECT_TYPE,
     STATE_TYPE,
@@ -15,6 +15,7 @@ import { Checkbox, Label } from 'semantic-ui-react';
 import StateValue from './StateValue';
 import SelectValue from './SelectValue';
 import TextCropping from './TextCropping';
+import {dateToUTC} from "../../utils/dateTimeFormater";
 
 const CellValue = (
     {
@@ -110,15 +111,13 @@ const CellValue = (
         );
     }
 
-    /* if (type === DATE_TIME_TYPE) {
-        const dateString = formatDate(Date.parse(value), 'dd.MM.YYYY HH:mm').toString();
+    if (type === LOCAL_DATE_TIME) {
         return (
-            <div
-                key={`value_${id}`}
-                dangerouslySetInnerHTML={{ __html: dateString.replaceAll(' ', '&nbsp;') }}
-            />
+            <TextCropping width={width} indexColumn={indexColumn}>
+                {dateToUTC(value, 'DD.MM.YYYY HH:mm')}
+            </TextCropping>
         );
-    }*/
+    }
 
     return (
         <TextCropping width={width} indexColumn={indexColumn}>

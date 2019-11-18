@@ -14,6 +14,7 @@ import {
     STATE_TYPE,
     TEXT_TYPE,
     TIME_TYPE,
+    LOCAL_DATE_TIME
 } from '../../constants/columnTypes';
 import TextFacet from './Text';
 import NumberFacet from './Number';
@@ -30,6 +31,7 @@ const getTypeFacet = {
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,
     [DATE_TYPE]: <DateFacet />,
+    [LOCAL_DATE_TIME]: <DateFacet/>,
     [TIME_TYPE]: <TimeFacet/>,
     [STATE_TYPE]: <StateFacet />,
     [BOOLEAN_TYPE]: <Bool />,
