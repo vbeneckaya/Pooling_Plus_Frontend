@@ -126,8 +126,26 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.EndWinterPeriod), "emptyEndWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            var existingRecord = this.FindByKey(dto);
-            var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
+            if (string.IsNullOrEmpty(dto.EffectiveDate))
+            {
+                result.AddError(nameof(dto.EffectiveDate), "emptyEffectiveDate".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.ExpirationDate))
+            {
+                result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var expirationDate = dto.ExpirationDate.ToDateTime();
+            var effectiveDate = dto.EffectiveDate.ToDateTime();
+
+            var existingRecord = this.GetByKey(dto)
+                .Where(i => i.Id != dto.Id.ToGuid())
+                .FirstOrDefault();
+
+            var hasDuplicates = existingRecord != null
+                && expirationDate < existingRecord.EffectiveDate && effectiveDate < existingRecord.EffectiveDate
+                || effectiveDate > existingRecord.ExpirationDate && expirationDate > existingRecord.ExpirationDate;
 
             if (hasDuplicates)
             {
@@ -259,14 +277,18 @@ namespace Application.Services.Tariffs
 
         public override Tariff FindByKey(TariffDto dto)
         {
+            return this.GetByKey(dto).FirstOrDefault();
+        }
+
+        private IQueryable<Tariff> GetByKey(TariffDto dto)
+        {
             return _dataService.GetDbSet<Tariff>()
-                .Where(i =>
-                    i.CarrierId == dto.CarrierId.ToGuid()
-                    && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
-                    && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
-                    && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
-                    && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity)
-                .FirstOrDefault();
+                    .Where(i =>
+                        i.CarrierId == dto.CarrierId.ToGuid()
+                        && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
+                        && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
+                        && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
+                        && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);
         }
     }
 }
