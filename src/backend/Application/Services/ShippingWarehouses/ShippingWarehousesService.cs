@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
+using Application.Shared;
 using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
@@ -61,8 +62,8 @@ namespace Application.Services.ShippingWarehouses
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.Code, dto.Code);
-            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName);
-            setter.UpdateField(e => e.Address, dto.Address);
+            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService));
             setter.UpdateField(e => e.ValidAddress, dto.ValidAddress, ignoreChanges: true);
             setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
             setter.UpdateField(e => e.Region, dto.Region);

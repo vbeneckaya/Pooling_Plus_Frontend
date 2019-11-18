@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Services.UserProvider;
+using System;
 
 namespace Domain.Services.History
 {
@@ -6,5 +7,6 @@ namespace Domain.Services.History
     {
         HistoryDto Get(Guid entityId);
         void Save(Guid entityId, string messageKey, params object[] messageArgs);
+        void SaveImpersonated(CurrentUserDto user, Guid entityId, string messageKey, params object[] messageArgs);
     }
 }
