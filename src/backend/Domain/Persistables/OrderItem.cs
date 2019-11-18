@@ -56,5 +56,7 @@ namespace Domain.Persistables
         /// Вручную изменен?
         /// </summary>
         public bool IsManualEdited { get; set; }
+
+        public Order Order { get; set; }
     }
 }
