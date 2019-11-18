@@ -1,16 +1,12 @@
 import React, { useEffect } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import Text from '../../BaseComponents/Text';
-import Date from '../../BaseComponents/Date';
-import TextArea from '../../BaseComponents/TextArea';
-import Select from '../../BaseComponents/Select';
 import { useSelector } from 'react-redux';
 import { valuesListSelector } from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
 
-const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck }) => {
+const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
@@ -34,8 +30,10 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             type={TEXT_TYPE}
                             isRequired
                             value={form['orderNumber']}
-                            error={isNotUniqueNumber}
-                            errorText={isNotUniqueNumber && t('number_already_exists')}
+                            error={
+                                (isNotUniqueNumber && t('number_already_exists')) ||
+                                error.find(error => error.name === 'orderNumber')
+                            }
                             onBlur={uniquenessNumberCheck}
                             onChange={onChange}
                         />
@@ -45,6 +43,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="clientOrderNumber"
                             type={TEXT_TYPE}
                             isRequired
+                            error={error.find(error => error.name === 'clientOrderNumber')}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
                         />
@@ -54,6 +53,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="orderDate"
                             type={DATE_TYPE}
                             isRequired
+                            error={error.find(error => error.name === 'orderDate')}
                             value={form['orderDate']}
                             onChange={onChange}
                         />
@@ -62,6 +62,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                         <FormField
                             name="payer"
                             type={TEXT_TYPE}
+                            error={error.find(error => error.name === 'payer')}
                             value={form['payer']}
                             onChange={onChange}
                         />
@@ -73,6 +74,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="shippingWarehouseId"
                             type={SELECT_TYPE}
                             value={form['shippingWarehouseId']}
+                            error={error.find(error => error.name === 'shippingWarehouseId')}
                             source="shippingWarehouses"
                             onChange={onChange}
                         />
@@ -83,6 +85,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             type={SELECT_TYPE}
                             isRequired
                             value={form['soldTo']}
+                            error={error.find(error => error.name === 'soldTo')}
                             source="soldTo"
                             onChange={handleChangeSoldTo}
                         />
@@ -92,6 +95,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="clientName"
                             type={TEXT_TYPE}
                             isDisabled
+                            error={error.find(error => error.name === 'clientName')}
                             value={form['clientName']}
                             onChange={onChange}
                         />
@@ -101,6 +105,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="deliveryDate"
                             type={DATE_TYPE}
                             value={form['deliveryDate']}
+                            error={error.find(error => error.name === 'deliveryDate')}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -111,6 +116,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="shippingAddress"
                             type={BIG_TEXT_TYPE}
                             value={form['shippingAddress']}
+                            error={error.find(error => error.name === 'shippingAddress')}
                             isDisabled
                             rows={2}
                             onChange={onChange}
@@ -121,6 +127,7 @@ const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberC
                             name="deliveryAddress"
                             type={BIG_TEXT_TYPE}
                             value={form['deliveryAddress']}
+                            error={error.find(error => error.name === 'deliveryAddress')}
                             isDisabled
                             rows={2}
                             onChange={onChange}

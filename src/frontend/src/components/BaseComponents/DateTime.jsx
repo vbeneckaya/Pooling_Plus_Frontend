@@ -17,14 +17,13 @@ const DateTime = ({
     placeholder,
                       isRequired,
                       error,
-                      errorText
 }) => {
     const { t } = useTranslation();
 
     const getClassNames = () => {
         const classNames = [];
 
-        if (error || errorText) {
+        if (error) {
             classNames.push('input-error');
         }
 
@@ -63,7 +62,7 @@ const DateTime = ({
                 popperPlacement={popperPlacement}
                 onChangeRaw={e => onChange(e, { name, value: e.target.value })}
             />
-            {error && errorText ? <span className="label-error">{errorText}</span> : null}
+            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
         </Form.Field>
     );
 };

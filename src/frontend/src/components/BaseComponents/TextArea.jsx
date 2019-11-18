@@ -2,13 +2,13 @@ import React from 'react';
 import { Form, TextArea } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
-const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, text, isRequired, error, errorText}) => {
+const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, text, isRequired, error}) => {
     const { t } = useTranslation();
 
     const getClassNames = () => {
         const classNames = [];
 
-        if (error || errorText) {
+        if (error) {
             classNames.push('input-error');
         }
 
@@ -34,7 +34,7 @@ const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, t
                 value={value || ''}
                 onChange={onChange}
             />
-            {error && errorText ? <span className="label-error">{errorText}</span> : null}
+            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
         </Form.Field>
     );
 };

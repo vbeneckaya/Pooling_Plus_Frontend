@@ -221,8 +221,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                             <Text
                                 name="name"
                                 value={name}
-                                error={error}
-                                errorText={error && t(error)}
+                                error={error && t(error)}
                                 onChange={(e, { value }) => setName(value)}
                             />
                             <Input

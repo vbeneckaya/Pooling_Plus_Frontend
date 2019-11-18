@@ -138,8 +138,7 @@ class Card extends Component {
                                         column={column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err}
-                                        errorText={err && err.message}
+                                        error={err && err.message}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />

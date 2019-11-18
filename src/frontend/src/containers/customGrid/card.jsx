@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
-    editCardRequest,
+    editCardRequest, errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
@@ -43,6 +43,7 @@ const Card = props => {
 
     const card = useSelector(state => cardSelector(state));
     const settings = useSelector(state => settingsFormSelector(state, card.status));
+    const error = useSelector(state => errorSelector(state));
 
     const loadCard = () => {
         dispatch(
@@ -224,6 +225,7 @@ const Card = props => {
                         settings,
                         uniquenessNumberCheck: handleUniquenessCheck,
                         isNotUniqueNumber,
+                        error,
                         onClose,
                         onChangeForm,
                     })}

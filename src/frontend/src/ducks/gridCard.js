@@ -4,7 +4,7 @@ import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
-import {SETTINGS_TYPE_HIDE} from "../constants/formTypes";
+import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
 
 //*  TYPES  *//
 
@@ -37,6 +37,7 @@ const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 const initial = {
     config: {},
     data: {},
+    error: [],
     progress: false,
     editProgress: false,
 };
@@ -100,11 +101,13 @@ export default (state = initial, { type, payload }) => {
         case EDIT_GRID_CARD_SUCCESS:
             return {
                 ...state,
+                error: [],
                 editProgress: false,
             };
         case EDIT_GRID_CARD_ERROR:
             return {
                 ...state,
+                error: payload,
                 editProgress: false,
             };
         default:
@@ -162,20 +165,11 @@ const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(
-    stateSelector,
-    state => state.data.id,
-);
+const idSelector = createSelector(stateSelector, state => state.data.id);
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const cardSelector = createSelector(stateSelector, state => state.data);
 
 export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
@@ -207,6 +201,8 @@ export const settingsExtSelector = createSelector(
         return settings;
     },
 );
+
+export const errorSelector = createSelector(stateSelector, state => state.error);
 
 //*  SAGA  *//
 
@@ -259,6 +255,10 @@ function* editCardSaga({ payload }) {
 
         if (result.isError) {
             toast.error(result.error);
+            yield put({
+                type: EDIT_GRID_CARD_ERROR,
+                payload: result.errors
+            });
         } else {
             yield put({
                 type: EDIT_GRID_CARD_SUCCESS,
@@ -269,8 +269,7 @@ function* editCardSaga({ payload }) {
         }
     } catch (error) {
         yield put({
-            type: EDIT_GRID_CARD_ERROR,
-            payload: error,
+            type: EDIT_GRID_CARD_ERROR
         });
     }
 }

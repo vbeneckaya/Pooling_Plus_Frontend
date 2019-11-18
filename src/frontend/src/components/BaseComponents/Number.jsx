@@ -11,7 +11,6 @@ const Number = ({
     className,
     text,
     error,
-                    errorText,
     placeholder,
                     isRequired,
 }) => {
@@ -35,7 +34,7 @@ const Number = ({
                 onChange={onChange}
                 autoComplete="off"
             />
-            {error && errorText ? <span className="label-error">{errorText}</span> : null}
+            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
         </Form.Field>
     );
 };

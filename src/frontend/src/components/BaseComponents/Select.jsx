@@ -22,7 +22,6 @@ const Select = ({
     isTranslate,
     error,
     textValue,
-    errorText,
     noLabel,
                     isRequired,
 }) => {
@@ -77,7 +76,7 @@ const Select = ({
                 onChange={handleChange}
                 selectOnBlur={false}
             />
-            {errorText && <span className="label-error">{errorText}</span>}
+            {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );
 };
