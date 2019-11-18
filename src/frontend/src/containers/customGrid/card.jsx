@@ -52,6 +52,7 @@ const Card = props => {
                 id,
                 callbackSuccess: card => {
                     setForm(card);
+                    setNotChangeForm(true);
                 },
             }),
         );
@@ -127,7 +128,8 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    onClose();
+                    // onClose();
+                    loadCard();
                 },
             }),
         );
