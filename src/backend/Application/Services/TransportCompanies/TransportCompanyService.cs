@@ -61,10 +61,11 @@ namespace Application.Services.TransportCompanies
                 .OrderBy(i => i.Title)
                 .ThenBy(i => i.Id);
         }
+
         public override TransportCompany FindByKey(TransportCompanyDto dto)
         {
             return _dataService.GetDbSet<TransportCompany>()
-                .FirstOrDefault(i => i.Name == dto.Name);
+                .FirstOrDefault(i => i.Title == dto.Title);
         }
     }
 }
