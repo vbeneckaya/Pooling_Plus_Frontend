@@ -53,7 +53,7 @@ namespace Application.Shared
             return new List<LookUpDto>();
         }
 
-        public virtual TEntity FindByKey(TListDto dto)
+        public virtual TEntity FindByKey(TListDto dto, bool isImport = false)
         {
             return FindById(dto);
         }
