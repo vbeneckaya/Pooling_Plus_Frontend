@@ -5,7 +5,7 @@ import { Button, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
     clearUserCard,
     clearUsersInfo,
-    createUserRequest,
+    createUserRequest, errorSelector,
     getUserCardRequest,
     progressSelector,
     userCardSelector,
@@ -17,6 +17,8 @@ import {
 } from '../../ducks/roles';
 import Select from '../../components/BaseComponents/Select';
 import Text from '../../components/BaseComponents/Text';
+import {SELECT_TYPE, TEXT_TYPE} from "../../constants/columnTypes";
+import FormField from "../../components/BaseComponents";
 
 class UserCard extends Component {
     constructor(props) {
@@ -108,7 +110,7 @@ class UserCard extends Component {
     render() {
         const { modalOpen, form } = this.state;
         const { login, userName, roleId, email, isActive, password } = form;
-        const { children, title, loading, id, rolesLoading, roles, t } = this.props;
+        const {children, title, loading, t, error} = this.props;
 
         return (
             <Modal
@@ -124,17 +126,25 @@ class UserCard extends Component {
                     <Dimmer active={loading} inverted className="table-loader">
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
-                    <Form autoComplete="off">
+                    <Form>
                         <Grid columns="equal">
                             <Grid.Row columns="equal">
                                 <Grid.Column>
-                                    <Text name="email" value={email} onChange={this.handleChange} />
-                                    <Text
-                                        name="userName"
-                                        value={userName}
+                                    <FormField
+                                        type={TEXT_TYPE}
+                                        name="email"
+                                        value={email}
+                                        error={error && (error.find(item => item.name === 'email') || {}).message}
                                         onChange={this.handleChange}
                                     />
-                                    <Select
+                                    <FormField
+                                        name="userName"
+                                        value={userName}
+                                        type={TEXT_TYPE}
+                                        error={error && (error.find(item => item.name === 'userName') || {}).message}
+                                        onChange={this.handleChange}
+                                    />
+                                    <FormField
                                         fluid
                                         search
                                         selection
@@ -142,12 +152,17 @@ class UserCard extends Component {
                                         name="roleId"
                                         value={roleId}
                                         source="roles"
+                                        error={error && (error.find(item => item.name === 'roleId') || {}).message}
+                                        type={SELECT_TYPE}
                                         onChange={this.handleChange}
                                     />
-                                    <Text
-                                        type="password"
+                                    <FormField
+                                        typeValue="password"
                                         name="password"
                                         value={password}
+                                        type={TEXT_TYPE}
+                                        error={error && (error.find(item => item.name === 'password') || {}).message}
+                                        autoComplete="new-password"
                                         onChange={this.handleChange}
                                     />
                                     {/*{id ? (
@@ -187,6 +202,7 @@ const mapStateToProps = state => {
         loading: progressSelector(state),
         roles: rolesFromUserSelector(state),
         rolesLoading: rolesProgressSelector(state),
+        error: errorSelector(state)
     };
 };
 
