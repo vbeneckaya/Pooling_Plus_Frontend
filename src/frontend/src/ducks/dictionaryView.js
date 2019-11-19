@@ -85,7 +85,8 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_DICTIONARY_CARD:
             return {
                 ...state,
-                card: {}
+                card: {},
+                error: null
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {

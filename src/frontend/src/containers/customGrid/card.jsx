@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
-    cardSelector,
+    cardSelector, clearGridCard,
     editCardRequest, errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
@@ -79,6 +79,8 @@ const Card = props => {
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
             beforeClose ? beforeClose() : setModalOpen(false);
+            setNotChangeForm(true);
+            dispatch(clearGridCard());
             setForm({});
             setIsNotUnqueNumber(false);
             loadList && loadList(false, true);

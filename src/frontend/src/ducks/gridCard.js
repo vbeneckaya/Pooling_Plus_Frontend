@@ -32,6 +32,8 @@ const IS_UNIQUE_NUMBER_REQUEST = 'IS_UNIQUE_NUMBER_REQUEST';
 const IS_UNIQUE_NUMBER_SUCCESS = 'IS_UNIQUE_NUMBER_SUCCESS';
 const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
+const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -110,6 +112,12 @@ export default (state = initial, { type, payload }) => {
                 error: payload,
                 editProgress: false,
             };
+        case CLEAR_GRID_CARD:
+            return {
+                ...state,
+                error: [],
+                data: {}
+            };
         default:
             return state;
     }
@@ -158,6 +166,12 @@ export const isUniqueNumberRequest = payload => {
         payload,
     };
 };
+
+export const clearGridCard = () => {
+    return {
+        type: CLEAR_GRID_CARD
+    }
+}
 
 //*  SELECTORS *//
 
