@@ -37,8 +37,8 @@ namespace Application.Services.Tariffs
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
             entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
-            entity.EffectiveDate = dto.EffectiveDate.ToDateTime();
-            entity.ExpirationDate = dto.ExpirationDate.ToDateTime();
+            entity.EffectiveDate = dto.EffectiveDate.ToDate();
+            entity.ExpirationDate = dto.ExpirationDate.ToDate();
 
             if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
             {
@@ -287,23 +287,24 @@ namespace Application.Services.Tariffs
         {
             if (!isImport) return this.GetByKey(dto).FirstOrDefault();
 
+            var effectiveDate = dto.EffectiveDate.ToDate();
+            var expirationDate = dto.ExpirationDate.ToDate();
+
             var entity = this.GetByKey(dto)
-                .Where(i => i.EffectiveDate == dto.EffectiveDate.ToDateTime())
-                .Where(i => i.ExpirationDate == dto.ExpirationDate.ToDateTime())
+                .Where(i => i.EffectiveDate == effectiveDate)
+                .Where(i => i.ExpirationDate == expirationDate)
                 .FirstOrDefault();
 
             if (entity != null) return entity;
 
-            entity = this.GetByKey(dto).FirstOrDefault();
+            var overlapped = this.GetByKey(dto).Any(i => !IsPeriodsOverlapped(i, dto));
 
-            if (entity != null && !IsPeriodsOverlapped(entity, dto))
-            {
-                return entity;
-            }
-            else
+            if (overlapped)
             {
                 return null;
             }
+
+            return this.GetByKey(dto).FirstOrDefault();
         }
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)

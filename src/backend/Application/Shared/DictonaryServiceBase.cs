@@ -244,7 +244,7 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
+            var entityFromDb = isImport ? FindByKey(entityFrom, isImport) : FindById(entityFrom);
             var isNew = entityFromDb == null;
             Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
