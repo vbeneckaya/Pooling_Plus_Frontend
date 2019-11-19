@@ -46,7 +46,7 @@ namespace Application.BusinessModels.Orders.Actions
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
                 ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
-                ShippingCreationDate = DateTime.Now
+                ShippingCreationDate = DateTime.UtcNow
             };
 
             var setter = new FieldSetter<Shipping>(shipping, _historyService);
