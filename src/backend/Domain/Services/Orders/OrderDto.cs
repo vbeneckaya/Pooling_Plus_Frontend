@@ -181,7 +181,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? DocumentReturnStatus { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
 
         public string Source { get; set; }
