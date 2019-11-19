@@ -97,6 +97,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
                                 value={value}
                                 source={source}
                                 onChange={setFilter}
+                                t={t}
                             />
                         }
                         pinned

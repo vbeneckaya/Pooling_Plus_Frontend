@@ -167,8 +167,8 @@ class TableInfo extends Component {
                         <Grid.Row>
                             <Grid.Column width={7}>
                                 <Search
-                                    isAuto
                                     value={filter}
+                                    className="search-input"
                                     onChange={this.changeFullTextFilter}
                                 />
                                 <span className="records-counter">{t('totalCount', {count: totalCount})}</span>

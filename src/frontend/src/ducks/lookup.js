@@ -73,7 +73,17 @@ export const clearLookup = payload => {
 //*  SELECTORS *//
 
 const stateSelector = state => state.lookup;
-export const listSelector = createSelector(stateSelector, state => state.list) || [];
+export const listSelector = createSelector(
+    [stateSelector, (state, filter) => filter, (state, filter, t) => t],
+    (state, filter, t) =>
+        state.list
+            ? state.list.map(item => ({
+                value: item.value,
+                name: t(item.name),
+                isActive: item.isActive,
+            })).filter(x => filter ? x.name ? x.name.toLowerCase().includes(filter) : false : true)
+            : [],
+);
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 export const valuesListSelector = createSelector(
