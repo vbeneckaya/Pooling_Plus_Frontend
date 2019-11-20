@@ -126,7 +126,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="shippingAddress"
                             type={BIG_TEXT_TYPE}
                             value={form['shippingAddress']}
-                            error={form['shippingAddress']}
+                            error={error['shippingAddress']}
                             isDisabled
                             rows={2}
                             onChange={onChange}
