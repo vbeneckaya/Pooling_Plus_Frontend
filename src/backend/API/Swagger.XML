@@ -291,6 +291,11 @@
             Получение данных для выпадающего списка
             </summary>
         </member>
+        <member name="M:API.Controllers.ShippingWarehousesForOrderCreationController.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
         <member name="M:API.Controllers.SoldToController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
