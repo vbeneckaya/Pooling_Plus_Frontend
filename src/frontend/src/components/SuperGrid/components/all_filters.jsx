@@ -8,8 +8,6 @@ const AllFilters = ({ gridName, filter }) => {
     const columns = useSelector(state => representationFromGridSelector(state, gridName));
     const { t } = useTranslation();
 
-    console.log('filter', filter);
-
 
     return (
         <div className="all-filters-popup">

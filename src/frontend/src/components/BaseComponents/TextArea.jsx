@@ -2,13 +2,14 @@ import React from 'react';
 import { Form, TextArea } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
-const BigText = ({ value, name, onChange, isDisabled, noLabel, className, rows, text }) => {
+const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, text, isRequired}) => {
     const { t } = useTranslation();
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label
+                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
             ) : null}
             <TextArea
                 className={className}

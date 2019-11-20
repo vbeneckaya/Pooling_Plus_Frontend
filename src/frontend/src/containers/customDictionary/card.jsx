@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Loader, Modal } from 'semantic-ui-react';
+import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
     cardSelector,
     clearDictionaryInfo,
@@ -19,11 +19,12 @@ const initialState = {
 class Card extends Component {
     state = {
         ...initialState,
+        confirmation: {open: false},
+        notChangeForm: true
     };
 
     componentDidUpdate(prevProps) {
         if (prevProps.card !== this.props.card) {
-            const { user = {} } = this.props;
 
             this.setState({
                 form: {
@@ -46,7 +47,7 @@ class Card extends Component {
         });
     };
 
-    onClose = () => {
+    confirmClose = () => {
         const { loadList, clear } = this.props;
 
         this.setState({
@@ -56,8 +57,30 @@ class Card extends Component {
         loadList(false, true);
     };
 
+    onClose = () => {
+        const {notChangeForm} = this.state;
+
+        if (notChangeForm) {
+            this.confirmClose()
+        } else {
+            this.setState({
+                confirmation: {
+                    open: true,
+                    content: 'Закрыть форму без сохранения изменений?',
+                    onCancel: () => {
+                        this.setState({
+                            confirmation: {open: false}
+                        })
+                    },
+                    onConfirm: this.confirmClose
+                }
+            })
+        }
+    };
+
     handleChange = (event, { name, value }) => {
         this.setState(prevState => ({
+            notChangeForm: false,
             form: {
                 ...prevState.form,
                 [name]: value,
@@ -83,13 +106,13 @@ class Card extends Component {
         save({
             params,
             name,
-            callbackSuccess: this.onClose,
+            callbackSuccess: this.confirmClose,
         });
     };
 
     render() {
         const {title, loading, children, progress, columns, t, error} = this.props;
-        const { modalOpen, form } = this.state;
+        const {modalOpen, form, confirmation} = this.state;
 
         return (
             <Modal
@@ -133,6 +156,14 @@ class Card extends Component {
                         {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
+                <Confirm
+                    dimmer="blurring"
+                    open={confirmation.open}
+                    onCancel={confirmation.onCancel}
+                    cancelButton={t('cancelConfirm')}
+                    onConfirm={confirmation.onConfirm}
+                    content={confirmation.content}
+                />
             </Modal>
         );
     }

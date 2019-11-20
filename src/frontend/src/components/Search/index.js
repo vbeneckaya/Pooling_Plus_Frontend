@@ -20,15 +20,17 @@ class Search extends React.Component {
         const {value} = this.state;
 
         this.props.onChange(null, {value});
-    }
+    };
 
     handleChange = (e, {value}) => {
         clearTimeout(this.timer);
 
         this.setState({value});
 
-        this.timer = setTimeout(this.triggerChange, 300);
-    }
+        if (!value) {
+            this.timer = setTimeout(this.triggerChange, 300);
+        }
+    };
 
     handleKeyPress = e => {
         if (e.keyCode === 13) {

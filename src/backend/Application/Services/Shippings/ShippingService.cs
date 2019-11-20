@@ -275,9 +275,9 @@ namespace Application.Services.Shippings
                     {
                         point = new RoutePointDto
                         {
-                            WarehouseName = _dataService.GetById<Warehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
+                            WarehouseName = _dataService.GetById<ShippingWarehouse>(order.ShippingWarehouseId.Value)?.WarehouseName,
                             Address = order.ShippingAddress,
-                            PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy HH:mm"),
+                            PlannedDate = order.ShippingDate?.ToString("dd.MM.yyyy"),
                             ArrivalTime = order.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.ShippingStatus.ToString().ToLowerFirstLetter(),
@@ -300,7 +300,7 @@ namespace Application.Services.Shippings
                         {
                             WarehouseName = order.ClientName,
                             Address = order.DeliveryAddress,
-                            PlannedDate = order.DeliveryDate?.ToString("dd.MM.yyyy HH:mm"),
+                            PlannedDate = order.DeliveryDate?.ToString("dd.MM.yyyy"),
                             ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),
                             DepartureTime = order.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm"),
                             VehicleStatus = order.DeliveryStatus.ToString().ToLowerFirstLetter(),

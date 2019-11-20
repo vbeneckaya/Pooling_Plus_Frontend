@@ -13,6 +13,32 @@ before_script:
   - ssh-keyscan -t rsa bdf.tms.artlogics.ru >> ~/.ssh/known_hosts
  
 
+build-frontend-demo:
+  stage: build
+  script:
+    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo
+  only:
+   - demo
+
+build-tasks-demo:
+  stage: build
+  script:
+    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo -f ./docker/tasks/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo
+  only:
+   - demo
+
+build-backend-demo:
+  stage: build
+  script:
+    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
+  only:
+   - demo
   
 build-frontend-dev:
   stage: build
@@ -119,7 +145,7 @@ deploy-frontend-demo:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
   only:
    - demo
   when: manual    
@@ -132,7 +158,7 @@ deploy-backend-demo:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
   only:
    - demo
   when: manual    
@@ -145,7 +171,7 @@ deploy-tasks-demo:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
   only:
    - demo
   when: manual     

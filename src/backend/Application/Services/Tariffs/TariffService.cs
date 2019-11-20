@@ -36,6 +36,24 @@ namespace Application.Services.Tariffs
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
 
+            if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
+            {
+                entity.StartWinterPeriod = swPeriod;
+            }
+            else
+            {
+                entity.StartWinterPeriod = null;
+            }
+
+            if (dto.EndWinterPeriod.TryParseDate(out DateTime ewPeriod))
+            {
+                entity.EndWinterPeriod = ewPeriod;
+            }
+            else
+            {
+                entity.EndWinterPeriod = null;
+            }
+
             entity.FtlRate = dto.FtlRate;
             entity.LtlRate1 = dto.LtlRate1;
             entity.LtlRate2 = dto.LtlRate2;
@@ -90,6 +108,11 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
+            if (string.IsNullOrEmpty(dto.CarrierId))
+            {
+                result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
             var existingRecord = this.FindByKey(dto);
             var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
 
@@ -111,6 +134,8 @@ namespace Application.Services.Tariffs
                 TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
                 CarrierId = entity.CarrierId?.ToString(),
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
+                StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
+                EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
@@ -203,9 +228,14 @@ namespace Application.Services.Tariffs
                 .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
                 .ToList();
 
+            var searchDateFormat = "dd.MM.yyyy HH:mm";
+
             return query.Where(i =>
                    transportCompanies.Any(t => t == i.CarrierId)
                 || vehicleTypes.Any(t => t == i.VehicleTypeId)
+                || tarifficationTypes.Contains(i.TarifficationType)
+                || i.StartWinterPeriod.HasValue && i.StartWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
+                || i.EndWinterPeriod.HasValue && i.EndWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
                 || tarifficationTypes.Contains(i.TarifficationType)
                 || i.ShipmentCity.ToLower().Contains(search)
                 || i.DeliveryCity.ToLower().Contains(search)

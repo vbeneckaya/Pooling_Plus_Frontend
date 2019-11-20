@@ -68,7 +68,7 @@ namespace Tasks
                             using (var scope = _serviceProvider.CreateScope()) 
                             using (LogContext.PushProperty("TaskName", taskName))
                             {
-                                await task.Task.Execute(task.Parameters, stoppingToken);
+                                await task.Task.Execute(scope.ServiceProvider, task.Parameters, stoppingToken);
                             }
                             Log.Logger.Information("Задача {taskName} завершена успешно", taskName);
                         }

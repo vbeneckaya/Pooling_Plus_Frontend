@@ -38,7 +38,7 @@ const App = () => {
                         <MainRoute />
                     </>
                 ) : (
-                    <Dimmer active inverted className="table-loader">
+                    <Dimmer active inverted>
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
                 )}

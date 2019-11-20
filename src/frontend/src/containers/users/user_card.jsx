@@ -114,13 +114,12 @@ class UserCard extends Component {
                 trigger={children}
                 open={modalOpen}
                 dimmer="blurring"
-                className="card-modal"
                 closeIcon
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}
             >
                 <Modal.Header>{title}</Modal.Header>
-                <Modal.Content scrolling>
+                <Modal.Content>
                     <Dimmer active={loading} inverted className="table-loader">
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>

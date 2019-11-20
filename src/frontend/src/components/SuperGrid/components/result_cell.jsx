@@ -34,7 +34,6 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     let [value, setValue] = useState(null);
 
     const copyToClipboard = () => {
-        console.log('contextRef', contextRef);
         const text = contextRef.current && contextRef.current.textContent;
         navigator.clipboard &&
             navigator.clipboard.writeText(text).then(
@@ -48,7 +47,6 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     };
 
     const handleClick = (rowId, fieldName, state) => {
-        console.log('click');
         dispatch(
             checkForEditingRequest({
                 rowId,

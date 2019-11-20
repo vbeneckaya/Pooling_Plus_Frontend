@@ -50,8 +50,6 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
         [valuesList, form.soldTo],
     );
 
-    console.log('settings["actualWeightKg"]', settings['actualWeightKg']);
-
     return (
         <Form>
             <Grid>
