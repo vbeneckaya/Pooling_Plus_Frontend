@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using System;
 
 namespace Domain.Services.Shippings
 {
@@ -129,8 +130,8 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByCarrier { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6), IsReadOnly]
-        public string ShippingCreationDate { get; set; }
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(6), IsReadOnly]
+        public DateTime? ShippingCreationDate { get; set; }
         
         /*end of fields*/
     }

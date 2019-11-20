@@ -10,7 +10,7 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             if (newValue != order.BoxesCount)
             {
-                order.OrderChangeDate = DateTime.Now;
+                order.OrderChangeDate = DateTime.UtcNow;
             }
         }
 

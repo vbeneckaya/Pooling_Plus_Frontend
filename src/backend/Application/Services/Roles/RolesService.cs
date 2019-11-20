@@ -107,7 +107,7 @@ namespace Application.Services.Roles
 
             if (hasDuplicates)
             {
-                result.AddError("duplicateRole", "roles.duplicateRole".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "roles.duplicateRole".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

@@ -8,7 +8,7 @@ namespace Application.BusinessModels.Orders.Handlers
     {
         public void AfterChange(Order order, decimal? oldValue, decimal? newValue)
         {
-            order.OrderChangeDate = DateTime.Now;
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, decimal? oldValue, decimal? newValue)

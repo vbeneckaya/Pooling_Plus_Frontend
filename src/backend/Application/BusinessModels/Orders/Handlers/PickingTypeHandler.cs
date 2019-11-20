@@ -15,7 +15,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, Guid? oldValue, Guid? newValue)
         {
-            order.OrderChangeDate = DateTime.Now;
+            order.OrderChangeDate = DateTime.UtcNow;
 
             if (_isManual)
             {

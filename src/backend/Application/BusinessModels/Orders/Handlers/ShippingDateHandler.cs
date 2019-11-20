@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            order.OrderChangeDate = DateTime.Now;
+            order.OrderChangeDate = DateTime.UtcNow;
 
             if (_isManual)
             {
