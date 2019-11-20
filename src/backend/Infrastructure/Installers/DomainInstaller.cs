@@ -1,8 +1,10 @@
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
+using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
+using Application.Services.BodyTypes;
 using Application.Services.Documents;
 using Application.Services.DocumentTypes;
 using Application.Services.FieldProperties;
@@ -17,6 +19,7 @@ using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
 using Application.Services.TaskProperties;
+using Application.Services.Tonnages;
 using Application.Services.Translations;
 using Application.Services.TransportCompanies;
 using Application.Services.Users;
@@ -29,6 +32,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
+using Domain.Services.BodyTypes;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
@@ -44,6 +48,7 @@ using Domain.Services.ShippingWarehouseCity;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
+using Domain.Services.Tonnages;
 using Domain.Services.Translations;
 using Domain.Services.TransportCompanies;
 using Domain.Services.Users;
@@ -84,6 +89,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
+            services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
             services.AddScoped<IFilesService, FilesService>();
@@ -92,8 +98,13 @@ namespace Infrastructure.Installers
             services.AddScoped<IVehicleTypesService, VehicleTypesService>();
             services.AddScoped<IFieldPropertiesService, FieldPropertiesService>();
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
-            services.AddSingleton<IWarehouseCityService, WarehouseCityService>();
-            services.AddSingleton<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+            services.AddScoped<IBodyTypesService, BodyTypesService>();
+            services.AddScoped<ITonnagesService, TonnagesService>();
+
+            services.AddScoped<IWarehouseCityService, WarehouseCityService>();
+            services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+
+            services.AddScoped<ICleanAddressService, CleanAddressService>();
 
             /*end of add service implementation*/
 

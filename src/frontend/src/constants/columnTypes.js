@@ -7,6 +7,7 @@ export const MAPPING_TYPE = 'Mapping';
 export const DATE_TIME_TYPE = 'DateTime';
 export const DATE_TYPE = 'Date';
 export const TIME_TYPE = 'Time';
+export const LOCAL_DATE_TIME = 'LocalDateTime';
 export const BOOLEAN_TYPE = 'Boolean';
 export const GROUP_TYPE = 'Group';
 export const LINK_TYPE = 'Link';

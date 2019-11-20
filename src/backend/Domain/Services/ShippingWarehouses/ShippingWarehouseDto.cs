@@ -31,6 +31,7 @@ namespace Domain.Services.ShippingWarehouses
         public string Area { get; set; }
 
         [ExcelIgnore]
+        [FieldType(FieldType.Text), OrderNumber(4)]
         public string City { get; set; }
 
         [ExcelIgnore]

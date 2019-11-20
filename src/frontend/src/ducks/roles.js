@@ -2,6 +2,7 @@ import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import roles from '../mocks/roles';
+import {toast} from 'react-toastify';
 
 const TYPE_API = 'roles';
 
@@ -32,12 +33,14 @@ const GET_ALL_ACTIONS_SUCCESS = 'GET_ALL_ACTIONS_SUCCESS';
 const GET_ALL_ACTIONS_ERROR = 'GET_ALL_ACTIONS_ERROR';
 
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
+const CLEAR_ROLE_CARD = 'CLEAR_ROLE_CARD';
 
 //*  INITIAL STATE  *//
 
 const initial = {
     list: [],
     card: {},
+    error: [],
     permissions: [],
     actions: {},
     totalCount: 0,
@@ -54,13 +57,12 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: true,
-                error: '',
+                error: [],
             };
         case GET_ROLES_LIST_SUCCESS:
             return {
                 ...state,
                 progress: false,
-                error: '',
                 list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
                 totalCount: payload.totalCount,
             };
@@ -70,13 +72,18 @@ export default (state = initial, { type, payload }) => {
                 progress: false,
                 card: payload,
             };
-        case CREATE_ROLE_SUCCESS:
+        case GET_ROLES_LIST_ERROR:
+        case GET_ROLE_CARD_ERROR:
             return {
                 ...state,
                 progress: false,
             };
-        case GET_ROLES_LIST_ERROR:
-        case GET_ROLE_CARD_ERROR:
+        case CREATE_ROLE_SUCCESS:
+            return {
+                ...state,
+                progress: false,
+                error: [],
+            };
         case CREATE_ROLE_ERROR:
             return {
                 ...state,
@@ -88,6 +95,12 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 ...initial,
             };
+        case CLEAR_ROLE_CARD:
+            return {
+                ...state,
+                card: {},
+                error: [],
+            };
         case GET_ALL_PERMISSIONS_SUCCESS:
             return {
                 ...state,
@@ -96,12 +109,12 @@ export default (state = initial, { type, payload }) => {
         case GET_ALL_ACTIONS_SUCCESS:
             return {
                 ...state,
-                actions: payload
+                actions: payload,
             };
         case GET_ALL_ACTIONS_ERROR:
             return {
                 ...state,
-                actions: {}
+                actions: {},
             };
         default:
             return state;
@@ -137,6 +150,12 @@ export const clearRolesInfo = () => {
     };
 };
 
+export const clearRolesCard = () => {
+    return {
+        type: CLEAR_ROLE_CARD,
+    };
+};
+
 export const toggleRoleActiveRequest = payload => {
     return {
         type: TOGGLE_ROLE_ACTIVE_REQUEST,
@@ -154,8 +173,8 @@ export const getAllPermissionsRequest = payload => {
 export const getAllActionsRequest = payload => {
     return {
         type: GET_ALL_ACTIONS_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -178,6 +197,7 @@ export const rolesFromUserSelector = createSelector(stateSelector, state => {
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const roleCardSelector = createSelector(stateSelector, state => state.card);
+export const errorSelector = createSelector(stateSelector, state => state.error);
 
 export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 export const allActionsSelector = createSelector(stateSelector, state => state.actions);
@@ -226,10 +246,18 @@ function* createRoleSaga({ payload }) {
 
         const result = yield postman.post(`/${TYPE_API}/saveOrCreate`, params);
 
-        yield put({
-            type: CREATE_ROLE_SUCCESS,
-        });
-        callbackFunc();
+        if (result.isError) {
+            toast.error(result.error);
+            yield put({
+                type: CREATE_ROLE_ERROR,
+                payload: result.errors,
+            });
+        } else {
+            yield put({
+                type: CREATE_ROLE_SUCCESS,
+            });
+            callbackFunc && callbackFunc();
+        }
     } catch (error) {
         yield put({
             type: CREATE_ROLE_ERROR,

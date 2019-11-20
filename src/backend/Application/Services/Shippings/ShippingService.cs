@@ -2,7 +2,10 @@ using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using AutoMapper;
+using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -22,6 +25,7 @@ namespace Application.Services.Shippings
 {
     public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
+        private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
@@ -110,14 +114,15 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
             setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
             setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId), nameLoader: GetVehicleTypeNameById);
+            setter.UpdateField(e => e.BodyTypeId, dto.BodyTypeId.ToGuid(), nameLoader: GetBodyTypeNameById);
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
             setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler());
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler());
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime));
-            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime));
+            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.DeliveryInvoiceNumber, dto.DeliveryInvoiceNumber);
             setter.UpdateField(e => e.DeviationReasonsComments, dto.DeviationReasonsComments);
             setter.UpdateField(e => e.TotalDeliveryCost, dto.TotalDeliveryCost, new TotalDeliveryCostHandler());
@@ -195,6 +200,11 @@ namespace Application.Services.Shippings
         private string GetVehicleTypeNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<VehicleType>(id.Value)?.Name;
+        }
+
+        private string GetBodyTypeNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<BodyType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
@@ -344,8 +354,6 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        private readonly IMapper _mapper;
-
         public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {
             List<object> parameters = new List<object>();
@@ -389,6 +397,7 @@ namespace Application.Services.Shippings
                          .WhereAnd(searchForm.Filter.TransportWaybill.ApplyBooleanFilter<Shipping>(i => i.TransportWaybill, ref parameters))
                          .WhereAnd(searchForm.Filter.TrucksDowntime.ApplyNumericFilter<Shipping>(i => i.TrucksDowntime, ref parameters))
                          .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Shipping, Guid?>(i => i.VehicleTypeId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.BodyTypeId.ApplyOptionsFilter<Shipping, Guid?>(i => i.BodyTypeId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.Waybill.ApplyBooleanFilter<Shipping>(i => i.Waybill, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Shipping>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Shipping>(i => i.WeightKg, ref parameters));
@@ -489,6 +498,50 @@ namespace Application.Services.Shippings
             || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
+        }
+
+        protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
+        {
+            return base.CreateExportExcelMapper()
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
+        }
+
+        private Guid? GetCarrierIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetCarrierNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<TransportCompany>().Find(id);
+            return entry?.Title;
+        }
+
+        private Guid? GetVehicleTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetVehicleTypeNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
+            return entry?.Name;
+        }
+
+        private Guid? GetBodyTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetBodyTypeNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().GetById(id);
+            return entry?.Name;
         }
     }
 }

@@ -19,6 +19,7 @@ const OrderModal = ({
     isNotUniqueNumber,
     uniquenessNumberCheck,
     settings,
+                        error
 }) => {
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
@@ -97,6 +98,7 @@ const OrderModal = ({
             ) : (
                 <CreateOrder
                     form={form}
+                    error={error}
                     isNotUniqueNumber={isNotUniqueNumber}
                     uniquenessNumberCheck={uniquenessNumberCheck}
                     onChange={onChangeForm}

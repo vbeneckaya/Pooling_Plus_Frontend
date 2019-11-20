@@ -4,9 +4,9 @@ import { withTranslation } from 'react-i18next';
 import {Button, Dimmer, Form, Input, Loader, Modal, Tab} from 'semantic-ui-react';
 import {
     allActionsSelector,
-    allPermissionsSelector,
+    allPermissionsSelector, clearRolesCard,
     clearRolesInfo,
-    createRoleRequest,
+    createRoleRequest, errorSelector,
     getAllActionsRequest,
     getAllPermissionsRequest,
     getRoleCardRequest,
@@ -14,6 +14,8 @@ import {
     roleCardSelector,
 } from '../../ducks/roles';
 import {sortFunc} from "../../utils/sort";
+import FormField from "../../components/BaseComponents";
+import {TEXT_TYPE} from "../../constants/columnTypes";
 
 class RoleCard extends Component {
     constructor(props) {
@@ -66,7 +68,7 @@ class RoleCard extends Component {
 
         clear();
 
-        loadList();
+        loadList(false, true);
     };
 
     handleChange = (e, { name, value }) => {
@@ -129,7 +131,7 @@ class RoleCard extends Component {
     };
 
     render() {
-        const {title, children, loading, t, allPermissions, allActions} = this.props;
+        const {title, children, loading, t, allPermissions, allActions, error} = this.props;
         const {orderActions = [], shippingActions = []} = allActions;
         const { modalOpen, form } = this.state;
         const {name, permissions = [], actions = []} = form;
@@ -139,7 +141,6 @@ class RoleCard extends Component {
                 trigger={children}
                 open={modalOpen}
                 dimmer="blurring"
-                className="card-modal"
                 closeIcon
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}
@@ -150,10 +151,18 @@ class RoleCard extends Component {
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
                     <Form>
-                        <Form.Field>
+                        <FormField
+                            name="name"
+                            value={name}
+                            type={TEXT_TYPE}
+                            isRequired
+                            error={error && (error.find(item => item.name === 'name') || {}).message}
+                            onChange={this.handleChange}
+                        />
+                        {/*<Form.Field>
                             <label>{t('name')}</label>
-                            <Input value={name} name="name" onChange={this.handleChange} />
-                        </Form.Field>
+                            <Input value={name} name="name"  />
+                        </Form.Field>*/}
                         {/*<Form.Field>
                             <label>{t('permissions')}</label>
                         </Form.Field>*/}
@@ -243,6 +252,7 @@ const mapStateToProps = state => {
         loading: progressSelector(state),
         allPermissions: allPermissionsSelector(state),
         allActions: allActionsSelector(state),
+        error: errorSelector(state)
     };
 };
 
@@ -255,7 +265,7 @@ const mapDispatchToProps = dispatch => {
             dispatch(createRoleRequest(params));
         },
         clear: () => {
-            dispatch(clearRolesInfo());
+            dispatch(clearRolesCard());
         },
         getAllPermissions: () => {
             dispatch(getAllPermissionsRequest());
