@@ -20,24 +20,14 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
 
     const handleChangeSoldTo = (e, {name, value}) => {
         const item = valuesList.find(item => item.value === value) || {};
-        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+        onChange(e, {
+            name,
+            value,
+        });
+        onChange(e, {name: 'clientName', value: item.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: item.address});
     };
 
-    /*useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
-
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'deliveryAddress', value: item.address });
-        },
-        [form.clientName],
-    );*/
 
     useEffect(
         () => {
