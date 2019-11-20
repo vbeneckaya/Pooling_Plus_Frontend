@@ -1,8 +1,7 @@
 using System;
-using Domain.Enums;
 
 namespace Domain.Persistables
-{   
+{
     /// <summary>
     /// Склад
     /// </summary>
@@ -21,17 +20,41 @@ namespace Domain.Persistables
         /// </summary>
         public string SoldToNumber { get; set; }
         /// <summary>
+        /// Индекс
+        /// </summary>
+        public string PostalCode { get; set; }
+        /// <summary>
         /// Регион
         /// </summary>
         public string Region { get; set; }
+        /// <summary>
+        /// Район
+        /// </summary>
+        public string Area { get; set; }
         /// <summary>
         /// Город
         /// </summary>
         public string City { get; set; }
         /// <summary>
+        /// Улица
+        /// </summary>
+        public string Street { get; set; }
+        /// <summary>
+        /// Дом
+        /// </summary>
+        public string House { get; set; }
+        /// <summary>
         /// Адрес
         /// </summary>
         public string Address { get; set; }
+        /// <summary>
+        /// Распознанный адрес
+        /// </summary>
+        public string ValidAddress { get; set; }
+        /// <summary>
+        /// Нераспознанная часть
+        /// </summary>
+        public string UnparsedAddressParts { get; set; }
         /// <summary>
         /// Тип комплектации
         /// </summary>
@@ -44,10 +67,13 @@ namespace Domain.Persistables
         /// Склад клиента
         /// </summary>
         public bool CustomerWarehouse { get; set; }
-
         /// <summary>
         /// Особенности комплектации
         /// </summary>
         public string PickingFeatures { get; set; }
+        /// <summary>
+        /// Активный
+        /// </summary>
+        public bool IsActive { get; set; }
     }
 }

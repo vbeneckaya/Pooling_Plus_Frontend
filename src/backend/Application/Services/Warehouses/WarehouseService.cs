@@ -1,13 +1,14 @@
 using Application.BusinessModels.Warehouses.Handlers;
+using Application.Services.Addresses;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using AutoMapper;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Warehouses;
 using Domain.Shared;
@@ -21,12 +22,15 @@ namespace Application.Services.Warehouses
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
+        private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, 
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService) 
             : base(dataService, userProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _cleanAddressService = cleanAddressService;
         }
 
         public WarehouseDto GetBySoldTo(string soldToNumber)
@@ -37,7 +41,10 @@ namespace Application.Services.Warehouses
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = _dataService.GetDbSet<Warehouse>().OrderBy(x => x.WarehouseName).ToList();
+            var entities = _dataService.GetDbSet<Warehouse>()
+                                       .Where(x => x.IsActive)
+                                       .OrderBy(x => x.WarehouseName)
+                                       .ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -48,8 +55,19 @@ namespace Application.Services.Warehouses
             }
         }
 
+        public override Warehouse FindByKey(WarehouseDto dto)
+        {
+            return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
+        }
+
         public override ValidateResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             bool isNew = string.IsNullOrEmpty(dto.Id);
             var setter = new FieldSetter<Warehouse>(entity, _historyService);
 
@@ -59,12 +77,13 @@ namespace Application.Services.Warehouses
             setter.UpdateField(e => e.SoldToNumber, dto.SoldToNumber);
             setter.UpdateField(e => e.Region, dto.Region, new RegionHandler(_dataService, _historyService));
             setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
             setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), 
                                new PickingTypeIdHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
             setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
             setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures);
+            setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();
             setter.SaveHistoryLog();
@@ -125,6 +144,33 @@ namespace Application.Services.Warehouses
             return query
                 .OrderBy(i => i.WarehouseName)
                 .ThenBy(i => i.Id);
+        }
+
+        private ValidateResult ValidateDto(WarehouseDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.SoldToNumber))
+            {
+                result.AddError(nameof(dto.SoldToNumber), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.WarehouseName))
+            {
+                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<Warehouse>()
+                                            .Where(x => x.SoldToNumber == dto.SoldToNumber && x.Id.ToString() != dto.Id)
+                                            .Any();
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.SoldToNumber), "duplicateSoldTo".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         private MapperConfiguration ConfigureMapper()
