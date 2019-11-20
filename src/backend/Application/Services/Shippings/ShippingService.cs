@@ -338,8 +338,8 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ShippingCreationDate, e => e.MapFrom((s, t) => s.ShippingCreationDate?.ToString("dd.MM.yyyy HH:mm")));
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
+                    //.ForMember(t => t.ShippingCreationDate, e => e.MapFrom((s, t) => s.ShippingCreationDate?.ToString("dd.MM.yyyy HH:mm")));
             });
             return result;
         }

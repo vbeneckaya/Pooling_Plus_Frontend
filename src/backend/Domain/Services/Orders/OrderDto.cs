@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using System;
 
 namespace Domain.Services.Orders
 {
@@ -143,7 +144,7 @@ namespace Domain.Services.Orders
         public string MajorAdoptionNumber { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
-        public string OrderCreationDate { get; set; }
+        public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? WaybillTorg12 { get; set; }
@@ -172,7 +173,7 @@ namespace Domain.Services.Orders
         public string ShippingWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IgnoreFieldSettings]
-        public string OrderChangeDate { get; set; }
+        public DateTime? OrderChangeDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? OrderConfirmed { get; set; }
