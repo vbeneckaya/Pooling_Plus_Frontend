@@ -221,7 +221,7 @@ namespace Application.Services.Orders
             DetailedValidattionResult result = new DetailedValidattionResult();
 
             if (string.IsNullOrEmpty(dto.OrderNumber))
-                result.AddError(nameof(dto.OrderNumber), "empty{OrderNumber}".Translate(lang),
+                result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
                     ValidationErrorType.ValueIsRequired);
 
             if (string.IsNullOrEmpty(dto.ClientOrderNumber))
