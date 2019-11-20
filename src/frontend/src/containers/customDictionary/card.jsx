@@ -14,13 +14,13 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
+    confirmation: {open: false},
+    notChangeForm: true
 };
 
 class Card extends Component {
     state = {
         ...initialState,
-        confirmation: {open: false},
-        notChangeForm: true
     };
 
     componentDidUpdate(prevProps) {

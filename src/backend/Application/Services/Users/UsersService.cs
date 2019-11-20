@@ -125,7 +125,7 @@ namespace Application.Services.Users
 
             if (hasDuplicates)
             {
-                result.AddError("duplicatedUser", "users.duplicatedUser".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Email), "users.duplicatedUser".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

@@ -343,8 +343,8 @@ namespace Application.Services.Orders
 
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderCreationDate, DateTime.Now, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderCreationDate, DateTime.UtcNow, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(e => e.DeliveryStatus, VehicleState.VehicleEmpty);
         }
@@ -435,9 +435,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.OrderChangeDate, e => e.MapFrom((s, t) => s.OrderChangeDate?.ToString("dd.MM.yyyy HH:mm")));
+                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));

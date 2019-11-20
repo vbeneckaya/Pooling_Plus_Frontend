@@ -34,7 +34,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            order.OrderChangeDate = DateTime.Now;
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, decimal? oldValue, decimal? newValue)
