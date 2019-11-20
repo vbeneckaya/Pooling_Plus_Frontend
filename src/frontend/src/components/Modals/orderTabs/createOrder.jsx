@@ -75,7 +75,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             type={SELECT_TYPE}
                             value={form['shippingWarehouseId']}
                             error={error.find(error => error.name === 'shippingWarehouseId')}
-                            source="shippingWarehouses"
+                            source="shippingWarehousesForOrderCreation"
                             onChange={onChange}
                         />
                     </Grid.Column>
