@@ -8,16 +8,29 @@ import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constan
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
-    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
+    const soldToList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
+    const shippingWarehouseList =
+        useSelector(state => valuesListSelector(state, 'shippingWarehousesForOrderCreation')) || [];
 
     const handleChangeSoldTo = (e, {name, value}) => {
-        const item = valuesList.find(item => item.value === value) || {};
-        onChange(null, {
+        const item = soldToList.find(item => item.value === value) || {};
+        onChange(e, {
             name,
             value,
-            clientName: item.warehouseName,
-            deliveryAddress: item.address,
         });
+        onChange(e, {name: 'clientName', value: item.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: item.address});
+    };
+
+    const handleChangeShippingWarehouseId = (e, {name, value}) => {
+        const item = shippingWarehouseList.find(item => item.value === value) || {};
+
+        onChange(e, {
+            name,
+            value,
+        });
+
+        onChange(e, {name: 'shippingAddress', value: item.address});
     };
 
     return (
@@ -30,10 +43,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             type={TEXT_TYPE}
                             isRequired
                             value={form['orderNumber']}
-                            error={
-                                (isNotUniqueNumber && t('number_already_exists')) ||
-                                error.find(error => error.name === 'orderNumber')
-                            }
+                            error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
                             onBlur={uniquenessNumberCheck}
                             onChange={onChange}
                         />
@@ -43,7 +53,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="clientOrderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            error={error.find(error => error.name === 'clientOrderNumber')}
+                            error={error["clientOrderNumber"]}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
                         />
@@ -53,7 +63,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="orderDate"
                             type={DATE_TYPE}
                             isRequired
-                            error={error.find(error => error.name === 'orderDate')}
+                            error={error["orderDate"]}
                             value={form['orderDate']}
                             onChange={onChange}
                         />
@@ -62,7 +72,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="payer"
                             type={TEXT_TYPE}
-                            error={error.find(error => error.name === 'payer')}
+                            error={error["payer"]}
                             value={form['payer']}
                             onChange={onChange}
                         />
@@ -74,9 +84,9 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="shippingWarehouseId"
                             type={SELECT_TYPE}
                             value={form['shippingWarehouseId']}
-                            error={error.find(error => error.name === 'shippingWarehouseId')}
-                            source="shippingWarehouses"
-                            onChange={onChange}
+                            error={error["shippingWarehouseId"]}
+                            source="shippingWarehousesForOrderCreation"
+                            onChange={handleChangeShippingWarehouseId}
                         />
                     </Grid.Column>
                     <Grid.Column>
@@ -85,7 +95,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             type={SELECT_TYPE}
                             isRequired
                             value={form['soldTo']}
-                            error={error.find(error => error.name === 'soldTo')}
+                            error={error["soldTo"]}
                             source="soldTo"
                             onChange={handleChangeSoldTo}
                         />
@@ -95,7 +105,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="clientName"
                             type={TEXT_TYPE}
                             isDisabled
-                            error={error.find(error => error.name === 'clientName')}
+                            error={error['clientName']}
                             value={form['clientName']}
                             onChange={onChange}
                         />
@@ -105,7 +115,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="deliveryDate"
                             type={DATE_TYPE}
                             value={form['deliveryDate']}
-                            error={error.find(error => error.name === 'deliveryDate')}
+                            error={error['deliveryDate']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -116,7 +126,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="shippingAddress"
                             type={BIG_TEXT_TYPE}
                             value={form['shippingAddress']}
-                            error={error.find(error => error.name === 'shippingAddress')}
+                            error={error['shippingAddress']}
                             isDisabled
                             rows={2}
                             onChange={onChange}
@@ -127,7 +137,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="deliveryAddress"
                             type={BIG_TEXT_TYPE}
                             value={form['deliveryAddress']}
-                            error={error.find(error => error.name === 'deliveryAddress')}
+                            error={error['deliveryAddress']}
                             isDisabled
                             rows={2}
                             onChange={onChange}

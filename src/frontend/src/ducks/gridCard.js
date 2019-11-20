@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
 import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
+import {errorMapping} from "../utils/errorMapping";
 
 //*  TYPES  *//
 
@@ -216,7 +217,7 @@ export const settingsExtSelector = createSelector(
     },
 );
 
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 //*  SAGA  *//
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
@@ -99,20 +99,16 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
-        if (name === 'soldTo') {
-            setForm(prevState => ({
-                ...prevState,
-                [name]: value,
-                clientName,
-                deliveryAddress
-            }))
-        } else {
+    const onChangeForm = (e, {name, value}) => {
             setForm(prevState => ({
                 ...prevState,
                 [name]: value
             }));
-        }
+
+        console.log('___', notChangeForm,
+            value !== undefined,
+            Object.keys(form).length,
+            value !== card[name], value);
 
         if (
             notChangeForm &&
@@ -123,6 +119,16 @@ const Card = props => {
             setNotChangeForm(false);
         }
     };
+
+    useEffect(() => {
+        if (notChangeForm) {
+            Object.keys(form).forEach(key => {
+                if (form[key] !== card[key]) {
+                    setNotChangeForm(false);
+                }
+            })
+        }
+    }, [form]);
 
     const saveOrEditForm = () => {
         dispatch(
