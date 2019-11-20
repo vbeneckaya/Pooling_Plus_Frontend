@@ -4,6 +4,7 @@ import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
+import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
 
 //*  TYPES  *//
 
@@ -31,11 +32,14 @@ const IS_UNIQUE_NUMBER_REQUEST = 'IS_UNIQUE_NUMBER_REQUEST';
 const IS_UNIQUE_NUMBER_SUCCESS = 'IS_UNIQUE_NUMBER_SUCCESS';
 const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
+const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
+
 //*  INITIAL STATE  *//
 
 const initial = {
     config: {},
     data: {},
+    error: [],
     progress: false,
     editProgress: false,
 };
@@ -99,12 +103,20 @@ export default (state = initial, { type, payload }) => {
         case EDIT_GRID_CARD_SUCCESS:
             return {
                 ...state,
+                error: [],
                 editProgress: false,
             };
         case EDIT_GRID_CARD_ERROR:
             return {
                 ...state,
+                error: payload,
                 editProgress: false,
+            };
+        case CLEAR_GRID_CARD:
+            return {
+                ...state,
+                error: [],
+                data: {}
             };
         default:
             return state;
@@ -155,26 +167,23 @@ export const isUniqueNumberRequest = payload => {
     };
 };
 
+export const clearGridCard = () => {
+    return {
+        type: CLEAR_GRID_CARD
+    }
+}
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(
-    stateSelector,
-    state => state.data.id,
-);
+const idSelector = createSelector(stateSelector, state => state.data.id);
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const cardSelector = createSelector(stateSelector, state => state.data);
 
 export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
@@ -184,7 +193,7 @@ export const settingsFormSelector = createSelector(
         base.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
 
@@ -200,12 +209,14 @@ export const settingsExtSelector = createSelector(
         ext.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
         return settings;
     },
 );
+
+export const errorSelector = createSelector(stateSelector, state => state.error);
 
 //*  SAGA  *//
 
@@ -258,6 +269,10 @@ function* editCardSaga({ payload }) {
 
         if (result.isError) {
             toast.error(result.error);
+            yield put({
+                type: EDIT_GRID_CARD_ERROR,
+                payload: result.errors
+            });
         } else {
             yield put({
                 type: EDIT_GRID_CARD_SUCCESS,
@@ -268,8 +283,7 @@ function* editCardSaga({ payload }) {
         }
     } catch (error) {
         yield put({
-            type: EDIT_GRID_CARD_ERROR,
-            payload: error,
+            type: EDIT_GRID_CARD_ERROR
         });
     }
 }

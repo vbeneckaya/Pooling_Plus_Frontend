@@ -111,7 +111,7 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), ignoreChanges: true);
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService), nameLoader: GetShippingWarehouseNameById);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
@@ -126,7 +126,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService, !isInjection));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService));
@@ -146,7 +146,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
             setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(), nameLoader: GetPickingTypeNameById);
+            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
@@ -163,10 +163,10 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
+            setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
+            setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
             /*end of map dto to entity fields*/
-
-
 
             if (isNew)
             {
@@ -190,6 +190,15 @@ namespace Application.Services.Orders
             {
                 var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
                 _historyService.Save(entity.Id, isNew ? "orderCreatedFromInjection" : "orderUpdatedFromInjection", dto.OrderNumber, file);
+
+                if (string.IsNullOrEmpty(entity.Source))
+                {
+                    entity.Source = file;
+                }
+                else
+                {
+                    entity.Source = $"{entity.Source};{file}";
+                }
             }
 
             setter.SaveHistoryLog();
@@ -216,7 +225,15 @@ namespace Application.Services.Orders
             {
                 return null;
             }
-            return _mapper.Map<OrderDto>(entity);
+
+            var dto = _mapper.Map<OrderDto>(entity);
+            var warehouse = _dataService.GetDbSet<Warehouse>()
+                .Where(i => i.SoldToNumber == dto.SoldTo)
+                .FirstOrDefault();
+
+            dto.PickingFeatures = warehouse?.PickingFeatures;
+
+            return dto;
         }
 
         public override OrderFormDto MapFromEntityToFormDto(Order entity)
@@ -249,6 +266,11 @@ namespace Application.Services.Orders
         private string GetPickingTypeNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
+        }
+
+        private string GetShippingWarehouseNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
         }
 
         private bool CheckRequiredFields(Order order)

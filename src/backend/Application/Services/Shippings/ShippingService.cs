@@ -22,6 +22,7 @@ namespace Application.Services.Shippings
 {
     public class ShippingsService : GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
+        private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
@@ -110,14 +111,15 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
             setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
             setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId), nameLoader: GetVehicleTypeNameById);
+            setter.UpdateField(e => e.BodyTypeId, dto.BodyTypeId.ToGuid(), nameLoader: GetBodyTypeNameById);
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
             setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler());
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler());
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime));
-            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime));
+            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.DeliveryInvoiceNumber, dto.DeliveryInvoiceNumber);
             setter.UpdateField(e => e.DeviationReasonsComments, dto.DeviationReasonsComments);
             setter.UpdateField(e => e.TotalDeliveryCost, dto.TotalDeliveryCost, new TotalDeliveryCostHandler());
@@ -195,6 +197,11 @@ namespace Application.Services.Shippings
         private string GetVehicleTypeNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<VehicleType>(id.Value)?.Name;
+        }
+
+        private string GetBodyTypeNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<BodyType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
@@ -343,8 +350,6 @@ namespace Application.Services.Shippings
             });
             return result;
         }
-
-        private readonly IMapper _mapper;
 
         public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
         {

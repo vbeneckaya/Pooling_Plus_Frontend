@@ -14,7 +14,6 @@ const Text = ({
     error,
     type,
     datalist: valuesList = [],
-    errorText,
     placeholder,
                   isRequired,
 }) => {
@@ -23,8 +22,9 @@ const Text = ({
     return (
         <Form.Field>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}
@@ -38,7 +38,7 @@ const Text = ({
                 onChange={onChange}
                 onBlur={onBlur}
             />
-            {error && errorText ? <span className="label-error">{errorText}</span> : null}
+            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
             {valuesList && valuesList.length ? (
                 <datalist id={name}>
                     {valuesList.map(item => (

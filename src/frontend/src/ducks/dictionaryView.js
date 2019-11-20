@@ -27,6 +27,7 @@ const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
+const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
 
 //*  INITIAL STATE  *//
 
@@ -79,7 +80,13 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_DICTIONARY_INFO:
             return {
                 ...state,
-                ...initial,
+                ...initial
+            };
+        case CLEAR_DICTIONARY_CARD:
+            return {
+                ...state,
+                card: {},
+                error: null
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -149,6 +156,12 @@ export const clearDictionaryInfo = () => {
     };
 };
 
+export const clearDictionaryCard = () => {
+    return {
+        type: CLEAR_DICTIONARY_CARD
+    }
+};
+
 export const importFromExcelRequest = payload => {
     return {
         type: DICTIONARY_IMPORT_FROM_EXCEL_REQUEST,
@@ -215,8 +228,6 @@ export const exportProgressSelector = createSelector(stateSelector, state => sta
 export function* getListSaga({ payload }) {
     try {
         const { filter = {}, name, isConcat } = payload;
-
-        yield delay(1000);
 
         const result = yield postman.post(`/${name}/search`, filter);
 
@@ -324,6 +335,6 @@ export function* saga() {
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
         takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
         takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
-        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
+        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga)
     ]);
 }

@@ -8,10 +8,10 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
         public string OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -90,7 +90,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.BigText)]
         public string DeliveryAddress { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(VehicleState))]
+        [FieldType(FieldType.State, source: nameof(VehicleState)), IsReadOnly]
         public string ShippingStatus { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
@@ -143,7 +143,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
+        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IsReadOnly]
         public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -160,7 +160,7 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(3), IsReadOnly]
         public string ShippingNumber { get; set; }
 
         [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4)]
@@ -170,14 +170,22 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses))]
         public string ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.LocalDateTime), IgnoreFieldSettings]
+        [FieldType(FieldType.DateTime), IsReadOnly]
         public DateTime? OrderChangeDate { get; set; }
 
-        [FieldType(FieldType.Boolean)]
+        [FieldType(FieldType.Boolean), AllowBulkUpdate]
         public bool? OrderConfirmed { get; set; }
 
-        /*end of fields*/
+        [FieldType(FieldType.Boolean)]
+        public bool? DocumentReturnStatus { get; set; }
+
+        [FieldType(FieldType.Text)]
+        public string PickingFeatures { get; set; }
+
+        public string Source { get; set; }
+
     }
 }

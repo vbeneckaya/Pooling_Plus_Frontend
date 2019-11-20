@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
-    cardSelector,
-    editCardRequest,
+    cardSelector, clearGridCard,
+    editCardRequest, errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
@@ -43,6 +43,7 @@ const Card = props => {
 
     const card = useSelector(state => cardSelector(state));
     const settings = useSelector(state => settingsFormSelector(state, card.status));
+    const error = useSelector(state => errorSelector(state));
 
     const loadCard = () => {
         dispatch(
@@ -51,6 +52,7 @@ const Card = props => {
                 id,
                 callbackSuccess: card => {
                     setForm(card);
+                    setNotChangeForm(true);
                 },
             }),
         );
@@ -77,6 +79,8 @@ const Card = props => {
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
             beforeClose ? beforeClose() : setModalOpen(false);
+            setNotChangeForm(true);
+            dispatch(clearGridCard());
             setForm({});
             setIsNotUnqueNumber(false);
             loadList && loadList(false, true);
@@ -97,17 +101,17 @@ const Card = props => {
 
     const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
         if (name === 'soldTo') {
-            setForm({
-                ...form,
+            setForm(prevState => ({
+                ...prevState,
                 [name]: value,
                 clientName,
                 deliveryAddress
-            })
+            }))
         } else {
-            setForm({
-                ...form,
-                [name]: value,
-            });
+            setForm(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
         }
 
         if (
@@ -126,7 +130,11 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    onClose();
+                    if (form.id) {
+                        loadCard();
+                    } else {
+                        onClose();
+                    }
                 },
             }),
         );
@@ -217,16 +225,32 @@ const Card = props => {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <Modal.Description>
-                    {React.cloneElement(getModal[name], {
-                        ...props,
-                        form,
-                        load: loadCard,
-                        settings,
-                        uniquenessNumberCheck: handleUniquenessCheck,
-                        isNotUniqueNumber,
-                        onClose,
-                        onChangeForm,
-                    })}
+                    {
+                        name === ORDERS_GRID
+                        ?
+                            <OrderModal
+                                {...props}
+                                form={form}
+                                load={loadCard}
+                                settings={settings}
+                                uniquenessNumberCheck={handleUniquenessCheck}
+                                isNotUniqueNumber={isNotUniqueNumber}
+                                error={error}
+                                onClose={onClose}
+                                onChangeForm={onChangeForm}
+                            />
+                            : <ShippingModal
+                                {...props}
+                                form={form}
+                                load={loadCard}
+                                settings={settings}
+                                uniquenessNumberCheck={handleUniquenessCheck}
+                                isNotUniqueNumber={isNotUniqueNumber}
+                                error={error}
+                                onClose={onClose}
+                                onChangeForm={onChangeForm}
+                            />
+                    }
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">

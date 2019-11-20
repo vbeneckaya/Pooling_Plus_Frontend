@@ -35,10 +35,10 @@ namespace Application.Services.FieldProperties
                 var fieldTypeAttr = (FieldTypeAttribute)Attribute.GetCustomAttribute(prop, typeof(FieldTypeAttribute));
 
                 bool isDefault = Attribute.IsDefined(prop, typeof(IsDefaultAttribute));
-                bool isIgnoredForFieldSettings = Attribute.IsDefined(prop, typeof(IgnoreFieldSettingsAttribute));
                 bool isBulkUpdateAllowed = Attribute.IsDefined(prop, typeof(AllowBulkUpdateAttribute));
                 bool isFixedPosition = Attribute.IsDefined(prop, typeof(IsFixedPositionAttribute));
                 bool isRequired = Attribute.IsDefined(prop, typeof(IsRequiredAttribute));
+                bool isReadOnly = Attribute.IsDefined(prop, typeof(IsReadOnlyAttribute));
 
                 int orderNumber = int.MaxValue;
                 if (Attribute.IsDefined(prop, typeof(OrderNumberAttribute)))
@@ -55,10 +55,10 @@ namespace Application.Services.FieldProperties
                     ShowRawReferenceValue = fieldTypeAttr.ShowRawValue,
                     OrderNumber = orderNumber,
                     IsDefault = isDefault,
-                    IsIgnoredForFieldSettings = isIgnoredForFieldSettings,
                     IsBulkUpdateAllowed = isBulkUpdateAllowed,
                     IsFixedPosition = isFixedPosition,
-                    IsRequired = isRequired
+                    IsRequired = isRequired,
+                    IsReadOnly = isReadOnly
                 };
                 yield return fieldInfo;
             }

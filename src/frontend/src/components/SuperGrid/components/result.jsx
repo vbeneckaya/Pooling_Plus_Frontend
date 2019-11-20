@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
 import {Button, Checkbox, Dimmer, Loader, Table} from 'semantic-ui-react';
-import CellResult from './result_cell';
+import BodyCell from './body_cell';
 import _ from 'lodash'
 
 class Result extends Component {
@@ -58,6 +58,7 @@ class Result extends Component {
             disabledCheck,
             name,
             progress,
+            t
         } = this.props;
 
         return (
@@ -86,15 +87,17 @@ class Result extends Component {
                         </Table.Cell>
                         {columns &&
                         columns.map((column, indexColumn) => (
-                            <CellResult
+                            <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
                                 row={row}
                                 column={column}
+                                value={row[column.name]}
                                 indexRow={indexRow}
                                 indexColumn={indexColumn}
                                 loadList={loadList}
                                 gridName={name}
                                 modalCard={modalCard}
+                                t={t}
                             />
                         ))}
                         {isShowActions ? (

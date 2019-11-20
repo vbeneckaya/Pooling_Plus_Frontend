@@ -24,6 +24,7 @@ const TOGGLE_USER_ACTIVE_SUCCESS = 'TOGGLE_USER_ACTIVE_SUCCESS';
 const TOGGLE_USER_ACTIVE_ERROR = 'TOGGLE_USER_ACTIVE_ERROR';
 
 const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
+const CLEAR_USER_CARD = 'CLEAR_USER_CARD';
 
 //*  INITIAL STATE  *//
 
@@ -78,6 +79,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 ...initial,
             };
+        case CLEAR_USER_CARD:
+            return {
+                ...state,
+                card: {}
+            };
         default:
             return state;
     }
@@ -109,6 +115,12 @@ export const createUserRequest = payload => {
 export const clearUsersInfo = () => {
     return {
         type: CLEAR_USERS_INFO,
+    };
+};
+
+export const clearUserCard = () => {
+    return {
+        type: CLEAR_USER_CARD,
     };
 };
 

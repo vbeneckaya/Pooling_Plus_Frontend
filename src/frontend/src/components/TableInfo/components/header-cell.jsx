@@ -10,6 +10,7 @@ const HeaderCellComponent = ({row}) => {
         setPosition(cellRef.current.offsetLeft);
     }, []);
 
+    console.log('headerCell');
 
     return (
         <th
@@ -22,4 +23,6 @@ const HeaderCellComponent = ({row}) => {
     );
 };
 
-export default HeaderCellComponent;
+export default React.memo(HeaderCellComponent, (prevProps, nextProps) => {
+    return prevProps.row.name === nextProps.row.name
+});

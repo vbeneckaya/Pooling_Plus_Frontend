@@ -22,8 +22,8 @@ const Select = ({
     isTranslate,
     error,
     textValue,
-    errorText,
     noLabel,
+                    isRequired,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -43,18 +43,22 @@ const Select = ({
         onChange(e, { value, name });
     };
 
-    let items = valuesList && valuesList.map((x, index) => ({
-        key: `${x.value}_${index}`,
-        value: x.value,
-        text: isTranslate ? t(x.name) : x.name,
-        /* disabled: !x.isActive,
-        description: x.description,*/
-    }));
+    let items =
+        valuesList &&
+        valuesList.map((x, index) => ({
+            key: `${x.value}_${index}`,
+            value: x.value,
+            text: isTranslate ? t(x.name) : x.name
+        }));
+
+    console.log('select');
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Dropdown
                 placeholder={placeholder}
@@ -72,9 +76,9 @@ const Select = ({
                 onChange={handleChange}
                 selectOnBlur={false}
             />
-            {errorText && <span className="label-error">{errorText}</span>}
+            {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );
 };
 
-export default Select;
+export default React.memo(Select);

@@ -127,9 +127,8 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                                 value={form['soldTo']}
                                                 type={SELECT_TYPE}
                                                 settings={settings['soldTo']}
-                                                errorText={error && t('soldTo_error')}
                                                 textValue={error && form['soldTo']}
-                                                error={error}
+                                                error={error && t('soldTo_error')}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
                                             />

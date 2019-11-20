@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { ORDERS_GRID } from '../../../constants/grids';
 import { Button, Grid, Icon, Popup } from 'semantic-ui-react';
-import Mass_changes from './mass_changes';
+import MassChanges from './mass_changes';
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -93,7 +93,7 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                     </div>
                 </Grid.Column>
                 <Grid.Column floated="right">
-                    <Mass_changes gridName={gridName} load={() => load(false, true)} />
+                    <MassChanges gridName={gridName} load={() => load(false, true)}/>
                 </Grid.Column>
             </Grid.Row>
         </Grid>

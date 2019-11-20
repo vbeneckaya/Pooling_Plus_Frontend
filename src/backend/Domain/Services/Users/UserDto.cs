@@ -1,4 +1,7 @@
-﻿namespace Domain.Services.Users
+﻿using Domain.Enums;
+using Domain.Extensions;
+
+namespace Domain.Services.Users
 {
     public class UserDto : IDto
     {
@@ -10,5 +13,8 @@
         public string Password { get; set; }
         public bool IsActive { get; set; }
         public string FieldsConfig { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies))]
+        public string CarrierId { get; set; }
     }
 }

@@ -39,10 +39,6 @@ const getTypeFacet = {
 };
 
 const FormField = props => {
-    if (props.settings === SETTINGS_TYPE_HIDE) {
-        return null;
-    }
-
     let params = {
         ...props,
         ...props.column,
@@ -62,10 +58,22 @@ const FormField = props => {
         };
     }
 
+    if (props.settings === SETTINGS_TYPE_HIDE) {
+        params = {
+            ...params,
+            isDisabled: true,
+            value: null
+        };
+    }
+
     return React.cloneElement(
         getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE/>,
         params,
     );
 };
 
-export default FormField;
+export default React.memo(FormField, (prevProps, nextProps) => {
+    return prevProps.value === nextProps.value &&
+        prevProps.isDisabled === nextProps.isDisabled &&
+        prevProps.error === nextProps.error;
+});

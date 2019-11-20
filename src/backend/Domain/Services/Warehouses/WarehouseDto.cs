@@ -25,10 +25,13 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Select, source: nameof(PickingTypes)), OrderNumber(6)]
         public string PickingTypeId { get; set; }
 
-        [FieldType(FieldType.Number), OrderNumber(7)]
+        [FieldType(FieldType.Text), OrderNumber(7)]
+        public string PickingFeatures { get; set; }
+
+        [FieldType(FieldType.Number), OrderNumber(8)]
         public int? LeadtimeDays { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(8)]
+        [FieldType(FieldType.Boolean), OrderNumber(9)]
         public bool CustomerWarehouse { get; set; }
         /*end of fields*/
     }

@@ -31,11 +31,19 @@ namespace Application.Services.History
         public void Save(Guid entityId, string messageKey, params object[] messageArgs)
         {
             var user = _userProvider.GetCurrentUser();
-            string userName = GetUserName(user);
+            SaveInner(user, entityId, messageKey, messageArgs);
+        }
 
+        public void SaveImpersonated(CurrentUserDto user, Guid entityId, string messageKey, params object[] messageArgs)
+        {
+            SaveInner(user, entityId, messageKey, messageArgs);
+        }
+
+        private void SaveInner(CurrentUserDto user, Guid entityId, string messageKey, params object[] messageArgs)
+        {
+            string userName = GetUserName(user);
             string[] valueArgs = messageArgs.Select(GetDisplayValue).ToArray();
             string strArgs = JsonConvert.SerializeObject(valueArgs);
-
             HistoryEntry entry = new HistoryEntry
             {
                 PersistableId = entityId,
