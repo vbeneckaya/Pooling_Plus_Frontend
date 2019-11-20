@@ -226,7 +226,6 @@ class UserCard extends Component {
                                         name="carrierId"
                                         value={carrierId}
                                         source="transportCompanies"
-                                        isRequired
                                         error={
                                             error &&
                                             (error.find(item => item.name === 'carrierId') || {})
