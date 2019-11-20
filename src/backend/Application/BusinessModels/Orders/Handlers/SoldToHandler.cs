@@ -27,6 +27,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 if (soldToWarehouse != null)
                 {
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
+                    setter.UpdateField(o => o.PickingFeatures, soldToWarehouse.PickingFeatures);
 
                     if (soldToWarehouse.PickingTypeId.HasValue)
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
