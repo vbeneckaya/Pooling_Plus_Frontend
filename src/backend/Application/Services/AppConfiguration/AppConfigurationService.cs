@@ -278,7 +278,7 @@ namespace Application.Services.AppConfiguration
             if (forEntity.HasValue)
             {
                 var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
-                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0) || x.IsIgnoredForFieldSettings);
+                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
             }
 
             foreach (var field in fields.OrderBy(f => f.OrderNumber))

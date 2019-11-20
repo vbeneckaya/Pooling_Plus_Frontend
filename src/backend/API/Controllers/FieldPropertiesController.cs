@@ -53,6 +53,15 @@ namespace API.Controllers
         public ValidateResult Save([FromBody] FieldPropertyDto fieldPropertiesDto)
         {
             return fieldPropertiesService.Save(fieldPropertiesDto);
+        }        
+
+        /// <summary>
+        /// Переключить "Скрыто" у поля
+        /// </summary>
+        [HttpPost("toggleHiddenState")]
+        public ValidateResult ToggleHiddenState([FromBody] ToggleHiddenStateDto dto)
+        {
+            return fieldPropertiesService.ToggleHiddenState(dto);
         }
     }
 }

@@ -14,17 +14,18 @@ const Text = ({
     error,
     type,
     datalist: valuesList = [],
-    errorText,
     placeholder,
                   isRequired,
+                  autoComplete,
 }) => {
     const { t } = useTranslation();
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}
@@ -37,8 +38,11 @@ const Text = ({
                 error={error}
                 onChange={onChange}
                 onBlur={onBlur}
+                autoComplete={autoComplete}
             />
-            {error && errorText ? <span className="label-error">{errorText}</span> : null}
+            {error && typeof error === 'string' ? (
+                <span className="label-error">{error}</span>
+            ) : null}
             {valuesList && valuesList.length ? (
                 <datalist id={name}>
                     {valuesList.map(item => (

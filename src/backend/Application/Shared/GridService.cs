@@ -597,7 +597,7 @@ namespace Application.Shared
             Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var excelMapper = new ExcelMapper<TDto>(_dataService, _userIdProvider);
+            var excelMapper = CreateExportExcelMapper();//new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
             Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
@@ -607,6 +607,11 @@ namespace Application.Shared
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
             return new ExcelMapper<TFormDto>(_dataService, _userIdProvider);
+        }
+
+        protected virtual ExcelMapper<TDto> CreateExportExcelMapper()
+        {
+            return new ExcelMapper<TDto>(_dataService, _userIdProvider);
         }
 
         protected TimeSpan? ParseTime(string value)

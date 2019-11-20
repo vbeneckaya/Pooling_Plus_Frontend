@@ -305,6 +305,7 @@ class SuperGrid extends Component {
                         unstackable
                         celled={false}
                         selectable={false}
+                        style={{minHeight: 'inherit'}}
                         headerRow={
                             <Filter
                                 columns={columns}
@@ -344,6 +345,7 @@ class SuperGrid extends Component {
                             gridName={name}
                             groupActions={groupActions}
                             clearSelectedRows={this.clearSelectedRows}
+                            load={this.loadList}
                         />
                     ) : null}
                 </div>

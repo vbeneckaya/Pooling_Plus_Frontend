@@ -18,6 +18,7 @@ namespace Application.Services.FieldProperties
         private readonly ICommonDataService _dataService;
         private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly IUserProvider _userProvider;
+        private static readonly string ShowIdentifier = FieldPropertiesAccessType.Show.ToString().ToLowerFirstLetter();
 
         public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService, IUserProvider userProvider)
         {
@@ -45,31 +46,50 @@ namespace Application.Services.FieldProperties
                                                         && (x.CompanyId == companyId || x.CompanyId == null))
                                                .ToList();
 
+            var fieldVisibilities = _dataService.GetDbSet<FieldPropertyItemVisibility>()
+                                               .Where(x => x.ForEntity == forEntityType
+                                                        && (x.RoleId == roleId || x.RoleId == null)
+                                                        && (x.CompanyId == companyId || x.CompanyId == null))
+                                               .ToList();
+
             var fieldNames = GetFieldNames(forEntityType);
-            foreach (string fieldName in fieldNames)
+            foreach (var fieldName in fieldNames)
             {
                 var accessTypes = new Dictionary<string, string>();
+
+                var visibilitySetting = fieldVisibilities.SingleOrDefault(x => x.FieldName == fieldName.Name);
+
+                var isHidden = visibilitySetting?.IsHidden ?? false;
+                
                 foreach (var state in states)
                 {
-                    var stateId = (int)state;
-                    var fieldMatrixItem =
-                        fieldMatrixItems.Where(x => x.State == stateId && x.FieldName == fieldName)
-                                        .OrderBy(x => x)
-                                        .FirstOrDefault();
-
                     var stateName = state.ToString()?.ToLowerFirstLetter();
-                    var accessType = fieldMatrixItem?.AccessType.ToString()?.ToLowerFirstLetter()
-                                        ?? FieldPropertiesAccessType.Show.ToString().ToLowerFirstLetter();
-
-                    if (!string.IsNullOrEmpty(stateName))
+                    if (isHidden)
+                        accessTypes[stateName] = ShowIdentifier;
+                    else
                     {
-                        accessTypes[stateName] = accessType;
+                        var stateId = (int)state;
+
+                        var fieldMatrixItem =
+                            fieldMatrixItems.Where(x => x.State == stateId && x.FieldName == fieldName.Name)
+                                .OrderBy(x => x)
+                                .FirstOrDefault();
+
+                        var accessType = fieldMatrixItem?.AccessType.ToString()?.ToLowerFirstLetter()
+                                         ?? ShowIdentifier;
+
+                        if (!string.IsNullOrEmpty(stateName))
+                        {
+                            accessTypes[stateName] = accessType;
+                        }                    
                     }
                 }
                 result.Add(new FieldForFieldProperties
                 {
-                    FieldName = fieldName,
-                    AccessTypes = accessTypes
+                    FieldName = fieldName.Name,
+                    AccessTypes = accessTypes,
+                    isReadOnly = fieldName.IsReadOnly,
+                    isHidden = isHidden
                 });
             }
 
@@ -105,7 +125,8 @@ namespace Application.Services.FieldProperties
             Guid? userId)
         {
             var hiddenAccessType = FieldPropertiesAccessType.Hidden.ToString().ToLowerFirstLetter();
-            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId);
+            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId)
+                .Where(x=> !x.isHidden);
             foreach (var prop in fieldProperties)
             {
                 bool hasAccess = prop.AccessTypes.Any(x => x.Value != hiddenAccessType);
@@ -158,6 +179,45 @@ namespace Application.Services.FieldProperties
             return fieldMatrixItem?.AccessType ?? FieldPropertiesAccessType.Show;
         }
 
+        public ValidateResult ToggleHiddenState(ToggleHiddenStateDto dto)
+        {
+            var dbSet = _dataService.GetDbSet<FieldPropertyItemVisibility>();
+
+            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
+
+            var companyId = string.IsNullOrEmpty(dto.CompanyId)
+                ? (Guid?)null
+                : Guid.Parse(dto.CompanyId);
+
+            var roleId = string.IsNullOrEmpty(dto.RoleId)
+                ? (Guid?)null
+                : Guid.Parse(dto.RoleId);
+            
+            
+            var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
+                                            && x.FieldName == dto.FieldName);
+
+            if (visibilityItem == null)
+            {
+                visibilityItem = new FieldPropertyItemVisibility
+                {
+                    Id = Guid.NewGuid(),
+                    ForEntity = forEntity,
+                    CompanyId = companyId,
+                    RoleId = roleId,
+                    FieldName = dto.FieldName,
+                    IsHidden = true
+                };
+                dbSet.Add(visibilityItem);
+            }
+            else
+                visibilityItem.IsHidden = !visibilityItem.IsHidden;
+
+            _dataService.SaveChanges();
+
+            return new ValidateResult();
+        }
+
         public ValidateResult Save(FieldPropertyDto dto)
         {
             var dbSet = _dataService.GetDbSet<FieldPropertyItem>();
@@ -178,20 +238,7 @@ namespace Application.Services.FieldProperties
                                         && x.FieldName == dto.FieldName)
                                 .ToList();
 
-            Array states;
-            if (string.IsNullOrEmpty(dto.State))
-            {
-                states = forEntity == FieldPropertiesForEntityType.Shippings || forEntity == FieldPropertiesForEntityType.RoutePoints
-                        ? Enum.GetValues(typeof(ShippingState))
-                        : Enum.GetValues(typeof(OrderState));
-            }
-            else
-            {
-                int state = forEntity == FieldPropertiesForEntityType.Shippings || forEntity == FieldPropertiesForEntityType.RoutePoints
-                    ? (int)Enum.Parse<ShippingState>(dto.State, true)
-                    : (int)Enum.Parse<OrderState>(dto.State, true);
-                states = new[] { state };
-            }
+            var states = GetStates(forEntity, dto.State);
 
             foreach (var state in states)
             {
@@ -220,7 +267,7 @@ namespace Application.Services.FieldProperties
             return new ValidateResult();
         }
 
-        private List<string> GetFieldNames(FieldPropertiesForEntityType entityType)
+        private List<FieldInfo> GetFieldNames(FieldPropertiesForEntityType entityType)
         {
             switch(entityType)
             {
@@ -233,16 +280,42 @@ namespace Application.Services.FieldProperties
                 case FieldPropertiesForEntityType.Shippings:
                     return ExtractFieldNamesFromDto<ShippingDto>();
                 default:
-                    return new List<string>();
+                    return new List<FieldInfo>();
             }
         }
 
-        private List<string> ExtractFieldNamesFromDto<TDto>()
+        private static Array GetStates(FieldPropertiesForEntityType entityType, string state = "")
         {
-            var fields = _fieldDispatcherService.GetDtoFields<TDto>();
-            var result = fields.Where(x => !x.IsIgnoredForFieldSettings)
-                               .Select(x => x.Name?.ToLowerFirstLetter())
-                               .ToList();
+            Array states;
+            if (string.IsNullOrEmpty(state))
+            {
+                states = entityType == FieldPropertiesForEntityType.Shippings ||
+                         entityType == FieldPropertiesForEntityType.RoutePoints
+                    ? Enum.GetValues(typeof(ShippingState))
+                    : Enum.GetValues(typeof(OrderState));
+            }
+            else
+            {
+                states = new[]
+                {
+                    entityType == FieldPropertiesForEntityType.Shippings ||
+                    entityType == FieldPropertiesForEntityType.RoutePoints
+                        ? (int) Enum.Parse<ShippingState>(state, true)
+                        : (int) Enum.Parse<OrderState>(state, true)
+                };
+            }
+
+            return states;
+        }
+
+        private List<FieldInfo> ExtractFieldNamesFromDto<TDto>()
+        {
+            var result = _fieldDispatcherService.GetDtoFields<TDto>()
+                .ToList();
+            
+            foreach (var fieldInfo in result) 
+                fieldInfo.Name = fieldInfo.Name?.ToLowerFirstLetter();
+
             return result;
         }
     }

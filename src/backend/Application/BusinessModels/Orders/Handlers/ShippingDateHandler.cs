@@ -11,8 +11,15 @@ namespace Application.BusinessModels.Orders.Handlers
     public class ShippingDateHandler : IFieldHandler<Order, DateTime?>
     {
         private readonly ICommonDataService _dataService;
-
         private readonly IHistoryService _historyService;
+        private readonly bool _isManual;
+
+        public ShippingDateHandler(ICommonDataService dataService, IHistoryService historyService, bool isManual)
+        {
+            _dataService = dataService;
+            _historyService = historyService;
+            _isManual = isManual;
+        }
 
         public void AfterChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
@@ -31,7 +38,12 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            order.OrderChangeDate = DateTime.Now;
+            order.OrderChangeDate = DateTime.UtcNow;
+
+            if (_isManual)
+            {
+                order.ManualShippingDate = true;
+            }
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)
@@ -44,12 +56,6 @@ namespace Application.BusinessModels.Orders.Handlers
             {
                 return null;
             }
-        }
-
-        public ShippingDateHandler(ICommonDataService dataService, IHistoryService historyService)
-        {
-            _dataService = dataService;
-            _historyService = historyService;
         }
     }
 }

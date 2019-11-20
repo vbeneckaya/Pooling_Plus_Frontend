@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
-    cardSelector,
+    cardSelector, clearDictionaryCard,
     clearDictionaryInfo,
     columnsSelector, errorSelector,
     getCardRequest,
@@ -14,13 +14,13 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
+    confirmation: {open: false},
+    notChangeForm: true
 };
 
 class Card extends Component {
     state = {
         ...initialState,
-        confirmation: {open: false},
-        notChangeForm: true
     };
 
     componentDidUpdate(prevProps) {
@@ -48,12 +48,12 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clear } = this.props;
+        const {loadList, clearCard} = this.props;
 
         this.setState({
             ...initialState,
         });
-        clear();
+        clearCard();
         loadList(false, true);
     };
 
@@ -138,8 +138,7 @@ class Card extends Component {
                                         column={column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err}
-                                        errorText={err && err.message}
+                                        error={err && err.message}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />
@@ -187,8 +186,8 @@ const mapDispatchToProps = dispatch => {
         save: params => {
             dispatch(saveDictionaryCardRequest(params));
         },
-        clear: () => {
-            dispatch(clearDictionaryInfo());
+        clearCard: () => {
+            dispatch(clearDictionaryCard());
         },
     };
 };

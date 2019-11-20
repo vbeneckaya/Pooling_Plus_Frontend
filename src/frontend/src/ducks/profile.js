@@ -1,9 +1,10 @@
-import { all, put, takeEvery } from 'redux-saga/effects';
+import {all, put, takeEvery, take, spawn} from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { push as historyPush } from 'connected-react-router';
 import { FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK } from '../router/links';
 import { logoutRequest } from './login';
+import {clearDictionaryInfo} from './dictionaryView';
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -168,6 +169,22 @@ function* getUserProfileSaga({ payload = {} }) {
     }
 }
 
+function* changeLocation() {
+    while (true) {
+        console.log('55555555555555555555555555');
+        const {payload} = yield take('@@router/LOCATION_CHANGE');
+        const {location} = payload;
+        const {pathname} = location;
+
+        console.log('3333', pathname);
+
+        if (pathname.includes('dictionary')) {
+            yield put(clearDictionaryInfo());
+        }
+    }
+}
+
 export function* saga() {
     yield all([takeEvery(GET_USER_PROFILE_REQUEST, getUserProfileSaga)]);
+    yield spawn(changeLocation);
 }

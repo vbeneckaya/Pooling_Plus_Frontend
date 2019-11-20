@@ -2,6 +2,7 @@ import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import users from '../mocks/users';
+import {toast} from 'react-toastify';
 
 const TYPE_API = 'users';
 
@@ -24,6 +25,7 @@ const TOGGLE_USER_ACTIVE_SUCCESS = 'TOGGLE_USER_ACTIVE_SUCCESS';
 const TOGGLE_USER_ACTIVE_ERROR = 'TOGGLE_USER_ACTIVE_ERROR';
 
 const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
+const CLEAR_USER_CARD = 'CLEAR_USER_CARD';
 
 //*  INITIAL STATE  *//
 
@@ -31,6 +33,7 @@ const initial = {
     list: [],
     card: {},
     totalCount: 0,
+    error: [],
     progress: false,
 };
 
@@ -64,6 +67,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: false,
+                error: [],
             };
         case GET_USERS_LIST_ERROR:
         case GET_USER_CARD_ERROR:
@@ -77,6 +81,12 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 ...initial,
+            };
+        case CLEAR_USER_CARD:
+            return {
+                ...state,
+                card: {},
+                error: [],
             };
         default:
             return state;
@@ -112,6 +122,12 @@ export const clearUsersInfo = () => {
     };
 };
 
+export const clearUserCard = () => {
+    return {
+        type: CLEAR_USER_CARD,
+    };
+};
+
 export const toggleUserActiveRequest = payload => {
     return {
         type: TOGGLE_USER_ACTIVE_REQUEST,
@@ -126,6 +142,7 @@ export const usersListSelector = createSelector(stateSelector, state => state.li
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const userCardSelector = createSelector(stateSelector, state => state.card);
+export const errorSelector = createSelector(stateSelector, state => state.error);
 
 //*  SAGA  *//
 
@@ -171,10 +188,18 @@ function* createUserSaga({ payload }) {
 
         const result = yield postman.post('/users/saveOrCreate', params);
 
-        yield put({
-            type: CREATE_USER_SUCCESS,
-        });
-        callbackFunc();
+        if (result.isError) {
+            toast.error(result.error);
+            yield put({
+                type: CREATE_USER_ERROR,
+                payload: result.errors,
+            });
+        } else {
+            yield put({
+                type: CREATE_USER_SUCCESS,
+            });
+            callbackFunc && callbackFunc();
+        }
     } catch (error) {
         yield put({
             type: CREATE_USER_ERROR,

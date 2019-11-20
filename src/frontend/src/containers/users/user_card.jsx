@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
-    clearUsersInfo,
+    clearUserCard,
     createUserRequest,
+    errorSelector,
     getUserCardRequest,
     progressSelector,
     userCardSelector,
@@ -14,8 +15,8 @@ import {
     progressSelector as rolesProgressSelector,
     rolesFromUserSelector,
 } from '../../ducks/roles';
-import Select from '../../components/BaseComponents/Select';
-import Text from '../../components/BaseComponents/Text';
+import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
+import FormField from '../../components/BaseComponents';
 
 class UserCard extends Component {
     constructor(props) {
@@ -23,17 +24,19 @@ class UserCard extends Component {
 
         this.state = {
             modalOpen: false,
+            confirmation: { open: false },
             form: {
                 login: null,
                 userName: null,
                 roleId: null,
                 email: null,
+                carrierId: null,
                 isActive: true,
             },
         };
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.user !== this.props.user) {
             const { user = {} } = this.props;
 
@@ -42,6 +45,7 @@ class UserCard extends Component {
                     login: user.login,
                     userName: user.userName,
                     roleId: user.roleId,
+                    carrierId: user.carrierId,
                     email: user.email,
                     password: user.password,
                     isActive: user.isActive,
@@ -64,13 +68,41 @@ class UserCard extends Component {
     };
 
     handleClose = () => {
+        const { form } = this.state;
+        const { user, t } = this.props;
+        let counter = 0;
+
+        Object.keys(form).forEach(key => {
+            if (form[key] !== user[key]) {
+                this.setState({
+                    confirmation: {
+                        open: true,
+                        content: t('confirm_close_dictionary'),
+                        onConfirm: this.confirmClose,
+                        onCancel: () => {
+                            this.setState({
+                                confirmation: { open: false },
+                            });
+                        },
+                    },
+                });
+                counter++;
+            }
+        });
+
+        if (!counter) {
+            this.confirmClose();
+        }
+    };
+
+    confirmClose = () => {
         const { loadList, clear } = this.props;
 
         this.setState({ modalOpen: false });
 
         this.setState({ form: {} });
         clear();
-        loadList();
+        loadList(false, true);
     };
 
     handleChange = (event, { name, value }) => {
@@ -80,6 +112,11 @@ class UserCard extends Component {
                 [name]: value,
             },
         }));
+    };
+
+    handleRoleChange = (event, { name, value }) => {
+        this.handleChange(event, {name, value});
+        this.handleChange(event, {name: 'carrierId', value: null})
     };
 
     mapProps = () => {
@@ -101,13 +138,13 @@ class UserCard extends Component {
     handleCreate = () => {
         const { createUser } = this.props;
 
-        createUser({ params: this.mapProps(), callbackFunc: this.handleClose });
+        createUser({params: this.mapProps(), callbackFunc: this.confirmClose});
     };
 
     render() {
-        const { modalOpen, form } = this.state;
-        const { login, userName, roleId, email, isActive, password } = form;
-        const { children, title, loading, id, rolesLoading, roles, t } = this.props;
+        const { modalOpen, form, confirmation } = this.state;
+        const { login, userName, roleId, email, isActive, password, carrierId } = form;
+        const { children, title, loading, t, error, user } = this.props;
 
         return (
             <Modal
@@ -123,17 +160,49 @@ class UserCard extends Component {
                     <Dimmer active={loading} inverted className="table-loader">
                         <Loader size="huge">Loading</Loader>
                     </Dimmer>
-                    <Form autoComplete="off">
+                    <Form>
                         <Grid columns="equal">
                             <Grid.Row columns="equal">
                                 <Grid.Column>
-                                    <Text name="email" value={email} onChange={this.handleChange} />
-                                    <Text
-                                        name="userName"
-                                        value={userName}
+                                    <FormField
+                                        type={TEXT_TYPE}
+                                        name="email"
+                                        value={email}
+                                        isRequired
+                                        error={
+                                            error &&
+                                            (error.find(item => item.name === 'email') || {})
+                                                .message
+                                        }
                                         onChange={this.handleChange}
                                     />
-                                    <Select
+                                    <FormField
+                                        name="userName"
+                                        value={userName}
+                                        type={TEXT_TYPE}
+                                        isRequired
+                                        error={
+                                            error &&
+                                            (error.find(item => item.name === 'userName') || {})
+                                                .message
+                                        }
+                                        onChange={this.handleChange}
+                                    />
+                                    <FormField
+                                        typeValue="password"
+                                        name="password"
+                                        isRequired={!user.id}
+                                        value={password}
+                                        type={TEXT_TYPE}
+                                        error={
+                                            error &&
+                                            (error.find(item => item.name === 'password') || {})
+                                                .message
+                                        }
+                                        autoComplete="new-password"
+                                        onChange={this.handleChange}
+                                    />
+                                    <FormField
                                         fluid
                                         search
                                         selection
@@ -141,12 +210,28 @@ class UserCard extends Component {
                                         name="roleId"
                                         value={roleId}
                                         source="roles"
-                                        onChange={this.handleChange}
+                                        isRequired
+                                        error={
+                                            error &&
+                                            (error.find(item => item.name === 'roleId') || {})
+                                                .message
+                                        }
+                                        type={SELECT_TYPE}
+                                        onChange={this.handleRoleChange}
                                     />
-                                    <Text
-                                        type="password"
-                                        name="password"
-                                        value={password}
+                                    <FormField
+                                        fluid
+                                        search
+                                        selection
+                                        name="carrierId"
+                                        value={carrierId}
+                                        source="transportCompanies"
+                                        error={
+                                            error &&
+                                            (error.find(item => item.name === 'carrierId') || {})
+                                                .message
+                                        }
+                                        type={SELECT_TYPE}
                                         onChange={this.handleChange}
                                     />
                                     {/*{id ? (
@@ -175,6 +260,14 @@ class UserCard extends Component {
                         {t('SaveButton')}
                     </Button>
                 </Modal.Actions>
+                <Confirm
+                    dimmer="blurring"
+                    open={confirmation.open}
+                    onCancel={confirmation.onCancel}
+                    cancelButton={t('cancelConfirm')}
+                    onConfirm={confirmation.onConfirm}
+                    content={confirmation.content}
+                />
             </Modal>
         );
     }
@@ -186,6 +279,7 @@ const mapStateToProps = state => {
         loading: progressSelector(state),
         roles: rolesFromUserSelector(state),
         rolesLoading: rolesProgressSelector(state),
+        error: errorSelector(state),
     };
 };
 
@@ -201,7 +295,7 @@ const mapDispatchToProps = dispatch => {
             dispatch(createUserRequest(params));
         },
         clear: () => {
-            dispatch(clearUsersInfo());
+            dispatch(clearUserCard());
         },
     };
 };

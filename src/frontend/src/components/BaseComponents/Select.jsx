@@ -22,8 +22,9 @@ const Select = ({
     isTranslate,
     error,
     textValue,
-    errorText,
     noLabel,
+                    isRequired,
+                    autoComplete,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -40,21 +41,25 @@ const Select = ({
     const valuesList = useSelector(state => valuesListSelector(state, source)) || [];
 
     const handleChange = (e, { value }) => {
-        onChange(e, { value, name });
+        onChange(e, {value, name, ext: valuesList.find(x => x.value === value)});
     };
 
-    let items = valuesList && valuesList.map((x, index) => ({
-        key: `${x.value}_${index}`,
-        value: x.value,
-        text: isTranslate ? t(x.name) : x.name,
-        /* disabled: !x.isActive,
-        description: x.description,*/
-    }));
+    let items =
+        valuesList &&
+        valuesList.map((x, index) => ({
+            key: `${x.value}_${index}`,
+            value: x.value,
+            text: isTranslate ? t(x.name) : x.name,
+        }));
+
+    console.log('select');
 
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{t(text || name)}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <Dropdown
                 placeholder={placeholder}
@@ -71,10 +76,11 @@ const Select = ({
                 options={items}
                 onChange={handleChange}
                 selectOnBlur={false}
+                autoComplete={autoComplete}
             />
-            {errorText && <span className="label-error">{errorText}</span>}
+            {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );
 };
 
-export default Select;
+export default React.memo(Select);

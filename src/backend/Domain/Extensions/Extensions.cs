@@ -211,5 +211,10 @@ namespace Domain.Extensions
         {
             return int.TryParse(intString, out int intValue) ? intValue : (int?)null;
         }
+
+        public static bool? ToBool(this string boolString)
+        {
+            return bool.TryParse(boolString, out bool boolValue) ? boolValue : (bool?)null;
+        }
     }
 }

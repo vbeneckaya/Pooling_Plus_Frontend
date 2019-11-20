@@ -3,17 +3,8 @@ using Domain.Enums;
 
 namespace Domain.Persistables
 {
-    public class FieldPropertyItem : IPersistable, IComparable
+    public class FieldPropertyItem : FieldPropertyItemBase, IPersistable, IComparable
     {
-        public Guid Id { get; set; }
-        
-        public FieldPropertiesForEntityType ForEntity { get; set; }
-
-        public Guid? CompanyId { get; set; }
-
-        public Guid? RoleId { get; set; }
-
-        public string FieldName { get; set; }
         public int State { get; set; }
         public FieldPropertiesAccessType AccessType { get; set; }
         
