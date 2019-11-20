@@ -25,6 +25,8 @@ namespace Domain.Services.Shippings
 
         public string VehicleTypeId { get; set; }
 
+        public string BodyTypeId { get; set; }
+
         public string PalletsCount { get; set; }
 
         public string ActualPalletsCount { get; set; }
