@@ -135,6 +135,14 @@ ru:
   emptyEndWinterPeriod: "Укажите Начало зимнего периода"
   emptyEffectiveDate: "Укажите дату начала действия тарифов"
   emptyExpirationDate: "Укажите дату окончания действия тарифов"
+  
+  emptyOrderNumber: "Укажите номер накладной BDF"
+  emptyClientOrderNumber: "Укажите номер заказа клиента"
+  emptyOrderDate: "Укажите дату заказа"
+  emptySoldTo: "Укажите Sold-to"
+  emptyShippingAddress: "Укажите адрес отгрузки"
+  duplicateOrder: "Укажите "
+  
   endWinterPeriod: "Окончание зимнего периода"
   error_file_size: "Размер файла не должен превышать 10Mb"
   exit: "Выйти"

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Domain.Services.Translations;
 
 namespace Application.Services.Orders
 {
@@ -92,6 +93,12 @@ namespace Application.Services.Orders
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+            
             bool isNew = string.IsNullOrEmpty(dto.Id);
             bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
 
@@ -205,6 +212,35 @@ namespace Application.Services.Orders
 
             string errors = setter.ValidationErrors;
             return new ValidateResult(errors, entity.Id.ToString());
+        }
+        
+        private ValidateResult ValidateDto(OrderDto dto)
+        {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.OrderNumber))
+                result.AddError(nameof(dto.OrderNumber), "empty{OrderNumber}".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+            if (string.IsNullOrEmpty(dto.ClientOrderNumber))
+                result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+            if (string.IsNullOrEmpty(dto.OrderDate))
+                result.AddError(nameof(dto.OrderDate), "emptyOrderDate".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+
+            if (string.IsNullOrEmpty(dto.SoldTo))
+                result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
+
+            if (string.IsNullOrEmpty(dto.ShippingAddress))
+                result.AddError(nameof(dto.ShippingAddress), "emptyShippingAddress".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+            return result;
         }
 
         public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
