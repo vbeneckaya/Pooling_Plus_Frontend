@@ -884,7 +884,7 @@ en:
   title: "Title"
   to: "To"
   tonnages: "Tonnage"
-  tonnageId: "Тоннаж"
+  tonnageId: "Tonnage"
   totalCount: "{{count}} records"
   totalDeliveryCost: "Total delivery cost"
   transitDays: "Days in transit"
