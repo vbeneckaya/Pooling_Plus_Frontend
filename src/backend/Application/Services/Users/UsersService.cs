@@ -118,7 +118,7 @@ namespace Application.Services.Users
                 result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            if (string.IsNullOrEmpty(dto.Password))
+            if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
                 result.AddError(nameof(dto.Password), "users.emptyPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
