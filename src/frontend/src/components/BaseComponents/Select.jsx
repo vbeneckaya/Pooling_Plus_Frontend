@@ -41,7 +41,7 @@ const Select = ({
     const valuesList = useSelector(state => valuesListSelector(state, source)) || [];
 
     const handleChange = (e, { value }) => {
-        onChange(e, { value, name });
+        onChange(e, {value, name, ext: valuesList.find(x => x.value === value)});
     };
 
     let items =

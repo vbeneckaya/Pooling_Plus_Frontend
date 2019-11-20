@@ -1,36 +1,29 @@
 import React, { useEffect } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { valuesListSelector } from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
-    const soldToList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const shippingWarehouseList =
-        useSelector(state => valuesListSelector(state, 'shippingWarehousesForOrderCreation')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        const item = soldToList.find(item => item.value === value) || {};
+    const handleChangeSoldTo = (e, {name, value, ext}) => {
+        console.log(ext);
         onChange(e, {
             name,
             value,
         });
-        onChange(e, {name: 'clientName', value: item.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: item.address});
+        onChange(e, {name: 'clientName', value: ext.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: ext.address});
     };
 
-    const handleChangeShippingWarehouseId = (e, {name, value}) => {
-        const item = shippingWarehouseList.find(item => item.value === value) || {};
-
+    const handleChangeShippingWarehouseId = (e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
         });
 
-        onChange(e, {name: 'shippingAddress', value: item.address});
+        onChange(e, {name: 'shippingAddress', value: ext.address});
     };
 
     return (

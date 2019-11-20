@@ -66,32 +66,37 @@ const FormField = props => {
         };
     }
 
-    switch (props.type || (props.column && props.column.type)) {
-        case TEXT_TYPE:
-            return <Text {...params} />;
-        case STATE_TYPE:
-            return <State {...params} />;
-        case DATE_TYPE:
-            return <Date {...params} />;
-        case DATE_TIME_TYPE:
-            return <DateTime {...params} />;
-        case TIME_TYPE:
-            return <Text type="time" {...params} />;
-        case SELECT_TYPE:
-            return <Select {...params} />;
-        case NUMBER_TYPE:
-            return <Text {...params} />;
-        case BOOLEAN_TYPE:
-            return <Bool {...params} />;
-        case ENUM_TYPE:
-            return <Select isTranslate {...params} />;
-        case BIG_TEXT_TYPE:
-            return <TextArea {...params} />;
-        case CHECKBOX_TYPE:
-            return <CheckBox {...params} />;
-        default:
-            return <Text {...params} />
-    }
+    /* switch (props.type || (props.column && props.column.type)) {
+         case TEXT_TYPE:
+             return <Text {...params} />;
+         case STATE_TYPE:
+             return <State {...params} />;
+         case DATE_TYPE:
+             return <Date {...params} />;
+         case DATE_TIME_TYPE:
+             return <DateTime {...params} />;
+         case TIME_TYPE:
+             return <Text type="time" {...params} />;
+         case SELECT_TYPE:
+             return <Select {...params} />;
+         case NUMBER_TYPE:
+             return <Text {...params} />;
+         case BOOLEAN_TYPE:
+             return <Bool {...params} />;
+         case ENUM_TYPE:
+             return <Select isTranslate {...params} />;
+         case BIG_TEXT_TYPE:
+             return <TextArea {...params} />;
+         case CHECKBOX_TYPE:
+             return <CheckBox {...params} />;
+         default:
+             return <Text {...params} />
+     }*/
+
+    return React.cloneElement(
+        getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE/>,
+        params,
+    );
 };
 
 export default React.memo(FormField, (prevProps, nextProps) => {
