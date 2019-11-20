@@ -198,7 +198,7 @@ function* createUserSaga({ payload }) {
             yield put({
                 type: CREATE_USER_SUCCESS,
             });
-            callbackFunc();
+            callbackFunc && callbackFunc();
         }
     } catch (error) {
         yield put({

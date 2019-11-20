@@ -138,7 +138,7 @@ class UserCard extends Component {
     handleCreate = () => {
         const { createUser } = this.props;
 
-        createUser({ params: this.mapProps(), callbackFunc: this.confirmClose() });
+        createUser({params: this.mapProps(), callbackFunc: this.confirmClose});
     };
 
     render() {
