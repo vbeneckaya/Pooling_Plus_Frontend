@@ -282,7 +282,7 @@ namespace Application.Services.Orders
                     && !string.IsNullOrEmpty(order.ShippingAddress)
                     && !string.IsNullOrEmpty(order.DeliveryAddress)
                     && !string.IsNullOrEmpty(order.Payer)
-                    //&& order.ShippingWarehouseId.HasValue
+                    && order.ShippingWarehouseId.HasValue
                     && order.DeliveryWarehouseId.HasValue
                     && order.ShippingDate.HasValue
                     && order.DeliveryDate.HasValue;
