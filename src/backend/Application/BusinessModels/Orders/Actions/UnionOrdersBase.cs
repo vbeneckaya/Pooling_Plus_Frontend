@@ -61,10 +61,24 @@ namespace Application.BusinessModels.Orders.Actions
             setter.UpdateField(s => s.ActualWeightKg, actualWeight);
             setter.UpdateField(s => s.TrucksDowntime, downtime);
 
+            var ordersLoadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).FirstOrDefault();
+            var updateLoadingArrivalTime = ordersLoadingArrivalTime.HasValue && orders.All(i => i.LoadingArrivalTime == ordersLoadingArrivalTime);
+
+            var ordersLoadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).FirstOrDefault();
+            var updateLoadingDepartureTime = ordersLoadingDepartureTime.HasValue && orders.All(i => i.LoadingDepartureTime == ordersLoadingDepartureTime);
+
+            if (updateLoadingArrivalTime)
+            {
+                setter.UpdateField(s => s.LoadingArrivalTime, ordersLoadingArrivalTime);
+            }
+
+            if (updateLoadingDepartureTime)
+            {
+                setter.UpdateField(s => s.LoadingDepartureTime, ordersLoadingDepartureTime);
+            }
+            
             setter.SaveHistoryLog();
-
-            shippingDbSet.Add(shipping);
-
+            
             foreach (var order in orders)
             {
                 order.ShippingId = shipping.Id;

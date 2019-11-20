@@ -49,36 +49,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
             setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
-<<<<<<< HEAD
             
-=======
-            setter.UpdateField(s => s.TemperatureMin, tempRange?.Key);
-            setter.UpdateField(s => s.TemperatureMax, tempRange?.Value);
-            setter.UpdateField(s => s.PalletsCount, palletsCount);
-            setter.UpdateField(s => s.ActualPalletsCount, actualPalletsCount);
-            setter.UpdateField(s => s.ConfirmedPalletsCount, confirmedPalletsCount);
-            setter.UpdateField(s => s.WeightKg, weight);
-            setter.UpdateField(s => s.ActualWeightKg, actualWeight);
-            setter.UpdateField(s => s.TrucksDowntime, downtime);
-
-            var ordersLoadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).FirstOrDefault();
-            var updateLoadingArrivalTime = ordersLoadingArrivalTime.HasValue && orders.All(i => i.LoadingArrivalTime == ordersLoadingArrivalTime);
-
-            var ordersLoadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).FirstOrDefault();
-            var updateLoadingDepartureTime = ordersLoadingDepartureTime.HasValue && orders.All(i => i.LoadingDepartureTime == ordersLoadingDepartureTime);
-
-            if (updateLoadingArrivalTime)
-            {
-                setter.UpdateField(s => s.LoadingArrivalTime, ordersLoadingArrivalTime);
-            }
-
-            if (updateLoadingDepartureTime)
-            {
-                setter.UpdateField(s => s.LoadingDepartureTime, ordersLoadingDepartureTime);
-            }
-
-            _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
->>>>>>> origin/develop
             setter.SaveHistoryLog();
 
             shippingDbSet.Add(shipping);

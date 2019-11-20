@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
-    /// Объеденить заказы в существующий
+    /// Объеденить заказы в существующую
     /// </summary>
     public class UnionOrdersInExisted : UnionOrdersBase, IGroupAppAction<Order>
     {
@@ -55,7 +55,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             return target.Count() > 1 && 
                    target.Where(x => x.Status == OrderState.InShipping).Count() == 1 &&
-                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.InShipping);
+                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
         }
     }
 }
