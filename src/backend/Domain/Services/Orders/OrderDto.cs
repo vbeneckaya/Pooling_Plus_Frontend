@@ -83,7 +83,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.BigText), IsRequired]
+        [FieldType(FieldType.BigText)]
         public string ShippingAddress { get; set; }
 
         [FieldType(FieldType.BigText)]

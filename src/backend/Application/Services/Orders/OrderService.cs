@@ -236,10 +236,6 @@ namespace Application.Services.Orders
             if (string.IsNullOrEmpty(dto.SoldTo))
                 result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
 
-            if (string.IsNullOrEmpty(dto.ShippingAddress))
-                result.AddError(nameof(dto.ShippingAddress), "emptyShippingAddress".Translate(lang),
-                    ValidationErrorType.ValueIsRequired);
-
             return result;
         }
 
