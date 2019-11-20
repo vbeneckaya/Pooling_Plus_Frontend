@@ -1,6 +1,7 @@
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
+using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
@@ -101,6 +102,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+
+            services.AddScoped<ICleanAddressService, CleanAddressService>();
 
             /*end of add service implementation*/
 

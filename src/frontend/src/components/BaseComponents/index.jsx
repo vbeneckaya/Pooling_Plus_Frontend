@@ -42,6 +42,7 @@ const FormField = props => {
     let params = {
         ...props,
         ...props.column,
+        type: props.typeValue
     };
 
     if (props.type === SELECT_TYPE || (props.column && props.column.type === SELECT_TYPE)) {
@@ -51,14 +52,14 @@ const FormField = props => {
         };
     }
 
-    if (props.settings === SETTINGS_TYPE_SHOW) {
+    if (props.settings && props.settings === SETTINGS_TYPE_SHOW) {
         params = {
             ...params,
             isDisabled: true,
         };
     }
 
-    if (props.settings === SETTINGS_TYPE_HIDE) {
+    if (props.settings && props.settings === SETTINGS_TYPE_HIDE) {
         params = {
             ...params,
             isDisabled: true,
@@ -74,6 +75,7 @@ const FormField = props => {
 
 export default React.memo(FormField, (prevProps, nextProps) => {
     return prevProps.value === nextProps.value &&
+        prevProps.type === nextProps.type &&
         prevProps.isDisabled === nextProps.isDisabled &&
         prevProps.error === nextProps.error;
 });

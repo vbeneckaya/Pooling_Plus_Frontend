@@ -268,7 +268,7 @@ function* saveDictionaryCardSaga({ payload }) {
     } catch (e) {
         yield put({
             type: SAVE_DICTIONARY_CARD_ERROR,
-            payload: e,
+            payload: null,
         });
     }
 }

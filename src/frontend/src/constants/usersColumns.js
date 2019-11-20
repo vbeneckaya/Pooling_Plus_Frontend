@@ -1,4 +1,4 @@
-import { ACTIVE_TYPE, ENUM_TYPE } from './columnTypes';
+import { ACTIVE_TYPE, ENUM_TYPE, SELECT_TYPE } from './columnTypes';
 
 export const usersColumns = [
     {
@@ -10,6 +10,11 @@ export const usersColumns = [
     {
         name: 'role',
         isTranslate: true,
+    },
+    {
+        name: 'carrierId',
+        type: SELECT_TYPE,
+        source: 'transportCompanies',
     },
     {
         name: 'isActive',

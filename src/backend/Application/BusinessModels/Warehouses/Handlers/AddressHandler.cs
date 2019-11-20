@@ -1,4 +1,5 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Services.Addresses;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -13,15 +14,27 @@ namespace Application.BusinessModels.Warehouses.Handlers
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
+        private readonly ICleanAddressService _cleanAddressService;
 
-        public AddressHandler(ICommonDataService dataService, IHistoryService historyService)
+        public AddressHandler(ICommonDataService dataService, IHistoryService historyService, ICleanAddressService cleanAddressService)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _cleanAddressService = cleanAddressService;
         }
 
         public void AfterChange(Warehouse entity, string oldValue, string newValue)
         {
+            var cleanAddress = string.IsNullOrEmpty(newValue) ? null : _cleanAddressService.CleanAddress(newValue);
+            entity.ValidAddress = cleanAddress?.ResultAddress;
+            entity.PostalCode = cleanAddress?.PostalCode;
+            entity.Region = cleanAddress?.Region;
+            entity.Area = cleanAddress?.Area;
+            entity.City = cleanAddress?.City;
+            entity.Street = cleanAddress?.Street;
+            entity.House = cleanAddress?.House;
+            entity.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;
+
             var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.SoldTo == entity.SoldToNumber
@@ -36,6 +49,22 @@ namespace Application.BusinessModels.Warehouses.Handlers
                                                  nameof(order.DeliveryAddress).ToLowerFirstLetter(),
                                                  order.DeliveryAddress, newValue);
                 order.DeliveryAddress = newValue;
+
+                if (order.DeliveryRegion != entity.Region)
+                {
+                    _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
+                                                     nameof(order.DeliveryRegion).ToLowerFirstLetter(),
+                                                     order.DeliveryRegion, entity.Region);
+                    order.DeliveryRegion = entity.Region;
+                }
+
+                if (order.DeliveryCity != entity.City)
+                {
+                    _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
+                                                     nameof(order.DeliveryCity).ToLowerFirstLetter(),
+                                                     order.DeliveryCity, entity.City);
+                    order.DeliveryCity = entity.City;
+                }
             }
         }
 

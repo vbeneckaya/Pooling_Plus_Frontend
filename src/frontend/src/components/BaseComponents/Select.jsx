@@ -24,6 +24,7 @@ const Select = ({
     textValue,
     noLabel,
                     isRequired,
+                    autoComplete,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -48,7 +49,7 @@ const Select = ({
         valuesList.map((x, index) => ({
             key: `${x.value}_${index}`,
             value: x.value,
-            text: isTranslate ? t(x.name) : x.name
+            text: isTranslate ? t(x.name) : x.name,
         }));
 
     console.log('select');
@@ -56,7 +57,7 @@ const Select = ({
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
                     }`}</label>
             ) : null}
@@ -75,6 +76,7 @@ const Select = ({
                 options={items}
                 onChange={handleChange}
                 selectOnBlur={false}
+                autoComplete={autoComplete}
             />
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>

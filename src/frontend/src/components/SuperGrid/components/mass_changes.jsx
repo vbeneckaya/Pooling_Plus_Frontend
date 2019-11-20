@@ -19,6 +19,7 @@ const MassChanges = ({gridName, load}) => {
 
     useEffect(
         () => {
+            setValue(null);
             setColumn({
                 name: field,
                 type: fieldParams ? fieldParams.type : TEXT_TYPE,
@@ -65,7 +66,7 @@ const MassChanges = ({gridName, load}) => {
                         </Grid.Column>
                         <Grid.Column className="grid-mass-updates-fields">
                             <FormField
-                                column={column}
+                                {...column}
                                 value={changValue}
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
