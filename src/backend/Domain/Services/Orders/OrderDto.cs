@@ -143,7 +143,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IsReadOnly]
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IsReadOnly]
         public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -173,7 +173,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(ShippingWarehouses))]
         public string ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.DateTime), IsReadOnly]
+        [FieldType(FieldType.LocalDateTime), IsReadOnly]
         public DateTime? OrderChangeDate { get; set; }
 
         [FieldType(FieldType.Boolean), AllowBulkUpdate]

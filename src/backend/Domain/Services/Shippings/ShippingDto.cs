@@ -130,7 +130,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByCarrier { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(6), IsReadOnly]
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(6), IsReadOnly]
         public DateTime? ShippingCreationDate { get; set; }
         
         /*end of fields*/
