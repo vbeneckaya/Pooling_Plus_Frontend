@@ -144,8 +144,8 @@ namespace Application.Services.Tariffs
                 .FirstOrDefault();
 
             var hasDuplicates = existingRecord != null
-                && expirationDate < existingRecord.EffectiveDate && effectiveDate < existingRecord.EffectiveDate
-                || effectiveDate > existingRecord.ExpirationDate && expirationDate > existingRecord.ExpirationDate;
+                && (expirationDate < existingRecord.EffectiveDate && effectiveDate < existingRecord.EffectiveDate
+                || effectiveDate > existingRecord.ExpirationDate && expirationDate > existingRecord.ExpirationDate);
 
             if (hasDuplicates)
             {
