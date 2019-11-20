@@ -29,7 +29,6 @@ const getTypeFacet = {
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
     [TIME_TYPE]: <Text type="time" />,
-    [GROUP_TYPE]: <Text />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
     [BOOLEAN_TYPE]: <Bool />,
@@ -42,7 +41,7 @@ const FormField = props => {
     let params = {
         ...props,
         ...props.column,
-        type: props.typeValue
+        type: props.typeValue,
     };
 
     if (props.type === SELECT_TYPE || (props.column && props.column.type === SELECT_TYPE)) {
@@ -63,19 +62,43 @@ const FormField = props => {
         params = {
             ...params,
             isDisabled: true,
-            value: null
+            value: null,
         };
     }
 
-    return React.cloneElement(
-        getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE/>,
-        params,
-    );
+    switch (props.type || (props.column && props.column.type)) {
+        case TEXT_TYPE:
+            return <Text {...params} />;
+        case STATE_TYPE:
+            return <State {...params} />;
+        case DATE_TYPE:
+            return <Date {...params} />;
+        case DATE_TIME_TYPE:
+            return <DateTime {...params} />;
+        case TIME_TYPE:
+            return <Text type="time" {...params} />;
+        case SELECT_TYPE:
+            return <Select {...params} />;
+        case NUMBER_TYPE:
+            return <Text {...params} />;
+        case BOOLEAN_TYPE:
+            return <Bool {...params} />;
+        case ENUM_TYPE:
+            return <Select isTranslate {...params} />;
+        case BIG_TEXT_TYPE:
+            return <TextArea {...params} />;
+        case CHECKBOX_TYPE:
+            return <CheckBox {...params} />;
+        default:
+            return <Text {...params} />
+    }
 };
 
 export default React.memo(FormField, (prevProps, nextProps) => {
-    return prevProps.value === nextProps.value &&
+    return (
+        prevProps.value === nextProps.value &&
         prevProps.type === nextProps.type &&
         prevProps.isDisabled === nextProps.isDisabled &&
-        prevProps.error === nextProps.error;
+        prevProps.error === nextProps.error
+    );
 });
