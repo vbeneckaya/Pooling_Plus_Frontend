@@ -138,7 +138,7 @@ const Card = props => {
     };
 
     const handleSave = () => {
-        if (name === ORDERS_GRID) {
+        if (name === ORDERS_GRID && !form.id) {
             handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
