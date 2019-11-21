@@ -18,13 +18,19 @@ import {
 import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
 import FormField from '../../components/BaseComponents';
 
+const initialState = {
+    modalOpen: false,
+    form: {},
+    confirmation: {open: false},
+    notChangeForm: true
+};
+
 class UserCard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            modalOpen: false,
-            confirmation: { open: false },
+            ...initialState,
             form: {
                 login: null,
                 userName: null,
@@ -68,45 +74,37 @@ class UserCard extends Component {
     };
 
     handleClose = () => {
-        const { form } = this.state;
-        const { user, t } = this.props;
-        let counter = 0;
-
-        Object.keys(form).forEach(key => {
-            if (form[key] !== user[key]) {
-                this.setState({
-                    confirmation: {
-                        open: true,
-                        content: t('confirm_close_dictionary'),
-                        onConfirm: this.confirmClose,
-                        onCancel: () => {
-                            this.setState({
-                                confirmation: { open: false },
-                            });
-                        },
+        const {notChangeForm} = this.state;
+        const {t} = this.props;
+        console.log('!!!', notChangeForm);
+        if (notChangeForm) {
+            this.confirmClose()
+        } else {
+            this.setState({
+                confirmation: {
+                    open: true,
+                    content: t('confirm_close_dictionary'),
+                    onCancel: () => {
+                        this.setState({
+                            confirmation: {open: false}
+                        })
                     },
-                });
-                counter++;
-            }
-        });
-
-        if (!counter) {
-            this.confirmClose();
+                    onConfirm: this.confirmClose
+                }
+            })
         }
     };
 
     confirmClose = () => {
         const { loadList, clear } = this.props;
-
-        this.setState({ modalOpen: false });
-
-        this.setState({ form: {} });
+        this.setState({...initialState});
         clear();
         loadList(false, true);
     };
 
     handleChange = (event, { name, value }) => {
         this.setState(prevState => ({
+            notChangeForm: false,
             form: {
                 ...prevState.form,
                 [name]: value,

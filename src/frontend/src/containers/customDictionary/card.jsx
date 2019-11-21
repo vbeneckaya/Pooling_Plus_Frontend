@@ -59,6 +59,7 @@ class Card extends Component {
 
     onClose = () => {
         const {notChangeForm} = this.state;
+        const {t} = this.props;
 
         if (notChangeForm) {
             this.confirmClose()
@@ -66,7 +67,7 @@ class Card extends Component {
             this.setState({
                 confirmation: {
                     open: true,
-                    content: 'Закрыть форму без сохранения изменений?',
+                    content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
                             confirmation: {open: false}
