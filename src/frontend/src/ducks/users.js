@@ -3,6 +3,7 @@ import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import users from '../mocks/users';
 import {toast} from 'react-toastify';
+import {errorMapping} from "../utils/errorMapping";
 
 const TYPE_API = 'users';
 
@@ -142,7 +143,7 @@ export const usersListSelector = createSelector(stateSelector, state => state.li
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const userCardSelector = createSelector(stateSelector, state => state.card);
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 //*  SAGA  *//
 

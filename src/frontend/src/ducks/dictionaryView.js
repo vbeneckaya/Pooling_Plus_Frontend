@@ -3,6 +3,7 @@ import {downloader, postman} from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
+import {errorMapping} from "../utils/errorMapping";
 
 //*  TYPES  *//
 
@@ -191,7 +192,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const listSelector = createSelector(stateSelector, state => state.list);
 export const cardSelector = createSelector(stateSelector, state => state.card);
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],

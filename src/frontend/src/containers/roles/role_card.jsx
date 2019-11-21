@@ -157,7 +157,7 @@ class RoleCard extends Component {
                             value={name}
                             type={TEXT_TYPE}
                             isRequired
-                            error={error && (error.find(item => item.name === 'name') || {}).message}
+                            error={error['name']}
                             onChange={this.handleChange}
                         />
                         {/*<Form.Field>

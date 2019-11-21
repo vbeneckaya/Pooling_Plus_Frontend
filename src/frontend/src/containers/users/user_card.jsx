@@ -169,11 +169,7 @@ class UserCard extends Component {
                                         name="email"
                                         value={email}
                                         isRequired
-                                        error={
-                                            error &&
-                                            (error.find(item => item.name === 'email') || {})
-                                                .message
-                                        }
+                                        error={error['email']}
                                         onChange={this.handleChange}
                                     />
                                     <FormField
@@ -181,11 +177,7 @@ class UserCard extends Component {
                                         value={userName}
                                         type={TEXT_TYPE}
                                         isRequired
-                                        error={
-                                            error &&
-                                            (error.find(item => item.name === 'userName') || {})
-                                                .message
-                                        }
+                                        error={error['userName']}
                                         onChange={this.handleChange}
                                     />
                                     <FormField
@@ -194,11 +186,7 @@ class UserCard extends Component {
                                         isRequired={!user.id}
                                         value={password}
                                         type={TEXT_TYPE}
-                                        error={
-                                            error &&
-                                            (error.find(item => item.name === 'password') || {})
-                                                .message
-                                        }
+                                        error={error['password']}
                                         autoComplete="new-password"
                                         onChange={this.handleChange}
                                     />
@@ -211,11 +199,7 @@ class UserCard extends Component {
                                         value={roleId}
                                         source="roles"
                                         isRequired
-                                        error={
-                                            error &&
-                                            (error.find(item => item.name === 'roleId') || {})
-                                                .message
-                                        }
+                                        error={error['roleId']}
                                         type={SELECT_TYPE}
                                         onChange={this.handleRoleChange}
                                     />
@@ -226,11 +210,7 @@ class UserCard extends Component {
                                         name="carrierId"
                                         value={carrierId}
                                         source="transportCompanies"
-                                        error={
-                                            error &&
-                                            (error.find(item => item.name === 'carrierId') || {})
-                                                .message
-                                        }
+                                        error={error['carrierId']}
                                         type={SELECT_TYPE}
                                         onChange={this.handleChange}
                                     />

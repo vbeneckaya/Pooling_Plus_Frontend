@@ -131,13 +131,12 @@ class Card extends Component {
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
                             {columns.map(column => {
-                                const err = error && error.find(error => error.name === column.name);
                                 return (
                                     <FormField
                                         column={column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err && err.message}
+                                        error={error[column.name]}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />
