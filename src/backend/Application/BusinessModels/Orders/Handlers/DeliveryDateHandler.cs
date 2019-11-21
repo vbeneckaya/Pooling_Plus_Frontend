@@ -49,7 +49,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 setter.UpdateField(o => o.ManualDeliveryDate, true, ignoreChanges: true);
             }
             
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
             setter.SaveHistoryLog();
         }
 

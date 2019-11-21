@@ -59,7 +59,7 @@ namespace Application.Services.BodyTypes
 
             if (hasDuplicates)
             {
-                result.AddError("duplicatedBodyType", "bodyType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "bodyType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

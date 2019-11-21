@@ -1,6 +1,7 @@
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
+using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
@@ -88,6 +89,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
+            services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
             services.AddScoped<IFilesService, FilesService>();
@@ -101,6 +103,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+
+            services.AddScoped<ICleanAddressService, CleanAddressService>();
 
             /*end of add service implementation*/
 
@@ -136,6 +140,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
+            services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)

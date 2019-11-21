@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Grid, Segment } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
+import {Button, Form, Grid, Icon, Segment} from 'semantic-ui-react';
+import {useSelector, useDispatch} from 'react-redux';
 import { valuesListSelector } from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {
@@ -11,40 +11,31 @@ import {
     SELECT_TYPE,
     TEXT_TYPE,
 } from '../../../constants/columnTypes';
+import {addError} from "../../../ducks/gridCard";
 
-const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck, settings }) => {
+const Information = ({form, onChange, isNotUniqueNumber, uniquenessNumberCheck, settings, error}) => {
     const { t } = useTranslation();
-    let [error, setError] = useState(false);
+    const dispatch = useDispatch();
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        const item = valuesList.find(item => item.value === value) || {};
-        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+    const handleChangeSoldTo = (e, {name, value, ext}) => {
+        onChange(e, {
+            name,
+            value,
+        });
+        onChange(e, {name: 'clientName', value: ext.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: ext.address});
     };
 
-    /*useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
-
-    useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'deliveryAddress', value: item.address });
-        },
-        [form.clientName],
-    );*/
 
     useEffect(
         () => {
             if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
-                setError(true);
-            } else {
-                setError(false);
+                dispatch(addError({
+                    name: 'soldTo',
+                    message: t('soldTo_error')
+                }))
             }
         },
         [valuesList, form.soldTo],
@@ -127,11 +118,15 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                                 value={form['soldTo']}
                                                 type={SELECT_TYPE}
                                                 settings={settings['soldTo']}
+                                                error={error['soldTo']}
                                                 textValue={error && form['soldTo']}
-                                                error={error && t('soldTo_error')}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
-                                            />
+                                            >
+                                                {/* <Button icon>
+                                                <Icon name='world' />
+                                            </Button>*/}
+                                            </FormField>
                                         </Grid.Column>
                                         <Grid.Column>
                                             <Form.Field>

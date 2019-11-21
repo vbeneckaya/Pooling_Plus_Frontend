@@ -24,6 +24,8 @@ const Select = ({
     textValue,
     noLabel,
                     isRequired,
+                    autoComplete,
+                    children,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -40,7 +42,7 @@ const Select = ({
     const valuesList = useSelector(state => valuesListSelector(state, source)) || [];
 
     const handleChange = (e, { value }) => {
-        onChange(e, { value, name });
+        onChange(e, {value, name, ext: valuesList.find(x => x.value === value)});
     };
 
     let items =
@@ -48,7 +50,7 @@ const Select = ({
         valuesList.map((x, index) => ({
             key: `${x.value}_${index}`,
             value: x.value,
-            text: isTranslate ? t(x.name) : x.name
+            text: isTranslate ? t(x.name) : x.name,
         }));
 
     console.log('select');
@@ -56,26 +58,30 @@ const Select = ({
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
                     }`}</label>
             ) : null}
-            <Dropdown
-                placeholder={placeholder}
-                fluid
-                clearable={clearable}
-                selection
-                loading={loading}
-                search
-                text={textValue}
-                error={error}
-                multiple={multiple}
-                disabled={isDisabled}
-                value={value}
-                options={items}
-                onChange={handleChange}
-                selectOnBlur={false}
-            />
+            <div>
+                <Dropdown
+                    placeholder={placeholder}
+                    fluid
+                    clearable={clearable}
+                    selection
+                    loading={loading}
+                    search
+                    text={textValue}
+                    error={error}
+                    multiple={multiple}
+                    disabled={isDisabled}
+                    value={value}
+                    options={items}
+                    onChange={handleChange}
+                    selectOnBlur={false}
+                    autoComplete={autoComplete}
+                />
+                {children && children}
+            </div>
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );

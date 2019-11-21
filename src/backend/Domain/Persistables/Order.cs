@@ -270,5 +270,10 @@ namespace Domain.Persistables
         /// Источник данных в заказе (список инжекций)
         /// </summary>
         public string Source { get; set; }
+
+        /// <summary>
+        /// Особенности комплектации
+        /// </summary>
+        public string PickingFeatures { get; set; }
     }
 }

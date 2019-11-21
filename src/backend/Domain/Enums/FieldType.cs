@@ -13,5 +13,6 @@ namespace Domain.Enums
         Date,
         Time,
         Link,
+        LocalDateTime
     }
 }
