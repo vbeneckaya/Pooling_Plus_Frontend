@@ -81,6 +81,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();
