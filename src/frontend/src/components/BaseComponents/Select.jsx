@@ -77,7 +77,19 @@ const Select = ({
                 onChange={handleChange}
                 selectOnBlur={false}
                 autoComplete={autoComplete}
-            />
+            >
+                {/* <Dropdown.Menu>
+                    {items.map(item => (
+                        <Dropdown.Item
+                            key={item.key}
+                            selected={item.value === value}
+                            onClick={e => handleChange(e, { name, value: item.value })}
+                        >
+                            {item.text}
+                        </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>*/}
+            </Dropdown>
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );
