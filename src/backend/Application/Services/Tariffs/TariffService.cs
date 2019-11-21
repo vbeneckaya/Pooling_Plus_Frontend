@@ -36,6 +36,7 @@ namespace Application.Services.Tariffs
             entity.TarifficationType = dto.TarifficationType.Parse<TarifficationType>();
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
+            entity.BodyTypeId = dto.BodyTypeId.ToGuid();
             entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
 
             if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
@@ -165,6 +166,7 @@ namespace Application.Services.Tariffs
                 TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
                 CarrierId = entity.CarrierId?.ToString(),
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
+                BodyTypeId = entity.BodyTypeId?.ToString(),
                 StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
                 EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
                 WinterAllowance = entity.WinterAllowance.HasValue ? 

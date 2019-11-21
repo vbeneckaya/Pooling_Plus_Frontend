@@ -24,6 +24,9 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
         public string VehicleTypeId { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(BodyTypes)), OrderNumber(4)]
+        public string BodyTypeId { get; set; }
+
         [FieldType(FieldType.Date), OrderNumber(6)]
         public string StartWinterPeriod { get; set; }
 

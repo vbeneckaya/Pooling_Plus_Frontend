@@ -36,6 +36,11 @@ namespace Domain.Persistables
         public Guid? VehicleTypeId { get; set; }
 
         /// <summary>
+        /// Тип Кузова
+        /// </summary>
+        public Guid? BodyTypeId { get; set; }
+
+        /// <summary>
         /// Начало зимнего периода
         /// </summary>
         public DateTime? StartWinterPeriod { get; set; }
