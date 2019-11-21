@@ -22,14 +22,14 @@ namespace Application.BusinessModels.Articles.Handlers
 
         public void AfterChange(Article entity, string oldValue, string newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping, 
+                                        OrderState.Shipped, OrderState.Delivered };
             var itemsToUpdate = _dataService.GetDbSet<OrderItem>()
                                             .Include(x => x.Order)
                                             .Where(x => x.Nart == entity.Nart
                                                         && x.Order != null
                                                         && x.Spgr != newValue
-                                                        && validStatuses.Contains(x.Order.Status)
-                                                        && (x.Order.ShippingId == null || x.Order.OrderShippingStatus == ShippingState.ShippingCreated))
+                                                        && validStatuses.Contains(x.Order.Status))
                                             .ToList();
             foreach (var orderItem in itemsToUpdate)
             {
