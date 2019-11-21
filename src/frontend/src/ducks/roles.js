@@ -107,7 +107,7 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_ERROR:
             return {
                 ...state,
-                error: state.error.filter(item => item.name !== payload),
+                error: state.error && state.error.filter(item => item.name !== payload),
             };
         case GET_ALL_PERMISSIONS_SUCCESS:
             return {

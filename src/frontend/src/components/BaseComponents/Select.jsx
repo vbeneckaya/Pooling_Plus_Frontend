@@ -62,7 +62,7 @@ const Select = ({
                     isRequired ? ' *' : ''
                     }`}</label>
             ) : null}
-            <div>
+            <div className="form-select">
                 <Dropdown
                     placeholder={placeholder}
                     fluid

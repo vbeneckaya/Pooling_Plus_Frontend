@@ -93,7 +93,7 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_ERROR:
             return {
                 ...state,
-                error: state.error.filter(item => item.name !== payload),
+                error: state.error && state.error.filter(item => item.name !== payload),
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {

@@ -19,18 +19,38 @@ const initialState = {
 };
 
 class Card extends Component {
-    state = {
-        ...initialState,
-    };
+    constructor(props = {}) {
+        console.log('props.defaultForm', props.defaultForm);
+        super(props);
+
+        this.state = {
+            ...initialState,
+            form: {
+                ...props.defaultForm
+            }
+        }
+    }
 
     componentDidUpdate(prevProps) {
+        console.log('this.props.defaultForm', this.props.defaultForm);
+
+        if (this.props.defaultForm !== prevProps.defaultForm) {
+            this.setState(prevState => ({
+                form: {
+                    ...prevState.form,
+                    ...this.props.defaultForm
+                }
+            }))
+        }
+
         if (prevProps.card !== this.props.card) {
 
-            this.setState({
+            this.setState(prevProps => ({
                 form: {
+                    ...prevProps.form,
                     ...this.props.card,
                 },
-            });
+            }));
         }
     }
 
@@ -54,7 +74,7 @@ class Card extends Component {
             ...initialState,
         });
         clearCard();
-        loadList(false, true);
+        loadList && loadList(false, true);
     };
 
     onClose = () => {
@@ -120,6 +140,7 @@ class Card extends Component {
                 dimmer="blurring"
                 trigger={children}
                 open={modalOpen}
+                closeOnDimmerClick={false}
                 onOpen={this.onOpen}
                 onClose={this.onClose}
                 closeIcon

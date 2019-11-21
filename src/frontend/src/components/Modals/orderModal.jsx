@@ -22,9 +22,7 @@ const OrderModal = ({
                         error,
 }) => {
     const { t } = useTranslation();
-    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
-        item => item.code,
-    );
+    const userPermissions = useSelector(state => userPermissionsSelector(state));
 
     const getPanes = [
         {
@@ -35,6 +33,7 @@ const OrderModal = ({
                         form={form}
                         settings={settings}
                         error={error}
+                        load={load}
                         isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
