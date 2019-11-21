@@ -16,6 +16,7 @@ const Text = ({
     datalist: valuesList = [],
     placeholder,
                   isRequired,
+                  autoComplete,
 }) => {
     const { t } = useTranslation();
 
@@ -37,8 +38,11 @@ const Text = ({
                 error={error}
                 onChange={onChange}
                 onBlur={onBlur}
+                autoComplete={autoComplete}
             />
-            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
+            {error && typeof error === 'string' ? (
+                <span className="label-error">{error}</span>
+            ) : null}
             {valuesList && valuesList.length ? (
                 <datalist id={name}>
                     {valuesList.map(item => (

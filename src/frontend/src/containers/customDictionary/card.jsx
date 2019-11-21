@@ -14,13 +14,13 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
+    confirmation: {open: false},
+    notChangeForm: true
 };
 
 class Card extends Component {
     state = {
         ...initialState,
-        confirmation: {open: false},
-        notChangeForm: true
     };
 
     componentDidUpdate(prevProps) {
@@ -59,6 +59,7 @@ class Card extends Component {
 
     onClose = () => {
         const {notChangeForm} = this.state;
+        const {t} = this.props;
 
         if (notChangeForm) {
             this.confirmClose()
@@ -66,7 +67,7 @@ class Card extends Component {
             this.setState({
                 confirmation: {
                     open: true,
-                    content: 'Закрыть форму без сохранения изменений?',
+                    content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
                             confirmation: {open: false}
@@ -117,7 +118,6 @@ class Card extends Component {
         return (
             <Modal
                 dimmer="blurring"
-                className="card-modal"
                 trigger={children}
                 open={modalOpen}
                 onOpen={this.onOpen}
@@ -132,13 +132,12 @@ class Card extends Component {
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
                             {columns.map(column => {
-                                const err = error && error.find(error => error.name === column.name);
                                 return (
                                     <FormField
-                                        column={column}
+                                        {...column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err && err.message}
+                                        error={error[column.name]}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />

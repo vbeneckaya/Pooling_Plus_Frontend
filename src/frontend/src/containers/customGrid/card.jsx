@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
-    cardSelector, clearGridCard,
-    editCardRequest, errorSelector,
+    cardSelector,
+    clearGridCard,
+    editCardRequest,
+    errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
@@ -99,30 +101,25 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
-        if (name === 'soldTo') {
-            setForm(prevState => ({
-                ...prevState,
-                [name]: value,
-                clientName,
-                deliveryAddress
-            }))
-        } else {
-            setForm(prevState => ({
-                ...prevState,
-                [name]: value
-            }));
-        }
-
-        if (
-            notChangeForm &&
-            value !== undefined &&
-            Object.keys(form).length &&
-            value !== card[name]
-        ) {
-            setNotChangeForm(false);
-        }
+    const onChangeForm = (e, {name, value}) => {
+        setForm(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
     };
+
+    useEffect(
+        () => {
+            if (notChangeForm) {
+                Object.keys(form).forEach(key => {
+                    if (form[key] !== card[key]) {
+                        setNotChangeForm(false);
+                    }
+                });
+            }
+        },
+        [form],
+    );
 
     const saveOrEditForm = () => {
         dispatch(
@@ -141,7 +138,7 @@ const Card = props => {
     };
 
     const handleSave = () => {
-        if (name === ORDERS_GRID) {
+        if (name === ORDERS_GRID && !form.id) {
             handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
@@ -186,14 +183,9 @@ const Card = props => {
         dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
-                callbackSuccess: number => {
-                    if (number && number !== card.orderNumber) {
-                        setIsNotUnqueNumber(true);
-                    } else {
-                        setIsNotUnqueNumber(false);
-                        callbackFunc && callbackFunc();
-                    }
-                },
+                fieldName: 'orderNumber',
+                errorText: t('number_already_exists'),
+                callbackSuccess: callbackFunc
             }),
         );
     };
@@ -225,32 +217,31 @@ const Card = props => {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <Modal.Description>
-                    {
-                        name === ORDERS_GRID
-                        ?
-                            <OrderModal
-                                {...props}
-                                form={form}
-                                load={loadCard}
-                                settings={settings}
-                                uniquenessNumberCheck={handleUniquenessCheck}
-                                isNotUniqueNumber={isNotUniqueNumber}
-                                error={error}
-                                onClose={onClose}
-                                onChangeForm={onChangeForm}
-                            />
-                            : <ShippingModal
-                                {...props}
-                                form={form}
-                                load={loadCard}
-                                settings={settings}
-                                uniquenessNumberCheck={handleUniquenessCheck}
-                                isNotUniqueNumber={isNotUniqueNumber}
-                                error={error}
-                                onClose={onClose}
-                                onChangeForm={onChangeForm}
-                            />
-                    }
+                    {name === ORDERS_GRID ? (
+                        <OrderModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    ) : (
+                        <ShippingModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    )}
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">

@@ -202,6 +202,11 @@ body {
     .field input[type='text'] {
         width: 100% !important;
     }
+
+    .dropdown {
+        position: fixed !important;
+        width: calc(33.3% - 45px) !important;
+    }
 }
 
 .tabs-card {
@@ -338,4 +343,8 @@ input::-webkit-calendar-picker-indicator {
 .ui.form .disabled.field, .ui.form .disabled.fields .field, .ui.form .field :disabled {
     opacity: .8!important;
     background: rgba(1, 1, 1, .05);
+}
+
+.table-action-buttons {
+    white-space: nowrap;
 }

@@ -27,6 +27,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 if (soldToWarehouse != null)
                 {
                     setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
+                    setter.UpdateField(o => o.PickingFeatures, soldToWarehouse.PickingFeatures);
 
                     if (soldToWarehouse.PickingTypeId.HasValue)
                         setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
@@ -45,7 +46,7 @@ namespace Application.BusinessModels.Orders.Handlers
             }
 
             setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+            setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
 
             setter.SaveHistoryLog();
         }

@@ -1,22 +1,25 @@
+using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
+using System;
 
 namespace Domain.Services.Orders
 {
     public class OrderDto : IDto
     {
+        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly, IsRequired]
         public string OrderNumber { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsRequired]
         public string ClientOrderNumber { get; set; }
 
-        [FieldType(FieldType.Date)]
+        [FieldType(FieldType.Date), IsRequired]
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
@@ -28,7 +31,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsDefault, OrderNumber(5)]
         public string ClientName { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true)]
+        [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
         public string SoldTo { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -142,8 +145,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IsReadOnly]
-        public string OrderCreationDate { get; set; }
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IsReadOnly]
+        public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? WaybillTorg12 { get; set; }
@@ -169,11 +172,11 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses))]
+        [FieldType(FieldType.Select, source: "ShippingWarehousesForOrderCreation")]
         public string ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.DateTime), IsReadOnly]
-        public string OrderChangeDate { get; set; }
+        [FieldType(FieldType.LocalDateTime), IsReadOnly]
+        public DateTime? OrderChangeDate { get; set; }
 
         [FieldType(FieldType.Boolean), AllowBulkUpdate]
         public bool? OrderConfirmed { get; set; }
@@ -181,7 +184,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? DocumentReturnStatus { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
 
         public string Source { get; set; }

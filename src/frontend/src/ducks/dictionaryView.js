@@ -3,6 +3,7 @@ import {downloader, postman} from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
+import {errorMapping} from "../utils/errorMapping";
 
 //*  TYPES  *//
 
@@ -28,6 +29,7 @@ const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
 const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
+const CLEAR_ERROR = 'CLEAR_ERROR';
 
 //*  INITIAL STATE  *//
 
@@ -87,6 +89,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 card: {},
                 error: null
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error.filter(item => item.name !== payload),
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -176,6 +183,13 @@ export const exportToExcelRequest = payload => {
     };
 };
 
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.dictionaryView;
@@ -191,7 +205,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const listSelector = createSelector(stateSelector, state => state.list);
 export const cardSelector = createSelector(stateSelector, state => state.card);
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
@@ -268,7 +282,7 @@ function* saveDictionaryCardSaga({ payload }) {
     } catch (e) {
         yield put({
             type: SAVE_DICTIONARY_CARD_ERROR,
-            payload: e,
+            payload: null,
         });
     }
 }
