@@ -10,6 +10,7 @@ using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Serilog;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -154,11 +155,11 @@ namespace Application.Services.Tariffs
 
         private bool IsPeriodsOverlapped(Tariff tariff, TariffDto dto)
         {
-            var expirationDate = dto.ExpirationDate.ToDateTime();
-            var effectiveDate = dto.EffectiveDate.ToDateTime();
+            var expirationDate = dto.ExpirationDate.ToDate().GetValueOrDefault(DateTime.MaxValue);
+            var effectiveDate = dto.EffectiveDate.ToDate().GetValueOrDefault(DateTime.MinValue);
 
-            return expirationDate < tariff.EffectiveDate && effectiveDate < tariff.EffectiveDate
-                || effectiveDate > tariff.ExpirationDate && expirationDate > tariff.ExpirationDate;
+            return !(expirationDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue) && effectiveDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue)
+                || effectiveDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue) && expirationDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue));
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
@@ -283,28 +284,27 @@ namespace Application.Services.Tariffs
                 );
         }
 
-        public override Tariff FindByKey(TariffDto dto, bool isImport = false)
+        public Tariff FindByKeyExt(TariffDto dto)
         {
-            if (!isImport) return this.GetByKey(dto).FirstOrDefault();
-
             var effectiveDate = dto.EffectiveDate.ToDate();
             var expirationDate = dto.ExpirationDate.ToDate();
 
-            var entity = this.GetByKey(dto)
+            return this.GetByKey(dto)
                 .Where(i => i.EffectiveDate == effectiveDate)
                 .Where(i => i.ExpirationDate == expirationDate)
                 .FirstOrDefault();
+        }
 
-            if (entity != null) return entity;
+        private bool HasDatesOverlapped(TariffDto dto)
+        {
+            var list = this.GetByKey(dto).Where(i => IsPeriodsOverlapped(i, dto)).ToList();
 
-            var overlapped = this.GetByKey(dto).Any(i => !IsPeriodsOverlapped(i, dto));
+            return this.GetByKey(dto).Any(i => IsPeriodsOverlapped(i, dto));
+        }
 
-            if (overlapped)
-            {
-                return null;
-            }
-
-            return this.GetByKey(dto).FirstOrDefault();
+        public override Tariff FindByKey(TariffDto dto)
+        {
+            return GetByKey(dto).FirstOrDefault();
         }
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)
@@ -316,6 +316,72 @@ namespace Application.Services.Tariffs
                         && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);
+        }
+
+        protected override ValidateResult SaveOrCreateInner(TariffDto entityFrom, bool isImport)
+        {
+            var lang = this._userProvider.GetCurrentUser().Language;
+
+            var dbSet = _dataService.GetDbSet<Tariff>();
+
+            Tariff entityFromDb = null;
+
+            if (!isImport)
+            {
+                entityFromDb = FindByKey(entityFrom);
+            }
+            else 
+            {
+                entityFromDb = FindByKeyExt(entityFrom);
+
+                if (entityFromDb == null)
+                {
+                    if (HasDatesOverlapped(entityFrom))
+                        return new DetailedValidattionResult("duplicated", "tariffs.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                }
+            }
+
+            // Rest of SaveOrCreateInner logic
+
+            var isNew = entityFromDb == null;
+
+            if (isNew)
+            {
+                entityFromDb = new Tariff
+                {
+                    Id = Guid.NewGuid()
+                };
+            }
+            else if (isImport)
+            {
+                entityFrom.Id = entityFromDb.Id.ToString();
+            }
+
+            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
+
+            if (!result.IsError)
+            {
+                if (isNew)
+                {
+                    dbSet.Add(entityFromDb);
+                    result.ResultType = ValidateResultType.Created;
+                }
+                else
+                {
+                    dbSet.Update(entityFromDb);
+                    result.ResultType = ValidateResultType.Updated;
+                }
+
+                _dataService.SaveChanges();
+
+                Log.Information($"«апись {entityFromDb.Id} в справочнике {typeof(Tariff)} {(isNew ? "создана" : "обновлена")}.");
+            }
+            else
+            {
+                Log.Information($"Ќе удалось сохранить запись в справочник {typeof(Tariff)}: {result.Error}.");
+            }
+
+            return result;
         }
     }
 }

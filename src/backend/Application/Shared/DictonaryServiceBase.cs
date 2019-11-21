@@ -53,7 +53,7 @@ namespace Application.Shared
             return new List<LookUpDto>();
         }
 
-        public virtual TEntity FindByKey(TListDto dto, bool isImport = false)
+        public virtual TEntity FindByKey(TListDto dto)
         {
             return FindById(dto);
         }
@@ -236,7 +236,7 @@ namespace Application.Shared
             }
         }
 
-        protected ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        protected virtual ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
@@ -244,7 +244,7 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entityFromDb = isImport ? FindByKey(entityFrom, isImport) : FindById(entityFrom);
+            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
             var isNew = entityFromDb == null;
             Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();

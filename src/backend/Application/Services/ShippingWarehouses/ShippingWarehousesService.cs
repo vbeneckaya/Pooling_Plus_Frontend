@@ -44,7 +44,7 @@ namespace Application.Services.ShippingWarehouses
             }
         }
 
-        public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto, bool isImport = false)
+        public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
             return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
         }
