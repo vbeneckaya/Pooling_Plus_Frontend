@@ -1,3 +1,4 @@
+using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 using System;
@@ -6,6 +7,7 @@ namespace Domain.Services.Orders
 {
     public class OrderDto : IDto
     {
+        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
@@ -182,7 +184,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Boolean)]
         public bool? DocumentReturnStatus { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
 
         public string Source { get; set; }

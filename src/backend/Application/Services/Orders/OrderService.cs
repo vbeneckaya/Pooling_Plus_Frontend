@@ -2,6 +2,8 @@ using Application.BusinessModels.Orders.Handlers;
 using Application.BusinessModels.Shared.Actions;
 using Application.Extensions;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using AutoMapper;
 using DAL.Services;
 using Domain.Enums;
@@ -259,11 +261,6 @@ namespace Application.Services.Orders
             }
 
             var dto = _mapper.Map<OrderDto>(entity);
-            var warehouse = _dataService.GetDbSet<Warehouse>()
-                .Where(i => i.SoldToNumber == dto.SoldTo)
-                .FirstOrDefault();
-
-            dto.PickingFeatures = warehouse?.PickingFeatures;
 
             return dto;
         }
@@ -494,6 +491,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ShippingId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingId, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Order>(i => i.ShippingNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingStatus.ApplyEnumFilter<Order, VehicleState>(i => i.ShippingStatus, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingWarehouseId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingWarehouseId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.SoldTo.ApplyOptionsFilter<Order, string>(i => i.SoldTo, ref parameters))
                          .WhereAnd(searchForm.Filter.Status.ApplyEnumFilter<Order, OrderState>(i => i.Status, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Order>(i => i.TemperatureMax, ref parameters))
@@ -508,7 +506,8 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.DocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.DocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualDocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.ActualDocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
-                         .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters));
+                         .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
+                         .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters));
 
             string sql = $@"SELECT * FROM ""Orders"" {where}";
             query = query.FromSql(sql, parameters.ToArray());
@@ -628,6 +627,24 @@ namespace Application.Services.Orders
                 || columns.Contains("shippingStatus") && vehicleStates.Contains(i.ShippingStatus)
                 || columns.Contains("status") && orderStates.Contains(i.Status)
                 );
+        }
+
+        protected override ExcelMapper<OrderFormDto> CreateExcelMapper()
+        {
+            return base.CreateExcelMapper()
+                .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById)); ;
+        }
+
+        private Guid? GetShippingWarehouseIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetShippingWarehouseNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Find(id);
+            return entry?.WarehouseName;
         }
     }
 }
