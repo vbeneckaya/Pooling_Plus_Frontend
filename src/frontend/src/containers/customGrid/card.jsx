@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
-    cardSelector, clearGridCard,
-    editCardRequest, errorSelector,
+    cardSelector,
+    clearGridCard,
+    editCardRequest,
+    errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
@@ -100,35 +102,24 @@ const Card = props => {
     };
 
     const onChangeForm = (e, {name, value}) => {
-            setForm(prevState => ({
-                ...prevState,
-                [name]: value
-            }));
-
-        console.log('___', notChangeForm,
-            value !== undefined,
-            Object.keys(form).length,
-            value !== card[name], value);
-
-        if (
-            notChangeForm &&
-            value !== undefined &&
-            Object.keys(form).length &&
-            value !== card[name]
-        ) {
-            setNotChangeForm(false);
-        }
+        setForm(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
     };
 
-    useEffect(() => {
-        if (notChangeForm) {
-            Object.keys(form).forEach(key => {
-                if (form[key] !== card[key]) {
-                    setNotChangeForm(false);
-                }
-            })
-        }
-    }, [form]);
+    useEffect(
+        () => {
+            if (notChangeForm) {
+                Object.keys(form).forEach(key => {
+                    if (form[key] !== card[key]) {
+                        setNotChangeForm(false);
+                    }
+                });
+            }
+        },
+        [form],
+    );
 
     const saveOrEditForm = () => {
         dispatch(
@@ -231,32 +222,31 @@ const Card = props => {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <Modal.Description>
-                    {
-                        name === ORDERS_GRID
-                        ?
-                            <OrderModal
-                                {...props}
-                                form={form}
-                                load={loadCard}
-                                settings={settings}
-                                uniquenessNumberCheck={handleUniquenessCheck}
-                                isNotUniqueNumber={isNotUniqueNumber}
-                                error={error}
-                                onClose={onClose}
-                                onChangeForm={onChangeForm}
-                            />
-                            : <ShippingModal
-                                {...props}
-                                form={form}
-                                load={loadCard}
-                                settings={settings}
-                                uniquenessNumberCheck={handleUniquenessCheck}
-                                isNotUniqueNumber={isNotUniqueNumber}
-                                error={error}
-                                onClose={onClose}
-                                onChangeForm={onChangeForm}
-                            />
-                    }
+                    {name === ORDERS_GRID ? (
+                        <OrderModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    ) : (
+                        <ShippingModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    )}
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">

@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.PickingTypes;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
@@ -16,6 +17,12 @@ namespace Application.Services.PickingTypes
 
         public override ValidateResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             
@@ -23,6 +30,29 @@ namespace Application.Services.PickingTypes
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
+        }
+
+        private ValidateResult ValidateDto(PickingTypeDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.Name))
+            {
+                result.AddError(nameof(dto.Name), "pickingType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<PickingType>()
+                                            .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
+                                            .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.Name), "pickingType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override PickingTypeDto MapFromEntityToDto(PickingType entity)

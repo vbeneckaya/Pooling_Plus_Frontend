@@ -18,14 +18,13 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        const item = valuesList.find(item => item.value === value) || {};
+    const handleChangeSoldTo = (e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
         });
-        onChange(e, {name: 'clientName', value: item.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: item.address});
+        onChange(e, {name: 'clientName', value: ext.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: ext.address});
     };
 
 

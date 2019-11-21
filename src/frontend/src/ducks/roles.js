@@ -3,6 +3,7 @@ import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import roles from '../mocks/roles';
 import {toast} from 'react-toastify';
+import {errorMapping} from "../utils/errorMapping";
 
 const TYPE_API = 'roles';
 
@@ -197,7 +198,7 @@ export const rolesFromUserSelector = createSelector(stateSelector, state => {
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const roleCardSelector = createSelector(stateSelector, state => state.card);
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 export const allActionsSelector = createSelector(stateSelector, state => state.actions);

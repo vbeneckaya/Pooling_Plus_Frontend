@@ -72,7 +72,7 @@ const MassChanges = ({gridName, load}) => {
                             />
                             <Button
                                 icon
-                                disabled={!changValue}
+                                disabled={changValue === null || changValue === undefined}
                                 className="grid-mass-updates-save"
                                 loading={progress}
                                 onClick={handleSave}

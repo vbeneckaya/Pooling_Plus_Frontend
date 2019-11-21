@@ -103,6 +103,7 @@ export default React.memo(FormField, (prevProps, nextProps) => {
     return (
         prevProps.value === nextProps.value &&
         prevProps.type === nextProps.type &&
+        prevProps.settings === nextProps.settings &&
         prevProps.isDisabled === nextProps.isDisabled &&
         prevProps.error === nextProps.error
     );
