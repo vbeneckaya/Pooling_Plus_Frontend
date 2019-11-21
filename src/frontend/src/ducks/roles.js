@@ -36,6 +36,8 @@ const GET_ALL_ACTIONS_ERROR = 'GET_ALL_ACTIONS_ERROR';
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 const CLEAR_ROLE_CARD = 'CLEAR_ROLE_CARD';
 
+const CLEAR_ERROR = 'CLEAR_ERROR';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -101,6 +103,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 card: {},
                 error: [],
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error.filter(item => item.name !== payload),
             };
         case GET_ALL_PERMISSIONS_SUCCESS:
             return {
@@ -176,6 +183,13 @@ export const getAllActionsRequest = payload => {
         type: GET_ALL_ACTIONS_REQUEST,
         payload,
     };
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
 };
 
 //*  SELECTORS *//

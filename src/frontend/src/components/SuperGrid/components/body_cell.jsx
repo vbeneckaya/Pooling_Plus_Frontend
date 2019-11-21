@@ -156,7 +156,7 @@ const BodyCell = ({row, column, loadList, indexRow, indexColumn, modalCard, grid
                     <Modal.Description>
                         <Form>
                             <FormField
-                                column={column}
+                                {...column}
                                 value={value}
                                 onChange={(e, { value }) => {
                                     setValue(value);

@@ -183,14 +183,9 @@ const Card = props => {
         dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
-                callbackSuccess: number => {
-                    if (number && number !== card.orderNumber) {
-                        setIsNotUnqueNumber(true);
-                    } else {
-                        setIsNotUnqueNumber(false);
-                        callbackFunc && callbackFunc();
-                    }
-                },
+                fieldName: 'orderNumber',
+                errorText: t('number_already_exists'),
+                callbackSuccess: callbackFunc
             }),
         );
     };

@@ -27,6 +27,7 @@ const TOGGLE_USER_ACTIVE_ERROR = 'TOGGLE_USER_ACTIVE_ERROR';
 
 const CLEAR_USERS_INFO = 'CLEAR_USERS_INFO';
 const CLEAR_USER_CARD = 'CLEAR_USER_CARD';
+const CLEAR_ERROR = 'CLEAR_ERROR';
 
 //*  INITIAL STATE  *//
 
@@ -89,6 +90,11 @@ export default (state = initial, { type, payload }) => {
                 card: {},
                 error: [],
             };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error.filter(item => item.name !== payload),
+            };
         default:
             return state;
     }
@@ -134,6 +140,13 @@ export const toggleUserActiveRequest = payload => {
         type: TOGGLE_USER_ACTIVE_REQUEST,
         payload,
     };
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
 };
 
 //*  SELECTORS *//

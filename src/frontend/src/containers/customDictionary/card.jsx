@@ -133,7 +133,7 @@ class Card extends Component {
                             {columns.map(column => {
                                 return (
                                     <FormField
-                                        column={column}
+                                        {...column}
                                         noScrollColumn={column}
                                         key={column.name}
                                         error={error[column.name]}

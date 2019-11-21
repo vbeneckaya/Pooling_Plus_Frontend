@@ -29,6 +29,7 @@ const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
 const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
+const CLEAR_ERROR = 'CLEAR_ERROR';
 
 //*  INITIAL STATE  *//
 
@@ -88,6 +89,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 card: {},
                 error: null
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error.filter(item => item.name !== payload),
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -175,6 +181,13 @@ export const exportToExcelRequest = payload => {
         type: DICTIONARY_EXPORT_TO_EXCEL_REQUEST,
         payload,
     };
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
 };
 
 //*  SELECTORS *//

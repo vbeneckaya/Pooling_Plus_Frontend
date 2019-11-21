@@ -35,6 +35,8 @@ const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
 const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
 
+const CLEAR_ERROR = 'CLEAR_ERROR';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -113,11 +115,27 @@ export default (state = initial, { type, payload }) => {
                 error: payload,
                 editProgress: false,
             };
+        case IS_UNIQUE_NUMBER_SUCCESS:
+            return {
+                ...state,
+                error: [
+                    ...state.error,
+                    {
+                        name: payload.fieldName,
+                        message: payload.errorText
+                    }
+                ]
+            };
         case CLEAR_GRID_CARD:
             return {
                 ...state,
                 error: [],
                 data: {}
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error.filter(item => item.name !== payload),
             };
         default:
             return state;
@@ -172,7 +190,14 @@ export const clearGridCard = () => {
     return {
         type: CLEAR_GRID_CARD
     }
-}
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
+};
 
 //*  SELECTORS *//
 
@@ -326,17 +351,23 @@ function* getCardSaga({ payload }) {
 
 function* isUniqueNumberSaga({ payload }) {
     try {
-        const { number, callbackSuccess } = payload;
+        const {number, fieldName, errorText, callbackSuccess} = payload;
         const result = yield postman.post('/orders/findNumber', { number, isPartial: false });
 
-        yield put({
-            type: IS_UNIQUE_NUMBER_SUCCESS,
-        });
-
-        callbackSuccess && callbackSuccess(result.length ? result[0].name : null);
+        if (result.length && result[0].name) {
+            yield put({
+                type: IS_UNIQUE_NUMBER_SUCCESS,
+                payload: {
+                    fieldName,
+                    errorText,
+                }
+            });
+        } else {
+            callbackSuccess && callbackSuccess();
+        }
     } catch (e) {
         yield put({
-            type: IS_UNIQUE_NUMBER_ERROR,
+            type: IS_UNIQUE_NUMBER_ERROR
         });
     }
 }

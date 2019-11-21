@@ -19,7 +19,7 @@ const OrderModal = ({
     isNotUniqueNumber,
     uniquenessNumberCheck,
     settings,
-                        error
+                        error,
 }) => {
     const { t } = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state)).map(

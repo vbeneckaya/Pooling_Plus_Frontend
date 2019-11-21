@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useDispatch} from 'react-redux';
 import {
     BIG_TEXT_TYPE,
     BOOLEAN_TYPE,
@@ -22,6 +23,7 @@ import Bool from './Bool';
 import DateTime from './DateTime';
 import { SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW } from '../../constants/formTypes';
 import CheckBox from './Checkbox';
+import {clearError} from "../../ducks/gridCard";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
@@ -38,18 +40,13 @@ const getTypeFacet = {
 };
 
 const FormField = props => {
+    const dispatch = useDispatch();
+
     let params = {
         ...props,
-        ...props.column,
         type: props.typeValue,
     };
 
-    if (props.type === SELECT_TYPE || (props.column && props.column.type === SELECT_TYPE)) {
-        params = {
-            ...params,
-            source: props.source || (props.column && props.column.source),
-        };
-    }
 
     if (props.settings && props.settings === SETTINGS_TYPE_SHOW) {
         params = {
@@ -65,6 +62,13 @@ const FormField = props => {
             value: null,
         };
     }
+
+    useEffect(() => {
+        console.log('55555');
+        if (props.error) {
+            dispatch(clearError && clearError(props.name))
+        }
+    }, [props.value]);
 
     /* switch (props.type || (props.column && props.column.type)) {
          case TEXT_TYPE:
