@@ -232,8 +232,6 @@ export function* getListSaga({ payload }) {
     try {
         const { filter = {}, name, isConcat } = payload;
 
-        yield delay(1000);
-
         const representation = yield select(state => representationFromGridSelector(state, name));
         const columns = representation ? representation.map(item => item.name) : [];
 

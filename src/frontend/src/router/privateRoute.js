@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import { isAuthSelector } from '../ducks/login';
-import {dictionariesSelector, gridsMenuSelector, homePageSelector, isCustomPageSelector} from '../ducks/profile';
-import {customPage} from "./links";
+import {
+    dictionariesSelector,
+    gridsMenuSelector,
+    homePageSelector,
+    isCustomPageSelector,
+} from '../ducks/profile';
+import {customPage} from './links';
 
 function PrivateRoute({ component: Component, ...rest }) {
     const isAuth = useSelector(state => isAuthSelector(state));
@@ -13,8 +18,8 @@ function PrivateRoute({ component: Component, ...rest }) {
     const dictionaryMenu = useSelector(state => dictionariesSelector(state)) || [];
     const isCustomPage = useSelector(state => isCustomPageSelector(state)) || {};
 
-    const { computedMatch, location, permission = '' } = rest;
-    const { path, params } = computedMatch;
+    const {computedMatch, location, permission = ''} = rest;
+    const {path, params} = computedMatch;
 
     console.log('path', path, isCustomPage, permission);
     console.log('grid', path.includes('grid') && !gridsMenu.includes(params.name));
@@ -30,7 +35,7 @@ function PrivateRoute({ component: Component, ...rest }) {
             <Redirect
                 to={{
                     pathname: homePage,
-                    state: { from: location },
+                    state: {from: location},
                 }}
             />
         );

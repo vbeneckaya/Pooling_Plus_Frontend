@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
@@ -22,9 +21,8 @@ const ModalComponent = ({ element, props, children }) => {
     return React.cloneElement(element, props, children);
 };
 
-const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, gridName }) => {
+const BodyCell = ({row, column, loadList, indexRow, indexColumn, modalCard, gridName, t}) => {
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const checkProgress = useSelector(state => checkProgressSelector(state));
     const editProgress = useSelector(state => progressMassUpdateSelector(state));
     const editModal = useSelector(state => editModalSelector(state));
@@ -96,6 +94,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
                         }`}
+                        ref={contextRef}
                         onClick={e =>
                             column.type !== LINK_TYPE
                                 ? handleClick(row.id, column.name, row.status)
@@ -104,12 +103,11 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                     >
                         <CellValue
                             {...column}
-                            ref={contextRef}
-                            id={`${row.id}_${column.name}_${indexRow}`}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
                             value={row[column.name]}
                             width={column.width}
+                            t={t}
                             modalCard={
                                 <ModalComponent
                                     element={modalCard}
@@ -158,7 +156,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                     <Modal.Description>
                         <Form>
                             <FormField
-                                column={column}
+                                {...column}
                                 value={value}
                                 onChange={(e, { value }) => {
                                     setValue(value);
@@ -182,4 +180,6 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     );
 };
 
-export default CellResult;
+export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
+    return prevProps.value === nextProps.value && prevProps.column.width === nextProps.column.width;
+});

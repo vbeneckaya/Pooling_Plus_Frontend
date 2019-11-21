@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.DocumentTypes;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System.Collections.Generic;
@@ -16,14 +17,47 @@ namespace Application.Services.DocumentTypes
 
         public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             entity.Name = dto.Name;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
+        }
+        private ValidateResult ValidateDto(DocumentTypeDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.Name))
+            {
+                result.AddError(nameof(dto.Name), "documentType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<DocumentType>()
+                                            .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
+                                            .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.Name), "documentType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = _dataService.GetDbSet<DocumentType>().OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<DocumentType>()
+                .Where(i => i.IsActive)
+                .OrderBy(x => x.Name)
+                .ToList();
+
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -39,7 +73,8 @@ namespace Application.Services.DocumentTypes
             return new DocumentTypeDto
             {
                 Id = entity.Id.ToString(),
-                Name = entity.Name
+                Name = entity.Name,
+                IsActive = entity.IsActive
             };
         }
 
@@ -48,6 +83,12 @@ namespace Application.Services.DocumentTypes
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+
+        public override DocumentType FindByKey(DocumentTypeDto dto)
+        {
+            return _dataService.GetDbSet<DocumentType>()
+                .FirstOrDefault(i => i.Name == dto.Name);
         }
     }
 }

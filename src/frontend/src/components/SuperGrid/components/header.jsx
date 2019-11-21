@@ -67,7 +67,7 @@ const Header = ({
             importFromExcelRequest({
                 name,
                 form: data,
-                callbackSuccess: () => loadList(),
+                callbackSuccess: () => loadList(false, true),
             }),
         );
     };

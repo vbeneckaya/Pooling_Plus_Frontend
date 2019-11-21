@@ -13,9 +13,7 @@ import { userPermissionsSelector } from '../../ducks/profile';
 
 const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose, settings }) => {
     const { t } = useTranslation();
-    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
-        item => item.code,
-    );
+    const userPermissions = useSelector(state => userPermissionsSelector(state));
     const { orders = [] } = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 

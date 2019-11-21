@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
-    cardSelector,
+    cardSelector, clearDictionaryCard,
     clearDictionaryInfo,
     columnsSelector, errorSelector,
     getCardRequest,
@@ -14,23 +14,43 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
+    confirmation: {open: false},
+    notChangeForm: true
 };
 
 class Card extends Component {
-    state = {
-        ...initialState,
-        confirmation: {open: false},
-        notChangeForm: true
-    };
+    constructor(props = {}) {
+        console.log('props.defaultForm', props.defaultForm);
+        super(props);
+
+        this.state = {
+            ...initialState,
+            form: {
+                ...props.defaultForm
+            }
+        }
+    }
 
     componentDidUpdate(prevProps) {
+        console.log('this.props.defaultForm', this.props.defaultForm);
+
+        if (this.props.defaultForm !== prevProps.defaultForm) {
+            this.setState(prevState => ({
+                form: {
+                    ...prevState.form,
+                    ...this.props.defaultForm
+                }
+            }))
+        }
+
         if (prevProps.card !== this.props.card) {
 
-            this.setState({
+            this.setState(prevProps => ({
                 form: {
+                    ...prevProps.form,
                     ...this.props.card,
                 },
-            });
+            }));
         }
     }
 
@@ -48,17 +68,18 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clear } = this.props;
+        const {loadList, clearCard} = this.props;
 
         this.setState({
             ...initialState,
         });
-        clear();
-        loadList(false, true);
+        clearCard();
+        loadList && loadList(false, true);
     };
 
     onClose = () => {
         const {notChangeForm} = this.state;
+        const {t} = this.props;
 
         if (notChangeForm) {
             this.confirmClose()
@@ -66,7 +87,7 @@ class Card extends Component {
             this.setState({
                 confirmation: {
                     open: true,
-                    content: 'Закрыть форму без сохранения изменений?',
+                    content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
                             confirmation: {open: false}
@@ -117,9 +138,9 @@ class Card extends Component {
         return (
             <Modal
                 dimmer="blurring"
-                className="card-modal"
                 trigger={children}
                 open={modalOpen}
+                closeOnDimmerClick={false}
                 onOpen={this.onOpen}
                 onClose={this.onClose}
                 closeIcon
@@ -132,14 +153,12 @@ class Card extends Component {
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
                             {columns.map(column => {
-                                const err = error && error.find(error => error.name === column.name);
                                 return (
                                     <FormField
-                                        column={column}
+                                        {...column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err}
-                                        errorText={err && err.message}
+                                        error={error[column.name]}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />
@@ -187,8 +206,8 @@ const mapDispatchToProps = dispatch => {
         save: params => {
             dispatch(saveDictionaryCardRequest(params));
         },
-        clear: () => {
-            dispatch(clearDictionaryInfo());
+        clearCard: () => {
+            dispatch(clearDictionaryCard());
         },
     };
 };

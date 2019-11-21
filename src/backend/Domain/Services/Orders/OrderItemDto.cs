@@ -10,19 +10,19 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string Nart { get; set; }
 
-        [FieldType(FieldType.Text), IgnoreFieldSettings]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string Description { get; set; }
 
-        [FieldType(FieldType.Text), IgnoreFieldSettings]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string CountryOfOrigin { get; set; }
 
-        [FieldType(FieldType.Text), IgnoreFieldSettings]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string Spgr { get; set; }
 
-        [FieldType(FieldType.Text), IgnoreFieldSettings]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string Ean { get; set; }
 
-        [FieldType(FieldType.Number), IgnoreFieldSettings]
+        [FieldType(FieldType.Number), IsReadOnly]
         public int? ShelfLife { get; set; }
 
         [FieldType(FieldType.Number)]

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Grid, Segment } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { valuesListSelector } from '../../../ducks/lookup';
+import {Button, Form, Grid, Icon, Popup, Segment} from 'semantic-ui-react';
+import {useSelector, useDispatch} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {
     BIG_TEXT_TYPE,
@@ -11,40 +11,69 @@ import {
     SELECT_TYPE,
     TEXT_TYPE,
 } from '../../../constants/columnTypes';
+import {addError, clearError} from '../../../ducks/gridCard';
+import Card from '../../../containers/customDictionary/card';
+import {columnsSelector} from '../../../ducks/dictionaryView';
+import {userPermissionsSelector} from '../../../ducks/profile';
+import {SETTINGS_TYPE_EDIT} from "../../../constants/formTypes";
 
-const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck, settings }) => {
+const Information = ({
+                         form,
+                         onChange,
+                         isNotUniqueNumber,
+                         uniquenessNumberCheck,
+                         settings,
+                         error,
+                         load,
+                     }) => {
     const { t } = useTranslation();
-    let [error, setError] = useState(false);
+    const dispatch = useDispatch();
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-
-    const handleChangeSoldTo = (e, {name, value}) => {
-        const item = valuesList.find(item => item.value === value) || {};
-        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
+    const soldToItem = valuesList.find(item => item.value === form['soldTo']) || {};
+    const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
+    const defaultForm = {
+        soldToNumber: form['soldTo'],
+        address: form['deliveryAddress'],
     };
 
-    /*useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
+    console.log('soldToItem', soldToItem);
+    const userPermissions = useSelector(state => userPermissionsSelector(state));
+
+    const handleChangeSoldTo = (e, {name, value, ext}) => {
+        onChange(e, {
+            name,
+            value,
+        });
+        onChange(e, {name: 'clientName', value: ext.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: ext.address});
+    };
+
+    const handleLoad = () => {
+        dispatch(
+            getLookupRequest({
+                name: 'soldTo',
+                isForm: true,
+            }),
+        );
+        load();
+    };
 
     useEffect(
         () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'deliveryAddress', value: item.address });
-        },
-        [form.clientName],
-    );*/
-
-    useEffect(
-        () => {
-            if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
-                setError(true);
+            if (
+                form.soldTo &&
+                valuesList.length &&
+                !valuesList.find(item => item.value === form.soldTo)
+            ) {
+                dispatch(
+                    addError({
+                        name: 'soldTo',
+                        message: t('soldTo_error'),
+                    }),
+                );
             } else {
-                setError(false);
+                dispatch(clearError('soldTo'));
             }
         },
         [valuesList, form.soldTo],
@@ -127,12 +156,59 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                                 value={form['soldTo']}
                                                 type={SELECT_TYPE}
                                                 settings={settings['soldTo']}
-                                                errorText={error && t('soldTo_error')}
+                                                error={error['soldTo']}
                                                 textValue={error && form['soldTo']}
-                                                error={error}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
-                                            />
+                                            >
+                                                {userPermissions.includes(15) && settings['soldTo'] === SETTINGS_TYPE_EDIT ? (
+                                                    error['soldTo'] ? (
+                                                        <Popup
+                                                            content={t(
+                                                                'Добавить в справочник Склады доставки',
+                                                            )}
+                                                            position="bottom right"
+                                                            trigger={
+                                                                <Card
+                                                                    title={`${t('warehouses')}: ${t(
+                                                                        'new_record',
+                                                                    )}`}
+                                                                    columns={columns}
+                                                                    name="warehouses"
+                                                                    defaultForm={defaultForm}
+                                                                    loadList={handleLoad}
+                                                                >
+                                                                    <Button icon>
+                                                                        <Icon name="add"/>
+                                                                    </Button>
+                                                                </Card>
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        <Popup
+                                                            content={t(
+                                                                'Редактировать данные по складу доставки',
+                                                            )}
+                                                            position="bottom right"
+                                                            trigger={
+                                                                <Card
+                                                                    title={`${t('warehouses')}: ${t(
+                                                                        'edit_record',
+                                                                    )}`}
+                                                                    columns={columns}
+                                                                    name="warehouses"
+                                                                    id={soldToItem['id']}
+                                                                    loadList={handleLoad}
+                                                                >
+                                                                    <Button icon>
+                                                                        <Icon name="edit"/>
+                                                                    </Button>
+                                                                </Card>
+                                                            }
+                                                        />
+                                                    )
+                                                ) : null}
+                                            </FormField>
                                         </Grid.Column>
                                         <Grid.Column>
                                             <Form.Field>

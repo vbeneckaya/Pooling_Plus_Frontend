@@ -7,5 +7,13 @@ namespace Domain.Persistables
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public Guid? TonnageId { get; set; }
+
+        public Guid? BodyTypeId { get; set; }
+
+        public int? PalletsCount { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

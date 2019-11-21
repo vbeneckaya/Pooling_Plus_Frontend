@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardSelector,
+    clearGridCard,
     editCardRequest,
+    errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
@@ -43,6 +45,7 @@ const Card = props => {
 
     const card = useSelector(state => cardSelector(state));
     const settings = useSelector(state => settingsFormSelector(state, card.status));
+    const error = useSelector(state => errorSelector(state));
 
     const loadCard = () => {
         dispatch(
@@ -51,6 +54,7 @@ const Card = props => {
                 id,
                 callbackSuccess: card => {
                     setForm(card);
+                    setNotChangeForm(true);
                 },
             }),
         );
@@ -77,6 +81,8 @@ const Card = props => {
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
             beforeClose ? beforeClose() : setModalOpen(false);
+            setNotChangeForm(true);
+            dispatch(clearGridCard());
             setForm({});
             setIsNotUnqueNumber(false);
             loadList && loadList(false, true);
@@ -95,30 +101,25 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = (e, {name, value, clientName, deliveryAddress}) => {
-        if (name === 'soldTo') {
-            setForm({
-                ...form,
-                [name]: value,
-                clientName,
-                deliveryAddress
-            })
-        } else {
-            setForm({
-                ...form,
-                [name]: value,
-            });
-        }
-
-        if (
-            notChangeForm &&
-            value !== undefined &&
-            Object.keys(form).length &&
-            value !== card[name]
-        ) {
-            setNotChangeForm(false);
-        }
+    const onChangeForm = (e, {name, value}) => {
+        setForm(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
     };
+
+    useEffect(
+        () => {
+            if (notChangeForm) {
+                Object.keys(form).forEach(key => {
+                    if (form[key] !== card[key]) {
+                        setNotChangeForm(false);
+                    }
+                });
+            }
+        },
+        [form],
+    );
 
     const saveOrEditForm = () => {
         dispatch(
@@ -126,14 +127,18 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    onClose();
+                    if (form.id) {
+                        loadCard();
+                    } else {
+                        onClose();
+                    }
                 },
             }),
         );
     };
 
     const handleSave = () => {
-        if (name === ORDERS_GRID) {
+        if (name === ORDERS_GRID && !form.id) {
             handleUniquenessCheck(saveOrEditForm);
         } else {
             saveOrEditForm();
@@ -178,14 +183,9 @@ const Card = props => {
         dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
-                callbackSuccess: number => {
-                    if (number && number !== card.orderNumber) {
-                        setIsNotUnqueNumber(true);
-                    } else {
-                        setIsNotUnqueNumber(false);
-                        callbackFunc && callbackFunc();
-                    }
-                },
+                fieldName: 'orderNumber',
+                errorText: t('number_already_exists'),
+                callbackSuccess: callbackFunc
             }),
         );
     };
@@ -203,6 +203,7 @@ const Card = props => {
             open={modalOpen}
             onOpen={onOpen}
             onClose={onClose}
+            closeOnDimmerClick={false}
             closeIcon
             size="large"
         >
@@ -217,16 +218,31 @@ const Card = props => {
                     <Loader size="huge">Loading</Loader>
                 </Dimmer>
                 <Modal.Description>
-                    {React.cloneElement(getModal[name], {
-                        ...props,
-                        form,
-                        load: loadCard,
-                        settings,
-                        uniquenessNumberCheck: handleUniquenessCheck,
-                        isNotUniqueNumber,
-                        onClose,
-                        onChangeForm,
-                    })}
+                    {name === ORDERS_GRID ? (
+                        <OrderModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    ) : (
+                        <ShippingModal
+                            {...props}
+                            form={form}
+                            load={loadCard}
+                            settings={settings}
+                            uniquenessNumberCheck={handleUniquenessCheck}
+                            isNotUniqueNumber={isNotUniqueNumber}
+                            error={error}
+                            onClose={onClose}
+                            onChangeForm={onChangeForm}
+                        />
+                    )}
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions className="grid-card-actions">

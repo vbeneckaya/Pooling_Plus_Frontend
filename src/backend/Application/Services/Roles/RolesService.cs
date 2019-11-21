@@ -55,7 +55,11 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var entities = _dataService.GetDbSet<Role>().Where(x => x.IsActive).OrderBy(x => x.Name).ToList();
+            var entities = _dataService.GetDbSet<Role>()
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
+                .ToList();
+
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -68,7 +72,13 @@ namespace Application.Services.Roles
 
         public override ValidateResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
-            if(!string.IsNullOrEmpty(dto.Id))
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
+            if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             
             entity.Name = dto.Name;
@@ -77,6 +87,30 @@ namespace Application.Services.Roles
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
             return new ValidateResult(null, entity.Id.ToString());
+        }
+
+        private ValidateResult ValidateDto(RoleDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.Name))
+            {
+                result.AddError(nameof(dto.Name), "roles.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = this._dataService.GetDbSet<Role>()
+                .Where(i => i.Id != dto.Id.ToGuid())
+                .Where(i => i.Name == dto.Name)
+                .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.Name), "roles.duplicateRole".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
@@ -127,6 +161,13 @@ namespace Application.Services.Roles
                                    .SelectMany(s => s.GetTypes())
                                    .Where(p => actionSingleType.IsAssignableFrom(p) || actionGroupType.IsAssignableFrom(p));
             return actions.Select(x => x.Name.ToLowerFirstLetter());
+        }
+
+        public override Role FindByKey(RoleDto dto)
+        {
+            return _dataService.GetDbSet<Role>()
+                .Where(i => i.Name == dto.Name)
+                .FirstOrDefault();
         }
     }
 }

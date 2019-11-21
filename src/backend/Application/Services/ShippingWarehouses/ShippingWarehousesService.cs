@@ -1,6 +1,9 @@
-﻿using Application.Shared;
+﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
+using Application.Shared;
+using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services.History;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -13,8 +16,14 @@ namespace Application.Services.ShippingWarehouses
 {
     public class ShippingWarehousesService : DictonaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
     {
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider)
+        private readonly IMapper _mapper;
+        private readonly IHistoryService _historyService;
+
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
+            : base(dataService, userProvider)
         {
+            _mapper = ConfigureMapper().CreateMapper();
+            _historyService = historyService;
         }
 
         public ShippingWarehouse GetByCode(string code)
@@ -48,21 +57,27 @@ namespace Application.Services.ShippingWarehouses
                 return validateResult;
             }
 
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-            entity.Code = dto.Code;
-            entity.WarehouseName = dto.WarehouseName;
-            entity.Address = dto.Address;
-            entity.ValidAddress = dto.ValidAddress;
-            entity.PostalCode = dto.PostalCode;
-            entity.Region = dto.Region;
-            entity.Area = dto.Area;
-            entity.City = dto.City;
-            entity.Street = dto.Street;
-            entity.House = dto.House;
-            entity.IsActive = dto.IsActive ?? true;
+            var setter = new FieldSetter<ShippingWarehouse>(entity, _historyService);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            if (!string.IsNullOrEmpty(dto.Id))
+                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
+            setter.UpdateField(e => e.Code, dto.Code);
+            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ValidAddress, dto.ValidAddress, ignoreChanges: true);
+            setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
+            setter.UpdateField(e => e.Region, dto.Region);
+            setter.UpdateField(e => e.Area, dto.Area, ignoreChanges: true);
+            setter.UpdateField(e => e.City, dto.City);
+            setter.UpdateField(e => e.Street, dto.Street, ignoreChanges: true);
+            setter.UpdateField(e => e.House, dto.House, ignoreChanges: true);
+            setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
+
+            setter.ApplyAfterActions();
+            setter.SaveHistoryLog();
+
+            string errors = setter.ValidationErrors;
+            return new ValidateResult(errors, entity.Id.ToString());
         }
 
         public override ShippingWarehouseDto MapFromEntityToDto(ShippingWarehouse entity)
@@ -71,21 +86,7 @@ namespace Application.Services.ShippingWarehouses
             {
                 return null;
             }
-            return new ShippingWarehouseDto
-            {
-                Id = entity.Id.ToString(),
-                Code = entity.Code,
-                WarehouseName = entity.WarehouseName,
-                Address = entity.Address,
-                ValidAddress = entity.ValidAddress,
-                PostalCode = entity.PostalCode,
-                Region = entity.Region,
-                Area = entity.Area,
-                City = entity.City,
-                Street = entity.Street,
-                House = entity.House,
-                IsActive = entity.IsActive
-            };
+            return _mapper.Map<ShippingWarehouseDto>(entity);
         }
 
         protected override IQueryable<ShippingWarehouse> ApplySort(IQueryable<ShippingWarehouse> query, SearchFormDto form)
@@ -119,6 +120,16 @@ namespace Application.Services.ShippingWarehouses
                 result.AddError(nameof(dto.Code), "duplicateWarehouseCode".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
+            return result;
+        }
+
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
+            });
             return result;
         }
     }

@@ -19,6 +19,10 @@ const Filter = props => {
 
     useEffect(() => {
         setColumns(columns);
+
+        return () => {
+            timer.current = null;
+        }
     }, [columns]);
 
 
@@ -27,7 +31,7 @@ const Filter = props => {
         const nextColumns = [...customColumns];
         nextColumns[index] = {
             ... nextColumns[index],
-            width: size.width
+            width: size.width < 100 ? 100 : size.width
         };
         setColumns(nextColumns);
 
@@ -75,7 +79,17 @@ const Filter = props => {
                             .toLowerCase()
                             .replace(' ', '-')}-facet`}
                     >
-                        <FacetField key={'facet' + x.name} index={i} {...x} {...props} />
+                        <FacetField
+                            key={'facet' + x.name}
+                            index={i}
+                            name={x.name}
+                            sort={props.sort}
+                            setSort={props.setSort}
+                            type={x.type}
+                            value={props.filters[x.name]}
+                            setFilter={props.setFilter}
+                            source={x.source}
+                        />
                     </Table.HeaderCell>
                 </Resizable>
             ))}

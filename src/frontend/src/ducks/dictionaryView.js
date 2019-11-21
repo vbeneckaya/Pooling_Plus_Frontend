@@ -3,6 +3,7 @@ import {downloader, postman} from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
+import {errorMapping} from "../utils/errorMapping";
 
 //*  TYPES  *//
 
@@ -27,6 +28,8 @@ const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
+const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
+const CLEAR_ERROR = 'CLEAR_ERROR';
 
 //*  INITIAL STATE  *//
 
@@ -79,7 +82,18 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_DICTIONARY_INFO:
             return {
                 ...state,
-                ...initial,
+                ...initial
+            };
+        case CLEAR_DICTIONARY_CARD:
+            return {
+                ...state,
+                card: {},
+                error: null
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error && state.error.filter(item => item.name !== payload),
             };
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
@@ -149,6 +163,12 @@ export const clearDictionaryInfo = () => {
     };
 };
 
+export const clearDictionaryCard = () => {
+    return {
+        type: CLEAR_DICTIONARY_CARD
+    }
+};
+
 export const importFromExcelRequest = payload => {
     return {
         type: DICTIONARY_IMPORT_FROM_EXCEL_REQUEST,
@@ -161,6 +181,13 @@ export const exportToExcelRequest = payload => {
         type: DICTIONARY_EXPORT_TO_EXCEL_REQUEST,
         payload,
     };
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
 };
 
 //*  SELECTORS *//
@@ -178,7 +205,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const listSelector = createSelector(stateSelector, state => state.list);
 export const cardSelector = createSelector(stateSelector, state => state.card);
-export const errorSelector = createSelector(stateSelector, state => state.error);
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 export const canCreateByFormSelector = createSelector(
     [stateProfile, dictionaryName],
@@ -215,8 +242,6 @@ export const exportProgressSelector = createSelector(stateSelector, state => sta
 export function* getListSaga({ payload }) {
     try {
         const { filter = {}, name, isConcat } = payload;
-
-        yield delay(1000);
 
         const result = yield postman.post(`/${name}/search`, filter);
 
@@ -257,7 +282,7 @@ function* saveDictionaryCardSaga({ payload }) {
     } catch (e) {
         yield put({
             type: SAVE_DICTIONARY_CARD_ERROR,
-            payload: e,
+            payload: null,
         });
     }
 }
@@ -324,6 +349,6 @@ export function* saga() {
         takeEvery(GET_DICTIONARY_CARD_REQUEST, getCardSaga),
         takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
         takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
-        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
+        takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga)
     ]);
 }

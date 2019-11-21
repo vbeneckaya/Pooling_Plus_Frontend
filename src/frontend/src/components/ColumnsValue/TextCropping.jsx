@@ -17,7 +17,7 @@ const TextCropping = ({children, width: columnWidth, indexColumn}) => {
                 offsetWidth: valueRef.current && valueRef.current.offsetWidth,
             });
         },
-        [valueRef, children, columnWidth],
+        [valueRef.current, columnWidth],
     );
 
     return (

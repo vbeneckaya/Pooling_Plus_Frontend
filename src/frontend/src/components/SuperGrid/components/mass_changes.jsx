@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Form, Grid, Icon } from 'semantic-ui-react';
-import { invokeMassUpdateRequest, updatesSelector } from '../../../ducks/gridActions';
+import {invokeMassUpdateRequest, progressMassUpdateSelector, updatesSelector} from '../../../ducks/gridActions';
 import FormField from '../../BaseComponents';
 import { TEXT_TYPE } from '../../../constants/columnTypes';
 
-const Mass_changes = ({ gridName, load }) => {
+const MassChanges = ({gridName, load}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const updates = useSelector(state => updatesSelector(state)) || [];
+    const progress = useSelector(state => progressMassUpdateSelector(state)) || false;
     let [field, setField] = useState(null);
     let [column, setColumn] = useState({});
     let [changValue, setValue] = useState(null);
@@ -18,6 +19,7 @@ const Mass_changes = ({ gridName, load }) => {
 
     useEffect(
         () => {
+            setValue(null);
             setColumn({
                 name: field,
                 type: fieldParams ? fieldParams.type : TEXT_TYPE,
@@ -64,14 +66,15 @@ const Mass_changes = ({ gridName, load }) => {
                         </Grid.Column>
                         <Grid.Column className="grid-mass-updates-fields">
                             <FormField
-                                column={column}
+                                {...column}
                                 value={changValue}
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
                             <Button
                                 icon
-                                disabled={!changValue}
+                                disabled={changValue === null || changValue === undefined}
                                 className="grid-mass-updates-save"
+                                loading={progress}
                                 onClick={handleSave}
                             >
                                 <Icon name="save" />
@@ -84,4 +87,4 @@ const Mass_changes = ({ gridName, load }) => {
     );
 };
 
-export default Mass_changes;
+export default MassChanges;

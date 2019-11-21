@@ -51,6 +51,11 @@
         public string PickingTypeId { get; set; }
 
         /// <summary>
+        /// Picking Features
+        /// </summary>
+        public string PickingFeatures { get; set; }
+
+        /// <summary>
         /// Min temperature
         /// </summary>
         public string TemperatureMin { get; set; }
@@ -266,5 +271,10 @@
         /// Invoice
         /// </summary>
         public string WaybillTorg12 { get; set; }
+
+        /// <summary>
+        /// ShippingWarehouseId
+        /// </summary>
+        public string ShippingWarehouseId { get; set; }
     }
 }

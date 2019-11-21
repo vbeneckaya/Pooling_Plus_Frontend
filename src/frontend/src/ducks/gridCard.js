@@ -4,6 +4,8 @@ import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
+import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
+import {errorMapping} from "../utils/errorMapping";
 
 //*  TYPES  *//
 
@@ -31,11 +33,17 @@ const IS_UNIQUE_NUMBER_REQUEST = 'IS_UNIQUE_NUMBER_REQUEST';
 const IS_UNIQUE_NUMBER_SUCCESS = 'IS_UNIQUE_NUMBER_SUCCESS';
 const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
+const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
+
+const ADD_ERROR = 'ADD_ERROR';
+const CLEAR_ERROR = 'CLEAR_ERROR';
+
 //*  INITIAL STATE  *//
 
 const initial = {
     config: {},
     data: {},
+    error: [],
     progress: false,
     editProgress: false,
 };
@@ -99,12 +107,41 @@ export default (state = initial, { type, payload }) => {
         case EDIT_GRID_CARD_SUCCESS:
             return {
                 ...state,
+                error: [],
                 editProgress: false,
             };
         case EDIT_GRID_CARD_ERROR:
             return {
                 ...state,
+                error: payload,
                 editProgress: false,
+            };
+        case IS_UNIQUE_NUMBER_SUCCESS:
+            return {
+                ...state,
+                error: [
+                    ...state.error,
+                    {
+                        name: payload.fieldName,
+                        message: payload.errorText
+                    }
+                ]
+            };
+        case CLEAR_GRID_CARD:
+            return {
+                ...state,
+                error: [],
+                data: {}
+            };
+        case CLEAR_ERROR:
+            return {
+                ...state,
+                error: state.error && state.error.filter(item => item.name !== payload),
+            };
+        case ADD_ERROR:
+            return {
+                ...state,
+                error: [...state.error, payload]
             };
         default:
             return state;
@@ -155,26 +192,37 @@ export const isUniqueNumberRequest = payload => {
     };
 };
 
+export const clearGridCard = () => {
+    return {
+        type: CLEAR_GRID_CARD
+    }
+};
+
+export const clearError = payload => {
+    return {
+        type: CLEAR_ERROR,
+        payload
+    }
+};
+
+export const addError = payload => {
+    return {
+        type: ADD_ERROR,
+        payload
+    }
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.gridCard;
 
 const gridName = (state, name) => name;
 
-const idSelector = createSelector(
-    stateSelector,
-    state => state.data.id,
-);
+const idSelector = createSelector(stateSelector, state => state.data.id);
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
-export const cardSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const cardSelector = createSelector(stateSelector, state => state.data);
 
 export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
@@ -184,7 +232,7 @@ export const settingsFormSelector = createSelector(
         base.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
 
@@ -200,12 +248,14 @@ export const settingsExtSelector = createSelector(
         ext.forEach(item => {
             settings = {
                 ...settings,
-                [item.fieldName]: item.accessTypes[status],
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
             };
         });
         return settings;
     },
 );
+
+export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 //*  SAGA  *//
 
@@ -258,6 +308,10 @@ function* editCardSaga({ payload }) {
 
         if (result.isError) {
             toast.error(result.error);
+            yield put({
+                type: EDIT_GRID_CARD_ERROR,
+                payload: result.errors
+            });
         } else {
             yield put({
                 type: EDIT_GRID_CARD_SUCCESS,
@@ -268,8 +322,7 @@ function* editCardSaga({ payload }) {
         }
     } catch (error) {
         yield put({
-            type: EDIT_GRID_CARD_ERROR,
-            payload: error,
+            type: EDIT_GRID_CARD_ERROR
         });
     }
 }
@@ -311,17 +364,23 @@ function* getCardSaga({ payload }) {
 
 function* isUniqueNumberSaga({ payload }) {
     try {
-        const { number, callbackSuccess } = payload;
+        const {number, fieldName, errorText, callbackSuccess} = payload;
         const result = yield postman.post('/orders/findNumber', { number, isPartial: false });
 
-        yield put({
-            type: IS_UNIQUE_NUMBER_SUCCESS,
-        });
-
-        callbackSuccess && callbackSuccess(result.length ? result[0].name : null);
+        if (result.length && result[0].name) {
+            yield put({
+                type: IS_UNIQUE_NUMBER_SUCCESS,
+                payload: {
+                    fieldName,
+                    errorText,
+                }
+            });
+        } else {
+            callbackSuccess && callbackSuccess();
+        }
     } catch (e) {
         yield put({
-            type: IS_UNIQUE_NUMBER_ERROR,
+            type: IS_UNIQUE_NUMBER_ERROR
         });
     }
 }
