@@ -34,6 +34,7 @@ const OrderModal = ({
                     <Information
                         form={form}
                         settings={settings}
+                        error={error}
                         isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
