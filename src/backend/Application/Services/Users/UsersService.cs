@@ -78,13 +78,23 @@ namespace Application.Services.Users
 
             if (!string.IsNullOrEmpty(dto.Id)) 
                 entity.Id = Guid.Parse(dto.Id);
-            
+
+            var oldRoleId = entity.RoleId;
+
             entity.Email = dto.Email;
             entity.Name = dto.UserName;
             entity.RoleId = Guid.Parse(dto.RoleId);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId.ToGuid();
+
+            var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
+
+            if (oldRoleId != entity.RoleId && entity.RoleId != transportCompanyRole.Id)
+            {
+                entity.CarrierId = null;
+            }
+
             
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
@@ -108,7 +118,7 @@ namespace Application.Services.Users
                 result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            if (string.IsNullOrEmpty(dto.Password))
+            if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
                 result.AddError(nameof(dto.Password), "users.emptyPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
             }

@@ -7,22 +7,23 @@ using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using DAL.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
-    /// Объеденить заказы
+    /// Объеденить заказы в существующую
     /// </summary>
-    public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
+    public class UnionOrdersInExisted : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
 
         private readonly ICommonDataService _dataService;
 
-        public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
+        public UnionOrdersInExisted(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
@@ -32,30 +33,15 @@ namespace Application.BusinessModels.Orders.Actions
         public AppColor Color { get; set; }
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
+            var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
+
+            orders = orders.Where(x => x.Status == OrderState.Created);
+
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
-            var shippingsCount = shippingDbSet.Count();
-
-            var shipping = new Shipping
-            {
-                Status = ShippingState.ShippingCreated,
-                Id = Guid.NewGuid(),
-                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
-                ShippingCreationDate = DateTime.UtcNow
-            };
-
-            _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
-            
-            var setter = new FieldSetter<Shipping>(shipping, _historyService);
-
-            setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
-            setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
-            
-            setter.SaveHistoryLog();
-
-            shippingDbSet.Add(shipping);
+            var shipping = shippingDbSet.GetById(shippingId.Value);
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
-            
+
             _dataService.SaveChanges();
 
             return new AppActionResult
@@ -67,7 +53,9 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(entity => entity.Status == OrderState.Created);
+            return target.Count() > 1 && 
+                   target.Where(x => x.Status == OrderState.InShipping).Count() == 1 &&
+                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
         }
     }
 }
