@@ -2,6 +2,7 @@
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.DocumentTypes;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System.Collections.Generic;
@@ -16,10 +17,38 @@ namespace Application.Services.DocumentTypes
 
         public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return new ValidateResult(null, entity.Id.ToString());
+        }
+        private ValidateResult ValidateDto(DocumentTypeDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidattionResult result = new DetailedValidattionResult();
+
+            if (string.IsNullOrEmpty(dto.Name))
+            {
+                result.AddError(nameof(dto.Name), "documentType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<DocumentType>()
+                                            .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
+                                            .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.Name), "documentType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
