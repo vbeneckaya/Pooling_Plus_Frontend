@@ -141,6 +141,7 @@ class RoleCard extends Component {
                 trigger={children}
                 open={modalOpen}
                 dimmer="blurring"
+                className="card-modal"
                 closeIcon
                 onOpen={this.handleOpen}
                 onClose={this.handleClose}

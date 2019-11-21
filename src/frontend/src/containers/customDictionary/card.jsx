@@ -117,7 +117,6 @@ class Card extends Component {
         return (
             <Modal
                 dimmer="blurring"
-                className="card-modal"
                 trigger={children}
                 open={modalOpen}
                 onOpen={this.onOpen}
