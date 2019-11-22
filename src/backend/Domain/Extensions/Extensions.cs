@@ -193,6 +193,13 @@ namespace Domain.Extensions
             return dateString.TryParseDateTime(out DateTime date) ? date : (DateTime?)null;
         }
 
+        public static DateTime? ToDate(this string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString)) return null;
+
+            return dateString.TryParseDate(out DateTime date) ? date : (DateTime?)null;
+        }
+
         public static decimal? ToDecimal(this string decimalString)
         {
             if (string.IsNullOrEmpty(decimalString)) return null;

@@ -10,6 +10,7 @@ using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Serilog;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -36,7 +37,10 @@ namespace Application.Services.Tariffs
             entity.TarifficationType = dto.TarifficationType.Parse<TarifficationType>();
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
+            entity.BodyTypeId = dto.BodyTypeId.ToGuid();
             entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
+            entity.EffectiveDate = dto.EffectiveDate.ToDate();
+            entity.ExpirationDate = dto.ExpirationDate.ToDate();
 
             if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
             {
@@ -136,16 +140,11 @@ namespace Application.Services.Tariffs
                 result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            var expirationDate = dto.ExpirationDate.ToDateTime();
-            var effectiveDate = dto.EffectiveDate.ToDateTime();
-
             var existingRecord = this.GetByKey(dto)
                 .Where(i => i.Id != dto.Id.ToGuid())
-                .FirstOrDefault();
+                .Where(i => IsPeriodsOverlapped(i, dto));
 
-            var hasDuplicates = existingRecord != null
-                && expirationDate < existingRecord.EffectiveDate && effectiveDate < existingRecord.EffectiveDate
-                || effectiveDate > existingRecord.ExpirationDate && expirationDate > existingRecord.ExpirationDate;
+            var hasDuplicates = existingRecord.Any();
 
             if (hasDuplicates)
             {
@@ -153,6 +152,15 @@ namespace Application.Services.Tariffs
             }
 
             return result;
+        }
+
+        private bool IsPeriodsOverlapped(Tariff tariff, TariffDto dto)
+        {
+            var expirationDate = dto.ExpirationDate.ToDate().GetValueOrDefault(DateTime.MaxValue);
+            var effectiveDate = dto.EffectiveDate.ToDate().GetValueOrDefault(DateTime.MinValue);
+
+            return !(expirationDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue) && effectiveDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue)
+                || effectiveDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue) && expirationDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue));
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
@@ -165,10 +173,13 @@ namespace Application.Services.Tariffs
                 TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
                 CarrierId = entity.CarrierId?.ToString(),
                 VehicleTypeId = entity.VehicleTypeId?.ToString(),
+                BodyTypeId = entity.BodyTypeId?.ToString(),
                 StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
                 EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
                 WinterAllowance = entity.WinterAllowance.HasValue ? 
                     entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
+                EffectiveDate = entity.EffectiveDate?.ToString("dd.MM.yyyy"),
+                ExpirationDate = entity.ExpirationDate?.ToString("dd.MM.yyyy"),
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
@@ -275,9 +286,22 @@ namespace Application.Services.Tariffs
                 );
         }
 
+        private bool HasDatesOverlapped(TariffDto dto)
+        {
+            var list = this.GetByKey(dto).Where(i => IsPeriodsOverlapped(i, dto)).ToList();
+
+            return this.GetByKey(dto).Any(i => IsPeriodsOverlapped(i, dto));
+        }
+
         public override Tariff FindByKey(TariffDto dto)
         {
-            return this.GetByKey(dto).FirstOrDefault();
+            var effectiveDate = dto.EffectiveDate.ToDate();
+            var expirationDate = dto.ExpirationDate.ToDate();
+
+            return this.GetByKey(dto)
+                .Where(i => i.EffectiveDate == effectiveDate)
+                .Where(i => i.ExpirationDate == expirationDate)
+                .FirstOrDefault();
         }
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)

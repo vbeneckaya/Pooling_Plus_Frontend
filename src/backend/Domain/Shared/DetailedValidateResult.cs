@@ -8,6 +8,11 @@ namespace Domain.Shared
     {
         public DetailedValidattionResult() { }
 
+        public DetailedValidattionResult(string name, string message, ValidationErrorType errorType) 
+        {
+            this.AddError(name, message, errorType);
+        }
+
         public List<ValidationResultItem> Errors { get; set; } = new List<ValidationResultItem>();
 
         public override string Error {
