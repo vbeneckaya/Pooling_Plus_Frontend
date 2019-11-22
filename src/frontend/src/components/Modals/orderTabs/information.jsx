@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import {Button, Form, Grid, Icon, Popup, Segment} from 'semantic-ui-react';
-import {useSelector, useDispatch} from 'react-redux';
-import {getLookupRequest, valuesListSelector} from '../../../ducks/lookup';
+import React, {useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Form, Grid, Segment} from 'semantic-ui-react';
+import {useDispatch, useSelector} from 'react-redux';
+import {valuesListSelector} from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {
     BIG_TEXT_TYPE,
     DATE_TYPE,
     NUMBER_TYPE,
     SELECT_TYPE,
+    SOLD_TO_TYPE,
     TEXT_TYPE,
 } from '../../../constants/columnTypes';
 import {addError, clearError} from '../../../ducks/gridCard';
-import Card from '../../../containers/customDictionary/card';
-import {columnsSelector} from '../../../ducks/dictionaryView';
-import {userPermissionsSelector} from '../../../ducks/profile';
-import {SETTINGS_TYPE_EDIT} from "../../../constants/formTypes";
 
 const Information = ({
                          form,
@@ -30,15 +27,6 @@ const Information = ({
     const dispatch = useDispatch();
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const soldToItem = valuesList.find(item => item.value === form['soldTo']) || {};
-    const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
-    const defaultForm = {
-        soldToNumber: form['soldTo'],
-        address: form['deliveryAddress'],
-    };
-
-    console.log('soldToItem', soldToItem);
-    const userPermissions = useSelector(state => userPermissionsSelector(state));
 
     const handleChangeSoldTo = (e, {name, value, ext}) => {
         onChange(e, {
@@ -47,16 +35,6 @@ const Information = ({
         });
         onChange(e, {name: 'clientName', value: ext.warehouseName});
         onChange(e, {name: 'deliveryAddress', value: ext.address});
-    };
-
-    const handleLoad = () => {
-        dispatch(
-            getLookupRequest({
-                name: 'soldTo',
-                isForm: true,
-            }),
-        );
-        load();
     };
 
     useEffect(
@@ -78,6 +56,7 @@ const Information = ({
         },
         [valuesList, form.soldTo],
     );
+
 
     return (
         <Form>
@@ -154,61 +133,15 @@ const Information = ({
                                             <FormField
                                                 name="soldTo"
                                                 value={form['soldTo']}
-                                                type={SELECT_TYPE}
+                                                type={SOLD_TO_TYPE}
                                                 settings={settings['soldTo']}
                                                 error={error['soldTo']}
                                                 textValue={error && form['soldTo']}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
-                                            >
-                                                {userPermissions.includes(15) && settings['soldTo'] === SETTINGS_TYPE_EDIT ? (
-                                                    error['soldTo'] ? (
-                                                        <Popup
-                                                            content={t(
-                                                                'Добавить в справочник Склады доставки',
-                                                            )}
-                                                            position="bottom right"
-                                                            trigger={
-                                                                <Card
-                                                                    title={`${t('warehouses')}: ${t(
-                                                                        'new_record',
-                                                                    )}`}
-                                                                    columns={columns}
-                                                                    name="warehouses"
-                                                                    defaultForm={defaultForm}
-                                                                    loadList={handleLoad}
-                                                                >
-                                                                    <Button icon>
-                                                                        <Icon name="add"/>
-                                                                    </Button>
-                                                                </Card>
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        <Popup
-                                                            content={t(
-                                                                'Редактировать данные по складу доставки',
-                                                            )}
-                                                            position="bottom right"
-                                                            trigger={
-                                                                <Card
-                                                                    title={`${t('warehouses')}: ${t(
-                                                                        'edit_record',
-                                                                    )}`}
-                                                                    columns={columns}
-                                                                    name="warehouses"
-                                                                    id={soldToItem['id']}
-                                                                    loadList={handleLoad}
-                                                                >
-                                                                    <Button icon>
-                                                                        <Icon name="edit"/>
-                                                                    </Button>
-                                                                </Card>
-                                                            }
-                                                        />
-                                                    )
-                                                ) : null}
-                                            </FormField>
+                                                load={load}
+                                                deliveryAddress={form['deliveryAddress']}
+                                            />
                                         </Grid.Column>
                                         <Grid.Column>
                                             <Form.Field>
@@ -406,52 +339,6 @@ const Information = ({
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-                {/* <Grid.Row columns={3} stretched>
-                    <Grid.Column>
-                        <Form.Field>
-                            <label>{t('boxesCountGroup')}</label>
-                            <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
-                                className="mini-column"
-                            >
-                                <Text
-                                    name="boxesCount"
-                                    text="prepare"
-                                    value={form['boxesCount']}
-                                    onChange={onChange}
-                                />
-                                <Text
-                                    name="confirmedBoxesCount"
-                                    text="fact"
-                                    value={form['confirmedBoxesCount']}
-                                    onChange={onChange}
-                                />
-                            </Segment>
-                        </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Form.Field>
-                            <label>{t('weigth')}</label>
-                            <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
-                                className="mini-column"
-                            >
-                                <Text
-                                    name="weightKg"
-                                    text="planWeigth"
-                                    value={form['weightKg']}
-                                    onChange={onChange}
-                                />
-                                <Text
-                                    name="actualWeightKg"
-                                    text="factWeigth"
-                                    value={form['actualWeightKg']}
-                                    onChange={onChange}
-                                />
-                            </Segment>
-                        </Form.Field>
-                    </Grid.Column>
-                </Grid.Row>*/}
             </Grid>
         </Form>
     );
