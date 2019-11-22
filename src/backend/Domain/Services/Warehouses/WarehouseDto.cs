@@ -48,7 +48,10 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Boolean), OrderNumber(9)]
         public bool CustomerWarehouse { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(10)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsRequired, OrderNumber(10)]
+        public string DeliveryType { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; }
     }
 }
