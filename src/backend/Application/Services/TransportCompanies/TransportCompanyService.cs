@@ -62,7 +62,7 @@ namespace Application.Services.TransportCompanies
             }
 
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
-                                            .Where(x => x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
+                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
                                             .Any();
 
             if (hasDuplicates)
