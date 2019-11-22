@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Application.Shared.Excel.Columns;
+using Domain.Enums;
 using Domain.Extensions;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace Domain.Services.BodyTypes
 {
     public class BodyTypeDto: IDto
     {
+        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
