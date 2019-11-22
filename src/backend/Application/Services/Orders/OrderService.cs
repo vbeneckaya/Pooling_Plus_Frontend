@@ -149,6 +149,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler());
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
+            setter.UpdateField(e => e.ShippingCity, dto.ShippingCity);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
@@ -328,16 +329,6 @@ namespace Application.Services.Orders
 
         private void InitializeNewOrder(FieldSetter<Order> setter, bool isInjection)
         {
-            if (!isInjection && string.IsNullOrEmpty(setter.Entity.ShippingAddress))
-            {
-                var fromWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
-                if (fromWarehouse != null)
-                {
-                    setter.UpdateField(e => e.ShippingWarehouseId, fromWarehouse.Id, ignoreChanges: true);
-                    setter.UpdateField(e => e.ShippingAddress, fromWarehouse.Address);
-                }
-            }
-
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
             setter.UpdateField(e => e.OrderCreationDate, DateTime.UtcNow, ignoreChanges: true);
@@ -487,6 +478,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ReturnInformation.ApplyStringFilter<Order>(i => i.ReturnInformation, ref parameters))
                          .WhereAnd(searchForm.Filter.ReturnShippingAccountNo.ApplyStringFilter<Order>(i => i.ReturnShippingAccountNo, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingAddress.ApplyStringFilter<Order>(i => i.ShippingAddress, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingCity.ApplyStringFilter<Order>(i => i.ShippingCity, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingDate.ApplyDateRangeFilter<Order>(i => i.ShippingDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingId, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Order>(i => i.ShippingNumber, ref parameters))
@@ -589,6 +581,7 @@ namespace Application.Services.Orders
                 || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
                 || columns.Contains("shippingDate") && i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("transitDays") && isInt && i.TransitDays == searchInt
                 || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
