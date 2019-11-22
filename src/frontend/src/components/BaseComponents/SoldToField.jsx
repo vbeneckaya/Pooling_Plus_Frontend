@@ -1,5 +1,5 @@
 import React from 'react';
-import Select from './Select';
+import Select from './Select_new';
 import {useDispatch, useSelector} from 'react-redux';
 import {getLookupRequest, valuesListSelector} from '../../ducks/lookup';
 import {columnsSelector} from '../../ducks/dictionaryView';

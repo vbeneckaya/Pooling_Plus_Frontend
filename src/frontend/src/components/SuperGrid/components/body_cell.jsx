@@ -176,7 +176,9 @@ const BodyCell = ({
 export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
     return (
         prevProps.value === nextProps.value &&
-        prevProps.column.width === nextProps.column.width/* &&
+        prevProps.column.width ===
+        nextProps.column
+            .width /* &&
         nextProps.isEqual(prevProps.checkProgress, nextProps.checkProgress) &&
         nextProps.isEqual(prevProps.editProgress, nextProps.editProgress)*/
     );
