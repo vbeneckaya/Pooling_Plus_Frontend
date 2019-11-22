@@ -82,7 +82,7 @@ namespace Application.Services.Warehouses
                                new PickingTypeIdHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
             setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
-            setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures);
+            setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();

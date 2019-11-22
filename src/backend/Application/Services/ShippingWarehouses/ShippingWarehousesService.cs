@@ -68,7 +68,7 @@ namespace Application.Services.ShippingWarehouses
             setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
             setter.UpdateField(e => e.Region, dto.Region);
             setter.UpdateField(e => e.Area, dto.Area, ignoreChanges: true);
-            setter.UpdateField(e => e.City, dto.City);
+            setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
             setter.UpdateField(e => e.Street, dto.Street, ignoreChanges: true);
             setter.UpdateField(e => e.House, dto.House, ignoreChanges: true);
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);

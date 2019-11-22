@@ -35,6 +35,7 @@ const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
 const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
 
+const ADD_ERROR = 'ADD_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
 
 //*  INITIAL STATE  *//
@@ -135,7 +136,12 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_ERROR:
             return {
                 ...state,
-                error: state.error.filter(item => item.name !== payload),
+                error: state.error && state.error.filter(item => item.name !== payload),
+            };
+        case ADD_ERROR:
+            return {
+                ...state,
+                error: [...state.error, payload]
             };
         default:
             return state;
@@ -195,6 +201,13 @@ export const clearGridCard = () => {
 export const clearError = payload => {
     return {
         type: CLEAR_ERROR,
+        payload
+    }
+};
+
+export const addError = payload => {
+    return {
+        type: ADD_ERROR,
         payload
     }
 };

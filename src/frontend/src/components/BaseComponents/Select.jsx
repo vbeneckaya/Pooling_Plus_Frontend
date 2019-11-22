@@ -25,6 +25,7 @@ const Select = ({
     noLabel,
                     isRequired,
                     autoComplete,
+                    children,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -61,35 +62,26 @@ const Select = ({
                     isRequired ? ' *' : ''
                     }`}</label>
             ) : null}
-            <Dropdown
-                placeholder={placeholder}
-                fluid
-                clearable={clearable}
-                selection
-                loading={loading}
-                search
-                text={textValue}
-                error={error}
-                multiple={multiple}
-                disabled={isDisabled}
-                value={value}
-                options={items}
-                onChange={handleChange}
-                selectOnBlur={false}
-                autoComplete={autoComplete}
-            >
-                {/* <Dropdown.Menu>
-                    {items.map(item => (
-                        <Dropdown.Item
-                            key={item.key}
-                            selected={item.value === value}
-                            onClick={e => handleChange(e, { name, value: item.value })}
-                        >
-                            {item.text}
-                        </Dropdown.Item>
-                    ))}
-                </Dropdown.Menu>*/}
-            </Dropdown>
+            <div className="form-select">
+                <Dropdown
+                    placeholder={placeholder}
+                    fluid
+                    clearable={clearable}
+                    selection
+                    loading={loading}
+                    search
+                    text={textValue}
+                    error={error}
+                    multiple={multiple}
+                    disabled={isDisabled}
+                    value={value}
+                    options={items}
+                    onChange={handleChange}
+                    selectOnBlur={false}
+                    autoComplete={autoComplete}
+                />
+                {children && children}
+            </div>
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
         </Form.Field>
     );

@@ -99,7 +99,7 @@ const Position = ({ form, onChange, gridName, load, settings: baseSettings }) =>
 
     const handleSaveItem = () => {
         const {quantity, nart} = items[indexEdit];
-        if (nart && quantity && parseInt(quantity) >= 0 && !quantity.toString().includes('.')) {
+        if (nart && quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.')) {
             editPositions(items);
             setIndexEdit(null);
             setError([]);
@@ -110,7 +110,7 @@ const Position = ({ form, onChange, gridName, load, settings: baseSettings }) =>
                 setError((prevState = []) => prevState && prevState.filter(item => item !== 'nart'));
             }
 
-            if (!(quantity && parseInt(quantity) >= 0 && !quantity.toString().includes('.'))) {
+            if (!(quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.'))) {
                 setError(prevState => ([...prevState, 'quantity']));
             } else {
                 setError((prevState = []) => prevState && prevState.filter(item => item !== 'quantity'));

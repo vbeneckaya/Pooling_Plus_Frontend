@@ -141,7 +141,9 @@ export const homePageSelector = createSelector(stateSelector, state => {
 });
 
 export const userPermissionsSelector = createSelector(stateSelector, state => {
-    return state.role ? state.role.permissions : [];
+    return state.role ? state.role.permissions.map(
+        item => item.code,
+    ) : [];
 });
 
 //*  SAGA  *//

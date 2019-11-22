@@ -203,6 +203,7 @@ const Card = props => {
             open={modalOpen}
             onOpen={onOpen}
             onClose={onClose}
+            closeOnDimmerClick={false}
             closeIcon
             size="large"
         >

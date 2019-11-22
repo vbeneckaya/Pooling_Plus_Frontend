@@ -117,11 +117,15 @@ namespace Domain.Persistables
         /// </summary>
         public decimal? InvoiceAmountExcludingVAT { get; set; }
         /// <summary>
-        /// Регион
+        /// Город отгрузки
+        /// </summary>
+        public string ShippingCity { get; set; }
+        /// <summary>
+        /// Регион доставки
         /// </summary>
         public string DeliveryRegion { get; set; }
         /// <summary>
-        /// Город
+        /// Город доставки
         /// </summary>
         public string DeliveryCity { get; set; }
         /// <summary>

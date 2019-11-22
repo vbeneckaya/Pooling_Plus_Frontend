@@ -8,8 +8,9 @@ import {
     DATE_TYPE,
     ENUM_TYPE,
     GROUP_TYPE,
+    LOCAL_DATE_TIME,
     NUMBER_TYPE,
-    SELECT_TYPE,
+    SELECT_TYPE, SOLD_TO_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
     TIME_TYPE,
@@ -23,13 +24,15 @@ import Bool from './Bool';
 import DateTime from './DateTime';
 import { SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW } from '../../constants/formTypes';
 import CheckBox from './Checkbox';
-import {clearError} from "../../ducks/gridCard";
+import {clearError} from '../../ducks/gridCard';
+import SoldToField from "./SoldToField";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
     [STATE_TYPE]: <State />,
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
+    [LOCAL_DATE_TIME]: <DateTime/>,
     [TIME_TYPE]: <Text type="time" />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
@@ -37,6 +40,7 @@ const getTypeFacet = {
     [ENUM_TYPE]: <Select isTranslate />,
     [BIG_TEXT_TYPE]: <TextArea />,
     [CHECKBOX_TYPE]: <CheckBox />,
+    [SOLD_TO_TYPE]: <SoldToField/>
 };
 
 const FormField = props => {
@@ -46,7 +50,6 @@ const FormField = props => {
         ...props,
         type: props.typeValue,
     };
-
 
     if (props.settings && props.settings === SETTINGS_TYPE_SHOW) {
         params = {
@@ -63,12 +66,14 @@ const FormField = props => {
         };
     }
 
-    useEffect(() => {
-        console.log('55555');
-        if (props.error) {
-            dispatch(clearError && clearError(props.name))
-        }
-    }, [props.value]);
+    useEffect(
+        () => {
+            if (props.error) {
+                dispatch(clearError && clearError(props.name));
+            }
+        },
+        [props.value],
+    );
 
     /* switch (props.type || (props.column && props.column.type)) {
          case TEXT_TYPE:
