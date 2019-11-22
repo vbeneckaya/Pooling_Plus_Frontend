@@ -54,8 +54,10 @@ const BodyCell = ({
             t,
             callbackSuccess: () => {
                 handleOpen();
-                setProgress(false);
             },
+            callbackFunc: () => {
+                setProgress(false);
+            }
         });
     };
 
