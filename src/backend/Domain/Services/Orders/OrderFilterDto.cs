@@ -82,6 +82,11 @@
         public string TransitDays { get; set; }
 
         /// <summary>
+        /// Shipping City
+        /// </summary>
+        public string ShippingCity { get; set; }
+
+        /// <summary>
         /// Delivery Region
         /// </summary>
         public string DeliveryRegion { get; set; }

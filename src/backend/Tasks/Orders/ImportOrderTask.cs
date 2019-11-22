@@ -173,6 +173,7 @@ namespace Tasks.Orders
                 string shippingAddressCode = docRoot.SelectSingleNode("E1EDP01/WERKS")?.InnerText;
                 var shippingWarehouse = shippingWarehousesService.GetByCode(shippingAddressCode);
                 dto.ShippingAddress = shippingWarehouse?.Address ?? dto.ShippingAddress;
+                dto.ShippingCity = shippingWarehouse?.City ?? dto.ShippingCity;
                 dto.ShippingWarehouseId = shippingWarehouse?.Id.ToString() ?? dto.ShippingWarehouseId;
 
                 string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;

@@ -1,13 +1,9 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Shared;
-using DAL;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
 using System;
-using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
@@ -26,6 +22,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 {
                     var setter = new FieldSetter<Order>(order, _historyService);
                     setter.UpdateField(s => s.ShippingAddress, shippingWarehouse.Address);
+                    setter.UpdateField(s => s.ShippingCity, shippingWarehouse.City);
                     setter.SaveHistoryLog();
                 }
             }

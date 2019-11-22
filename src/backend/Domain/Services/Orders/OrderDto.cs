@@ -80,10 +80,13 @@ namespace Domain.Services.Orders
 
         public decimal? InvoiceAmountExcludingVAT { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
+        public string ShippingCity { get; set; }
+
         [FieldType(FieldType.Text)]
         public string DeliveryRegion { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true)]
         public string DeliveryCity { get; set; }
 
         [FieldType(FieldType.BigText)]
