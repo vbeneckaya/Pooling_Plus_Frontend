@@ -141,9 +141,9 @@ namespace Application.Services.Tariffs
 
             var existingRecord = this.GetByKey(dto)
                 .Where(i => i.Id != dto.Id.ToGuid())
-                .FirstOrDefault();
+                .Where(i => IsPeriodsOverlapped(i, dto));
 
-            var hasDuplicates = existingRecord != null && IsPeriodsOverlapped(existingRecord, dto);
+            var hasDuplicates = existingRecord.Any();
 
             if (hasDuplicates)
             {
@@ -284,17 +284,6 @@ namespace Application.Services.Tariffs
                 );
         }
 
-        public Tariff FindByKeyExt(TariffDto dto)
-        {
-            var effectiveDate = dto.EffectiveDate.ToDate();
-            var expirationDate = dto.ExpirationDate.ToDate();
-
-            return this.GetByKey(dto)
-                .Where(i => i.EffectiveDate == effectiveDate)
-                .Where(i => i.ExpirationDate == expirationDate)
-                .FirstOrDefault();
-        }
-
         private bool HasDatesOverlapped(TariffDto dto)
         {
             var list = this.GetByKey(dto).Where(i => IsPeriodsOverlapped(i, dto)).ToList();
@@ -304,7 +293,13 @@ namespace Application.Services.Tariffs
 
         public override Tariff FindByKey(TariffDto dto)
         {
-            return GetByKey(dto).FirstOrDefault();
+            var effectiveDate = dto.EffectiveDate.ToDate();
+            var expirationDate = dto.ExpirationDate.ToDate();
+
+            return this.GetByKey(dto)
+                .Where(i => i.EffectiveDate == effectiveDate)
+                .Where(i => i.ExpirationDate == expirationDate)
+                .FirstOrDefault();
         }
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)
@@ -316,72 +311,6 @@ namespace Application.Services.Tariffs
                         && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);
-        }
-
-        protected override ValidateResult SaveOrCreateInner(TariffDto entityFrom, bool isImport)
-        {
-            var lang = this._userProvider.GetCurrentUser().Language;
-
-            var dbSet = _dataService.GetDbSet<Tariff>();
-
-            Tariff entityFromDb = null;
-
-            if (!isImport)
-            {
-                entityFromDb = FindByKey(entityFrom);
-            }
-            else 
-            {
-                entityFromDb = FindByKeyExt(entityFrom);
-
-                if (entityFromDb == null)
-                {
-                    if (HasDatesOverlapped(entityFrom))
-                        return new DetailedValidattionResult("duplicated", "tariffs.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
-                }
-            }
-
-            // Rest of SaveOrCreateInner logic
-
-            var isNew = entityFromDb == null;
-
-            if (isNew)
-            {
-                entityFromDb = new Tariff
-                {
-                    Id = Guid.NewGuid()
-                };
-            }
-            else if (isImport)
-            {
-                entityFrom.Id = entityFromDb.Id.ToString();
-            }
-
-            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
-
-            if (!result.IsError)
-            {
-                if (isNew)
-                {
-                    dbSet.Add(entityFromDb);
-                    result.ResultType = ValidateResultType.Created;
-                }
-                else
-                {
-                    dbSet.Update(entityFromDb);
-                    result.ResultType = ValidateResultType.Updated;
-                }
-
-                _dataService.SaveChanges();
-
-                Log.Information($"«апись {entityFromDb.Id} в справочнике {typeof(Tariff)} {(isNew ? "создана" : "обновлена")}.");
-            }
-            else
-            {
-                Log.Information($"Ќе удалось сохранить запись в справочник {typeof(Tariff)}: {result.Error}.");
-            }
-
-            return result;
         }
     }
 }
