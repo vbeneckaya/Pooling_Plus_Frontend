@@ -120,9 +120,10 @@ namespace Application.Services.Warehouses
 
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
+            string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
                 .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
-                .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>());
+                .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
 
         private Guid? GetPickingTypeIdByName(string name)
