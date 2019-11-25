@@ -84,7 +84,7 @@ namespace Application.Services.Warehouses
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
             setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
             setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType));
+            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType), new DeliveryTypeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();
