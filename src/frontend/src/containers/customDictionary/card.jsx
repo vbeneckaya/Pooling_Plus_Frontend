@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
+    cardProgressSelector,
     cardSelector,
     clearDictionaryCard,
     clearDictionaryInfo,
@@ -195,6 +196,7 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         columns: ownProps.columns ? ownProps.columns : columnsSelector(state, name),
+        loading: cardProgressSelector(state),
         card: cardSelector(state),
         error: errorSelector(state),
     };
