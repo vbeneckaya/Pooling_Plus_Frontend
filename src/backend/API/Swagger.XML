@@ -94,6 +94,21 @@
             Поиск по номеру
             </summary>
         </member>
+        <member name="M:API.Controllers.ProfileController.Profile">
+            <summary>
+            Получение профиля текущего пользователя
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ProfileController.Save(Domain.Services.Profile.SaveProfileDto)">
+            <summary>
+            Сохранение новой информации о пользователе
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ProfileController.SetNewPassword(Domain.Services.Profile.SetNewPasswordDto)">
+            <summary>
+            Задание нового пароля
+            </summary>
+        </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
             Получение данных для выпадающего списка в 
