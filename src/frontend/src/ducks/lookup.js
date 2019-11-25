@@ -11,6 +11,8 @@ const GET_LOOKUP_ERROR = 'GET_LOOKUP_ERROR';
 
 const CLEAR_LOOKUP = 'CLEAR_LOOKUP';
 
+const CLEAR_FORM_LOOKUP = 'CLEAR_FORM_LOOKUP';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -49,6 +51,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 list: [],
             };
+        case CLEAR_FORM_LOOKUP:
+            return {
+                ...state,
+                [payload]: []
+            };
         default:
             return state;
     }
@@ -68,6 +75,13 @@ export const clearLookup = payload => {
         type: CLEAR_LOOKUP,
         payload,
     };
+};
+
+export const clearFormLookup = payload => {
+    return {
+        type: CLEAR_FORM_LOOKUP,
+        payload
+    }
 };
 
 //*  SELECTORS *//

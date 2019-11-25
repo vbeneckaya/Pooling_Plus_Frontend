@@ -19,7 +19,7 @@ import Text from './Text';
 import TextArea from './TextArea';
 import State from './State';
 import Date from './Date';
-import Select from './Select';
+import Select from './Select_new';
 import Bool from './Bool';
 import DateTime from './DateTime';
 import { SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW } from '../../constants/formTypes';
