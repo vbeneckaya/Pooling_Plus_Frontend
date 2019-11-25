@@ -293,7 +293,7 @@ namespace Application.Shared
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
-            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperFirstLetter());
+            var mapFromStateDto = Enum.Parse<T>(dtoStatus, true);
 
             return mapFromStateDto;
         }

@@ -34,7 +34,7 @@ namespace Application.Services.Tariffs
 
             entity.ShipmentCity = dto.ShipmentCity;
             entity.DeliveryCity = dto.DeliveryCity;
-            entity.TarifficationType = dto.TarifficationType.Parse<TarifficationType>();
+            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType);
             entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
             entity.CarrierId = dto.CarrierId.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId.ToGuid();
@@ -220,8 +220,9 @@ namespace Application.Services.Tariffs
 
         protected override ExcelMapper<TariffDto> CreateExcelMapper()
         {
+            string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<TariffDto>(_dataService, _userProvider)
-                .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>())
+                .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
         }
