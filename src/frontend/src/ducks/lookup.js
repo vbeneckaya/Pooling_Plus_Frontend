@@ -77,11 +77,16 @@ export const listSelector = createSelector(
     [stateSelector, (state, filter) => filter, (state, filter, t) => t],
     (state, filter, t) =>
         state.list
-            ? state.list.map(item => ({
-                value: item.value,
-                name: t(item.name),
-                isActive: item.isActive,
-            })).filter(x => filter ? x.name ? x.name.toLowerCase().includes(filter) : false : true)
+            ? state.list
+                .map(item => ({
+                    value: item.value,
+                    name: t(item.name),
+                    isActive: item.isActive,
+                }))
+                .filter(
+                    x =>
+                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                )
             : [],
 );
 export const progressSelector = createSelector(stateSelector, state => state.progress);
@@ -89,6 +94,30 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
     (state, key) => state[key],
+);
+
+export const listFromSelectSelector = createSelector(
+    [
+        stateSelector,
+        (state, key) => key,
+        (state, key, t) => t,
+        (state, key, t, filter) => filter,
+        (state, key, t, filter, isTranslate) => isTranslate,
+    ],
+    (state, key, t, filter, isTranslate) => {
+        return state[key]
+            ? state[key]
+                .map(item => ({
+                    ...item,
+                    value: item.value,
+                    name: isTranslate ? t(item.name) : item.name,
+                }))
+                .filter(
+                    x =>
+                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                )
+            : [];
+    },
 );
 
 //*  SAGA  *//
