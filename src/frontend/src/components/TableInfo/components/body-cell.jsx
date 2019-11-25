@@ -22,8 +22,8 @@ const BodyCellComponent = ({column, children, value, indexColumn, indexRow, togg
                 column.isFixedPosition
                     ? {
                         left: position,
-                        maxWidth: width,
-                        minWidth: width,
+                        maxWidth: '150px',
+                        minWidth: '150px',
                     }
                     : null
             }
@@ -34,6 +34,7 @@ const BodyCellComponent = ({column, children, value, indexColumn, indexRow, togg
                 indexRow={indexRow}
                 indexColumn={indexColumn}
                 value={value}
+                width={column.isFixedPosition ? 150 : null}
                 id={id}
                 t={t}
             />
