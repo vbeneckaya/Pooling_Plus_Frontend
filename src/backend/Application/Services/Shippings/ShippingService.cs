@@ -112,7 +112,7 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
-            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
+            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), new CarrierIdHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
             setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId), nameLoader: GetVehicleTypeNameById);
             setter.UpdateField(e => e.BodyTypeId, dto.BodyTypeId.ToGuid(), nameLoader: GetBodyTypeNameById);
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());

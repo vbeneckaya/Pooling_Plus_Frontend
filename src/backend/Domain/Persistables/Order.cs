@@ -279,5 +279,30 @@ namespace Domain.Persistables
         /// Особенности комплектации
         /// </summary>
         public string PickingFeatures { get; set; }
+
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        public Guid? CarrierId { get; set; }
+
+        /// <summary>
+        /// Способ доставки
+        /// </summary>
+        public DeliveryType? DeliveryType { get; set; }
+
+        /// <summary>
+        /// Комментарий (причины отклонения от графика)
+        /// </summary>
+        public string DeviationsComment { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость, без НДС
+        /// </summary>
+        public decimal? DeliveryCost { get; set; }
+
+        /// <summary>
+        /// Фактическая стоимость, без НДС
+        /// </summary>
+        public decimal? ActualDeliveryCost { get; set; }
     }
 }
