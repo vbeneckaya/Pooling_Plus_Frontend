@@ -291,6 +291,13 @@ namespace Application.Shared
             return result;
         }
 
+        protected T MapFromStateDto<T>(string dtoStatus) where T : struct
+        {
+            var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperFirstLetter());
+
+            return mapFromStateDto;
+        }
+
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
             return new ExcelMapper<TListDto>(_dataService, _userProvider);
