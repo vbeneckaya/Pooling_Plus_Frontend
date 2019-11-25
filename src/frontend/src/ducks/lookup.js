@@ -85,7 +85,7 @@ export const valuesListSelector = createSelector(
 
 function* getLookupSaga({ payload }) {
     try {
-        const { name, isForm, isSearch } = payload;
+        const { name, isForm, isSearch, callbackSuccess } = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
             `/${name}/${isSearch ? 'search' : 'forSelect'}`,
             {},
@@ -99,6 +99,9 @@ function* getLookupSaga({ payload }) {
                     list: result.items || result,
                 },
             });
+
+
+            callbackSuccess && callbackSuccess(result);
         } else {
             yield put({
                 type: GET_LOOKUP_SUCCESS,

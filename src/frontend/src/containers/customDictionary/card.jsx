@@ -23,7 +23,7 @@ const initialState = {
 
 class Card extends Component {
     constructor(props = {}) {
-        console.log('props.defaultForm', props.defaultForm);
+        //console.log('props.defaultForm', props.defaultForm);
         super(props);
 
         this.state = {
@@ -35,7 +35,7 @@ class Card extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('this.props.defaultForm', this.props.defaultForm);
+        //console.log('this.props.defaultForm', this.props.defaultForm);
 
         if (this.props.defaultForm !== prevProps.defaultForm) {
             this.setState(prevState => ({
@@ -63,7 +63,6 @@ class Card extends Component {
     };
 
     onOpen = () => {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', this.props.id);
         this.loadCard();
         this.setState({
             modalOpen: true,
@@ -71,7 +70,11 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const {loadList, clearCard} = this.props;
+        const {loadList, clearCard, load} = this.props;
+
+        load && load(this.state.form);
+
+        console.log('this.state.form', this.state.form, this.props);
 
         this.setState({
             ...initialState,
@@ -137,7 +140,7 @@ class Card extends Component {
     render() {
         const {title, loading, children, progress, columns, t, error} = this.props;
         const {modalOpen, form, confirmation} = this.state;
-        console.log('column', columns, form);
+        //console.log('column', columns, form);
         return (
             <Modal
                 dimmer="blurring"

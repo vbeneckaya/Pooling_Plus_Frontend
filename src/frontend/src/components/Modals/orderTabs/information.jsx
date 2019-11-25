@@ -139,7 +139,6 @@ const Information = ({
                                                 textValue={error && form['soldTo']}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
-                                                load={load}
                                                 deliveryAddress={form['deliveryAddress']}
                                             />
                                         </Grid.Column>
