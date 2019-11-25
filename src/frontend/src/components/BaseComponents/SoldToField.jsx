@@ -10,7 +10,7 @@ import {SETTINGS_TYPE_EDIT} from '../../constants/formTypes';
 import {useTranslation} from 'react-i18next';
 
 const SoldToField = props => {
-    const {value, load, settings, error, textValue, deliveryAddress} = props;
+    const {value, settings, error, textValue, deliveryAddress, onChange, name} = props;
     const dispatch = useDispatch();
     const {t} = useTranslation();
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
@@ -30,14 +30,18 @@ const SoldToField = props => {
     };
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
-    const handleLoad = () => {
+    const handleLoad = (form) => {
         dispatch(
             getLookupRequest({
                 name: 'soldTo',
                 isForm: true,
+                callbackSuccess: (result) => {
+                    console.log('form', form, value);
+                    onChange(null, {value: form.soldToNumber, name, ext: result.find(x => x.value === form.soldToNumber)});
+                }
             }),
         );
-        load();
+
     };
 
     return (
@@ -54,7 +58,7 @@ const SoldToField = props => {
                                 columns={columns}
                                 name="warehouses"
                                 defaultForm={defaultForm}
-                                loadList={handleLoad}
+                                load={handleLoad}
                             >
                                 <Button icon>
                                     <Icon name="add"/>
@@ -72,7 +76,7 @@ const SoldToField = props => {
                                 columns={columnsEdit}
                                 name="warehouses"
                                 id={soldToItem.id}
-                                loadList={handleLoad}
+                                load={handleLoad}
                             >
                                 <Button icon>
                                     <Icon name="edit"/>

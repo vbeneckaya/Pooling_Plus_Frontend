@@ -38,6 +38,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(o => o.DeliveryAddress, soldToWarehouse.Address);
                     setter.UpdateField(o => o.DeliveryCity, soldToWarehouse.City);
                     setter.UpdateField(o => o.DeliveryRegion, soldToWarehouse.Region);
+                    setter.UpdateField(o => o.DeliveryType, soldToWarehouse.DeliveryType);
                 }
                 else
                 {

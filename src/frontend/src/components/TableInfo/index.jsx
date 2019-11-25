@@ -231,7 +231,6 @@ class TableInfo extends Component {
                     <InfiniteScrollTable
                         className="grid-table table-info"
                         onBottomVisible={this.nextPage}
-                        unstackable
                         context={this.container}
                         headerRow={this.headerRowComponent()}
                     >
