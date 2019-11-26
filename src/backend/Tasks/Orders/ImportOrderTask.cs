@@ -193,6 +193,7 @@ namespace Tasks.Orders
                     dto.DeliveryRegion = null;
                     dto.PickingTypeId = null;
                     dto.TransitDays = null;
+                    dto.DeliveryType = null;
                 }
                 else
                 {
