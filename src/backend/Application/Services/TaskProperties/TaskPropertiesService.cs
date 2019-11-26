@@ -12,7 +12,9 @@ namespace Application.Services.TaskProperties
 {
     public class TaskPropertiesService : DictonaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
     {
-        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override ValidateResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
         {

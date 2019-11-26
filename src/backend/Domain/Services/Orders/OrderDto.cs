@@ -202,6 +202,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public decimal? DeliveryCost { get; set; }
 
+        public bool? ManualDeliveryCost { get; set; }
+
         [FieldType(FieldType.Number)]
         public decimal? ActualDeliveryCost { get; set; }
 

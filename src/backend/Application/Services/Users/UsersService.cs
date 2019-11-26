@@ -15,7 +15,9 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {

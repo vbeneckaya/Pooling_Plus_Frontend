@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -10,6 +11,7 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.DependencyInjection;
 using OfficeOpenXml;
 using Serilog;
 using System;
@@ -49,24 +51,20 @@ namespace Application.Shared
 
         protected readonly IFieldPropertiesService _fieldPropertiesService;
 
-        protected readonly IEnumerable<IAppAction<TEntity>> _singleActions;
-
-        protected readonly IEnumerable<IGroupAppAction<TEntity>> _groupActions;
+        protected readonly IServiceProvider _serviceProvider;
 
         protected GridService(
             ICommonDataService dataService, 
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<TEntity>> singleActions,
-            IEnumerable<IGroupAppAction<TEntity>> groupActions)
+            IServiceProvider serviceProvider)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldPropertiesService = fieldPropertiesService;
-            _singleActions = singleActions;
-            _groupActions = groupActions;
+            _serviceProvider = serviceProvider;
         }
 
         public TDto Get(Guid id)
@@ -173,6 +171,8 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
+
             ValidateResult mapResult;
             var dbSet = _dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
@@ -193,7 +193,17 @@ namespace Application.Shared
                     }
 
                     dbSet.Update(entityFromDb);
-                    
+
+                    foreach (var trigger in triggers)
+                    {
+                        if (trigger.IsTriggered(entityFromDb))
+                        {
+                            trigger.Execute(entityFromDb);
+                        }
+                    }
+                    Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                    sw.Restart();
+
                     _dataService.SaveChanges();
                     Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
@@ -219,6 +229,16 @@ namespace Application.Shared
             }
 
             dbSet.Add(entity);
+
+            foreach (var trigger in triggers)
+            {
+                if (trigger.IsTriggered(entity))
+                {
+                    trigger.Execute(entity);
+                }
+            }
+            Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
 
             _dataService.SaveChanges();
             Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -250,7 +270,8 @@ namespace Application.Shared
             Log.Debug("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            foreach (var action in _singleActions)
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            foreach (var action in singleActions)
             {
                 string actionName = action.GetType().Name.ToLowerFirstLetter();
                 if (role?.Actions != null && !role.Actions.Contains(actionName))
@@ -278,7 +299,8 @@ namespace Application.Shared
 
             if (ids.Count() > 1)
             {
-                foreach (var action in _groupActions)
+                var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
+                foreach (var action in groupActions)
                 {
                     string actionName = action.GetType().Name.ToLowerFirstLetter();
                     if (role?.Actions != null && !role.Actions.Contains(actionName))
@@ -312,7 +334,10 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var action = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
+
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            var action = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -334,6 +359,20 @@ namespace Application.Shared
             if (isActionAllowed && action.IsAvailable(entity)) 
                 message += action.Run(currentUser, entity).Message;
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            foreach (var trigger in triggers)
+            {
+                if (trigger.IsTriggered(entity))
+                {
+                    trigger.Execute(entity);
+                }
+            }
+            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            _dataService.SaveChanges();
+            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new AppActionResult
             {
@@ -348,8 +387,14 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var singleAction = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
-            var groupAction = _groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
+
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            var singleAction = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+
+            var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
+            var groupAction = groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+
             Log.Debug("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -366,12 +411,23 @@ namespace Application.Shared
 
             var entities = dbSet.Where(x => ids.Contains(x.Id));
 
+            AppActionResult result;
             if (groupAction != null)
             {
                 string actionName = groupAction.GetType().Name.ToLowerFirstLetter();
                 bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
                 if (isActionAllowed && groupAction.IsAvailable(entities))
-                    return groupAction.Run(currentUser, entities);
+                {
+                    result = groupAction.Run(currentUser, entities);
+                }
+                else
+                {
+                    result = new AppActionResult
+                    {
+                        IsError = false,
+                        Message = "Done"
+                    };
+                }
             }
             else
             {
@@ -392,19 +448,32 @@ namespace Application.Shared
                         }
                     }
                 }
-                return new AppActionResult
+                result = new AppActionResult
                 {
                     IsError = false,
                     Message = string.Join(". ", messages)
                 };
             }
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
 
-            return new AppActionResult
+            foreach (var trigger in triggers)
             {
-                IsError = false,
-                Message = "Done"
-            };
+                foreach (var entity in entities)
+                {
+                    if (trigger.IsTriggered(entity))
+                    {
+                        trigger.Execute(entity);
+                    }
+                }
+            }
+            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            _dataService.SaveChanges();
+            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            return result;
         }
 
         public IEnumerable<BulkUpdateDto> GetBulkUpdates(IEnumerable<Guid> ids)

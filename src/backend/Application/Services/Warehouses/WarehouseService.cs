@@ -25,9 +25,9 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, 
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider)
+            : base(dataService, userProvider, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

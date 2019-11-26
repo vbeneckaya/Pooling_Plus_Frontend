@@ -12,7 +12,9 @@ namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public IEnumerable<TranslationDto> GetAll()
         {

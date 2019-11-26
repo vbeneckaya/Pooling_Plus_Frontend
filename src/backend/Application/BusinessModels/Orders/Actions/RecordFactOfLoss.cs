@@ -31,8 +31,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Lost;
 
             _historyService.Save(order.Id, "orderSetLost", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {

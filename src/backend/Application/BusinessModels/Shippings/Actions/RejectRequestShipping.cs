@@ -38,8 +38,6 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetRejected", shipping.ShippingNumber);
 
-            _dataService.SaveChanges();
-
             return new AppActionResult
             {
                 IsError = false,

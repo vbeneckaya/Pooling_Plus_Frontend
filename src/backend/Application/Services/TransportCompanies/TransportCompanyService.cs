@@ -13,7 +13,9 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {

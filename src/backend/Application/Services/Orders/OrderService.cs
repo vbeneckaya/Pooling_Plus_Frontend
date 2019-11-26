@@ -34,10 +34,9 @@ namespace Application.Services.Orders
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
+            IFieldPropertiesService fieldPropertiesService, 
+            IServiceProvider serviceProvider)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -179,7 +178,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
             setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
             setter.UpdateField(e => e.DeviationsComment, dto.DeviationsComment);
-            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost);
+            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
             setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
