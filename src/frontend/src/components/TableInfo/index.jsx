@@ -116,6 +116,10 @@ class TableInfo extends Component {
         this.fileUploader && this.fileUploader.click();
     };
 
+    exportToExcel = () => {
+        this.props.exportToExcel && this.props.exportToExcel(this.mapData())
+    };
+
     onFilePicked = e => {
         const file = e.target.files[0];
 
@@ -193,7 +197,7 @@ class TableInfo extends Component {
                                     <Button
                                         color="green"
                                         loading={exportLoader}
-                                        onClick={exportToExcel}
+                                        onClick={this.exportToExcel}
                                     >
                                         <Icon name="download" />
                                         {t('exportToExcel')}
