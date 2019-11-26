@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
     cardProgressSelector,
     cardSelector,
@@ -17,7 +17,7 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
-    confirmation: {open: false},
+    confirmation: { open: false },
     notChangeForm: true,
 };
 
@@ -35,8 +35,6 @@ class Card extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        //console.log('this.props.defaultForm', this.props.defaultForm);
-
         if (this.props.defaultForm !== prevProps.defaultForm) {
             this.setState(prevState => ({
                 form: {
@@ -47,12 +45,11 @@ class Card extends Component {
         }
 
         if (prevProps.card !== this.props.card) {
-            this.setState(prevProps => ({
+            this.setState({
                 form: {
-                    ...prevProps.form,
                     ...this.props.card,
                 },
-            }));
+            });
         }
     }
 
@@ -70,11 +67,9 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const {loadList, clearCard, load} = this.props;
+        const { loadList, clearCard, load } = this.props;
 
         load && load(this.state.form);
-
-        console.log('this.state.form', this.state.form, this.props);
 
         this.setState({
             ...initialState,
@@ -84,8 +79,8 @@ class Card extends Component {
     };
 
     onClose = () => {
-        const {notChangeForm} = this.state;
-        const {t} = this.props;
+        const { notChangeForm } = this.state;
+        const { t } = this.props;
 
         if (notChangeForm) {
             this.confirmClose();
@@ -96,7 +91,7 @@ class Card extends Component {
                     content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
-                            confirmation: {open: false},
+                            confirmation: { open: false },
                         });
                     },
                     onConfirm: this.confirmClose,
@@ -138,8 +133,8 @@ class Card extends Component {
     };
 
     render() {
-        const {title, loading, children, progress, columns, t, error} = this.props;
-        const {modalOpen, form, confirmation} = this.state;
+        const { title, loading, children, progress, columns, t, error } = this.props;
+        const { modalOpen, form, confirmation } = this.state;
         //console.log('column', columns, form);
         return (
             <Modal

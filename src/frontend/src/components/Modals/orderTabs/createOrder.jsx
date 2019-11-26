@@ -8,7 +8,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
     const { t } = useTranslation();
 
     const handleChangeSoldTo = (e, {name, value, ext}) => {
-        console.log(ext);
+
         onChange(e, {
             name,
             value,

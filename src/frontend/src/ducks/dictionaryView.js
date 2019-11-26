@@ -242,7 +242,9 @@ export const canExportToExcelSelector = createSelector(
 );
 
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
-export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
+export const exportProgressSelector = createSelector(stateSelector, state => {
+    return state.exportProgress
+});
 
 //*  SAGA  *//
 
@@ -320,7 +322,7 @@ function* importFromExcelSaga({ payload }) {
 
 function* exportToExcelSaga({ payload }) {
     try {
-        const { name } = payload;
+        const {name, filter} = payload;
         /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
@@ -328,7 +330,7 @@ function* exportToExcelSaga({ payload }) {
         link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();*/
-        const res = yield downloader.post(`/${name}/exportToExcel`, {}, {responseType: 'blob'});
+        const res = yield downloader.post(`/${name}/exportToExcel`, filter.filter, {responseType: 'blob'});
         const { data } = res;
         let headerLine = res.headers['content-disposition'];
         let startFileNameIndex = headerLine.indexOf('filename=') + 10;

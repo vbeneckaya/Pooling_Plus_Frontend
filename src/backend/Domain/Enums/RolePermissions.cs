@@ -35,6 +35,9 @@ namespace Domain.Enums
 
         RolesEdit = 21,
         UsersEdit = 22,
-        FieldsSettings = 23
+        FieldsSettings = 23,
+
+        ShippingWarehousesEdit = 24,
+
     }
 }

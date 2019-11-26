@@ -26,27 +26,26 @@ class TableInfo extends Component {
     };
 
     shouldComponentUpdate(nextProps) {
-        if (nextProps.list.length !== this.props.list.length) {
-            return true
-        }
+        /* if (nextProps.list.length !== this.props.list.length) {
+             return true
+         }
 
-        if (this.props.loading !== nextProps.loading) {
-            return true
-        }
+         if (this.props.loading !== nextProps.loading) {
+             return true
+         }
 
-        if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
-            return true
-        }
+         if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
+             return true
+         }
 
-        if (_.isEqual(nextProps.list, this.props.list)) {
-            return false
-        }
+         if (_.isEqual(nextProps.list, this.props.list)) {
+             return false
+         }*/
 
         return true
     }
 
     componentDidMount() {
-        console.log('this.props.name', this.props.name);
         this.load();
     }
 
@@ -60,7 +59,6 @@ class TableInfo extends Component {
         /* const { clear } = this.props;
 
          clear && clear();*/
-        console.log('clear');
     }
 
     mapData = (isConcat, isReload) => {
@@ -118,6 +116,10 @@ class TableInfo extends Component {
         this.fileUploader && this.fileUploader.click();
     };
 
+    exportToExcel = () => {
+        this.props.exportToExcel && this.props.exportToExcel(this.mapData())
+    };
+
     onFilePicked = e => {
         const file = e.target.files[0];
 
@@ -155,8 +157,6 @@ class TableInfo extends Component {
         } = this.props;
 
         const { filter } = this.state;
-
-        console.log('list', list);
 
         return (
             <Container className={className}>
@@ -197,7 +197,7 @@ class TableInfo extends Component {
                                     <Button
                                         color="green"
                                         loading={exportLoader}
-                                        onClick={exportToExcel}
+                                        onClick={this.exportToExcel}
                                     >
                                         <Icon name="download" />
                                         {t('exportToExcel')}

@@ -11,7 +11,7 @@ namespace Domain.Services
         IEnumerable<LookUpDto> ForSelect();
         ImportResultDto Import(IEnumerable<TDto> entityFrom);
         ImportResultDto ImportFromExcel(Stream fileStream);
-        Stream ExportToExcel();
+        Stream ExportToExcel(SearchFormDto form);
         ValidateResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);
     }

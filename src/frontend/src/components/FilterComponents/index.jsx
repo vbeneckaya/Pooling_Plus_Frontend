@@ -70,7 +70,6 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
     };
 
     const contextRef = useRef(null);
-    console.log('filter');
 
     return (
         <div className="facet">

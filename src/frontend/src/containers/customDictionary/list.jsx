@@ -50,12 +50,13 @@ class List extends Component {
         });
     };
 
-    handleExportToExcel = () => {
+    handleExportToExcel = (filter) => {
         const {exportFromExcel, match} = this.props;
         const {params = {}} = match;
         const {name = ''} = params;
         exportFromExcel({
             name,
+            filter
         });
     };
 

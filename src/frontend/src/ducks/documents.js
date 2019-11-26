@@ -303,7 +303,6 @@ function* downloadDocumentSaga({ payload }) {
         /*  let startFileNameIndex = headerLine[2].indexOf("''");
           /!*let endFileNameIndex = headerLine[2].lastIndexOf('"');*!/*/
         let filename = decodeURI(headerLine.substring(17));
-        console.log('filename', filename);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
         link.setAttribute('download', filename);

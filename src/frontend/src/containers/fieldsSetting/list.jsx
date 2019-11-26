@@ -119,8 +119,6 @@ const List = () => {
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
-    console.log('base', baseSettings);
-
     return (
         <div className="container">
             <Loader active={loading && !baseSettings.length} size="huge" className="table-loader">

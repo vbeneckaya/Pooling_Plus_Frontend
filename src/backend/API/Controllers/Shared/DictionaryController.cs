@@ -94,9 +94,9 @@ namespace API.Controllers.Shared
         /// Экспортировать в excel
         /// </summary>
         [HttpPost("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel()
+        public IActionResult ExportToExcel([FromBody]SearchFormDto form)
         {
-            var memoryStream = _service.ExportToExcel();
+            var memoryStream = _service.ExportToExcel(form);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
 

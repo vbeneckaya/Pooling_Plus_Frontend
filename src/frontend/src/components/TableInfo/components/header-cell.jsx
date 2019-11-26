@@ -12,8 +12,6 @@ const HeaderCellComponent = ({row}) => {
         setWidth(cellRef.current.offsetWidth);
     }, []);
 
-    console.log('headerCell');
-
     return (
         <th
             className={row.isFixedPosition ? 'no-scroll table-header-cell' : 'table-header-cell'}
