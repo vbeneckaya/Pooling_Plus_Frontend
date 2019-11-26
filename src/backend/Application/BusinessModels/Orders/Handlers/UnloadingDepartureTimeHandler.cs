@@ -18,20 +18,20 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, DateTime? oldValue, DateTime? newValue)
         {
-            if (order.ShippingId.HasValue)
-            {
-                var ordersToUpdate = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId
-                                                        && o.Id != order.Id
-                                                        && o.DeliveryWarehouseId == order.DeliveryWarehouseId)
-                                               .ToList();
+            //if (order.ShippingId.HasValue)
+            //{
+            //    var ordersToUpdate = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId
+            //                                            && o.Id != order.Id
+            //                                            && o.DeliveryWarehouseId == order.DeliveryWarehouseId)
+            //                                   .ToList();
 
-                foreach (Order updOrder in ordersToUpdate)
-                {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
-                    setter.UpdateField(o => o.UnloadingDepartureTime, newValue);
-                    setter.SaveHistoryLog();
-                }
-            }
+            //    foreach (Order updOrder in ordersToUpdate)
+            //    {
+            //        var setter = new FieldSetter<Order>(updOrder, _historyService);
+            //        setter.UpdateField(o => o.UnloadingDepartureTime, newValue);
+            //        setter.SaveHistoryLog();
+            //    }
+            //}
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)

@@ -61,21 +61,11 @@ namespace Application.BusinessModels.Orders.Actions
             setter.UpdateField(s => s.ActualWeightKg, actualWeight);
             setter.UpdateField(s => s.TrucksDowntime, downtime);
 
-            var ordersLoadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).FirstOrDefault();
-            var updateLoadingArrivalTime = ordersLoadingArrivalTime.HasValue && orders.All(i => i.LoadingArrivalTime == ordersLoadingArrivalTime);
+            var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
+            setter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
 
-            var ordersLoadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).FirstOrDefault();
-            var updateLoadingDepartureTime = ordersLoadingDepartureTime.HasValue && orders.All(i => i.LoadingDepartureTime == ordersLoadingDepartureTime);
-
-            if (updateLoadingArrivalTime)
-            {
-                setter.UpdateField(s => s.LoadingArrivalTime, ordersLoadingArrivalTime);
-            }
-
-            if (updateLoadingDepartureTime)
-            {
-                setter.UpdateField(s => s.LoadingDepartureTime, ordersLoadingDepartureTime);
-            }
+            var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
+            setter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
             
             setter.SaveHistoryLog();
             
