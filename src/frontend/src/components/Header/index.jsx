@@ -138,7 +138,7 @@ const Header = () => {
                             </div>
                             {userName && userRole ? (
                                 <Menu.Menu>
-                                    <Dropdown text={`${userName} (${t(userRole)})`} item>
+                                    <Dropdown text={`${userName} (${userRole})`} item>
                                         <Dropdown.Menu>
                                             <Dropdown.Item>
                                                 <Profile>
