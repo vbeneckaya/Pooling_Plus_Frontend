@@ -173,12 +173,9 @@ function* getUserProfileSaga({ payload = {} }) {
 
 function* changeLocation() {
     while (true) {
-        console.log('55555555555555555555555555');
         const {payload} = yield take('@@router/LOCATION_CHANGE');
         const {location} = payload;
         const {pathname} = location;
-
-        console.log('3333', pathname);
 
         if (pathname.includes('dictionary')) {
             yield put(clearDictionaryInfo());

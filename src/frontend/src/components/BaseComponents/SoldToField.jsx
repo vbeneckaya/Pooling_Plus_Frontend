@@ -36,7 +36,6 @@ const SoldToField = props => {
                 name: 'soldTo',
                 isForm: true,
                 callbackSuccess: (result) => {
-                    console.log('form', form, value);
                     onChange(null, {value: form.soldToNumber, name, ext: result.find(x => x.value === form.soldToNumber)});
                 }
             }),

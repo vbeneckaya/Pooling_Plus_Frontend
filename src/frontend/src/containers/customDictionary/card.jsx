@@ -35,8 +35,6 @@ class Card extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('update', this.state);
-
         if (this.props.defaultForm !== prevProps.defaultForm) {
             this.setState(prevState => ({
                 form: {
@@ -78,8 +76,6 @@ class Card extends Component {
         });
         clearCard();
         loadList && loadList(false, true);
-
-        console.log('this.state.form', this.state);
     };
 
     onClose = () => {

@@ -76,7 +76,7 @@ class UserCard extends Component {
     handleClose = () => {
         const {notChangeForm} = this.state;
         const {t} = this.props;
-        console.log('!!!', notChangeForm);
+
         if (notChangeForm) {
             this.confirmClose()
         } else {

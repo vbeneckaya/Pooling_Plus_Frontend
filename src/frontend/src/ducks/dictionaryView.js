@@ -242,7 +242,9 @@ export const canExportToExcelSelector = createSelector(
 );
 
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
-export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
+export const exportProgressSelector = createSelector(stateSelector, state => {
+    return state.exportProgress
+});
 
 //*  SAGA  *//
 
