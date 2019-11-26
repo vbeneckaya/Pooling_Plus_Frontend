@@ -30,7 +30,7 @@ namespace Domain.Services.ShippingWarehouses
         [ExcelIgnore]
         public string Area { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(4)]
+        [FieldType(FieldType.Text), OrderNumber(4), IsReadOnly]
         public string City { get; set; }
 
         [ExcelIgnore]

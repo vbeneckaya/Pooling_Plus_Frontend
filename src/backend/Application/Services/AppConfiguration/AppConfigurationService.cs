@@ -126,21 +126,26 @@ namespace Application.Services.AppConfiguration
 
             if (canEditWarehouses)
             {
-                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                var  columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
-                    Name = GetName<ShippingWarehousesService>(),
+                    Name = GetName<WarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditWarehouses,
                     ShowOnHeader = false,
                     Columns = columns
                 });
+            }
 
-                columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
+            var canEditShippingWarehouses = _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
+
+            if (canEditShippingWarehouses)
+            {
+                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
-                    Name = GetName<WarehousesService>(),
+                    Name = GetName<ShippingWarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditWarehouses,
@@ -285,12 +290,12 @@ namespace Application.Services.AppConfiguration
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
                 {
-                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired);
+                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
                 else
                 {
                     yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, 
-                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired);
+                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
             }
         }

@@ -18,13 +18,13 @@ namespace Domain.Services.Warehouses
         [ExcelIgnore]
         public string PostalCode { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(3)]
+        [FieldType(FieldType.Text), OrderNumber(3), IsReadOnly]
         public string Region { get; set; }
 
         [ExcelIgnore]
         public string Area { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(4)]
+        [FieldType(FieldType.Text), OrderNumber(4), IsReadOnly]
         public string City { get; set; }
 
         [ExcelIgnore]
