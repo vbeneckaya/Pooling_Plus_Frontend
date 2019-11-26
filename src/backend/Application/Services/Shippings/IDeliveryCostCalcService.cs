@@ -4,6 +4,6 @@ namespace Application.Services.Shippings
 {
     public interface IDeliveryCostCalcService
     {
-        decimal? CalculateDeliveryCost(Shipping shipping);
+        void UpdateDeliveryCost(Shipping shipping);
     }
 }
