@@ -5,16 +5,22 @@ import { push as historyPush } from 'connected-react-router';
 import { FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK } from '../router/links';
 import { logoutRequest } from './login';
 import {clearDictionaryInfo} from './dictionaryView';
+import result from "../components/SuperGrid/components/result";
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
 const GET_USER_PROFILE_SUCCESS = 'GET_USER_PROFILE_SUCCESS';
 const GET_USER_PROFILE_ERROR = 'GET_USER_PROFILE_ERROR';
 
+const GET_PROFILE_SETTINGS_REQUEST = 'GET_PROFILE_SETTINGS_REQUEST';
+const GET_PROFILE_SETTINGS_SUCCESS = 'GET_PROFILE_SETTINGS_SUCCESS';
+const GET_PROFILE_SETTINGS_ERROR = 'GET_PROFILE_SETTINGS_ERROR';
+
 //*  INITIAL STATE  *//
 
 const initial = {
     progress: false,
+    data: {},
 };
 
 //*  REDUCER  *//
@@ -37,6 +43,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
             };
+        case GET_PROFILE_SETTINGS_SUCCESS:
+            return {
+                ...state,
+                data: payload
+            };
         default:
             return state;
     }
@@ -47,6 +58,13 @@ export default (state = initial, { type, payload }) => {
 export const getUserProfile = payload => {
     return {
         type: GET_USER_PROFILE_REQUEST,
+        payload,
+    };
+};
+
+export const getProfileSettingsRequest = payload => {
+    return {
+        type: GET_PROFILE_SETTINGS_REQUEST,
         payload,
     };
 };
@@ -141,10 +159,10 @@ export const homePageSelector = createSelector(stateSelector, state => {
 });
 
 export const userPermissionsSelector = createSelector(stateSelector, state => {
-    return state.role ? state.role.permissions.map(
-        item => item.code,
-    ) : [];
+    return state.role ? state.role.permissions.map(item => item.code) : [];
 });
+
+export const profileSettingsSelector = createSelector(stateSelector, state => state.data);
 
 //*  SAGA  *//
 
@@ -171,6 +189,21 @@ function* getUserProfileSaga({ payload = {} }) {
     }
 }
 
+function* getProfileSettingsSaga() {
+    try {
+        const result = yield postman.get('/profile');
+
+        yield put({
+            type: GET_PROFILE_SETTINGS_SUCCESS,
+            payload: result,
+        });
+    } catch (e) {
+        yield put({
+            type: GET_PROFILE_SETTINGS_ERROR,
+        });
+    }
+}
+
 function* changeLocation() {
     while (true) {
         const {payload} = yield take('@@router/LOCATION_CHANGE');
@@ -184,6 +217,9 @@ function* changeLocation() {
 }
 
 export function* saga() {
-    yield all([takeEvery(GET_USER_PROFILE_REQUEST, getUserProfileSaga)]);
+    yield all([
+        takeEvery(GET_USER_PROFILE_REQUEST, getUserProfileSaga),
+        takeEvery(GET_PROFILE_SETTINGS_REQUEST, getProfileSettingsSaga)
+    ]);
     yield spawn(changeLocation);
 }

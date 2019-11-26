@@ -16,6 +16,7 @@ import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
 import { DICTIONARY_LINK, GRID_LINK } from '../../router/links';
+import Profile from '../../containers/users/profile';
 
 const Header = () => {
     const dispatch = useDispatch();
@@ -139,6 +140,11 @@ const Header = () => {
                                 <Menu.Menu>
                                     <Dropdown text={`${userName} (${t(userRole)})`} item>
                                         <Dropdown.Menu>
+                                            <Dropdown.Item>
+                                                <Profile>
+                                                    <div>{t('Настройки профиля')}</div>
+                                                </Profile>
+                                            </Dropdown.Item>
                                             <Dropdown.Item onClick={logOut}>
                                                 {t('exit')}
                                             </Dropdown.Item>
