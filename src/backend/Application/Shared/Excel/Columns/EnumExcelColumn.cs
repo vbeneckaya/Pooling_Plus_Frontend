@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Domain.Services.Translations;
+using Domain.Shared;
 using OfficeOpenXml;
 
 namespace Application.Shared.Excel.Columns
@@ -27,7 +28,7 @@ namespace Application.Shared.Excel.Columns
             cell.Value = value;
         }
 
-        public void SetValue(object entity, ExcelRange cell)
+        public ValidationResultItem SetValue(object entity, ExcelRange cell)
         {
             string cellValue = cell.GetValue<string>();
             if (string.IsNullOrEmpty(cellValue))
@@ -53,6 +54,8 @@ namespace Application.Shared.Excel.Columns
 
                 Property.SetValue(entity, validCellValue);
             }
+
+            return null;
         }
     }
 }

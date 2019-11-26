@@ -141,7 +141,6 @@ namespace Application.Shared
 
             if (excelMapper.Errors.Any(e => e.IsError))
             {
-                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
                 var result = new ImportResult();
                 result.Results.AddRange(excelMapper.Errors);
 

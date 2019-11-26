@@ -102,7 +102,7 @@ namespace Application.Services.Tariffs
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.ShipmentCity))
             {
@@ -117,17 +117,6 @@ namespace Application.Services.Tariffs
             if (string.IsNullOrEmpty(dto.CarrierId))
             {
                 result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-
-            if (string.IsNullOrEmpty(dto.StartWinterPeriod))
-            {
-                result.AddError(nameof(dto.StartWinterPeriod), "emptyStartWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.EndWinterPeriod))
-            {
-                result.AddError(nameof(dto.EndWinterPeriod), "emptyEndWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.EffectiveDate))
@@ -224,7 +213,9 @@ namespace Application.Services.Tariffs
             return new ExcelMapper<TariffDto>(_dataService, _userProvider)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById));
+
         }
 
         private Guid? GetCarrierIdByName(string name)
@@ -248,6 +239,18 @@ namespace Application.Services.Tariffs
         private string GetVehicleTypeNameById(Guid id)
         {
             var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
+            return entry?.Name;
+        }
+
+        private Guid? GetBodyTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetBodyTypeNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().GetById(id);
             return entry?.Name;
         }
 
@@ -285,13 +288,6 @@ namespace Application.Services.Tariffs
                 || i.ShipmentCity.ToLower().Contains(search)
                 || i.DeliveryCity.ToLower().Contains(search)
                 );
-        }
-
-        private bool HasDatesOverlapped(TariffDto dto)
-        {
-            var list = this.GetByKey(dto).Where(i => IsPeriodsOverlapped(i, dto)).ToList();
-
-            return this.GetByKey(dto).Any(i => IsPeriodsOverlapped(i, dto));
         }
 
         public override Tariff FindByKey(TariffDto dto)

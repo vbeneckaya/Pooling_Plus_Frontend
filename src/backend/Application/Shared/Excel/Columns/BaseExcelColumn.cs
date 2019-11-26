@@ -1,4 +1,5 @@
 ﻿using Domain.Services.Translations;
+using Domain.Shared;
 using OfficeOpenXml;
 using System;
 using System.Reflection;
@@ -37,7 +38,7 @@ namespace Application.Shared.Excel.Columns
             }
         }
 
-        public void SetValue(object entity, ExcelRange cell)
+        public ValidationResultItem SetValue(object entity, ExcelRange cell)
         {
             if (cell.Value == null)
             {
@@ -93,6 +94,8 @@ namespace Application.Shared.Excel.Columns
             {
                 Property.SetValue(entity, cell.Value?.ToString());
             }
+
+            return null;
         }
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Domain.Shared
 {
-    public class DetailedValidattionResult: ValidateResult
+    public class DetailedValidationResult: ValidateResult
     {
-        public DetailedValidattionResult() { }
+        public DetailedValidationResult() { }
 
-        public DetailedValidattionResult(string name, string message, ValidationErrorType errorType) 
+        public DetailedValidationResult(string name, string message, ValidationErrorType errorType) 
         {
             this.AddError(name, message, errorType);
         }
