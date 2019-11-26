@@ -12,7 +12,9 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
-        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override ValidateResult MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {

@@ -16,7 +16,9 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override ValidateResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {

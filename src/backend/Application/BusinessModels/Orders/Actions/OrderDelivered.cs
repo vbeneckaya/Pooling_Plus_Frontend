@@ -32,8 +32,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Delivered;
 
             _historyService.Save(order.Id, "orderSetDelivered", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {

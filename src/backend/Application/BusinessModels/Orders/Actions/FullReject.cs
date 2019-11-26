@@ -31,8 +31,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.FullReturn;
 
             _historyService.Save(order.Id, "orderSetFullReturn", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {

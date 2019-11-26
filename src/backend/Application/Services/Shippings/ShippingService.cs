@@ -34,10 +34,9 @@ namespace Application.Services.Shippings
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<Shipping>> singleActions,
-            IEnumerable<IGroupAppAction<Shipping>> groupActions)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
+            IFieldPropertiesService fieldPropertiesService, 
+            IServiceProvider serviceProvider)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

@@ -36,8 +36,6 @@ namespace Application.BusinessModels.Shippings.Actions
 
             _historyService.Save(shipping.Id, "shippingSetProblem", shipping.ShippingNumber);
 
-            _dataService.SaveChanges();
-
             return new AppActionResult
             {
                 IsError = false,

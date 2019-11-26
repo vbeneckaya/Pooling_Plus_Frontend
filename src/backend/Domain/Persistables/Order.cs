@@ -301,6 +301,11 @@ namespace Domain.Persistables
         public decimal? DeliveryCost { get; set; }
 
         /// <summary>
+        /// Базовая стоимость введена вручную
+        /// </summary>
+        public bool ManualDeliveryCost { get; set; }
+
+        /// <summary>
         /// Фактическая стоимость, без НДС
         /// </summary>
         public decimal? ActualDeliveryCost { get; set; }

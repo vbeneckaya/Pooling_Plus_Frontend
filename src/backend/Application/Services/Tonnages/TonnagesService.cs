@@ -9,13 +9,14 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Application.Services.Tonnages
 {
     public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
-        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override ValidateResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)
         {

@@ -1,8 +1,8 @@
-﻿using Application.Shared;
-using DAL.Services;
+﻿using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,6 @@ namespace Application.Services.Shippings
                                            .ToList();
 
             var hasSkippingOrders = orders.Where(x => x.DeliveryType != DeliveryType.Delivery
-                                                    || x.DeliveryCost != null
                                                     || x.PalletsCount == null
                                                     || x.PalletsCount <= 0
                                                     || x.ShippingDate == null
@@ -49,14 +48,20 @@ namespace Application.Services.Shippings
                 return;
             }
 
+            Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
+
             foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity }))
             {
-                decimal deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable()) ?? 0M;
+                decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable());
                 foreach (var order in group)
                 {
-                    var setter = new FieldSetter<Order>(order, _historyService);
-                    setter.UpdateField(x => x.DeliveryCost, deliveryCost);
-                    setter.SaveHistoryLog();
+                    if (!order.ManualDeliveryCost && order.DeliveryCost != deliveryCost)
+                    {
+                        _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
+                                                         nameof(order.DeliveryCost),
+                                                         order.DeliveryCost, deliveryCost);
+                        order.DeliveryCost = deliveryCost;
+                    }
                 }
             }
         }

@@ -56,9 +56,6 @@ namespace Application.BusinessModels.Orders.Actions
                 _historyService.Save(shipping.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
             }
             
-            
-            _dataService.SaveChanges();
-            
             return new AppActionResult
             {
                 IsError = false,

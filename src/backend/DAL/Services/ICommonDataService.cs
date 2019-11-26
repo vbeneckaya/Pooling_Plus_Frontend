@@ -1,8 +1,7 @@
 ﻿using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DAL.Services
 {
@@ -11,6 +10,8 @@ namespace DAL.Services
         DbSet<TEntity> GetDbSet<TEntity>() where TEntity: class, IPersistable;
 
         TEntity GetById<TEntity>(Guid id) where TEntity : class, IPersistable;
+
+        EntityEntry<TEntity> GetTrackingEntry<TEntity>(TEntity entity) where TEntity : class, IPersistable;
 
         void SaveChanges();
     }
