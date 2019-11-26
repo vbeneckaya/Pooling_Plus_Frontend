@@ -27,7 +27,7 @@ namespace API.Controllers
         /// <summary>
         /// Сохранение новой информации о пользователе
         /// </summary>
-        [HttpGet("save")] 
+        [HttpPost("save")] 
         public ValidateResult Save(SaveProfileDto dto)
         {
             return profileService.Save(dto);
@@ -36,7 +36,7 @@ namespace API.Controllers
         /// <summary>
         /// Задание нового пароля
         /// </summary>
-        [HttpGet("setNewPassword")] 
+        [HttpPost("setNewPassword")] 
         public ValidateResult SetNewPassword(SetNewPasswordDto dto)
         {
             return profileService.SetNewPassword(dto);
