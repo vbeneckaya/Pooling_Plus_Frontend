@@ -15,7 +15,7 @@ namespace Domain.Persistables
         public Role Role { get; set; }
 
         /// <summary>
-        /// Транспортная компания
+        /// РўСЂР°РЅСЃРїРѕСЂС‚РЅР°СЏ РєРѕРјРїР°РЅРёСЏ
         /// </summary>
         public Guid? CarrierId { get; set; }
     }

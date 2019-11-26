@@ -22,12 +22,19 @@ namespace Application.Services.Profile
         public ProfileDto GetProfile()
         {
             var currentUserId = userProvider.GetCurrentUserId();
-            var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            var user = dataService
+                .GetDbSet<User>()
+                .GetById(currentUserId.Value);
+
+            var role = dataService
+                .GetDbSet<Role>()
+                .GetById(user.RoleId);
+            
             return new ProfileDto
             {
                 Email = user.Email,
                 UserName = user.Name,
-                RoleName = user.Role.Name,
+                RoleName = role.Name,
             };
         }
 
