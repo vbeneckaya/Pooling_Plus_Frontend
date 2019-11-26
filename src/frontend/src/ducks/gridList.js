@@ -352,7 +352,7 @@ function* exportToExcelSaga({ payload }) {
 
         const res = yield downloader.post(
             `/${name}/exportToExcel`,
-            { columns, filter },
+            { columns, ...filter },
             { responseType: 'blob' },
         );
         const { data } = res;
