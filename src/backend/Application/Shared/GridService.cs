@@ -36,6 +36,8 @@ namespace Application.Shared
 
         public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
 
+        public abstract IQueryable<TEntity> ApplyRestrictions(IQueryable<TEntity> query);
+
         public abstract string GetNumber(TFormDto dto);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
@@ -123,7 +125,9 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var query = this.ApplySearchForm(dbSet, form);
+            var query = ApplySearchForm(dbSet, form);
+            query = ApplyRestrictions(query);
+            
             Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -154,7 +158,9 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             
-            var query = this.ApplySearchForm(dbSet, form);
+            var query = ApplySearchForm(dbSet, form);
+            query = ApplyRestrictions(query);
+            
             Log.Debug("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -658,6 +664,9 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
+            
+            query = ApplyRestrictions(query);
+
             Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 

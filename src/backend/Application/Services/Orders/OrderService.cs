@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DAL.Queries;
 using Domain.Services.Translations;
 
 namespace Application.Services.Orders
@@ -71,7 +72,18 @@ namespace Application.Services.Orders
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
         }
+        
+        public override IQueryable<Order> ApplyRestrictions(IQueryable<Order> query)
+        {
+            var currentUserId = _userIdProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            
+            if (user.CarrierId.HasValue) 
+                query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            return query;
+        }        
+        
         public override string GetNumber(OrderFormDto dto)
         {
             return dto?.OrderNumber;
