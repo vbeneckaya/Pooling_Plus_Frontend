@@ -35,7 +35,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
 
-            orders = orders.Where(x => x.Status == OrderState.Created);
+            orders = orders.Where(x => x.Status == OrderState.Confirmed);
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
@@ -54,8 +54,8 @@ namespace Application.BusinessModels.Orders.Actions
         public bool IsAvailable(IEnumerable<Order> target)
         {
             return target.Count() > 1 && 
-                   target.Where(x => x.Status == OrderState.InShipping).Count() == 1 &&
-                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
+                   target.Count(x => x.Status == OrderState.InShipping) == 1 &&
+                   target.Any(x => x.Status == OrderState.Confirmed);
         }
     }
 }

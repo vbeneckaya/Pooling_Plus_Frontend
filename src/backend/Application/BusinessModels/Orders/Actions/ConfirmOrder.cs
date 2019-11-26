@@ -4,37 +4,47 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
-    /// Создать перевозку
+    /// Отменить заказ
     /// </summary>
-    public class CreateShipping : IAppAction<Order>
+    public class ConfirmOrder : IAppAction<Order>
     {
         private readonly IHistoryService _historyService;
 
         private readonly ICommonDataService _dataService;
 
-        public CreateShipping(ICommonDataService dataService, IHistoryService historyService)
+        public ConfirmOrder(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
-            Color = AppColor.Blue;
+            Color = AppColor.Red;
         }
 
         public AppColor Color { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
-            var unionOrders = new UnionOrders(_dataService, _historyService);
-            return unionOrders.Run(user, new[] { order });
+            order.Status = OrderState.Confirmed;
+
+            _historyService.Save(order.Id, "orderSetConfirmed", order.OrderNumber);
+
+            _dataService.SaveChanges();
+            
+            return new AppActionResult
+            {
+                IsError = false,
+                Message = "orderSetConfirmed".Translate(user.Language, order.OrderNumber)
+            };
         }
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Confirmed;
+            return order.Status == OrderState.Created;
         }
     }
 }
