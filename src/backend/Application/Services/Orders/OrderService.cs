@@ -447,7 +447,7 @@ namespace Application.Services.Orders
         /// <param name="query">query</param>
         /// <param name="searchForm">search form</param>
         /// <returns></returns>
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm, List<string> columns = null)
         {
             List<object> parameters = new List<object>();
             string where = string.Empty;
@@ -518,7 +518,7 @@ namespace Application.Services.Orders
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-            query = this.ApplySearch(query, searchForm);
+            query = this.ApplySearch(query, searchForm?.Filter?.Search, columns ?? searchForm?.Filter?.Columns);
 
             var sortFieldMapping = new Dictionary<string, string>
             {
@@ -536,11 +536,8 @@ namespace Application.Services.Orders
                 .DefaultOrderBy(i => i.Id, true);
         }
 
-        private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var search = searchForm.Filter.Search;
-            var columns = searchForm.Filter.Columns;
-
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
             if (string.IsNullOrEmpty(search)) return query;

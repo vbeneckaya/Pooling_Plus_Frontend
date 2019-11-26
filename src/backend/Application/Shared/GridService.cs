@@ -39,7 +39,7 @@ namespace Application.Shared
         public abstract string GetNumber(TFormDto dto);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
-        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm);
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
@@ -657,7 +657,7 @@ namespace Application.Shared
             var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
 
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var query = this.ApplySearchForm(dbSet, dto);
+            var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
             Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 

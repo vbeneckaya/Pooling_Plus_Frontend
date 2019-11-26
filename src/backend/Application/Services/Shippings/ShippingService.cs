@@ -352,7 +352,7 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
+        public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm, List<string> columns = null)
         {
             List<object> parameters = new List<object>();
             string where = string.Empty;
@@ -404,18 +404,15 @@ namespace Application.Services.Shippings
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-            query = this.ApplySearch(query, searchForm);
+            query = this.ApplySearch(query, searchForm?.Filter?.Search, columns ?? searchForm?.Filter?.Columns);
 
             return query.OrderBy(searchForm.Sort?.Name, searchForm.Sort?.Desc)
                 .DefaultOrderBy(i => i.ShippingCreationDate, !string.IsNullOrEmpty(searchForm.Sort?.Name))
                 .DefaultOrderBy(i => i.Id, true);
         }
 
-        private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm)
+        private IQueryable<Shipping> ApplySearch(IQueryable<Shipping> query, string search, List<string> columns)
         {
-            var search = searchForm.Filter.Search;
-            var columns = searchForm.Filter.Columns;
-
             if (string.IsNullOrEmpty(search)) return query;
 
             var isInt = int.TryParse(search, out int searchInt);
