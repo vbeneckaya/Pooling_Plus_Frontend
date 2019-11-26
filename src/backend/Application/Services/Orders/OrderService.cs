@@ -651,9 +651,9 @@ namespace Application.Services.Orders
                 );
         }
 
-        protected override ExcelMapper<OrderFormDto> CreateExcelMapper()
+        protected override ExcelMapper<OrderDto> CreateExportExcelMapper()
         {
-            return base.CreateExcelMapper()
+            return base.CreateExportExcelMapper()
                 .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById))
                 .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById));
         }
