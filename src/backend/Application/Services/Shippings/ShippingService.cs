@@ -74,6 +74,18 @@ namespace Application.Services.Shippings
             return result;
         }
 
+        public override IQueryable<Shipping> ApplyRestrictions(IQueryable<Shipping> query)
+        {
+            var currentUserId = _userIdProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            
+            if (user.CarrierId.HasValue)
+                query = query
+                    .Where(x => x.CarrierId == user.CarrierId);
+
+            return query;
+        }
+
         public override string GetNumber(ShippingFormDto dto)
         {
             return dto?.ShippingNumber;
