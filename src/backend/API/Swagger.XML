@@ -148,7 +148,7 @@
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictionaryController`3.ExportToExcel">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ExportToExcel(Domain.Shared.SearchFormDto)">
             <summary>
             Экспортировать в excel
             </summary>

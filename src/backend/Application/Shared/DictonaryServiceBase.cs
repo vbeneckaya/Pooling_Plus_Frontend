@@ -189,7 +189,7 @@ namespace Application.Shared
             };
         }
 
-        public Stream ExportToExcel()
+        public Stream ExportToExcel(SearchFormDto form)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -201,9 +201,13 @@ namespace Application.Shared
             string entityName = typeof(TEntity).Name.Pluralize().ToLowerFirstLetter();
             string entityDisplayName = entityName.Translate(user.Language);
             var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
-
+            
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var entities = dbSet.ToList();
+            var query = ApplySearch(dbSet, form);
+            Log.Debug("{entityName}.ExportToExcel (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var entities = ApplySort(query, form).ToList();
             Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 

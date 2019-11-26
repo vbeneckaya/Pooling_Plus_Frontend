@@ -285,12 +285,12 @@ namespace Application.Services.AppConfiguration
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
                 {
-                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired);
+                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
                 else
                 {
                     yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, 
-                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired);
+                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
             }
         }
