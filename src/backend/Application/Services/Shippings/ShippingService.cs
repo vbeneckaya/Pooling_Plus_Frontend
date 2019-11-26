@@ -501,10 +501,14 @@ namespace Application.Services.Shippings
 
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
         {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
             return base.CreateExportExcelMapper()
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
+                .MapColumn(i => i.Status, new EnumExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
 
         private Guid? GetCarrierIdByName(string name)
