@@ -3,12 +3,15 @@ import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../../BaseComponents';
 import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
+import {useSelector} from "react-redux";
+import {valuesListSelector} from "../../../ducks/lookup";
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    const handleChangeSoldTo = (e, {name, value, ext}) => {
+    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
+    const handleChangeSoldTo = (e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
@@ -24,6 +27,8 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
         });
 
         onChange(e, {name: 'shippingAddress', value: ext.address});
+
+        return valuesList;
     };
 
     return (
