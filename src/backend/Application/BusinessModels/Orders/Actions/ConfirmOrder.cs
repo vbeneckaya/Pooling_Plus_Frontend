@@ -22,7 +22,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             _dataService = dataService;
             _historyService = historyService;
-            Color = AppColor.Red;
+            Color = AppColor.Green;
         }
 
         public AppColor Color { get; set; }
