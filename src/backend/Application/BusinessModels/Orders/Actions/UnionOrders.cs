@@ -65,7 +65,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.Count(entity => entity.Status == OrderState.Confirmed) >= 2;
+            return target.All(entity => entity.Status == OrderState.Confirmed);
         }
     }
 }

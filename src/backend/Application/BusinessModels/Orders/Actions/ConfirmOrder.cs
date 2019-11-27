@@ -33,8 +33,6 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderSetConfirmed", order.OrderNumber);
 
-            _dataService.SaveChanges();
-            
             return new AppActionResult
             {
                 IsError = false,
