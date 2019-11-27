@@ -110,14 +110,26 @@ namespace Application.Services.Tariffs
 
             var result = _validator.Validate(dto); //new DetailedValidationResult();
 
-            if (string.IsNullOrEmpty(dto.ShipmentCity))
-            {
-                result.Result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            // Delivery City
 
             if (string.IsNullOrEmpty(dto.DeliveryCity))
             {
                 result.Result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+            else if(!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.ToLower()))
+            { 
+                result.Result.AddError(nameof(dto.DeliveryCity), "deliveryCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
+            }
+
+            // Shipping City
+
+            if (string.IsNullOrEmpty(dto.ShipmentCity))
+            {
+                result.Result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+            else if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.ToLower()))
+            {
+                result.Result.AddError(nameof(dto.ShipmentCity), "shipmentCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
             }
 
             if (string.IsNullOrEmpty(dto.CarrierId))
@@ -221,7 +233,6 @@ namespace Application.Services.Tariffs
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById));
-
         }
 
         private Guid? GetCarrierIdByName(string name)
