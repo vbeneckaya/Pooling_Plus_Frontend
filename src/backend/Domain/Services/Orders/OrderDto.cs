@@ -102,6 +102,9 @@ namespace Domain.Services.Orders
         public string DeliveryStatus { get; set; }
 
         [FieldType(FieldType.Time)]
+        public string ShippingAvisationTime { get; set; }
+
+        [FieldType(FieldType.Time)]
         public string ClientAvisationTime { get; set; }
 
         [FieldType(FieldType.Text)]

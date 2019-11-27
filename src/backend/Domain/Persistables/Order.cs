@@ -145,6 +145,10 @@ namespace Domain.Persistables
         /// </summary>
         public VehicleState DeliveryStatus { get; set; }
         /// <summary>
+        /// Время авизации на складе отгрузки
+        /// </summary>
+        public TimeSpan? ShippingAvisationTime { get; set; }
+        /// <summary>
         /// Время авизации у клиента
         /// </summary>
         public TimeSpan? ClientAvisationTime { get; set; }
