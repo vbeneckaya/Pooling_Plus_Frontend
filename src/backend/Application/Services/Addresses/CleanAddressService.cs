@@ -36,10 +36,22 @@ namespace Application.Services.Addresses
                 DaDataCleanAddressAnswer[] answer;
                 answer = JsonConvert.DeserializeObject<DaDataCleanAddressAnswer[]>(responseData);
 
-                if (answer != null && answer.Length > 0
-                    && (!string.IsNullOrEmpty(answer[0].PostalCode) || !string.IsNullOrEmpty(answer[0].Fias)))
+                if (answer != null && answer.Length > 0)
                 {
-                    result = ConvertCleanAnswerResponse(answer[0]);
+                    if (!string.IsNullOrEmpty(answer[0].PostalCode) || !string.IsNullOrEmpty(answer[0].Fias))
+                    {
+                        result = ConvertCleanAnswerResponse(answer[0]);
+                        Log.Information("Адрес {address} разобран как: {PostalCode}, {Region}, {City}, {Street}, {House}, не разобрано: {UnparsedAddressParts}",
+                                        address, result.PostalCode, result.Region, result.City, result.Street, result.House, result.UnparsedAddressParts);
+                    }
+                    else
+                    {
+                        Log.Warning("В КЛАДР не определился ни почтовый индекс, ни ФИАС для {address}", address);
+                    }
+                }
+                else
+                {
+                    Log.Warning("В КЛАДР не найдено вариантов для {address}", address);
                 }
             }
             return result;
