@@ -1,6 +1,7 @@
 using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
@@ -34,8 +35,9 @@ namespace Application.Services.Shippings
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService, 
-            IServiceProvider serviceProvider)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
+            IServiceProvider serviceProvider, 
+            ITriggersService triggersService)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

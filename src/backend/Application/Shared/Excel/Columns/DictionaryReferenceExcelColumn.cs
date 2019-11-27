@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using Domain.Services.Translations;
+using Domain.Shared;
 using OfficeOpenXml;
 
 namespace Application.Shared.Excel.Columns
@@ -20,11 +22,24 @@ namespace Application.Shared.Excel.Columns
             }
         }
 
-        public void SetValue(object entity, ExcelRange cell)
+        public ValidationResultItem SetValue(object entity, ExcelRange cell)
         {
             string refName = cell.GetValue<string>();
             string refId = string.IsNullOrEmpty(refName) ? null : _guidLookupMethod(refName)?.ToString();
+
+            if (!string.IsNullOrEmpty(refName) && string.IsNullOrEmpty(refId))
+            {
+                return new ValidationResultItem
+                {
+                    Name = refName,
+                    Message = "invalidDictionaryValue",
+                    ResultType = ValidationErrorType.InvalidDictionaryValue
+                };
+            }
+
             Property.SetValue(entity, refId);
+
+            return null;
         }
 
         public DictionaryReferenceExcelColumn(Func<string, Guid?> guidLookupMethod, Func<Guid, string> nameLookupMethod)

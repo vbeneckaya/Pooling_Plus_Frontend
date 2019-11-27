@@ -18,9 +18,9 @@ namespace Domain.Shared
 
         public int CreatedCount => this.Results.Where(i => i.ResultType == ValidateResultType.Created).Count();
 
-        private IEnumerable<DetailedValidattionResult> DetailedResults => this.Results
-                        .Where(i => i.GetType() == typeof(DetailedValidattionResult))
-                        .Cast<DetailedValidattionResult>();
+        private IEnumerable<DetailedValidationResult> DetailedResults => this.Results
+                        .Where(i => i.GetType() == typeof(DetailedValidationResult))
+                        .Cast<DetailedValidationResult>();
 
         public int RequiredErrorsCount => this.DetailedResults
                     .Where(i => i.Errors.Any(e => e.ResultType == ValidationErrorType.ValueIsRequired))

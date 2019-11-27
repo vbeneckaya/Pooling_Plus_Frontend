@@ -52,7 +52,7 @@ export class UsersList extends Component {
                 headerRow={usersColumns}
                 title={t('users')}
                 loading={loading}
-                className="wider container-margin-top-bottom"
+                className="wider ui container container-margin-top-bottom"
                 list={list}
                 isShowActions
                 actions={this.getActions}

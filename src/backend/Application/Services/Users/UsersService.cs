@@ -1,3 +1,4 @@
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -15,8 +16,8 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -70,7 +71,7 @@ namespace Application.Services.Users
             };
         }
 
-        public override ValidateResult MapFromDtoToEntity(User entity, UserDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -101,14 +102,14 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(UserDto dto)
+        private DetailedValidationResult ValidateDto(UserDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Email))
             {

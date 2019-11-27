@@ -3,6 +3,7 @@ using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
+using Domain.Shared;
 using System.Linq;
 
 namespace Application.BusinessModels.Tariffs.Triggers
@@ -27,11 +28,9 @@ namespace Application.BusinessModels.Tariffs.Triggers
             }
         }
 
-        public bool IsTriggered(Tariff entity)
+        public bool IsTriggered(EntityChangesDto<Tariff> changes)
         {
-            var trackingEntry = _dataService.GetTrackingEntry(entity);
-            var result = trackingEntry.Properties.Any(x => x.IsModified);
-            return result;
+            return changes?.FieldChanges?.Count > 0;
         }
     }
 }

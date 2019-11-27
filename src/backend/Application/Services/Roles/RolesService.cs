@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -18,8 +19,8 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -72,7 +73,7 @@ namespace Application.Services.Roles
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(Role entity, RoleDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -88,14 +89,14 @@ namespace Application.Services.Roles
             entity.Actions = dto.Actions?.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(RoleDto dto)
+        private DetailedValidationResult ValidateDto(RoleDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Name))
             {

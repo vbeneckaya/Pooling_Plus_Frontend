@@ -1,11 +1,11 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.DocumentTypes;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,11 +14,11 @@ namespace Application.Services.DocumentTypes
 
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
-        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
-        public override ValidateResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -29,13 +29,13 @@ namespace Application.Services.DocumentTypes
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
-        private ValidateResult ValidateDto(DocumentTypeDto dto)
+        private DetailedValidationResult ValidateDto(DocumentTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Name))
             {

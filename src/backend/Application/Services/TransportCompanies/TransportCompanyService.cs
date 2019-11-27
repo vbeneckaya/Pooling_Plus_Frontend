@@ -1,3 +1,4 @@
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
@@ -13,8 +14,8 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -34,7 +35,7 @@ namespace Application.Services.TransportCompanies
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -49,14 +50,14 @@ namespace Application.Services.TransportCompanies
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(TransportCompanyDto dto)
+        private DetailedValidationResult ValidateDto(TransportCompanyDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Title))
             {

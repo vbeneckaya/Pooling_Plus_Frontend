@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml;
+﻿using Domain.Shared;
+using OfficeOpenXml;
 using System.Reflection;
 
 namespace Application.Shared.Excel.Columns
@@ -10,6 +11,6 @@ namespace Application.Shared.Excel.Columns
         int ColumnIndex { get; set; }
 
         void FillValue(object entity, ExcelRange cell);
-        void SetValue(object entity, ExcelRange cell);
+        ValidationResultItem SetValue(object entity, ExcelRange cell);
     }
 }

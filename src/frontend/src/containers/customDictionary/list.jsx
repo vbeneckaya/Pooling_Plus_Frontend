@@ -84,7 +84,7 @@ class List extends Component {
                 key={name}
                 headerRow={columns}
                 name={name}
-                className="wider container-margin-top-bottom"
+                className={columns.length >= 10 ? 'container' : "wider ui container container-margin-top-bottom"}
                 loadList={loadList}
                 loading={progress}
                 totalCount={totalCount}

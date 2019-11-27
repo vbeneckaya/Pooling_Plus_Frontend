@@ -1,5 +1,6 @@
 using Application.BusinessModels.Warehouses.Handlers;
 using Application.Services.Addresses;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
@@ -25,9 +26,9 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider,
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, serviceProvider)
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -61,7 +62,7 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -106,7 +107,7 @@ namespace Application.Services.Warehouses
             }
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -183,11 +184,11 @@ namespace Application.Services.Warehouses
                 );
         }
 
-        private ValidateResult ValidateDto(WarehouseDto dto)
+        private DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.SoldToNumber))
             {

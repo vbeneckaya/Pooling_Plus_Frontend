@@ -27,14 +27,17 @@ using Application.Services.TaskProperties;
 using Application.Services.Tonnages;
 using Application.Services.Translations;
 using Application.Services.TransportCompanies;
+using Application.Services.Triggers;
 using Application.Services.Users;
 using Application.Services.UserSettings;
 using Application.Services.VehicleTypes;
 using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
+using Application.Shared;
 using DAL;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
@@ -89,6 +92,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
 
+            services.AddScoped<ITriggersService, TriggersService>();
+
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IShippingsService, ShippingsService>();
@@ -113,6 +118,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
+
+            services.AddScoped<IValidationService, ValidationService>();
 
             /*end of add service implementation*/
 
@@ -139,6 +146,7 @@ namespace Infrastructure.Installers
         private static void AddOrderBusinessModels(IServiceCollection services)
         {
             services.AddScoped<IAppAction<Order>, CreateShipping>();
+            services.AddScoped<IAppAction<Order>, ConfirmOrder>();
             services.AddScoped<IAppAction<Order>, CancelOrder>();
             services.AddScoped<IAppAction<Order>, RemoveFromShipping>();
             services.AddScoped<IAppAction<Order>, SendToArchive>();

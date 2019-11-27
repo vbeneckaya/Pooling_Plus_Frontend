@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.Injections;
@@ -12,11 +13,11 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
-        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
-        public override ValidateResult MapFromDtoToEntity(Injection entity, InjectionDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Injection entity, InjectionDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -25,7 +26,7 @@ namespace Application.Services.Injections
             entity.Status = dto.Status;
             entity.ProcessTimeUtc = dto.ProcessTimeUtc;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override InjectionDto MapFromEntityToDto(Injection entity)

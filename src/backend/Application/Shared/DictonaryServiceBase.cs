@@ -1,4 +1,4 @@
-using Application.BusinessModels.Shared.Triggers;
+using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -8,7 +8,6 @@ using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.DependencyInjection;
 using OfficeOpenXml;
 using Serilog;
 using System;
@@ -22,18 +21,18 @@ namespace Application.Shared
 {
     public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
-        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TListDto dto);
+        public abstract DetailedValidationResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
         protected readonly IUserProvider _userProvider;
-        protected readonly IServiceProvider _serviceProvider;
+        protected readonly ITriggersService _triggersService;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService)
         {
             _dataService = dataService;
             _userProvider = userProvider;
-            _serviceProvider = serviceProvider;
+            _triggersService = triggersService;
         }
 
         public TListDto Get(Guid id)
@@ -110,25 +109,41 @@ namespace Application.Shared
             return query.OrderBy(i => i.Id);
         }
 
-        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
+        public ImportResultDto Import(IEnumerable<ValidatedRecord<TListDto>> entitiesFrom)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var importResult = new ImportResult();
-            
-            foreach (var dto in entitiesFrom)
-                importResult.Results.Add(SaveOrCreateInner(dto, true));
+            foreach (var record in entitiesFrom)
+            {
+                if (record.Result.IsError) continue;
+
+                var validationResult = SaveOrCreateInner(record.Data, true);
+
+                if (validationResult.IsError)
+                {
+                    record.Result.AddErrors(validationResult.Errors);
+                }
+            }
+
             Log.Debug("{entityName}.Import (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
+
+            var importResult = new ImportResult();
+            importResult.Results.AddRange(entitiesFrom.Select(i => i.Result));
 
             var result = MapFromImportResult(importResult);
             Log.Debug("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
-        
+
+        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
+        {
+            return Import(entitiesFrom.Select(i => new ValidatedRecord<TListDto>(i)));
+        }
+
         public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
@@ -143,14 +158,13 @@ namespace Application.Shared
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (excelMapper.Errors.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
-                var result = new ImportResult();
-                result.Results.AddRange(excelMapper.Errors);
+            //if (excelMapper.Errors.Any(e => e.IsError))
+            //{
+            //    var result = new ImportResult();
+            //    result.Results.AddRange(excelMapper.Errors);
 
-                return MapFromImportResult(result);
-            }
+            //    return MapFromImportResult(result);
+            //}
 
             var importResult = Import(dtos);
             Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -244,13 +258,11 @@ namespace Application.Shared
             }
         }
 
-        protected ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        protected DetailedValidationResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
@@ -284,17 +296,11 @@ namespace Application.Shared
                 }
                 else
                 {
-                    dbSet.Update(entityFromDb);
+                    //dbSet.Update(entityFromDb);
                     result.ResultType = ValidateResultType.Updated;
                 }
 
-                foreach (var trigger in triggers)
-                {
-                    if (trigger.IsTriggered(entityFromDb))
-                    {
-                        trigger.Execute(entityFromDb);
-                    }
-                }
+                _triggersService.Execute();
                 Log.Debug("{entityName}.SaveOrCreateInner (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 
@@ -321,6 +327,18 @@ namespace Application.Shared
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
             return new ExcelMapper<TListDto>(_dataService, _userProvider);
+        }
+
+        public ValidateResult Delete(Guid id)
+        {
+            var entity = _dataService.GetById<TEntity>(id);
+
+            if (entity == null) return new ValidateResult("Запись не найдена", id.ToString());
+
+            _dataService.Remove(entity);
+            _dataService.SaveChanges();
+
+            return new ValidateResult(null, id.ToString());
         }
     }
 }

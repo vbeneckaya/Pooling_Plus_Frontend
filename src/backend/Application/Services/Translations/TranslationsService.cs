@@ -1,3 +1,4 @@
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
@@ -12,8 +13,8 @@ namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public IEnumerable<TranslationDto> GetAll()
@@ -35,7 +36,7 @@ namespace Application.Services.Translations
             return _dataService.GetDbSet<Translation>().Where(x => x.Name == name).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(Translation entity, TranslationDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Translation entity, TranslationDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -43,7 +44,7 @@ namespace Application.Services.Translations
             entity.En = dto.En;
             entity.Ru = dto.Ru;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override TranslationDto MapFromEntityToDto(Translation entity)

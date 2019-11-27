@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Linq;
 using DAL.Queries;
 using Domain.Services.Translations;
+using Application.Services.Triggers;
 
 namespace Application.Services.Orders
 {
@@ -35,8 +36,9 @@ namespace Application.Services.Orders
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService, 
-            IServiceProvider serviceProvider)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
+            IServiceProvider serviceProvider,
+            ITriggersService triggersService)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -238,7 +240,7 @@ namespace Application.Services.Orders
         {
             var lang = _userIdProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.OrderNumber))
                 result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
@@ -380,7 +382,7 @@ namespace Application.Services.Orders
                     {
                         updatedItems.Add(item.Id);
                         MapFromItemDtoToEntity(item, itemDto, false, isManual);
-                        _dataService.GetDbSet<OrderItem>().Update(item);
+                        //_dataService.GetDbSet<OrderItem>().Update(item);
                     }
                 }
 
