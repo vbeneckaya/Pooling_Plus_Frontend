@@ -150,7 +150,7 @@ const Header = () => {
                                 <Menu.Menu>
                                     <Dropdown text={`${userName} (${userRole})`} item>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item onClick={onOpen}>{t('Настройки профиля')}</Dropdown.Item>
+                                            <Dropdown.Item onClick={onOpen}>{t('profile_settings')}</Dropdown.Item>
                                             <Dropdown.Item onClick={logOut}>
                                                 {t('exit')}
                                             </Dropdown.Item>
