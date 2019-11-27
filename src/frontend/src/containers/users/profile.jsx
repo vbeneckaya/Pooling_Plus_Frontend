@@ -68,7 +68,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
             dispatch(
                 addError({
                     name: 'returnNewPassword',
-                    message: 'Пароли не совпадают',
+                    message: t('passwords_do_not_match'),
                 }),
             );
             return false;
@@ -103,7 +103,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
             closeIcon
             size="mini"
         >
-            <Modal.Header>{'Настройки профиля'}</Modal.Header>
+            <Modal.Header>{t('profile_settings')}</Modal.Header>
             <Modal.Content>
                 <Modal.Description>
                     <Form>
@@ -158,7 +158,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
                                     loading={progressChangePassword}
                                     onClick={handleSaveNewPassword}
                                 >
-                                    {t('Установить новый пароль')}
+                                    {t('set_new_password')}
                                 </Button>
                             </div>
                         </Segment>
