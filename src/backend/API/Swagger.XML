@@ -94,7 +94,7 @@
             Поиск по номеру
             </summary>
         </member>
-        <member name="M:API.Controllers.ProfileController.Profile">
+        <member name="M:API.Controllers.ProfileController.Info">
             <summary>
             Получение профиля текущего пользователя
             </summary>
