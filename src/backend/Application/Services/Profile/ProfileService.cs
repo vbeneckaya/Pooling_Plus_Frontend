@@ -4,6 +4,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.Profile;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 
@@ -43,53 +44,60 @@ namespace Application.Services.Profile
             var currentUserId = userProvider.GetCurrentUserId();
             var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
             
+            var lang = userProvider.GetCurrentUser().Language;
+            
+            var result = new DetailedValidattionResult();
+            
             if (string.IsNullOrEmpty(dto.Email))
-                return new ValidateResult
-                {
-                    Error = "userEmailIsEmpty"
-                };
+                result.AddError(nameof(dto.Email), "userEmailIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired); 
 
-            if (!IsValidEmail(dto.Email))
-                return new ValidateResult("userEmailIsInvalid");
+            if (!string.IsNullOrEmpty(dto.Email) && !IsValidEmail(dto.Email))
+                result.AddError(nameof(dto.Email), "userEmailIsInvalid".Translate(lang), ValidationErrorType.InvalidValueFormat);
 
             if (dataService.GetDbSet<User>().Any(x => x.Email == dto.Email && x.Id != user.Id))
-                return new ValidateResult("userEmailIsNotAvailable");
+                result.AddError(nameof(dto.Email), "userEmailIsNotAvailable".Translate(lang), ValidationErrorType.DuplicatedRecord);
 
             if (string.IsNullOrEmpty(dto.UserName))
-                return new ValidateResult("userNameIsEmpty");
-            
+                result.AddError(nameof(dto.UserName), "userNameIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired);
+
             user.Email = dto.Email;
             user.Name = dto.UserName;
             
             dataService.SaveChanges();
             
-            return new ValidateResult
-            {
-                ResultType = ValidateResultType.Updated,
-                Error = null
-            };
+            return result;
         }
 
         public ValidateResult SetNewPassword(SetNewPasswordDto dto)
         {
             var currentUserId = userProvider.GetCurrentUserId();
             var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            var lang = userProvider.GetCurrentUser().Language;
+            
+            var result = new DetailedValidattionResult();
 
             if (user.PasswordHash == dto.OldPassword.GetHash())
             {
-                if(string.IsNullOrEmpty(dto.NewPassword))
-                    return new ValidateResult("epmtyPassword");
-                
-                if(dto.NewPassword.Length < 6)
-                    return new ValidateResult("shortPassword");
-                
+                if (string.IsNullOrEmpty(dto.NewPassword))
+                {
+                    result.AddError(nameof(dto.NewPassword), "users.emptyPassword".Translate(lang), ValidationErrorType.InvalidValueFormat);
+                    return result;
+                }
+
+                if (dto.NewPassword.Length < 6)
+                {
+                    result.AddError(nameof(dto.NewPassword), "shortPassword".Translate(lang), ValidationErrorType.InvalidValueFormat);
+                    return result;
+                }
+
                 user.PasswordHash = dto.NewPassword.GetHash();
 
                 dataService.SaveChanges();
-                return new ValidateResult();
             }
+            else
+                result.AddError(nameof(dto.OldPassword), "wrongOldPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
 
-            return new ValidateResult();
+            return result;
         }
         
         bool IsValidEmail(string email)
