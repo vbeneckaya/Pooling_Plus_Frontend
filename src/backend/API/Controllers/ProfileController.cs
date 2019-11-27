@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api")]
+    [Route("api/profile")]
     public class ProfileController : Controller
     {
         private readonly IProfileService profileService;
@@ -18,8 +18,8 @@ namespace API.Controllers
         /// <summary>
         /// Получение профиля текущего пользователя
         /// </summary>
-        [HttpGet("profile")] 
-        public ProfileDto Profile()
+        [HttpGet("info")] 
+        public ProfileDto Info()
         {
             return profileService.GetProfile();
         }
