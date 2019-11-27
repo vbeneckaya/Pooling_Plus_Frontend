@@ -147,6 +147,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, OrderDelivered>();
             services.AddScoped<IAppAction<Order>, FullReject>();
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
+            services.AddScoped<IAppAction<Order>, RollbackOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
@@ -165,6 +166,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
+            services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
         }
