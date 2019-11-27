@@ -27,7 +27,6 @@ namespace Application.Services.Shippings
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
-        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public ShippingsService(
             IHistoryService historyService,
@@ -40,7 +39,6 @@ namespace Application.Services.Shippings
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
-            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)

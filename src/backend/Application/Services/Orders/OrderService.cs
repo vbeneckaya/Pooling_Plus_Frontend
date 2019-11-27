@@ -28,7 +28,6 @@ namespace Application.Services.Orders
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
-        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public OrdersService(
             IHistoryService historyService,
@@ -41,7 +40,6 @@ namespace Application.Services.Orders
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
-            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -169,6 +167,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
+            setter.UpdateField(e => e.ShippingAvisationTime, ParseTime(dto.ShippingAvisationTime));
             setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
             setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
@@ -441,6 +440,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
@@ -471,6 +471,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ArticlesCount.ApplyNumericFilter<Order>(i => i.ArticlesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientOrderNumber.ApplyStringFilter<Order>(i => i.ClientOrderNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
@@ -641,6 +642,7 @@ namespace Application.Services.Orders
                 || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
                 || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
                 || columns.Contains("orderCreationDate") && i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("orderChangeDate") && i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
