@@ -33,7 +33,7 @@ namespace Application.Services.Translations
             return _dataService.GetDbSet<Translation>().Where(x => x.Name == name).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(Translation entity, TranslationDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Translation entity, TranslationDto dto)
         {
             if(!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -41,7 +41,7 @@ namespace Application.Services.Translations
             entity.En = dto.En;
             entity.Ru = dto.Ru;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override TranslationDto MapFromEntityToDto(Translation entity)

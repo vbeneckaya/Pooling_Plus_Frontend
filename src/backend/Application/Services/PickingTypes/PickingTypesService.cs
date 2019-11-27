@@ -15,7 +15,7 @@ namespace Application.Services.PickingTypes
     {
         public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override ValidateResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -29,10 +29,10 @@ namespace Application.Services.PickingTypes
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(PickingTypeDto dto)
+        private DetailedValidationResult ValidateDto(PickingTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 

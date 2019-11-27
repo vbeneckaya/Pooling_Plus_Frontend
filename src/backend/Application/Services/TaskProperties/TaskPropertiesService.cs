@@ -14,14 +14,14 @@ namespace Application.Services.TaskProperties
     {
         public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override ValidateResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.TaskName = dto.TaskName;
             entity.Properties = dto.Properties;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override TaskPropertyDto MapFromEntityToDto(TaskProperty entity)

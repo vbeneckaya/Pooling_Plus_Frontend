@@ -49,7 +49,7 @@ namespace Application.Services.ShippingWarehouses
             return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -77,7 +77,7 @@ namespace Application.Services.ShippingWarehouses
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override ShippingWarehouseDto MapFromEntityToDto(ShippingWarehouse entity)
@@ -96,7 +96,7 @@ namespace Application.Services.ShippingWarehouses
                 .ThenBy(i => i.Id);
         }
 
-        private ValidateResult ValidateDto(ShippingWarehouseDto dto)
+        private DetailedValidationResult ValidateDto(ShippingWarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 

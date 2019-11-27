@@ -17,7 +17,7 @@ namespace Application.Services.BodyTypes
     {
         public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
 
-        public override ValidateResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -31,7 +31,7 @@ namespace Application.Services.BodyTypes
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override BodyTypeDto MapFromEntityToDto(BodyType entity)
@@ -43,7 +43,7 @@ namespace Application.Services.BodyTypes
                 IsActive = entity.IsActive
             };
         }
-        private ValidateResult ValidateDto(BodyTypeDto dto)
+        private DetailedValidationResult ValidateDto(BodyTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 

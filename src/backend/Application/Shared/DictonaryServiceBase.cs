@@ -20,7 +20,7 @@ namespace Application.Shared
 {
     public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
-        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TListDto dto);
+        public abstract DetailedValidationResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
@@ -106,25 +106,41 @@ namespace Application.Shared
             return query.OrderBy(i => i.Id);
         }
 
-        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
+        public ImportResultDto Import(IEnumerable<ValidatedRecord<TListDto>> entitiesFrom)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var importResult = new ImportResult();
-            
-            foreach (var dto in entitiesFrom)
-                importResult.Results.Add(SaveOrCreateInner(dto, true));
+            foreach (var record in entitiesFrom)
+            {
+                if (record.Result.IsError) continue;
+
+                var validationResult = SaveOrCreateInner(record.Data, true);
+
+                if (validationResult.IsError)
+                {
+                    record.Result.AddErrors(validationResult.Errors);
+                }
+            }
+
             Log.Debug("{entityName}.Import (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
+
+            var importResult = new ImportResult();
+            importResult.Results.AddRange(entitiesFrom.Select(i => i.Result));
 
             var result = MapFromImportResult(importResult);
             Log.Debug("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
-        
+
+        public ImportResultDto Import(IEnumerable<TListDto> entitiesFrom)
+        {
+            return Import(entitiesFrom.Select(i => new ValidatedRecord<TListDto>(i)));
+        }
+
         public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
@@ -139,13 +155,13 @@ namespace Application.Shared
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (excelMapper.Errors.Any(e => e.IsError))
-            {
-                var result = new ImportResult();
-                result.Results.AddRange(excelMapper.Errors);
+            //if (excelMapper.Errors.Any(e => e.IsError))
+            //{
+            //    var result = new ImportResult();
+            //    result.Results.AddRange(excelMapper.Errors);
 
-                return MapFromImportResult(result);
-            }
+            //    return MapFromImportResult(result);
+            //}
 
             var importResult = Import(dtos);
             Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -239,7 +255,7 @@ namespace Application.Shared
             }
         }
 
-        protected ValidateResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        protected DetailedValidationResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();

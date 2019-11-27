@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -19,9 +20,14 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        private readonly IValidationService _validator;
 
-        public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, IValidationService validator) : base(dataService, userProvider) 
+        {
+            this._validator = validator;
+        }
+
+        public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -95,38 +101,38 @@ namespace Application.Services.Tariffs
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(TariffDto dto)
+        private DetailedValidationResult ValidateDto(TariffDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            var result = _validator.Validate(dto); //new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.ShipmentCity))
             {
-                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.Result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.DeliveryCity))
             {
-                result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.Result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.CarrierId))
             {
-                result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.Result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.EffectiveDate))
             {
-                result.AddError(nameof(dto.EffectiveDate), "emptyEffectiveDate".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.Result.AddError(nameof(dto.EffectiveDate), "emptyEffectiveDate".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.ExpirationDate))
             {
-                result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.Result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var existingRecord = this.GetByKey(dto)
@@ -137,10 +143,10 @@ namespace Application.Services.Tariffs
 
             if (hasDuplicates)
             {
-                result.AddError("duplicateTariffs", "duplicateTariffs".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.Result.AddError("duplicateTariffs", "duplicateTariffs".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return result;
+            return result.Result;
         }
 
         private bool IsPeriodsOverlapped(Tariff tariff, TariffDto dto)

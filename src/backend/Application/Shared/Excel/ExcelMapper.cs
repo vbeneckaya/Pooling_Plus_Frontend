@@ -42,7 +42,7 @@ namespace Application.Shared.Excel
             }
         }
 
-        public IEnumerable<TDto> LoadEntries(ExcelWorksheet worksheet)
+        public IEnumerable<ValidatedRecord<TDto>> LoadEntries(ExcelWorksheet worksheet)
         {
             var rows = worksheet.Cells
                 .Select(cell => cell.Start.Row)
@@ -97,7 +97,8 @@ namespace Application.Shared.Excel
                 };
 
                 _errors.Add(validationResult);
-                yield return entity;
+
+                yield return new ValidatedRecord<TDto>(entity, validationResult);
             }
         }
 
