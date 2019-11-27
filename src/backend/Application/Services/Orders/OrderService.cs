@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DAL.Queries;
 using Domain.Services.Translations;
 
 namespace Application.Services.Orders
@@ -27,21 +28,18 @@ namespace Application.Services.Orders
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
-        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public OrdersService(
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
+            IFieldPropertiesService fieldPropertiesService, 
+            IServiceProvider serviceProvider)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
-            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -72,7 +70,18 @@ namespace Application.Services.Orders
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
         }
+        
+        public override IQueryable<Order> ApplyRestrictions(IQueryable<Order> query)
+        {
+            var currentUserId = _userIdProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            
+            if (user.CarrierId.HasValue) 
+                query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            return query;
+        }        
+        
         public override string GetNumber(OrderFormDto dto)
         {
             return dto?.OrderNumber;
@@ -158,6 +167,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
+            setter.UpdateField(e => e.ShippingAvisationTime, ParseTime(dto.ShippingAvisationTime));
             setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
             setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
@@ -179,7 +189,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
             setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
             setter.UpdateField(e => e.DeviationsComment, dto.DeviationsComment);
-            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost);
+            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
             setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
@@ -430,6 +440,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
@@ -448,7 +459,7 @@ namespace Application.Services.Orders
         /// <param name="query">query</param>
         /// <param name="searchForm">search form</param>
         /// <returns></returns>
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm, List<string> columns = null)
         {
             List<object> parameters = new List<object>();
             string where = string.Empty;
@@ -460,6 +471,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ArticlesCount.ApplyNumericFilter<Order>(i => i.ArticlesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientOrderNumber.ApplyStringFilter<Order>(i => i.ClientOrderNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
@@ -509,7 +521,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters))
-                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
                          .WhereAnd(searchForm.Filter.DeviationsComment.ApplyStringFilter<Order>(i => i.DeviationsComment, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCost.ApplyNumericFilter<Order>(i => i.DeliveryCost, ref parameters))
@@ -519,7 +531,7 @@ namespace Application.Services.Orders
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-            query = this.ApplySearch(query, searchForm);
+            query = this.ApplySearch(query, searchForm?.Filter?.Search, columns ?? searchForm?.Filter?.Columns);
 
             var sortFieldMapping = new Dictionary<string, string>
             {
@@ -537,11 +549,8 @@ namespace Application.Services.Orders
                 .DefaultOrderBy(i => i.Id, true);
         }
 
-        private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var search = searchForm.Filter.Search;
-            var columns = searchForm.Filter.Columns;
-
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
             if (string.IsNullOrEmpty(search)) return query;
@@ -633,6 +642,7 @@ namespace Application.Services.Orders
                 || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
                 || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
                 || columns.Contains("orderCreationDate") && i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("orderChangeDate") && i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
@@ -651,11 +661,30 @@ namespace Application.Services.Orders
                 );
         }
 
-        protected override ExcelMapper<OrderFormDto> CreateExcelMapper()
+        protected override ExcelMapper<OrderDto> CreateExportExcelMapper()
         {
-            return base.CreateExcelMapper()
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
+            return base.CreateExportExcelMapper()
+                .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
                 .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById))
-                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById));
+                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
+                .MapColumn(i => i.Status, new EnumExcelColumn<OrderState>(lang))
+                .MapColumn(i => i.OrderShippingStatus, new EnumExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.ShippingStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.DeliveryStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+        }
+
+        private Guid? GetPickingTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetPickingTypeNameById(Guid id)
+        {
+            return GetPickingTypeNameById((Guid?)id);
         }
 
         private Guid? GetShippingWarehouseIdByName(string name)

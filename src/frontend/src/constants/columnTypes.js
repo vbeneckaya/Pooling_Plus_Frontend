@@ -13,6 +13,7 @@ export const GROUP_TYPE = 'Group';
 export const LINK_TYPE = 'Link';
 export const CHECKBOX_TYPE = 'Checkbox';
 export const SOLD_TO_TYPE = 'SoldTo';
+export const PASSWORD_TYPE = 'Password';
 
 export const ENUM_TYPE = 'Enum';
 export const ACTIVE_TYPE = 'active';

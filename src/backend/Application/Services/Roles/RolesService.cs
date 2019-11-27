@@ -18,7 +18,9 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {

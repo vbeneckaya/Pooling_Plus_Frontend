@@ -1,4 +1,5 @@
 ﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
+using Application.Services.Addresses;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -18,12 +19,15 @@ namespace Application.Services.ShippingWarehouses
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
+        private readonly ICleanAddressService _cleanAddressService;
 
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
-            : base(dataService, userProvider)
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider, 
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService) 
+            : base(dataService, userProvider, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _cleanAddressService = cleanAddressService;
         }
 
         public ShippingWarehouse GetByCode(string code)
@@ -63,7 +67,7 @@ namespace Application.Services.ShippingWarehouses
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.Code, dto.Code);
             setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
             setter.UpdateField(e => e.ValidAddress, dto.ValidAddress, ignoreChanges: true);
             setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
             setter.UpdateField(e => e.Region, dto.Region);

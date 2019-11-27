@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Select from './Select';
 import {useDispatch, useSelector} from 'react-redux';
 import {getLookupRequest, valuesListSelector} from '../../ducks/lookup';
@@ -13,6 +13,7 @@ const SoldToField = props => {
     const {value, settings, error, textValue, deliveryAddress, onChange, name} = props;
     const dispatch = useDispatch();
     const {t} = useTranslation();
+
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
     const soldToItem = valuesList.find(item => item.value === value) || {};
     const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
@@ -30,63 +31,68 @@ const SoldToField = props => {
     };
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
-    const handleLoad = (form) => {
+    const handleLoad = form => {
         dispatch(
             getLookupRequest({
                 name: 'soldTo',
                 isForm: true,
-                callbackSuccess: (result) => {
-                    onChange(null, {value: form.soldToNumber, name, ext: result.find(x => x.value === form.soldToNumber)});
-                }
+                callbackSuccess: result => {
+                    onChange(null, {
+                        value: form.soldToNumber,
+                        name,
+                        ext: result.find(x => x.value === form.soldToNumber),
+                    });
+                },
             }),
         );
-
     };
 
     return (
-
         <Select {...props}>
             {userPermissions.includes(15) && settings === SETTINGS_TYPE_EDIT ? (
                 error ? (
                     <Popup
-                        content={t('Добавить в справочник Склады доставки')}
+                        content={t('Add to the catalog Delivery warehouses')}
                         position="bottom right"
                         trigger={
-                            <Card
-                                title={`${t('warehouses')}: ${t('new_record')}`}
-                                columns={columns}
-                                name="warehouses"
-                                defaultForm={defaultForm}
-                                load={handleLoad}
-                            >
-                                <Button icon>
-                                    <Icon name="add"/>
-                                </Button>
-                            </Card>
+                            <div>
+                                <Card
+                                    title={`${t('warehouses')}: ${t('new_record')}`}
+                                    columns={columns}
+                                    name="warehouses"
+                                    defaultForm={defaultForm}
+                                    load={handleLoad}
+                                >
+                                    <Button icon>
+                                        <Icon name="add"/>
+                                    </Button>
+                                </Card>
+                            </div>
                         }
                     />
                 ) : (
                     <Popup
-                        content={t('Редактировать данные по складу доставки')}
+                        content={t('Edit delivery warehouse data')}
                         position="bottom right"
                         trigger={
-                            <Card
-                                title={`${t('warehouses')}: ${t('edit_record')}`}
-                                columns={columnsEdit}
-                                name="warehouses"
-                                id={soldToItem.id}
-                                load={handleLoad}
-                            >
-                                <Button icon>
-                                    <Icon name="edit"/>
-                                </Button>
-                            </Card>
+                            <div>
+                                <Card
+                                    title={`${t('warehouses')}: ${t('edit_record')}`}
+                                    columns={columnsEdit}
+                                    name="warehouses"
+                                    id={soldToItem.id}
+                                    load={handleLoad}
+                                >
+                                    <Button icon>
+                                        <Icon name="edit"/>
+                                    </Button>
+                                </Card>
+                            </div>
                         }
                     />
                 )
             ) : null}
         </Select>
-
     );
 };
 

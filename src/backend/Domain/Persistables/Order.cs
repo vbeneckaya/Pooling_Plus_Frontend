@@ -145,6 +145,10 @@ namespace Domain.Persistables
         /// </summary>
         public VehicleState DeliveryStatus { get; set; }
         /// <summary>
+        /// Время авизации на складе отгрузки
+        /// </summary>
+        public TimeSpan? ShippingAvisationTime { get; set; }
+        /// <summary>
         /// Время авизации у клиента
         /// </summary>
         public TimeSpan? ClientAvisationTime { get; set; }
@@ -299,6 +303,11 @@ namespace Domain.Persistables
         /// Базовая стоимость, без НДС
         /// </summary>
         public decimal? DeliveryCost { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость введена вручную
+        /// </summary>
+        public bool ManualDeliveryCost { get; set; }
 
         /// <summary>
         /// Фактическая стоимость, без НДС

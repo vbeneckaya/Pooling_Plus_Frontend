@@ -32,8 +32,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Archive;
 
             _historyService.Save(order.Id, "orderSetArchived", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {

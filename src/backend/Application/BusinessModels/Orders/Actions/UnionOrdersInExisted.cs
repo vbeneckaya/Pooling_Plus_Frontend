@@ -42,8 +42,6 @@ namespace Application.BusinessModels.Orders.Actions
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
 
-            _dataService.SaveChanges();
-
             return new AppActionResult
             {
                 IsError = false,

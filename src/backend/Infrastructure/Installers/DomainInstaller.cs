@@ -1,6 +1,10 @@
 using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Orders.Triggers;
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
+using Application.BusinessModels.Shippings.Triggers;
+using Application.BusinessModels.Tariffs.Triggers;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -14,6 +18,7 @@ using Application.Services.Identity;
 using Application.Services.Injections;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
+using Application.Services.Profile;
 using Application.Services.Roles;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
@@ -42,6 +47,7 @@ using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
+using Domain.Services.Profile;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouseCity;
@@ -81,6 +87,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();
@@ -105,11 +112,13 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);
             AddShippingBusinessModels(services);
+            AddDictionariesBusinessModels(services);
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
 
@@ -142,6 +151,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
+
+            services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -155,6 +166,13 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
+
+            services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
+        }
+
+        private static void AddDictionariesBusinessModels(IServiceCollection services)
+        {
+            services.AddScoped<ITrigger<Tariff>, UpdateTariffDeliveryCost>();
         }
     }
 }

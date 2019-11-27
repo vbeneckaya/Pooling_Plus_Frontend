@@ -55,8 +55,6 @@ namespace Application.BusinessModels.Orders.Actions
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
-            
-            _dataService.SaveChanges();
 
             return new AppActionResult
             {

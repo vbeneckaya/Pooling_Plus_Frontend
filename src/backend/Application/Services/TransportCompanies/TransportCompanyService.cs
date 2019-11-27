@@ -13,7 +13,9 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
@@ -62,7 +64,7 @@ namespace Application.Services.TransportCompanies
             }
 
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
-                                            .Where(x => x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
+                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
                                             .Any();
 
             if (hasDuplicates)

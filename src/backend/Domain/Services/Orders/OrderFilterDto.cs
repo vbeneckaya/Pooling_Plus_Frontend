@@ -217,6 +217,11 @@
         public string MajorAdoptionNumber { get; set; }
 
         /// <summary>
+        /// Warehouse Avisation Time 
+        /// </summary>
+        public string ShippingAvisationTime { get; set; }
+
+        /// <summary>
         /// Client Avisation Time 
         /// </summary>
         public string ClientAvisationTime { get; set; }
