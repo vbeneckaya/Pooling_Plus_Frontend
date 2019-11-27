@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
+    canDeleteSelector,
     cardProgressSelector,
     cardSelector,
     clearDictionaryCard,
     clearDictionaryInfo,
-    columnsSelector,
+    columnsSelector, deleteDictionaryEntryRequest,
     errorSelector,
     getCardRequest,
     saveDictionaryCardRequest,
@@ -132,8 +133,18 @@ class Card extends Component {
         });
     };
 
+    handleDelete = () => {
+        const {id, deleteEntry, name} = this.props;
+
+        deleteEntry({
+            name,
+            id,
+            callbackSuccess: this.confirmClose
+        })
+    };
+
     render() {
-        const { title, loading, children, progress, columns, t, error } = this.props;
+        const {title, loading, children, progress, columns, t, error, canDelete} = this.props;
         const { modalOpen, form, confirmation } = this.state;
         //console.log('column', columns, form);
         return (
@@ -168,13 +179,22 @@ class Card extends Component {
                         </div>
                     </Modal.Description>
                 </Modal.Content>
-                <Modal.Actions>
-                    <Button color="grey" onClick={this.onClose}>
-                        {t('CancelButton')}
-                    </Button>
-                    <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        {t('SaveButton')}
-                    </Button>
+                <Modal.Actions className="grid-card-actions">
+                    <div>
+                        {canDelete && form.id ? (
+                            <Button color="red" onClick={this.handleDelete}>
+                                {t('delete')}
+                            </Button>
+                        ) : null}
+                    </div>
+                    <div>
+                        <Button color="grey" onClick={this.onClose}>
+                            {t('CancelButton')}
+                        </Button>
+                        <Button color="blue" loading={progress} onClick={this.handleSave}>
+                            {t('SaveButton')}
+                        </Button>
+                    </div>
                 </Modal.Actions>
                 <Confirm
                     dimmer="blurring"
@@ -194,6 +214,7 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         columns: ownProps.columns ? ownProps.columns : columnsSelector(state, name),
+        canDelete: canDeleteSelector(state, name),
         loading: cardProgressSelector(state),
         card: cardSelector(state),
         error: errorSelector(state),
@@ -211,6 +232,9 @@ const mapDispatchToProps = dispatch => {
         clearCard: () => {
             dispatch(clearDictionaryCard());
         },
+        deleteEntry: params => {
+            dispatch(deleteDictionaryEntryRequest(params))
+        }
     };
 };
 

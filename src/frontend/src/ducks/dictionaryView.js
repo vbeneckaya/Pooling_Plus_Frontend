@@ -27,6 +27,10 @@ const SAVE_DICTIONARY_CARD_REQUEST = 'SAVE_DICTIONARY_CARD_REQUEST';
 const SAVE_DICTIONARY_CARD_SUCCESS = 'SAVE_DICTIONARY_CARD_SUCCESS';
 const SAVE_DICTIONARY_CARD_ERROR = 'SAVE_DICTIONARY_CARD_ERROR';
 
+const DELETE_DICTIONARY_ENTRY_REQUEST = 'DELETE_DICTIONARY_ENTRY_REQUEST';
+const DELETE_DICTIONARY_ENTRY_SUCCESS = 'DELETE_DICTIONARY_ENTRY_SUCCESS';
+const DELETE_DICTIONARY_ENTRY_ERROR = 'DELETE_DICTIONARY_ENTRY_ERROR';
+
 const CLEAR_DICTIONARY_INFO = 'CLEAR_DICTIONARY_INFO';
 const CLEAR_DICTIONARY_CARD = 'CLEAR_DICTIONARY_CARD';
 const CLEAR_ERROR = 'CLEAR_ERROR';
@@ -196,6 +200,13 @@ export const clearError = payload => {
     };
 };
 
+export const deleteDictionaryEntryRequest = payload => {
+    return {
+        type: DELETE_DICTIONARY_ENTRY_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.dictionaryView;
@@ -241,9 +252,14 @@ export const canExportToExcelSelector = createSelector(
     },
 );
 
+export const canDeleteSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.canDelete : false;
+});
+
 export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 export const exportProgressSelector = createSelector(stateSelector, state => {
-    return state.exportProgress
+    return state.exportProgress;
 });
 
 //*  SAGA  *//
@@ -290,7 +306,7 @@ function* saveDictionaryCardSaga({ payload }) {
         }
     } catch (e) {
         yield put({
-            type: SAVE_DICTIONARY_CARD_ERROR
+            type: SAVE_DICTIONARY_CARD_ERROR,
         });
     }
 }
@@ -351,6 +367,23 @@ function* exportToExcelSaga({ payload }) {
     }
 }
 
+function* deleteDictionaryEntrySaga({payload}) {
+    try {
+        const {name, id, callbackSuccess} = payload;
+        const result = yield postman.delete(`/${name}/delete`, {params: {id}});
+
+        yield put({
+            type: DELETE_DICTIONARY_ENTRY_SUCCESS,
+        });
+
+        callbackSuccess && callbackSuccess();
+    } catch (e) {
+        yield put({
+            type: DELETE_DICTIONARY_ENTRY_ERROR,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_DICTIONARY_LIST_REQUEST, getListSaga),
@@ -358,5 +391,6 @@ export function* saga() {
         takeEvery(SAVE_DICTIONARY_CARD_REQUEST, saveDictionaryCardSaga),
         takeEvery(DICTIONARY_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
         takeEvery(DICTIONARY_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
+        takeEvery(DELETE_DICTIONARY_ENTRY_REQUEST, deleteDictionaryEntrySaga),
     ]);
 }
