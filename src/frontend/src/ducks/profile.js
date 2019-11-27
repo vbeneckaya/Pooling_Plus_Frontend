@@ -7,7 +7,8 @@ import { logoutRequest } from './login';
 import { clearDictionaryInfo } from './dictionaryView';
 import result from '../components/SuperGrid/components/result';
 import { toast } from 'react-toastify';
-import {errorMapping} from "../utils/errorMapping";
+import {errorMapping} from '../utils/errorMapping';
+import {autoUpdateStop} from './gridList';
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -187,104 +188,77 @@ export const dictionariesSelector = createSelector(
     state => state.dictionaries && state.dictionaries.map(dictionary => dictionary.name),
 );
 
-export const isCustomPageSelector = createSelector(
+export const isCustomPageSelector = createSelector(stateSelector, state => {
+    return {
+        editFieldProperties: state.editFieldProperties,
+        editRoles: state.editRoles,
+        editUsers: state.editUsers,
+    };
+});
+
+export const otherMenuSelector = createSelector(stateSelector, state => {
+    const menu = [];
+    if (state.editFieldProperties) {
+        menu.push({
+            name: 'fields_setting',
+            link: FIELDS_SETTING_LINK,
+        });
+    }
+
+    return menu;
+});
+
+export const userNameSelector = createSelector(stateSelector, state => state.userName);
+export const roleSelector = createSelector(stateSelector, state => state.userRole);
+export const roleIdSelector = createSelector(stateSelector, state => state.role && state.role.id);
+
+export const rolesAndUsersMenu = createSelector(stateSelector, state => {
+    let menu = [];
+
+    if (state.editRoles) {
+        menu.push({
+            name: 'roles',
+            link: ROLES_LINK,
+        });
+    }
+
+    if (state.editUsers) {
+        menu.push({
+            name: 'users',
+            link: USERS_LINK,
+        });
+    }
+
+    return menu;
+});
+
+export const homePageSelector = createSelector(stateSelector, state => {
+    let homePage = '/grid';
+    if (state.grids && state.grids.length) {
+        homePage = `/grid/${state.grids[0].name}`;
+    } else if (state.dictionaries && state.dictionaries.length) {
+        homePage = `/dictionary/${state.dictionaries[0].name}`;
+    } else if (state.editRoles) {
+        homePage = '/roles';
+    } else if (state.editUsers) {
+        homePage = '/users';
+    }
+
+    return homePage;
+});
+
+export const userPermissionsSelector = createSelector(stateSelector, state => {
+    return state.role ? state.role.permissions.map(item => item.code) : [];
+});
+
+export const profileSettingsSelector = createSelector(stateSelector, state => state.data);
+
+export const progressEditSelector = createSelector(stateSelector, state => state.progressEdit);
+
+export const progressChangePasswordSelector = createSelector(
     stateSelector,
-    state => {
-        return {
-            editFieldProperties: state.editFieldProperties,
-            editRoles: state.editRoles,
-            editUsers: state.editUsers,
-        };
-    },
+    state => state.progressChangePassword,
 );
-
-export const otherMenuSelector = createSelector(
-    stateSelector,
-    state => {
-        const menu = [];
-        if (state.editFieldProperties) {
-            menu.push({
-                name: 'fields_setting',
-                link: FIELDS_SETTING_LINK,
-            });
-        }
-
-        return menu;
-    },
-);
-
-export const userNameSelector = createSelector(
-    stateSelector,
-    state => state.userName,
-);
-export const roleSelector = createSelector(
-    stateSelector,
-    state => state.userRole,
-);
-export const roleIdSelector = createSelector(
-    stateSelector,
-    state => state.role && state.role.id,
-);
-
-export const rolesAndUsersMenu = createSelector(
-    stateSelector,
-    state => {
-        let menu = [];
-
-        if (state.editRoles) {
-            menu.push({
-                name: 'roles',
-                link: ROLES_LINK,
-            });
-        }
-
-        if (state.editUsers) {
-            menu.push({
-                name: 'users',
-                link: USERS_LINK,
-            });
-        }
-
-        return menu;
-    },
-);
-
-export const homePageSelector = createSelector(
-    stateSelector,
-    state => {
-        let homePage = '/grid';
-        if (state.grids && state.grids.length) {
-            homePage = `/grid/${state.grids[0].name}`;
-        } else if (state.dictionaries && state.dictionaries.length) {
-            homePage = `/dictionary/${state.dictionaries[0].name}`;
-        } else if (state.editRoles) {
-            homePage = '/roles';
-        } else if (state.editUsers) {
-            homePage = '/users';
-        }
-
-        return homePage;
-    },
-);
-
-export const userPermissionsSelector = createSelector(
-    stateSelector,
-    state => {
-        return state.role ? state.role.permissions.map(item => item.code) : [];
-    },
-);
-
-export const profileSettingsSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
-
-export const progressEditSelector = createSelector(
-    stateSelector,
-    state => state.progressEdit,
-);
-
-export const progressChangePasswordSelector = createSelector(stateSelector, state => state.progressChangePassword);
 
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
@@ -292,9 +266,9 @@ export const errorSelector = createSelector(stateSelector, state => errorMapping
 
 function* getUserProfileSaga({ payload = {} }) {
     try {
+        const {url, isNotCofigUpdate} = payload;
         const userInfo = yield postman.get('/identity/userInfo');
-        const config = yield postman.get('/appConfiguration');
-        const { url } = payload;
+        const config = isNotCofigUpdate ? {} : yield postman.get('/appConfiguration');
 
         yield put({
             type: GET_USER_PROFILE_SUCCESS,
@@ -345,6 +319,11 @@ function* editProfileSettingsSaga({ payload }) {
                 payload: result,
             });
 
+            yield put({
+                type: GET_USER_PROFILE_SUCCESS,
+                payload: {userName: form.userName},
+            });
+
             callbackSuccess && callbackSuccess();
         }
     } catch (e) {
@@ -356,7 +335,8 @@ function* editProfileSettingsSaga({ payload }) {
 
 function* changePasswordSaga({ payload }) {
     try {
-        const result = yield postman.post('/setNewPassword', payload);
+        const {form, callbackSuccess} = payload;
+        const result = yield postman.post('/setNewPassword', form);
 
         if (result.isError) {
             toast.error(result.error);
@@ -366,10 +346,14 @@ function* changePasswordSaga({ payload }) {
                 payload: result.errors,
             });
         } else {
+            toast.info(result.message);
+
             yield put({
                 type: CHANGE_PASSWORD_SUCCESS,
                 payload: result,
             });
+
+            callbackSuccess && callbackSuccess();
         }
     } catch (e) {
         yield put({
@@ -386,6 +370,14 @@ function* changeLocation() {
 
         if (pathname.includes('dictionary')) {
             yield put(clearDictionaryInfo());
+        }
+
+        if (pathname.includes('grid')) {
+            yield put(
+                autoUpdateStop({
+                    isClear: true,
+                }),
+            );
         }
     }
 }

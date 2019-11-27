@@ -25,9 +25,12 @@ const Profile = ({ children }) => {
 
     const profile = useSelector(state => profileSettingsSelector(state));
 
-    useEffect(() => {
-        setForm({ ...profile });
-    }, [profile]);
+    useEffect(
+        () => {
+            setForm({...profile});
+        },
+        [profile],
+    );
 
     const progressEdit = useSelector(state => progressEditSelector(state));
 
@@ -85,11 +88,18 @@ const Profile = ({ children }) => {
 
     const handleSaveNewPassword = () => {
         if (handleComparePassword()) {
-            dispatch(changePasswordRequest(passwordForm));
+            dispatch(
+                changePasswordRequest({
+                    form: passwordForm,
+                    callbackSuccess: () => {
+                        setPassword({})
+                    },
+                }),
+            );
         }
     };
 
-    console.log('form', form);
+    console.log('form', passwordForm);
 
     return (
         <Modal
@@ -134,6 +144,7 @@ const Profile = ({ children }) => {
                                 name="oldPassword"
                                 type={TEXT_TYPE}
                                 typeValue="password"
+                                autoComplete="new-password"
                                 value={passwordForm['oldPassword']}
                                 onChange={handleChangePassword}
                             />
@@ -152,7 +163,10 @@ const Profile = ({ children }) => {
                                 onBlur={handleComparePassword}
                             />
                             <div className="change_password">
-                                <Button loading={progressChangePassword} onClick={handleSaveNewPassword}>
+                                <Button
+                                    loading={progressChangePassword}
+                                    onClick={handleSaveNewPassword}
+                                >
                                     {t('Установить новый пароль')}
                                 </Button>
                             </div>
