@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DAL.Queries;
 using Domain.Services.Translations;
 
 namespace Application.Services.Orders
@@ -34,10 +35,9 @@ namespace Application.Services.Orders
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
+            IFieldPropertiesService fieldPropertiesService, 
+            IServiceProvider serviceProvider)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -72,7 +72,18 @@ namespace Application.Services.Orders
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
         }
+        
+        public override IQueryable<Order> ApplyRestrictions(IQueryable<Order> query)
+        {
+            var currentUserId = _userIdProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            
+            if (user.CarrierId.HasValue) 
+                query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            return query;
+        }        
+        
         public override string GetNumber(OrderFormDto dto)
         {
             return dto?.OrderNumber;
@@ -179,7 +190,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
             setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
             setter.UpdateField(e => e.DeviationsComment, dto.DeviationsComment);
-            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost);
+            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
             setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
@@ -448,7 +459,7 @@ namespace Application.Services.Orders
         /// <param name="query">query</param>
         /// <param name="searchForm">search form</param>
         /// <returns></returns>
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm, List<string> columns = null)
         {
             List<object> parameters = new List<object>();
             string where = string.Empty;
@@ -509,7 +520,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters))
-                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
                          .WhereAnd(searchForm.Filter.DeviationsComment.ApplyStringFilter<Order>(i => i.DeviationsComment, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCost.ApplyNumericFilter<Order>(i => i.DeliveryCost, ref parameters))
@@ -519,7 +530,7 @@ namespace Application.Services.Orders
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-            query = this.ApplySearch(query, searchForm);
+            query = this.ApplySearch(query, searchForm?.Filter?.Search, columns ?? searchForm?.Filter?.Columns);
 
             var sortFieldMapping = new Dictionary<string, string>
             {
@@ -537,11 +548,8 @@ namespace Application.Services.Orders
                 .DefaultOrderBy(i => i.Id, true);
         }
 
-        private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var search = searchForm.Filter.Search;
-            var columns = searchForm.Filter.Columns;
-
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
             if (string.IsNullOrEmpty(search)) return query;
@@ -653,9 +661,28 @@ namespace Application.Services.Orders
 
         protected override ExcelMapper<OrderDto> CreateExportExcelMapper()
         {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
             return base.CreateExportExcelMapper()
+                .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
                 .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById))
-                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById));
+                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
+                .MapColumn(i => i.Status, new EnumExcelColumn<OrderState>(lang))
+                .MapColumn(i => i.OrderShippingStatus, new EnumExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.ShippingStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.DeliveryStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+        }
+
+        private Guid? GetPickingTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetPickingTypeNameById(Guid id)
+        {
+            return GetPickingTypeNameById((Guid?)id);
         }
 
         private Guid? GetShippingWarehouseIdByName(string name)

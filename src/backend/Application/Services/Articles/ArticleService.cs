@@ -18,8 +18,8 @@ namespace Application.Services.Articles
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
-        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
-            : base(dataService, userProvider)
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider, IHistoryService historyService) 
+            : base(dataService, userProvider, serviceProvider)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

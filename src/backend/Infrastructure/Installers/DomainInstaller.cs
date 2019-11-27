@@ -1,6 +1,10 @@
 using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Orders.Triggers;
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
+using Application.BusinessModels.Shippings.Triggers;
+using Application.BusinessModels.Tariffs.Triggers;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -81,6 +85,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
+            services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();
@@ -110,6 +115,7 @@ namespace Infrastructure.Installers
 
             AddOrderBusinessModels(services);
             AddShippingBusinessModels(services);
+            AddDictionariesBusinessModels(services);
 
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
 
@@ -141,6 +147,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
+
+            services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -154,6 +162,13 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
+
+            services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
+        }
+
+        private static void AddDictionariesBusinessModels(IServiceCollection services)
+        {
+            services.AddScoped<ITrigger<Tariff>, UpdateTariffDeliveryCost>();
         }
     }
 }

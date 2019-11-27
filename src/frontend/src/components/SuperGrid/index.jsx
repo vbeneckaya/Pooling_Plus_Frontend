@@ -291,7 +291,7 @@ class SuperGrid extends Component {
                     disabledClearFilter={!Object.keys(filters).length}
                     clearFilter={this.clearFilters}
                     updatingFilter={this.updatingFilter}
-                    filter={filters}
+                    filter={this.mapData()}
                     setSelected={this.setSelected}
                 />
                 <div

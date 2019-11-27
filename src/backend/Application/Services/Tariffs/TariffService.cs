@@ -10,7 +10,6 @@ using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Serilog;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -19,7 +18,9 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
+            : base(dataService, userProvider, serviceProvider) 
+        { }
 
         public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {

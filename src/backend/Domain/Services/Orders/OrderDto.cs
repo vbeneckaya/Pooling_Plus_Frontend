@@ -193,7 +193,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsReadOnly]
         public string CarrierId { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsReadOnly]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
         public string DeliveryType { get; set; }
 
         [FieldType(FieldType.BigText)]
@@ -201,6 +201,8 @@ namespace Domain.Services.Orders
 
         [FieldType(FieldType.Number)]
         public decimal? DeliveryCost { get; set; }
+
+        public bool? ManualDeliveryCost { get; set; }
 
         [FieldType(FieldType.Number)]
         public decimal? ActualDeliveryCost { get; set; }
