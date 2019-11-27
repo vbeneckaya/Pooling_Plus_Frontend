@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
     dictionariesHeaderSelector,
-    dictionariesMenuSelector,
+    dictionariesMenuSelector, getProfileSettingsRequest,
     gridsMenuSelector,
     otherMenuSelector,
     rolesAndUsersMenu,
@@ -16,6 +16,7 @@ import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
 import { DICTIONARY_LINK, GRID_LINK } from '../../router/links';
+import Profile from '../../containers/users/profile';
 
 const Header = () => {
     const dispatch = useDispatch();
@@ -35,6 +36,16 @@ const Header = () => {
     };
 
     let [activeItem, setActiveItem] = useState(location.pathname);
+    let [openProfile, setOpenProfile] = useState(false);
+
+    const onOpen = () => {
+        dispatch(getProfileSettingsRequest());
+        setOpenProfile(true);
+    };
+
+    const onClose = () => {
+        setOpenProfile(false);
+    };
 
     useEffect(
         () => {
@@ -137,8 +148,9 @@ const Header = () => {
                             </div>
                             {userName && userRole ? (
                                 <Menu.Menu>
-                                    <Dropdown text={`${userName} (${t(userRole)})`} item>
+                                    <Dropdown text={`${userName} (${userRole})`} item>
                                         <Dropdown.Menu>
+                                            <Dropdown.Item onClick={onOpen}>{t('profile_settings')}</Dropdown.Item>
                                             <Dropdown.Item onClick={logOut}>
                                                 {t('exit')}
                                             </Dropdown.Item>
@@ -148,6 +160,7 @@ const Header = () => {
                             ) : null}
                         </div>
                     </Menu>
+                    <Profile open={openProfile} onOpen={onOpen} onClose={onClose}/>
                 </header>
             ) : null}
         </>

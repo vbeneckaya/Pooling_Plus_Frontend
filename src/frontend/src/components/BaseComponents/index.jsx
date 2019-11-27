@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {useDispatch} from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
     BIG_TEXT_TYPE,
     BOOLEAN_TYPE,
@@ -10,10 +10,12 @@ import {
     GROUP_TYPE,
     LOCAL_DATE_TIME,
     NUMBER_TYPE,
-    SELECT_TYPE, SOLD_TO_TYPE,
+    SELECT_TYPE,
+    SOLD_TO_TYPE,
     STATE_TYPE,
     TEXT_TYPE,
     TIME_TYPE,
+    PASSWORD_TYPE,
 } from '../../constants/columnTypes';
 import Text from './Text';
 import TextArea from './TextArea';
@@ -24,15 +26,16 @@ import Bool from './Bool';
 import DateTime from './DateTime';
 import { SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW } from '../../constants/formTypes';
 import CheckBox from './Checkbox';
-import {clearError} from '../../ducks/gridCard';
-import SoldToField from "./SoldToField";
+import { clearError } from '../../ducks/gridCard';
+import SoldToField from './SoldToField';
+import PasswordField from "./Password";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
     [STATE_TYPE]: <State />,
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
-    [LOCAL_DATE_TIME]: <DateTime/>,
+    [LOCAL_DATE_TIME]: <DateTime />,
     [TIME_TYPE]: <Text type="time" />,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
@@ -40,7 +43,8 @@ const getTypeFacet = {
     [ENUM_TYPE]: <Select isTranslate />,
     [BIG_TEXT_TYPE]: <TextArea />,
     [CHECKBOX_TYPE]: <CheckBox />,
-    [SOLD_TO_TYPE]: <SoldToField/>
+    [SOLD_TO_TYPE]: <SoldToField />,
+    [PASSWORD_TYPE]: <PasswordField/>
 };
 
 const FormField = props => {
@@ -66,14 +70,11 @@ const FormField = props => {
         };
     }
 
-    useEffect(
-        () => {
-            if (props.error) {
-                dispatch(clearError && clearError(props.name));
-            }
-        },
-        [props.value],
-    );
+    useEffect(() => {
+        if (props.error) {
+            dispatch(clearError && clearError(props.name));
+        }
+    }, [props.value]);
 
     /* switch (props.type || (props.column && props.column.type)) {
          case TEXT_TYPE:
@@ -103,7 +104,7 @@ const FormField = props => {
      }*/
 
     return React.cloneElement(
-        getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE/>,
+        getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE />,
         params,
     );
 };

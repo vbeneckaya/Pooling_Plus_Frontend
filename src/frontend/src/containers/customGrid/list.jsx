@@ -40,6 +40,10 @@ class List extends Component {
         };
     }
 
+    componentWillUnmount() {
+        this.props.stopUpdate({isClear: true});
+    }
+
     getGroupActions = () => {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;

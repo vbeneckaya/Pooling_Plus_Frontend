@@ -18,6 +18,7 @@ using Application.Services.Identity;
 using Application.Services.Injections;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
+using Application.Services.Profile;
 using Application.Services.Roles;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
@@ -46,6 +47,7 @@ using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
+using Domain.Services.Profile;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouseCity;
@@ -110,6 +112,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             /*end of add service implementation*/
 

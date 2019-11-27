@@ -38,12 +38,14 @@ class SuperGrid extends Component {
     }
 
     componentDidMount() {
+        console.log('00000')
         this.props.autoUpdateStart(this.mapData());
     }
 
     componentWillUnmount() {
-        this.props.autoUpdateStop({ isClear: true });
+        console.log('clear')
     }
+
 
     componentDidUpdate(prevProps) {
         const { selectedRows } = this.state;
@@ -63,6 +65,10 @@ class SuperGrid extends Component {
             }
 
             this.setSelected(newSelectedRow);
+        }
+
+        if (this.props.name !== prevProps.name) {
+            this.props.autoUpdateStart(this.mapData());
         }
     }
 

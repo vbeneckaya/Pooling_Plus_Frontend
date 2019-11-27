@@ -55,12 +55,6 @@ class TableInfo extends Component {
         }
     }
 
-    componentWillUnmount() {
-        /* const { clear } = this.props;
-
-         clear && clear();*/
-    }
-
     mapData = (isConcat, isReload) => {
         const { filter, page } = this.state;
         const { name } = this.props;
