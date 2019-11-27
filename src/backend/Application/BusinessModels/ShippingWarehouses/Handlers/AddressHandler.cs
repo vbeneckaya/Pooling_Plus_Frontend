@@ -30,7 +30,7 @@ namespace Application.BusinessModels.ShippingWarehouses.Handlers
             entity.PostalCode = cleanAddress?.PostalCode;
             entity.Region = cleanAddress?.Region;
             entity.Area = cleanAddress?.Area;
-            entity.City = cleanAddress?.City;
+            entity.City = cleanAddress?.City ?? cleanAddress?.Region;
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;
 

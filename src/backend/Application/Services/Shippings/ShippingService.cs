@@ -262,6 +262,14 @@ namespace Application.Services.Shippings
                         }
                     }
                 }
+
+                var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
+                var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
+
+                var shipSetter = new FieldSetter<Shipping>(entity, _historyService);
+                shipSetter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
+                shipSetter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
+                shipSetter.SaveHistoryLog();
             }
 
             return new ValidateResult(null, entity.Id.ToString());
