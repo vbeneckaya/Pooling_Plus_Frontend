@@ -289,7 +289,7 @@ function* getUserProfileSaga({ payload = {} }) {
 
 function* getProfileSettingsSaga() {
     try {
-        const result = yield postman.get('/profile');
+        const result = yield postman.get('/profile/info');
 
         yield put({
             type: GET_PROFILE_SETTINGS_SUCCESS,
