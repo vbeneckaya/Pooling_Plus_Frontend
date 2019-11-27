@@ -12,6 +12,8 @@ namespace DAL.Services
 
         TEntity GetById<TEntity>(Guid id) where TEntity : class, IPersistable;
 
+        void Remove<TEntity>(TEntity entity) where TEntity : class, IPersistable;
+
         void SaveChanges();
     }
 }

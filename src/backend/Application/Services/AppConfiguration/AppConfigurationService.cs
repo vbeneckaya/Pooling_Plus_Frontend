@@ -117,9 +117,10 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = canEditTariffs,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditTariffs,
+                    CanDelete = true,
                     ShowOnHeader = true,
                     Columns = columns
-                });
+                }); ;
             }
 
             var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);

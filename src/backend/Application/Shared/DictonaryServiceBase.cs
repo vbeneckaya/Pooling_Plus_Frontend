@@ -321,5 +321,17 @@ namespace Application.Shared
         {
             return new ExcelMapper<TListDto>(_dataService, _userProvider);
         }
+
+        public ValidateResult Delete(Guid id)
+        {
+            var entity = _dataService.GetById<TEntity>(id);
+
+            if (entity == null) return new ValidateResult("Запись не найдена", id.ToString());
+
+            _dataService.Remove(entity);
+            _dataService.SaveChanges();
+
+            return new ValidateResult(null, id.ToString());
+        }
     }
 }
