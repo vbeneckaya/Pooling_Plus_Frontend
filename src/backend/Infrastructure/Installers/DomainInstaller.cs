@@ -27,6 +27,7 @@ using Application.Services.TaskProperties;
 using Application.Services.Tonnages;
 using Application.Services.Translations;
 using Application.Services.TransportCompanies;
+using Application.Services.Triggers;
 using Application.Services.Users;
 using Application.Services.UserSettings;
 using Application.Services.VehicleTypes;
@@ -88,6 +89,8 @@ namespace Infrastructure.Installers
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+
+            services.AddScoped<ITriggersService, TriggersService>();
 
             /*start of add service implementation*/
             services.AddScoped<IOrdersService, OrdersService>();

@@ -1,3 +1,4 @@
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -15,8 +16,8 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)

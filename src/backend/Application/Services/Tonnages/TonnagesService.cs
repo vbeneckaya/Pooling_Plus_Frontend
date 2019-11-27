@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -14,8 +15,8 @@ namespace Application.Services.Tonnages
 {
     public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
-        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public override ValidateResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)

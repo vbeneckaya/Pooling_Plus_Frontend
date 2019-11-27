@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.TaskProperties;
@@ -12,8 +13,8 @@ namespace Application.Services.TaskProperties
 {
     public class TaskPropertiesService : DictonaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
     {
-        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public override ValidateResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)

@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
@@ -18,8 +19,8 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider) 
-            : base(dataService, userProvider, serviceProvider) 
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)

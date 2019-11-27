@@ -1,4 +1,4 @@
-using Application.BusinessModels.Shared.Triggers;
+using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -8,7 +8,6 @@ using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.Extensions.DependencyInjection;
 using OfficeOpenXml;
 using Serilog;
 using System;
@@ -27,13 +26,13 @@ namespace Application.Shared
 
         protected readonly ICommonDataService _dataService;
         protected readonly IUserProvider _userProvider;
-        protected readonly IServiceProvider _serviceProvider;
+        protected readonly ITriggersService _triggersService;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService)
         {
             _dataService = dataService;
             _userProvider = userProvider;
-            _serviceProvider = serviceProvider;
+            _triggersService = triggersService;
         }
 
         public TListDto Get(Guid id)
@@ -250,8 +249,6 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
-
             var dbSet = _dataService.GetDbSet<TEntity>();
 
             var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
@@ -284,17 +281,11 @@ namespace Application.Shared
                 }
                 else
                 {
-                    dbSet.Update(entityFromDb);
+                    //dbSet.Update(entityFromDb);
                     result.ResultType = ValidateResultType.Updated;
                 }
 
-                foreach (var trigger in triggers)
-                {
-                    if (trigger.IsTriggered(entityFromDb))
-                    {
-                        trigger.Execute(entityFromDb);
-                    }
-                }
+                _triggersService.Execute();
                 Log.Debug("{entityName}.SaveOrCreateInner (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 

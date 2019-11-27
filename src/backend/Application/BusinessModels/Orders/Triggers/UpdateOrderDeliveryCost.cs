@@ -2,6 +2,7 @@
 using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Shared;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Triggers
@@ -26,9 +27,9 @@ namespace Application.BusinessModels.Orders.Triggers
             }
         }
 
-        public bool IsTriggered(Order entity)
+        public bool IsTriggered(EntityChangesDto<Order> changes)
         {
-            if (entity.ShippingId == null)
+            if (changes?.Entity?.ShippingId == null)
             {
                 return false;
             }
@@ -42,9 +43,7 @@ namespace Application.BusinessModels.Orders.Triggers
                 nameof(Order.ShippingCity),
                 nameof(Order.DeliveryCity)
             };
-            var trackingEntry = _dataService.GetTrackingEntry(entity);
-            var result = trackingEntry.Properties.Any(x => x.IsModified && watchProperties.Contains(x.Metadata.Name));
-            return result;
+            return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }
     }
 }

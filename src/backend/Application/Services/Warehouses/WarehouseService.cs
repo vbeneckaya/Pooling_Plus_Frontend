@@ -1,5 +1,6 @@
 using Application.BusinessModels.Warehouses.Handlers;
 using Application.Services.Addresses;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
@@ -25,9 +26,9 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider,
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, serviceProvider)
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

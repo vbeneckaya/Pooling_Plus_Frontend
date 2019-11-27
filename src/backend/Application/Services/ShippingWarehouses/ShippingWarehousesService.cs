@@ -1,5 +1,6 @@
 ﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
 using Application.Services.Addresses;
+using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -21,9 +22,9 @@ namespace Application.Services.ShippingWarehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider, 
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                          IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, serviceProvider)
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

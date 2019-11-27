@@ -1,5 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.BusinessModels.Shared.Triggers;
+using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -46,27 +46,26 @@ namespace Application.Shared
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
         protected readonly IUserProvider _userIdProvider;
-
         protected readonly ICommonDataService _dataService;
-
         protected readonly IFieldDispatcherService _fieldDispatcherService;
-
         protected readonly IFieldPropertiesService _fieldPropertiesService;
-
         protected readonly IServiceProvider _serviceProvider;
+        protected readonly ITriggersService _triggersService;
 
         protected GridService(
             ICommonDataService dataService, 
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            ITriggersService triggersService)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldPropertiesService = fieldPropertiesService;
             _serviceProvider = serviceProvider;
+            _triggersService = triggersService;
         }
 
         public TDto Get(Guid id)
@@ -177,8 +176,6 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
-
             ValidateResult mapResult;
             var dbSet = _dataService.GetDbSet<TEntity>();
             if (!string.IsNullOrEmpty(entityFrom.Id))
@@ -198,15 +195,9 @@ namespace Application.Shared
                         return mapResult;
                     }
 
-                    dbSet.Update(entityFromDb);
+                    //dbSet.Update(entityFromDb);
 
-                    foreach (var trigger in triggers)
-                    {
-                        if (trigger.IsTriggered(entityFromDb))
-                        {
-                            trigger.Execute(entityFromDb);
-                        }
-                    }
+                    _triggersService.Execute();
                     Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                     sw.Restart();
 
@@ -236,13 +227,7 @@ namespace Application.Shared
 
             dbSet.Add(entity);
 
-            foreach (var trigger in triggers)
-            {
-                if (trigger.IsTriggered(entity))
-                {
-                    trigger.Execute(entity);
-                }
-            }
+            _triggersService.Execute();
             Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -340,8 +325,6 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
-
             var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
             var action = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
             
@@ -367,13 +350,7 @@ namespace Application.Shared
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            foreach (var trigger in triggers)
-            {
-                if (trigger.IsTriggered(entity))
-                {
-                    trigger.Execute(entity);
-                }
-            }
+            _triggersService.Execute();
             Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -392,8 +369,6 @@ namespace Application.Shared
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
-
-            var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
 
             var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
             var singleAction = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
@@ -463,16 +438,7 @@ namespace Application.Shared
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            foreach (var trigger in triggers)
-            {
-                foreach (var entity in entities)
-                {
-                    if (trigger.IsTriggered(entity))
-                    {
-                        trigger.Execute(entity);
-                    }
-                }
-            }
+            _triggersService.Execute();
             Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 

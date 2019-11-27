@@ -1,4 +1,5 @@
 using Application.BusinessModels.Articles.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -18,8 +19,9 @@ namespace Application.Services.Articles
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
-        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, IServiceProvider serviceProvider, IHistoryService historyService) 
-            : base(dataService, userProvider, serviceProvider)
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                               IHistoryService historyService) 
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

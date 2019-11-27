@@ -1,8 +1,11 @@
-﻿namespace Application.BusinessModels.Shared.Triggers
+﻿using Domain.Persistables;
+using Domain.Shared;
+
+namespace Application.BusinessModels.Shared.Triggers
 {
-    public interface ITrigger<TEntity>
+    public interface ITrigger<TEntity> where TEntity : class, IPersistable
     {
-        bool IsTriggered(TEntity entity);
+        bool IsTriggered(EntityChangesDto<TEntity> changes);
         void Execute(TEntity entity);
     }
 }
