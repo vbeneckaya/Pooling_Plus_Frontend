@@ -48,8 +48,6 @@ namespace Application.BusinessModels.Shippings.Actions
                 _historyService.Save(shipping.Id, "shippingRollback", 
                     shipping.ShippingNumber, 
                     newState.ToString().ToLowerFirstLetter());
-                
-                _dataService.SaveChanges();
             }
             
             return new AppActionResult

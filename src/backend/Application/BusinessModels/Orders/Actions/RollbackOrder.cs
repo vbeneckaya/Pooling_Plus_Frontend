@@ -54,8 +54,6 @@ namespace Application.BusinessModels.Orders.Actions
                 _historyService.Save(order.Id, "orderRollback", 
                     order.OrderNumber, 
                     newState.ToString().ToLowerFirstLetter());
-                
-                _dataService.SaveChanges();
             }
             
             return new AppActionResult
