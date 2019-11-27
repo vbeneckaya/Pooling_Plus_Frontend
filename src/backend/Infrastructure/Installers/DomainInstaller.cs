@@ -139,6 +139,7 @@ namespace Infrastructure.Installers
         private static void AddOrderBusinessModels(IServiceCollection services)
         {
             services.AddScoped<IAppAction<Order>, CreateShipping>();
+            services.AddScoped<IAppAction<Order>, ConfirmOrder>();
             services.AddScoped<IAppAction<Order>, CancelOrder>();
             services.AddScoped<IAppAction<Order>, RemoveFromShipping>();
             services.AddScoped<IAppAction<Order>, SendToArchive>();

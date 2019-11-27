@@ -52,6 +52,12 @@ namespace Domain.Enums
         /// </summary>
         [StateColor(AppColor.Red)]
         Lost,
+
+        /// <summary>
+        /// Потерян
+        /// </summary>
+        [StateColor(AppColor.Green)]
+        Confirmed,
         /*end of fields*/
     }
 }
