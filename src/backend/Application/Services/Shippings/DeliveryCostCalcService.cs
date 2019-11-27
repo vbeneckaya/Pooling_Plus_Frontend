@@ -1,5 +1,6 @@
 ﻿using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
 using Serilog;
@@ -58,7 +59,7 @@ namespace Application.Services.Shippings
                     if (!order.ManualDeliveryCost && order.DeliveryCost != deliveryCost)
                     {
                         _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
-                                                         nameof(order.DeliveryCost),
+                                                         nameof(order.DeliveryCost).ToLowerFirstLetter(),
                                                          order.DeliveryCost, deliveryCost);
                         order.DeliveryCost = deliveryCost;
                     }
