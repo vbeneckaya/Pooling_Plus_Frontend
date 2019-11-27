@@ -59,5 +59,8 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; }
+
+        [FieldType(FieldType.Time)]
+        public string AvisaleTime { get; set; }
     }
 }

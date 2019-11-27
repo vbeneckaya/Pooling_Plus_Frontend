@@ -193,6 +193,15 @@ namespace Domain.Extensions
             return dateString.TryParseDateTime(out DateTime date) ? date : (DateTime?)null;
         }
 
+        public static TimeSpan? ToTimeSpan(this string timeString)
+        {
+            if (string.IsNullOrEmpty(timeString)) return null;
+
+            bool result = TimeSpan.TryParse(timeString, CultureInfo.InvariantCulture, out TimeSpan time);
+
+            return result ? time : (TimeSpan?)null;
+        }
+
         public static DateTime? ToDate(this string dateString)
         {
             if (string.IsNullOrEmpty(dateString)) return null;
