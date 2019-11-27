@@ -305,7 +305,7 @@ function* getProfileSettingsSaga() {
 function* editProfileSettingsSaga({ payload }) {
     try {
         const { form, callbackSuccess } = payload;
-        const result = yield postman.post('/save', form);
+        const result = yield postman.post('/profile/save', form);
 
         if (result.isError) {
             toast.error(result.error);
@@ -335,8 +335,8 @@ function* editProfileSettingsSaga({ payload }) {
 
 function* changePasswordSaga({ payload }) {
     try {
-        const {form, callbackSuccess} = payload;
-        const result = yield postman.post('/setNewPassword', form);
+        const {form, callbackSuccess, t} = payload;
+        const result = yield postman.post('/profile/setNewPassword', form);
 
         if (result.isError) {
             toast.error(result.error);
@@ -346,7 +346,7 @@ function* changePasswordSaga({ payload }) {
                 payload: result.errors,
             });
         } else {
-            toast.info(result.message);
+            toast.info(t('changePasswordSuccess'));
 
             yield put({
                 type: CHANGE_PASSWORD_SUCCESS,

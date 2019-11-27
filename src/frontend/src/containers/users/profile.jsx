@@ -16,10 +16,10 @@ import {
 } from '../../ducks/profile';
 import PasswordField from '../../components/BaseComponents/Password';
 
-const Profile = ({ children }) => {
+const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    let [modalOpen, setModalOpen] = useState(false);
+    // let [modalOpen, setModalOpen] = useState(false);
     let [form, setForm] = useState({});
     let [passwordForm, setPassword] = useState({});
 
@@ -37,15 +37,6 @@ const Profile = ({ children }) => {
     const progressChangePassword = useSelector(state => progressChangePasswordSelector(state));
 
     const error = useSelector(state => errorSelector(state));
-
-    const onOpen = () => {
-        dispatch(getProfileSettingsRequest());
-        setModalOpen(true);
-    };
-
-    const onClose = () => {
-        setModalOpen(false);
-    };
 
     const handleChange = (e, { name, value }) => {
         setForm(prevState => ({
@@ -91,6 +82,7 @@ const Profile = ({ children }) => {
             dispatch(
                 changePasswordRequest({
                     form: passwordForm,
+                    t,
                     callbackSuccess: () => {
                         setPassword({})
                     },
@@ -104,7 +96,6 @@ const Profile = ({ children }) => {
     return (
         <Modal
             dimmer="blurring"
-            trigger={children}
             open={modalOpen}
             closeOnDimmerClick={false}
             onOpen={onOpen}
