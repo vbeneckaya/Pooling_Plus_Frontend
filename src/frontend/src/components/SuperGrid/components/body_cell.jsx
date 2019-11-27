@@ -81,8 +81,10 @@ const BodyCell = ({
             value,
             callbackSuccess: () => {
                 loadList(false, true);
-                setProgress(false);
             },
+            callbackFunc: () => {
+                setProgress(false);
+            }
         });
     };
 

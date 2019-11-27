@@ -252,7 +252,7 @@ function* getAllIdsSaga({ payload }) {
 
 function* invokeMassUpdateSaga({ payload }) {
     try {
-        const { ids, callbackSuccess, name, field, value } = payload;
+        const {ids, callbackSuccess, name, field, value, callbackFunc} = payload;
         const result = yield postman.post(`/${name}/invokeBulkUpdate/${field}`, {
             ids,
             value,
@@ -270,6 +270,7 @@ function* invokeMassUpdateSaga({ payload }) {
             result.message && toast.info(result.message);
             callbackSuccess();
         }
+        callbackFunc && callbackFunc();
     } catch (e) {
         yield put({
             type: INVOKE_MASS_UPDATE_ERROR,
