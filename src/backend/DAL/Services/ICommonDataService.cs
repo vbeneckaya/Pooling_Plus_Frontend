@@ -14,6 +14,8 @@ namespace DAL.Services
 
         IEnumerable<EntityChangesDto<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable;
 
+        void Remove<TEntity>(TEntity entity) where TEntity : class, IPersistable;
+
         void SaveChanges();
     }
 }
