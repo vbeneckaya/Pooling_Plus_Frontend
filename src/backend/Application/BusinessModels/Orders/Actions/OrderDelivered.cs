@@ -10,7 +10,7 @@ using Domain.Services.UserProvider;
 namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
-    /// Заказ отгружен
+    /// Заказ доставлен
     /// </summary>
     public class OrderDelivered : IAppAction<Order>
     {
@@ -42,7 +42,8 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Shipped;
+            return (order.Status == OrderState.Shipped && (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery)) ||
+                   (order.Status == OrderState.Confirmed && (order.DeliveryType.HasValue && order.DeliveryType.Value == DeliveryType.SelfDelivery));
         }
     }
 }
