@@ -212,7 +212,7 @@ namespace Domain.Services.Orders
 
         public string Source { get; set; }
 
-        [FieldType(FieldType.Time)]
+        [FieldType(FieldType.Time), IsReadOnly]
         public string AvisaleTime { get; set; }
     }
 }
