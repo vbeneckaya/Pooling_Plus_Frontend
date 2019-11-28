@@ -65,7 +65,8 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(entity => entity.Status == OrderState.Confirmed);
+            return target.All(order => order.Status == OrderState.Confirmed && 
+                                       (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery));
         }
     }
 }
