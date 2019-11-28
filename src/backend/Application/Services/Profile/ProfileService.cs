@@ -46,7 +46,7 @@ namespace Application.Services.Profile
             
             var lang = userProvider.GetCurrentUser().Language;
             
-            var result = new DetailedValidattionResult();
+            var result = new DetailedValidationResult();
             
             if (string.IsNullOrEmpty(dto.Email))
                 result.AddError(nameof(dto.Email), "userEmailIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired); 
@@ -74,7 +74,7 @@ namespace Application.Services.Profile
             var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
             var lang = userProvider.GetCurrentUser().Language;
             
-            var result = new DetailedValidattionResult();
+            var result = new DetailedValidationResult();
 
             if (user.PasswordHash == dto.OldPassword.GetHash())
             {
