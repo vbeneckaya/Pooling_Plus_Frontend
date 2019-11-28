@@ -60,10 +60,13 @@ namespace Application.Services.Profile
             if (string.IsNullOrEmpty(dto.UserName))
                 result.AddError(nameof(dto.UserName), "userNameIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired);
 
-            user.Email = dto.Email;
-            user.Name = dto.UserName;
+            if (!result.IsError)
+            {
+                user.Email = dto.Email;
+                user.Name = dto.UserName;
             
-            dataService.SaveChanges();
+                dataService.SaveChanges();
+            }
             
             return result;
         }
