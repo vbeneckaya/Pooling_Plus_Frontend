@@ -194,6 +194,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
             setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
+            setter.UpdateField(e => e.AvisaleTime, dto.Source.ToTimeSpan());
 
             /*end of map dto to entity fields*/
 

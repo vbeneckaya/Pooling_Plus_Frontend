@@ -212,5 +212,7 @@ namespace Domain.Services.Orders
 
         public string Source { get; set; }
 
+        [FieldType(FieldType.Time)]
+        public string AvisaleTime { get; set; }
     }
 }
