@@ -46,76 +46,75 @@ const Select = ({
     let [searchQuery, setSearchQuery] = useState(null);
     let [filter, setFilter] = useState('');
 
-    const valuesList =
-        useSelector(state => listFromSelectSelector(state, source, t, filter, isTranslate)) || [];
+    const valuesList = useSelector(state => listFromSelectSelector(state, source, t, filter, isTranslate)) || [];
     const progress = useSelector(state => progressSelector(state));
 
     const changeItems = () => {
-        setItems(valuesList.slice(0, counter));
+        //setItems(valuesList.slice(0, counter));
     };
 
     useEffect(() => {
-        changeItems();
+        //changeItems();
     }, [valuesList, counter]);
 
     useEffect(() => {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            setFilter(searchQuery);
-        }, 300);
+        /* clearTimeout(timer.current);
+         timer.current = setTimeout(() => {
+             setFilter(searchQuery);
+         }, 300);*/
     }, [searchQuery]);
 
     useEffect(() => {
-        context.current.scrollTop = 0;
-        setCounter(PAGE_SIZE);
+        /* context.current.scrollTop = 0;
+         setCounter(PAGE_SIZE);*/
     }, [filter]);
 
     const handleChange = (e, { value }) => {
-        setSearchQuery('');
+        /*setSearchQuery('');
         toggle(false);
         onChange(e, { value, name, ext: valuesList.find(x => x.value === value) });
-        handleClose();
+        handleClose();*/
     };
 
     const handleOpen = () => {
-        dispatch(
-            getLookupRequest({
-                name: source,
-                isForm: true,
-            }),
-        );
-        toggle(true);
+        /* dispatch(
+             getLookupRequest({
+                 name: source,
+                 isForm: true,
+             }),
+         );
+         toggle(true);*/
     };
 
     const handleClose = () => {
-        context.current.scrollTop = 0;
-        setCounter(PAGE_SIZE);
-        setItems([]);
-        dispatch(clearFormLookup(source));
+        /* context.current.scrollTop = 0;
+         setCounter(PAGE_SIZE);
+         setItems([]);
+         // dispatch(clearFormLookup(source));*/
     };
 
     const handleBlur = () => {
-        toggle(false);
-        setSearchQuery('');
+        /*toggle(false);
+        setSearchQuery('');*/
     };
 
     const toggle = value => {
-        setOpen(value);
+        //setOpen(value);
     };
 
     const scroll = () => {
-        if (counter < valuesList.length) {
+        /*if (counter < valuesList.length) {
             setCounter(prevState => prevState + PAGE_SIZE);
-        }
+        }*/
     };
 
     const handleSearchChange = (e, { searchQuery }) => {
-        setSearchQuery(searchQuery);
+        // setSearchQuery(searchQuery);
     };
 
     const handleFocus = () => {
-        toggle(true);
-        handleOpen();
+        /*toggle(true);
+        handleOpen();*/
     };
 
     /*let items =
@@ -126,7 +125,7 @@ const Select = ({
             text: isTranslate ? t(x.name) : x.name,
         }));*/
 
-    console.log('select', items);
+    console.log('select');
 
     return (
         <Form.Field>

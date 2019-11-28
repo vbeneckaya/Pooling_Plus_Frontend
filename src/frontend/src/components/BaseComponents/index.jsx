@@ -103,6 +103,7 @@ const FormField = props => {
              return <Text {...params} />
      }*/
 
+    console.log('4444444');
     return React.cloneElement(
         getTypeFacet[props.type || (props.column && props.column.type)] || <TEXT_TYPE />,
         params,
