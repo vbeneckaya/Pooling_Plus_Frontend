@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -9,15 +10,16 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Application.Services.BodyTypes
 {
     public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
-        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
+        { }
 
-        public override ValidateResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -31,7 +33,7 @@ namespace Application.Services.BodyTypes
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override BodyTypeDto MapFromEntityToDto(BodyType entity)
@@ -43,11 +45,11 @@ namespace Application.Services.BodyTypes
                 IsActive = entity.IsActive
             };
         }
-        private ValidateResult ValidateDto(BodyTypeDto dto)
+        private DetailedValidationResult ValidateDto(BodyTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Name))
             {

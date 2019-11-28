@@ -1,11 +1,13 @@
 using Application.BusinessModels.Warehouses.Handlers;
 using Application.Services.Addresses;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using AutoMapper;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
 using Domain.Services.Translations;
@@ -24,9 +26,9 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, 
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider)
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -60,7 +62,7 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -83,6 +85,7 @@ namespace Application.Services.Warehouses
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
             setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
             setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType), new DeliveryTypeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();
@@ -104,7 +107,7 @@ namespace Application.Services.Warehouses
             }
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -118,8 +121,10 @@ namespace Application.Services.Warehouses
 
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
+            string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
-                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById));
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
+                .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
 
         private Guid? GetPickingTypeIdByName(string name)
@@ -146,11 +151,44 @@ namespace Application.Services.Warehouses
                 .ThenBy(i => i.Id);
         }
 
-        private ValidateResult ValidateDto(WarehouseDto dto)
+        protected override IQueryable<Warehouse> ApplySearch(IQueryable<Warehouse> query, SearchFormDto form)
+        {
+            if (string.IsNullOrEmpty(form.Search)) return query;
+
+            var search = form.Search.ToLower();
+
+            var isInt = int.TryParse(search, out int searchInt);
+
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                .Select(i => i.Id).ToList();
+
+            var deliveryTypeNames = Enum.GetNames(typeof(DeliveryType)).Select(i => i.ToLower());
+
+            var deliveryTypes = _dataService.GetDbSet<Translation>()
+                .Where(i => deliveryTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (DeliveryType?)Enum.Parse<DeliveryType>(i.Name, true))
+                .ToList();
+
+            return query.Where(i =>
+                   i.WarehouseName.ToLower().Contains(search)
+                || i.SoldToNumber.ToLower().Contains(search)
+                || i.Region.ToLower().Contains(search)
+                || i.City.ToLower().Contains(search)
+                || i.Address.ToLower().Contains(search)
+                || i.PickingFeatures.ToLower().Contains(search)
+                //|| i.PickingTypeId != null && pickingTypes.Any(t => t == i.PickingTypeId)
+                //|| i.DeliveryType != null && deliveryTypes.Contains(i.DeliveryType)
+                || isInt && i.LeadtimeDays == searchInt
+                );
+        }
+
+        private DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.SoldToNumber))
             {
@@ -160,6 +198,11 @@ namespace Application.Services.Warehouses
             if (string.IsNullOrEmpty(dto.WarehouseName))
             {
                 result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (string.IsNullOrEmpty(dto.DeliveryType))
+            {
+                result.AddError(nameof(dto.DeliveryType), "emptyDeliveryType".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var hasDuplicates = _dataService.GetDbSet<Warehouse>()
@@ -179,7 +222,8 @@ namespace Application.Services.Warehouses
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()));
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
             });
             return result;
         }

@@ -17,7 +17,7 @@ const InfiniteScrollTable = ({
     style,
     structured,
 }) => {
-    console.log('InfiniteScrollTable');
+
     return (
         <div style={{ position: 'relative', ...style }}>
             <Table

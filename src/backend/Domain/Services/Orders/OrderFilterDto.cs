@@ -217,6 +217,11 @@
         public string MajorAdoptionNumber { get; set; }
 
         /// <summary>
+        /// Warehouse Avisation Time 
+        /// </summary>
+        public string ShippingAvisationTime { get; set; }
+
+        /// <summary>
         /// Client Avisation Time 
         /// </summary>
         public string ClientAvisationTime { get; set; }
@@ -281,5 +286,30 @@
         /// ShippingWarehouseId
         /// </summary>
         public string ShippingWarehouseId { get; set; }
+
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        public string CarrierId { get; set; }
+
+        /// <summary>
+        /// Способ доставки
+        /// </summary>
+        public string DeliveryType { get; set; }
+
+        /// <summary>
+        /// Комментарий (причины отклонения от графика)
+        /// </summary>
+        public string DeviationsComment { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость, без НДС
+        /// </summary>
+        public string DeliveryCost { get; set; }
+
+        /// <summary>
+        /// Фактическая стоимость, без НДС
+        /// </summary>
+        public string ActualDeliveryCost { get; set; }
     }
 }

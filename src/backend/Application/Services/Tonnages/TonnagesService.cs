@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -9,15 +10,16 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Application.Services.Tonnages
 {
     public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
-        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
+        { }
 
-        public override ValidateResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -31,7 +33,7 @@ namespace Application.Services.Tonnages
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
         public override TonnageDto MapFromEntityToDto(Tonnage entity)
@@ -44,11 +46,11 @@ namespace Application.Services.Tonnages
             };
         }
 
-        private ValidateResult ValidateDto(TonnageDto dto)
+        private DetailedValidationResult ValidateDto(TonnageDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Name))
             {

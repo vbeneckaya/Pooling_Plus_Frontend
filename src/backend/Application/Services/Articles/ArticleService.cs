@@ -1,4 +1,5 @@
 using Application.BusinessModels.Articles.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -18,8 +19,9 @@ namespace Application.Services.Articles
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
-        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
-            : base(dataService, userProvider)
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                               IHistoryService historyService) 
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -38,7 +40,7 @@ namespace Application.Services.Articles
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(Article entity, ArticleDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Article entity, ArticleDto dto)
         {
             var setter = new FieldSetter<Article>(entity, _historyService);
 
@@ -88,7 +90,7 @@ namespace Application.Services.Articles
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override ArticleDto MapFromEntityToDto(Article entity)

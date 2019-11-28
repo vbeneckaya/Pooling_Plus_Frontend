@@ -1,4 +1,5 @@
-﻿using Application.Shared;
+﻿using Application.Services.Triggers;
+using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using DAL.Services;
@@ -16,9 +17,11 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
+        { }
 
-        public override ValidateResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
@@ -35,14 +38,14 @@ namespace Application.Services.VehicleTypes
             entity.PalletsCount = dto.PalletsCount.ToInt();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(VehicleTypeDto dto)
+        private DetailedValidationResult ValidateDto(VehicleTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Name))
             {

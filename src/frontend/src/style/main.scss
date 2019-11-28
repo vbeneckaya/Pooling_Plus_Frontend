@@ -187,6 +187,7 @@ body {
 
     .field:not(.wide) {
         width: 33.3% !important;
+        transition: width 0ms;
     }
 
     .field.wide {
@@ -203,10 +204,16 @@ body {
         width: 100% !important;
     }
 
-    .dropdown {
-        position: fixed !important;
-        width: calc(33.3% - 45px) !important;
+    /*.dropdown {
+        transition: width 0ms!important;
     }
+
+    .visible {
+        position: sticky !important;
+        width: calc(33.3% - 45px) !important;
+        transition: width 0ms;
+        //top: calc();
+    }*/
 }
 
 .tabs-card {
@@ -339,12 +346,21 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .ui.disabled.input,
-.ui.input:not(.disabled) input[disabled], .ui.disabled.search,
-.ui.form .disabled.field, .ui.form .disabled.fields .field, .ui.form .field :disabled {
-    opacity: .8!important;
-    background: rgba(1, 1, 1, .05);
+.ui.input:not(.disabled) input[disabled],
+.ui.disabled.search,
+.ui.form .disabled.field,
+.ui.form .disabled.fields .field,
+.ui.form .field :disabled {
+    opacity: 0.8 !important;
+    background: rgba(1, 1, 1, 0.05);
 }
 
 .table-action-buttons {
     white-space: nowrap;
+}
+
+.change_password {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
 }

@@ -1,3 +1,4 @@
+using Domain.Enums;
 using System;
 
 namespace Domain.Persistables
@@ -71,6 +72,10 @@ namespace Domain.Persistables
         /// Особенности комплектации
         /// </summary>
         public string PickingFeatures { get; set; }
+        /// <summary>
+        /// Способ доставки
+        /// </summary>
+        public DeliveryType? DeliveryType { get; set; }
         /// <summary>
         /// Активный
         /// </summary>

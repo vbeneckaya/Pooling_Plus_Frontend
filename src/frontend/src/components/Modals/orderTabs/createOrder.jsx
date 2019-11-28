@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../../BaseComponents';
@@ -7,8 +7,7 @@ import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constan
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    const handleChangeSoldTo = (e, {name, value, ext}) => {
-        console.log(ext);
+    function handleChangeSoldTo (e, {name, value, ext}) {
         onChange(e, {
             name,
             value,

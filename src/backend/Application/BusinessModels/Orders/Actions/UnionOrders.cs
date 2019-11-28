@@ -55,8 +55,6 @@ namespace Application.BusinessModels.Orders.Actions
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
-            
-            _dataService.SaveChanges();
 
             return new AppActionResult
             {
@@ -67,7 +65,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(entity => entity.Status == OrderState.Created);
+            return target.All(entity => entity.Status == OrderState.Confirmed);
         }
     }
 }

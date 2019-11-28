@@ -1,5 +1,6 @@
 ﻿using Domain.Persistables;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain.Services.Translations
 {
@@ -37,6 +38,13 @@ namespace Domain.Services.Translations
                 }
             }
             return key;
+        }
+
+        public static IEnumerable<string> GetKeysByTranslation(string value)
+        {
+            return _cache.Ru.Concat(_cache.En)
+                        .Where(x => string.Compare(x.Value, value, true) == 0)
+                        .Select(x => x.Key);
         }
 
         private static readonly TranslationCache _cache = new TranslationCache();

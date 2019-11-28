@@ -102,6 +102,9 @@ namespace Domain.Services.Orders
         public string DeliveryStatus { get; set; }
 
         [FieldType(FieldType.Time)]
+        public string ShippingAvisationTime { get; set; }
+
+        [FieldType(FieldType.Time)]
         public string ClientAvisationTime { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -189,6 +192,23 @@ namespace Domain.Services.Orders
 
         [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsReadOnly]
+        public string CarrierId { get; set; }
+
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
+        public string DeliveryType { get; set; }
+
+        [FieldType(FieldType.BigText)]
+        public string DeviationsComment { get; set; }
+
+        [FieldType(FieldType.Number)]
+        public decimal? DeliveryCost { get; set; }
+
+        public bool? ManualDeliveryCost { get; set; }
+
+        [FieldType(FieldType.Number)]
+        public decimal? ActualDeliveryCost { get; set; }
 
         public string Source { get; set; }
 

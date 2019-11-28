@@ -1,4 +1,5 @@
 ﻿using Domain.Services.Translations;
+using Domain.Shared;
 using OfficeOpenXml;
 using System;
 using System.Reflection;
@@ -37,7 +38,7 @@ namespace Application.Shared.Excel.Columns
             }
         }
 
-        public void SetValue(object entity, ExcelRange cell)
+        public ValidationResultItem SetValue(object entity, ExcelRange cell)
         {
             if (cell.Value == null)
             {
@@ -71,7 +72,7 @@ namespace Application.Shared.Excel.Columns
             {
                 bool? value = null;
                 string cellValue = cell.GetValue<string>()?.ToLower();
-                if(cellValue == "да" || cellValue == "д" || cellValue == "yes" || cellValue == "y")
+                if (cellValue == "да" || cellValue == "д" || cellValue == "yes" || cellValue == "y")
                 {
                     value = true;
                 }
@@ -89,10 +90,30 @@ namespace Application.Shared.Excel.Columns
                     Property.SetValue(entity, value);
                 }
             }
+            // OLE Automation Date Format
+            else if (cell.Style.Numberformat.NumFmtID == 164)
+            {
+                var dateNumber = (double)cell.Value;
+                try
+                {
+                    var date = DateTime.FromOADate(dateNumber);
+                    Property.SetValue(entity, date.ToString(cell.Style.Numberformat.Format));
+                }
+                catch (Exception ex)
+                {
+                    return new ValidationResultItem
+                    {
+                        Message = "invalidValueFormat",
+                        ResultType = ValidationErrorType.InvalidValueFormat
+                    };
+                }
+            }
             else
             {
                 Property.SetValue(entity, cell.Value?.ToString());
             }
+
+            return null;
         }
     }
 }

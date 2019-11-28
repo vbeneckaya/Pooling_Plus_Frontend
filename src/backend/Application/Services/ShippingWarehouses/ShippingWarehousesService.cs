@@ -1,4 +1,6 @@
 ﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
+using Application.Services.Addresses;
+using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
@@ -18,12 +20,15 @@ namespace Application.Services.ShippingWarehouses
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
+        private readonly ICleanAddressService _cleanAddressService;
 
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, IHistoryService historyService) 
-            : base(dataService, userProvider)
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService) 
+            : base(dataService, userProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _cleanAddressService = cleanAddressService;
         }
 
         public ShippingWarehouse GetByCode(string code)
@@ -49,7 +54,7 @@ namespace Application.Services.ShippingWarehouses
             return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -63,7 +68,7 @@ namespace Application.Services.ShippingWarehouses
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.Code, dto.Code);
             setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
             setter.UpdateField(e => e.ValidAddress, dto.ValidAddress, ignoreChanges: true);
             setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
             setter.UpdateField(e => e.Region, dto.Region);
@@ -77,7 +82,7 @@ namespace Application.Services.ShippingWarehouses
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override ShippingWarehouseDto MapFromEntityToDto(ShippingWarehouse entity)
@@ -96,11 +101,11 @@ namespace Application.Services.ShippingWarehouses
                 .ThenBy(i => i.Id);
         }
 
-        private ValidateResult ValidateDto(ShippingWarehouseDto dto)
+        private DetailedValidationResult ValidateDto(ShippingWarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Code))
             {

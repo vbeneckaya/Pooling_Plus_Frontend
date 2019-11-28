@@ -21,23 +21,30 @@ namespace Application.BusinessModels.Orders.Handlers
         {
             if (order.ShippingId.HasValue)
             {
-                var ordersToUpdate = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId
-                                                        && o.Id != order.Id
-                                                        && o.ShippingWarehouseId == order.ShippingWarehouseId)
-                                               .ToList();
+                //var ordersToUpdate = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId
+                //                                        && o.Id != order.Id
+                //                                        && o.ShippingWarehouseId == order.ShippingWarehouseId)
+                //                               .ToList();
 
-                foreach (Order updOrder in ordersToUpdate)
-                {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
-                    setter.UpdateField(o => o.LoadingDepartureTime, newValue);
-                    setter.SaveHistoryLog();
-                }
+                //foreach (Order updOrder in ordersToUpdate)
+                //{
+                //    var setter = new FieldSetter<Order>(updOrder, _historyService);
+                //    setter.UpdateField(o => o.LoadingDepartureTime, newValue);
+                //    setter.SaveHistoryLog();
+                //}
 
                 var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
                 if (shipping != null)
                 {
+                    var orders = _dataService.GetDbSet<Order>()
+                                             .Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                             .ToList();
+                    orders.Add(order);
+
+                    var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
+
                     var setter = new FieldSetter<Shipping>(shipping, _historyService);
-                    setter.UpdateField(s => s.LoadingDepartureTime, newValue);
+                    setter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
                     setter.SaveHistoryLog();
                 }
             }

@@ -94,9 +94,9 @@ namespace API.Controllers.Shared
         /// Экспортировать в excel
         /// </summary>
         [HttpPost("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel()
+        public IActionResult ExportToExcel([FromBody]SearchFormDto form)
         {
-            var memoryStream = _service.ExportToExcel();
+            var memoryStream = _service.ExportToExcel(form);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
 
@@ -107,6 +107,15 @@ namespace API.Controllers.Shared
         public ValidateResult SaveOrCreate([FromBody] TDto form)
         {
             return _service.SaveOrCreate(form);
+        }
+
+        /// <summary>
+        /// Удалить
+        /// </summary>
+        [HttpDelete("delete")]
+        public ValidateResult Delete(Guid id)
+        {
+            return _service.Delete(id);
         }
 
         private string EntityName => typeof(TEntity).Name;
