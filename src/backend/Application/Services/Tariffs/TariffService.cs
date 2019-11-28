@@ -7,6 +7,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -23,7 +24,7 @@ namespace Application.Services.Tariffs
             : base(dataService, userProvider, triggersService) 
         { }
 
-        public override ValidateResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -97,39 +98,40 @@ namespace Application.Services.Tariffs
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(TariffDto dto)
+        private DetailedValidationResult ValidateDto(TariffDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            var result = new DetailedValidationResult();
 
-            if (string.IsNullOrEmpty(dto.ShipmentCity))
-            {
-                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            // Delivery City
 
             if (string.IsNullOrEmpty(dto.DeliveryCity))
             {
                 result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
+            else if(!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.ToLower()))
+            {
+                result.AddError(nameof(dto.DeliveryCity), "deliveryCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
+            }
+
+            // Shipping City
+
+            if (string.IsNullOrEmpty(dto.ShipmentCity))
+            {
+                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+            else if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.ToLower()))
+            {
+                result.AddError(nameof(dto.ShipmentCity), "shipmentCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
+            }
 
             if (string.IsNullOrEmpty(dto.CarrierId))
             {
                 result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-
-            if (string.IsNullOrEmpty(dto.StartWinterPeriod))
-            {
-                result.AddError(nameof(dto.StartWinterPeriod), "emptyStartWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.EndWinterPeriod))
-            {
-                result.AddError(nameof(dto.EndWinterPeriod), "emptyEndWinterPeriod".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             if (string.IsNullOrEmpty(dto.EffectiveDate))
@@ -140,6 +142,28 @@ namespace Application.Services.Tariffs
             if (string.IsNullOrEmpty(dto.ExpirationDate))
             {
                 result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            // Dates Format Validation
+
+            if (!IsDateValid(dto.ExpirationDate))
+            {
+                result.AddError(nameof(dto.ExpirationDate), "invalidExpirationDate".Translate(lang), ValidationErrorType.InvalidValueFormat);
+            }
+
+            if (!IsDateValid(dto.EffectiveDate))
+            {
+                result.AddError(nameof(dto.EffectiveDate), "invalidEffectiveDate".Translate(lang), ValidationErrorType.InvalidValueFormat);
+            }
+
+            if (!IsDateValid(dto.StartWinterPeriod))
+            {
+                result.AddError(nameof(dto.StartWinterPeriod), "invalidStartWinterPeriod".Translate(lang), ValidationErrorType.InvalidValueFormat);
+            }
+
+            if (!IsDateValid(dto.EndWinterPeriod))
+            {
+                result.AddError(nameof(dto.EndWinterPeriod), "invalidEndWinterPeriod".Translate(lang), ValidationErrorType.InvalidValueFormat);
             }
 
             var existingRecord = this.GetByKey(dto)
@@ -163,6 +187,12 @@ namespace Application.Services.Tariffs
 
             return !(expirationDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue) && effectiveDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue)
                 || effectiveDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue) && expirationDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue));
+        }
+
+        // From ValidationService
+        private bool IsDateValid(string dateString)
+        {
+            return string.IsNullOrEmpty(dateString) || dateString.ToDate().HasValue;
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
@@ -226,7 +256,8 @@ namespace Application.Services.Tariffs
             return new ExcelMapper<TariffDto>(_dataService, _userProvider)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById));
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById));
         }
 
         private Guid? GetCarrierIdByName(string name)
@@ -250,6 +281,18 @@ namespace Application.Services.Tariffs
         private string GetVehicleTypeNameById(Guid id)
         {
             var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
+            return entry?.Name;
+        }
+
+        private Guid? GetBodyTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetBodyTypeNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<BodyType>().GetById(id);
             return entry?.Name;
         }
 
@@ -289,13 +332,6 @@ namespace Application.Services.Tariffs
                 );
         }
 
-        private bool HasDatesOverlapped(TariffDto dto)
-        {
-            var list = this.GetByKey(dto).Where(i => IsPeriodsOverlapped(i, dto)).ToList();
-
-            return this.GetByKey(dto).Any(i => IsPeriodsOverlapped(i, dto));
-        }
-
         public override Tariff FindByKey(TariffDto dto)
         {
             var effectiveDate = dto.EffectiveDate.ToDate();
@@ -313,6 +349,7 @@ namespace Application.Services.Tariffs
                     .Where(i =>
                         i.CarrierId == dto.CarrierId.ToGuid()
                         && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
+                        && i.BodyTypeId == dto.BodyTypeId.ToGuid()
                         && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);

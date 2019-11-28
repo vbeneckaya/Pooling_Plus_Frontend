@@ -55,5 +55,10 @@ namespace DAL.Services
         {
             _context.SaveChanges();
         }
+
+        void ICommonDataService.Remove<TEntity>(TEntity entity)
+        {
+            this.GetDbSet<TEntity>().Remove(entity);
+        }
     }
 }

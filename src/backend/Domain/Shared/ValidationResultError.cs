@@ -21,6 +21,8 @@ namespace Domain.Shared
 
         ValueIsRequired,
 
-        DuplicatedRecord
+        DuplicatedRecord,
+
+        Exception
     }
 }

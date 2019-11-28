@@ -40,7 +40,7 @@ namespace Application.Services.Articles
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(Article entity, ArticleDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Article entity, ArticleDto dto)
         {
             var setter = new FieldSetter<Article>(entity, _historyService);
 
@@ -90,7 +90,7 @@ namespace Application.Services.Articles
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override ArticleDto MapFromEntityToDto(Article entity)

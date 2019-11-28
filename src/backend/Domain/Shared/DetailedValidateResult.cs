@@ -4,23 +4,35 @@ using System.Linq;
 
 namespace Domain.Shared
 {
-    public class DetailedValidattionResult: ValidateResult
+    public class DetailedValidationResult: ValidateResult
     {
-        public DetailedValidattionResult() { }
+        public DetailedValidationResult() { }
 
-        public DetailedValidattionResult(string name, string message, ValidationErrorType errorType) 
+        public DetailedValidationResult(string error, string id): base(error, id) 
+        {
+        }
+
+        public DetailedValidationResult(string name, string message, ValidationErrorType errorType) 
         {
             this.AddError(name, message, errorType);
         }
 
-        public List<ValidationResultItem> Errors { get; set; } = new List<ValidationResultItem>();
+        public List<ValidationResultItem> _errors = new List<ValidationResultItem>();
+
+        public IReadOnlyCollection<ValidationResultItem> Errors => _errors.AsReadOnly();
+
+        private string _error;
 
         public override string Error {
             get 
             {
-                return string.Join(", ", this.Errors.Select(i => i.Message));
+                return !string.IsNullOrEmpty(_error) ? _error :
+                    string.Join(", ", this.Errors.Select(i => i.Message));
             }
-            set {  }
+            set 
+            {
+                _error = value;
+            }
         }
         
         public override bool IsError
@@ -33,13 +45,27 @@ namespace Domain.Shared
 
         public void AddError(string name, string message, ValidationErrorType errorType)
         {
-            this.ResultType = ValidateResultType.Error;
-            this.Errors.Add(new ValidationResultItem
+            this.AddError(new ValidationResultItem
             { 
                 Name = name?.ToLowerFirstLetter(),
                 Message = message,
                 ResultType = errorType
             });
+        }
+
+        public void AddError(ValidationResultItem error)
+        {
+            this.ResultType = ValidateResultType.Error;
+            this._errors.Add(error);
+        }
+
+        public void AddErrors(IEnumerable<ValidationResultItem> errors)
+        {
+            if (errors.Count() > 0)
+            {
+                this.ResultType = ValidateResultType.Error;
+                this._errors.AddRange(errors);
+            }
         }
     }
 }

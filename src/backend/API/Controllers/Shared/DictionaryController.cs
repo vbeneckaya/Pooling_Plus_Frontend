@@ -109,6 +109,15 @@ namespace API.Controllers.Shared
             return _service.SaveOrCreate(form);
         }
 
+        /// <summary>
+        /// Удалить
+        /// </summary>
+        [HttpDelete("delete")]
+        public ValidateResult Delete(Guid id)
+        {
+            return _service.Delete(id);
+        }
+
         private string EntityName => typeof(TEntity).Name;
     }
 }

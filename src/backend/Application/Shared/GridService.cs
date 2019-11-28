@@ -593,7 +593,9 @@ namespace Application.Shared
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
-            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+            var records = excelMapper.LoadEntries(workSheet).ToList();
+            var dtos = records.Select(i => i.Data);
+
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 

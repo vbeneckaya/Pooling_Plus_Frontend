@@ -71,7 +71,7 @@ namespace Application.Services.Users
             };
         }
 
-        public override ValidateResult MapFromDtoToEntity(User entity, UserDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -102,14 +102,14 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
         }
 
-        private ValidateResult ValidateDto(UserDto dto)
+        private DetailedValidationResult ValidateDto(UserDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.Email))
             {
