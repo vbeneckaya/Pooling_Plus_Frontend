@@ -9,16 +9,7 @@ import {valuesListSelector} from "../../../ducks/lookup";
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const refValuesList = useRef();
-
-    useEffect(() => {
-        console.log('^^^^^');
-        refValuesList.current = valuesList;
-    }, [valuesList]);
-
     const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
-        console.log('valuesList', valuesList);
         onChange(e, {
             name,
             value,

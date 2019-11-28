@@ -23,9 +23,9 @@ const Select = ({
     error,
     textValue,
     noLabel,
-                    isRequired,
-                    autoComplete,
-                    children,
+    isRequired,
+    autoComplete,
+    children,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const Select = ({
     const valuesList = useSelector(state => valuesListSelector(state, source)) || [];
 
     const handleChange = (e, { value }) => {
-        onChange(e, {value, name, ext: valuesList.find(x => x.value === value)});
+        onChange(e, { value, name, ext: valuesList.find(x => x.value === value) });
     };
 
     let items =
@@ -58,7 +58,7 @@ const Select = ({
             {!noLabel ? (
                 <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
-                    }`}</label>
+                }`}</label>
             ) : null}
             <div className="form-select">
                 <Dropdown

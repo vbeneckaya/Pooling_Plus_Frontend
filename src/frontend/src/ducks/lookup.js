@@ -54,7 +54,7 @@ export default (state = initial, { type, payload }) => {
         case CLEAR_FORM_LOOKUP:
             return {
                 ...state,
-                [payload]: []
+                [payload]: [],
             };
         default:
             return state;
@@ -80,8 +80,8 @@ export const clearLookup = payload => {
 export const clearFormLookup = payload => {
     return {
         type: CLEAR_FORM_LOOKUP,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -92,22 +92,46 @@ export const listSelector = createSelector(
     (state, filter, t) =>
         state.list
             ? state.list
-                .map(item => ({
-                    value: item.value,
-                    name: t(item.name),
-                    isActive: item.isActive,
-                }))
-                .filter(
-                    x =>
-                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
-                )
+                  .map(item => ({
+                      value: item.value,
+                      name: t(item.name),
+                      isActive: item.isActive,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  )
             : [],
 );
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
-    (state, key) => state[key],
+    (state, key) => (state[key] ? state[key] : []),
+);
+
+export const totalCounterSelector = createSelector(
+    [
+        stateSelector,
+        (state, key) => key,
+        (state, key, t) => t,
+        (state, key, t, filter) => filter,
+        (state, key, t, filter, isTranslate) => isTranslate,
+    ],
+    (state, key, t, filter, isTranslate) =>
+        state[key]
+            ? state[key]
+                  .map(item => ({
+                      ...item,
+                      value: item.value,
+                      name: isTranslate ? t(item.name) : item.name,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  ).length
+            : 0,
 );
 
 export const listFromSelectSelector = createSelector(
@@ -117,19 +141,20 @@ export const listFromSelectSelector = createSelector(
         (state, key, t) => t,
         (state, key, t, filter) => filter,
         (state, key, t, filter, isTranslate) => isTranslate,
+        (state, key, t, filter, isTranslate, counter) => counter,
     ],
-    (state, key, t, filter, isTranslate) => {
+    (state, key, t, filter, isTranslate, counter) => {
         return state[key]
             ? state[key]
-                .map(item => ({
-                    ...item,
-                    value: item.value,
-                    name: isTranslate ? t(item.name) : item.name,
-                }))
-                .filter(
-                    x =>
-                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
-                )
+                  .map(item => ({
+                      ...item,
+                      value: item.value,
+                      name: isTranslate ? t(item.name) : item.name,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  )
+                  .slice(0, counter)
             : [];
     },
 );
@@ -138,7 +163,7 @@ export const listFromSelectSelector = createSelector(
 
 function* getLookupSaga({ payload }) {
     try {
-        const { name, isForm, isSearch, callbackSuccess } = payload;
+        const { name, isForm, isSearch, callbackSuccess, callbackFunc } = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
             `/${name}/${isSearch ? 'search' : 'forSelect'}`,
             {},
@@ -153,8 +178,8 @@ function* getLookupSaga({ payload }) {
                 },
             });
 
-
             callbackSuccess && callbackSuccess(result);
+            callbackFunc && callbackFunc();
         } else {
             yield put({
                 type: GET_LOOKUP_SUCCESS,

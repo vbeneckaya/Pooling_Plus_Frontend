@@ -9,7 +9,8 @@ import {
     clearFormLookup,
     getLookupRequest,
     listFromSelectSelector,
-    progressSelector,
+    listSelector,
+    progressSelector, totalCounterSelector,
     valuesListSelector,
 } from '../../ducks/lookup';
 import { PAGE_SIZE } from '../../constants/settings';
@@ -41,89 +42,78 @@ const Select = ({
     let timer = useRef(null);
 
     let [open, setOpen] = useState(false);
-    let [items, setItems] = useState([]);
+    // let [items, setItems] = useState([]);
     let [counter, setCounter] = useState(PAGE_SIZE);
     let [searchQuery, setSearchQuery] = useState(null);
     let [filter, setFilter] = useState('');
 
-    const valuesList = useSelector(state => listFromSelectSelector(state, source, t, filter, isTranslate)) || [];
-    const progress = useSelector(state => progressSelector(state));
-
-    const changeItems = () => {
-        //setItems(valuesList.slice(0, counter));
-    };
-
-    useEffect(() => {
-        //changeItems();
-    }, [valuesList, counter]);
+    const valuesList = useSelector(state =>
+        listFromSelectSelector(state, source, t, filter, isTranslate, counter),
+    );
+    const totalCounter = useSelector(state =>
+        totalCounterSelector(state, source, t, filter, isTranslate),
+    );
+    const progress = false;
 
     useEffect(() => {
-        /* clearTimeout(timer.current);
-         timer.current = setTimeout(() => {
-             setFilter(searchQuery);
-         }, 300);*/
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            setFilter(searchQuery);
+        }, 300);
     }, [searchQuery]);
 
     useEffect(() => {
-        /* context.current.scrollTop = 0;
-         setCounter(PAGE_SIZE);*/
+        context.current.scrollTop = 0;
+        setCounter(PAGE_SIZE);
     }, [filter]);
 
     const handleChange = (e, { value }) => {
-        /*setSearchQuery('');
+        setSearchQuery('');
         toggle(false);
         onChange(e, { value, name, ext: valuesList.find(x => x.value === value) });
-        handleClose();*/
+        handleClose();
     };
 
     const handleOpen = () => {
-        /* dispatch(
-             getLookupRequest({
-                 name: source,
-                 isForm: true,
-             }),
-         );
-         toggle(true);*/
+        dispatch(
+            getLookupRequest({
+                name: source,
+                isForm: true,
+            }),
+        );
+        toggle(true);
     };
 
     const handleClose = () => {
-        /* context.current.scrollTop = 0;
-         setCounter(PAGE_SIZE);
-         setItems([]);
-         // dispatch(clearFormLookup(source));*/
+        context.current.scrollTop = 0;
+        setCounter(PAGE_SIZE);
+        // dispatch(clearFormLookup(source));
     };
 
     const handleBlur = () => {
-        /*toggle(false);
-        setSearchQuery('');*/
+        toggle(false);
+        setSearchQuery('');
     };
 
     const toggle = value => {
-        //setOpen(value);
+        setOpen(value);
     };
 
     const scroll = () => {
-        /*if (counter < valuesList.length) {
+        console.log('scroll', totalCounter);
+        if (counter < totalCounter) {
             setCounter(prevState => prevState + PAGE_SIZE);
-        }*/
+        }
     };
 
     const handleSearchChange = (e, { searchQuery }) => {
-        // setSearchQuery(searchQuery);
+        setSearchQuery(searchQuery);
     };
 
     const handleFocus = () => {
-        /*toggle(true);
-        handleOpen();*/
+        toggle(true);
+        handleOpen();
     };
-
-    /*let items =
-        valuesList &&
-        valuesList.map((x, index) => ({
-            key: `${x.value}_${index}`,
-            value: x.value,
-            text: isTranslate ? t(x.name) : x.name,
-        }));*/
 
     console.log('select');
 
@@ -155,8 +145,8 @@ const Select = ({
                     open={open}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>
-                        {items.length ? (
-                            items.map(item => (
+                        {valuesList.length ? (
+                            valuesList.map(item => (
                                 <Dropdown.Item
                                     key={item.value}
                                     selected={item.value === value}
