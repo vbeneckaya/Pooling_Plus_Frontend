@@ -88,6 +88,8 @@ const BodyCell = ({
         });
     };
 
+    console.log('cell');
+
     return (
         <>
             <Table.Cell className="value-cell">

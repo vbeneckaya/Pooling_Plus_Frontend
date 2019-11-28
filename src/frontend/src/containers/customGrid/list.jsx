@@ -125,7 +125,7 @@ class List extends Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = dispatch => {
     return {
         autoUpdate: params => {
             dispatch(autoUpdateStart(params));
@@ -143,9 +143,9 @@ function mapDispatchToProps(dispatch) {
             dispatch(getAllIdsRequest(params));
         },
     };
-}
+};
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
     const { match = {} } = ownProps;
     const { params = {} } = match;
     const { name = '' } = params;
@@ -158,7 +158,7 @@ function mapStateToProps(state, ownProps) {
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
     };
-}
+};
 
 export default withTranslation()(
     withRouter(

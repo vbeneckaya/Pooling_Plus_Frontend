@@ -1,29 +1,40 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef, useCallback, useMemo} from 'react';
 import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../../BaseComponents';
 import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
+import {useSelector} from "react-redux";
+import {valuesListSelector} from "../../../ducks/lookup";
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    function handleChangeSoldTo (e, {name, value, ext}) {
+    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
+    const refValuesList = useRef();
+
+    useEffect(() => {
+        console.log('^^^^^');
+        refValuesList.current = valuesList;
+    }, [valuesList]);
+
+    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
+        console.log('valuesList', valuesList);
         onChange(e, {
             name,
             value,
         });
         onChange(e, {name: 'clientName', value: ext.warehouseName});
         onChange(e, {name: 'deliveryAddress', value: ext.address});
-    };
+    }, []);
 
-    const handleChangeShippingWarehouseId = (e, {name, value, ext}) => {
+    const handleChangeShippingWarehouseId = useCallback((e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
         });
 
         onChange(e, {name: 'shippingAddress', value: ext.address});
-    };
+    }, []);
 
     return (
         <Form className="tabs-card">

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
@@ -101,12 +101,12 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = (e, {name, value}) => {
+    const onChangeForm = useCallback((e, {name, value}) => {
         setForm(prevState => ({
             ...prevState,
             [name]: value,
         }));
-    };
+    }, []);
 
     useEffect(
         () => {
