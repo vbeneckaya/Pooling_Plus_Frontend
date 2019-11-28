@@ -41,7 +41,7 @@ namespace Application.BusinessModels.Orders.Actions
             if (order.Status == OrderState.Shipped)
                 newState = OrderState.InShipping;
             
-            if (order.Status == OrderState.Shipped)
+            if (order.Status == OrderState.Delivered)
                 newState = OrderState.Created;
             
             if (order.Status == OrderState.Archive)
