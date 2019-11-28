@@ -8,7 +8,7 @@ namespace Domain.Services.Shippings
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
         public string ShippingNumber { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(4)]
