@@ -97,7 +97,7 @@ namespace Application.Shared.Excel.Columns
                 try
                 {
                     var date = DateTime.FromOADate(dateNumber);
-                    Property.SetValue(entity, date.ToString(cell.Style.Numberformat.Format));
+                    Property.SetValue(entity, date.ToString("dd.MM.yyyy"));
                 }
                 catch (Exception ex)
                 {

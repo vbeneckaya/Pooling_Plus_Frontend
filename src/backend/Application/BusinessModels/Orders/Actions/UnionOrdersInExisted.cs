@@ -53,7 +53,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             return target.Count() > 1 && 
                    target.Count(x => x.Status == OrderState.InShipping) == 1 &&
-                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Confirmed);
+                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Confirmed && (!x.DeliveryType.HasValue || x.DeliveryType.Value == DeliveryType.Delivery));
         }
     }
 }
