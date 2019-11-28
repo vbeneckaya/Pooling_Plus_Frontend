@@ -165,6 +165,10 @@
             width: inherit;
         }
     }*/
+
+    &-selected td{
+        background-color: rgba(222, 236, 255, 1);;
+    }
 }
 
 .column-overflow {
@@ -182,7 +186,7 @@
 }
 
 .grid-row:hover td {
-    background-color: #deecff;
+    background-color: rgba(222, 236, 255, .5);
 }
 
 .grid-row td,
