@@ -91,7 +91,7 @@
         </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.ProfileController.Info">
@@ -111,17 +111,17 @@
         </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
-            Получение данных для выпадающего списка в 
+            ��������� ������ ��� ����������� ������ � 
             </summary>
         </member>
         <member name="M:API.Controllers.RolesController.GetAllPermissions">
             <summary>
-            Получение списка всех доступных разрешений
+            ��������� ������ ���� ��������� ����������
             </summary>
         </member>
         <member name="M:API.Controllers.RolesController.GetAllActions">
             <summary>
-            Получение списка всех доступных действий
+            ��������� ������ ���� ��������� ��������
             </summary>
         </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
@@ -303,7 +303,7 @@
         </member>
         <member name="M:API.Controllers.ShippingsController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
@@ -328,7 +328,7 @@
         </member>
         <member name="M:API.Controllers.UsersController.SetActive(System.Guid,System.Boolean)">
             <summary>
-            Получение данных для выпадающего списка в 
+            ��������� ������ ��� ����������� ������ � 
             </summary>
         </member>
         <member name="T:API.Controllers.UserSettingsController">

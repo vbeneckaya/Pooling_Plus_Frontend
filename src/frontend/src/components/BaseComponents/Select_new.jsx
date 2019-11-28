@@ -1,40 +1,41 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {Dropdown, Form, Visibility} from 'semantic-ui-react';
+import { Dropdown, Form, Visibility } from 'semantic-ui-react';
 
 import './style.scss';
 import {
+    clearFormLookup,
     getLookupRequest,
     listFromSelectSelector,
     progressSelector,
     valuesListSelector,
 } from '../../ducks/lookup';
-import {PAGE_SIZE} from '../../constants/settings';
-import {debounce} from 'throttle-debounce';
+import { PAGE_SIZE } from '../../constants/settings';
+import { debounce } from 'throttle-debounce';
 
 const Select = ({
-                    value,
-                    onChange,
-                    placeholder = '',
-                    isDisabled,
-                    label,
-                    name,
-                    text,
-                    multiple,
-                    loading,
-                    clearable,
-                    source,
-                    isTranslate,
-                    error,
-                    textValue,
-                    noLabel,
-                    isRequired,
-                    autoComplete,
-                    children,
-                }) => {
-    const {t} = useTranslation();
+    value,
+    onChange,
+    placeholder = '',
+    isDisabled,
+    label,
+    name,
+    text,
+    multiple,
+    loading,
+    clearable,
+    source,
+    isTranslate,
+    error,
+    textValue,
+    noLabel,
+    isRequired,
+    autoComplete,
+    children,
+}) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const context = useRef(null);
     let timer = useRef(null);
@@ -53,53 +54,44 @@ const Select = ({
         setItems(valuesList.slice(0, counter));
     };
 
-    useEffect(
-        () => {
-            changeItems();
-        },
-        [valuesList, counter],
-    );
+    useEffect(() => {
+        changeItems();
+    }, [valuesList, counter]);
 
-    useEffect(
-        () => {
-            clearTimeout(timer.current);
-            timer.current = setTimeout(() => {
-                console.log('%%%%%');
-                setFilter(searchQuery);
-            }, 300);
-        },
-        [searchQuery],
-    );
+    useEffect(() => {
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            setFilter(searchQuery);
+        }, 300);
+    }, [searchQuery]);
 
-    useEffect(
-        () => {
-            context.current.scrollTop = 0;
-            setCounter(PAGE_SIZE);
-        },
-        [filter],
-    );
+    useEffect(() => {
+        context.current.scrollTop = 0;
+        setCounter(PAGE_SIZE);
+    }, [filter]);
 
-    const handleChange = (e, {value}) => {
-        console.log(value, valuesList.find(x => x.value === value));
+    const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, {value, name, ext: valuesList.find(x => x.value === value)});
+        onChange(e, { value, name, ext: valuesList.find(x => x.value === value) });
+        handleClose();
     };
 
     const handleOpen = () => {
-        toggle(true);
         dispatch(
             getLookupRequest({
                 name: source,
                 isForm: true,
             }),
         );
+        toggle(true);
     };
 
     const handleClose = () => {
         context.current.scrollTop = 0;
         setCounter(PAGE_SIZE);
         setItems([]);
+        dispatch(clearFormLookup(source));
     };
 
     const handleBlur = () => {
@@ -112,18 +104,18 @@ const Select = ({
     };
 
     const scroll = () => {
-        console.log('scroll');
         if (counter < valuesList.length) {
             setCounter(prevState => prevState + PAGE_SIZE);
         }
     };
 
-    const handleSearchChange = (e, {searchQuery}) => {
+    const handleSearchChange = (e, { searchQuery }) => {
         setSearchQuery(searchQuery);
     };
 
     const handleFocus = () => {
         toggle(true);
+        handleOpen();
     };
 
     /*let items =
@@ -141,7 +133,7 @@ const Select = ({
             {!noLabel ? (
                 <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
-                    }`}</label>
+                }`}</label>
             ) : null}
             <div className="form-select">
                 <Dropdown
@@ -154,7 +146,6 @@ const Select = ({
                     text={textValue}
                     error={error}
                     disabled={isDisabled}
-                    value={value}
                     closeOnChange={true}
                     closeOnBlur={true}
                     onBlur={handleBlur}
@@ -165,17 +156,21 @@ const Select = ({
                     open={open}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>
-                        {items.map(item => (
-                            <Dropdown.Item
-                                key={item.value}
-                                selected={item.value === value}
-                                active={item.value === value}
-                                value={item.value}
-                                onClick={e => handleChange(e, {value: item.value})}
-                            >
-                                {item.name}
-                            </Dropdown.Item>
-                        ))}
+                        {items.length ? (
+                            items.map(item => (
+                                <Dropdown.Item
+                                    key={item.value}
+                                    selected={item.value === value}
+                                    active={item.value === value}
+                                    value={item.value}
+                                    onClick={e => handleChange(e, { value: item.value })}
+                                >
+                                    {item.name}
+                                </Dropdown.Item>
+                            ))
+                        ) : (
+                            <div className="message">No results found.</div>
+                        )}
                         <Visibility
                             continuous={false}
                             once={false}
