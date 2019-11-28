@@ -71,6 +71,8 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
 
     const contextRef = useRef(null);
 
+    console.log('facet');
+
     return (
         <div className="facet">
             <div className="facet-field" onClick={handleSort} ref={contextRef}>
@@ -114,6 +116,4 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
     );
 };
 
-export default React.memo(FacetField, (prevProps, nextProps) => {
-    return prevProps.value === nextProps.value && prevProps.sort.name === nextProps.sort.name && prevProps.sort.desc === nextProps.sort.desc;
-});
+export default React.memo(FacetField);
