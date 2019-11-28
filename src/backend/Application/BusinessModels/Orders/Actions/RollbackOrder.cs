@@ -39,9 +39,15 @@ namespace Application.BusinessModels.Orders.Actions
                 newState = OrderState.Created;
 
             if (order.Status == OrderState.Shipped)
-                newState = OrderState.InShipping;
+            {
+                if (!order.DeliveryType.HasValue || order.DeliveryType == DeliveryType.Delivery)
+                    newState = OrderState.InShipping;
+                else
+                    newState = OrderState.Confirmed;
+            }
             
-            if (order.Status == OrderState.Shipped)
+            
+            if (order.Status == OrderState.Delivered)
                 newState = OrderState.Created;
             
             if (order.Status == OrderState.Archive)

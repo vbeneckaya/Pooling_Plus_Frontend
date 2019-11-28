@@ -102,6 +102,7 @@ class List extends Component {
         return (
             <div className="container">
                 <SuperGrid
+                    key={name}
                     columns={columns}
                     rows={list}
                     name={name}

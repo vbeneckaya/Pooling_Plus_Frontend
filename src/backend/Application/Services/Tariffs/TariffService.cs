@@ -349,6 +349,7 @@ namespace Application.Services.Tariffs
                     .Where(i =>
                         i.CarrierId == dto.CarrierId.ToGuid()
                         && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
+                        && i.BodyTypeId == dto.BodyTypeId.ToGuid()
                         && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);
