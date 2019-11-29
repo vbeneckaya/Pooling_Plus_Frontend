@@ -211,8 +211,5 @@ namespace Domain.Services.Orders
         public decimal? ActualDeliveryCost { get; set; }
 
         public string Source { get; set; }
-
-        [FieldType(FieldType.Time), IsReadOnly]
-        public string AvisaleTime { get; set; }
     }
 }

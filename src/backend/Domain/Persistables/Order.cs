@@ -313,10 +313,5 @@ namespace Domain.Persistables
         /// Фактическая стоимость, без НДС
         /// </summary>
         public decimal? ActualDeliveryCost { get; set; }
-
-        /// <summary>
-        /// Время авизации у клиента
-        /// </summary>
-        public TimeSpan? AvisaleTime { get; set; }
     }
 }
