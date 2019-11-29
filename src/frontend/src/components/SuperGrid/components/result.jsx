@@ -71,7 +71,7 @@ class Result extends Component {
                 rows.map((row, indexRow) => (
                     <Table.Row
                         key={row.id}
-                        className={'grid-row ' + row.color || ''}
+                        className={`grid-row${ row.color || ''} ${selectedRows.has(row.id) ? 'grid-row-selected' : ''}`}
                         data-grid-id={row.id}
                     >
                         <Table.Cell

@@ -54,7 +54,7 @@ namespace Domain.Enums
         Lost,
 
         /// <summary>
-        /// Потерян
+        /// Подтверждён
         /// </summary>
         [StateColor(AppColor.Green)]
         Confirmed,

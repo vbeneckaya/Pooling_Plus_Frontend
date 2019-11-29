@@ -241,7 +241,7 @@ namespace Application.Services.Orders
         {
             var lang = _userIdProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.OrderNumber))
                 result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),

@@ -173,6 +173,11 @@
             Сохранить или изменить
             </summary>
         </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.Delete(System.Guid)">
+            <summary>
+            Удалить
+            </summary>
+        </member>
         <member name="M:API.Controllers.Shared.GridController`6.Search(Domain.Shared.FilterFormDto{`5})">
             <summary>
             Поиск по вхождению с пагинацией

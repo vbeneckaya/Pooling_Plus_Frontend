@@ -33,9 +33,11 @@ using Application.Services.UserSettings;
 using Application.Services.VehicleTypes;
 using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
+using Application.Shared;
 using DAL;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
@@ -117,6 +119,8 @@ namespace Infrastructure.Installers
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
 
+            services.AddScoped<IValidationService, ValidationService>();
+
             /*end of add service implementation*/
 
             AddOrderBusinessModels(services);
@@ -151,6 +155,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, OrderDelivered>();
             services.AddScoped<IAppAction<Order>, FullReject>();
             services.AddScoped<IAppAction<Order>, DeleteOrder>();
+            services.AddScoped<IAppAction<Order>, RollbackOrder>();
 
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
@@ -169,6 +174,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ProblemShipping>();
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
+            services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
         }

@@ -262,6 +262,7 @@ const Card = props => {
                         actions.map(item => (
                             <Button
                                 color={item.color}
+								size="small"
                                 loading={progressActionName === item.name}
                                 disabled={progressActionName}
                                 onClick={() => invokeAction(item.name)}
@@ -273,12 +274,13 @@ const Card = props => {
                 <div>
                     <Button
                         color="grey"
+						size="small"
                         disabled={progressActionName}
                         onClick={() => onClose(true)}
                     >
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" disabled={disableSave} onClick={handleSave}>
+                    <Button color="blue" size="small" disabled={disableSave} onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
                 </div>

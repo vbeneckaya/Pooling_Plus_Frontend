@@ -62,7 +62,7 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
-        public override ValidateResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             var validateResult = ValidateDto(dto);
             if (validateResult.IsError)
@@ -108,7 +108,7 @@ namespace Application.Services.Warehouses
             }
 
             string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            return new DetailedValidationResult(errors, entity.Id.ToString());
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -185,11 +185,11 @@ namespace Application.Services.Warehouses
                 );
         }
 
-        private ValidateResult ValidateDto(WarehouseDto dto)
+        private DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidattionResult result = new DetailedValidattionResult();
+            DetailedValidationResult result = new DetailedValidationResult();
 
             if (string.IsNullOrEmpty(dto.SoldToNumber))
             {

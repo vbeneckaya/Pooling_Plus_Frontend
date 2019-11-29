@@ -42,7 +42,7 @@ namespace Application.Shared.Excel
             }
         }
 
-        public IEnumerable<TDto> LoadEntries(ExcelWorksheet worksheet)
+        public IEnumerable<ValidatedRecord<TDto>> LoadEntries(ExcelWorksheet worksheet)
         {
             var rows = worksheet.Cells
                 .Select(cell => cell.Start.Row)
@@ -74,22 +74,31 @@ namespace Application.Shared.Excel
                     continue;
                 }
 
-                StringBuilder errors = new StringBuilder();
                 var entity = new TDto();
+                var validationResult = new DetailedValidationResult();
+
                 foreach (var column in _columns.Values)
                 {
                     try
                     {
                         var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                        column.SetValue(entity, cell);
+                        var columnResult = column.SetValue(entity, cell);
+
+                        if (columnResult != null)
+                        { 
+                            validationResult.AddError(_columns.Keys.ElementAt(column.ColumnIndex), columnResult.Message, columnResult.ResultType);
+                        }
+
                     }
                     catch (Exception ex)
                     {
-                        errors.AppendLine($"Строка {rowIndex}: {ex.Message}.");
+                        validationResult.AddError("exception", $"Строка {rowIndex}: {ex.Message}.", ValidationErrorType.Exception);
                     }
                 };
-                _errors.Add(new ValidateResult(errors.ToString()));
-                yield return entity;
+
+                _errors.Add(validationResult);
+
+                yield return new ValidatedRecord<TDto>(entity, validationResult);
             }
         }
 

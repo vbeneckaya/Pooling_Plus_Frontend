@@ -1,7 +1,7 @@
+using System;
 using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
-using System;
 
 namespace Domain.Services.Orders
 {
@@ -22,13 +22,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Date), IsRequired]
         public string OrderDate { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
+        [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
         public string OrderType { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(5)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(5), IsReadOnly]
         public string ClientName { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
@@ -83,16 +83,16 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
         public string ShippingCity { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsReadOnly]
         public string DeliveryRegion { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true)]
+        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.BigText)]
+        [FieldType(FieldType.BigText), IsReadOnly]
         public string ShippingAddress { get; set; }
 
-        [FieldType(FieldType.BigText)]
+        [FieldType(FieldType.BigText), IsReadOnly]
         public string DeliveryAddress { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState)), IsReadOnly]

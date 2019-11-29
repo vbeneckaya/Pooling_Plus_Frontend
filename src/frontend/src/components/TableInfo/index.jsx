@@ -153,7 +153,7 @@ class TableInfo extends Component {
         const { filter } = this.state;
 
         return (
-            <Container className={className}>
+            <div className={className}>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
@@ -283,7 +283,7 @@ class TableInfo extends Component {
                         </Table.Body>
                     </InfiniteScrollTable>
                 </div>
-            </Container>
+            </div>
         );
     }
 }
