@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Form, Grid, Segment} from 'semantic-ui-react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -28,7 +28,7 @@ const Information = ({
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value, ext}) => {
+    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
 
         onChange(e, {
             name,
@@ -36,7 +36,7 @@ const Information = ({
         });
         onChange(e, {name: 'clientName', value: ext.warehouseName});
         onChange(e, {name: 'deliveryAddress', value: ext.address});
-    };
+    }, []);
 
     useEffect(
         () => {

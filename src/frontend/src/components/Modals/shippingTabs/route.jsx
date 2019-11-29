@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import { useTranslation } from 'react-i18next';
 import {useSelector} from 'react-redux';
 import { Form, Grid } from 'semantic-ui-react';
@@ -16,7 +16,7 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
 
     const settings = useSelector(state => settingsExtSelector(state, form.status));
 
-    const handleChange = (e, { name, value }) => {
+    const handleChange = useCallback((e, {name, value}) => {
         pointChange(
             {
                 ...point,
@@ -24,7 +24,7 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
             },
             index,
         );
-    };
+    }, [point]);
 
     return (
         <Form style={{ paddingLeft: '12px' }}>

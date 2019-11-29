@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useCallback} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Menu, Tab } from 'semantic-ui-react';
@@ -17,9 +17,9 @@ const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose, set
     const { orders = [] } = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
-    const handleTabChange = (e, { activeIndex }) => {
+    const handleTabChange = useCallback((e, {activeIndex}) => {
         setRouteActiveIndex(activeIndex);
-    };
+    }, []);
 
     const getPanes = [
         {

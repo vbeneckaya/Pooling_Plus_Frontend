@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef, useCallback} from 'react';
 import { Form, Grid } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import FormField from '../../BaseComponents';
@@ -7,23 +7,23 @@ import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constan
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    function handleChangeSoldTo (e, {name, value, ext}) {
+    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
         });
         onChange(e, {name: 'clientName', value: ext.warehouseName});
         onChange(e, {name: 'deliveryAddress', value: ext.address});
-    };
+    }, []);
 
-    const handleChangeShippingWarehouseId = (e, {name, value, ext}) => {
+    const handleChangeShippingWarehouseId = useCallback((e, {name, value, ext}) => {
         onChange(e, {
             name,
             value,
         });
 
         onChange(e, {name: 'shippingAddress', value: ext.address});
-    };
+    }, []);
 
     return (
         <Form className="tabs-card">
