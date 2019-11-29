@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useCallback} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Menu, Tab } from 'semantic-ui-react';
@@ -13,15 +13,13 @@ import { userPermissionsSelector } from '../../ducks/profile';
 
 const ShippingModal = ({ form, onChangeForm, name, id, onClose: beforeClose, settings }) => {
     const { t } = useTranslation();
-    const userPermissions = useSelector(state => userPermissionsSelector(state)).map(
-        item => item.code,
-    );
+    const userPermissions = useSelector(state => userPermissionsSelector(state));
     const { orders = [] } = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
-    const handleTabChange = (e, { activeIndex }) => {
+    const handleTabChange = useCallback((e, {activeIndex}) => {
         setRouteActiveIndex(activeIndex);
-    };
+    }, []);
 
     const getPanes = [
         {

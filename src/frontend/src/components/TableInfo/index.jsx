@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { Button, Container, Dimmer, Grid, Icon, Loader, Table } from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import { debounce } from 'throttle-debounce';
@@ -9,7 +10,7 @@ import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
-import CellResult from "../SuperGrid/components/result_cell";
+import _ from "lodash";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -24,20 +25,34 @@ class TableInfo extends Component {
         filter: '',
     };
 
+    shouldComponentUpdate(nextProps) {
+        /* if (nextProps.list.length !== this.props.list.length) {
+             return true
+         }
+
+         if (this.props.loading !== nextProps.loading) {
+             return true
+         }
+
+         if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
+             return true
+         }
+
+         if (_.isEqual(nextProps.list, this.props.list)) {
+             return false
+         }*/
+
+        return true
+    }
+
     componentDidMount() {
         this.load();
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.name !== prevProps.name) {
-            this.load();
+            console.log('listupdate')
         }
-    }
-
-    componentWillUnmount () {
-        const { clear } = this.props;
-
-        clear && clear();
     }
 
     mapData = (isConcat, isReload) => {
@@ -95,6 +110,10 @@ class TableInfo extends Component {
         this.fileUploader && this.fileUploader.click();
     };
 
+    exportToExcel = () => {
+        this.props.exportToExcel && this.props.exportToExcel(this.mapData())
+    };
+
     onFilePicked = e => {
         const file = e.target.files[0];
 
@@ -102,7 +121,7 @@ class TableInfo extends Component {
         data.append('FileName', file.name);
         data.append('FileContent', new Blob([file], { type: file.type }));
         data.append('FileContentType', file.type);
-        this.props.importFromExcel(data, () => this.load());
+        this.props.importFromExcel(data, () => this.load(false, true));
 
         e.target.value = null;
     };
@@ -134,7 +153,7 @@ class TableInfo extends Component {
         const { filter } = this.state;
 
         return (
-            <Container className={className}>
+            <div className={className}>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
@@ -172,7 +191,7 @@ class TableInfo extends Component {
                                     <Button
                                         color="green"
                                         loading={exportLoader}
-                                        onClick={exportToExcel}
+                                        onClick={this.exportToExcel}
                                     >
                                         <Icon name="download" />
                                         {t('exportToExcel')}
@@ -206,7 +225,6 @@ class TableInfo extends Component {
                     <InfiniteScrollTable
                         className="grid-table table-info"
                         onBottomVisible={this.nextPage}
-                        unstackable
                         context={this.container}
                         headerRow={this.headerRowComponent()}
                     >
@@ -224,30 +242,23 @@ class TableInfo extends Component {
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
-                                                      value={row[column.name]}
                                                       column={column}
-                                                  >
-                                                      <CellValue
-                                                          {...column}
-                                                          key_id={`${row.id}_${
-                                                              column.name
-                                                          }_${index}`}
-                                                          id={row.id}
-                                                          toggleIsActive={(
+                                                      value={row[column.name]}
+                                                      id={row.id}
+                                                      toggleIsActive={(
+                                                          event,
+                                                          {itemID, checked},
+                                                      ) =>
+                                                          toggleIsActive(
                                                               event,
-                                                              { itemID, checked },
-                                                          ) =>
-                                                              toggleIsActive(
-                                                                  event,
-                                                                  { itemID, checked },
-                                                                  this.load,
-                                                              )
-                                                          }
-                                                          indexRow={i}
-                                                          indexColumn={index}
-                                                          value={row[column.name]}
-                                                      />
-                                                  </BodyCellComponent>
+                                                              {itemID, checked},
+                                                              this.load,
+                                                          )
+                                                      }
+                                                      indexRow={i}
+                                                      indexColumn={index}
+                                                      t={t}
+                                                  />
                                               ))}
                                               {isShowActions ? (
                                                   <Table.Cell textAlign="center">
@@ -272,7 +283,7 @@ class TableInfo extends Component {
                         </Table.Body>
                     </InfiniteScrollTable>
                 </div>
-            </Container>
+            </div>
         );
     }
 }

@@ -1,10 +1,9 @@
 ﻿using Domain.Persistables;
-using Domain.Services;
+using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DAL.Services
 {
@@ -19,17 +18,47 @@ namespace DAL.Services
 
         public TEntity GetById<TEntity>(Guid id) where TEntity : class, IPersistable
         {
-            return this.GetDbSet<TEntity>().Find(id);
+            return GetDbSet<TEntity>().Find(id);
         }
 
         public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class, IPersistable
         {
-            return this._context.Set<TEntity>();
+            return _context.Set<TEntity>();
+        }
+
+        public IEnumerable<EntityChangesDto<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable
+        {
+            var entries = _context.ChangeTracker.Entries<TEntity>().ToList();
+            foreach (var entry in entries)
+            {
+                var fieldChanges = new List<EntityFieldChangesDto>();
+                foreach (var field in entry.Properties.Where(x => x.IsModified).ToList())
+                {
+                    var fieldChange = new EntityFieldChangesDto
+                    {
+                        FieldName = field.Metadata.Name,
+                        OldValue = field.OriginalValue,
+                        NewValue = field.CurrentValue
+                    };
+                    fieldChanges.Add(fieldChange);
+                }
+
+                yield return new EntityChangesDto<TEntity>
+                {
+                    Entity = entry.Entity,
+                    FieldChanges = fieldChanges
+                };
+            }
         }
 
         public void SaveChanges()
         {
             _context.SaveChanges();
+        }
+
+        void ICommonDataService.Remove<TEntity>(TEntity entity)
+        {
+            this.GetDbSet<TEntity>().Remove(entity);
         }
     }
 }

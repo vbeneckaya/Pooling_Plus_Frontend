@@ -1,19 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
-import {
-    checkForEditingRequest,
-    checkProgressSelector,
-    editModalSelector,
-} from '../../../ducks/gridColumnEdit';
-
 import FormField from '../../BaseComponents';
 import { LINK_TYPE } from '../../../constants/columnTypes';
 import { ORDERS_GRID } from '../../../constants/grids';
-import { invokeMassUpdateRequest, progressMassUpdateSelector } from '../../../ducks/gridActions';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -22,80 +13,90 @@ const ModalComponent = ({ element, props, children }) => {
     return React.cloneElement(element, props, children);
 };
 
-const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, gridName }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const checkProgress = useSelector(state => checkProgressSelector(state));
-    const editProgress = useSelector(state => progressMassUpdateSelector(state));
-    const editModal = useSelector(state => editModalSelector(state));
+const BodyCell = ({
+                      row,
+                      column,
+                      loadList,
+                      indexRow,
+                      indexColumn,
+                      modalCard,
+                      gridName,
+                      t,
+                      checkForEditing,
+                      invokeMassUpdate,
+                  }) => {
     const contextRef = useRef(null);
 
     let [open, setOpen] = useState(false);
     let [value, setValue] = useState(null);
+    let [progress, setProgress] = useState(false);
 
     const copyToClipboard = () => {
         const text = contextRef.current && contextRef.current.textContent;
         navigator.clipboard &&
-            navigator.clipboard.writeText(text).then(
-                () => {
-                    toast.info(t('copied_to_clipboard_success'));
-                },
-                error => {
-                    toast.error(t('copied_to_clipboard_error', { error }));
-                },
-            );
+        navigator.clipboard.writeText(text).then(
+            () => {
+                toast.info(t('copied_to_clipboard_success'));
+            },
+            error => {
+                toast.error(t('copied_to_clipboard_error', {error}));
+            },
+        );
     };
 
     const handleClick = (rowId, fieldName, state) => {
-        dispatch(
-            checkForEditingRequest({
-                rowId,
-                fieldName,
-                state,
-                forEntity: gridName,
-                t,
-                callbackSuccess: () => {
-                    handleOpen();
-                },
-            }),
-        );
+        setProgress(true);
+        checkForEditing({
+            rowId,
+            fieldName,
+            state,
+            forEntity: gridName,
+            t,
+            callbackSuccess: () => {
+                handleOpen();
+            },
+            callbackFunc: () => {
+                setProgress(false);
+            }
+        });
     };
 
     const handleOpen = () => {
-        setValue(row[column.name]);
         setOpen(true);
+        setValue(row[column.name]);
     };
 
     const handleClose = () => {
-        setValue(null);
         setOpen(false);
+        setValue(null);
     };
 
     const handleSave = () => {
+        setProgress(true);
         handleClose();
-        dispatch(
-            invokeMassUpdateRequest({
-                ids: [row.id],
-                name: gridName,
-                field: column.name,
-                value,
-                callbackSuccess: () => {
-                    loadList(false, true);
-                },
-            }),
-        );
+        invokeMassUpdate({
+            ids: [row.id],
+            name: gridName,
+            field: column.name,
+            value,
+            callbackSuccess: () => {
+                loadList(false, true);
+            },
+            callbackFunc: () => {
+                setProgress(false);
+            }
+        });
     };
 
     return (
         <>
-            <Table.Cell
-                className="value-cell"
-            >
+            <Table.Cell className="value-cell">
                 <div className="cell-grid">
                     <div
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
-                        }`}
+                            }`}
+                        ref={contextRef}
                         onClick={e =>
                             column.type !== LINK_TYPE
                                 ? handleClick(row.id, column.name, row.status)
@@ -104,12 +105,11 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                     >
                         <CellValue
                             {...column}
-                            ref={contextRef}
-                            id={`${row.id}_${column.name}_${indexRow}`}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
                             value={row[column.name]}
                             width={column.width}
+                            t={t}
                             modalCard={
                                 <ModalComponent
                                     element={modalCard}
@@ -124,12 +124,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                         />
                     </div>
                     <div>
-                        {(checkProgress &&
-                            row.id === checkProgress.rowId &&
-                            column.name === checkProgress.fieldName) ||
-                        (editProgress &&
-                            row.id === editModal.rowId &&
-                            column.name === editModal.fieldName) ? (
+                        {progress ? (
                             <Loader active={true} size="mini" />
                         ) : (
                             <>
@@ -158,7 +153,7 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
                     <Modal.Description>
                         <Form>
                             <FormField
-                                column={column}
+                                {...column}
                                 value={value}
                                 onChange={(e, { value }) => {
                                     setValue(value);
@@ -182,4 +177,11 @@ const CellResult = ({ row, column, loadList, indexRow, indexColumn, modalCard, g
     );
 };
 
-export default CellResult;
+export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
+    return (
+        prevProps.value === nextProps.value &&
+        prevProps.column.width === nextProps.column.width/* &&
+        nextProps.isEqual(prevProps.checkProgress, nextProps.checkProgress) &&
+        nextProps.isEqual(prevProps.editProgress, nextProps.editProgress)*/
+    );
+});

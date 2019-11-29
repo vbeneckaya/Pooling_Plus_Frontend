@@ -31,9 +31,14 @@ namespace Domain.Persistables
         public Guid? CarrierId { get; set; }
 
         /// <summary>
-        /// Тип кузова
+        /// Тип ТС
         /// </summary>
         public Guid? VehicleTypeId { get; set; }
+
+        /// <summary>
+        /// Тип Кузова
+        /// </summary>
+        public Guid? BodyTypeId { get; set; }
 
         /// <summary>
         /// Начало зимнего периода
@@ -49,6 +54,16 @@ namespace Domain.Persistables
         /// Зимняя надбавка
         /// </summary>
         public decimal? WinterAllowance { get; set; }
+
+        /// <summary>
+        /// Дата начала действия тарифов
+        /// </summary>
+        public DateTime? EffectiveDate { get; set; }
+
+        /// <summary>
+        /// Дата окончания действия тарифов
+        /// </summary>
+        public DateTime? ExpirationDate { get; set; }
 
         /// <summary>
         /// Ставка FTL

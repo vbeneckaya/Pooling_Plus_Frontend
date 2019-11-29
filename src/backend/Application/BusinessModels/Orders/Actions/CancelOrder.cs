@@ -32,8 +32,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Canceled;
 
             _historyService.Save(order.Id, "orderSetCancelled", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {

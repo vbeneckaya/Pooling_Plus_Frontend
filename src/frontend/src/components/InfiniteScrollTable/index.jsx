@@ -17,6 +17,7 @@ const InfiniteScrollTable = ({
     style,
     structured,
 }) => {
+
     return (
         <div style={{ position: 'relative', ...style }}>
             <Table
@@ -47,4 +48,4 @@ const InfiniteScrollTable = ({
     );
 };
 
-export default InfiniteScrollTable;
+export default React.memo(InfiniteScrollTable);

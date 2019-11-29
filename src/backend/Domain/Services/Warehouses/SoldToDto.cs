@@ -4,6 +4,7 @@ namespace Domain.Services.Warehouses
 {
     public class SoldToDto : LookUpDto
     {
+        public string Id { get; set; }
         public string WarehouseName { get; set; }
         public string Region { get; set; }
         public string City { get; set; }

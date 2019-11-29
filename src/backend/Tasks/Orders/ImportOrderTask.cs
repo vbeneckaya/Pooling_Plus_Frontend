@@ -173,6 +173,7 @@ namespace Tasks.Orders
                 string shippingAddressCode = docRoot.SelectSingleNode("E1EDP01/WERKS")?.InnerText;
                 var shippingWarehouse = shippingWarehousesService.GetByCode(shippingAddressCode);
                 dto.ShippingAddress = shippingWarehouse?.Address ?? dto.ShippingAddress;
+                dto.ShippingCity = shippingWarehouse?.City ?? dto.ShippingCity;
                 dto.ShippingWarehouseId = shippingWarehouse?.Id.ToString() ?? dto.ShippingWarehouseId;
 
                 string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
@@ -192,6 +193,7 @@ namespace Tasks.Orders
                     dto.DeliveryRegion = null;
                     dto.PickingTypeId = null;
                     dto.TransitDays = null;
+                    dto.DeliveryType = null;
                 }
                 else
                 {
@@ -242,6 +244,16 @@ namespace Tasks.Orders
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
                         if (string.IsNullOrEmpty(nart))
                         {
+                            Log.Warning("Пустое значение NART в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.", 
+                                        entryInd, processedCount, totalCount, fileName);
+                            continue;
+                        }
+
+                        int? quantity = itemRoot.ParseInt("MENGE");
+                        if (quantity == null || quantity == 0)
+                        {
+                            Log.Warning("Пустое количество в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.",
+                                        entryInd, processedCount, totalCount, fileName);
                             continue;
                         }
 
@@ -258,7 +270,7 @@ namespace Tasks.Orders
                         }
 
                         itemDto.Nart = nart;
-                        itemDto.Quantity = itemRoot.ParseInt("MENGE") ?? itemDto.Quantity;
+                        itemDto.Quantity = quantity ?? itemDto.Quantity;
                     }
 
                     var itemsToRemove = dto.Items.Where(x => !string.IsNullOrEmpty(x.Id) && !updatedItems.Contains(x.Id)).ToList();

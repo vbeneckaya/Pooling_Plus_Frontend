@@ -5,6 +5,7 @@
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 5px;
+    grid-template-rows: auto 76px;
 }
 
 .grid_small {
@@ -164,6 +165,10 @@
             width: inherit;
         }
     }*/
+
+    &-selected td{
+        background-color: rgba(222, 236, 255, 1);;
+    }
 }
 
 .column-overflow {
@@ -181,7 +186,7 @@
 }
 
 .grid-row:hover td {
-    background-color: #deecff;
+    background-color: rgba(222, 236, 255, .5);
 }
 
 .grid-row td,
@@ -231,6 +236,7 @@
     flex-wrap: nowrap !important;
     height: max-content;
     z-index: 2;
+    min-height: 88px;
 
     .row {
         padding-top: 0 !important;

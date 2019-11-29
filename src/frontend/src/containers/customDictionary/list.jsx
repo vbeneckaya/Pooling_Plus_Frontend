@@ -1,13 +1,14 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 import {
     canCreateByFormSelector,
     canExportToExcelSelector,
-    canImportFromExcelSelector, clearDictionaryInfo,
+    canImportFromExcelSelector,
+    clearDictionaryInfo,
     columnsSelector,
     exportProgressSelector,
     exportToExcelRequest,
@@ -29,27 +30,19 @@ const newModal = (t, load, name) => (
     </Card>
 );
 
-const List = ({
-    match = {},
-    columns,
-    loadList,
-    progress,
-    totalCount,
-    list,
-    isCreateBtn,
-    isImportBtn,
-    isExportBtn,
-    importFromExcel,
-    exportFromExcel,
-    importLoader,
-    exportLoader,
-    clear
-}) => {
-    const { params = {} } = match;
-    const { name = '' } = params;
-    const { t } = useTranslation();
+class List extends Component {
 
-    const handleImportFromExcel = (form, callbackSuccess) => {
+    state = {};
+
+    componentWillUnmount() {
+        this.props.clear();
+    }
+
+    handleImportFromExcel = (form, callbackSuccess) => {
+        const {importFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
+
         importFromExcel({
             form,
             name,
@@ -57,34 +50,59 @@ const List = ({
         });
     };
 
-    const handleExportToExcel = () => {
+    handleExportToExcel = (filter) => {
+        const {exportFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
         exportFromExcel({
             name,
+            filter
         });
     };
 
-    return (
-        <TableInfo
-            headerRow={columns}
-            name={name}
-            className="wider container-margin-top-bottom"
-            loadList={loadList}
-            loading={progress}
-            totalCount={totalCount}
-            title={name}
-            list={list}
-            clear={clear}
-            isImportBtn={isImportBtn}
-            isExportBtn={isExportBtn}
-            importFromExcel={handleImportFromExcel}
-            exportToExcel={handleExportToExcel}
-            importLoader={importLoader}
-            exportLoader={exportLoader}
-            newModal={isCreateBtn ? newModal : null}
-            modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
-        />
-    );
-};
+    render() {
+        const {
+            match = {},
+            columns,
+            loadList,
+            progress,
+            totalCount,
+            list,
+            isCreateBtn,
+            isImportBtn,
+            isExportBtn,
+            importLoader,
+            exportLoader,
+            clear,
+            t,
+        } = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
+
+        return (
+            <TableInfo
+                key={name}
+                headerRow={columns}
+                name={name}
+                className={columns.length >= 10 ? 'container' : "wider ui container container-margin-top-bottom"}
+                loadList={loadList}
+                loading={progress}
+                totalCount={totalCount}
+                title={name}
+                list={list}
+                clear={clear}
+                isImportBtn={isImportBtn}
+                isExportBtn={isExportBtn}
+                importFromExcel={this.handleImportFromExcel}
+                exportToExcel={this.handleExportToExcel}
+                importLoader={importLoader}
+                exportLoader={exportLoader}
+                newModal={isCreateBtn ? newModal : null}
+                modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
+            />
+        );
+    }
+}
 
 const mapStateToProps = (state, ownProps) => {
     const { match = {} } = ownProps;
@@ -116,14 +134,16 @@ const mapDispatchToProps = dispatch => {
             dispatch(exportToExcelRequest(params));
         },
         clear: () => {
-            dispatch(clearDictionaryInfo())
-        }
+            dispatch(clearDictionaryInfo());
+        },
     };
 };
 
-export default withRouter(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(List),
+export default withTranslation()(
+    withRouter(
+        connect(
+            mapStateToProps,
+            mapDispatchToProps,
+        )(List),
+    ),
 );

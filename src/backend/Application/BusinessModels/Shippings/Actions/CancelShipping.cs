@@ -44,8 +44,6 @@ namespace Application.BusinessModels.Shippings.Actions
                 _historyService.Save(order.Id, "orderCancellingShipping", order.OrderNumber, shipping.ShippingNumber);
             }
 
-            _dataService.SaveChanges();
-
             return new AppActionResult
             {
                 IsError = false,

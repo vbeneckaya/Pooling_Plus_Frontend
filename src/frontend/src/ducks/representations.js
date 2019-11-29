@@ -111,7 +111,7 @@ export const representationNameSelector = createSelector(
 export const representationSelector = createSelector(
     [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name)],
     (state, gridName, columnList) => {
-        const representationName = state.representation[gridName];
+        const representationName = state.representation && state.representation[gridName];
         const representation = representationName ? state.list[representationName] : [];
         const actualRepresentation = [];
 

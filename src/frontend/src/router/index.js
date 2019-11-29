@@ -30,11 +30,11 @@ const MainRoute = withRouter(props => {
                 path="/"
                 component={() => <Redirect to={homePage} />}
             />
-            <PrivateRoute exact path="/grid/:name" component={() => <CustomGrid />} />
-            <PrivateRoute exact path="/dictionary/:name" component={() => <CustomDictionary />} />
-            <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={() => <RolesList />} />
-            <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={() => <UsersList />} />
-            <PrivateRoute exact path={FIELDS_SETTING_LINK} permission="editFieldProperties" component={() => <FieldsSetting />} />
+            <PrivateRoute exact path="/grid/:name" component={CustomGrid}/>
+            <PrivateRoute exact path="/dictionary/:name" component={CustomDictionary}/>
+            <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={RolesList}/>
+            <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={UsersList}/>
+            <PrivateRoute exact path={FIELDS_SETTING_LINK} permission="editFieldProperties" component={FieldsSetting}/>
             <Route exact path={LOGIN_LINK} component={Login} />
             <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
         </Switch>

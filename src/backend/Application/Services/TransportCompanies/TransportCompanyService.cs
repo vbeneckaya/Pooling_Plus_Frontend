@@ -1,6 +1,8 @@
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services.Translations;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -12,11 +14,17 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider) : base(dataService, userProvider) { }
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
+            : base(dataService, userProvider, triggersService) 
+        { }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
-            var carriers = _dataService.GetDbSet<TransportCompany>().OrderBy(c => c.Title).ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                .Where(i => i.IsActive)
+                .OrderBy(c => c.Title)
+                .ToList();
+
             foreach (TransportCompany carrier in carriers)
             {
                 yield return new LookUpDto
@@ -27,15 +35,45 @@ namespace Application.Services.TransportCompanies
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
+        public override DetailedValidationResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
-            if(!string.IsNullOrEmpty(dto.Id))
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
+            if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
             entity.ContractNumber = dto.ContractNumber;
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
+            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new ValidateResult(null, entity.Id.ToString());
+            return new DetailedValidationResult(null, entity.Id.ToString());
+        }
+
+        private DetailedValidationResult ValidateDto(TransportCompanyDto dto)
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            DetailedValidationResult result = new DetailedValidationResult();
+
+            if (string.IsNullOrEmpty(dto.Title))
+            {
+                result.AddError(nameof(dto.Title), "transportCompany.emptyTitle".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
+                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
+                                            .Any();
+
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.Title), "transportCompany.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
         }
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
@@ -46,7 +84,7 @@ namespace Application.Services.TransportCompanies
                 Title = entity.Title,
                 ContractNumber = entity.ContractNumber,
                 DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
-                /*end of map entity to dto fields*/
+                IsActive = entity.IsActive
             };
         }
 
@@ -55,6 +93,12 @@ namespace Application.Services.TransportCompanies
             return query
                 .OrderBy(i => i.Title)
                 .ThenBy(i => i.Id);
+        }
+
+        public override TransportCompany FindByKey(TransportCompanyDto dto)
+        {
+            return _dataService.GetDbSet<TransportCompany>()
+                .FirstOrDefault(i => i.Title == dto.Title);
         }
     }
 }

@@ -1,54 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Form, Grid, Segment } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { valuesListSelector } from '../../../ducks/lookup';
+import React, {useEffect, useCallback} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Form, Grid, Segment} from 'semantic-ui-react';
+import {useDispatch, useSelector} from 'react-redux';
+import {valuesListSelector} from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {
     BIG_TEXT_TYPE,
     DATE_TYPE,
     NUMBER_TYPE,
     SELECT_TYPE,
+    SOLD_TO_TYPE,
     TEXT_TYPE,
 } from '../../../constants/columnTypes';
+import {addError, clearError} from '../../../ducks/gridCard';
 
-const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck, settings }) => {
+const Information = ({
+                         form,
+                         onChange,
+                         isNotUniqueNumber,
+                         uniquenessNumberCheck,
+                         settings,
+                         error,
+                         load,
+                     }) => {
     const { t } = useTranslation();
-    let [error, setError] = useState(false);
+    const dispatch = useDispatch();
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
 
-    const handleChangeSoldTo = (e, {name, value}) => {
-        const item = valuesList.find(item => item.value === value) || {};
-        onChange(null, {name, value, clientName: item.warehouseName, deliveryAddress: item.address});
-    };
+    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
 
-    /*useEffect(
-        () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'clientName', value: item.warehouseName });
-        },
-        [form.soldTo],
-    );
+        onChange(e, {
+            name,
+            value,
+        });
+        onChange(e, {name: 'clientName', value: ext.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: ext.address});
+    }, []);
 
     useEffect(
         () => {
-            const item = valuesList.find(item => item.value === form.soldTo) || {};
-            onChange(null, { name: 'deliveryAddress', value: item.address });
-        },
-        [form.clientName],
-    );*/
-
-    useEffect(
-        () => {
-            if (form.soldTo && !valuesList.find(item => item.value === form.soldTo)) {
-                setError(true);
+            if (
+                form.soldTo &&
+                valuesList.length &&
+                !valuesList.find(item => item.value === form.soldTo)
+            ) {
+                dispatch(
+                    addError({
+                        name: 'soldTo',
+                        message: t('soldTo_error'),
+                    }),
+                );
             } else {
-                setError(false);
+                dispatch(clearError('soldTo'));
             }
         },
         [valuesList, form.soldTo],
     );
+
 
     return (
         <Form>
@@ -125,13 +134,13 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                                             <FormField
                                                 name="soldTo"
                                                 value={form['soldTo']}
-                                                type={SELECT_TYPE}
+                                                type={SOLD_TO_TYPE}
                                                 settings={settings['soldTo']}
-                                                errorText={error && t('soldTo_error')}
+                                                error={error['soldTo']}
                                                 textValue={error && form['soldTo']}
-                                                error={error}
                                                 source="soldTo"
                                                 onChange={handleChangeSoldTo}
+                                                deliveryAddress={form['deliveryAddress']}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -330,52 +339,6 @@ const Information = ({ form, onChange, isNotUniqueNumber, uniquenessNumberCheck,
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
-                {/* <Grid.Row columns={3} stretched>
-                    <Grid.Column>
-                        <Form.Field>
-                            <label>{t('boxesCountGroup')}</label>
-                            <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
-                                className="mini-column"
-                            >
-                                <Text
-                                    name="boxesCount"
-                                    text="prepare"
-                                    value={form['boxesCount']}
-                                    onChange={onChange}
-                                />
-                                <Text
-                                    name="confirmedBoxesCount"
-                                    text="fact"
-                                    value={form['confirmedBoxesCount']}
-                                    onChange={onChange}
-                                />
-                            </Segment>
-                        </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Form.Field>
-                            <label>{t('weigth')}</label>
-                            <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
-                                className="mini-column"
-                            >
-                                <Text
-                                    name="weightKg"
-                                    text="planWeigth"
-                                    value={form['weightKg']}
-                                    onChange={onChange}
-                                />
-                                <Text
-                                    name="actualWeightKg"
-                                    text="factWeigth"
-                                    value={form['actualWeightKg']}
-                                    onChange={onChange}
-                                />
-                            </Segment>
-                        </Form.Field>
-                    </Grid.Column>
-                </Grid.Row>*/}
             </Grid>
         </Form>
     );

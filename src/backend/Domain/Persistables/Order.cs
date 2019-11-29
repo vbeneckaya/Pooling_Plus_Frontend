@@ -57,6 +57,10 @@ namespace Domain.Persistables
         /// </summary>
         public DateTime? ShippingDate { get; set; }
         /// <summary>
+        /// Дата отгрузки введена вручную
+        /// </summary>
+        public bool ManualShippingDate { get; set; }
+        /// <summary>
         /// Дней в пути
         /// </summary>
         public int? TransitDays { get; set; }
@@ -64,6 +68,10 @@ namespace Domain.Persistables
         /// Дата доставки
         /// </summary>
         public DateTime? DeliveryDate { get; set; }
+        /// <summary>
+        /// Дата доставки введена вручную
+        /// </summary>
+        public bool ManualDeliveryDate { get; set; }
         /// <summary>
         /// Кол-во арт.
         /// </summary>
@@ -109,11 +117,15 @@ namespace Domain.Persistables
         /// </summary>
         public decimal? InvoiceAmountExcludingVAT { get; set; }
         /// <summary>
-        /// Регион
+        /// Город отгрузки
+        /// </summary>
+        public string ShippingCity { get; set; }
+        /// <summary>
+        /// Регион доставки
         /// </summary>
         public string DeliveryRegion { get; set; }
         /// <summary>
-        /// Город
+        /// Город доставки
         /// </summary>
         public string DeliveryCity { get; set; }
         /// <summary>
@@ -133,6 +145,10 @@ namespace Domain.Persistables
         /// </summary>
         public VehicleState DeliveryStatus { get; set; }
         /// <summary>
+        /// Время авизации на складе отгрузки
+        /// </summary>
+        public TimeSpan? ShippingAvisationTime { get; set; }
+        /// <summary>
         /// Время авизации у клиента
         /// </summary>
         public TimeSpan? ClientAvisationTime { get; set; }
@@ -144,6 +160,10 @@ namespace Domain.Persistables
         /// Тип комплектации
         /// </summary>
         public Guid? PickingTypeId { get; set; }
+        /// <summary>
+        /// Тип комплектации выбран вручную
+        /// </summary>
+        public bool ManualPickingTypeId { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
@@ -248,5 +268,50 @@ namespace Domain.Persistables
         /// Заказ подтвержден
         /// </summary>
         public bool OrderConfirmed { get; set; }
+
+        /// <summary>
+        /// Статус возврата документов
+        /// </summary>
+        public bool DocumentReturnStatus { get; set; }
+
+        /// <summary>
+        /// Источник данных в заказе (список инжекций)
+        /// </summary>
+        public string Source { get; set; }
+
+        /// <summary>
+        /// Особенности комплектации
+        /// </summary>
+        public string PickingFeatures { get; set; }
+
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        public Guid? CarrierId { get; set; }
+
+        /// <summary>
+        /// Способ доставки
+        /// </summary>
+        public DeliveryType? DeliveryType { get; set; }
+
+        /// <summary>
+        /// Комментарий (причины отклонения от графика)
+        /// </summary>
+        public string DeviationsComment { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость, без НДС
+        /// </summary>
+        public decimal? DeliveryCost { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость введена вручную
+        /// </summary>
+        public bool ManualDeliveryCost { get; set; }
+
+        /// <summary>
+        /// Фактическая стоимость, без НДС
+        /// </summary>
+        public decimal? ActualDeliveryCost { get; set; }
     }
 }

@@ -10,7 +10,7 @@ import { SETTINGS_TYPE_EDIT, SETTINGS_TYPE_SHOW } from '../../../constants/formT
 import FormField from '../../BaseComponents';
 import { NUMBER_TYPE } from '../../../constants/columnTypes';
 
-const EditField = ({ value, name, onChange, datalist, error, isDisabled }) => {
+const EditField = ({value, name, onChange, datalist, error = [], isDisabled}) => {
     return (
         <>
             {name === 'nart' ? (
@@ -21,6 +21,7 @@ const EditField = ({ value, name, onChange, datalist, error, isDisabled }) => {
                     onChange={onChange}
                     noLabel
                     datalist={datalist}
+                    error={error && error.includes('nart')}
                 />
             ) : (
                 <Number
@@ -29,7 +30,7 @@ const EditField = ({ value, name, onChange, datalist, error, isDisabled }) => {
                     name={name}
                     onChange={onChange}
                     noLabel
-                    error={error}
+                    error={error && error.includes('quantity')}
                 />
             )}
         </>
@@ -41,7 +42,7 @@ const Position = ({ form, onChange, gridName, load, settings: baseSettings }) =>
     const dispatch = useDispatch();
     let [items, setItems] = useState([...form.items]);
     let [indexEdit, setIndexEdit] = useState(null);
-    let [error, setError] = useState(false);
+    let [error, setError] = useState([]);
 
     const card = useSelector(state => cardSelector(state));
     const articles = useSelector(state => valuesListSelector(state, 'articles')) || [];
@@ -97,14 +98,25 @@ const Position = ({ form, onChange, gridName, load, settings: baseSettings }) =>
     };
 
     const handleSaveItem = () => {
-        const { quantity } = items[indexEdit];
-        if (quantity && parseInt(quantity) >= 0 && !quantity.toString().includes('.')) {
+        const {quantity, nart} = items[indexEdit];
+        if (nart && quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.')) {
             editPositions(items);
             setIndexEdit(null);
-            setError(false);
+            setError([]);
         } else {
-            setError(true);
+            if (!nart) {
+                setError(prevState => ([...prevState, 'nart']));
+            } else {
+                setError((prevState = []) => prevState && prevState.filter(item => item !== 'nart'));
+            }
+
+            if (!(quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.'))) {
+                setError(prevState => ([...prevState, 'quantity']));
+            } else {
+                setError((prevState = []) => prevState && prevState.filter(item => item !== 'quantity'));
+            }
         }
+
     };
 
     const handleChangeField = (e, { name, value }) => {
@@ -204,7 +216,7 @@ const Position = ({ form, onChange, gridName, load, settings: baseSettings }) =>
                                                   )}
                                               </>
                                           ))}
-                                          <Table.Cell textAlign="right">
+                                          <Table.Cell textAlign="right" className="table-action-buttons">
                                               {index === indexEdit ? (
                                                   <>
                                                       <Button

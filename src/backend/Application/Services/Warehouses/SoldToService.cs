@@ -21,6 +21,7 @@ namespace Application.Services.Warehouses
                 addedSoldTo.Add(wh.SoldToNumber);
                 SoldToDto dto = new SoldToDto
                 {
+                    Id = wh.Id.ToString(),
                     Name = $"{wh.SoldToNumber} ({wh.WarehouseName})",
                     Value = wh.SoldToNumber,
                     WarehouseName = wh.WarehouseName,

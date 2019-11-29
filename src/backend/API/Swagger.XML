@@ -29,6 +29,11 @@
             Сохранить
             </summary>
         </member>
+        <member name="M:API.Controllers.FieldPropertiesController.ToggleHiddenState(Domain.Services.FieldProperties.ToggleHiddenStateDto)">
+            <summary>
+            Переключить "Скрыто" у поля
+            </summary>
+        </member>
         <member name="T:API.Controllers.FilesController">
             <summary>
             Файлы
@@ -89,6 +94,21 @@
             Поиск по номеру
             </summary>
         </member>
+        <member name="M:API.Controllers.ProfileController.Info">
+            <summary>
+            Получение профиля текущего пользователя
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ProfileController.Save(Domain.Services.Profile.SaveProfileDto)">
+            <summary>
+            Сохранение новой информации о пользователе
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ProfileController.SetNewPassword(Domain.Services.Profile.SetNewPasswordDto)">
+            <summary>
+            Задание нового пароля
+            </summary>
+        </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
             Получение данных для выпадающего списка в 
@@ -143,7 +163,7 @@
             Импортировать из excel
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictionaryController`3.ExportToExcel">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ExportToExcel(Domain.Shared.SearchFormDto)">
             <summary>
             Экспортировать в excel
             </summary>
@@ -151,6 +171,11 @@
         <member name="M:API.Controllers.Shared.DictionaryController`3.SaveOrCreate(`2)">
             <summary>
             Сохранить или изменить
+            </summary>
+        </member>
+        <member name="M:API.Controllers.Shared.DictionaryController`3.Delete(System.Guid)">
+            <summary>
+            Удалить
             </summary>
         </member>
         <member name="M:API.Controllers.Shared.GridController`6.Search(Domain.Shared.FilterFormDto{`5})">
@@ -282,6 +307,11 @@
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingWarehousesForOrderCreationController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
             </summary>

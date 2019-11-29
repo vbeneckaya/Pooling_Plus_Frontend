@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
 import {
+    canDeleteSelector,
+    cardProgressSelector,
     cardSelector,
+    clearDictionaryCard,
     clearDictionaryInfo,
-    columnsSelector, errorSelector,
+    columnsSelector, deleteDictionaryEntryRequest,
+    errorSelector,
     getCardRequest,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
@@ -14,18 +18,34 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
+    confirmation: { open: false },
+    notChangeForm: true,
 };
 
 class Card extends Component {
-    state = {
-        ...initialState,
-        confirmation: {open: false},
-        notChangeForm: true
-    };
+    constructor(props = {}) {
+        //console.log('props.defaultForm', props.defaultForm);
+        super(props);
+
+        this.state = {
+            ...initialState,
+            form: {
+                ...props.defaultForm,
+            },
+        };
+    }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.card !== this.props.card) {
+        if (this.props.defaultForm !== prevProps.defaultForm) {
+            this.setState(prevState => ({
+                form: {
+                    ...prevState.form,
+                    ...this.props.defaultForm,
+                },
+            }));
+        }
 
+        if (prevProps.card !== this.props.card) {
             this.setState({
                 form: {
                     ...this.props.card,
@@ -48,33 +68,36 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clear } = this.props;
+        const { loadList, clearCard, load } = this.props;
+
+        load && load(this.state.form);
 
         this.setState({
             ...initialState,
         });
-        clear();
-        loadList(false, true);
+        clearCard();
+        loadList && loadList(false, true);
     };
 
     onClose = () => {
-        const {notChangeForm} = this.state;
+        const { notChangeForm } = this.state;
+        const { t } = this.props;
 
         if (notChangeForm) {
-            this.confirmClose()
+            this.confirmClose();
         } else {
             this.setState({
                 confirmation: {
                     open: true,
-                    content: 'Закрыть форму без сохранения изменений?',
+                    content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
-                            confirmation: {open: false}
-                        })
+                            confirmation: { open: false },
+                        });
                     },
-                    onConfirm: this.confirmClose
-                }
-            })
+                    onConfirm: this.confirmClose,
+                },
+            });
         }
     };
 
@@ -110,16 +133,26 @@ class Card extends Component {
         });
     };
 
-    render() {
-        const {title, loading, children, progress, columns, t, error} = this.props;
-        const {modalOpen, form, confirmation} = this.state;
+    handleDelete = () => {
+        const {id, deleteEntry, name} = this.props;
 
+        deleteEntry({
+            name,
+            id,
+            callbackSuccess: this.confirmClose
+        })
+    };
+
+    render() {
+        const {title, loading, children, progress, columns, t, error, canDelete} = this.props;
+        const { modalOpen, form, confirmation } = this.state;
+        //console.log('column', columns, form);
         return (
             <Modal
                 dimmer="blurring"
-                className="card-modal"
                 trigger={children}
                 open={modalOpen}
+                closeOnDimmerClick={false}
                 onOpen={this.onOpen}
                 onClose={this.onClose}
                 closeIcon
@@ -132,14 +165,12 @@ class Card extends Component {
                     <Modal.Description>
                         <div className="ui form dictionary-edit">
                             {columns.map(column => {
-                                const err = error && error.find(error => error.name === column.name);
                                 return (
                                     <FormField
-                                        column={column}
+                                        {...column}
                                         noScrollColumn={column}
                                         key={column.name}
-                                        error={err}
-                                        errorText={err && err.message}
+                                        error={error[column.name]}
                                         value={form[column.name]}
                                         onChange={this.handleChange}
                                     />
@@ -148,13 +179,22 @@ class Card extends Component {
                         </div>
                     </Modal.Description>
                 </Modal.Content>
-                <Modal.Actions>
-                    <Button color="grey" onClick={this.onClose}>
-                        {t('CancelButton')}
-                    </Button>
-                    <Button color="blue" loading={progress} onClick={this.handleSave}>
-                        {t('SaveButton')}
-                    </Button>
+                <Modal.Actions className="grid-card-actions">
+                    <div>
+                        {canDelete && form.id ? (
+                            <Button color="red" onClick={this.handleDelete}>
+                                {t('delete')}
+                            </Button>
+                        ) : null}
+                    </div>
+                    <div>
+                        <Button color="grey" onClick={this.onClose}>
+                            {t('CancelButton')}
+                        </Button>
+                        <Button color="blue" loading={progress} onClick={this.handleSave}>
+                            {t('SaveButton')}
+                        </Button>
+                    </div>
                 </Modal.Actions>
                 <Confirm
                     dimmer="blurring"
@@ -173,9 +213,11 @@ const mapStateToProps = (state, ownProps) => {
     const { name } = ownProps;
 
     return {
-        columns: columnsSelector(state, name),
+        columns: ownProps.columns ? ownProps.columns : columnsSelector(state, name),
+        canDelete: canDeleteSelector(state, name),
+        loading: cardProgressSelector(state),
         card: cardSelector(state),
-        error: errorSelector(state)
+        error: errorSelector(state),
     };
 };
 
@@ -187,9 +229,12 @@ const mapDispatchToProps = dispatch => {
         save: params => {
             dispatch(saveDictionaryCardRequest(params));
         },
-        clear: () => {
-            dispatch(clearDictionaryInfo());
+        clearCard: () => {
+            dispatch(clearDictionaryCard());
         },
+        deleteEntry: params => {
+            dispatch(deleteDictionaryEntryRequest(params))
+        }
     };
 };
 

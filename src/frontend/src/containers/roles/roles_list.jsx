@@ -54,7 +54,7 @@ export class RolesList extends Component {
                 headerRow={rolesColumns}
                 title={t('roles')}
                 loading={loading}
-                className="wider container-margin-top-bottom"
+                className="wider ui container container-margin-top-bottom"
                 list={list}
                 isShowActions
                 actions={this.getActions}

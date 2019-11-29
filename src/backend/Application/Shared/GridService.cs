@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
 using DAL.Services;
@@ -10,6 +11,7 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.DependencyInjection;
 using OfficeOpenXml;
 using Serilog;
 using System;
@@ -34,39 +36,36 @@ namespace Application.Shared
 
         public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
 
+        public abstract IQueryable<TEntity> ApplyRestrictions(IQueryable<TEntity> query);
+
         public abstract string GetNumber(TFormDto dto);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
-        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm);
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
 
         protected readonly IUserProvider _userIdProvider;
-
         protected readonly ICommonDataService _dataService;
-
         protected readonly IFieldDispatcherService _fieldDispatcherService;
-
         protected readonly IFieldPropertiesService _fieldPropertiesService;
-
-        protected readonly IEnumerable<IAppAction<TEntity>> _singleActions;
-
-        protected readonly IEnumerable<IGroupAppAction<TEntity>> _groupActions;
+        protected readonly IServiceProvider _serviceProvider;
+        protected readonly ITriggersService _triggersService;
 
         protected GridService(
             ICommonDataService dataService, 
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<TEntity>> singleActions,
-            IEnumerable<IGroupAppAction<TEntity>> groupActions)
+            IServiceProvider serviceProvider,
+            ITriggersService triggersService)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldPropertiesService = fieldPropertiesService;
-            _singleActions = singleActions;
-            _groupActions = groupActions;
+            _serviceProvider = serviceProvider;
+            _triggersService = triggersService;
         }
 
         public TDto Get(Guid id)
@@ -125,7 +124,9 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var query = this.ApplySearchForm(dbSet, form);
+            var query = ApplySearchForm(dbSet, form);
+            query = ApplyRestrictions(query);
+            
             Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -156,7 +157,9 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             
-            var query = this.ApplySearchForm(dbSet, form);
+            var query = ApplySearchForm(dbSet, form);
+            query = ApplyRestrictions(query);
+            
             Log.Debug("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -192,8 +195,12 @@ namespace Application.Shared
                         return mapResult;
                     }
 
-                    dbSet.Update(entityFromDb);
-                    
+                    //dbSet.Update(entityFromDb);
+
+                    _triggersService.Execute();
+                    Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                    sw.Restart();
+
                     _dataService.SaveChanges();
                     Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
@@ -219,6 +226,10 @@ namespace Application.Shared
             }
 
             dbSet.Add(entity);
+
+            _triggersService.Execute();
+            Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
 
             _dataService.SaveChanges();
             Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -250,7 +261,8 @@ namespace Application.Shared
             Log.Debug("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            foreach (var action in _singleActions)
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            foreach (var action in singleActions)
             {
                 string actionName = action.GetType().Name.ToLowerFirstLetter();
                 if (role?.Actions != null && !role.Actions.Contains(actionName))
@@ -278,7 +290,8 @@ namespace Application.Shared
 
             if (ids.Count() > 1)
             {
-                foreach (var action in _groupActions)
+                var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
+                foreach (var action in groupActions)
                 {
                     string actionName = action.GetType().Name.ToLowerFirstLetter();
                     if (role?.Actions != null && !role.Actions.Contains(actionName))
@@ -312,7 +325,8 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var action = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            var action = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
             
             if(action == null)
                 return new AppActionResult
@@ -334,6 +348,14 @@ namespace Application.Shared
             if (isActionAllowed && action.IsAvailable(entity)) 
                 message += action.Run(currentUser, entity).Message;
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            _triggersService.Execute();
+            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            _dataService.SaveChanges();
+            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new AppActionResult
             {
@@ -348,8 +370,12 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var singleAction = _singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
-            var groupAction = _groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+            var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
+            var singleAction = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+
+            var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
+            var groupAction = groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
+
             Log.Debug("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -366,12 +392,23 @@ namespace Application.Shared
 
             var entities = dbSet.Where(x => ids.Contains(x.Id));
 
+            AppActionResult result;
             if (groupAction != null)
             {
                 string actionName = groupAction.GetType().Name.ToLowerFirstLetter();
                 bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
                 if (isActionAllowed && groupAction.IsAvailable(entities))
-                    return groupAction.Run(currentUser, entities);
+                {
+                    result = groupAction.Run(currentUser, entities);
+                }
+                else
+                {
+                    result = new AppActionResult
+                    {
+                        IsError = false,
+                        Message = "Done"
+                    };
+                }
             }
             else
             {
@@ -392,19 +429,23 @@ namespace Application.Shared
                         }
                     }
                 }
-                return new AppActionResult
+                result = new AppActionResult
                 {
                     IsError = false,
                     Message = string.Join(". ", messages)
                 };
             }
             Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
 
-            return new AppActionResult
-            {
-                IsError = false,
-                Message = "Done"
-            };
+            _triggersService.Execute();
+            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            _dataService.SaveChanges();
+            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            return result;
         }
 
         public IEnumerable<BulkUpdateDto> GetBulkUpdates(IEnumerable<Guid> ids)
@@ -552,7 +593,9 @@ namespace Application.Shared
             var workSheet = excel.Workbook.Worksheets.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
-            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+            var records = excelMapper.LoadEntries(workSheet).ToList();
+            var dtos = records.Select(i => i.Data);
+
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -588,7 +631,10 @@ namespace Application.Shared
             var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
 
             var dbSet = _dataService.GetDbSet<TEntity>();
-            var query = this.ApplySearchForm(dbSet, dto);
+            var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
+            
+            query = ApplyRestrictions(query);
+
             Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -597,7 +643,7 @@ namespace Application.Shared
             Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var excelMapper = new ExcelMapper<TDto>(_dataService, _userIdProvider);
+            var excelMapper = CreateExportExcelMapper();//new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
             Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
@@ -607,6 +653,11 @@ namespace Application.Shared
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
             return new ExcelMapper<TFormDto>(_dataService, _userIdProvider);
+        }
+
+        protected virtual ExcelMapper<TDto> CreateExportExcelMapper()
+        {
+            return new ExcelMapper<TDto>(_dataService, _userIdProvider);
         }
 
         protected TimeSpan? ParseTime(string value)

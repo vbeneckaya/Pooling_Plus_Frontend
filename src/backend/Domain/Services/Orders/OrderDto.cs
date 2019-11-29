@@ -1,3 +1,5 @@
+using System;
+using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 
@@ -5,30 +7,31 @@ namespace Domain.Services.Orders
 {
     public class OrderDto : IDto
     {
+        [ExcelIgnore]
         public string Id { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IgnoreFieldSettings]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1)]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly, IsRequired]
         public string OrderNumber { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsRequired]
         public string ClientOrderNumber { get; set; }
 
-        [FieldType(FieldType.Date)]
+        [FieldType(FieldType.Date), IsRequired]
         public string OrderDate { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.OrderType))]
+        [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
         public string OrderType { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(5)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(5), IsReadOnly]
         public string ClientName { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true)]
+        [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
         public string SoldTo { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -77,23 +80,29 @@ namespace Domain.Services.Orders
 
         public decimal? InvoiceAmountExcludingVAT { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
+        public string ShippingCity { get; set; }
+
+        [FieldType(FieldType.Text), IsReadOnly]
         public string DeliveryRegion { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
         public string DeliveryCity { get; set; }
 
-        [FieldType(FieldType.BigText)]
+        [FieldType(FieldType.BigText), IsReadOnly]
         public string ShippingAddress { get; set; }
 
-        [FieldType(FieldType.BigText)]
+        [FieldType(FieldType.BigText), IsReadOnly]
         public string DeliveryAddress { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(VehicleState))]
+        [FieldType(FieldType.State, source: nameof(VehicleState)), IsReadOnly]
         public string ShippingStatus { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
         public string DeliveryStatus { get; set; }
+
+        [FieldType(FieldType.Time)]
+        public string ShippingAvisationTime { get; set; }
 
         [FieldType(FieldType.Time)]
         public string ClientAvisationTime { get; set; }
@@ -142,8 +151,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.DateTime), IsDefault, OrderNumber(8), IgnoreFieldSettings]
-        public string OrderCreationDate { get; set; }
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IsReadOnly]
+        public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? WaybillTorg12 { get; set; }
@@ -159,7 +168,7 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(3), IsReadOnly]
         public string ShippingNumber { get; set; }
 
         [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4)]
@@ -169,14 +178,39 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.Select, source: "ShippingWarehousesForOrderCreation")]
         public string ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.DateTime), IgnoreFieldSettings]
-        public string OrderChangeDate { get; set; }
+        [FieldType(FieldType.LocalDateTime), IsReadOnly]
+        public DateTime? OrderChangeDate { get; set; }
 
-        [FieldType(FieldType.Boolean)]
+        [FieldType(FieldType.Boolean), AllowBulkUpdate]
         public bool? OrderConfirmed { get; set; }
 
-        /*end of fields*/
+        [FieldType(FieldType.Boolean)]
+        public bool? DocumentReturnStatus { get; set; }
+
+        [FieldType(FieldType.Text), IsReadOnly]
+        public string PickingFeatures { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsReadOnly]
+        public string CarrierId { get; set; }
+
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
+        public string DeliveryType { get; set; }
+
+        [FieldType(FieldType.BigText)]
+        public string DeviationsComment { get; set; }
+
+        [FieldType(FieldType.Number)]
+        public decimal? DeliveryCost { get; set; }
+
+        public bool? ManualDeliveryCost { get; set; }
+
+        [FieldType(FieldType.Number)]
+        public decimal? ActualDeliveryCost { get; set; }
+
+        public string Source { get; set; }
+
     }
 }

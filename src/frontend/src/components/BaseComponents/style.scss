@@ -100,6 +100,14 @@
     }
 }
 
+.input-error {
+    background-color: #fff6f6 !important;
+    border-color: #e0b4b4 !important;
+    color: #9f3a38 !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
 .ui.input.error > input {
     background-color: #fff6f6 !important;
     border-color: #e0b4b4 !important;
@@ -128,4 +136,13 @@ input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
     -webkit-appearance: none;
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.form-select {
+    display: flex;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+    button {
+        margin-left: 8px !important;
+    }
 }

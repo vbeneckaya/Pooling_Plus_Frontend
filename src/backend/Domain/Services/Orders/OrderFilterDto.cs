@@ -51,6 +51,11 @@
         public string PickingTypeId { get; set; }
 
         /// <summary>
+        /// Picking Features
+        /// </summary>
+        public string PickingFeatures { get; set; }
+
+        /// <summary>
         /// Min temperature
         /// </summary>
         public string TemperatureMin { get; set; }
@@ -75,6 +80,11 @@
         /// Transit Days
         /// </summary>
         public string TransitDays { get; set; }
+
+        /// <summary>
+        /// Shipping City
+        /// </summary>
+        public string ShippingCity { get; set; }
 
         /// <summary>
         /// Delivery Region
@@ -207,6 +217,11 @@
         public string MajorAdoptionNumber { get; set; }
 
         /// <summary>
+        /// Warehouse Avisation Time 
+        /// </summary>
+        public string ShippingAvisationTime { get; set; }
+
+        /// <summary>
         /// Client Avisation Time 
         /// </summary>
         public string ClientAvisationTime { get; set; }
@@ -266,5 +281,35 @@
         /// Invoice
         /// </summary>
         public string WaybillTorg12 { get; set; }
+
+        /// <summary>
+        /// ShippingWarehouseId
+        /// </summary>
+        public string ShippingWarehouseId { get; set; }
+
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        public string CarrierId { get; set; }
+
+        /// <summary>
+        /// Способ доставки
+        /// </summary>
+        public string DeliveryType { get; set; }
+
+        /// <summary>
+        /// Комментарий (причины отклонения от графика)
+        /// </summary>
+        public string DeviationsComment { get; set; }
+
+        /// <summary>
+        /// Базовая стоимость, без НДС
+        /// </summary>
+        public string DeliveryCost { get; set; }
+
+        /// <summary>
+        /// Фактическая стоимость, без НДС
+        /// </summary>
+        public string ActualDeliveryCost { get; set; }
     }
 }

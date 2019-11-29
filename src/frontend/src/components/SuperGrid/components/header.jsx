@@ -48,7 +48,7 @@ const Header = ({
     const representations = useSelector(state => representationsSelector(state, name));
 
     const exportExcel = () => {
-        dispatch(exportToExcelRequest({ name, filter }));
+        dispatch(exportToExcelRequest({ name, filter: filter.filter }));
     };
 
     const importExcel = () => {
@@ -67,7 +67,7 @@ const Header = ({
             importFromExcelRequest({
                 name,
                 form: data,
-                callbackSuccess: () => loadList(),
+                callbackSuccess: () => loadList(false, true),
             }),
         );
     };

@@ -31,8 +31,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.Status = OrderState.Lost;
 
             _historyService.Save(order.Id, "orderSetLost", order.OrderNumber);
-
-            _dataService.SaveChanges();
             
             return new AppActionResult
             {
@@ -43,7 +41,8 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Shipped;
+            return order.Status == OrderState.Shipped &&
+                   (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery);
         }
     }
 }

@@ -40,6 +40,10 @@ class List extends Component {
         };
     }
 
+    componentWillUnmount() {
+        this.props.stopUpdate({isClear: true});
+    }
+
     getGroupActions = () => {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
@@ -98,6 +102,7 @@ class List extends Component {
         return (
             <div className="container">
                 <SuperGrid
+                    key={name}
                     columns={columns}
                     rows={list}
                     name={name}

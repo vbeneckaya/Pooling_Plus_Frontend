@@ -7,7 +7,7 @@ const RowForm = ({ fields, form, onChange }) => {
         <Grid.Row columns={fields.length}>
             {fields.map(field => (
                 <Grid.Column>
-                    <FormField column={field} value={form[field.name]} onChange={onChange} />
+                    <FormField {...field} value={form[field.name]} onChange={onChange}/>
                 </Grid.Column>
             ))}
         </Grid.Row>

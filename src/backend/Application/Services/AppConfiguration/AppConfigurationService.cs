@@ -1,16 +1,19 @@
 using Application.Services.Articles;
+using Application.Services.BodyTypes;
 using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
+using Application.Services.Tonnages;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
 using Application.Services.Warehouses;
 using Domain.Enums;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
+using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
@@ -19,6 +22,7 @@ using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
+using Domain.Services.Tonnages;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
@@ -113,30 +117,36 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = canEditTariffs,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditTariffs,
+                    CanDelete = true,
                     ShowOnHeader = true,
                     Columns = columns
-                });
+                }); ;
             }
 
             var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
 
             if (canEditWarehouses)
             {
-                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                var  columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
-                    Name = GetName<ShippingWarehousesService>(),
+                    Name = GetName<WarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditWarehouses,
                     ShowOnHeader = false,
                     Columns = columns
                 });
+            }
 
-                columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
+            var canEditShippingWarehouses = _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
+
+            if (canEditShippingWarehouses)
+            {
+                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
-                    Name = GetName<WarehousesService>(),
+                    Name = GetName<ShippingWarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditWarehouses,
@@ -207,6 +217,28 @@ namespace Application.Services.AppConfiguration
                     ShowOnHeader = false,
                     Columns = columns
                 });
+
+                var bodyTypeColumns = ExtractColumnsFromDto<BodyTypeDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<BodyTypesService>(),
+                    CanCreateByForm = canEditVehicleTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
+                    ShowOnHeader = false,
+                    Columns = bodyTypeColumns
+                });
+
+                var tonnageColumns = ExtractColumnsFromDto<TonnageDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<TonnagesService>(),
+                    CanCreateByForm = canEditVehicleTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditVehicleTypes,
+                    ShowOnHeader = false,
+                    Columns = tonnageColumns
+                });
             }
 
             var canEditDocumentTypes = _identityService.HasPermissions(RolePermissions.DocumentTypesEdit);
@@ -224,7 +256,7 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 });
             }
-                
+
             return dicts;
         }
 
@@ -252,19 +284,19 @@ namespace Application.Services.AppConfiguration
             if (forEntity.HasValue)
             {
                 var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
-                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0) || x.IsIgnoredForFieldSettings);
+                fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
             }
 
             foreach (var field in fields.OrderBy(f => f.OrderNumber))
             {
                 if (string.IsNullOrEmpty(field.ReferenceSource))
                 {
-                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired);
+                    yield return new UserConfigurationGridColumn(field.Name, field.FieldType, field.IsDefault, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
                 else
                 {
                     yield return new UserConfigurationGridColumnWhitchSource(field.Name, field.FieldType, field.ReferenceSource, field.IsDefault, 
-                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired);
+                                                                             field.ShowRawReferenceValue, field.IsFixedPosition, field.IsRequired, field.IsReadOnly);
                 }
             }
         }

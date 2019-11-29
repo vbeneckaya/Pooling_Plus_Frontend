@@ -34,8 +34,6 @@ namespace Application.BusinessModels.Orders.Actions
 
             _dataService.GetDbSet<Order>().Remove(order);
 
-            _dataService.SaveChanges();
-
             return new AppActionResult
             {
                 IsError = false,

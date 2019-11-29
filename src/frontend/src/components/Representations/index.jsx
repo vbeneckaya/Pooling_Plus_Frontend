@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Confirm, Dropdown, Form, Input, Message, Modal } from 'semantic-ui-react';
+import {Button, Confirm, Dropdown, Form, Input, Message, Modal, Popup} from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
@@ -200,7 +200,10 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         </Dropdown.Menu>
                     </Dropdown>
                 </Form.Field>
-                <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
+                <Popup
+                    content={t('customize_representation')}
+                    position="bottom right"
+                    trigger={<Button icon="cogs" disabled={!representationName} onClick={editOpen}/>}/>
             </div>
             <Modal
                 dimmer="blurring"
@@ -221,8 +224,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                             <Text
                                 name="name"
                                 value={name}
-                                error={error}
-                                errorText={error && t(error)}
+                                error={error && t(error)}
                                 onChange={(e, { value }) => setName(value)}
                             />
                             <Input

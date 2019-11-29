@@ -2,6 +2,8 @@ using Application.BusinessModels.Orders.Handlers;
 using Application.BusinessModels.Shared.Actions;
 using Application.Extensions;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using AutoMapper;
 using DAL.Services;
 using Domain.Enums;
@@ -18,27 +20,28 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DAL.Queries;
+using Domain.Services.Translations;
+using Application.Services.Triggers;
 
 namespace Application.Services.Orders
 {
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
-        private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public OrdersService(
             IHistoryService historyService,
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService,
-            IEnumerable<IAppAction<Order>> singleActions,
-            IEnumerable<IGroupAppAction<Order>> groupActions)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, singleActions, groupActions)
+            IFieldPropertiesService fieldPropertiesService, 
+            IServiceProvider serviceProvider,
+            ITriggersService triggersService)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
-            _fieldPropertiesService = fieldPropertiesService;
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -69,7 +72,18 @@ namespace Application.Services.Orders
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
         }
+        
+        public override IQueryable<Order> ApplyRestrictions(IQueryable<Order> query)
+        {
+            var currentUserId = _userIdProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            
+            if (user.CarrierId.HasValue) 
+                query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            return query;
+        }        
+        
         public override string GetNumber(OrderFormDto dto)
         {
             return dto?.OrderNumber;
@@ -92,6 +106,12 @@ namespace Application.Services.Orders
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
+            var validateResult = ValidateDto(dto);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+            
             bool isNew = string.IsNullOrEmpty(dto.Id);
             bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
 
@@ -111,13 +131,17 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), ignoreChanges: true);
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService), nameLoader: GetShippingWarehouseNameById);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
                 setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
                 setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(_dataService, _historyService));
+            if (!string.IsNullOrEmpty(dto.CarrierId))
+                setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
+            if (!string.IsNullOrEmpty(dto.DeliveryType))
+                setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType));
             setter.UpdateField(e => e.ClientOrderNumber, dto.ClientOrderNumber, new ClientOrderNumberHandler(_historyService));
             setter.UpdateField(e => e.OrderDate, ParseDateTime(dto.OrderDate));
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
@@ -126,7 +150,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService, !isInjection));
             setter.UpdateField(e => e.TransitDays, dto.TransitDays);
             setter.UpdateField(e => e.DeliveryDate, ParseDateTime(dto.DeliveryDate), new DeliveryDateHandler(_dataService, _historyService, isInjection));
             setter.UpdateField(e => e.OrderNumber, dto.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService));
@@ -140,13 +164,15 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler());
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
+            setter.UpdateField(e => e.ShippingCity, dto.ShippingCity);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
             setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
+            setter.UpdateField(e => e.ShippingAvisationTime, ParseTime(dto.ShippingAvisationTime));
             setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(), nameLoader: GetPickingTypeNameById);
+            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
@@ -163,10 +189,13 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualReturnDate, ParseDateTime(dto.ActualReturnDate));
             setter.UpdateField(e => e.MajorAdoptionNumber, dto.MajorAdoptionNumber);
             setter.UpdateField(e => e.OrderConfirmed, dto.OrderConfirmed ?? false);
+            setter.UpdateField(e => e.DocumentReturnStatus, dto.DocumentReturnStatus.GetValueOrDefault());
+            setter.UpdateField(e => e.DeviationsComment, dto.DeviationsComment);
+            setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
+            setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
+            setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
 
             /*end of map dto to entity fields*/
-
-
 
             if (isNew)
             {
@@ -190,12 +219,46 @@ namespace Application.Services.Orders
             {
                 var file = dto.AdditionalInfo.Split(" - ").ElementAtOrDefault(1);
                 _historyService.Save(entity.Id, isNew ? "orderCreatedFromInjection" : "orderUpdatedFromInjection", dto.OrderNumber, file);
+
+                if (string.IsNullOrEmpty(entity.Source))
+                {
+                    entity.Source = file;
+                }
+                else
+                {
+                    entity.Source = $"{entity.Source};{file}";
+                }
             }
 
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return new ValidateResult(errors, entity.Id.ToString());
+        }
+        
+        private ValidateResult ValidateDto(OrderDto dto)
+        {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            DetailedValidationResult result = new DetailedValidationResult();
+
+            if (string.IsNullOrEmpty(dto.OrderNumber))
+                result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+            if (string.IsNullOrEmpty(dto.ClientOrderNumber))
+                result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+            if (string.IsNullOrEmpty(dto.OrderDate))
+                result.AddError(nameof(dto.OrderDate), "emptyOrderDate".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
+
+
+            if (string.IsNullOrEmpty(dto.SoldTo))
+                result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
+
+            return result;
         }
 
         public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
@@ -216,7 +279,10 @@ namespace Application.Services.Orders
             {
                 return null;
             }
-            return _mapper.Map<OrderDto>(entity);
+
+            var dto = _mapper.Map<OrderDto>(entity);
+
+            return dto;
         }
 
         public override OrderFormDto MapFromEntityToFormDto(Order entity)
@@ -251,6 +317,11 @@ namespace Application.Services.Orders
             return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
         }
 
+        private string GetShippingWarehouseNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
+        }
+
         private bool CheckRequiredFields(Order order)
         {
             if (order.Status == OrderState.Draft)
@@ -260,7 +331,7 @@ namespace Application.Services.Orders
                     && !string.IsNullOrEmpty(order.ShippingAddress)
                     && !string.IsNullOrEmpty(order.DeliveryAddress)
                     && !string.IsNullOrEmpty(order.Payer)
-                    //&& order.ShippingWarehouseId.HasValue
+                    && order.ShippingWarehouseId.HasValue
                     && order.DeliveryWarehouseId.HasValue
                     && order.ShippingDate.HasValue
                     && order.DeliveryDate.HasValue;
@@ -277,20 +348,10 @@ namespace Application.Services.Orders
 
         private void InitializeNewOrder(FieldSetter<Order> setter, bool isInjection)
         {
-            if (!isInjection && string.IsNullOrEmpty(setter.Entity.ShippingAddress))
-            {
-                var fromWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => !x.CustomerWarehouse);
-                if (fromWarehouse != null)
-                {
-                    setter.UpdateField(e => e.ShippingWarehouseId, fromWarehouse.Id, ignoreChanges: true);
-                    setter.UpdateField(e => e.ShippingAddress, fromWarehouse.Address);
-                }
-            }
-
             setter.UpdateField(e => e.IsActive, true, ignoreChanges: true);
             setter.UpdateField(e => e.Status, OrderState.Draft, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderCreationDate, DateTime.Now, ignoreChanges: true);
-            setter.UpdateField(e => e.OrderChangeDate, DateTime.Now, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderCreationDate, DateTime.UtcNow, ignoreChanges: true);
+            setter.UpdateField(e => e.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
             setter.UpdateField(e => e.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(e => e.DeliveryStatus, VehicleState.VehicleEmpty);
         }
@@ -321,7 +382,7 @@ namespace Application.Services.Orders
                     {
                         updatedItems.Add(item.Id);
                         MapFromItemDtoToEntity(item, itemDto, false, isManual);
-                        _dataService.GetDbSet<OrderItem>().Update(item);
+                        //_dataService.GetDbSet<OrderItem>().Update(item);
                     }
                 }
 
@@ -381,9 +442,10 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.OrderCreationDate, e => e.MapFrom((s, t) => s.OrderCreationDate?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.OrderChangeDate, e => e.MapFrom((s, t) => s.OrderChangeDate?.ToString("dd.MM.yyyy HH:mm")));
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
@@ -399,7 +461,7 @@ namespace Application.Services.Orders
         /// <param name="query">query</param>
         /// <param name="searchForm">search form</param>
         /// <returns></returns>
-        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        public override IQueryable<Order> ApplySearchForm(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm, List<string> columns = null)
         {
             List<object> parameters = new List<object>();
             string where = string.Empty;
@@ -411,6 +473,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ArticlesCount.ApplyNumericFilter<Order>(i => i.ArticlesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientOrderNumber.ApplyStringFilter<Order>(i => i.ClientOrderNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
@@ -438,10 +501,12 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ReturnInformation.ApplyStringFilter<Order>(i => i.ReturnInformation, ref parameters))
                          .WhereAnd(searchForm.Filter.ReturnShippingAccountNo.ApplyStringFilter<Order>(i => i.ReturnShippingAccountNo, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingAddress.ApplyStringFilter<Order>(i => i.ShippingAddress, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingCity.ApplyStringFilter<Order>(i => i.ShippingCity, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingDate.ApplyDateRangeFilter<Order>(i => i.ShippingDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingId, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Order>(i => i.ShippingNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingStatus.ApplyEnumFilter<Order, VehicleState>(i => i.ShippingStatus, ref parameters))
+                         .WhereAnd(searchForm.Filter.ShippingWarehouseId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingWarehouseId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.SoldTo.ApplyOptionsFilter<Order, string>(i => i.SoldTo, ref parameters))
                          .WhereAnd(searchForm.Filter.Status.ApplyEnumFilter<Order, OrderState>(i => i.Status, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Order>(i => i.TemperatureMax, ref parameters))
@@ -456,13 +521,19 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.DocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.DocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualDocumentsReturnDate.ApplyDateRangeFilter<Order>(i => i.ActualDocumentsReturnDate, ref parameters))
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
-                         .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters));
+                         .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
+                         .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeviationsComment.ApplyStringFilter<Order>(i => i.DeviationsComment, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeliveryCost.ApplyNumericFilter<Order>(i => i.DeliveryCost, ref parameters))
+                         .WhereAnd(searchForm.Filter.ActualDeliveryCost.ApplyNumericFilter<Order>(i => i.ActualDeliveryCost, ref parameters));
 
             string sql = $@"SELECT * FROM ""Orders"" {where}";
             query = query.FromSql(sql, parameters.ToArray());
 
             // Apply Search
-            query = this.ApplySearch(query, searchForm);
+            query = this.ApplySearch(query, searchForm?.Filter?.Search, columns ?? searchForm?.Filter?.Columns);
 
             var sortFieldMapping = new Dictionary<string, string>
             {
@@ -480,11 +551,8 @@ namespace Application.Services.Orders
                 .DefaultOrderBy(i => i.Id, true);
         }
 
-        private IQueryable<Order> ApplySearch(IQueryable<Order> query, FilterFormDto<OrderFilterDto> searchForm)
+        private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var search = searchForm.Filter.Search;
-            var columns = searchForm.Filter.Columns;
-
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
             if (string.IsNullOrEmpty(search)) return query;
@@ -493,11 +561,13 @@ namespace Application.Services.Orders
             var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
-            var pickingTypes = this._dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase));
-            
+            var pickingTypes = _dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+
+            var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+
             var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
-            var orderTypes = this._dataService.GetDbSet<Translation>()
+            var orderTypes = _dataService.GetDbSet<Translation>()
                 .Where(i => orderTypeNames.Contains(i.Name.ToLower()))
                 .WhereTranslation(search)
                 .Select(i => (OrderType?)Enum.Parse<OrderType>(i.Name, true))
@@ -505,7 +575,7 @@ namespace Application.Services.Orders
 
             var orderShippingStateNames = Enum.GetNames(typeof(ShippingState)).Select(i => i.ToLower());
 
-            var orderShippingStates = this._dataService.GetDbSet<Translation>()
+            var orderShippingStates = _dataService.GetDbSet<Translation>()
                 .Where(i => orderShippingStateNames.Contains(i.Name.ToLower()))
                 .WhereTranslation(search)
                 .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
@@ -513,7 +583,7 @@ namespace Application.Services.Orders
 
             var orderStateNames = Enum.GetNames(typeof(OrderState)).Select(i => i.ToLower());
 
-            var orderStates = this._dataService.GetDbSet<Translation>()
+            var orderStates = _dataService.GetDbSet<Translation>()
                 .Where(i => orderStateNames.Contains(i.Name.ToLower()))
                 .WhereTranslation(search)
                 .Select(i => (OrderState?)Enum.Parse<OrderState>(i.Name, true))
@@ -521,10 +591,18 @@ namespace Application.Services.Orders
 
             var vehicleStateNames = Enum.GetNames(typeof(VehicleState)).Select(i => i.ToLower());
 
-            var vehicleStates = this._dataService.GetDbSet<Translation>()
+            var vehicleStates = _dataService.GetDbSet<Translation>()
                 .Where(i => vehicleStateNames.Contains(i.Name.ToLower()))
                 .WhereTranslation(search)
                 .Select(i => (VehicleState?)Enum.Parse<VehicleState>(i.Name, true))
+                .ToList();
+
+            var deliveryTypeNames = Enum.GetNames(typeof(DeliveryType)).Select(i => i.ToLower());
+
+            var deliveryTypes = _dataService.GetDbSet<Translation>()
+                .Where(i => deliveryTypeNames.Contains(i.Name.ToLower()))
+                .WhereTranslation(search)
+                .Select(i => (DeliveryType?)Enum.Parse<DeliveryType>(i.Name, true))
                 .ToList();
 
             return query.Where(i =>
@@ -538,6 +616,7 @@ namespace Application.Services.Orders
                 || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
                 || columns.Contains("shippingDate") && i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("transitDays") && isInt && i.TransitDays == searchInt
                 || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
@@ -565,17 +644,77 @@ namespace Application.Services.Orders
                 || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
                 || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
                 || columns.Contains("orderCreationDate") && i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("orderChangeDate") && i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
+                || columns.Contains("deviationsComment") && !string.IsNullOrEmpty(i.DeviationsComment) && i.DeviationsComment.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                || columns.Contains("deliveryCost") && isDecimal && i.DeliveryCost >= searchDecimal - precision && i.DeliveryCost <= searchDecimal + precision
+                || columns.Contains("actualDeliveryCost") && isDecimal && i.ActualDeliveryCost >= searchDecimal - precision && i.ActualDeliveryCost <= searchDecimal + precision
 
                 || columns.Contains("pickingTypeId") && pickingTypes.Any(p => p.Id == i.PickingTypeId)
+                || columns.Contains("carrierId") && carriers.Any(p => p.Id == i.CarrierId)
                 || columns.Contains("orderType") && orderTypes.Contains(i.OrderType)
                 || columns.Contains("orderShippingStatus") && orderShippingStates.Contains(i.OrderShippingStatus)
                 || columns.Contains("deliveryStatus") && vehicleStates.Contains(i.DeliveryStatus)
                 || columns.Contains("shippingStatus") && vehicleStates.Contains(i.ShippingStatus)
                 || columns.Contains("status") && orderStates.Contains(i.Status)
+                || columns.Contains("deliveryType") && deliveryTypes.Contains(i.DeliveryType)
                 );
+        }
+
+        protected override ExcelMapper<OrderDto> CreateExportExcelMapper()
+        {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
+            return base.CreateExportExcelMapper()
+                .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
+                .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById))
+                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
+                .MapColumn(i => i.Status, new EnumExcelColumn<OrderState>(lang))
+                .MapColumn(i => i.OrderShippingStatus, new EnumExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.ShippingStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.DeliveryStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+        }
+
+        private Guid? GetPickingTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetPickingTypeNameById(Guid id)
+        {
+            return GetPickingTypeNameById((Guid?)id);
+        }
+
+        private Guid? GetShippingWarehouseIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetShippingWarehouseNameById(Guid id)
+        {
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Find(id);
+            return entry?.WarehouseName;
+        }
+
+        private Guid? GetCarrierIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private string GetCarrierNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
+        }
+
+        private string GetCarrierNameById(Guid id)
+        {
+            return GetCarrierNameById((Guid?)id);
         }
     }
 }

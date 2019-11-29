@@ -1,33 +1,35 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
-import {Button, Checkbox, Dimmer, Loader, Table} from 'semantic-ui-react';
-import CellResult from './result_cell';
-import _ from 'lodash'
+import {Button, Checkbox, Loader, Table} from 'semantic-ui-react';
+import BodyCell from './body_cell';
+import {connect} from 'react-redux';
+import {checkForEditingRequest} from '../../../ducks/gridColumnEdit';
+import {invokeMassUpdateRequest} from '../../../ducks/gridActions';
+import _ from 'lodash';
 
 class Result extends Component {
-
     shouldComponentUpdate(nextProps) {
         if (nextProps.rows && this.props.rows && nextProps.rows.length !== this.props.rows.length) {
-            return true
+            return true;
         }
 
         if (this.props.progress !== nextProps.progress) {
-            return true
+            return true;
         }
 
         if (!_.isEqual(Array.from(nextProps.selectedRows), Array.from(this.props.selectedRows))) {
-            return true
+            return true;
         }
 
         if (!_.isEqual(Array.from(nextProps.columns), Array.from(this.props.columns))) {
-            return true
+            return true;
         }
 
         if (_.isEqual(nextProps.rows, this.props.rows)) {
-            return false
+            return false;
         }
 
-        return true
+        return true;
     }
 
     handleCheck = row => {
@@ -58,6 +60,9 @@ class Result extends Component {
             disabledCheck,
             name,
             progress,
+            t,
+            checkForEditing,
+            invokeMassUpdate,
         } = this.props;
 
         return (
@@ -66,7 +71,7 @@ class Result extends Component {
                 rows.map((row, indexRow) => (
                     <Table.Row
                         key={row.id}
-                        className={'grid-row ' + row.color || ''}
+                        className={`grid-row${ row.color || ''} ${selectedRows.has(row.id) ? 'grid-row-selected' : ''}`}
                         data-grid-id={row.id}
                     >
                         <Table.Cell
@@ -86,15 +91,19 @@ class Result extends Component {
                         </Table.Cell>
                         {columns &&
                         columns.map((column, indexColumn) => (
-                            <CellResult
+                            <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
                                 row={row}
                                 column={column}
+                                value={row[column.name]}
                                 indexRow={indexRow}
                                 indexColumn={indexColumn}
                                 loadList={loadList}
                                 gridName={name}
                                 modalCard={modalCard}
+                                t={t}
+                                checkForEditing={checkForEditing}
+                                invokeMassUpdate={invokeMassUpdate}
                             />
                         ))}
                         {isShowActions ? (
@@ -141,4 +150,20 @@ class Result extends Component {
     }
 }
 
-export default withTranslation()(Result);
+const mapDispatchToProps = dispatch => {
+    return {
+        checkForEditing: params => {
+            dispatch(checkForEditingRequest(params));
+        },
+        invokeMassUpdate: params => {
+            dispatch(invokeMassUpdateRequest(params));
+        },
+    };
+};
+
+export default withTranslation()(
+    connect(
+        null,
+        mapDispatchToProps,
+    )(Result),
+);
