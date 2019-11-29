@@ -57,10 +57,10 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsRequired, OrderNumber(10)]
         public string DeliveryType { get; set; }
 
+        [FieldType(FieldType.Time), OrderNumber(10)]
+        public string AvisaleTime { get; set; }
+
         [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; }
-
-        [FieldType(FieldType.Time)]
-        public string AvisaleTime { get; set; }
     }
 }
