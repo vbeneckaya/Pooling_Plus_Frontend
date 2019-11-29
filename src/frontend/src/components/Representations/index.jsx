@@ -218,7 +218,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         ? t('Edit representation', { name: representationName })
                         : t('Create representation')}
                 </Modal.Header>
-                <Modal.Content>
+                <Modal.Content scrolling>
                     <Modal.Description>
                         <Form style={{ marginBottom: '16px' }}>
                             <Text
