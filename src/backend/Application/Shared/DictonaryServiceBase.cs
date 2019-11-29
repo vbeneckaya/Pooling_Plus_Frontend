@@ -121,6 +121,8 @@ namespace Application.Shared
 
                 var validationResult = SaveOrCreateInner(record.Data, true);
 
+                record.Result.ResultType = validationResult.ResultType;
+
                 if (validationResult.IsError)
                 {
                     record.Result.AddErrors(validationResult.Errors);
