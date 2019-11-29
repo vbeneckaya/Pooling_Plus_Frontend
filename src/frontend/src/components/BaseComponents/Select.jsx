@@ -53,6 +53,8 @@ const Select = ({
             text: isTranslate ? t(x.name) : x.name,
         }));
 
+    console.log('select');
+
     return (
         <Form.Field>
             {!noLabel ? (

@@ -41,7 +41,7 @@ const Filter = props => {
         const nextColumns = [...customColumns];
         nextColumns[index] = {
             ...nextColumns[index],
-            width: size.width < 100 ? 100 : size.width,
+            width: size.width,
         };
         setColumns(nextColumns);
 

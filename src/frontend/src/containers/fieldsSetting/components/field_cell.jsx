@@ -51,6 +51,4 @@ const FieldCell = ({ field, t, changeSettings, isExt, isDisabled }) => {
     );
 };
 
-export default React.memo(FieldCell, (prevProps, nextProps) => {
-    return prevProps.field === nextProps.field && nextProps.isDisabled === prevProps.isDisabled;
-});
+export default React.memo(FieldCell);

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState, useCallback} from 'react';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
@@ -14,7 +14,6 @@ const ModalComponent = ({ element, props, children }) => {
 };
 
 const BodyCell = ({
-                      row,
                       column,
                       loadList,
                       indexRow,
@@ -24,6 +23,7 @@ const BodyCell = ({
                       t,
                       checkForEditing,
                       invokeMassUpdate,
+                      ...row
                   }) => {
     const contextRef = useRef(null);
 
@@ -57,7 +57,7 @@ const BodyCell = ({
             },
             callbackFunc: () => {
                 setProgress(false);
-            }
+            },
         });
     };
 
@@ -84,11 +84,21 @@ const BodyCell = ({
             },
             callbackFunc: () => {
                 setProgress(false);
-            }
+            },
         });
     };
 
-    console.log('cell');
+    const handleChange = useCallback((e, {value}) => {
+        setValue(value);
+    }, []);
+
+    const handleCellClick = useCallback(e => {
+        column.type !== LINK_TYPE
+            ? handleClick(row.id, column.name, row.status)
+            : e.stopPropagation()
+    }, [column.type, row.id, column.name, row.status]);
+
+    console.log('BodyCell');
 
     return (
         <>
@@ -99,11 +109,7 @@ const BodyCell = ({
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
                             }`}
                         ref={contextRef}
-                        onClick={e =>
-                            column.type !== LINK_TYPE
-                                ? handleClick(row.id, column.name, row.status)
-                                : e.stopPropagation()
-                        }
+                        onClick={handleCellClick}
                     >
                         <CellValue
                             {...column}
@@ -114,7 +120,7 @@ const BodyCell = ({
                             t={t}
                             modalCard={
                                 <ModalComponent
-                                    element={modalCard}
+                                    element={modalCard()}
                                     props={{
                                         ...row,
                                         loadList,
@@ -157,9 +163,7 @@ const BodyCell = ({
                             <FormField
                                 {...column}
                                 value={value}
-                                onChange={(e, { value }) => {
-                                    setValue(value);
-                                }}
+                                onChange={handleChange}
                             />
                         </Form>
                     </Modal.Description>
@@ -180,12 +184,5 @@ const BodyCell = ({
 };
 
 export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
-    return (
-        prevProps.value === nextProps.value &&
-        prevProps.column.width ===
-        nextProps.column
-            .width /* &&
-        nextProps.isEqual(prevProps.checkProgress, nextProps.checkProgress) &&
-        nextProps.isEqual(prevProps.editProgress, nextProps.editProgress)*/
-    );
+    return prevProps.value === nextProps.value && prevProps.column.width === nextProps.column.width;
 });

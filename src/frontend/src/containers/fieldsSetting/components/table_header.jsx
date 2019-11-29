@@ -1,6 +1,5 @@
 import React from 'react';
 import {Label, Table} from "semantic-ui-react";
-import _ from 'lodash';
 
 const TableHeader = ({ statusList, t }) => {
     return (
@@ -25,6 +24,4 @@ const TableHeader = ({ statusList, t }) => {
     )
 };
 
-export default React.memo(TableHeader, (prevProps, nextProps) => {
-    return _.isEqual(prevProps.statusList, nextProps.statusList);
-});
+export default React.memo(TableHeader);

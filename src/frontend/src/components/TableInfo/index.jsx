@@ -25,26 +25,6 @@ class TableInfo extends Component {
         filter: '',
     };
 
-    shouldComponentUpdate(nextProps) {
-        /* if (nextProps.list.length !== this.props.list.length) {
-             return true
-         }
-
-         if (this.props.loading !== nextProps.loading) {
-             return true
-         }
-
-         if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
-             return true
-         }
-
-         if (_.isEqual(nextProps.list, this.props.list)) {
-             return false
-         }*/
-
-        return true
-    }
-
     componentDidMount() {
         this.load();
     }
@@ -125,6 +105,18 @@ class TableInfo extends Component {
 
         e.target.value = null;
     };
+
+    handleToggleIsActive = (
+        event,
+        {itemID, checked},
+    ) => {
+        this.props.toggleIsActive(
+            event,
+            {itemID, checked},
+            this.load,
+        )
+    };
+
 
     render() {
         const {
@@ -245,16 +237,7 @@ class TableInfo extends Component {
                                                       column={column}
                                                       value={row[column.name]}
                                                       id={row.id}
-                                                      toggleIsActive={(
-                                                          event,
-                                                          {itemID, checked},
-                                                      ) =>
-                                                          toggleIsActive(
-                                                              event,
-                                                              {itemID, checked},
-                                                              this.load,
-                                                          )
-                                                      }
+                                                      toggleIsActive={this.handleToggleIsActive}
                                                       indexRow={i}
                                                       indexColumn={index}
                                                       t={t}

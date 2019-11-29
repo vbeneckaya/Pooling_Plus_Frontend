@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import { Table } from 'semantic-ui-react';
 import FieldCell from './field_cell';
 import SettingCell from './setting_cell';
@@ -14,6 +14,10 @@ const TableBody = ({
     t,
     toggleHidden,
 }) => {
+    const handleOnChange = useCallback((e, {value, fieldName, status}) => {
+        changeSettings(fieldName, value, status, isExt);
+    }, [isExt]);
+
     return (
         <Table.Row key={column.fieldName}>
             <Table.Cell className="table-fields-setting_name">
@@ -43,9 +47,9 @@ const TableBody = ({
                             (editProgress.field === column.fieldName &&
                                 (!editProgress.state || editProgress.state === status.name))
                         }
-                        onChange={(e, { value }) =>
-                            changeSettings(column.fieldName, value, status.name, isExt)
-                        }
+                        status={status.name}
+                        fieldName={column.fieldName}
+                        onChange={handleOnChange}
                         t={t}
                     />
                 </Table.Cell>

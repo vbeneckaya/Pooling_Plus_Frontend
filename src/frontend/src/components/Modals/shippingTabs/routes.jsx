@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { Icon, Tab } from 'semantic-ui-react';
 import Route from './route';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,24 +9,25 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
     const { routePoints: points } = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
-    if (!stateColors.length) {
-        dispatch(
-            getLookupRequest({
+    useEffect(() => {
+        if (!stateColors.length) {
+            dispatch(getLookupRequest({
                 name: 'vehicleState',
                 isForm: true,
                 isSearch: true,
-            }),
-        );
-    }
+            }));
+        }
+    }, []);
 
-    const handleChange = (point, index) => {
+
+    const handleChange = useCallback((point, index) => {
         const newPoints = [...points];
         newPoints[index] = point;
         onChange(null, {
             name: 'routePoints',
             value: newPoints,
         });
-    };
+    }, [points]);
 
     const pointsTabs = [];
 

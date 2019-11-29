@@ -93,7 +93,7 @@ class Result extends Component {
                         columns.map((column, indexColumn) => (
                             <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
-                                row={row}
+                                {...row}
                                 column={column}
                                 value={row[column.name]}
                                 indexRow={indexRow}

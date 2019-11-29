@@ -2,7 +2,7 @@ import React from 'react';
 import {Dropdown} from "semantic-ui-react";
 import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW} from "../../../constants/formTypes";
 
-const SettingCell = ({value, t, onChange, loading, isDisabled}) => {
+const SettingCell = ({value, t, onChange, loading, isDisabled, status, fieldName}) => {
 
     const availabilityListOptions = [
         /* { key: SETTINGS_TYPE_HIDE, value: SETTINGS_TYPE_HIDE, text: t(SETTINGS_TYPE_HIDE) },*/
@@ -10,6 +10,7 @@ const SettingCell = ({value, t, onChange, loading, isDisabled}) => {
         { key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT) },
     ];
 
+    console.log('SettingCell');
 
     return (
         <Dropdown
@@ -18,11 +19,11 @@ const SettingCell = ({value, t, onChange, loading, isDisabled}) => {
             disabled={isDisabled}
             value={value}
             loading={loading}
+            status={status}
+            fieldName={fieldName}
             onChange={onChange}
         />
     )
 };
 
-export default React.memo(SettingCell, (prevProps, nextProps) => {
-    return prevProps.value === nextProps.value && nextProps.loading === prevProps.loading && nextProps.isDisabled === prevProps.isDisabled;
-});
+export default React.memo(SettingCell);

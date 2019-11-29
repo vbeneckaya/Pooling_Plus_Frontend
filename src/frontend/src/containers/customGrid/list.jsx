@@ -81,6 +81,13 @@ class List extends Component {
         this.setState({ confirmation: { open: false } });
     };
 
+    modalCard = () => {
+        const {stopUpdate, match = {}} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
+        return <Card stopUpdate={stopUpdate} name={name}/>;
+    };
+
     render() {
         const {
             columns = [],
@@ -116,7 +123,7 @@ class List extends Component {
                     getActions={getActions}
                     groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
-                    modalCard={<Card stopUpdate={stopUpdate} name={name} />}
+                    modalCard={this.modalCard}
                     createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
