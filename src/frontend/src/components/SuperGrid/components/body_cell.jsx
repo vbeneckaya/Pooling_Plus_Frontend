@@ -102,15 +102,15 @@ const BodyCell = ({
 
     return (
         <>
-            <Table.Cell className="value-cell">
+            <Table.Cell className="value-cell" style={{width: `${column.width}px`}}>
                 <div className="cell-grid">
                     <div
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
                             }`}
                         ref={contextRef}
-                        onClick={handleCellClick}
                     >
+                        <div onClick={handleCellClick}>
                         <CellValue
                             {...column}
                             indexRow={indexRow}
@@ -130,23 +130,24 @@ const BodyCell = ({
                                 />
                             }
                         />
-                    </div>
-                    <div>
-                        {progress ? (
-                            <Loader active={true} size="mini" />
-                        ) : (
-                            <>
-                                {row[column.name] !== null ? (
-                                    <div className="cell-grid-copy-btn">
-                                        <Icon
-                                            name="clone outline"
-                                            size="small"
-                                            onClick={() => copyToClipboard(row[column.name])}
-                                        />
-                                    </div>
-                                ) : null}
-                            </>
-                        )}
+                        </div>
+                        <div>
+                            {progress ? (
+                                <Loader active={true} size="mini" />
+                            ) : (
+                                <>
+                                    {row[column.name] !== null ? (
+                                        <div className="cell-grid-copy-btn">
+                                            <Icon
+                                                name="clone outline"
+                                                size="small"
+                                                onClick={() => copyToClipboard(row[column.name])}
+                                            />
+                                        </div>
+                                    ) : null}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
             </Table.Cell>

@@ -19,6 +19,7 @@ const Filter = props => {
         setSelectedAll,
         columns,
         gridName,
+        resizeColumn
     } = props;
     const dispatch = useDispatch();
     let [customColumns, setColumns] = useState(columns);
@@ -38,12 +39,13 @@ const Filter = props => {
 
     const handleResize = (e, {size, index}) => {
         clearTimeout(timer.current);
-        const nextColumns = [...customColumns];
+        /*const nextColumns = [...customColumns];
         nextColumns[index] = {
             ...nextColumns[index],
             width: size.width,
         };
-        setColumns(nextColumns);
+        setColumns(nextColumns);*/
+        //handleChangeWidth && handleChangeWidth(nextColumns);
 
         /* debounce(300, dispatch(editRepresentationRequest({
              key: gridName,
@@ -51,19 +53,20 @@ const Filter = props => {
              oldName: representationName,
              value: nextColumns,
          })))*/
-        timer.current = setTimeout(() => {
+        resizeColumn(size, index);
+        /*timer.current = setTimeout(() => {
             dispatch(
                 editRepresentationRequest({
                     key: gridName,
                     name: representationName,
                     oldName: representationName,
-                    value: nextColumns,
+                    value: columns,
                     callbackSuccess: () => {
-                        dispatch(getRepresentationsRequest({key: gridName}));
+                        //dispatch(getRepresentationsRequest({key: gridName}));
                     },
                 }),
             );
-        }, 2000);
+        }, 2000);*/
     };
 
     return (
@@ -86,7 +89,7 @@ const Filter = props => {
                 >
                     <Table.HeaderCell
                         key={'th' + x.name + i}
-                        style={{maxWidth: `${x.width}px`, minWidth: `${x.width}px`}}
+                        style={{width: `${x.width}px`}}
                         className={`column-facet column-${x.name
                             .toLowerCase()
                             .replace(' ', '-')}-facet`}

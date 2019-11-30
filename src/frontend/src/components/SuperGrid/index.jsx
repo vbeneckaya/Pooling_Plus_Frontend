@@ -20,6 +20,7 @@ const initState = (storageFilterItem, storageSortItem) => ({
     sort: storageSortItem ? JSON.parse(localStorage.getItem(storageSortItem)) || {} : {},
     fullText: '',
     selectedRows: new Set(),
+    columns: []
 });
 
 const CreateButton = ({ button, ...res }) => {
@@ -67,8 +68,10 @@ class SuperGrid extends Component {
             this.setSelected(newSelectedRow);
         }
 
-        if (this.props.name !== prevProps.name) {
-            this.props.autoUpdateStart(this.mapData());
+        if (prevProps.columns !== this.props.columns) {
+            this.setState({
+                columns: this.props.columns
+            })
         }
     }
 
@@ -249,11 +252,23 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
+    resizeColumn = (size, index) => {
+        this.setState(prevState => {
+            const nextColumns = [...prevState.columns];
+            nextColumns[index] = {
+                ...nextColumns[index],
+                width: size.width,
+            };
+            return {
+                columns: nextColumns
+            }
+        });
+    };
+
     render() {
-        const { filters, sort, fullText, selectedRows } = this.state;
+        const { filters, sort, fullText, selectedRows, columns } = this.state;
         const {
             totalCount: count = 0,
-            columns,
             rows = [],
             progress,
             modalCard,
@@ -311,6 +326,7 @@ class SuperGrid extends Component {
                         unstackable
                         celled={false}
                         selectable={false}
+                        columns={columns}
                         headerRow={
                             <Filter
                                 columns={columns}
@@ -325,6 +341,7 @@ class SuperGrid extends Component {
                                 setFilter={this.setFilter}
                                 setSort={this.setSort}
                                 setSelectedAll={this.setSelectedAll}
+                                resizeColumn={this.resizeColumn}
                             />
                         }
                         context={this.container}

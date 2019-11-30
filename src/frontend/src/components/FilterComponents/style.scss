@@ -123,6 +123,7 @@
 .facet {
     display: flex;
     align-items: center;
+    width: inherit;
     &-field {
         -webkit-line-clamp: 2;
         overflow: hidden;
