@@ -180,6 +180,4 @@ const BodyCell = ({
     );
 };
 
-export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
-    return prevProps.value === nextProps.value && prevProps.column.width === nextProps.column.width;
-});
+export default React.memo(BodyCell);

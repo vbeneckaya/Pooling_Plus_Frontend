@@ -66,7 +66,10 @@ class SuperGrid extends Component {
 
         if (prevProps.columns !== this.props.columns) {
             this.setState({
-                columns: this.props.columns,
+                columns: this.props.columns.map(item => ({
+                    ...item,
+                    width: item.width || 100
+                })),
             });
         }
     }
