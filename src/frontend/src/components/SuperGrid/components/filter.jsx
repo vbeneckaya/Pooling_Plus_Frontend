@@ -1,14 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
-import { Checkbox, Table } from 'semantic-ui-react';
-import { Resizable } from 'react-resizable';
+import React, {useEffect, useRef, useState} from 'react';
+import {Checkbox, Table} from 'semantic-ui-react';
+import {Resizable} from 'react-resizable';
 import FacetField from '../../FilterComponents';
-import {debounce} from 'throttle-debounce';
-import {
-    editRepresentationRequest,
-    getRepresentationsRequest,
-    representationNameSelector,
-} from '../../../ducks/representations';
-import {useDispatch, useSelector} from 'react-redux';
 
 const Filter = props => {
     const {
@@ -18,12 +11,9 @@ const Filter = props => {
         checkAllDisabled,
         setSelectedAll,
         columns,
-        gridName,
         resizeColumn
     } = props;
-    const dispatch = useDispatch();
     let [customColumns, setColumns] = useState(columns);
-    const representationName = useSelector(state => representationNameSelector(state, gridName));
     let timer = useRef(null);
 
     useEffect(
@@ -38,35 +28,7 @@ const Filter = props => {
     );
 
     const handleResize = (e, {size, index}) => {
-        clearTimeout(timer.current);
-        /*const nextColumns = [...customColumns];
-        nextColumns[index] = {
-            ...nextColumns[index],
-            width: size.width,
-        };
-        setColumns(nextColumns);*/
-        //handleChangeWidth && handleChangeWidth(nextColumns);
-
-        /* debounce(300, dispatch(editRepresentationRequest({
-             key: gridName,
-             name: representationName,
-             oldName: representationName,
-             value: nextColumns,
-         })))*/
         resizeColumn(size, index);
-        /*timer.current = setTimeout(() => {
-            dispatch(
-                editRepresentationRequest({
-                    key: gridName,
-                    name: representationName,
-                    oldName: representationName,
-                    value: columns,
-                    callbackSuccess: () => {
-                        //dispatch(getRepresentationsRequest({key: gridName}));
-                    },
-                }),
-            );
-        }, 2000);*/
     };
 
     return (

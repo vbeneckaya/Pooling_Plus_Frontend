@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
@@ -14,17 +14,17 @@ const ModalComponent = ({ element, props, children }) => {
 };
 
 const BodyCell = ({
-                      column,
-                      loadList,
-                      indexRow,
-                      indexColumn,
-                      modalCard,
-                      gridName,
-                      t,
-                      checkForEditing,
-                      invokeMassUpdate,
-                      ...row
-                  }) => {
+    column,
+    loadList,
+    indexRow,
+    indexColumn,
+    modalCard,
+    gridName,
+    t,
+    checkForEditing,
+    invokeMassUpdate,
+    ...row
+}) => {
     const contextRef = useRef(null);
 
     let [open, setOpen] = useState(false);
@@ -34,14 +34,14 @@ const BodyCell = ({
     const copyToClipboard = () => {
         const text = contextRef.current && contextRef.current.textContent;
         navigator.clipboard &&
-        navigator.clipboard.writeText(text).then(
-            () => {
-                toast.info(t('copied_to_clipboard_success'));
-            },
-            error => {
-                toast.error(t('copied_to_clipboard_error', {error}));
-            },
-        );
+            navigator.clipboard.writeText(text).then(
+                () => {
+                    toast.info(t('copied_to_clipboard_success'));
+                },
+                error => {
+                    toast.error(t('copied_to_clipboard_error', { error }));
+                },
+            );
     };
 
     const handleClick = (rowId, fieldName, state) => {
@@ -88,29 +88,30 @@ const BodyCell = ({
         });
     };
 
-    const handleChange = useCallback((e, {value}) => {
+    const handleChange = useCallback((e, { value }) => {
         setValue(value);
     }, []);
 
-    const handleCellClick = useCallback(e => {
-        column.type !== LINK_TYPE
-            ? handleClick(row.id, column.name, row.status)
-            : e.stopPropagation()
-    }, [column.type, row.id, column.name, row.status]);
-
-    console.log('BodyCell');
+    const handleCellClick = useCallback(
+        e => {
+            column.type !== LINK_TYPE
+                ? handleClick(row.id, column.name, row.status)
+                : e.stopPropagation();
+        },
+        [column.type, row.id, column.name, row.status],
+    );
 
     return (
         <>
-            <Table.Cell className="value-cell" style={{width: `${column.width}px`}}>
+            <Table.Cell className="value-cell" style={{ width: `${column.width}px` }}>
                 <div className="cell-grid">
                     <div
                         className={`cell-grid-value ${
                             row[column.name] !== null ? '' : 'cell-grid-value_empty'
-                            }`}
+                        }`}
                         ref={contextRef}
+                        onClick={handleCellClick}
                     >
-                        <div onClick={handleCellClick}>
                         <CellValue
                             {...column}
                             indexRow={indexRow}
@@ -130,24 +131,23 @@ const BodyCell = ({
                                 />
                             }
                         />
-                        </div>
-                        <div>
-                            {progress ? (
-                                <Loader active={true} size="mini" />
-                            ) : (
-                                <>
-                                    {row[column.name] !== null ? (
-                                        <div className="cell-grid-copy-btn">
-                                            <Icon
-                                                name="clone outline"
-                                                size="small"
-                                                onClick={() => copyToClipboard(row[column.name])}
-                                            />
-                                        </div>
-                                    ) : null}
-                                </>
-                            )}
-                        </div>
+                    </div>
+                    <div>
+                        {progress ? (
+                            <Loader active={true} size="mini" />
+                        ) : (
+                            <>
+                                {row[column.name] !== null ? (
+                                    <div className="cell-grid-copy-btn">
+                                        <Icon
+                                            name="clone outline"
+                                            size="small"
+                                            onClick={() => copyToClipboard(row[column.name])}
+                                        />
+                                    </div>
+                                ) : null}
+                            </>
+                        )}
                     </div>
                 </div>
             </Table.Cell>
@@ -161,11 +161,7 @@ const BodyCell = ({
                 <Modal.Content>
                     <Modal.Description>
                         <Form>
-                            <FormField
-                                {...column}
-                                value={value}
-                                onChange={handleChange}
-                            />
+                            <FormField {...column} value={value} onChange={handleChange} />
                         </Form>
                     </Modal.Description>
                 </Modal.Content>

@@ -11,8 +11,9 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import {Confirm, Loader} from 'semantic-ui-react';
+import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
+import { editRepresentationRequest } from '../../ducks/representations';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -20,7 +21,7 @@ const initState = (storageFilterItem, storageSortItem) => ({
     sort: storageSortItem ? JSON.parse(localStorage.getItem(storageSortItem)) || {} : {},
     fullText: '',
     selectedRows: new Set(),
-    columns: []
+    columns: [],
 });
 
 const CreateButton = ({ button, ...res }) => {
@@ -39,14 +40,9 @@ class SuperGrid extends Component {
     }
 
     componentDidMount() {
-        console.log('00000')
+        this.timer = null;
         this.props.autoUpdateStart(this.mapData());
     }
-
-    componentWillUnmount() {
-        console.log('clear')
-    }
-
 
     componentDidUpdate(prevProps) {
         const { selectedRows } = this.state;
@@ -70,8 +66,8 @@ class SuperGrid extends Component {
 
         if (prevProps.columns !== this.props.columns) {
             this.setState({
-                columns: this.props.columns
-            })
+                columns: this.props.columns,
+            });
         }
     }
 
@@ -140,7 +136,7 @@ class SuperGrid extends Component {
         }, this.debounceSetFilterApiAndLoadList);
     };
 
-    setSort = (sort) => {
+    setSort = sort => {
         const { storageSortItem } = this.props;
 
         storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify(sort));
@@ -189,7 +185,7 @@ class SuperGrid extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
+        this.setState({ fullText: value, page: 1 }, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {
@@ -253,6 +249,7 @@ class SuperGrid extends Component {
     };
 
     resizeColumn = (size, index) => {
+        clearTimeout(this.timer);
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
             nextColumns[index] = {
@@ -260,9 +257,24 @@ class SuperGrid extends Component {
                 width: size.width,
             };
             return {
-                columns: nextColumns
-            }
+                columns: nextColumns,
+            };
         });
+
+        this.timer = setTimeout(() => {
+            const {editRepresentation, representationName, name} = this.props;
+            const {columns} = this.state;
+
+            editRepresentation({
+                key: name,
+                name: representationName,
+                oldName: representationName,
+                value: columns,
+                callbackSuccess: () => {
+                    //dispatch(getRepresentationsRequest({key: gridName}));
+                },
+            });
+        }, 2000);
     };
 
     render() {
@@ -291,7 +303,9 @@ class SuperGrid extends Component {
 
         return (
             <>
-                <Loader active={progress && !rows.length} size="huge" className="table-loader">Loading</Loader>
+                <Loader active={progress && !rows.length} size="huge" className="table-loader">
+                    Loading
+                </Loader>
                 <HeaderSearchGrid
                     createButton={
                         createButton && (

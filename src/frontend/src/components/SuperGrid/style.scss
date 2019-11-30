@@ -157,6 +157,7 @@
     .link-cell {
         color: #2185d0;
         /* text-decoration-line: underline;*/
+        width: 100%;
     }
     /*.address-cell {
         max-width: 100px;
@@ -485,13 +486,10 @@ $teal: #b5eae7;
     }
     &-value {
         position: relative;
-        width: inherit;
-        min-width: 0;
+        width: min-content;
+        min-width: 10px;
         min-height: 18px;
         display: flex;
-        >div {
-            width: inherit;
-        }
         &:hover {
             cursor: pointer;
         }
