@@ -33,10 +33,10 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Date), OrderNumber(7)]
         public string EndWinterPeriod { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(8)]
+        [FieldType(FieldType.Date), OrderNumber(8), IsRequired]
         public string EffectiveDate { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(9)]
+        [FieldType(FieldType.Date), OrderNumber(9), IsRequired]
         public string ExpirationDate { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(10)]

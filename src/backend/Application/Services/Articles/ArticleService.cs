@@ -4,6 +4,7 @@ using Application.Shared;
 using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Articles;
 using Domain.Services.History;
 using Domain.Services.UserProvider;
@@ -19,9 +20,9 @@ namespace Application.Services.Articles
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
-        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
                                IHistoryService historyService) 
-            : base(dataService, userProvider, triggersService)
+            : base(dataService, userProvider, triggersService, validationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
