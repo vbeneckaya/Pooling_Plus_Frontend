@@ -22,7 +22,7 @@ import {
 import {
     editRepresentationRequest,
     representationFromGridSelector,
-    representationNameSelector
+    representationNameSelector,
 } from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
@@ -106,14 +106,16 @@ class List extends Component {
             getActions,
             getAllIds,
             editRepresentation,
-            representationName
+            representationName,
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
         const { confirmation } = this.state;
 
         return (
-            <div className="container">
+            <div
+                className="container"
+            >
                 <SuperGrid
                     key={name}
                     columns={columns}
@@ -159,8 +161,8 @@ const mapDispatchToProps = dispatch => {
             dispatch(getAllIdsRequest(params));
         },
         editRepresentation: params => {
-            dispatch(editRepresentationRequest(params))
-        }
+            dispatch(editRepresentationRequest(params));
+        },
     };
 };
 
@@ -176,7 +178,7 @@ const mapStateToProps = (state, ownProps) => {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
-        representationName: representationNameSelector(state, name)
+        representationName: representationNameSelector(state, name),
     };
 };
 

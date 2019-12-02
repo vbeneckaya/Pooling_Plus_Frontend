@@ -11,7 +11,8 @@ const Filter = props => {
         checkAllDisabled,
         setSelectedAll,
         columns,
-        resizeColumn
+        resizeColumn,
+        extWidth
     } = props;
     let [customColumns, setColumns] = useState(columns);
     let timer = useRef(null);
@@ -30,6 +31,8 @@ const Filter = props => {
     const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
     }, []);
+
+    console.log('extWidth', extWidth);
 
     return (
         <Table.Row className="sticky-header">
@@ -72,6 +75,7 @@ const Filter = props => {
                     </Table.HeaderCell>
                 </Resizable>
             ))}
+            <Table.HeaderCell style={{width: extWidth > 0 ? extWidth : 0}}/>
             {isShowActions ? <Table.HeaderCell className="actions-column"/> : null}
         </Table.Row>
     );

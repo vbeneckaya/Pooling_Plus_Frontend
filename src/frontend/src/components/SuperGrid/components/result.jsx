@@ -8,29 +8,6 @@ import {invokeMassUpdateRequest} from '../../../ducks/gridActions';
 import _ from 'lodash';
 
 class Result extends Component {
-    shouldComponentUpdate(nextProps) {
-        if (nextProps.rows && this.props.rows && nextProps.rows.length !== this.props.rows.length) {
-            return true;
-        }
-
-        if (this.props.progress !== nextProps.progress) {
-            return true;
-        }
-
-        if (!_.isEqual(Array.from(nextProps.selectedRows), Array.from(this.props.selectedRows))) {
-            return true;
-        }
-
-        if (!_.isEqual(Array.from(nextProps.columns), Array.from(this.props.columns))) {
-            return true;
-        }
-
-        if (_.isEqual(nextProps.rows, this.props.rows)) {
-            return false;
-        }
-
-        return true;
-    }
 
     handleCheck = row => {
         const {selectedRows, setSelected, onlyOneCheck} = this.props;
@@ -106,6 +83,7 @@ class Result extends Component {
                                 invokeMassUpdate={invokeMassUpdate}
                             />
                         ))}
+                        <Table.Cell/>
                         {isShowActions ? (
                             <Table.HeaderCell
                                 className="actions-column"
