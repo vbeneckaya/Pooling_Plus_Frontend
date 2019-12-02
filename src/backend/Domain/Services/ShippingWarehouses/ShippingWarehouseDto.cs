@@ -15,7 +15,7 @@ namespace Domain.Services.ShippingWarehouses
         [FieldType(FieldType.Text), OrderNumber(2), IsRequired]
         public string WarehouseName { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(3)]
+        [FieldType(FieldType.Text), OrderNumber(5)]
         public string Address { get; set; }
 
         [ExcelIgnore]
@@ -24,7 +24,7 @@ namespace Domain.Services.ShippingWarehouses
         [ExcelIgnore]
         public string PostalCode { get; set; }
 
-        [ExcelIgnore]
+        [FieldType(FieldType.Text), OrderNumber(3), IsReadOnly]
         public string Region { get; set; }
 
         [ExcelIgnore]
@@ -39,7 +39,7 @@ namespace Domain.Services.ShippingWarehouses
         [ExcelIgnore]
         public string House { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(4)]
+        [FieldType(FieldType.Boolean), OrderNumber(6)]
         public bool? IsActive { get; set; }
     }
 }

@@ -34,6 +34,8 @@ namespace Application.Shared
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
+        protected abstract ValidateResult ValidateDto(TFormDto dto);
+
         public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
 
         public abstract IQueryable<TEntity> ApplyRestrictions(IQueryable<TEntity> query);
@@ -171,6 +173,17 @@ namespace Application.Shared
         }
 
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
+        {
+            var validateResult = ValidateDto(entityFrom);
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
+
+            return SaveOrCreateInner(entityFrom);
+        }
+
+        private ValidateResult SaveOrCreateInner(TFormDto entityFrom)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
@@ -540,7 +553,9 @@ namespace Application.Shared
                 propertyType.SetValue(dto, validValue);
             }
 
-            var importResult = Import(dtos);
+            var importResult = new List<ValidateResult>();
+            foreach (var dto in dtos)
+                importResult.Add(SaveOrCreateInner(dto));
             Log.Debug("{entityName}.InvokeBulkUpdate (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             string errors = string.Join(" ", importResult.Where(x => x.IsError).Select(x => x.Error));
@@ -567,7 +582,7 @@ namespace Application.Shared
             
             return mapFromStateDto;
         }
-        
+
         public IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entitiesFrom)
         {
             string entityName = typeof(TEntity).Name;
@@ -575,9 +590,19 @@ namespace Application.Shared
             sw.Start();
 
             var result = new List<ValidateResult>();
-            
-            foreach (var dto in entitiesFrom) 
-                result.Add(SaveOrCreate(dto));
+
+            foreach (var dto in entitiesFrom)
+            {
+                var validateResult = ValidateDto(dto);
+                if (validateResult.IsError)
+                {
+                    result.Add(validateResult);
+                }
+                else
+                {
+                    result.Add(SaveOrCreateInner(dto));
+                }
+            }
             Log.Debug("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;

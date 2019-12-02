@@ -80,5 +80,11 @@ namespace Domain.Persistables
         /// Активный
         /// </summary>
         public bool IsActive { get; set; }
+
+        /// <summary>
+        /// Время авизации
+        /// </summary>
+        public TimeSpan? AvisaleTime { get; set; }
+
     }
 }

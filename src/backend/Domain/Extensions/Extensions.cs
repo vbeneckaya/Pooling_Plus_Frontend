@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Domain.Enums;
@@ -129,6 +131,31 @@ namespace Domain.Extensions
             return null;
         }
 
+        public static IEnumerable<T> GetOrderedEnum<T>()
+        {
+            Type type = typeof(T);
+            var values = Enum.GetValues(type);
+
+            var valuesDict = new Dictionary<T, int>();
+            foreach (var rawValue in values)
+            {
+                int orderNumber = -1;
+                var memInfo = type.GetMember(type.GetEnumName(rawValue));
+                if (memInfo?.Length > 0)
+                {
+                    var orderNumberAttributes = memInfo[0].GetCustomAttributes(typeof(OrderNumberAttribute), false);
+                    if (orderNumberAttributes?.Length > 0)
+                    {
+                        orderNumber = ((OrderNumberAttribute)orderNumberAttributes[0]).Value;
+                    }
+                }
+                valuesDict[(T)rawValue] = orderNumber;
+            }
+
+            return valuesDict.OrderBy(x => x.Value)
+                             .Select(x => x.Key);
+        }
+
         public static bool TryParseDate(this string dateString, out DateTime result) =>
             DateTime.TryParseExact(dateString,
                 "dd.MM.yyyy",
@@ -191,6 +218,15 @@ namespace Domain.Extensions
             if (string.IsNullOrEmpty(dateString)) return null;
 
             return dateString.TryParseDateTime(out DateTime date) ? date : (DateTime?)null;
+        }
+
+        public static TimeSpan? ToTimeSpan(this string timeString)
+        {
+            if (string.IsNullOrEmpty(timeString)) return null;
+
+            bool result = TimeSpan.TryParse(timeString, CultureInfo.InvariantCulture, out TimeSpan time);
+
+            return result ? time : (TimeSpan?)null;
         }
 
         public static DateTime? ToDate(this string dateString)

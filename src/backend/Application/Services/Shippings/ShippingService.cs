@@ -515,6 +515,11 @@ namespace Application.Services.Shippings
             );
         }
 
+        protected override ValidateResult ValidateDto(ShippingFormDto dto)
+        {
+            return new ValidateResult(null, dto.Id);
+        }
+
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
