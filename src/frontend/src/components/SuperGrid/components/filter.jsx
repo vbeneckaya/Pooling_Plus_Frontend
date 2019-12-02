@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {Checkbox, Table} from 'semantic-ui-react';
 import {Resizable} from 'react-resizable';
 import FacetField from '../../FilterComponents';
@@ -27,9 +27,9 @@ const Filter = props => {
         [columns],
     );
 
-    const handleResize = (e, {size, index}) => {
+    const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
-    };
+    }, []);
 
     return (
         <Table.Row className="sticky-header">
@@ -66,6 +66,7 @@ const Filter = props => {
                             value={props.filters[x.name]}
                             setFilter={props.setFilter}
                             source={x.source}
+                            handleResize={handleResize}
                         />
                     </Table.HeaderCell>
                 </Resizable>

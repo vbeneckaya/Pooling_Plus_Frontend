@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import { Table, Visibility } from 'semantic-ui-react';
 
@@ -16,16 +16,33 @@ const InfiniteScrollTable = ({
     context,
     style,
     structured,
+                                 fixed,
+                                 columns
 }) => {
+    const tableRef = useRef(null);
+    let [width, setWidth] = useState(0);
+
+    useEffect(() => {
+        console.log(tableRef.current.offsetWidth);
+        let sum = 0;
+
+        columns.forEach(item => {
+            sum = sum + item.width + columns.length + 50;
+        });
+        console.log('sum', sum);
+        setWidth(tableRef.current.offsetWidth > sum ? tableRef.current.offsetWidth : sum);
+    }, [columns]);
 
     return (
-        <div style={{ position: 'relative', ...style }}>
+        <div style={{position: 'relative', ...style}} ref={tableRef}>
             <Table
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}
                 unstackable={unstackable || false}
                 structured={structured}
                 className={className || ''}
+                fixed={fixed}
+                style={{width}}
             >
                 <Table.Header>{headerRow}</Table.Header>
 

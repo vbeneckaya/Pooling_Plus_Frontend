@@ -252,6 +252,8 @@ class SuperGrid extends Component {
     };
 
     resizeColumn = (size, index) => {
+        const {columns} = this.state;
+
         clearTimeout(this.timer);
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
@@ -264,9 +266,15 @@ class SuperGrid extends Component {
             };
         });
 
+        let sum = 0;
+
+        columns.forEach(item => {
+            sum = sum + item.width + columns.length + 50;
+        });
+        console.log('sum', sum);
+
         this.timer = setTimeout(() => {
             const {editRepresentation, representationName, name} = this.props;
-            const {columns} = this.state;
 
             editRepresentation({
                 key: name,
@@ -344,6 +352,7 @@ class SuperGrid extends Component {
                         celled={false}
                         selectable={false}
                         columns={columns}
+                        fixed
                         headerRow={
                             <Filter
                                 columns={columns}

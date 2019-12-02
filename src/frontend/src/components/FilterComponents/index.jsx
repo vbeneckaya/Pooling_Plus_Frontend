@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Button, Icon, Popup} from 'semantic-ui-react';
 import './style.scss';
@@ -45,7 +45,7 @@ const Control = props => {
     return React.cloneElement(getTypeFacet[type], props);
 };
 
-const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, source, index}) => {
+const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, source, index, handleResize}) => {
     const { t } = useTranslation();
     let sort = null;
 
@@ -70,11 +70,23 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
     };
 
     const contextRef = useRef(null);
+    const thRef = useRef(null);
 
-    console.log('facet');
+    useEffect(() => {
+        console.log('rest', thRef.current && thRef.current.offsetWidth);
+        handleResize(null, {
+            size: {
+                width: thRef.current.offsetWidth,
+            },
+            index
+        })
+    }, [thRef.current]);
+
+    //console.log('facet');
+
 
     return (
-        <div className="facet">
+        <div className="facet" ref={thRef}>
             <div className="facet-field" onClick={handleSort} ref={contextRef}>
                 {t(name)}
             </div>

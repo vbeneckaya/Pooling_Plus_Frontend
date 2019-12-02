@@ -477,7 +477,7 @@ $teal: #b5eae7;
 .cell-grid {
     display: flex;
     position: relative;
-    width: inherit !important;
+    width: 100% !important;
     &:hover .cell-grid-copy-btn {
         -webkit-transition: opacity .8s ease-in-out;
         -moz-transition: opacity .8s ease-in-out;
