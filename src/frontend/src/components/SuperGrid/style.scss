@@ -42,8 +42,8 @@
     border-top: none !important;
 
     th {
-        min-width: 100px;
-        max-width: 100px;
+        /*min-width: 100px;
+        max-width: 100px;*/
         position: sticky !important;
         position: -webkit-sticky !important;
         top: 0;
@@ -157,6 +157,7 @@
     .link-cell {
         color: #2185d0;
         /* text-decoration-line: underline;*/
+        width: 100%;
     }
     /*.address-cell {
         max-width: 100px;
@@ -191,10 +192,10 @@
 
 .grid-row td,
 .grid-row th {
-    min-width: 100px;
+    /*min-width: 100px;
     max-width: 100px;
     box-sizing: content-box;
-    border-top: 1px solid #ddd !important;
+    border-top: 1px solid #ddd !important;*/
 }
 
 .grid-row th {
@@ -485,9 +486,10 @@ $teal: #b5eae7;
     }
     &-value {
         position: relative;
-        width: inherit;
-        min-width: 0;
+        width: min-content;
+        min-width: 10px;
         min-height: 18px;
+        display: flex;
         &:hover {
             cursor: pointer;
         }

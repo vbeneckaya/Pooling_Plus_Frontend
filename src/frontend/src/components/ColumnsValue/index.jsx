@@ -21,15 +21,11 @@ const CellValue = (
     {
         type,
         value = '',
-        stateColors = [],
         id,
-        key_id,
         toggleIsActive,
-        isTranslate,
         source,
         indexRow,
         indexColumn,
-        name,
         modalCard,
         showRawValue,
         width,
@@ -37,7 +33,7 @@ const CellValue = (
         isDisabled
     }
 ) => {
-
+    console.log('BodyCell');
     if (type === SELECT_TYPE) {
         return (
             <SelectValue
@@ -126,4 +122,4 @@ const CellValue = (
     );
 };
 
-export default CellValue;
+export default React.memo(CellValue);

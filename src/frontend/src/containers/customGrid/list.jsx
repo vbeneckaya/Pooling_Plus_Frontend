@@ -19,7 +19,11 @@ import {
     getAllIdsRequest,
     invokeActionRequest,
 } from '../../ducks/gridActions';
-import { representationFromGridSelector } from '../../ducks/representations';
+import {
+    editRepresentationRequest,
+    representationFromGridSelector,
+    representationNameSelector
+} from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -101,6 +105,8 @@ class List extends Component {
             isCreateBtn,
             getActions,
             getAllIds,
+            editRepresentation,
+            representationName
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -113,6 +119,8 @@ class List extends Component {
                     columns={columns}
                     rows={list}
                     name={name}
+                    editRepresentation={editRepresentation}
+                    representationName={representationName}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -150,6 +158,9 @@ const mapDispatchToProps = dispatch => {
         getAllIds: params => {
             dispatch(getAllIdsRequest(params));
         },
+        editRepresentation: params => {
+            dispatch(editRepresentationRequest(params))
+        }
     };
 };
 
@@ -165,6 +176,7 @@ const mapStateToProps = (state, ownProps) => {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
+        representationName: representationNameSelector(state, name)
     };
 };
 
