@@ -211,6 +211,5 @@ namespace Domain.Services.Orders
         public decimal? ActualDeliveryCost { get; set; }
 
         public string Source { get; set; }
-
     }
 }
