@@ -4,6 +4,7 @@ using DAL.Queries;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
@@ -16,8 +17,8 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -73,12 +74,6 @@ namespace Application.Services.Users
 
         public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id)) 
                 entity.Id = Guid.Parse(dto.Id);
 
@@ -102,34 +97,34 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(UserDto dto)
+        protected override DetailedValidationResult ValidateDto(UserDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Email))
-            {
-                result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            //if (string.IsNullOrEmpty(dto.Email))
+            //{
+            //    result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
+            //}
 
-            if (string.IsNullOrEmpty(dto.UserName))
-            {
-                result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            //if (string.IsNullOrEmpty(dto.UserName))
+            //{
+            //    result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
+            //}
 
             if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
-                result.AddError(nameof(dto.Password), "users.emptyPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            if (string.IsNullOrEmpty(dto.RoleId))
-            {
-                result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            //if (string.IsNullOrEmpty(dto.RoleId))
+            //{
+            //    result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
+            //}
 
             var hasDuplicates = this._dataService.GetDbSet<User>()
                 .Where(i => i.Id != dto.Id.ToGuid())
@@ -138,7 +133,7 @@ namespace Application.Services.Users
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Email), "users.duplicatedUser".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

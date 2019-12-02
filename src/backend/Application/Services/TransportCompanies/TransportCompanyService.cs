@@ -2,6 +2,7 @@ using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
@@ -14,8 +15,8 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -37,12 +38,6 @@ namespace Application.Services.TransportCompanies
 
         public override DetailedValidationResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
@@ -50,19 +45,19 @@ namespace Application.Services.TransportCompanies
             entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(TransportCompanyDto dto)
+        protected override DetailedValidationResult ValidateDto(TransportCompanyDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Title))
-            {
-                result.AddError(nameof(dto.Title), "transportCompany.emptyTitle".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            //if (string.IsNullOrEmpty(dto.Title))
+            //{
+            //    result.AddError(nameof(dto.Title), "transportCompany.emptyTitle".Translate(lang), ValidationErrorType.ValueIsRequired);
+            //}
 
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
                                             .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
@@ -70,7 +65,7 @@ namespace Application.Services.TransportCompanies
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Title), "transportCompany.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Title), "TransportCompany.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

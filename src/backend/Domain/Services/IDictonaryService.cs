@@ -17,7 +17,7 @@ namespace Domain.Services
 
         Stream ExportToExcel(SearchFormDto form);
 
-        ValidateResult SaveOrCreate(TDto entityFrom);
+        DetailedValidationResult SaveOrCreate(TDto entityFrom);
         TDto Get(Guid id);
 
         ValidateResult Delete(Guid id);
