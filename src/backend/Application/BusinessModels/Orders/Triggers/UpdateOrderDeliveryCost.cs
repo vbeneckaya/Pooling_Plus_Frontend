@@ -38,6 +38,7 @@ namespace Application.BusinessModels.Orders.Triggers
             {
                 nameof(Order.DeliveryType),
                 nameof(Order.PalletsCount),
+                nameof(Order.ClientName),
                 nameof(Order.ShippingDate),
                 nameof(Order.DeliveryDate),
                 nameof(Order.ShippingCity),
