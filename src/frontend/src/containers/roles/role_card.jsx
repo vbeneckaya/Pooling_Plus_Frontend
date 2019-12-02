@@ -178,10 +178,10 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(permission.name)}
                                                         value={permission.code}
-                                                        checked={permissions.includes(
+                                                        checked={permissions && permissions.includes(
                                                             permission.code,
                                                         )}
-                                                        disabled={
+                                                        disabled={permissions &&
                                                             ([2, 4, 5, 6].includes(
                                                                 permission.code,
                                                                 ) &&
@@ -207,7 +207,7 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(action)}
                                                         value={action}
-                                                        checked={actions.includes(action)}
+                                                        checked={actions && actions.includes(action)}
                                                         onChange={this.handleActions}
                                                     />
                                                 </Form.Field>
@@ -224,7 +224,7 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(action)}
                                                         value={action}
-                                                        checked={actions.includes(action)}
+                                                        checked={actions && actions.includes(action)}
                                                         onChange={this.handleActions}
                                                     />
                                                 </Form.Field>
