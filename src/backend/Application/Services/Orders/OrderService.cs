@@ -106,12 +106,6 @@ namespace Application.Services.Orders
 
         public override ValidateResult MapFromDtoToEntity(Order entity, OrderDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-            
             bool isNew = string.IsNullOrEmpty(dto.Id);
             bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
 
@@ -236,7 +230,7 @@ namespace Application.Services.Orders
             return new ValidateResult(errors, entity.Id.ToString());
         }
         
-        private ValidateResult ValidateDto(OrderDto dto)
+        protected override ValidateResult ValidateDto(OrderFormDto dto)
         {
             var lang = _userIdProvider.GetCurrentUser()?.Language;
 
