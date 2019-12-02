@@ -20,7 +20,7 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService.UpdateDeliveryCost(entity);
         }
 
-        public bool IsTriggered(EntityChangesDto<Shipping> changes)
+        public bool IsTriggered(EntityChanges<Shipping> changes)
         {
             var watchProperties = new[]
             {

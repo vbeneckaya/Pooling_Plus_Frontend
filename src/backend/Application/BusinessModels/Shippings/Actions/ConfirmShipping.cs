@@ -32,9 +32,8 @@ namespace Application.BusinessModels.Shippings.Actions
             var orders = _dataService.GetDbSet<Order>().Where(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id).ToList();
             foreach (Order order in orders)
             {
-                var setter = new FieldSetter<Order>(order, _historyService);
+                var setter = new FieldSetter<Order>(order);
                 setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
-                setter.SaveHistoryLog();
 
                 order.OrderShippingStatus = shipping.Status;
             }

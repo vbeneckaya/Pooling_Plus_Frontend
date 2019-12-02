@@ -39,9 +39,8 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
 
-                    var setter = new FieldSetter<Shipping>(shipping, _historyService);
+                    var setter = new FieldSetter<Shipping>(shipping);
                     setter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
-                    setter.SaveHistoryLog();
                 }
             }
         }

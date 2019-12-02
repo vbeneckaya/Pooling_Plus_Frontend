@@ -45,13 +45,11 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
-            var setter = new FieldSetter<Shipping>(shipping, _historyService);
+            var setter = new FieldSetter<Shipping>(shipping);
 
             setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
             setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
             
-            setter.SaveHistoryLog();
-
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);

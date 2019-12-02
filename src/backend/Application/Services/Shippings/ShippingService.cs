@@ -114,7 +114,7 @@ namespace Application.Services.Shippings
                 }
             }
 
-            var setter = new FieldSetter<Shipping>(entity, _historyService, readOnlyFields);
+            var setter = new FieldSetter<Shipping>(entity, readOnlyFields);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -161,7 +161,6 @@ namespace Application.Services.Shippings
             /*end of map dto to entity fields*/
 
             setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return new ValidateResult(errors, entity.Id.ToString());
@@ -237,7 +236,7 @@ namespace Application.Services.Shippings
                         Order order;
                         if (ordersDict.TryGetValue(orderId, out order))
                         {
-                            var setter = new FieldSetter<Order>(order, _historyService);
+                            var setter = new FieldSetter<Order>(order);
 
                             if (pointDto.IsLoading)
                             {
@@ -258,7 +257,6 @@ namespace Application.Services.Shippings
                             }
 
                             setter.ApplyAfterActions();
-                            setter.SaveHistoryLog();
                         }
                     }
                 }
@@ -266,10 +264,9 @@ namespace Application.Services.Shippings
                 var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
                 var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
 
-                var shipSetter = new FieldSetter<Shipping>(entity, _historyService);
+                var shipSetter = new FieldSetter<Shipping>(entity);
                 shipSetter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
                 shipSetter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
-                shipSetter.SaveHistoryLog();
             }
 
             return new ValidateResult(null, entity.Id.ToString());

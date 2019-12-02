@@ -32,13 +32,12 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var updSetter = new FieldSetter<Order>(updOrder, _historyService);
+                    var updSetter = new FieldSetter<Order>(updOrder);
                     updSetter.UpdateField(o => o.DeliveryDate, newValue);
-                    updSetter.SaveHistoryLog();
                 }
             }
 
-            var setter = new FieldSetter<Order>(order, _historyService);
+            var setter = new FieldSetter<Order>(order);
 
             if (_isInjection)
             {
@@ -50,7 +49,6 @@ namespace Application.BusinessModels.Orders.Handlers
             }
             
             setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
-            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)

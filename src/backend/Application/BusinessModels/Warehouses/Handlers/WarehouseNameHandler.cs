@@ -32,9 +32,9 @@ namespace Application.BusinessModels.Warehouses.Handlers
 
             foreach (var order in orders)
             {
-                _historyService.SaveImpersonated(null, order.Id, "fieldChanged", 
-                                                 nameof(order.ClientName).ToLowerFirstLetter(),
-                                                 order.ClientName, newValue);
+                //_historyService.SaveImpersonated(null, order.Id, "fieldChanged", 
+                //                                 nameof(order.ClientName).ToLowerFirstLetter(),
+                //                                 order.ClientName, newValue);
                 order.ClientName = newValue;
             }
         }

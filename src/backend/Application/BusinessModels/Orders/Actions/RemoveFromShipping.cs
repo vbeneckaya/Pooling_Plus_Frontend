@@ -31,7 +31,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
-            var setter = new FieldSetter<Order>(order, _historyService);
+            var setter = new FieldSetter<Order>(order);
 
             setter.UpdateField(o => o.Status, OrderState.Created, ignoreChanges: true);
             setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleEmpty);
@@ -44,7 +44,6 @@ namespace Application.BusinessModels.Orders.Actions
             order.OrderShippingStatus = null;
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
-            setter.SaveHistoryLog();
 
             if (_dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
             {

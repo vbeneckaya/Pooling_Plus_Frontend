@@ -57,7 +57,7 @@ namespace Application.Services.ShippingWarehouses
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
-            var setter = new FieldSetter<ShippingWarehouse>(entity, _historyService);
+            var setter = new FieldSetter<ShippingWarehouse>(entity);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -74,7 +74,6 @@ namespace Application.Services.ShippingWarehouses
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return null;

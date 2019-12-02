@@ -18,7 +18,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, string oldValue, string newValue)
         {
-            var setter = new FieldSetter<Order>(order, _historyService);
+            var setter = new FieldSetter<Order>(order);
 
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
@@ -48,8 +48,6 @@ namespace Application.BusinessModels.Orders.Handlers
 
             setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
             setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
-
-            setter.SaveHistoryLog();
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)

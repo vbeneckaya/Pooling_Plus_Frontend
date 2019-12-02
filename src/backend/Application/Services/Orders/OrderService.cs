@@ -126,7 +126,7 @@ namespace Application.Services.Orders
                 }
             }
 
-            var setter = new FieldSetter<Order>(entity, _historyService, readOnlyFields);
+            var setter = new FieldSetter<Order>(entity, readOnlyFields);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -229,8 +229,6 @@ namespace Application.Services.Orders
                     entity.Source = $"{entity.Source};{file}";
                 }
             }
-
-            setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return new ValidateResult(errors, entity.Id.ToString());
@@ -399,7 +397,7 @@ namespace Application.Services.Orders
 
         private void MapFromItemDtoToEntity(OrderItem entity, OrderItemDto dto, bool isNew, bool isManual)
         {
-            var setter = new FieldSetter<OrderItem>(entity, _historyService);
+            var setter = new FieldSetter<OrderItem>(entity);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);

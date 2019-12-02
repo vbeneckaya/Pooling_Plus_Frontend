@@ -27,7 +27,7 @@ namespace Application.BusinessModels.Orders.Triggers
             }
         }
 
-        public bool IsTriggered(EntityChangesDto<Order> changes)
+        public bool IsTriggered(EntityChanges<Order> changes)
         {
             if (changes?.Entity?.ShippingId == null)
             {

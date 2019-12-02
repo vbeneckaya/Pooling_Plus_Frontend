@@ -27,7 +27,7 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+        public WarehousesService(IAuditDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
             : base(dataService, userProvider, triggersService, validationService)
         {
@@ -66,7 +66,7 @@ namespace Application.Services.Warehouses
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            var setter = new FieldSetter<Warehouse>(entity, _historyService);
+            var setter = new FieldSetter<Warehouse>(entity);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -84,7 +84,6 @@ namespace Application.Services.Warehouses
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
 
             setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
 
             if (isNew)
             {

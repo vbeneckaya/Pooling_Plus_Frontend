@@ -50,7 +50,7 @@ namespace Application.BusinessModels.Orders.Actions
                 ? orders.Sum(o => o.ActualWeightKg ?? 0)
                 : (decimal?) null;
 
-            var setter = new FieldSetter<Shipping>(shipping, historyService);
+            var setter = new FieldSetter<Shipping>(shipping);
 
             setter.UpdateField(s => s.TemperatureMin, tempRange?.Key);
             setter.UpdateField(s => s.TemperatureMax, tempRange?.Value);
@@ -67,8 +67,6 @@ namespace Application.BusinessModels.Orders.Actions
             var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
             setter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
             
-            setter.SaveHistoryLog();
-            
             foreach (var order in orders)
             {
                 order.ShippingId = shipping.Id;
@@ -76,13 +74,12 @@ namespace Application.BusinessModels.Orders.Actions
                 order.Status = OrderState.InShipping;
                 order.OrderShippingStatus = shipping.Status;
 
-                var ordSetter = new FieldSetter<Order>(order, historyService);
+                var ordSetter = new FieldSetter<Order>(order);
 
                 ordSetter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
                 ordSetter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 
                 historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
-                ordSetter.SaveHistoryLog();
             }
         }
     }

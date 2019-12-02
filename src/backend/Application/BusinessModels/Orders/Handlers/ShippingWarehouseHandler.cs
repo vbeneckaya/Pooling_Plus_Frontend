@@ -20,10 +20,9 @@ namespace Application.BusinessModels.Orders.Handlers
                 var shippingWarehouse = _dataService.GetDbSet<ShippingWarehouse>().Find(order.ShippingWarehouseId.Value);
                 if (shippingWarehouse != null)
                 {
-                    var setter = new FieldSetter<Order>(order, _historyService);
+                    var setter = new FieldSetter<Order>(order);
                     setter.UpdateField(s => s.ShippingAddress, shippingWarehouse.Address);
                     setter.UpdateField(s => s.ShippingCity, shippingWarehouse.City);
-                    setter.SaveHistoryLog();
                 }
             }
         }

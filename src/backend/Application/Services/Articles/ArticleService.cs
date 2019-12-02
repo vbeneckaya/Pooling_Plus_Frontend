@@ -43,7 +43,7 @@ namespace Application.Services.Articles
 
         public override DetailedValidationResult MapFromDtoToEntity(Article entity, ArticleDto dto)
         {
-            var setter = new FieldSetter<Article>(entity, _historyService);
+            var setter = new FieldSetter<Article>(entity);
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
@@ -88,7 +88,6 @@ namespace Application.Services.Articles
             setter.UpdateField(e => e.NetWeightPalletsG, dto.NetWeightPalletsG);
 
             setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
             return new DetailedValidationResult(errors, entity.Id.ToString());

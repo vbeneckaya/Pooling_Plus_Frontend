@@ -29,7 +29,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
+                    var setter = new FieldSetter<Order>(updOrder);
 
                     setter.UpdateField(o => o.ShippingStatus, newValue);
 
@@ -43,8 +43,6 @@ namespace Application.BusinessModels.Orders.Handlers
                         setter.UpdateField(o => o.LoadingDepartureTime, DateTime.Now);
                         setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleWaiting);
                     }
-
-                    setter.SaveHistoryLog();
                 }
             }
         }
