@@ -11,6 +11,8 @@ const GET_LOOKUP_ERROR = 'GET_LOOKUP_ERROR';
 
 const CLEAR_LOOKUP = 'CLEAR_LOOKUP';
 
+const CLEAR_FORM_LOOKUP = 'CLEAR_FORM_LOOKUP';
+
 //*  INITIAL STATE  *//
 
 const initial = {
@@ -49,6 +51,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 list: [],
             };
+        case CLEAR_FORM_LOOKUP:
+            return {
+                ...state,
+                [payload]: [],
+            };
         default:
             return state;
     }
@@ -70,22 +77,93 @@ export const clearLookup = payload => {
     };
 };
 
+export const clearFormLookup = payload => {
+    return {
+        type: CLEAR_FORM_LOOKUP,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.lookup;
-export const listSelector = createSelector(stateSelector, state => state.list) || [];
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const listSelector = createSelector(
+    [stateSelector, (state, filter) => filter, (state, filter, t) => t],
+    (state, filter, t) =>
+        state.list
+            ? state.list
+                  .map(item => ({
+                      value: item.value,
+                      name: t(item.name),
+                      isActive: item.isActive,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  )
+            : [],
+);
+export const progressSelector = createSelector(
+    stateSelector,
+    state => state.progress,
+);
 
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
-    (state, key) => state[key],
+    (state, key) => (state[key] ? state[key] : []),
+);
+
+export const totalCounterSelector = createSelector(
+    [
+        stateSelector,
+        (state, key) => key,
+        (state, key, t) => t,
+        (state, key, t, filter) => filter,
+        (state, key, t, filter, isTranslate) => isTranslate,
+    ],
+    (state, key, t, filter, isTranslate) =>
+        state[key]
+            ? state[key]
+                  .map(item => ({
+                      ...item,
+                      value: item.value,
+                      name: isTranslate ? t(item.name) : item.name,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  ).length
+            : 0,
+);
+
+export const listFromSelectSelector = createSelector(
+    [
+        stateSelector,
+        (state, key) => key,
+        (state, key, t) => t,
+        (state, key, t, filter) => filter,
+        (state, key, t, filter, isTranslate) => isTranslate,
+        (state, key, t, filter, isTranslate, counter) => counter,
+    ],
+    (state, key, t, filter, isTranslate, counter) => {
+        return state[key]
+            ? state[key]
+                  .map(item => ({
+                      ...item,
+                      value: item.value,
+                      name: isTranslate ? t(item.name) : item.name,
+                  }))
+                  .filter(x =>
+                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  )
+                  .slice(0, counter)
+            : [];
+    },
 );
 
 //*  SAGA  *//
 
 function* getLookupSaga({ payload }) {
     try {
-        const { name, isForm, isSearch, callbackSuccess } = payload;
+        const { name, isForm, isSearch, callbackSuccess, callbackFunc } = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
             `/${name}/${isSearch ? 'search' : 'forSelect'}`,
             {},
@@ -100,8 +178,8 @@ function* getLookupSaga({ payload }) {
                 },
             });
 
-
             callbackSuccess && callbackSuccess(result);
+            callbackFunc && callbackFunc();
         } else {
             yield put({
                 type: GET_LOOKUP_SUCCESS,

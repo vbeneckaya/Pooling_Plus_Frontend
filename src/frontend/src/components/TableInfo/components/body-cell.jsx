@@ -12,7 +12,7 @@ const BodyCellComponent = ({column, children, value, indexColumn, indexRow, togg
         setWidth(cellRef.current.offsetWidth);
     }, []);
 
-    /*console.log('cell');*/
+    console.log('cell');
 
     return (
         <td
@@ -45,7 +45,4 @@ const BodyCellComponent = ({column, children, value, indexColumn, indexRow, togg
     );
 };
 
-export default React.memo(BodyCellComponent, (prevProps, nextProps) => {
-    return prevProps.value === nextProps.value;
-
-});
+export default React.memo(BodyCellComponent);

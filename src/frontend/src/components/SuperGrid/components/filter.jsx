@@ -6,32 +6,42 @@ import {debounce} from 'throttle-debounce';
 import {
     editRepresentationRequest,
     getRepresentationsRequest,
-    representationNameSelector
-} from "../../../ducks/representations";
+    representationNameSelector,
+} from '../../../ducks/representations';
 import {useDispatch, useSelector} from 'react-redux';
 
 const Filter = props => {
-    const {isShowActions, indeterminate, all, checkAllDisabled, setSelectedAll, columns, gridName} = props;
+    const {
+        isShowActions,
+        indeterminate,
+        all,
+        checkAllDisabled,
+        setSelectedAll,
+        columns,
+        gridName,
+    } = props;
     const dispatch = useDispatch();
     let [customColumns, setColumns] = useState(columns);
     const representationName = useSelector(state => representationNameSelector(state, gridName));
     let timer = useRef(null);
 
-    useEffect(() => {
-        setColumns(columns);
+    useEffect(
+        () => {
+            setColumns(columns);
 
-        return () => {
-            timer.current = null;
-        }
-    }, [columns]);
-
+            return () => {
+                timer.current = null;
+            };
+        },
+        [columns],
+    );
 
     const handleResize = (e, {size, index}) => {
         clearTimeout(timer.current);
         const nextColumns = [...customColumns];
         nextColumns[index] = {
-            ... nextColumns[index],
-            width: size.width < 100 ? 100 : size.width
+            ...nextColumns[index],
+            width: size.width,
         };
         setColumns(nextColumns);
 
@@ -42,16 +52,18 @@ const Filter = props => {
              value: nextColumns,
          })))*/
         timer.current = setTimeout(() => {
-            dispatch(editRepresentationRequest({
-                key: gridName,
-                name: representationName,
-                oldName: representationName,
-                value: nextColumns,
-                callbackSuccess: () => {
-                    dispatch(getRepresentationsRequest({key: gridName}));
-                }
-            }))
-        }, 500)
+            dispatch(
+                editRepresentationRequest({
+                    key: gridName,
+                    name: representationName,
+                    oldName: representationName,
+                    value: nextColumns,
+                    callbackSuccess: () => {
+                        dispatch(getRepresentationsRequest({key: gridName}));
+                    },
+                }),
+            );
+        }, 2000);
     };
 
     return (

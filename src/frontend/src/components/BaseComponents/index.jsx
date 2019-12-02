@@ -53,6 +53,7 @@ const FormField = props => {
     let params = {
         ...props,
         type: props.typeValue,
+        key: props.name
     };
 
     if ((props.settings && props.settings === SETTINGS_TYPE_SHOW) || props.isReadOnly) {
