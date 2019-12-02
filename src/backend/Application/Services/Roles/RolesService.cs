@@ -135,8 +135,7 @@ namespace Application.Services.Roles
 
         public IEnumerable<PermissionInfo> GetAllPermissions()
         {
-            return Enum.GetValues(typeof(RolePermissions))
-                .Cast<RolePermissions>()
+            return Domain.Extensions.Extensions.GetOrderedEnum<RolePermissions>()
                 .Where(x => x != RolePermissions.None)
                 .Select(i => new PermissionInfo
                 {
