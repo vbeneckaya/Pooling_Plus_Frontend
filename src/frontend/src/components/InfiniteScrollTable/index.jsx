@@ -17,21 +17,24 @@ const InfiniteScrollTable = ({
     style,
     structured,
                                  fixed,
-                                 columns
+                                 columns = [],
 }) => {
     const tableRef = useRef(null);
     let [width, setWidth] = useState(0);
 
-    useEffect(() => {
-        console.log(tableRef.current.offsetWidth);
-        let sum = 0;
+    useEffect(
+        () => {
+            console.log(tableRef.current.offsetWidth);
+            let sum = 0;
 
-        columns.forEach(item => {
-            sum = sum + item.width + columns.length + 50;
-        });
-        console.log('sum', sum);
-        setWidth(tableRef.current.offsetWidth > sum ? tableRef.current.offsetWidth : sum);
-    }, [columns]);
+            columns.forEach(item => {
+                sum = sum + item.width + columns.length + 50;
+            });
+            console.log('sum', sum);
+            setWidth(sum);
+        },
+        [columns],
+    );
 
     return (
         <div style={{position: 'relative', ...style}} ref={tableRef}>
@@ -42,7 +45,7 @@ const InfiniteScrollTable = ({
                 structured={structured}
                 className={className || ''}
                 fixed={fixed}
-                style={{width}}
+                style={{width, minWidth: 'calc(100vw - 45px)'}}
             >
                 <Table.Header>{headerRow}</Table.Header>
 

@@ -14,7 +14,7 @@ import {
     STATE_TYPE,
     TEXT_TYPE,
     TIME_TYPE,
-    LOCAL_DATE_TIME
+    LOCAL_DATE_TIME,
 } from '../../constants/columnTypes';
 import TextFacet from './Text';
 import NumberFacet from './Number';
@@ -45,7 +45,18 @@ const Control = props => {
     return React.cloneElement(getTypeFacet[type], props);
 };
 
-const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, source, index, handleResize}) => {
+const FacetField = ({
+                        name,
+                        sort: sortObj,
+                        setSort,
+                        type,
+                        value,
+                        setFilter,
+                        source,
+                        index,
+                        handleResize,
+                        width,
+                    }) => {
     const { t } = useTranslation();
     let sort = null;
 
@@ -72,18 +83,20 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
     const contextRef = useRef(null);
     const thRef = useRef(null);
 
-    useEffect(() => {
-        console.log('rest', thRef.current && thRef.current.offsetWidth);
-        handleResize(null, {
-            size: {
-                width: thRef.current.offsetWidth,
-            },
-            index
-        })
-    }, [thRef.current]);
+    /* useEffect(
+         () => {
+             console.log('rest', thRef.current && thRef.current.offsetWidth);
+             handleResize(null, {
+                 size: {
+                     width: thRef.current.offsetWidth,
+                 },
+                 index,
+             });
+         },
+         [thRef.current],
+     );*/
 
     //console.log('facet');
-
 
     return (
         <div className="facet" ref={thRef}>
@@ -91,11 +104,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
                 {t(name)}
             </div>
             <div className="facet-actions">
-                <div
-                    className={
-                        value ? 'facet-actions__filter_active' : 'facet-actions__filter'
-                    }
-                >
+                <div className={value ? 'facet-actions__filter_active' : 'facet-actions__filter'}>
                     <Popup
                         trigger={
                             <Button>
@@ -114,7 +123,7 @@ const FacetField = ({name, sort: sortObj, setSort, type, value, setFilter, sourc
                             />
                         }
                         pinned
-                        position={index === 0 ? "bottom left" : "bottom right"}
+                        position={index === 0 ? 'bottom left' : 'bottom right'}
                         className="from-popup"
                         on="click"
                     />

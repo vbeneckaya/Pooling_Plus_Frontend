@@ -52,7 +52,7 @@ const Filter = props => {
                     <Table.HeaderCell
                         key={'th' + x.name + i}
                         style={{width: `${x.width}px`}}
-                        className={`column-facet column-${x.name
+                        className={`column-facet column-${x.name && x.name
                             .toLowerCase()
                             .replace(' ', '-')}-facet`}
                     >
@@ -66,6 +66,7 @@ const Filter = props => {
                             value={props.filters[x.name]}
                             setFilter={props.setFilter}
                             source={x.source}
+                            width={x.width}
                             handleResize={handleResize}
                         />
                     </Table.HeaderCell>
