@@ -37,7 +37,7 @@ namespace Application.Services.Tariffs
 
             entity.ShipmentCity = dto.ShipmentCity?.Value;
             entity.DeliveryCity = dto.DeliveryCity?.Value;
-            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType);
+            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value);
             entity.VehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
@@ -242,12 +242,13 @@ namespace Application.Services.Tariffs
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             return new TariffDto
             {
                 Id = entity.Id.ToString(),
                 ShipmentCity = string.IsNullOrEmpty(entity.ShipmentCity) ? null : new LookUpDto(entity.ShipmentCity),
                 DeliveryCity = string.IsNullOrEmpty(entity.DeliveryCity) ? null : new LookUpDto(entity.DeliveryCity),
-                TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
+                TarifficationType = entity.TarifficationType == null ? null : entity.TarifficationType.GetEnumLookup(lang),
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
                 VehicleTypeId = entity.VehicleTypeId == null ? null : new LookUpDto(entity.VehicleTypeId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
@@ -395,12 +396,13 @@ namespace Application.Services.Tariffs
             Guid? bodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             string shipmentCity = dto.ShipmentCity?.Value;
             string deliveryCity = dto.DeliveryCity?.Value;
+            TarifficationType? tarifficationType = dto.TarifficationType?.Value?.Parse<TarifficationType>();
             return _dataService.GetDbSet<Tariff>()
                     .Where(i =>
                         i.CarrierId == carrierId
                         && i.VehicleTypeId == vehicleTypeId
                         && i.BodyTypeId == bodyTypeId
-                        && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
+                        && i.TarifficationType == tarifficationType
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == shipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == deliveryCity);
         }

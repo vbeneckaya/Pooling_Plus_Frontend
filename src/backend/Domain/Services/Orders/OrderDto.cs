@@ -24,7 +24,7 @@ namespace Domain.Services.Orders
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
-        public string OrderType { get; set; }
+        public LookUpDto OrderType { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
@@ -198,7 +198,7 @@ namespace Domain.Services.Orders
         public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
-        public string DeliveryType { get; set; }
+        public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.BigText)]
         public string DeviationsComment { get; set; }

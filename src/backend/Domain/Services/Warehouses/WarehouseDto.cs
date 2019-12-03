@@ -56,7 +56,7 @@ namespace Domain.Services.Warehouses
         public bool CustomerWarehouse { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsRequired, OrderNumber(10)]
-        public string DeliveryType { get; set; }
+        public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.Time), OrderNumber(10)]
         public string AvisaleTime { get; set; }

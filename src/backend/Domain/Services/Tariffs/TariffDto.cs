@@ -17,7 +17,7 @@ namespace Domain.Services.Tariffs
         public LookUpDto DeliveryCity { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
-        public string TarifficationType { get; set; }
+        public LookUpDto TarifficationType { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition, IsRequired]
         public LookUpDto CarrierId { get; set; }

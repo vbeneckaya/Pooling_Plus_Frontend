@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Domain.Enums;
+using Domain.Services.Translations;
+using Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Domain.Enums;
 
 namespace Domain.Extensions
 {
@@ -154,6 +156,24 @@ namespace Domain.Extensions
 
             return valuesDict.OrderBy(x => x.Value)
                              .Select(x => x.Key);
+        }
+
+        public static LookUpDto GetEnumLookup<T>(this T value, string language)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            else
+            {
+                string strValue = value.ToString().ToLowerFirstLetter();
+                string name = strValue.Translate(language);
+                return new LookUpDto
+                {
+                    Value = strValue,
+                    Name = name
+                };
+            }
         }
 
         public static bool TryParseDate(this string dateString, out DateTime result) =>

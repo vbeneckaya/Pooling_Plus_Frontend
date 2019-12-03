@@ -164,10 +164,10 @@ namespace Application.Services.Shippings
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.ShippingNumber, dto.ShippingNumber);
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType));
+            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType?.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType.Value));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
+            setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value));
             setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId?.Value) ? null : dto.CarrierId.Value.ToGuid(), new CarrierIdHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
             setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId?.Value) ? null : dto.VehicleTypeId.Value.ToGuid(), nameLoader: GetVehicleTypeNameById);
             setter.UpdateField(e => e.BodyTypeId, string.IsNullOrEmpty(dto.BodyTypeId?.Value) ? null : dto.BodyTypeId.Value.ToGuid(), nameLoader: GetBodyTypeNameById);
@@ -398,6 +398,7 @@ namespace Application.Services.Shippings
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ShippingDto, ShippingFormDto>();
@@ -405,11 +406,11 @@ namespace Application.Services.Shippings
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
