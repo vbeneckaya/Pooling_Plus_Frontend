@@ -102,6 +102,9 @@ export const listSelector = createSelector(
                   )
             : [],
 );
+
+export const stateListSelector = createSelector(stateSelector, state => state.list);
+
 export const progressSelector = createSelector(
     stateSelector,
     state => state.progress,

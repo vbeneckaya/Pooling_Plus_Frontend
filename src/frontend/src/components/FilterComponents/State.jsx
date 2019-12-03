@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button, Checkbox, Dimmer, Form, Icon, Loader, Popup } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
+import {clearLookup, getLookupRequest, listSelector, progressSelector, stateListSelector} from '../../ducks/lookup';
 
 const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
     const { t } = useTranslation();
@@ -43,7 +43,7 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
         if (onChange !== undefined) onChange(null, { name: name, value: null });
     };
 
-    const stateColors = useSelector(state => listSelector(state)) || [];
+    const stateColors = useSelector(state => stateListSelector(state)) || [];
     const loading = useSelector(state => progressSelector(state));
 
     return (
