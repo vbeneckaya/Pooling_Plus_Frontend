@@ -55,7 +55,7 @@ ru:
   check_for_editing_failed_shippings: "Поле '{{fieldName}}' перевозки недоступно для редактирования"
   check_for_editing_failed_orders: "Поле '{{fieldName}}' заказа недоступно для редактирования"
   choose_option: "Выберите параметр"
-  city: "Населенный пункт"
+  city: "Город"
   clientAvisationTime: "Время авизации у клиента"
   clientName: "Клиент"
   clientOrderNumber: "Номер заказа клиента"

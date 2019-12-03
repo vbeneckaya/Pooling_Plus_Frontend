@@ -24,7 +24,7 @@ namespace Domain.Services.Warehouses
         [ExcelIgnore]
         public string Area { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(4), IsReadOnly]
+        [FieldType(FieldType.Text), OrderNumber(4)]
         public string City { get; set; }
 
         [ExcelIgnore]

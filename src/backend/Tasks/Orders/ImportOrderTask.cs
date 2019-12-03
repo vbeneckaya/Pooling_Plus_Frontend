@@ -1,9 +1,9 @@
-﻿using Domain.Persistables;
+﻿using Application.Services.Addresses;
+using Domain.Persistables;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Warehouses;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
@@ -131,6 +131,7 @@ namespace Tasks.Orders
         {
             IWarehousesService warehousesService = serviceProvider.GetService<IWarehousesService>();
             IShippingWarehousesService shippingWarehousesService = serviceProvider.GetService<IShippingWarehousesService>();
+            ICleanAddressService сleanAddressService = serviceProvider.GetService<ICleanAddressService>();
             IOrdersService ordersService = serviceProvider.GetService<IOrdersService>();
 
             // Загружаем данные из файла
@@ -197,6 +198,13 @@ namespace Tasks.Orders
                 }
                 else
                 {
+                    if (!string.IsNullOrEmpty(deliveryCity) && deliveryCity != deliveryWarehouse.City)
+                    {
+                        var cleanResult = сleanAddressService.CleanAddress(deliveryCity);
+                        deliveryWarehouse.Region = cleanResult.Region ?? deliveryWarehouse.Region;
+                        dto.DeliveryRegion = deliveryWarehouse.Region;
+                    }
+
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
                     updWarehouses.Add(deliveryWarehouse);
