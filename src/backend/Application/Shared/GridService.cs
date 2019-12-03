@@ -26,7 +26,7 @@ namespace Application.Shared
     public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
         where TEntity : class, IPersistable, new() 
         where TDto : IDto, new() 
-        where TFormDto : IDto, new()
+        where TFormDto : TDto, new()
     {
         public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
@@ -82,6 +82,10 @@ namespace Application.Shared
 
             var result = MapFromEntityToDto(entity);
             Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(result);
+            Log.Debug("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -98,6 +102,10 @@ namespace Application.Shared
 
             var result = MapFromEntityToFormDto(entity);
             Log.Debug("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(result);
+            Log.Debug("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -147,6 +155,10 @@ namespace Application.Shared
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
             Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(a.Items);
+            Log.Debug("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -547,6 +559,10 @@ namespace Application.Shared
             {
                 validValue = ParseBool(value);
             }
+            if (propertyType.PropertyType == typeof(LookUpDto))
+            {
+                validValue = value == null ? null : new LookUpDto { Value = value };
+            }
 
             foreach (var dto in dtos)
             {
@@ -574,6 +590,15 @@ namespace Application.Shared
             }
 
             return result;
+        }
+
+        protected virtual void FillLookupNames(IEnumerable<TDto> dtos)
+        {
+        }
+
+        protected void FillLookupNames(TDto dto)
+        {
+            FillLookupNames(new[] { dto });
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
@@ -666,6 +691,10 @@ namespace Application.Shared
             var entities = query.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
             Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(dtos);
+            Log.Debug("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var excelMapper = CreateExportExcelMapper();//new ExcelMapper<TDto>(_dataService, _userIdProvider);

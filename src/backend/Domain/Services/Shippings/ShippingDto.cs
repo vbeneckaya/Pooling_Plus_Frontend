@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 using System;
 
 namespace Domain.Services.Shippings
@@ -24,13 +25,13 @@ namespace Domain.Services.Shippings
         public string TarifficationType { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
-        public string CarrierId { get; set; }
+        public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
-        public string VehicleTypeId { get; set; }
+        public LookUpDto VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(BodyTypes))]
-        public string BodyTypeId { get; set; }
+        public LookUpDto BodyTypeId { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? PalletsCount { get; set; }

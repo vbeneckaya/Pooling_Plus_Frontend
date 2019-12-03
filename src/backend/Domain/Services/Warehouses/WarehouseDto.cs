@@ -1,6 +1,7 @@
 using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.Warehouses
 {
@@ -43,7 +44,7 @@ namespace Domain.Services.Warehouses
         public string UnparsedAddressParts { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(PickingTypes)), OrderNumber(6)]
-        public string PickingTypeId { get; set; }
+        public LookUpDto PickingTypeId { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(7)]
         public string PickingFeatures { get; set; }
