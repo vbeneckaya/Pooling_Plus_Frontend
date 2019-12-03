@@ -90,8 +90,9 @@ namespace Application.Shared.Excel.Columns
                     Property.SetValue(entity, value);
                 }
             }
-            // OLE Automation Date Format
-            else 
+            // Readng OLE Automation Date Format https://stackoverflow.com/questions/13176832/reading-a-date-from-xlsx-using-open-xml-sdk
+            // Open Xml Date Format Codes
+            else
             if ((cell.Style.Numberformat.NumFmtID >= 14 && cell.Style.Numberformat.NumFmtID <= 22)
                     || (cell.Style.Numberformat.NumFmtID >= 165u && cell.Style.Numberformat.NumFmtID <= 180u))
             {

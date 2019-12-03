@@ -54,11 +54,6 @@ namespace Application.Services.TransportCompanies
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            //if (string.IsNullOrEmpty(dto.Title))
-            //{
-            //    result.AddError(nameof(dto.Title), "transportCompany.emptyTitle".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
-
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
                                             .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
                                             .Any();

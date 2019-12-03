@@ -163,14 +163,6 @@ namespace Application.Shared
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            //if (excelMapper.Errors.Any(e => e.IsError))
-            //{
-            //    var result = new ImportResult();
-            //    result.Results.AddRange(excelMapper.Errors);
-
-            //    return MapFromImportResult(result);
-            //}
-
             var importResult = Import(dtos);
             Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 

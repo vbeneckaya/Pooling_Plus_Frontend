@@ -106,25 +106,10 @@ namespace Application.Services.Users
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            //if (string.IsNullOrEmpty(dto.Email))
-            //{
-            //    result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
-
-            //if (string.IsNullOrEmpty(dto.UserName))
-            //{
-            //    result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
-
             if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
                 result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
-
-            //if (string.IsNullOrEmpty(dto.RoleId))
-            //{
-            //    result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
 
             var hasDuplicates = this._dataService.GetDbSet<User>()
                 .Where(i => i.Id != dto.Id.ToGuid())
