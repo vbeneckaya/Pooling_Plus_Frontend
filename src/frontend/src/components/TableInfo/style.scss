@@ -46,7 +46,7 @@
 .table-header-menu {
     background-color: white;
     border: 1px solid #ddd;
-    margin: 0!important;
+    margin: 0 !important;
 
     &_title {
         font-weight: 500;
@@ -65,26 +65,48 @@ thead th {
 }
 
 .table-info {
-    border-bottom: 1px solid #ddd !important;
+    //border-bottom: 1px solid #ddd !important;
     margin: 0 !important;
+
+    tr {
+        td{
+            background: white!important;
+        }
+
+        &:last-child {
+            border-bottom: 1px solid #ddd !important;
+        }
+    }
 
     td:hover {
         cursor: pointer;
         /* background-color: rgba(0,0,0,.05)!important*/
     }
-    tr:hover .no-scroll-value {
-        background-color: #f2f2f2 !important
+   tr:hover {
+       td{
+           background: rgba(0,0,0,.05)!important;
+       }
+
+    }
+
+    &:before {
+        content: '';
+        width: 100%;
+        height: 1px;
+        background: #ddd;
+        position: absolute;
+        bottom: 0;
+        z-index: 20;
     }
 }
 
 .no-scroll {
     position: sticky;
-    background-color: inherit;
     left: 0;
     z-index: 7;
 
     &-value {
-        background-color: white;
-        z-index: 5;
+        z-index: 15;
+        //background: inherit;
     }
 }
