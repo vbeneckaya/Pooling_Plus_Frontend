@@ -180,7 +180,7 @@ const Header = ({
                         representations={representations}
                     />
                 </Grid.Column>
-                <Grid.Column width={1}>
+                <Grid.Column width={1} style={{display: 'flex'}}>
                     <span className="records-counter">{t('totalCount', {count: counter})}</span>
                 </Grid.Column>
                 <Grid.Column width={10} className="grid-right-elements">
