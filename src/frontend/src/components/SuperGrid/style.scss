@@ -5,6 +5,7 @@
     width: 100%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     grid-template-rows: auto 76px;
     background-color: white;
     border-radius: 0 0 5px 5px;
@@ -149,8 +150,8 @@
     margin-top: 8px;
     white-space: nowrap;
     margin-right: 10px;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 400;
     color: #4d4d4d !important;
 }
 

@@ -24,9 +24,7 @@ import Card from './card';
 
 const newModal = (t, load, name) => (
     <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_btn')}
-        </Button>
+        <Button icon="add" />
     </Card>
 );
 

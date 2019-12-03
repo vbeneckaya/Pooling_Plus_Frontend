@@ -3,8 +3,10 @@
     overflow: auto;
     height: calc(100vh - 190px);
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
     background-color: white;
 
     .ui.structured.table {
@@ -42,7 +44,18 @@
 }
 
 .table-header-menu {
-    margin-bottom: 12px;
+    background-color: white;
+    border: 1px solid #ddd;
+    margin: 0!important;
+
+    &_title {
+        font-weight: 500;
+        font-size: 16px;
+        color: #4d4d4d;
+        display: flex;
+        align-items: center;
+        padding-right: 24px;
+    }
 }
 
 thead th {

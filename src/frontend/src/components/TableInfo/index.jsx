@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Button, Container, Dimmer, Grid, Icon, Loader, Table } from 'semantic-ui-react';
+import {Button, Container, Dimmer, Grid, Icon, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import { debounce } from 'throttle-debounce';
 import { PAGE_SIZE } from '../../constants/settings';
@@ -147,11 +147,9 @@ class TableInfo extends Component {
         return (
             <div className={className}>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
-                <div className="table-header-menu">
-                    <h2>{t(title)}</h2>
-                    <Grid>
+                    <Grid className="table-header-menu">
                         <Grid.Row>
-                            <Grid.Column width={7}>
+                            {/*<Grid.Column width={7}>
                                 <Search
                                     value={filter}
                                     className="search-input"
@@ -204,10 +202,59 @@ class TableInfo extends Component {
                                             )
                                         );
                                     })}
+                            </Grid.Column>*/}
+                            <Grid.Column width={5} style={{display: 'flex'}}>
+                                <span className="table-header-menu_title">
+                                    {t(name)}
+                                </span>
+                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
+                            </Grid.Column>
+                            <Grid.Column width={11} textAlign="right">
+                                {newModal ? newModal(t, this.load, name) : null}
+                                {isImportBtn ? (
+                                    <Popup
+                                        content={t('importFromExcel')}
+                                        position="bottom right"
+                                        trigger={
+                                            <Button
+                                                icon="upload"
+                                                loading={importLoader}
+                                                onClick={this.importFromExcel}
+                                            />
+                                        }
+                                    />
+                                ) : null}
+                                {isExportBtn ? (
+                                    <Popup
+                                        content={
+                                            t('exportToExcel') // todo
+                                        }
+                                        position="bottom right"
+                                        trigger={
+                                            <Button
+                                                icon="download"
+                                                loading={exportLoader}
+                                                onClick={this.exportToExcel}
+                                            />
+                                        }
+                                    />
+                                ) : null}
+                                <Search
+                                    value={filter}
+                                    className="search-input"
+                                    onChange={this.changeFullTextFilter}
+                                />
                             </Grid.Column>
                         </Grid.Row>
+                        <input
+                            type="file"
+                            ref={instance => {
+                                this.fileUploader = instance;
+                            }}
+                            style={{ display: 'none' }}
+                            onChange={this.onFilePicked}
+                        />
                     </Grid>
-                </div>
                 <div
                     className={`scroll-table-container`}
                     ref={instance => {
