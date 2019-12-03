@@ -47,6 +47,10 @@ namespace Application.Shared
 
             var result = MapFromEntityToDto(entity);
             Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(result);
+            Log.Debug("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -88,6 +92,10 @@ namespace Application.Shared
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
             Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            FillLookupNames(a.Items);
+            Log.Debug("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -235,6 +243,10 @@ namespace Application.Shared
             Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
+            FillLookupNames(dtos);
+            Log.Debug("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
             var excelMapper = CreateExcelMapper();
             excelMapper.FillSheet(workSheet, dtos, user.Language);
             Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -317,6 +329,15 @@ namespace Application.Shared
             }
 
             return result;
+        }
+
+        protected virtual void FillLookupNames(IEnumerable<TListDto> dtos)
+        {
+        }
+
+        protected void FillLookupNames(TListDto dto)
+        {
+            FillLookupNames(new[] { dto });
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct

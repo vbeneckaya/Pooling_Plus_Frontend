@@ -99,6 +99,51 @@ namespace Application.Services.Shippings
             return result;
         }
 
+        protected override void FillLookupNames(IEnumerable<ShippingDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
+                                     .Select(x => x.VehicleTypeId.Value.ToGuid())
+                                     .ToList();
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                                           .Where(x => vehicleTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var bodyTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.BodyTypeId?.Value))
+                                  .Select(x => x.BodyTypeId.Value.ToGuid())
+                                  .ToList();
+            var bodyTypes = _dataService.GetDbSet<BodyType>()
+                                        .Where(x => bodyTypeIds.Contains(x.Id))
+                                        .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
+                    && vehicleTypes.TryGetValue(dto.VehicleTypeId.Value, out VehicleType vehicleType))
+                {
+                    dto.VehicleTypeId.Name = vehicleType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.BodyTypeId?.Value)
+                    && bodyTypes.TryGetValue(dto.BodyTypeId.Value, out BodyType bodyType))
+                {
+                    dto.BodyTypeId.Name = bodyType.Name;
+                }
+            }
+        }
+
         public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
@@ -123,9 +168,9 @@ namespace Application.Services.Shippings
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType));
-            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId) ? (Guid?)null : Guid.Parse(dto.CarrierId), new CarrierIdHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
-            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId) ? (Guid?)null : Guid.Parse(dto.VehicleTypeId), nameLoader: GetVehicleTypeNameById);
-            setter.UpdateField(e => e.BodyTypeId, dto.BodyTypeId.ToGuid(), nameLoader: GetBodyTypeNameById);
+            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId?.Value) ? null : dto.CarrierId.Value.ToGuid(), new CarrierIdHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
+            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId?.Value) ? null : dto.VehicleTypeId.Value.ToGuid(), nameLoader: GetVehicleTypeNameById);
+            setter.UpdateField(e => e.BodyTypeId, string.IsNullOrEmpty(dto.BodyTypeId?.Value) ? null : dto.BodyTypeId.Value.ToGuid(), nameLoader: GetBodyTypeNameById);
             setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
             setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
             setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
@@ -361,8 +406,9 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
-                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId?.ToString()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
                     .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))

@@ -124,16 +124,16 @@ namespace Application.Services.Orders
 
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            if (!string.IsNullOrEmpty(dto.ShippingWarehouseId))
-                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId), new ShippingWarehouseHandler(_dataService, _historyService), nameLoader: GetShippingWarehouseNameById);
+            if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value))
+                setter.UpdateField(e => e.ShippingWarehouseId, Guid.Parse(dto.ShippingWarehouseId.Value), new ShippingWarehouseHandler(_dataService, _historyService), nameLoader: GetShippingWarehouseNameById);
             if (!string.IsNullOrEmpty(dto.Status))
                 setter.UpdateField(e => e.Status, MapFromStateDto<OrderState>(dto.Status), ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.ShippingStatus))
                 setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(dto.ShippingStatus), new ShippingStatusHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
                 setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(_dataService, _historyService));
-            if (!string.IsNullOrEmpty(dto.CarrierId))
-                setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId), nameLoader: GetCarrierNameById);
+            if (!string.IsNullOrEmpty(dto.CarrierId?.Value))
+                setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId.Value), nameLoader: GetCarrierNameById);
             if (!string.IsNullOrEmpty(dto.DeliveryType))
                 setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType));
             setter.UpdateField(e => e.ClientOrderNumber, dto.ClientOrderNumber, new ClientOrderNumberHandler(_historyService));
@@ -141,7 +141,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
             setter.UpdateField(e => e.Payer, dto.Payer);
             setter.UpdateField(e => e.ClientName, dto.ClientName);
-            setter.UpdateField(e => e.SoldTo, dto.SoldTo, new SoldToHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.SoldTo, dto.SoldTo?.Value, new SoldToHandler(_dataService, _historyService));
             setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
             setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
             setter.UpdateField(e => e.ShippingDate, ParseDateTime(dto.ShippingDate), new ShippingDateHandler(_dataService, _historyService, !isInjection));
@@ -158,15 +158,15 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService));
             setter.UpdateField(e => e.OrderAmountExcludingVAT, dto.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler());
             setter.UpdateField(e => e.InvoiceAmountExcludingVAT, dto.InvoiceAmountExcludingVAT);
-            setter.UpdateField(e => e.ShippingCity, dto.ShippingCity);
+            setter.UpdateField(e => e.ShippingCity, dto.ShippingCity?.Value);
             setter.UpdateField(e => e.DeliveryRegion, dto.DeliveryRegion);
-            setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity);
+            setter.UpdateField(e => e.DeliveryCity, dto.DeliveryCity?.Value);
             setter.UpdateField(e => e.ShippingAddress, dto.ShippingAddress);
             setter.UpdateField(e => e.DeliveryAddress, dto.DeliveryAddress);
             setter.UpdateField(e => e.ShippingAvisationTime, ParseTime(dto.ShippingAvisationTime));
             setter.UpdateField(e => e.ClientAvisationTime, ParseTime(dto.ClientAvisationTime), new ClientAvisationTimeHandler());
             setter.UpdateField(e => e.OrderComments, dto.OrderComments);
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
+            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId?.Value) ? null : dto.PickingTypeId.Value.ToGuid(), new PickingTypeHandler(!isInjection), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
             setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
@@ -249,10 +249,55 @@ namespace Application.Services.Orders
                     ValidationErrorType.ValueIsRequired);
 
 
-            if (string.IsNullOrEmpty(dto.SoldTo))
+            if (string.IsNullOrEmpty(dto.SoldTo?.Value))
                 result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
 
             return result;
+        }
+
+        protected override void FillLookupNames(IEnumerable<OrderDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
+                                     .Select(x => x.PickingTypeId.Value.ToGuid())
+                                     .ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                                           .Where(x => pickingTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var shippingWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
+                                           .Select(x => x.ShippingWarehouseId.Value.ToGuid())
+                                           .ToList();
+            var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
+                                                 .Where(x => shippingWarehouseIds.Contains(x.Id))
+                                                 .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
+                    && pickingTypes.TryGetValue(dto.PickingTypeId.Value, out PickingType pickingType))
+                {
+                    dto.PickingTypeId.Name = pickingType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value)
+                    && shippingWarehouses.TryGetValue(dto.ShippingWarehouseId.Value, out ShippingWarehouse shippingWarehouse))
+                {
+                    dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
+                }
+            }
         }
 
         public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
@@ -422,8 +467,11 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId?.ToString()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
+                    .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
+                    .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
+                    .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => s.DeliveryDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
@@ -438,7 +486,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
