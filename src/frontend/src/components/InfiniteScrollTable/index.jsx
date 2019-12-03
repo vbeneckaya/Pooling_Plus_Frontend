@@ -25,14 +25,13 @@ const InfiniteScrollTable = ({
 
     useEffect(
         () => {
-            console.log(tableRef.current.offsetWidth);
             let sum = 0;
 
             columns.forEach(item => {
-                sum = sum + item.width + columns.length + 50;
+                sum = sum + item.width + (columns.length) + 50;
             });
-            console.log('sum', tableRef.current.offsetWidth - sum);
-            setExtWidth(tableRef.current.offsetWidth - sum);
+            console.log('sum', tableRef.current.scrollWidth - sum, tableRef.current.scrollWidth);
+            setExtWidth(tableRef.current.scrollWidth - sum);
             setWidth(sum);
         },
         [columns],
@@ -47,7 +46,7 @@ const InfiniteScrollTable = ({
                 structured={structured}
                 className={className || ''}
                 fixed={fixed}
-                style={{minWidth: width}}
+                style={{width: '100%', minWidth: width}}
             >
                 <Table.Header>{React.cloneElement(headerRow, {extWidth})}</Table.Header>
 
