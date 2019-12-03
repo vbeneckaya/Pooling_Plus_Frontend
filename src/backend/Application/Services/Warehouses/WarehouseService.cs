@@ -104,7 +104,7 @@ namespace Application.Services.Warehouses
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
             setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
             setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType), new DeliveryTypeHandler(_dataService, _historyService));
+            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType?.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType.Value), new DeliveryTypeHandler(_dataService, _historyService));
             setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
             setter.UpdateField(e => e.AvisaleTime, dto.AvisaleTime.ToTimeSpan(), new AvisaleTimeHandler(_dataService, _historyService));
 
@@ -220,7 +220,7 @@ namespace Application.Services.Warehouses
                 result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            if (string.IsNullOrEmpty(dto.DeliveryType))
+            if (string.IsNullOrEmpty(dto.DeliveryType?.Value))
             {
                 result.AddError(nameof(dto.DeliveryType), "emptyDeliveryType".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
@@ -238,12 +238,13 @@ namespace Application.Services.Warehouses
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
             });
             return result;
         }

@@ -134,11 +134,11 @@ namespace Application.Services.Orders
                 setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.CarrierId?.Value))
                 setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId.Value), nameLoader: GetCarrierNameById);
-            if (!string.IsNullOrEmpty(dto.DeliveryType))
-                setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType));
+            if (!string.IsNullOrEmpty(dto.DeliveryType?.Value))
+                setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType.Value));
             setter.UpdateField(e => e.ClientOrderNumber, dto.ClientOrderNumber, new ClientOrderNumberHandler(_historyService));
             setter.UpdateField(e => e.OrderDate, ParseDateTime(dto.OrderDate));
-            setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType));
+            setter.UpdateField(e => e.OrderType, string.IsNullOrEmpty(dto.OrderType?.Value) ? (OrderType?)null : MapFromStateDto<OrderType>(dto.OrderType.Value));
             setter.UpdateField(e => e.Payer, dto.Payer);
             setter.UpdateField(e => e.ClientName, dto.ClientName);
             setter.UpdateField(e => e.SoldTo, dto.SoldTo?.Value, new SoldToHandler(_dataService, _historyService));
@@ -455,6 +455,7 @@ namespace Application.Services.Orders
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
@@ -462,7 +463,7 @@ namespace Application.Services.Orders
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
-                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s, t) => s.OrderDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
@@ -487,7 +488,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));

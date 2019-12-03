@@ -40,6 +40,7 @@ const SoldToField = props => {
                 callbackSuccess: result => {
                     onChange(null, {
                         value: {
+                            ...form,
                             value: form.soldToNumber,
                             name: form.soldToNumber
                         },

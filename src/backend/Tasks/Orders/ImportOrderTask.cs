@@ -223,7 +223,7 @@ namespace Tasks.Orders
                 if (missedRequiredFields.Any())
                 {
                     string fields = string.Join(", ", missedRequiredFields);
-                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ ({processedCount}/{totalCount}) не создан.", 
+                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ ({processedCount}/{totalCount}) не создан.",
                               fileName, fields, processedCount, totalCount);
                 }
                 else
@@ -247,7 +247,7 @@ namespace Tasks.Orders
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
                         if (string.IsNullOrEmpty(nart))
                         {
-                            Log.Warning("Пустое значение NART в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.", 
+                            Log.Warning("Пустое значение NART в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.",
                                         entryInd, processedCount, totalCount, fileName);
                             continue;
                         }
