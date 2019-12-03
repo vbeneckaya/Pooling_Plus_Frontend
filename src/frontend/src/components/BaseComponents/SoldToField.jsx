@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Select from './Select';
+import Select from './Select_new';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 import { columnsSelector } from '../../ducks/dictionaryView';
@@ -16,7 +16,7 @@ const SoldToField = props => {
     const { t } = useTranslation();
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const soldToItem = valuesList.find(item => item.value === value) || {};
+    const soldToItem = valuesList.find(item => item.value === value.value) || {};
     const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
     const columnsEdit = columns.map(item => {
         if (item.name === 'soldToNumber') {
@@ -27,7 +27,7 @@ const SoldToField = props => {
         } else return item;
     });
     const defaultForm = {
-        soldToNumber: textValue,
+        soldToNumber: textValue ? textValue.name : null,
         address: deliveryAddress,
     };
     const userPermissions = useSelector(state => userPermissionsSelector(state));
@@ -39,9 +39,12 @@ const SoldToField = props => {
                 isForm: true,
                 callbackSuccess: result => {
                     onChange(null, {
-                        value: form.soldToNumber,
+                        value: {
+                            ...form,
+                            value: form.soldToNumber,
+                            name: form.soldToNumber
+                        },
                         name,
-                        ext: result.find(x => x.value === form.soldToNumber),
                     });
                 },
             }),
@@ -58,7 +61,7 @@ const SoldToField = props => {
     }, []);
 
     useEffect(() => {
-        if (value && valuesList.length && !valuesList.find(item => item.value === value)) {
+        if (value && valuesList.length && !valuesList.find(item => item.value === value.value)) {
             dispatch(
                 addError({
                     name: 'soldTo',

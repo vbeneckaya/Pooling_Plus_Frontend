@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 using System;
 
 namespace Domain.Services.Shippings
@@ -12,7 +13,7 @@ namespace Domain.Services.Shippings
         public string ShippingNumber { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(4)]
-        public string DeliveryType { get; set; }
+        public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TemperatureMin { get; set; }
@@ -21,16 +22,16 @@ namespace Domain.Services.Shippings
         public int? TemperatureMax { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), IsDefault, OrderNumber(5)]
-        public string TarifficationType { get; set; }
+        public LookUpDto TarifficationType { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
-        public string CarrierId { get; set; }
+        public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
-        public string VehicleTypeId { get; set; }
+        public LookUpDto VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(BodyTypes))]
-        public string BodyTypeId { get; set; }
+        public LookUpDto BodyTypeId { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? PalletsCount { get; set; }
