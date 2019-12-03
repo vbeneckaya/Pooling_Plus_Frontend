@@ -28,9 +28,7 @@ import {
 const CreateButton = ({ t, ...res }) => {
     return (
         <Card {...res}>
-            <Button color="blue" className="create-button">
-                {t(`create_${res.name}`)}
-            </Button>
+            <Button icon="add"/>
         </Card>
     );
 };

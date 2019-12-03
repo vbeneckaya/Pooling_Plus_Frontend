@@ -5,6 +5,7 @@
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background-color: white;
 
     .ui.structured.table {
         border-collapse: separate;
@@ -19,6 +20,11 @@
         position: sticky;
         top: 85px;
     }
+}
+
+.ui.table thead th {
+    color: #4d4d4d !important;
+    font-weight: 500 !important;
 }
 
 .table-header-cell {

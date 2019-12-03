@@ -18,7 +18,7 @@ import {
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
-import AllFilters from "./all_filters";
+import AllFilters from './all_filters';
 
 const Header = ({
     createButton,
@@ -99,7 +99,7 @@ const Header = ({
     return (
         <Grid className="grid-header-panel">
             <Grid.Row>
-                <Grid.Column width={10}>
+                {/* <Grid.Column width={10}>
                     {createButton}
                     <Search searchValue={searchValue} className="search-input" onChange={searchOnChange}/>
                     <span className="records-counter">{t('totalCount', { count: counter })}</span>
@@ -129,7 +129,7 @@ const Header = ({
                             />
                         }
                     />
-                    {/*{
+                    {
                         <Popup
                             content={<AllFilters gridName={name} filter={filter}/>}
                             position="bottom right"
@@ -142,7 +142,7 @@ const Header = ({
                             }
                             on="click"
                         />
-                    }*/}
+                    }
                     {isImportBtn && (
                         <Popup
                             content={t('importFromExcel')}
@@ -171,8 +171,73 @@ const Header = ({
                             }
                         />
                     )}
+                </Grid.Column>*/}
+                <Grid.Column width={5}>
+                    <FieldsConfig
+                        gridName={name}
+                        getRepresentations={getRepresentations}
+                        changeRepresentation={changeRepresentation}
+                        representations={representations}
+                    />
+                </Grid.Column>
+                <Grid.Column width={1}>
+                    <span className="records-counter">{t('totalCount', {count: counter})}</span>
+                </Grid.Column>
+                <Grid.Column width={10} className="grid-right-elements">
+                    {createButton}
+                    {isImportBtn && (
+                        <Popup
+                            content={t('importFromExcel')}
+                            position="bottom right"
+                            trigger={
+                                <Button
+                                    icon="upload"
+                                    loading={importLoader}
+                                    onClick={importExcel}
+                                />
+                            }
+                        />
+                    )}
+                    {isExportBtn && (
+                        <Popup
+                            content={
+                                t('exportToExcel') // todo
+                            }
+                            position="bottom right"
+                            trigger={
+                                <Button
+                                    icon="download"
+                                    loading={exportLoader}
+                                    onClick={exportExcel}
+                                />
+                            }
+                        />
+                    )}
+                    <Popup
+                        content={t('reset_filters')}
+                        position="bottom right"
+                        trigger={
+                            <Button
+                                icon="clear-filter"
+                                className={`clear-filter-btn`}
+                                onClick={clearFilter}
+                                disabled={disabledClearFilter}
+                            />
+                        }
+                    />
+                    <Search
+                        searchValue={searchValue}
+                        className="search-input"
+                        onChange={searchOnChange}
+                    />
                 </Grid.Column>
             </Grid.Row>
+            <input
+                type="file"
+                ref={fileUploader}
+                style={{display: 'none'}}
+                onInput={onFilePicked}
+            />
         </Grid>
     );
 };

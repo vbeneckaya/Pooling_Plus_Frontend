@@ -1,11 +1,13 @@
 .scroll-grid-container {
     display: grid;
     overflow: auto;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 135px);
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
     grid-template-rows: auto 76px;
+    background-color: white;
+    border-radius: 0 0 5px 5px;
 }
 
 .grid_small {
@@ -24,6 +26,10 @@
 
 .ui.grid {
     margin-bottom: 1px;
+}
+
+.ui.table thead th {
+    background-color: white !important;
 }
 
 .grid-action-btn {
@@ -95,7 +101,10 @@
 }
 
 .grid-header-panel {
-    margin-bottom: 0 !important;
+    margin: 0 !important;
+    border: 1px solid #e6e6e6;
+    background-color: white;
+    width: 100%;
     .create-button {
         height: 33px;
         min-width: 150px;
@@ -119,8 +128,9 @@
         flex-grow: 1;
 
         label {
-            font-weight: bold;
+            font-weight: 500;
             padding-right: 8px;
+            color: #4d4d4d !important;
         }
 
         .field {
@@ -139,6 +149,9 @@
     margin-top: 8px;
     white-space: nowrap;
     margin-right: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4d4d4d !important;
 }
 
 .grid-row > td > div {
@@ -151,12 +164,12 @@
 
 .grid-row td {
     /*cursor: pointer;*/
-    background-color: #fbfdff;
+    //background-color: #fbfdff;
 }
 
 .grid-row {
     .link-cell {
-        color: #2185d0;
+        color: #18a8cc !important;;
         /* text-decoration-line: underline;*/
         width: 100%;
     }
