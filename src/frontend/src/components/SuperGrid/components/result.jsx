@@ -73,7 +73,7 @@ class Result extends Component {
                             <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
                                 value={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].value : row[column.name]}
-                                valueText={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].name : row[column.name]}
+                                valueText={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].name : null}
                                 status={row.status}
                                 rowId={row.id}
                                 rowNumber={name === ORDERS_GRID ? row.orderNumber : row.shippingNumber}
