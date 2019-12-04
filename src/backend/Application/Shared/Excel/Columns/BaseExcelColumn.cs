@@ -90,22 +90,33 @@ namespace Application.Shared.Excel.Columns
                     Property.SetValue(entity, value);
                 }
             }
-            // OLE Automation Date Format
-            else if (cell.Style.Numberformat.NumFmtID == 164)
+            // Readng OLE Automation Date Format https://stackoverflow.com/questions/13176832/reading-a-date-from-xlsx-using-open-xml-sdk
+            // Open Xml Date Format Codes
+            else
+            if ((cell.Style.Numberformat.NumFmtID >= 14 && cell.Style.Numberformat.NumFmtID <= 22)
+                    || (cell.Style.Numberformat.NumFmtID >= 165u && cell.Style.Numberformat.NumFmtID <= 180u))
             {
-                var dateNumber = (double)cell.Value;
-                try
+                if (cell.Value is DateTime)
                 {
-                    var date = DateTime.FromOADate(dateNumber);
+                    var date = (DateTime)cell.Value;
                     Property.SetValue(entity, date.ToString("dd.MM.yyyy"));
                 }
-                catch (Exception ex)
+                else if (cell.Value is double)
                 {
-                    return new ValidationResultItem
+                    var dateNumber = (double)cell.Value;
+                    try
                     {
-                        Message = "invalidValueFormat",
-                        ResultType = ValidationErrorType.InvalidValueFormat
-                    };
+                        var date = DateTime.FromOADate(dateNumber);
+                        Property.SetValue(entity, date.ToString("dd.MM.yyyy"));
+                    }
+                    catch (Exception ex)
+                    {
+                        return new ValidationResultItem
+                        {
+                            Message = "invalidValueFormat",
+                            ResultType = ValidationErrorType.InvalidValueFormat
+                        };
+                    }
                 }
             }
             else

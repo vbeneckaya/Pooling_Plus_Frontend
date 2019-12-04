@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import FormField from '../../BaseComponents';
 import { LINK_TYPE } from '../../../constants/columnTypes';
 import { ORDERS_GRID } from '../../../constants/grids';
+import _ from 'lodash';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -14,6 +15,8 @@ const ModalComponent = ({ element, props, children }) => {
 };
 
 const BodyCell = ({
+                      value,
+                      valueText,
     column,
     loadList,
     indexRow,
@@ -23,12 +26,14 @@ const BodyCell = ({
     t,
     checkForEditing,
     invokeMassUpdate,
-    row,
+                      status,
+                      rowId,
+                      rowNumber,
 }) => {
     const contextRef = useRef(null);
 
     let [open, setOpen] = useState(false);
-    let [value, setValue] = useState(null);
+    let [valueForm, setValue] = useState(null);
     let [progress, setProgress] = useState(false);
 
     const copyToClipboard = () => {
@@ -62,9 +67,9 @@ const BodyCell = ({
     };
 
     const handleOpen = () => {
-        console.log('row[column.name]', row[column.name]);
+        console.log('open', value);
         setOpen(true);
-        setValue(row[column.name]);
+        setValue(valueText ? {value, name: valueText} : value);
     };
 
     const handleClose = () => {
@@ -76,10 +81,10 @@ const BodyCell = ({
         setProgress(true);
         handleClose();
         invokeMassUpdate({
-            ids: [row.id],
+            ids: [rowId],
             name: gridName,
             field: column.name,
-            value,
+            value: valueForm,
             callbackSuccess: () => {
                 loadList(false, true);
             },
@@ -94,9 +99,7 @@ const BodyCell = ({
     }, []);
 
     const handleCellClick = e => {
-        column.type !== LINK_TYPE
-            ? handleClick(row.id, column.name, row.status)
-            : e.stopPropagation();
+        column.type !== LINK_TYPE ? handleClick(rowId, column.name, status) : e.stopPropagation();
     };
 
     const getModalCard = useCallback(() => {
@@ -104,24 +107,24 @@ const BodyCell = ({
             <ModalComponent
                 element={modalCard()}
                 props={{
-                    ...row,
+                    id: rowId,
+                    status,
                     loadList,
                     title: `edit_${gridName}`,
                 }}
-                key={`modal_${row.id}`}
+                key={`modal_${rowId}`}
             />
         );
     }, []);
 
+    console.log('BodyCell');
 
     return (
         <>
-            <Table.Cell className="value-cell" style={{ width: `${column.width}px` }}>
+            <Table.Cell className="value-cell">
                 <div className="cell-grid">
                     <div
-                        className={`cell-grid-value ${
-                            row[column.name] !== null ? '' : 'cell-grid-value_empty'
-                        }`}
+                        className={`cell-grid-value ${value ? '' : 'cell-grid-value_empty'}`}
                         ref={contextRef}
                         onClick={handleCellClick}
                     >
@@ -129,7 +132,8 @@ const BodyCell = ({
                             {...column}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
-                            value={row[column.name]}
+                            value={value}
+                            valueText={valueText}
                             width={column.width}
                             t={t}
                             modalCard={getModalCard}
@@ -140,12 +144,12 @@ const BodyCell = ({
                             <Loader active={true} size="mini" />
                         ) : (
                             <>
-                                {row[column.name] !== null ? (
+                                {value !== null ? (
                                     <div className="cell-grid-copy-btn">
                                         <Icon
                                             name="clone outline"
                                             size="small"
-                                            onClick={() => copyToClipboard(row[column.name])}
+                                            onClick={copyToClipboard}
                                         />
                                     </div>
                                 ) : null}
@@ -157,14 +161,14 @@ const BodyCell = ({
             <Modal open={open} size="tiny" closeOnDimmerClick={false}>
                 <Modal.Header>
                     {t(`edit_${gridName}`, {
-                        number: gridName === ORDERS_GRID ? row.orderNumber : row.shippingNumber,
-                        status: t(row.status),
+                        number: rowNumber,
+                        status: t(status),
                     })}
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
                         <Form onSubmit={handleSave}>
-                            <FormField {...column} value={value} onChange={handleChange} />
+                            <FormField {...column} value={valueForm} onChange={handleChange}/>
                         </Form>
                     </Modal.Description>
                 </Modal.Content>
@@ -172,7 +176,7 @@ const BodyCell = ({
                     <Button onClick={handleClose}>{t('cancelConfirm')}</Button>
                     <Button
                         color="primary"
-                        disabled={value === row[column.name]}
+                        disabled={_.isEqual(valueForm, value)}
                         onClick={handleSave}
                     >
                         {t('SaveButton')}
@@ -183,4 +187,17 @@ const BodyCell = ({
     );
 };
 
-export default React.memo(BodyCell);
+export default React.memo(
+    BodyCell /*, (prevProps, nextProps) => {
+    return prevProps.column === nextProps.column &&
+        prevProps.loadList === nextProps.loadList &&
+        prevProps.indexRow === nextProps.indexRow &&
+        prevProps.indexColumn === nextProps.indexColumn &&
+        prevProps.modalCard === nextProps.modalCard &&
+        prevProps.gridName === nextProps.gridName &&
+        prevProps.t === nextProps.t &&
+        prevProps.checkForEditing === nextProps.checkForEditing &&
+        prevProps.invokeMassUpdate === nextProps.invokeMassUpdate &&
+        _.isEqual(prevProps.row, nextProps.row)
+}*/,
+);

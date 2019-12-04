@@ -39,6 +39,11 @@ namespace Application.BusinessModels.Orders.Actions
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
+
+            if (shipping.Status == ShippingState.ShippingConfirmed)
+            {
+                shipping.Status = ShippingState.ShippingRequestSent;
+            }
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
 

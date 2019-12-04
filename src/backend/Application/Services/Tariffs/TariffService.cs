@@ -7,6 +7,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -20,18 +21,13 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
-        { }
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
+        {
+        }
 
         public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
 
@@ -98,83 +94,38 @@ namespace Application.Services.Tariffs
             entity.LtlRate32 = dto.LtlRate32;
             entity.LtlRate33 = dto.LtlRate33;
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(TariffDto dto)
+        protected override DetailedValidationResult ValidateDto(TariffDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            var result = new DetailedValidationResult();
+            var result = base.ValidateDto(dto); //new DetailedValidationResult();
 
             // Delivery City
 
-            if (string.IsNullOrEmpty(dto.DeliveryCity?.Value))
+            if (!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.Value.ToLower()))
             {
-                result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-            else if(!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.Value.ToLower()))
-            {
-                result.AddError(nameof(dto.DeliveryCity), "deliveryCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
+                result.AddError(nameof(dto.DeliveryCity), "Tariff.DeliveryCity.InvalidDictionaryValue".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
             }
 
             // Shipping City
 
-            if (string.IsNullOrEmpty(dto.ShipmentCity?.Value))
+            if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.Value.ToLower()))
             {
-                result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-            else if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.Value.ToLower()))
-            {
-                result.AddError(nameof(dto.ShipmentCity), "shipmentCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
-            }
-
-            if (string.IsNullOrEmpty(dto.CarrierId?.Value))
-            {
-                result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.EffectiveDate))
-            {
-                result.AddError(nameof(dto.EffectiveDate), "emptyEffectiveDate".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.ExpirationDate))
-            {
-                result.AddError(nameof(dto.ExpirationDate), "emptyExpirationDate".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            // Dates Format Validation
-
-            if (!IsDateValid(dto.ExpirationDate))
-            {
-                result.AddError(nameof(dto.ExpirationDate), "invalidExpirationDate".Translate(lang), ValidationErrorType.InvalidValueFormat);
-            }
-
-            if (!IsDateValid(dto.EffectiveDate))
-            {
-                result.AddError(nameof(dto.EffectiveDate), "invalidEffectiveDate".Translate(lang), ValidationErrorType.InvalidValueFormat);
-            }
-
-            if (!IsDateValid(dto.StartWinterPeriod))
-            {
-                result.AddError(nameof(dto.StartWinterPeriod), "invalidStartWinterPeriod".Translate(lang), ValidationErrorType.InvalidValueFormat);
-            }
-
-            if (!IsDateValid(dto.EndWinterPeriod))
-            {
-                result.AddError(nameof(dto.EndWinterPeriod), "invalidEndWinterPeriod".Translate(lang), ValidationErrorType.InvalidValueFormat);
+                result.AddError(nameof(dto.ShipmentCity), "Tariff.ShipmentCity.InvalidDictionaryValue".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
             }
 
             var existingRecord = this.GetByKey(dto)
                 .Where(i => i.Id != dto.Id.ToGuid())
                 .Where(i => IsPeriodsOverlapped(i, dto));
 
-            var hasDuplicates = existingRecord.Any();
+            var hasDuplicates = !result.IsError && existingRecord.Any();
 
             if (hasDuplicates)
             {
-                result.AddError("duplicateTariffs", "duplicateTariffs".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError("duplicateTariffs", "Tariff.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

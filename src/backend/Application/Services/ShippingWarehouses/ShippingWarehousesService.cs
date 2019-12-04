@@ -5,6 +5,7 @@ using Application.Shared;
 using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
@@ -22,9 +23,9 @@ namespace Application.Services.ShippingWarehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
                                          IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService)
+            : base(dataService, userProvider, triggersService, validationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -56,12 +57,6 @@ namespace Application.Services.ShippingWarehouses
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             var setter = new FieldSetter<ShippingWarehouse>(entity, _historyService);
 
             if (!string.IsNullOrEmpty(dto.Id))
@@ -82,7 +77,7 @@ namespace Application.Services.ShippingWarehouses
             setter.SaveHistoryLog();
 
             string errors = setter.ValidationErrors;
-            return new DetailedValidationResult(errors, entity.Id.ToString());
+            return null;
         }
 
         public override ShippingWarehouseDto MapFromEntityToDto(ShippingWarehouse entity)
@@ -101,28 +96,18 @@ namespace Application.Services.ShippingWarehouses
                 .ThenBy(i => i.Id);
         }
 
-        private DetailedValidationResult ValidateDto(ShippingWarehouseDto dto)
+        protected override DetailedValidationResult ValidateDto(ShippingWarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Code))
-            {
-                result.AddError(nameof(dto.Code), "emptyCode".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.WarehouseName))
-            {
-                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = _dataService.GetDbSet<ShippingWarehouse>()
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<ShippingWarehouse>()
                                             .Where(x => x.Code == dto.Code && x.Id.ToString() != dto.Id)
                                             .Any();
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Code), "duplicateWarehouseCode".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Code), "ShippingWarehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

@@ -262,7 +262,7 @@ deploy-tasks-prod:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
   only:
    - master
   when: manual  

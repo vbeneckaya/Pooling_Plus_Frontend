@@ -21,6 +21,7 @@ const CellValue = (
     {
         type,
         value = '',
+        valueText,
         id,
         toggleIsActive,
         source,
@@ -33,12 +34,13 @@ const CellValue = (
         isDisabled
     }
 ) => {
-    console.log('BodyCell');
+
     if (type === SELECT_TYPE) {
         return (
             <SelectValue
                 width={width}
                 value={value}
+                valueText={valueText}
                 source={source}
                 indexRow={indexRow}
                 indexColumn={indexColumn}
