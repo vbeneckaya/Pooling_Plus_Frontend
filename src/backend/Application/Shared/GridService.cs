@@ -77,15 +77,15 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Debug("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToDto(entity);
-            Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             FillLookupNames(result);
-            Log.Debug("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -97,15 +97,15 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Debug("{entityName}.GetForm (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetForm (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToFormDto(entity);
-            Log.Debug("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             FillLookupNames(result);
-            Log.Debug("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -117,11 +117,11 @@ namespace Application.Shared
             sw.Start();
 
             var entries = _dataService.GetDbSet<TEntity>().ToList();
-            Log.Debug("{entityName}.ForSelect (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ForSelect (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = entries.Select(MapFromEntityToLookupDto).ToList();
-            Log.Debug("{entityName}.ForSelect (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ForSelect (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -137,7 +137,7 @@ namespace Application.Shared
             var query = ApplySearchForm(dbSet, form);
             query = ApplyRestrictions(query);
             
-            Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (form.Take == 0)
@@ -146,7 +146,7 @@ namespace Application.Shared
             var totalCount = query.Count();
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();
-            Log.Debug("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var a = new SearchResult<TDto>
@@ -154,11 +154,11 @@ namespace Application.Shared
                 TotalCount = totalCount,
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
-            Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             FillLookupNames(a.Items);
-            Log.Debug("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -174,11 +174,11 @@ namespace Application.Shared
             var query = ApplySearchForm(dbSet, form);
             query = ApplyRestrictions(query);
             
-            Log.Debug("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var ids = query.Select(e => e.Id).ToList();
-            Log.Debug("{entityName}.SearchIds (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SearchIds (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             var result = ids.Select(x => x.ToString()).ToList();
             return result;
@@ -206,13 +206,13 @@ namespace Application.Shared
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
-                Log.Debug("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 if (entityFromDb != null)
                 {
                     mapResult = MapFromFormDtoToEntity(entityFromDb, entityFrom);
-                    Log.Debug("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                    Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                     sw.Restart();
 
                     if (mapResult.IsError)
@@ -223,11 +223,11 @@ namespace Application.Shared
                     //dbSet.Update(entityFromDb);
 
                     _triggersService.Execute();
-                    Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                    Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                     sw.Restart();
 
                     _dataService.SaveChanges();
-                    Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                    Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
                     return new ValidateResult
                     {
@@ -242,7 +242,7 @@ namespace Application.Shared
             };
 
             mapResult = MapFromFormDtoToEntity(entity, entityFrom);
-            Log.Debug("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (mapResult.IsError)
@@ -253,11 +253,11 @@ namespace Application.Shared
             dbSet.Add(entity);
 
             _triggersService.Execute();
-            Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             _dataService.SaveChanges();
-            Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new ValidateResult
             {
@@ -277,13 +277,13 @@ namespace Application.Shared
             var dbSet = _dataService.GetDbSet<TEntity>();
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            Log.Debug("{entityName}.GetActions (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = new List<ActionDto>();
 
             var entities = dbSet.Where(x => ids.Contains(x.Id)).ToList();
-            Log.Debug("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
@@ -310,7 +310,7 @@ namespace Application.Shared
                     }
                 }
             }
-            Log.Debug("{entityName}.GetActions (Find single actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Find single actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (ids.Count() > 1)
@@ -339,7 +339,7 @@ namespace Application.Shared
                     }                    
                 }
             }
-            Log.Debug("{entityName}.GetActions (Find group actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Find group actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -363,7 +363,7 @@ namespace Application.Shared
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Debug("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             string actionName = action.GetType().Name.ToLowerFirstLetter();
@@ -372,15 +372,15 @@ namespace Application.Shared
             var message = "";
             if (isActionAllowed && action.IsAvailable(entity)) 
                 message += action.Run(currentUser, entity).Message;
-            Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             _triggersService.Execute();
-            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             _dataService.SaveChanges();
-            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new AppActionResult
             {
@@ -401,7 +401,7 @@ namespace Application.Shared
             var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
             var groupAction = groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
 
-            Log.Debug("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (singleAction == null && groupAction == null)
@@ -460,15 +460,15 @@ namespace Application.Shared
                     Message = string.Join(". ", messages)
                 };
             }
-            Log.Debug("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             _triggersService.Execute();
-            Log.Debug("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             _dataService.SaveChanges();
-            Log.Debug("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -485,7 +485,7 @@ namespace Application.Shared
             var dbSet = _dataService.GetDbSet<TEntity>();
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            Log.Debug("{entityName}.GetBulkUpdates (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var fields = _fieldDispatcherService.GetDtoFields<TDto>();
@@ -494,13 +494,13 @@ namespace Application.Shared
                 ? FieldPropertiesForEntityType.Orders.ToString() 
                 : FieldPropertiesForEntityType.Shippings.ToString();
             var fieldsProperties = _fieldPropertiesService.GetFor(forEntity, null, role?.Id, null);
-            Log.Debug("{entityName}.GetBulkUpdates (Load field settings): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load field settings): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = new List<BulkUpdateDto>();
 
             var entities = LoadStatusData(ids);
-            Log.Debug("{entityName}.GetBulkUpdates (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             foreach (var field in fields.Where(x => x.IsBulkUpdateAllowed))
@@ -521,7 +521,7 @@ namespace Application.Shared
                     }
                 }
             }
-            Log.Debug("{entityName}.GetBulkUpdates (Find bulk updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Find bulk updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -543,7 +543,7 @@ namespace Application.Shared
 
             var entities = dbSet.Where(x => ids.Contains(x.Id));
             var dtos = entities.Select(MapFromEntityToFormDto).ToArray();
-            Log.Debug("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             object validValue = value;
@@ -572,7 +572,7 @@ namespace Application.Shared
             var importResult = new List<ValidateResult>();
             foreach (var dto in dtos)
                 importResult.Add(SaveOrCreateInner(dto));
-            Log.Debug("{entityName}.InvokeBulkUpdate (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeBulkUpdate (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             string errors = string.Join(" ", importResult.Where(x => x.IsError).Select(x => x.Error));
             var result = new AppActionResult
@@ -628,7 +628,7 @@ namespace Application.Shared
                     result.Add(SaveOrCreateInner(dto));
                 }
             }
-            Log.Debug("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }        
@@ -646,7 +646,7 @@ namespace Application.Shared
             var records = excelMapper.LoadEntries(workSheet).ToList();
             var dtos = records.Select(i => i.Data);
 
-            Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (excelMapper.Errors.Any(e => e.IsError))
@@ -656,7 +656,7 @@ namespace Application.Shared
             }
 
             var importResult = Import(dtos);
-            Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             if (importResult.Any(e => e.IsError))
             {
@@ -685,21 +685,21 @@ namespace Application.Shared
             
             query = ApplyRestrictions(query);
 
-            Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var entities = query.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-            Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             FillLookupNames(dtos);
-            Log.Debug("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var excelMapper = CreateExportExcelMapper();//new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
-            Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new MemoryStream(excel.GetAsByteArray());
         }
