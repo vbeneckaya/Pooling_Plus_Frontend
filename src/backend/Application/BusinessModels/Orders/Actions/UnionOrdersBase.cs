@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared;
+using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
@@ -11,6 +12,13 @@ namespace Application.BusinessModels.Orders.Actions
 {
     public abstract class UnionOrdersBase
     {
+        protected readonly ICommonDataService _dataService;
+
+        public UnionOrdersBase(ICommonDataService dataService)
+        {
+            _dataService = dataService;
+        }
+
         protected KeyValuePair<int, int>? FindCommonTempRange(IEnumerable<Order> orders)
         {
             if (!orders.Any() || orders.Any(o => o.TemperatureMin == null || o.TemperatureMax == null))
@@ -32,6 +40,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             return result;
         }
+
         protected void UnionOrderInShipping(IEnumerable<Order> orders, Shipping shipping, DbSet<Shipping> shippingDbSet, IHistoryService historyService)
         {
             var tempRange = FindCommonTempRange(orders);
@@ -80,10 +89,16 @@ namespace Application.BusinessModels.Orders.Actions
 
                 ordSetter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
                 ordSetter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
+                ordSetter.UpdateField(o => o.CarrierId, shipping.CarrierId, nameLoader: GetCarrierNameById);
 
                 historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
                 ordSetter.SaveHistoryLog();
             }
+        }
+
+        private string GetCarrierNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
     }
 }
