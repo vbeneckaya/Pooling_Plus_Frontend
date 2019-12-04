@@ -8,7 +8,7 @@ const FieldCell = ({ field, t, changeSettings, isExt, isDisabled }) => {
 
     return (
         <>
-            <b>{t(field)}</b>
+            <div className="cell-field-name">{t(field)}</div>
             <Popup
                 trigger={<Button size="mini" disabled={isDisabled} className="margin-left-8"
                                  onClick={toggle}>{t('All')}</Button>}
