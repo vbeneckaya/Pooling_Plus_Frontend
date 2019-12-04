@@ -133,7 +133,7 @@ namespace Application.Services.Orders
             if (!string.IsNullOrEmpty(dto.DeliveryStatus))
                 setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(dto.DeliveryStatus), new DeliveryStatusHandler(_dataService, _historyService));
             if (!string.IsNullOrEmpty(dto.CarrierId?.Value))
-                setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId.Value), nameLoader: GetCarrierNameById);
+                setter.UpdateField(e => e.CarrierId, Guid.Parse(dto.CarrierId.Value), new CarrierHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
             if (!string.IsNullOrEmpty(dto.DeliveryType?.Value))
                 setter.UpdateField(e => e.DeliveryType, MapFromStateDto<DeliveryType>(dto.DeliveryType.Value));
             setter.UpdateField(e => e.ClientOrderNumber, dto.ClientOrderNumber, new ClientOrderNumberHandler(_historyService));
