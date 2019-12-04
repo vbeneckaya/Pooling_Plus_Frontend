@@ -299,7 +299,7 @@ namespace Application.Services.Shippings
                 if (order.ShippingWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    string key = $"L-{order.ShippingWarehouseId.ToString()}";
+                    string key = $"L-{order.ShippingWarehouseId.ToString()}-{order.ShippingDate?.ToString("dd.MM.yyyy")}";
                     if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
@@ -322,7 +322,7 @@ namespace Application.Services.Shippings
                 if (order.DeliveryWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    string key = $"U-{order.DeliveryWarehouseId.ToString()}";
+                    string key = $"U-{order.DeliveryWarehouseId.ToString()}-{order.DeliveryDate?.ToString("dd.MM.yyyy")}";
                     if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
@@ -343,7 +343,7 @@ namespace Application.Services.Shippings
                 }
             }
 
-            var pointsList = points.Values.OrderBy(p => p.PlannedDate)
+            var pointsList = points.Values.OrderBy(p => DateTime.ParseExact(p.PlannedDate, "dd.MM.yyyy", CultureInfo.InvariantCulture))
                                           .ThenBy(p => p.IsLoading ? 0 : 1)
                                           .ThenBy(p => p.VehicleStatus)
                                           .ThenBy(p => p.WarehouseName)
