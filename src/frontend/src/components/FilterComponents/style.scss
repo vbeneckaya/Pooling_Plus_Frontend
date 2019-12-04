@@ -27,7 +27,7 @@
     z-index: 1;
     background-color: white;
 
-    label {
+    /*label {
         &:before {
             content: "";
             border-color: rgba(0, 0, 0, .4) !important;
@@ -37,7 +37,7 @@
             content: "";
             color: #18a8cc !important;
         }
-    }
+    }*/
 }
 
 .sort-button {
@@ -171,13 +171,20 @@
             .icon {
                 display: block;
                 margin: 0 !important;
-                color: #ccc !important;
+                color: #ccc;
             }
         }
         &__filter {
             opacity: 0;
-             &_activae {
+            &_active {
                  opacity: 1!important;
+                color: #18a8cc !important;
+                button {
+                    i {
+                        color: #18a8cc !important;
+                    }
+                }
+
              }
             button:hover i {
                 color: rgba(34, 36, 38, 0.35) !important;
@@ -207,7 +214,7 @@
     padding-top: 4px;
 
     span {
-        color: #4183c4;
+        color: #18a8cc;
         font-weight: 500 !important;
         &:hover{
             cursor: pointer;
@@ -215,7 +222,7 @@
 
         &:after {
             content: "";
-            border-bottom: 1px dashed #4183c4;
+            border-bottom: 1px dashed #18a8cc;
             display: block;
             margin-bottom: 4px;
 

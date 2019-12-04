@@ -1,17 +1,13 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import {Button, Container, Dimmer, Grid, Icon, Loader, Popup, Table} from 'semantic-ui-react';
+import React, {Component} from 'react';
+import {withTranslation} from 'react-i18next';
+import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
-import { debounce } from 'throttle-debounce';
-import { PAGE_SIZE } from '../../constants/settings';
+import {debounce} from 'throttle-debounce';
+import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import CellValue from '../ColumnsValue';
-import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from './components/header-cell';
 import BodyCellComponent from './components/body-cell';
-import _ from 'lodash';
-import BodyCell from '../SuperGrid/components/body_cell';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -142,9 +138,6 @@ class TableInfo extends Component {
                 <Loader active={loading && !list.length} size="huge" className="table-loader">
                     Loading
                 </Loader>
-                <div className="table-header-menu">
-                    <h2>{t(title)}</h2>
-                    <Grid>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                     <Grid className="table-header-menu">
                         <Grid.Row>

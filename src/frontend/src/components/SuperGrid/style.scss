@@ -238,7 +238,7 @@
 }
 
 .grid-footer-panel {
-    background-color: #f9fafb;
+    background-color: white;
     /*white-space: nowrap;*/
     position: -webkit-sticky;
     position: sticky;
@@ -430,7 +430,7 @@ $teal: #b5eae7;
 .footer-info-label {
     display: flex;
     font-weight: bold;
-    color: #2185d0;
+    color: #18a8cc;
     align-items: baseline;
     padding-bottom: 8px;
 
@@ -461,6 +461,8 @@ $teal: #b5eae7;
     label {
         padding-right: 8px;
         margin: 0 !important;
+        font-weight: 500 !important;
+        color: #4d4d4d !important;
     }
 
     &-fields {

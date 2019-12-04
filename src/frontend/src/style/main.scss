@@ -377,3 +377,24 @@ input::-webkit-calendar-picker-indicator {
     font-weight: 500 !important;
     color: #4d4d4d;
 }
+
+.ui.modal {
+    .header {
+        font-family: 'Ubuntu' !important;
+        font-weight: 500 !important;
+        color: #4d4d4d !important;
+    }
+}
+
+.ui.button {
+    font-family: 'Ubuntu' !important;
+    font-weight: 500 !important;
+}
+
+.ui.button.blue, .ui.primary.button {
+    background-color: #18a8cc;
+}
+
+.ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #18a8cc !important;
+}
