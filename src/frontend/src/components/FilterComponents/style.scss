@@ -26,6 +26,18 @@
     top: 1px;
     z-index: 1;
     background-color: white;
+
+    label {
+        &:before {
+            content: "";
+            border-color: rgba(0, 0, 0, .4) !important;
+        }
+
+        &:after {
+            content: "";
+            color: #18a8cc !important;
+        }
+    }
 }
 
 .sort-button {
