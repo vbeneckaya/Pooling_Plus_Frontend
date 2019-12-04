@@ -9,6 +9,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -26,9 +27,9 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
                                  IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService)
+            : base(dataService, userProvider, triggersService, validationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -83,12 +84,6 @@ namespace Application.Services.Warehouses
 
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             bool isNew = string.IsNullOrEmpty(dto.Id);
             var setter = new FieldSetter<Warehouse>(entity, _historyService);
 
@@ -127,7 +122,7 @@ namespace Application.Services.Warehouses
             }
 
             string errors = setter.ValidationErrors;
-            return new DetailedValidationResult(errors, entity.Id.ToString());
+            return null;
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -204,33 +199,18 @@ namespace Application.Services.Warehouses
                 );
         }
 
-        private DetailedValidationResult ValidateDto(WarehouseDto dto)
+        protected override DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.SoldToNumber))
-            {
-                result.AddError(nameof(dto.SoldToNumber), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.WarehouseName))
-            {
-                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.DeliveryType?.Value))
-            {
-                result.AddError(nameof(dto.DeliveryType), "emptyDeliveryType".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = _dataService.GetDbSet<Warehouse>()
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<Warehouse>()
                                             .Where(x => x.SoldToNumber == dto.SoldToNumber && x.Id.ToString() != dto.Id)
                                             .Any();
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.SoldToNumber), "duplicateSoldTo".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

@@ -25,14 +25,19 @@ namespace Application.Shared
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
+
         protected readonly IUserProvider _userProvider;
+
         protected readonly ITriggersService _triggersService;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService)
+        private readonly IValidationService _validationService;
+
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService)
         {
             _dataService = dataService;
             _userProvider = userProvider;
             _triggersService = triggersService;
+            _validationService = validationService;
         }
 
         public TListDto Get(Guid id)
@@ -161,20 +166,12 @@ namespace Application.Shared
             sw.Start();
 
             var excel = new ExcelPackage(fileStream);
-            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var workSheet = excel.Workbook.Worksheets[0];//.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
             var dtos = excelMapper.LoadEntries(workSheet).ToList();
             Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
-
-            //if (excelMapper.Errors.Any(e => e.IsError))
-            //{
-            //    var result = new ImportResult();
-            //    result.Results.AddRange(excelMapper.Errors);
-
-            //    return MapFromImportResult(result);
-            //}
 
             var importResult = Import(dtos);
             Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -254,7 +251,7 @@ namespace Application.Shared
             return new MemoryStream(excel.GetAsByteArray());
         }
 
-        public ValidateResult SaveOrCreate(TListDto entityFrom)
+        public DetailedValidationResult SaveOrCreate(TListDto entityFrom)
         {
             return SaveOrCreateInner(entityFrom, false);
         }
@@ -272,7 +269,7 @@ namespace Application.Shared
             }
         }
 
-        protected DetailedValidationResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        protected DetailedValidationResult SaveOrCreateInner(TListDto dto, bool isImport)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
@@ -280,24 +277,32 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
-            var isNew = entityFromDb == null;
+            var entity = isImport ? FindByKey(dto) : FindById(dto);
+            var isNew = entity == null;
             Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (isNew)
             {
-                entityFromDb = new TEntity
+                entity = new TEntity
                 {
                     Id = Guid.NewGuid()
                 };
             }
             else if (isImport)
             {
-                entityFrom.Id = entityFromDb.Id.ToString();
+                dto.Id = entity.Id.ToString();
             }
 
-            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
+            var result = ValidateDto(dto);
+            
+            if (result.IsError)
+            {
+                return result;
+            }
+
+            MapFromDtoToEntity(entity, dto);
+
             Log.Debug("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -305,7 +310,7 @@ namespace Application.Shared
             {
                 if (isNew)
                 {
-                    dbSet.Add(entityFromDb);
+                    dbSet.Add(entity);
                     result.ResultType = ValidateResultType.Created;
                 }
                 else
@@ -321,7 +326,7 @@ namespace Application.Shared
                 _dataService.SaveChanges();
                 Log.Debug("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
-                Log.Information($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+                Log.Information($"Запись {entity.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
             }
             else
             {
@@ -329,6 +334,11 @@ namespace Application.Shared
             }
 
             return result;
+        }
+        
+        protected virtual DetailedValidationResult ValidateDto(TListDto dto)
+        {
+            return _validationService.Validate(dto);
         }
 
         protected virtual void FillLookupNames(IEnumerable<TListDto> dtos)

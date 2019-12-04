@@ -2,6 +2,7 @@
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.PickingTypes;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -14,45 +15,34 @@ namespace Application.Services.PickingTypes
 {
     public class PickingTypesService : DictonaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
-        public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(PickingTypeDto dto)
+        protected override DetailedValidationResult ValidateDto(PickingTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Name))
-            {
-                result.AddError(nameof(dto.Name), "pickingType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = _dataService.GetDbSet<PickingType>()
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<PickingType>()
                                             .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
                                             .Any();
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Name), "pickingType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "PickingType.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
