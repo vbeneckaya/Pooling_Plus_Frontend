@@ -33,7 +33,7 @@ const CellValue = (
         isDisabled
     }
 ) => {
-    console.log('BodyCell');
+
     if (type === SELECT_TYPE) {
         return (
             <SelectValue

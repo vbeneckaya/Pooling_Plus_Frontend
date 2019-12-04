@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import FormField from '../../BaseComponents';
 import { LINK_TYPE } from '../../../constants/columnTypes';
 import { ORDERS_GRID } from '../../../constants/grids';
+import _ from 'lodash';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -113,10 +114,11 @@ const BodyCell = ({
         );
     }, []);
 
+    //console.log('BodyCell');
 
     return (
         <>
-            <Table.Cell className="value-cell" style={{ width: `${column.width}px` }}>
+            <Table.Cell className="value-cell">
                 <div className="cell-grid">
                     <div
                         className={`cell-grid-value ${
@@ -183,4 +185,15 @@ const BodyCell = ({
     );
 };
 
-export default React.memo(BodyCell);
+export default React.memo(BodyCell, (prevProps, nextProps) => {
+    return prevProps.column === nextProps.column &&
+        prevProps.loadList === nextProps.loadList &&
+        prevProps.indexRow === nextProps.indexRow &&
+        prevProps.indexColumn === nextProps.indexColumn &&
+        prevProps.modalCard === nextProps.modalCard &&
+        prevProps.gridName === nextProps.gridName &&
+        prevProps.t === nextProps.t &&
+        prevProps.checkForEditing === nextProps.checkForEditing &&
+        prevProps.invokeMassUpdate === nextProps.invokeMassUpdate &&
+        _.isEqual(prevProps.row, nextProps.row)
+});
