@@ -23,7 +23,7 @@ const BodyCell = ({
     t,
     checkForEditing,
     invokeMassUpdate,
-    ...row
+    row,
 }) => {
     const contextRef = useRef(null);
 
@@ -62,6 +62,7 @@ const BodyCell = ({
     };
 
     const handleOpen = () => {
+        console.log('row[column.name]', row[column.name]);
         setOpen(true);
         setValue(row[column.name]);
     };
@@ -92,14 +93,26 @@ const BodyCell = ({
         setValue(value);
     }, []);
 
-    const handleCellClick = useCallback(
-        e => {
-            column.type !== LINK_TYPE
-                ? handleClick(row.id, column.name, row.status)
-                : e.stopPropagation();
-        },
-        [column.type, row.id, column.name, row.status],
-    );
+    const handleCellClick = e => {
+        column.type !== LINK_TYPE
+            ? handleClick(row.id, column.name, row.status)
+            : e.stopPropagation();
+    };
+
+    const getModalCard = useCallback(() => {
+        return (
+            <ModalComponent
+                element={modalCard()}
+                props={{
+                    ...row,
+                    loadList,
+                    title: `edit_${gridName}`,
+                }}
+                key={`modal_${row.id}`}
+            />
+        );
+    }, []);
+
 
     return (
         <>
@@ -119,17 +132,7 @@ const BodyCell = ({
                             value={row[column.name]}
                             width={column.width}
                             t={t}
-                            modalCard={
-                                <ModalComponent
-                                    element={modalCard()}
-                                    props={{
-                                        ...row,
-                                        loadList,
-                                        title: `edit_${gridName}`,
-                                    }}
-                                    key={`modal_${row.id}`}
-                                />
-                            }
+                            modalCard={getModalCard}
                         />
                     </div>
                     <div>
@@ -160,7 +163,7 @@ const BodyCell = ({
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
-                        <Form>
+                        <Form onSubmit={handleSave}>
                             <FormField {...column} value={value} onChange={handleChange} />
                         </Form>
                     </Modal.Description>

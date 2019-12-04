@@ -31,7 +31,6 @@ namespace Application.Shared
                         string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
                         if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
                         {
-                            _validationErrors.Add($"{propertyInfo.Name} is Read Only");
                             return false;
                         }
 

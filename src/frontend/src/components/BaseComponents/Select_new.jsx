@@ -17,7 +17,7 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { debounce } from 'throttle-debounce';
 
 const Select = ({
-    value,
+                    value = {},
     onChange,
     placeholder = '',
     isDisabled,
@@ -70,7 +70,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, { value, name, ext: valuesList.find(x => x.value === value) });
+        onChange(e, {value, name});
         handleClose();
     };
 
@@ -115,7 +115,7 @@ const Select = ({
         handleOpen();
     };
 
-    console.log('select');
+    console.log('select', value);
 
     return (
         <Form.Field>
@@ -132,7 +132,7 @@ const Select = ({
                     loading={progress}
                     search
                     searchQuery={searchQuery}
-                    text={textValue}
+                    text={value ? value.name : null}
                     error={error}
                     disabled={isDisabled}
                     closeOnChange={true}
@@ -149,10 +149,10 @@ const Select = ({
                             valuesList.map(item => (
                                 <Dropdown.Item
                                     key={item.value}
-                                    selected={item.value === value}
-                                    active={item.value === value}
+                                    selected={value && item.value === value.value}
+                                    active={value && item.value === value.value}
                                     value={item.value}
-                                    onClick={e => handleChange(e, { value: item.value })}
+                                    onClick={e => handleChange(e, {value: item})}
                                 >
                                     {item.name}
                                 </Dropdown.Item>

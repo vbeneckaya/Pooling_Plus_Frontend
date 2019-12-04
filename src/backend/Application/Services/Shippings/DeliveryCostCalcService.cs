@@ -23,7 +23,9 @@ namespace Application.Services.Shippings
 
         public void UpdateDeliveryCost(Shipping shipping)
         {
-            if (shipping.Status != ShippingState.ShippingCreated
+            var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
+            if (shipping.Status == null
+                || !validState.Contains(shipping.Status.Value)
                 || shipping.CarrierId == null
                 || shipping.VehicleTypeId == null
                 || shipping.BodyTypeId == null
@@ -51,7 +53,7 @@ namespace Application.Services.Shippings
 
             Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
 
-            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity }))
+            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientName }))
             {
                 decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable());
                 foreach (var order in group)
@@ -81,6 +83,18 @@ namespace Application.Services.Shippings
                                                         && x.EffectiveDate <= shippingDate
                                                         && x.ExpirationDate >= shippingDate)
                                            .FirstOrDefault();
+            if (tariff == null)
+            {
+                tariff = _commonDataService.GetDbSet<Tariff>()
+                                           .Where(x => x.CarrierId == shipping.CarrierId
+                                                        && x.TarifficationType == shipping.TarifficationType
+                                                        && x.ShipmentCity == shippingCity
+                                                        && x.DeliveryCity == deliveryCity
+                                                        && x.EffectiveDate <= shippingDate
+                                                        && x.ExpirationDate >= shippingDate)
+                                           .FirstOrDefault();
+            }
+
             if (tariff == null)
             {
                 return null;

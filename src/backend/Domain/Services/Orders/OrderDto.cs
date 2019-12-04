@@ -2,6 +2,7 @@ using System;
 using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.Orders
 {
@@ -23,7 +24,7 @@ namespace Domain.Services.Orders
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
-        public string OrderType { get; set; }
+        public LookUpDto OrderType { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
@@ -32,7 +33,7 @@ namespace Domain.Services.Orders
         public string ClientName { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
-        public string SoldTo { get; set; }
+        public LookUpDto SoldTo { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TemperatureMin { get; set; }
@@ -81,13 +82,13 @@ namespace Domain.Services.Orders
         public decimal? InvoiceAmountExcludingVAT { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
-        public string ShippingCity { get; set; }
+        public LookUpDto ShippingCity { get; set; }
 
         [FieldType(FieldType.Text), IsReadOnly]
         public string DeliveryRegion { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
-        public string DeliveryCity { get; set; }
+        public LookUpDto DeliveryCity { get; set; }
 
         [FieldType(FieldType.BigText), IsReadOnly]
         public string ShippingAddress { get; set; }
@@ -111,7 +112,7 @@ namespace Domain.Services.Orders
         public string OrderComments { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(PickingTypes))]
-        public string PickingTypeId { get; set; }
+        public LookUpDto PickingTypeId { get; set; }
 
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
 
@@ -179,7 +180,7 @@ namespace Domain.Services.Orders
         public string AdditionalInfo { get; set; }
 
         [FieldType(FieldType.Select, source: "ShippingWarehousesForOrderCreation")]
-        public string ShippingWarehouseId { get; set; }
+        public LookUpDto ShippingWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsReadOnly]
         public DateTime? OrderChangeDate { get; set; }
@@ -194,10 +195,10 @@ namespace Domain.Services.Orders
         public string PickingFeatures { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsReadOnly]
-        public string CarrierId { get; set; }
+        public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
-        public string DeliveryType { get; set; }
+        public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.BigText)]
         public string DeviationsComment { get; set; }

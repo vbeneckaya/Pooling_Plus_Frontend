@@ -7,12 +7,12 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -35,12 +35,12 @@ namespace Application.Services.Tariffs
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
 
-            entity.ShipmentCity = dto.ShipmentCity;
-            entity.DeliveryCity = dto.DeliveryCity;
-            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType);
-            entity.VehicleTypeId = dto.VehicleTypeId.ToGuid();
-            entity.CarrierId = dto.CarrierId.ToGuid();
-            entity.BodyTypeId = dto.BodyTypeId.ToGuid();
+            entity.ShipmentCity = dto.ShipmentCity?.Value;
+            entity.DeliveryCity = dto.DeliveryCity?.Value;
+            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value);
+            entity.VehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
+            entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
+            entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
             entity.EffectiveDate = dto.EffectiveDate.ToDate();
             entity.ExpirationDate = dto.ExpirationDate.ToDate();
@@ -109,27 +109,27 @@ namespace Application.Services.Tariffs
 
             // Delivery City
 
-            if (string.IsNullOrEmpty(dto.DeliveryCity))
+            if (string.IsNullOrEmpty(dto.DeliveryCity?.Value))
             {
                 result.AddError(nameof(dto.DeliveryCity), "emptyDeliveryCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
-            else if(!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.ToLower()))
+            else if(!_dataService.GetDbSet<Warehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.DeliveryCity.Value.ToLower()))
             {
                 result.AddError(nameof(dto.DeliveryCity), "deliveryCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
             }
 
             // Shipping City
 
-            if (string.IsNullOrEmpty(dto.ShipmentCity))
+            if (string.IsNullOrEmpty(dto.ShipmentCity?.Value))
             {
                 result.AddError(nameof(dto.ShipmentCity), "emptyShipmentCity".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
-            else if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.ToLower()))
+            else if (!_dataService.GetDbSet<ShippingWarehouse>().Any(i => !string.IsNullOrEmpty(i.City) && i.City.ToLower() == dto.ShipmentCity.Value.ToLower()))
             {
                 result.AddError(nameof(dto.ShipmentCity), "shipmentCityNotExists".Translate(lang), ValidationErrorType.InvalidDictionaryValue);
             }
 
-            if (string.IsNullOrEmpty(dto.CarrierId))
+            if (string.IsNullOrEmpty(dto.CarrierId?.Value))
             {
                 result.AddError(nameof(dto.CarrierId), "emptyCarrierId".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
@@ -195,17 +195,63 @@ namespace Application.Services.Tariffs
             return string.IsNullOrEmpty(dateString) || dateString.ToDate().HasValue;
         }
 
+        protected override void FillLookupNames(IEnumerable<TariffDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
+                                     .Select(x => x.VehicleTypeId.Value.ToGuid())
+                                     .ToList();
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                                           .Where(x => vehicleTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var bodyTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.BodyTypeId?.Value))
+                                  .Select(x => x.BodyTypeId.Value.ToGuid())
+                                  .ToList();
+            var bodyTypes = _dataService.GetDbSet<BodyType>()
+                                        .Where(x => bodyTypeIds.Contains(x.Id))
+                                        .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
+                    && vehicleTypes.TryGetValue(dto.VehicleTypeId.Value, out VehicleType vehicleType))
+                {
+                    dto.VehicleTypeId.Name = vehicleType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.BodyTypeId?.Value)
+                    && bodyTypes.TryGetValue(dto.BodyTypeId.Value, out BodyType bodyType))
+                {
+                    dto.BodyTypeId.Name = bodyType.Name;
+                }
+            }
+        }
+
         public override TariffDto MapFromEntityToDto(Tariff entity)
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             return new TariffDto
             {
                 Id = entity.Id.ToString(),
-                ShipmentCity = entity.ShipmentCity,
-                DeliveryCity = entity.DeliveryCity,
-                TarifficationType = entity.TarifficationType?.ToString().ToLowerFirstLetter(),
-                CarrierId = entity.CarrierId?.ToString(),
-                VehicleTypeId = entity.VehicleTypeId?.ToString(),
-                BodyTypeId = entity.BodyTypeId?.ToString(),
+                ShipmentCity = string.IsNullOrEmpty(entity.ShipmentCity) ? null : new LookUpDto(entity.ShipmentCity),
+                DeliveryCity = string.IsNullOrEmpty(entity.DeliveryCity) ? null : new LookUpDto(entity.DeliveryCity),
+                TarifficationType = entity.TarifficationType == null ? null : entity.TarifficationType.GetEnumLookup(lang),
+                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
+                VehicleTypeId = entity.VehicleTypeId == null ? null : new LookUpDto(entity.VehicleTypeId.ToString()),
+                BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
                 StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
                 EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
                 WinterAllowance = entity.WinterAllowance.HasValue ? 
@@ -345,14 +391,20 @@ namespace Application.Services.Tariffs
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)
         {
+            Guid? carrierId = dto.CarrierId?.Value?.ToGuid();
+            Guid? vehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
+            Guid? bodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
+            string shipmentCity = dto.ShipmentCity?.Value;
+            string deliveryCity = dto.DeliveryCity?.Value;
+            TarifficationType? tarifficationType = dto.TarifficationType?.Value?.Parse<TarifficationType>();
             return _dataService.GetDbSet<Tariff>()
                     .Where(i =>
-                        i.CarrierId == dto.CarrierId.ToGuid()
-                        && i.VehicleTypeId == dto.VehicleTypeId.ToGuid()
-                        && i.BodyTypeId == dto.BodyTypeId.ToGuid()
-                        && i.TarifficationType == dto.TarifficationType.Parse<TarifficationType>()
-                        && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == dto.ShipmentCity
-                        && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == dto.DeliveryCity);
+                        i.CarrierId == carrierId
+                        && i.VehicleTypeId == vehicleTypeId
+                        && i.BodyTypeId == bodyTypeId
+                        && i.TarifficationType == tarifficationType
+                        && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == shipmentCity
+                        && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == deliveryCity);
         }
     }
 }

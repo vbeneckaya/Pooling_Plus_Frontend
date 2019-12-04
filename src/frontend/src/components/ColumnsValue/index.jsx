@@ -76,7 +76,7 @@ const CellValue = (
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {t(value)}
+                {value ? t(value.name) : ''}
             </TextCropping>
         );
     }
@@ -96,15 +96,15 @@ const CellValue = (
     }
 
     if (type === LINK_TYPE) {
-        return React.cloneElement(
-            modalCard,
+        return modalCard ? React.cloneElement(
+            modalCard(),
             null,
             <div className="link-cell">
                 <TextCropping width={width} indexColumn={indexColumn}>
                     {value}
                 </TextCropping>
             </div>,
-        );
+        ) : value;
     }
 
     if (type === LOCAL_DATE_TIME) {

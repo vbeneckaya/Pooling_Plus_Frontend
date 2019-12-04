@@ -4,7 +4,7 @@ import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 import TextCropping from './TextCropping';
 
 const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width}) => {
-    const dispatch = useDispatch();
+    /*const dispatch = useDispatch();
 
     let lookup = useSelector(state => valuesListSelector(state, source)) || [];
 
@@ -20,9 +20,10 @@ const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width}
     }, []);
 
     const valueText = lookup && lookup.length && lookup.find(x => x.value === value);
-
+*/
+    console.log('selectCell', value, showRawValue);
     return <TextCropping width={width}
-                         indexColumn={indexColumn}>{showRawValue ? value : valueText ? valueText.name : ''}</TextCropping>;
+                         indexColumn={indexColumn}>{value ? showRawValue ? value.value : value.name : ''}</TextCropping>;
 };
 
 export default SelectValue;

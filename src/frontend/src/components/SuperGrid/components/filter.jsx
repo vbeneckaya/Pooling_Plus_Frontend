@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {Checkbox, Table} from 'semantic-ui-react';
 import {Resizable} from 'react-resizable';
 import FacetField from '../../FilterComponents';
@@ -11,7 +11,8 @@ const Filter = props => {
         checkAllDisabled,
         setSelectedAll,
         columns,
-        resizeColumn
+        resizeColumn,
+        extWidth
     } = props;
     let [customColumns, setColumns] = useState(columns);
     let timer = useRef(null);
@@ -27,9 +28,11 @@ const Filter = props => {
         [columns],
     );
 
-    const handleResize = (e, {size, index}) => {
+    const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
-    };
+    }, []);
+
+    console.log('extWidth', extWidth);
 
     return (
         <Table.Row className="sticky-header">
@@ -52,7 +55,7 @@ const Filter = props => {
                     <Table.HeaderCell
                         key={'th' + x.name + i}
                         style={{width: `${x.width}px`}}
-                        className={`column-facet column-${x.name
+                        className={`column-facet column-${x.name && x.name
                             .toLowerCase()
                             .replace(' ', '-')}-facet`}
                     >
@@ -66,10 +69,13 @@ const Filter = props => {
                             value={props.filters[x.name]}
                             setFilter={props.setFilter}
                             source={x.source}
+                            width={x.width}
+                            handleResize={handleResize}
                         />
                     </Table.HeaderCell>
                 </Resizable>
             ))}
+            <Table.HeaderCell style={{width: extWidth > 0 ? extWidth : 0}}/>
             {isShowActions ? <Table.HeaderCell className="actions-column"/> : null}
         </Table.Row>
     );
