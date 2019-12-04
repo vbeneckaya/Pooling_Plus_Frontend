@@ -62,6 +62,7 @@ const CellValue = (
     }
 
     if (type === LABELS_TYPE) {
+        console.log(value);
         return (
             <>
                 {!value
