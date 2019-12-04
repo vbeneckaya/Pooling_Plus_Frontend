@@ -343,7 +343,7 @@ namespace Application.Services.Shippings
                 }
             }
 
-            var pointsList = points.Values.OrderBy(p => DateTime.ParseExact(p.PlannedDate, "dd.MM.yyyy", CultureInfo.InvariantCulture))
+            var pointsList = points.Values.OrderBy(p => p.PlannedDate.ParseDate())
                                           .ThenBy(p => p.IsLoading ? 0 : 1)
                                           .ThenBy(p => p.VehicleStatus)
                                           .ThenBy(p => p.WarehouseName)
