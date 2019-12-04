@@ -1,7 +1,7 @@
 .scroll-table-container {
     display: grid;
     overflow: auto;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 150px);
     width: 100%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
@@ -52,8 +52,6 @@
         font-weight: 500;
         font-size: 16px;
         color: #4d4d4d;
-        display: flex;
-        align-items: center;
         padding-right: 24px;
     }
 }

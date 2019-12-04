@@ -17,9 +17,7 @@ import RoleCard from './role_card';
 
 const newModal = (t, load) => (
     <RoleCard title={t('create_role_title')} id={null} loadList={load}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_role')}
-        </Button>
+        <Button icon="add"/>
     </RoleCard>
 );
 
@@ -52,7 +50,7 @@ export class RolesList extends Component {
         return (
             <TableInfo
                 headerRow={rolesColumns}
-                title={t('roles')}
+                name='roles'
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}

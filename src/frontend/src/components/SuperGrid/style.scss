@@ -1,7 +1,7 @@
 .scroll-grid-container {
     display: grid;
     overflow: auto;
-    height: calc(100vh - 135px);
+    height: calc(100vh - 150px);
     width: 100%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
@@ -147,7 +147,6 @@
 }
 
 .records-counter {
-    margin-top: 8px;
     white-space: nowrap;
     margin-right: 10px;
     font-size: 12px;

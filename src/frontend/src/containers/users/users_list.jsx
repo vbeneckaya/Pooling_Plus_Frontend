@@ -16,9 +16,7 @@ import { Button, Icon } from 'semantic-ui-react';
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_user')}
-        </Button>
+        <Button icon="add" />
     </UserCard>
 );
 
@@ -50,7 +48,7 @@ export class UsersList extends Component {
         return (
             <TableInfo
                 headerRow={usersColumns}
-                title={t('users')}
+                name="users"
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}

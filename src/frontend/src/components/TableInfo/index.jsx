@@ -203,7 +203,7 @@ class TableInfo extends Component {
                                         );
                                     })}
                             </Grid.Column>*/}
-                            <Grid.Column width={5} style={{display: 'flex'}}>
+                            <Grid.Column width={5} verticalAlign="middle">
                                 <span className="table-header-menu_title">
                                     {t(name)}
                                 </span>
