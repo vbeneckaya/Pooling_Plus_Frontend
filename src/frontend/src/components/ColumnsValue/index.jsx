@@ -21,6 +21,7 @@ const CellValue = (
     {
         type,
         value = '',
+        valueText,
         id,
         toggleIsActive,
         source,
@@ -39,6 +40,7 @@ const CellValue = (
             <SelectValue
                 width={width}
                 value={value}
+                valueText={valueText}
                 source={source}
                 indexRow={indexRow}
                 indexColumn={indexColumn}
