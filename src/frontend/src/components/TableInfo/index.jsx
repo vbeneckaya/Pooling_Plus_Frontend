@@ -11,6 +11,7 @@ import { withTranslation } from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
 import _ from "lodash";
+import BodyCell from "../SuperGrid/components/body_cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -235,7 +236,8 @@ class TableInfo extends Component {
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
                                                       column={column}
-                                                      value={row[column.name]}
+                                                      value={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].value : row[column.name]}
+                                                      valueText={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].name : row[column.name]}
                                                       id={row.id}
                                                       toggleIsActive={this.handleToggleIsActive}
                                                       indexRow={i}
