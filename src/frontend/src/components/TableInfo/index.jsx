@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
-import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
 import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
@@ -8,11 +6,8 @@ import {debounce} from 'throttle-debounce';
 import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import {withTranslation} from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
-import HeaderCellComponent from './components/header-cell';
-import BodyCellComponent from './components/body-cell';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -143,7 +138,6 @@ class TableInfo extends Component {
                 <Loader active={loading && !list.length} size="huge" className="table-loader">
                     Loading
                 </Loader>
-                <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                     <Grid className="table-header-menu">
                         <Grid.Row>
                             <Grid.Column width={5} verticalAlign="middle">
