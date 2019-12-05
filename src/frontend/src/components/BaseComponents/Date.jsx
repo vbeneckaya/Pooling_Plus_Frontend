@@ -4,7 +4,18 @@ import DatePicker from 'react-datepicker';
 import { formatDate, parseDate } from '../../utils/dateTimeFormater';
 import { useTranslation } from 'react-i18next';
 
-const Date = ({value, name, onChange, isDisabled, noLabel, required, placeholder, className, isRequired, error}) => {
+const Date = ({
+    value,
+    name,
+    onChange,
+    isDisabled,
+    noLabel,
+    text,
+    placeholder,
+    className,
+    isRequired,
+    error,
+}) => {
     const getClassNames = () => {
         const classNames = [];
 
@@ -24,7 +35,9 @@ const Date = ({value, name, onChange, isDisabled, noLabel, required, placeholder
     return (
         <Form.Field>
             {!noLabel ? (
-                <label className={isDisabled ? 'label-disabled' : null}>{`${t(name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                }`}</label>
             ) : null}
             <DatePicker
                 disabled={isDisabled || false}
@@ -38,7 +51,9 @@ const Date = ({value, name, onChange, isDisabled, noLabel, required, placeholder
                     onChange(e, { name: name, value: date ? formatDate(date) : null });
                 }}
             />
-            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
+            {error && typeof error === 'string' ? (
+                <span className="label-error">{error}</span>
+            ) : null}
         </Form.Field>
     );
 };

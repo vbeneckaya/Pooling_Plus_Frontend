@@ -1,7 +1,7 @@
 body {
     overflow-x: auto;
     overflow-y: hidden;
-    min-width: 1380px !important;
+    min-width: 1280px !important;
     font-size: 13px;
     background-color: #f9f9f9;
     font-family: 'Ubuntu' !important;
@@ -303,6 +303,8 @@ i.blue.icon {
 
     label {
         font-size: 0.92857143em;
+        color: #4d4d4d !important;
+        font-weight: 500 !important;
     }
 
     .field {
@@ -369,4 +371,30 @@ input::-webkit-calendar-picker-indicator {
     width: 100%;
     display: flex;
     justify-content: flex-end;
+}
+
+.ui .label {
+    font-weight: 500 !important;
+    color: #4d4d4d;
+}
+
+.ui.modal {
+    .header {
+        font-family: 'Ubuntu' !important;
+        font-weight: 500 !important;
+        color: #4d4d4d !important;
+    }
+}
+
+.ui.button {
+    font-family: 'Ubuntu' !important;
+    font-weight: 500 !important;
+}
+
+.ui.button.blue, .ui.primary.button {
+    background-color: #18a8cc;
+}
+
+.ui.toggle.checkbox input:checked ~ .box:before, .ui.toggle.checkbox input:checked ~ label:before {
+    background-color: #18a8cc !important;
 }

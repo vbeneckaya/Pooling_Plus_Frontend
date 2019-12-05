@@ -41,12 +41,13 @@
     border-color: transparent !important;
 }
 
-/*.ui.secondary.pointing.menu .active.item.dropdown {
+.ui.secondary.pointing.menu .active.item.dropdown {
     font-weight: initial;
-}*/
+}
 
 .ui.secondary.pointing.menu .item.dropdown.superActive {
     border-color: #18a8cc !important;
+    //border-color: #1b1c1d;
 }
 
 .ui.secondary.menu .header.item {

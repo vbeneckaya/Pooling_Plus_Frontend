@@ -5,6 +5,7 @@ using Application.Shared.Excel.Columns;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
@@ -17,8 +18,8 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
@@ -26,38 +27,28 @@ namespace Application.Services.VehicleTypes
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
 
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             entity.Name = dto.Name;
             entity.TonnageId = dto.TonnageId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             entity.PalletsCount = dto.PalletsCount.ToInt();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(VehicleTypeDto dto)
+        protected override DetailedValidationResult ValidateDto(VehicleTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Name))
-            {
-                result.AddError(nameof(dto.Name), "vehicleTypes.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var existingRecord = this.FindByKey(dto);
-            var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<VehicleType>()
+                                .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
+                                .Any();
 
             if (hasDuplicates)
             {
-                result.AddError("duplicatedVehicleTypes", "vehicleTypes.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "VehicleType.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

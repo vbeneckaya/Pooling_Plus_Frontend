@@ -194,7 +194,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsReadOnly]
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies))]
         public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]

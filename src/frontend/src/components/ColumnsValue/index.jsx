@@ -21,6 +21,7 @@ const CellValue = (
     {
         type,
         value = '',
+        valueText,
         id,
         toggleIsActive,
         source,
@@ -33,12 +34,13 @@ const CellValue = (
         isDisabled
     }
 ) => {
-    console.log('BodyCell');
+
     if (type === SELECT_TYPE) {
         return (
             <SelectValue
                 width={width}
                 value={value}
+                valueText={valueText}
                 source={source}
                 indexRow={indexRow}
                 indexColumn={indexColumn}
@@ -60,6 +62,7 @@ const CellValue = (
     }
 
     if (type === LABELS_TYPE) {
+        console.log(value);
         return (
             <>
                 {!value
@@ -76,7 +79,7 @@ const CellValue = (
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {value ? t(value.name) : ''}
+                {value ? t(valueText) : ''}
             </TextCropping>
         );
     }

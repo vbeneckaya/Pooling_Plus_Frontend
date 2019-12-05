@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
+import React, {Component} from 'react';
+import {withTranslation} from 'react-i18next';
+import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import {debounce} from 'throttle-debounce';
 import {PAGE_SIZE} from '../../constants/settings';
@@ -8,6 +11,8 @@ import './style.scss';
 import {withTranslation} from 'react-i18next';
 import HeaderCellComponent from "./components/header-cell";
 import BodyCellComponent from "./components/body-cell";
+import HeaderCellComponent from './components/header-cell';
+import BodyCellComponent from './components/body-cell';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -28,7 +33,7 @@ class TableInfo extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.name !== prevProps.name) {
-            console.log('listupdate')
+            console.log('listupdate');
         }
     }
 
@@ -88,7 +93,7 @@ class TableInfo extends Component {
     };
 
     exportToExcel = () => {
-        this.props.exportToExcel && this.props.exportToExcel(this.mapData())
+        this.props.exportToExcel && this.props.exportToExcel(this.mapData());
     };
 
     onFilePicked = e => {
@@ -103,17 +108,9 @@ class TableInfo extends Component {
         e.target.value = null;
     };
 
-    handleToggleIsActive = (
-        event,
-        {itemID, checked},
-    ) => {
-        this.props.toggleIsActive(
-            event,
-            {itemID, checked},
-            this.load,
-        )
+    handleToggleIsActive = (event, {itemID, checked}) => {
+        this.props.toggleIsActive(event, {itemID, checked}, this.load);
     };
-
 
     render() {
         const {
@@ -136,15 +133,16 @@ class TableInfo extends Component {
             importLoader,
             exportLoader,
             exportToExcel,
-            totalCount
+            totalCount,
         } = this.props;
 
         const { filter } = this.state;
 
-        console.log('modalCard', modalCard);
-
         return (
             <div className={className}>
+                <Loader active={loading && !list.length} size="huge" className="table-loader">
+                    Loading
+                </Loader>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                     <Grid className="table-header-menu">
                         <Grid.Row>
@@ -227,7 +225,20 @@ class TableInfo extends Component {
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
                                                       column={column}
-                                                      value={row[column.name]}
+                                                      value={
+                                                          row[column.name] &&
+                                                          typeof row[column.name] === 'object' &&
+                                                          !Array.isArray(row[column.name])
+                                                              ? row[column.name].value
+                                                              : row[column.name]
+                                                      }
+                                                      valueText={
+                                                          row[column.name] &&
+                                                          typeof row[column.name] === 'object' &&
+                                                          !Array.isArray(row[column.name])
+                                                              ? row[column.name].name
+                                                              : null
+                                                      }
                                                       id={row.id}
                                                       toggleIsActive={this.handleToggleIsActive}
                                                       indexRow={i}

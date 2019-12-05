@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.BodyTypes;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -15,8 +16,8 @@ namespace Application.Services.BodyTypes
 {
     public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
-        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
+            : base(dataService, userProvider, triggersService, validationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
@@ -24,16 +25,10 @@ namespace Application.Services.BodyTypes
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
 
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
         public override BodyTypeDto MapFromEntityToDto(BodyType entity)
@@ -45,23 +40,19 @@ namespace Application.Services.BodyTypes
                 IsActive = entity.IsActive
             };
         }
-        private DetailedValidationResult ValidateDto(BodyTypeDto dto)
+        protected override DetailedValidationResult ValidateDto(BodyTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Name))
-            {
-                result.AddError(nameof(dto.Name), "bodyType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var existingRecord = this.FindByKey(dto);
-            var hasDuplicates = existingRecord != null && existingRecord.Id != dto.Id.ToGuid();
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<BodyType>()
+                                .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
+                                .Any();
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Name), "bodyType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "BodyType.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

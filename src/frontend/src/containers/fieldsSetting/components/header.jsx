@@ -15,7 +15,7 @@ const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, chan
     console.log('header');
 
     return (
-        <Menu>
+        <Menu className="field-settings-menu">
             {gridsList && gridsList.length
                 ? gridsList.map(item => (
                       <Menu.Item

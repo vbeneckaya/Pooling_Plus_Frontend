@@ -6,6 +6,8 @@ import {connect} from 'react-redux';
 import {checkForEditingRequest} from '../../../ducks/gridColumnEdit';
 import {invokeMassUpdateRequest} from '../../../ducks/gridActions';
 import _ from 'lodash';
+import CellValue from "../../ColumnsValue";
+import {ORDERS_GRID} from "../../../constants/grids";
 
 class Result extends Component {
 
@@ -70,9 +72,12 @@ class Result extends Component {
                         columns.map((column, indexColumn) => (
                             <BodyCell
                                 key={`cell_${row.id}_${column.name}_${indexRow}`}
-                                row={row}
+                                value={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].value : row[column.name]}
+                                valueText={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].name : null}
+                                status={row.status}
+                                rowId={row.id}
+                                rowNumber={name === ORDERS_GRID ? row.orderNumber : row.shippingNumber}
                                 column={column}
-                                value={row[column.name]}
                                 indexRow={indexRow}
                                 indexColumn={indexColumn}
                                 loadList={loadList}
