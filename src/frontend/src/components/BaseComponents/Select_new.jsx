@@ -145,7 +145,7 @@ const Select = ({
                     open={open}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>
-                        {valuesList.length ? (
+                        {valuesList && valuesList.length ? (
                             valuesList.map(item => (
                                 <Dropdown.Item
                                     key={item.value}
