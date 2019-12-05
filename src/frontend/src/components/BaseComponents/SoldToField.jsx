@@ -15,8 +15,10 @@ const SoldToField = props => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
+    console.log('value', value);
+
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const soldToItem = valuesList.find(item => item.value === value.value) || {};
+    const soldToItem = value ? valuesList.find(item => item.value === value.value) || {} : {};
     const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
     const columnsEdit = columns.map(item => {
         if (item.name === 'soldToNumber') {
