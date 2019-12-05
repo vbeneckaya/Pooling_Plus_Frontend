@@ -1,24 +1,24 @@
-using Domain.Enums;
 using Domain.Extensions;
+using Domain.Services.FieldProperties;
 
 namespace Domain.Services.AppConfiguration
 {
     public class UserConfigurationGridColumn
     {
 
-        public UserConfigurationGridColumn(string name, FieldType type, 
-                                           bool isDefault = false, bool isFixedPosition = false, 
-                                           bool isRequired = false, bool isReadOnly = false)
+        public UserConfigurationGridColumn(FieldInfo field)
         {
-            Name = name.ToLowerFirstLetter();
-            Type = type.ToString();
-            IsDefault = isDefault;
-            IsFixedPosition = isFixedPosition;
-            IsRequired = isRequired;
-            IsReadOnly = isReadOnly;
+            Name = field.Name.ToLowerFirstLetter();
+            DisplayNameKey = field.DisplayNameKey;
+            Type = field.FieldType.ToString();
+            IsDefault = field.IsDefault;
+            IsFixedPosition = field.IsFixedPosition;
+            IsRequired = field.IsRequired;
+            IsReadOnly = field.IsReadOnly;
         }
 
         public string Name { get; set; }
+        public string DisplayNameKey { get; set; }
         public string Type { get; set; }
         public bool IsDefault { get; set; }
         public bool IsFixedPosition { get; set; }
@@ -31,13 +31,11 @@ namespace Domain.Services.AppConfiguration
         public string Source { get; }
         public bool ShowRawValue { get; set; }
 
-        public UserConfigurationGridColumnWhitchSource(string name, FieldType type, string source, bool isDefault = false, 
-                                                       bool showRawValue = false, bool isFixedPosition = false, 
-                                                       bool isRequired = false, bool isReadOnly = false) 
-            : base(name, type, isDefault, isFixedPosition, isRequired, isReadOnly)
+        public UserConfigurationGridColumnWhitchSource(FieldInfo field) 
+            : base(field)
         {
-            Source = source.Replace("Service", "").ToLowerFirstLetter();
-            ShowRawValue = showRawValue;
+            Source = field.ReferenceSource.Replace("Service", "").ToLowerFirstLetter();
+            ShowRawValue = field.ShowRawReferenceValue;
         }
     }
 }
