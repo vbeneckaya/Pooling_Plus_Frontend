@@ -50,6 +50,7 @@ const Filter = props => {
                     key={`resizable_${x.name}`}
                     width={x.width}
                     height={0}
+                    axis="x"
                     onResize={(e, {size}) => handleResize(e, {size, index: i})}
                 >
                     <Table.HeaderCell

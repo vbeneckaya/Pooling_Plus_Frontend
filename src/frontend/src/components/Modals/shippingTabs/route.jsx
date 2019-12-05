@@ -5,7 +5,7 @@ import { Form, Grid } from 'semantic-ui-react';
 import FormField from '../../BaseComponents';
 import {
     BIG_TEXT_TYPE,
-    DATE_TIME_TYPE,
+    DATE_TIME_TYPE, DATE_TYPE,
     NUMBER_TYPE,
     STATE_TYPE,
 } from '../../../constants/columnTypes';
@@ -33,9 +33,9 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
                     <Grid.Column>
                         <FormField
                             name="plannedDate"
-                            text={index === 0 ? 'plannedDate_loading' : 'plannedDate_delivery'}
+                            text={point.isLoading ? 'plannedDate_loading' : 'plannedDate_delivery'}
                             value={point['plannedDate']}
-                            type={DATE_TIME_TYPE}
+                            type={DATE_TYPE}
                             settings={settings['plannedDate']}
                             onChange={handleChange}
                         />

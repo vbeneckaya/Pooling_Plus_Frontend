@@ -31,7 +31,9 @@ namespace Application.Services.Triggers
             var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
             if (triggers.Any())
             {
-                var changes = _dataService.GetChanges<TEntity>();
+                var changes = _dataService.GetChanges<TEntity>().ToList();
+                _dataService.SaveChanges();
+
                 foreach (var entityChanges in changes)
                 {
                     foreach (var trigger in triggers)
