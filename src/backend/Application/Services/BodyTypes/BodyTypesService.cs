@@ -1,4 +1,5 @@
-﻿using Application.Services.Triggers;
+﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Extensions;
@@ -16,8 +17,9 @@ namespace Application.Services.BodyTypes
 {
     public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
-        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                                         IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)

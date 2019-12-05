@@ -230,8 +230,8 @@ namespace Application.Services.Orders
                 }
             }
 
-            string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            //string errors = setter.ValidationErrors;
+            return new ValidateResult(null, entity.Id.ToString());
         }
         
         private ValidateResult ValidateDto(OrderDto dto)

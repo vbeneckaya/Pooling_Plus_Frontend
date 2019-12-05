@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Warehouses.Handlers;
 using Application.Services.Addresses;
 using Application.Services.Triggers;
@@ -28,12 +29,25 @@ namespace Application.Services.Warehouses
         private readonly ICleanAddressService _cleanAddressService;
 
         public WarehousesService(IAuditDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService, validationService)
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+        }
+
+        protected override IFieldSetter<Warehouse> ConfigureHandlers(IFieldSetter<Warehouse> setter)
+        {
+            return setter
+                .AddHandler(e => e.WarehouseName, new WarehouseNameHandler(_dataService, _historyService))
+                .AddHandler(e => e.Region, new RegionHandler(_dataService, _historyService))
+                .AddHandler(e => e.City, new CityHandler(_dataService, _historyService))
+                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService))
+                .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
+                .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
+                .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
+                .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
         }
 
         public WarehouseDto GetBySoldTo(string soldToNumber)
@@ -66,25 +80,9 @@ namespace Application.Services.Warehouses
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            var setter = new FieldSetter<Warehouse>(entity);
 
-            if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.SoldToNumber, dto.SoldToNumber);
-            setter.UpdateField(e => e.Region, dto.Region, new RegionHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), 
-                               new PickingTypeIdHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
-            setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
-            setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType), new DeliveryTypeHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
-
-            setter.ApplyAfterActions();
-
+            _mapper.Map(dto, entity);
+           
             if (isNew)
             {
                 var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
@@ -100,7 +98,7 @@ namespace Application.Services.Warehouses
                 }
             }
 
-            string errors = setter.ValidationErrors;
+            //string errors = setter.ValidationErrors
             return null;
         }
 
@@ -203,6 +201,11 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+
+                cfg.CreateMap<WarehouseDto, Warehouse>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(s.DeliveryType)));
             });
             return result;
         }

@@ -20,47 +20,43 @@ namespace Application.Shared
             Func<T, string> nameLoader = null)
         {
             T oldValue = property.Compile()(Entity);
-            if (!Equals(oldValue, newValue))
+
+            if (Equals(oldValue, newValue)) return false;
+            
+            var propertyBody = property.Body as MemberExpression;
+
+            if (propertyBody == null) return false;
+           
+            var propertyInfo = propertyBody.Member as PropertyInfo;
+
+            if (propertyInfo == null) return false;
+
+            string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
+            //if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
+            //{
+            //    _validationErrors.Add($"{propertyInfo.Name} is Read Only");
+            //    return false;
+            //}
+
+            //if (fieldHandler != null)
+            //{
+            //    string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
+            //    if (!string.IsNullOrEmpty(error))
+            //    {
+            //        _validationErrors.Add(error);
+            //        return false;
+            //    }
+            //}
+
+            propertyInfo.SetValue(Entity, newValue);
+
+            if (fieldHandler != null)
             {
-                var propertyBody = property.Body as MemberExpression;
-                if (propertyBody != null)
-                {
-                    var propertyInfo = propertyBody.Member as PropertyInfo;
-                    if (propertyInfo != null)
-                    {
-                        string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
-                        if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
-                        {
-                            _validationErrors.Add($"{propertyInfo.Name} is Read Only");
-                            return false;
-                        }
-
-                        if (fieldHandler != null)
-                        {
-                            string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
-                            if (!string.IsNullOrEmpty(error))
-                            {
-                                _validationErrors.Add(error);
-                                return false;
-                            }
-                        }
-
-                        propertyInfo.SetValue(Entity, newValue);
-
-                        if (!ignoreChanges)
-                        {
-                            if (fieldHandler != null)
-                            {
-                                _afterActions.Add(() => fieldHandler.AfterChange(Entity, oldValue, newValue));
-                            }
-                        }
-
-                        HasChanges = true;
-                        return true;
-                    }
-                }
+                _afterActions.Add(() => fieldHandler.AfterChange(Entity, oldValue, newValue));
             }
-            return false;
+
+            HasChanges = true;
+            return true;
         }
 
         public void ApplyAfterActions()
@@ -75,7 +71,7 @@ namespace Application.Shared
 
         public bool HasChanges { get; private set; } = false;
 
-        public string ValidationErrors => string.Join(". ", _validationErrors);
+        //public string ValidationErrors => string.Join(". ", _validationErrors);
 
         public FieldSetter(TEntity entity, IEnumerable<string> readOnlyFields = null)
         {
@@ -86,6 +82,6 @@ namespace Application.Shared
         private readonly List<string> _readOnlyFields;
         private readonly List<Action> _afterActions = new List<Action>();
         private readonly Dictionary<string, Action> _historyActions = new Dictionary<string, Action>();
-        private readonly List<string> _validationErrors = new List<string>();
+        //private readonly List<string> _validationErrors = new List<string>();
     }
 }

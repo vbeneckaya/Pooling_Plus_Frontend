@@ -162,8 +162,8 @@ namespace Application.Services.Shippings
 
             setter.ApplyAfterActions();
 
-            string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            //string errors = setter.ValidationErrors;
+            return new ValidateResult(null, entity.Id.ToString());
         }
 
         public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)

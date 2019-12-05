@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
@@ -15,8 +16,9 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                                         IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -53,11 +55,6 @@ namespace Application.Services.TransportCompanies
             var lang = _userProvider.GetCurrentUser()?.Language;
 
             DetailedValidationResult result = base.ValidateDto(dto);
-
-            //if (string.IsNullOrEmpty(dto.Title))
-            //{
-            //    result.AddError(nameof(dto.Title), "transportCompany.emptyTitle".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
 
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
                                             .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
