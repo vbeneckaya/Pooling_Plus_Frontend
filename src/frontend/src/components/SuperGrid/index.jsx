@@ -218,8 +218,8 @@ class SuperGrid extends Component {
     };
 
     updatingFilter = () => {
-        const { filters } = this.state;
-        const { columns, storageFilterItem } = this.props;
+        const { filters, columns } = this.state;
+        //const { columns, storageFilterItem } = this.props;
 
         let newFilter = {};
 
