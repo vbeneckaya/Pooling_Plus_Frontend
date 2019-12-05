@@ -21,11 +21,9 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService _dataService;
-
         public UnionOrdersInExisted(ICommonDataService dataService, IHistoryService historyService)
+            : base(dataService)
         {
-            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }

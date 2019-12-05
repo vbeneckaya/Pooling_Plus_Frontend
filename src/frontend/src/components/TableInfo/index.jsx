@@ -244,7 +244,7 @@ class TableInfo extends Component {
                                                           typeof row[column.name] === 'object' &&
                                                           !Array.isArray(row[column.name])
                                                               ? row[column.name].name
-                                                              : row[column.name]
+                                                              : null
                                                       }
                                                       id={row.id}
                                                       toggleIsActive={this.handleToggleIsActive}
