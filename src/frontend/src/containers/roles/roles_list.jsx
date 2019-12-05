@@ -14,6 +14,7 @@ import {
 } from '../../ducks/roles';
 import { Button, Icon } from 'semantic-ui-react';
 import RoleCard from './role_card';
+import Card from "../customDictionary/card";
 
 const newModal = (t, load) => (
     <RoleCard title={t('create_role_title')} id={null} loadList={load}>
@@ -44,6 +45,12 @@ export class RolesList extends Component {
         ];
     };
 
+    getCard = ({row, loadList, name}) => {
+        const { t } = this.props;
+
+        return <RoleCard title={t('edit_role', { name: row.name })} loadList={loadList}/>
+    };
+
     render() {
         const { list, loadList, totalCount, loading, t } = this.props;
 
@@ -54,12 +61,11 @@ export class RolesList extends Component {
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}
-                isShowActions
-                actions={this.getActions}
                 newModal={newModal}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
                 loadList={loadList}
+                modalCard={this.getCard}
             />
         );
     }

@@ -58,6 +58,12 @@ class List extends Component {
         });
     };
 
+    getCard = ({row, loadList, name}) => {
+        const { t, isCreateBtn } = this.props;
+
+        return isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id}/> : null
+    };
+
     render() {
         const {
             match = {},
@@ -96,7 +102,7 @@ class List extends Component {
                 importLoader={importLoader}
                 exportLoader={exportLoader}
                 newModal={isCreateBtn ? newModal : null}
-                modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
+                modalCard={this.getCard}
             />
         );
     }

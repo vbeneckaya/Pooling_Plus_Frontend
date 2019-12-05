@@ -13,6 +13,7 @@ import {
 import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
+import RoleCard from "../roles/role_card";
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
@@ -41,6 +42,11 @@ export class UsersList extends Component {
             </UserCard>,
         ];
     };
+    getCard = ({row, loadList, name}) => {
+        const { t } = this.props;
+
+        return <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={loadList} />
+    };
 
     render() {
         const { list, loadList, totalCount, loading, t } = this.props;
@@ -52,12 +58,11 @@ export class UsersList extends Component {
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}
-                isShowActions
-                actions={this.getActions}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
                 newModal={newModal}
                 loadList={loadList}
+                modalCard={this.getCard}
             />
         );
     }

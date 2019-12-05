@@ -82,7 +82,10 @@ const CellValue = (
     }
 
     if (type === ACTIVE_TYPE) {
-        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={toggleIsActive}/>;
+        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={(e, data) => {
+            e.stopPropagation();
+            toggleIsActive(e, data);
+        }}/>;
     }
 
     if (type === BOOLEAN_TYPE) {
