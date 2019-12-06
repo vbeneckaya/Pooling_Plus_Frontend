@@ -123,16 +123,18 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                             ))
                             : null}
                         {
-                            <Dropdown
-                                icon="ellipsis horizontal"
-                                floating
-                                button
-                                className="icon mini ellipsis-actions-btn"
+                            groupActions &&
+                            groupActions().other.length
+                                ? <Dropdown
+                                    icon="ellipsis horizontal"
+                                    floating
+                                    button
+                                    upward
+                                    className="icon mini ellipsis-actions-btn"
                             >
                                 <Dropdown.Menu>
                                     <Dropdown.Menu scrolling>
-                                        {groupActions &&
-                                        groupActions().other.map(action => (
+                                        {groupActions().other.map(action => (
                                             <Dropdown.Item
                                                 key={action.name}
                                                 text={action.name}
@@ -143,6 +145,7 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                                     </Dropdown.Menu>
                                 </Dropdown.Menu>
                             </Dropdown>
+                                : null
                         }
                     </div>
                 </Grid.Column>
