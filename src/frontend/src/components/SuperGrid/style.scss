@@ -11,6 +11,10 @@
     border-radius: 0 0 5px 5px;
 }
 
+tbody {
+    color: #4d4d4d !important;
+}
+
 .grid_small {
     height: calc(100vh - 420px);
 }
@@ -411,10 +415,11 @@ $teal: #b5eae7;
 .footer-info {
     display: flex;
     white-space: nowrap;
-    padding: 1rem;
+    padding-bottom: 1rem;
+    color: #4d4d4d !important;
 
     &-value {
-        font-weight: bold;
+        font-weight: 500;
         padding-left: 8px;
     }
 
@@ -440,6 +445,13 @@ $teal: #b5eae7;
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.ellipsis-actions-btn {
+    height: 23.94px;
+    i {
+        vertical-align: text-top;
     }
 }
 

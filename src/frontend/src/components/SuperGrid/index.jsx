@@ -397,6 +397,7 @@ class SuperGrid extends Component {
                         <Footer
                             gridName={name}
                             groupActions={groupActions}
+                            selectedRows={selectedRows}
                             clearSelectedRows={this.clearSelectedRows}
                             load={this.loadList}
                         />

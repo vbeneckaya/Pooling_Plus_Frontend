@@ -1,40 +1,49 @@
 import React, { useState } from 'react';
 
 import { ORDERS_GRID } from '../../../constants/grids';
-import { Button, Grid, Icon, Popup } from 'semantic-ui-react';
+import {Button, Dropdown, Grid, Icon, Popup} from 'semantic-ui-react';
 import MassChanges from './mass_changes';
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { infoSelector } from '../../../ducks/gridActions';
 
-const InfoView = ({ info, t, handleClose }) => {
+const InfoView = ({info, t, handleClose, gridName, selectedRowsLen}) => {
     return (
         <div className="footer-info">
-            <div className="footer-info-close" onClick={handleClose}>
+            {/*<div className="footer-info-close" onClick={handleClose}>
                 <Icon name="sort down" />
-            </div>
-            <div>
-                {t('orders_selected')}
-                <span className="footer-info-value">{info.count}</span>
-            </div>
-            <div>
-                {t('number_of_boxes')}
-                <span className="footer-info-value">{info.boxesCount}</span>
-            </div>
-            <div>
-                {t('number_of_pallets')}
-                <span className="footer-info-value">{info.palletsCount}</span>
-            </div>
-            <div>
-                {t('target_weight')}
-                <span className="footer-info-value">{info.weightKg}</span>
-            </div>
+            </div>*/}
+            {gridName === ORDERS_GRID ? (
+                <>
+                    <div>
+                        {t('orders_selected')}
+                        <span className="footer-info-value">{info.count}</span>
+                    </div>
+                    <div>
+                        {t('number_of_boxes')}
+                        <span className="footer-info-value">{info.boxesCount}</span>
+                    </div>
+                    <div>
+                        {t('number_of_pallets')}
+                        <span className="footer-info-value">{info.palletsCount}</span>
+                    </div>
+                    <div>
+                        {t('target_weight')}
+                        <span className="footer-info-value">{info.weightKg}</span>
+                    </div>
+                </>
+            ) : (
+                <div>
+                    {t('shippings_selected')}
+                    <span className="footer-info-value">{selectedRowsLen}</span>
+                </div>
+            )}
         </div>
     );
 };
 
-const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
+const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows}) => {
     const { t } = useTranslation();
     let [isOpen, setIsOpen] = useState(false);
 
@@ -52,7 +61,15 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
         <Grid className="grid-footer-panel" columns="2">
             <Grid.Row>
                 <Grid.Column width={10}>
-                    {gridName === ORDERS_GRID ? (
+                    <InfoView
+                        info={info}
+                        t={t}
+                        handleClose={handleClose}
+                        gridName={gridName}
+                        selectedRowsLen={selectedRows.size}
+                    />
+                    {/*{gridName === ORDERS_GRID ? (
+
                         <Popup
                             trigger={
                                 <div
@@ -71,9 +88,9 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                             hideOnScroll
                             className="from-popup"
                         />
-                    ) : null}
+                    ) : null}*/}
                     <div className="footer_actions">
-                        {groupActions
+                        {/* {groupActions
                             ? groupActions().map(action => (
                                       <Button
                                           key={action.name}
@@ -89,7 +106,44 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName }) => {
                                           }
                                       />
                               ))
+                            : null}*/}
+                        {groupActions
+                            ? groupActions().require.map(action => (
+                                <Button
+                                    key={action.name}
+                                    color={action.color}
+                                    content={action.name}
+                                    loading={action.loading}
+                                    disabled={action.loading}
+                                    icon={action.icon}
+                                    size="mini"
+                                    compact
+                                    onClick={() => action.action(action.ids, clearSelectedRows)}
+                                />
+                            ))
                             : null}
+                        {
+                            <Dropdown
+                                icon="ellipsis horizontal"
+                                floating
+                                button
+                                className="icon mini ellipsis-actions-btn"
+                            >
+                                <Dropdown.Menu>
+                                    <Dropdown.Menu scrolling>
+                                        {groupActions &&
+                                        groupActions().other.map(action => (
+                                            <Dropdown.Item
+                                                key={action.name}
+                                                text={action.name}
+                                                label={{color: action.color, empty: true, circular: true}}
+                                                onClick={() => action.action(action.ids, clearSelectedRows)}
+                                            />
+                                        ))}
+                                    </Dropdown.Menu>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        }
                     </div>
                 </Grid.Column>
                 <Grid.Column floated="right">
