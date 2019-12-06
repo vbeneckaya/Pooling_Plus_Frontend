@@ -1,4 +1,3 @@
-using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Shared;
@@ -7,7 +6,6 @@ namespace Domain.Services.Tariffs
 {
     public class TariffDto : IDto
     {
-        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), OrderNumber(1), IsFixedPosition, IsRequired]

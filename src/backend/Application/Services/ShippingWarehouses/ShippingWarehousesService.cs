@@ -6,6 +6,7 @@ using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
@@ -24,8 +25,8 @@ namespace Application.Services.ShippingWarehouses
         private readonly ICleanAddressService _cleanAddressService;
 
         public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService, validationService)
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

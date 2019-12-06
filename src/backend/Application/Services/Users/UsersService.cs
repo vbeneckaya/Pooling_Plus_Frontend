@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
@@ -17,8 +18,9 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -55,7 +57,7 @@ namespace Application.Services.Users
             }
         }
 
-        protected override void FillLookupNames(IEnumerable<UserDto> dtos)
+        protected override IEnumerable<UserDto> FillLookupNames(IEnumerable<UserDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -84,6 +86,8 @@ namespace Application.Services.Users
                 {
                     dto.RoleId.Name = role.Name;
                 }
+
+                yield return dto;
             }
         }
 

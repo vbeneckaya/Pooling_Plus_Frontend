@@ -1,12 +1,10 @@
-﻿using Application.Shared.Excel.Columns;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Extensions;
 
 namespace Domain.Services.ShippingWarehouses
 {
     public class ShippingWarehouseDto : IDto
     {
-        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
@@ -18,25 +16,20 @@ namespace Domain.Services.ShippingWarehouses
         [FieldType(FieldType.Text), OrderNumber(5)]
         public string Address { get; set; }
 
-        [ExcelIgnore]
         public string ValidAddress { get; set; }
 
-        [ExcelIgnore]
         public string PostalCode { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(3), IsReadOnly]
         public string Region { get; set; }
 
-        [ExcelIgnore]
         public string Area { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(4), IsReadOnly]
         public string City { get; set; }
 
-        [ExcelIgnore]
         public string Street { get; set; }
 
-        [ExcelIgnore]
         public string House { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(6)]

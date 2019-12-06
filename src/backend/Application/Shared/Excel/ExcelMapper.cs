@@ -1,13 +1,14 @@
 ﻿using Application.Shared.Excel.Columns;
 using DAL.Services;
+using Domain.Enums;
 using Domain.Persistables;
+using Domain.Services.FieldProperties;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Application.Shared.Excel
 {
@@ -16,6 +17,7 @@ namespace Application.Shared.Excel
         public void AddColumn(IExcelColumn column)
         {
             string columnKey = GetColumnKey(column);
+            column.Field = _fieldDispatcherService.GetDtoFields<TDto>().Where(x => x.Name == column.Property.Name).FirstOrDefault();
             _columns[columnKey] = column;
         }
 
@@ -62,7 +64,7 @@ namespace Application.Shared.Excel
                 columnTitles.Add(worksheet.Cells[headRowIndex, colIndex]?.Value?.ToString());
             }
 
-            columnTitles = Unlocalize(columnTitles, _columns.Keys).ToList();
+            columnTitles = Unlocalize(columnTitles, _columns.Values.Select(x => x.Field)).ToList();
 
             FillColumnOrder(columnTitles);
 
@@ -108,7 +110,7 @@ namespace Application.Shared.Excel
         {
             foreach (var column in _columns.Where(c => c.Value.ColumnIndex >= 0))
             {
-                Translation local = _translations.FirstOrDefault(t => t.Name?.ToLower() == column.Key);
+                Translation local = _translations.FirstOrDefault(t => t.Name == column.Value.Field.DisplayNameKey);
                 column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key;
             }
         }
@@ -155,19 +157,26 @@ namespace Application.Shared.Excel
             }
         }
 
-        private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<string> fields)
+        private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<FieldInfo> fields)
         {
-            var fieldNamesSet = new HashSet<string>(fields.Select(x => x.ToLower()));
+            var fieldNamesSet = fields.ToDictionary(x => x.DisplayNameKey);
             foreach (string title in titles)
             {
                 if (string.IsNullOrEmpty(title))
                 {
-                    yield return title;
+                    yield return string.Empty;
                 }
                 else
                 {
-                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.Contains(t.Name.ToLower()));
-                    yield return (local?.Name ?? title)?.ToLower();
+                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.ContainsKey(t.Name));
+                    if (local == null)
+                    {
+                        yield return title?.ToLower();
+                    }
+                    else
+                    {
+                        yield return fieldNamesSet[local.Name].Name.ToLower();
+                    }
                 }
             }
         }
@@ -196,38 +205,26 @@ namespace Application.Shared.Excel
 
         private void InitColumns()
         {
-            var avalibleTypes = new List<Type>
-            {
-                typeof(string),
-                typeof(int),
-                typeof(int?),
-                typeof(DateTime),
-                typeof(DateTime?),
-                typeof(decimal),
-                typeof(decimal?),
-                typeof(bool),
-                typeof(bool?),
-            };
-
+            Type type = typeof(TDto);
             string lang = _userProvider.GetCurrentUser()?.Language;
 
-            typeof(TDto)
-                .GetProperties()
-                .Where(x => avalibleTypes.Contains(x.PropertyType))
-                .Where(x => !x.GetCustomAttributes(typeof(ExcelIgnoreAttribute), false).Any())
-                .Select((p, index) => new BaseExcelColumn { Property = p, Language = lang })
-                .ToList()
-                .ForEach(AddColumn);
+            _fieldDispatcherService.GetDtoFields<TDto>()
+                    .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.Select)
+                    .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
+                    .ToList()
+                    .ForEach(AddColumn);
         }
 
-        public ExcelMapper(ICommonDataService dataService, IUserProvider userProvider)
+        public ExcelMapper(ICommonDataService dataService, IUserProvider userProvider, IFieldDispatcherService fieldDispatcherService)
         {
             _userProvider = userProvider;
+            _fieldDispatcherService = fieldDispatcherService;
             _translations = dataService.GetDbSet<Translation>().ToList();
             InitColumns();
         }
 
         private readonly IUserProvider _userProvider;
+        private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly List<Translation> _translations;
         private readonly Dictionary<string, IExcelColumn> _columns = new Dictionary<string, IExcelColumn>();
         private readonly List<ValidateResult> _errors = new List<ValidateResult>();
