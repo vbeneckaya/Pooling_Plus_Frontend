@@ -6,14 +6,14 @@ import {debounce} from 'throttle-debounce';
 import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import HeaderCellComponent from './components/header-cell';
-import BodyCellComponent from './components/body-cell';
+import HeaderCellComponent from "./components/header-cell";
+import BodyCellComponent from "./components/body-cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
         return <>{children}</>;
     }
-    return React.cloneElement(element, props, children);
+    return React.cloneElement(element(props), props, children);
 };
 
 class TableInfo extends Component {
@@ -138,65 +138,8 @@ class TableInfo extends Component {
                 <Loader active={loading && !list.length} size="huge" className="table-loader">
                     Loading
                 </Loader>
-                <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
                     <Grid className="table-header-menu">
                         <Grid.Row>
-                            {/*<Grid.Column width={7}>
-                                <Search
-                                    value={filter}
-                                    className="search-input"
-                                    onChange={this.changeFullTextFilter}
-                                />
-                                <span className="records-counter">
-                                    {t('totalCount', {count: totalCount})}
-                                </span>
-                            </Grid.Column>
-                            <Grid.Column width={9} textAlign="right">
-                                <input
-                                    type="file"
-                                    ref={instance => {
-                                        this.fileUploader = instance;
-                                    }}
-                                    style={{ display: 'none' }}
-                                    onChange={this.onFilePicked}
-                                />
-
-                                {isImportBtn ? (
-                                    <Button
-                                        color="green"
-                                        loading={importLoader}
-                                        onClick={this.importFromExcel}
-                                    >
-                                        <Icon name="upload" />
-                                        {t('importFromExcel')}
-                                    </Button>
-                                ) : null}
-                                {isExportBtn ? (
-                                    <Button
-                                        color="green"
-                                        loading={exportLoader}
-                                        onClick={this.exportToExcel}
-                                    >
-                                        <Icon name="download" />
-                                        {t('exportToExcel')}
-                                    </Button>
-                                ) : null}
-                                {newModal ? newModal(t, this.load, name) : null}
-                                {groupActions &&
-                                    groupActions().map(action => {
-                                        return (
-                                            action.visible && (
-                                                <Button
-                                                    color={action.color}
-                                                    loading={action.loading}
-                                                    onClick={action.action}
-                                                >
-                                                    {action.buttonName}
-                                                </Button>
-                                            )
-                                        );
-                                    })}
-                            </Grid.Column>*/}
                             <Grid.Column width={5} verticalAlign="middle">
                                 <span className="table-header-menu_title">
                                     {t(name)}
@@ -268,7 +211,7 @@ class TableInfo extends Component {
                                   list.map((row, i) => (
                                       <ModalComponent
                                           element={modalCard}
-                                          props={{ id: row.id, loadList: this.load, name }}
+                                          props={{ row, loadList: this.load, name }}
                                           key={`modal_${row.id}`}
                                       >
                                           <Table.Row key={row.id}>
