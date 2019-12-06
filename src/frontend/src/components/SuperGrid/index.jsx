@@ -66,9 +66,7 @@ class SuperGrid extends Component {
 
         if (prevProps.columns !== this.props.columns) {
             const {columns} = this.props;
-            const width = this.container.scrollWidth - 60 - (columns.length * 50);
-
-            console.log('this.props.columns', this.container.scrollWidth, parseInt(width / columns.length));
+            const width = this.container.scrollWidth - 50;
 
             this.setState({
                 columns: columns.map(item => ({

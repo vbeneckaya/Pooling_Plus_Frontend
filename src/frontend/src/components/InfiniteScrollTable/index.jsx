@@ -28,11 +28,10 @@ const InfiniteScrollTable = ({
             let sum = 0;
 
             columns.forEach(item => {
-                sum = sum + item.width + (columns.length) + 50;
+                sum = sum + item.width;
             });
-            console.log('sum', tableRef.current.scrollWidth - sum, tableRef.current.scrollWidth);
-            setExtWidth(tableRef.current.scrollWidth - sum);
-            setWidth(sum);
+            setExtWidth(tableRef.current.scrollWidth - 50 - sum);
+            setWidth(sum + 50);
         },
         [columns],
     );
