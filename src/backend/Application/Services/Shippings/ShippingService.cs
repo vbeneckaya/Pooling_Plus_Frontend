@@ -97,9 +97,10 @@ namespace Application.Services.Shippings
         public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
         {
             var result = _dataService.GetDbSet<Shipping>()
-                            .Where(x => ids.Contains(x.Id))
-                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
-                            .ToList();
+                .Where(x => ids.Contains(x.Id))
+                .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                .ToList();
+
             return result;
         }
 
@@ -121,31 +122,30 @@ namespace Application.Services.Shippings
                 .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler());
         }
 
-
         private MapperConfiguration ConfigureMapper()
         {
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.DeliveryType)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => MapFromStateDto<DeliveryType>(s.DeliveryType)))
-                    .ForMember(t => t.TarifficationType, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.TarifficationType)))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => MapFromStateDto<TarifficationType>(s.TarifficationType)))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId.ToGuid()))
-                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId.ToGuid()))
-                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId.ToGuid()))
-                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => ParseDateTime(s.LoadingArrivalTime)))
-                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => ParseDateTime(s.LoadingDepartureTime)))
-                    .ForMember(t => t.BlankArrival, e => e.MapFrom((s, t) => s.BlankArrival.GetValueOrDefault()))
-                    .ForMember(t => t.Waybill, e => e.MapFrom((s, t) => s.Waybill.GetValueOrDefault()))
-                    .ForMember(t => t.WaybillTorg12, e => e.MapFrom((s, t) => s.WaybillTorg12.GetValueOrDefault()))
-                    .ForMember(t => t.TransportWaybill, e => e.MapFrom((s, t) => s.TransportWaybill.GetValueOrDefault()))
-                    .ForMember(t => t.Invoice, e => e.MapFrom((s, t) => s.Invoice.GetValueOrDefault()))
-                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.DocumentsReturnDate)))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.ActualDocumentsReturnDate)))
-                    .ForMember(t => t.CostsConfirmedByShipper, e => e.MapFrom((s, t) => s.CostsConfirmedByShipper.GetValueOrDefault()))
-                    .ForMember(t => t.CostsConfirmedByCarrier, e => e.MapFrom((s, t) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
+                    .ForMember(t => t.Id, e => e.MapFrom((s) => s.Id.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryType)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType)))
+                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => !string.IsNullOrEmpty(s.TarifficationType)))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType)))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.ToGuid()))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.ToGuid()))
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
+                    .ForMember(t => t.BlankArrival, e => e.MapFrom((s) => s.BlankArrival.GetValueOrDefault()))
+                    .ForMember(t => t.Waybill, e => e.MapFrom((s) => s.Waybill.GetValueOrDefault()))
+                    .ForMember(t => t.WaybillTorg12, e => e.MapFrom((s) => s.WaybillTorg12.GetValueOrDefault()))
+                    .ForMember(t => t.TransportWaybill, e => e.MapFrom((s) => s.TransportWaybill.GetValueOrDefault()))
+                    .ForMember(t => t.Invoice, e => e.MapFrom((s) => s.Invoice.GetValueOrDefault()))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.DocumentsReturnDate)))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
+                    .ForMember(t => t.CostsConfirmedByShipper, e => e.MapFrom((s) => s.CostsConfirmedByShipper.GetValueOrDefault()))
+                    .ForMember(t => t.CostsConfirmedByCarrier, e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
 
                 cfg.CreateMap<ShippingDto, ShippingFormDto>();
 

@@ -115,13 +115,13 @@ namespace Application.Services.Orders
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.OrderNumber))
-                result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
-                    ValidationErrorType.ValueIsRequired);
+            //if (string.IsNullOrEmpty(dto.OrderNumber))
+            //    result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
+            //        ValidationErrorType.ValueIsRequired);
 
-            if (string.IsNullOrEmpty(dto.ClientOrderNumber))
-                result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
-                    ValidationErrorType.ValueIsRequired);
+            //if (string.IsNullOrEmpty(dto.ClientOrderNumber))
+            //    result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
+            //        ValidationErrorType.ValueIsRequired);
 
             if (string.IsNullOrEmpty(dto.OrderDate))
                 result.AddError(nameof(dto.OrderDate), "emptyOrderDate".Translate(lang),
@@ -189,35 +189,35 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId.ToGuid()))
-                    .ForMember(t => t.Status, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.Status)))
-                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => MapFromStateDto<OrderState>(s.Status)))
-                    .ForMember(t => t.ShippingStatus, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.ShippingStatus)))
-                    .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
-                    .ForMember(t => t.DeliveryStatus, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.DeliveryStatus)))
-                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.DeliveryType)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => MapFromStateDto<DeliveryType>(s.DeliveryType)))
-                    .ForMember(t => t.OrderDate, e => e.MapFrom((s, t) => ParseDateTime(s.OrderDate)))
-                    .ForMember(t => t.OrderType, e => e.Condition((s, t) => !string.IsNullOrEmpty(s.OrderType)))
-                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => MapFromStateDto<OrderType>(s.OrderType)))
-                    .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => ParseDateTime(s.ShippingDate)))
-                    .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => ParseDateTime(s.DeliveryDate)))
-                    .ForMember(t => t.BoxesCount, e => e.MapFrom((s, t) => Round(s.BoxesCount, 1)))
-                    .ForMember(t => t.ConfirmedBoxesCount, e => e.MapFrom((s, t) => Round(s.ConfirmedBoxesCount, 1)))
-                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => ParseTime(s.ShippingAvisationTime)))
-                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => ParseTime(s.ClientAvisationTime)))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId.ToGuid()))
-                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => ParseDateTime(s.LoadingArrivalTime)))
-                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => ParseDateTime(s.LoadingDepartureTime)))
-                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s, t) => ParseDateTime(s.UnloadingArrivalTime)))
-                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s, t) => ParseDateTime(s.UnloadingDepartureTime)))
-                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.DocumentsReturnDate)))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.ActualDocumentsReturnDate)))
-                    .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.PlannedReturnDate)))
-                    .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => ParseDateTime(s.ActualReturnDate)))
-                    .ForMember(t => t.DocumentReturnStatus, e => e.MapFrom((s, t) => s.DocumentReturnStatus.GetValueOrDefault()));
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.ToGuid()))
+                    .ForMember(t => t.Status, e => e.Condition((s) => !string.IsNullOrEmpty(s.Status)))
+                    .ForMember(t => t.Status, e => e.MapFrom((s) => MapFromStateDto<OrderState>(s.Status)))
+                    .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
+                    .ForMember(t => t.ShippingStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
+                    .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
+                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryType)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType)))
+                    .ForMember(t => t.OrderDate, e => e.MapFrom((s) => ParseDateTime(s.OrderDate)))
+                    .ForMember(t => t.OrderType, e => e.Condition((s) => !string.IsNullOrEmpty(s.OrderType)))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s) => MapFromStateDto<OrderType>(s.OrderType)))
+                    .ForMember(t => t.ShippingDate, e => e.MapFrom((s) => ParseDateTime(s.ShippingDate)))
+                    .ForMember(t => t.DeliveryDate, e => e.MapFrom((s) => ParseDateTime(s.DeliveryDate)))
+                    .ForMember(t => t.BoxesCount, e => e.MapFrom((s) => Round(s.BoxesCount, 1)))
+                    .ForMember(t => t.ConfirmedBoxesCount, e => e.MapFrom((s) => Round(s.ConfirmedBoxesCount, 1)))
+                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s) => ParseTime(s.ShippingAvisationTime)))
+                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s) => ParseTime(s.ClientAvisationTime)))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.ToGuid()))
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
+                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.UnloadingArrivalTime)))
+                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.UnloadingDepartureTime)))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.DocumentsReturnDate)))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
+                    .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s) => ParseDateTime(s.PlannedReturnDate)))
+                    .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualReturnDate)))
+                    .ForMember(t => t.DocumentReturnStatus, e => e.MapFrom((s) => s.DocumentReturnStatus.GetValueOrDefault()));
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
