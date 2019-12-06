@@ -25,6 +25,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
                 name={name}
                 value={value || ''}
                 autoComplete="off"
+                autoFocus
                 placeholder={t(name)}
                 onChange={onChange}
             />

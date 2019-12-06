@@ -170,8 +170,12 @@
 .grid-row {
     .link-cell {
         color: #18a8cc !important;;
-        /* text-decoration-line: underline;*/
+
         width: 100%;
+
+        &:hover {
+            text-decoration-line: underline;
+        }
     }
     /*.address-cell {
         max-width: 100px;
