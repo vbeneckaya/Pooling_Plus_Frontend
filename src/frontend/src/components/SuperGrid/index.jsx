@@ -65,17 +65,16 @@ class SuperGrid extends Component {
         }
 
         if (prevProps.columns !== this.props.columns) {
+            console.log('777');
             const {columns} = this.props;
-            const width = this.container.scrollWidth - 60 - (columns.length * 50);
-
-            console.log('this.props.columns', this.container.scrollWidth, parseInt(width / columns.length));
+            const width = this.container.scrollWidth - 50;
 
             this.setState({
                 columns: columns.map(item => ({
                     ...item,
                     width: item.width || parseInt(width / columns.length)
                 })),
-            });
+            }, this.updatingFilter);
         }
     }
 
@@ -220,10 +219,20 @@ class SuperGrid extends Component {
     };
 
     updatingFilter = () => {
-        const { filters } = this.state;
-        const { columns, storageFilterItem } = this.props;
+        const { filters, sort } = this.state;
+        const { storageSortItem, columns } = this.props;
 
         let newFilter = {};
+
+        console.log('sort', sort, columns.find(item => item.name === sort.name));
+
+        if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
+            this.setState({
+                sort: {}
+            }, this.loadAndResetContainerScroll);
+
+            storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify({}));
+        }
 
         Object.keys(filters).forEach(key => {
             if (columns.find(item => item.name === key)) {

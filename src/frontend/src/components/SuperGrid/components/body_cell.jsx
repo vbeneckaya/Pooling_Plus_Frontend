@@ -117,7 +117,7 @@ const BodyCell = ({
         );
     }, []);
 
-    console.log('BodyCell');
+    //console.log('BodyCell');
 
     return (
         <>

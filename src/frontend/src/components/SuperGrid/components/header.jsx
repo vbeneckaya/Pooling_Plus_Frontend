@@ -90,7 +90,7 @@ const Header = ({
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    isEdit ? updatingFilter() : clearFilter();
+                    !isEdit && clearFilter();
                 },
             }),
         );

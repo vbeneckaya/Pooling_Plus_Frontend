@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.Services.Shippings;
 using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
@@ -31,13 +32,12 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
-            var shippingsCount = shippingDbSet.Count();
 
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
-                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
+                ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ShippingCreationDate = DateTime.UtcNow
             };
 

@@ -33,7 +33,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var setter = new FieldSetter<Order>(order, _historyService);
 
-            setter.UpdateField(o => o.Status, OrderState.Created, ignoreChanges: true);
+            setter.UpdateField(o => o.Status, OrderState.Confirmed, ignoreChanges: true);
             setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleEmpty);
             setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
 

@@ -30,7 +30,7 @@ const InfiniteScrollTable = ({
             columns.forEach(item => {
                 sum = sum + item.width;
             });
-            setExtWidth(tableRef.current.scrollWidth - sum);
+            setExtWidth(tableRef.current.scrollWidth - 50 - sum);
             setWidth(sum + 50);
         },
         [columns],

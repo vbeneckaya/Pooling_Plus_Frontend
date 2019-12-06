@@ -68,6 +68,7 @@ using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace Infrastructure.Installers
 {
@@ -127,6 +128,11 @@ namespace Infrastructure.Installers
             AddShippingBusinessModels(services);
             AddDictionariesBusinessModels(services);
 
+            InitDatabase(services, configuration, migrateDb);
+        }
+
+        private static void InitDatabase(IServiceCollection services, IConfiguration configuration, bool migrateDb)
+        {
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
 
             var buildServiceProvider = services.AddEntityFrameworkNpgsql()
@@ -136,11 +142,15 @@ namespace Infrastructure.Installers
                 })
                 .BuildServiceProvider();
 
+            var appDbContext = buildServiceProvider.GetService<AppDbContext>();
+
             if (migrateDb)
             {
-                var appDbContext = buildServiceProvider.GetService<AppDbContext>();
                 appDbContext.Migrate(connectionString);
             }
+
+            var shippingsCount = appDbContext.Shippings.Count();
+            ShippingNumberProvider.InitLastNumber(shippingsCount);
         }
 
         private static void AddOrderBusinessModels(IServiceCollection services)
