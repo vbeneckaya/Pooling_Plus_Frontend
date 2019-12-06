@@ -50,22 +50,20 @@ namespace Application.BusinessModels.Orders.Actions
                 ? orders.Sum(o => o.ActualWeightKg ?? 0)
                 : (decimal?) null;
 
-            var setter = new FieldSetter<Shipping>(shipping);
-
-            setter.UpdateField(s => s.TemperatureMin, tempRange?.Key);
-            setter.UpdateField(s => s.TemperatureMax, tempRange?.Value);
-            setter.UpdateField(s => s.PalletsCount, palletsCount);
-            setter.UpdateField(s => s.ActualPalletsCount, actualPalletsCount);
-            setter.UpdateField(s => s.ConfirmedPalletsCount, confirmedPalletsCount);
-            setter.UpdateField(s => s.WeightKg, weight);
-            setter.UpdateField(s => s.ActualWeightKg, actualWeight);
-            setter.UpdateField(s => s.TrucksDowntime, downtime);
+            shipping.TemperatureMin = tempRange?.Key;
+            shipping.TemperatureMax = tempRange?.Value;
+            shipping.PalletsCount = palletsCount;
+            shipping.ActualPalletsCount = actualPalletsCount;
+            shipping.ConfirmedPalletsCount = confirmedPalletsCount;
+            shipping.WeightKg = weight;
+            shipping.ActualWeightKg = actualWeight;
+            shipping.TrucksDowntime = downtime;
 
             var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
-            setter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
+            shipping.LoadingArrivalTime = loadingArrivalTime;
 
             var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
-            setter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
+            shipping.LoadingDepartureTime = loadingDepartureTime;
             
             foreach (var order in orders)
             {
@@ -74,10 +72,8 @@ namespace Application.BusinessModels.Orders.Actions
                 order.Status = OrderState.InShipping;
                 order.OrderShippingStatus = shipping.Status;
 
-                var ordSetter = new FieldSetter<Order>(order);
-
-                ordSetter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleWaiting);
-                ordSetter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
+                order.ShippingStatus = VehicleState.VehicleWaiting;
+                order.DeliveryStatus = VehicleState.VehicleEmpty;
 
                 historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
             }

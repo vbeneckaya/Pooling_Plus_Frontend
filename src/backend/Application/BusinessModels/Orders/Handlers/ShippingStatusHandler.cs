@@ -29,19 +29,17 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder);
-
-                    setter.UpdateField(o => o.ShippingStatus, newValue);
+                    updOrder.ShippingStatus = newValue;
 
                     if (newValue == VehicleState.VehicleArrived)
                     {
-                        setter.UpdateField(o => o.LoadingArrivalTime, DateTime.Now);
+                        updOrder.LoadingArrivalTime = DateTime.Now;
                     }
                     else if (newValue == VehicleState.VehicleDepartured)
                     {
-                        setter.UpdateField(o => o.LoadingArrivalTime, updOrder.LoadingArrivalTime ?? DateTime.Now);
-                        setter.UpdateField(o => o.LoadingDepartureTime, DateTime.Now);
-                        setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleWaiting);
+                        updOrder.LoadingArrivalTime = updOrder.LoadingArrivalTime ?? DateTime.Now;
+                        updOrder.LoadingDepartureTime = DateTime.Now;
+                        updOrder.DeliveryStatus = VehicleState.VehicleWaiting;
                     }
                 }
             }

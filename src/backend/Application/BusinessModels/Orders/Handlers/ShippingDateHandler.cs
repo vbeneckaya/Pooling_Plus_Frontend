@@ -32,8 +32,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder);
-                    setter.UpdateField(o => o.ShippingDate, newValue);
+                    updOrder.ShippingDate = newValue;
                 }
             }
 

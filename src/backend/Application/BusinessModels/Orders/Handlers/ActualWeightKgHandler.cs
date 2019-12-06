@@ -29,9 +29,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     actualWeights.Add(newValue);
 
                     var shippingActualWeight = actualWeights.Any(x => x.HasValue) ? actualWeights.Sum(x => x ?? 0) : (decimal?)null;
-
-                    var setter = new FieldSetter<Shipping>(shipping);
-                    setter.UpdateField(s => s.ActualWeightKg, shippingActualWeight);
+                    shipping.ActualWeightKg = shippingActualWeight;
                 }
             }
         }

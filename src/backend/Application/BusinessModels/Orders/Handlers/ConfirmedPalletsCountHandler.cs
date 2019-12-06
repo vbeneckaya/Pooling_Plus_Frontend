@@ -27,9 +27,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     counts.Add(newValue);
 
                     var shippingConfirmedPalletsCount = counts.Any(x => x.HasValue) ? counts.Sum(x => x ?? 0) : (int?)null;
-
-                    var setter = new FieldSetter<Shipping>(shipping);
-                    setter.UpdateField(s => s.ConfirmedPalletsCount, shippingConfirmedPalletsCount);
+                    shipping.ConfirmedPalletsCount = shippingConfirmedPalletsCount;
                 }
             }
 

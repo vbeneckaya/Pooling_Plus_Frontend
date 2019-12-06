@@ -32,23 +32,20 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var updSetter = new FieldSetter<Order>(updOrder);
-                    updSetter.UpdateField(o => o.DeliveryDate, newValue);
+                    updOrder.DeliveryDate = newValue;
                 }
             }
 
-            var setter = new FieldSetter<Order>(order);
-
             if (_isInjection)
             {
-                setter.UpdateField(o => o.ShippingDate, newValue?.AddDays(0 - order.TransitDays ?? 0));
+                order.ShippingDate = newValue?.AddDays(0 - order.TransitDays ?? 0);
             }
             else
             {
-                setter.UpdateField(o => o.ManualDeliveryDate, true, ignoreChanges: true);
+                order.ManualDeliveryDate = true;
             }
-            
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
+
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, DateTime? oldValue, DateTime? newValue)

@@ -42,9 +42,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     orders.Add(order);
 
                     var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
-
-                    var setter = new FieldSetter<Shipping>(shipping);
-                    setter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
+                    shipping.LoadingDepartureTime = loadingDepartureTime;
                 }
             }
         }

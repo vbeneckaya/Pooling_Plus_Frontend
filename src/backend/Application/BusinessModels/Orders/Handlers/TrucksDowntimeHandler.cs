@@ -30,8 +30,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                     foreach (Order updOrder in ordersToUpdate)
                     {
-                        var ordSetter = new FieldSetter<Order>(updOrder);
-                        ordSetter.UpdateField(o => o.TrucksDowntime, newValue);
+                        updOrder.TrucksDowntime = newValue;
                     }
 
                     var downtimes = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
@@ -40,9 +39,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     downtimes.Add(newValue);
 
                     var shippingDowntime = downtimes.Any(x => x.HasValue) ? downtimes.Sum(x => x ?? 0) : (decimal?)null;
-
-                    var setter = new FieldSetter<Shipping>(shipping);
-                    setter.UpdateField(s => s.TrucksDowntime, shippingDowntime);
+                    shipping.TrucksDowntime = shippingDowntime;
                 }
             }
         }

@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
@@ -28,8 +29,8 @@ namespace Application.Shared
         where TDto : IDto, new() 
         where TFormDto : IDto, new()
     {
-        public abstract ValidateResult MapFromDtoToEntity(TEntity entity, TDto dto);
-        public abstract ValidateResult MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
+        public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
+        public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
@@ -51,6 +52,8 @@ namespace Application.Shared
         protected readonly IFieldPropertiesService _fieldPropertiesService;
         protected readonly IServiceProvider _serviceProvider;
         protected readonly ITriggersService _triggersService;
+        protected readonly IValidationService _validationService;
+        protected readonly IFieldSetterFactory _fieldSetterFactory;
 
         protected GridService(
             ICommonDataService dataService, 
@@ -58,7 +61,9 @@ namespace Application.Shared
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IServiceProvider serviceProvider,
-            ITriggersService triggersService)
+            ITriggersService triggersService, 
+            IValidationService validationService, 
+            IFieldSetterFactory fieldSetterFactory)
         {
             _userIdProvider = userIdProvider;
             _dataService = dataService;
@@ -66,6 +71,13 @@ namespace Application.Shared
             _fieldPropertiesService = fieldPropertiesService;
             _serviceProvider = serviceProvider;
             _triggersService = triggersService;
+            _validationService = validationService;
+            _fieldSetterFactory = fieldSetterFactory;
+        }
+
+        protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TFormDto dto)
+        {
+            return null;
         }
 
         public TDto Get(Guid id)
@@ -170,6 +182,11 @@ namespace Application.Shared
             return result;
         }
 
+        protected virtual DetailedValidationResult ValidateDto(TFormDto dto)
+        {
+            return _validationService.Validate(dto);
+        }
+
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             string entityName = typeof(TEntity).Name;
@@ -178,37 +195,54 @@ namespace Application.Shared
 
             ValidateResult mapResult;
             var dbSet = _dataService.GetDbSet<TEntity>();
+
+            // Validation step
+
+            var result = ValidateDto(entityFrom);
+
+            if (result.IsError)
+            {
+                return result;
+            }
+
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
+
+                if (entityFromDb == null)
+                    throw new Exception($"Order not found (Id = {entityFrom.Id})");
+
                 Log.Debug("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 
-                if (entityFromDb != null)
+                MapFromFormDtoToEntity(entityFromDb, entityFrom);
+
+                // Change handlers
+
+                var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
+
+                if (setter != null)
                 {
-                    mapResult = MapFromFormDtoToEntity(entityFromDb, entityFrom);
-                    Log.Debug("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-                    sw.Restart();
-
-                    if (mapResult.IsError)
-                    {
-                        return mapResult;
-                    }
-
-                    //dbSet.Update(entityFromDb);
-
-                    _triggersService.Execute();
-                    Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-                    sw.Restart();
-
-                    _dataService.SaveChanges();
-                    Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-
-                    return new ValidateResult
-                    {
-                        Id = entityFromDb.Id.ToString()
-                    };
+                    var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+                    setter.Appy(changes);
                 }
+
+                Log.Debug("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                //dbSet.Update(entityFromDb);
+
+                _triggersService.Execute();
+                Log.Debug("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                _dataService.SaveChanges();
+                Log.Debug("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+                return new ValidateResult
+                {
+                    Id = entityFromDb.Id.ToString()
+                };
             }
 
             var entity = new TEntity
@@ -216,14 +250,12 @@ namespace Application.Shared
                 Id = Guid.NewGuid()
             };
 
-            mapResult = MapFromFormDtoToEntity(entity, entityFrom);
+            // Mapping
+
+            MapFromFormDtoToEntity(entity, entityFrom);
+
             Log.Debug("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
-
-            if (mapResult.IsError)
-            {
-                return mapResult;
-            }
 
             dbSet.Add(entity);
 

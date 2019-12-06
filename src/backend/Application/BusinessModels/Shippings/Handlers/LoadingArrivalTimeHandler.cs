@@ -16,8 +16,7 @@ namespace Application.BusinessModels.Shippings.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder);
-                    setter.UpdateField(o => o.LoadingArrivalTime, newValue);
+                    updOrder.LoadingArrivalTime = newValue;
                 }
         }
 

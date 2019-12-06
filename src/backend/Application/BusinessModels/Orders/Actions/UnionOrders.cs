@@ -45,10 +45,8 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
-            var setter = new FieldSetter<Shipping>(shipping);
-
-            setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
-            setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
+            shipping.DeliveryType = DeliveryType.Delivery;
+            shipping.TarifficationType = TarifficationType.Ftl;
             
             shippingDbSet.Add(shipping);
             

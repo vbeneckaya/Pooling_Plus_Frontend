@@ -31,11 +31,9 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
-            var setter = new FieldSetter<Order>(order);
-
-            setter.UpdateField(o => o.Status, OrderState.Created, ignoreChanges: true);
-            setter.UpdateField(o => o.ShippingStatus, VehicleState.VehicleEmpty);
-            setter.UpdateField(o => o.DeliveryStatus, VehicleState.VehicleEmpty);
+            order.Status = OrderState.Created;
+            order.ShippingStatus = VehicleState.VehicleEmpty;
+            order.DeliveryStatus = VehicleState.VehicleEmpty;
 
             var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
 

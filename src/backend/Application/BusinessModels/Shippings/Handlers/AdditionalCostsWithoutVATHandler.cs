@@ -11,10 +11,8 @@ namespace Application.BusinessModels.Shippings.Handlers
         {
             if (!shipping.ManualTotalDeliveryCost)
             {
-                var setter = new FieldSetter<Shipping>(shipping);
-
                 decimal newTotalValue = shipping.DeliveryCostWithoutVAT ?? 0M + shipping.ReturnCostWithoutVAT ?? 0M + shipping.AdditionalCostsWithoutVAT ?? 0M;
-                setter.UpdateField(s => s.TotalDeliveryCost, newTotalValue);
+                shipping.TotalDeliveryCost = newTotalValue;
             }
         }
 
