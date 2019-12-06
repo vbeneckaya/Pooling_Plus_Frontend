@@ -64,12 +64,25 @@ namespace Application.Services.Users
                                        .Where(x => carrierIds.Contains(x.Id))
                                        .ToDictionary(x => x.Id.ToString());
 
+            var roleIds = dtos.Where(x => !string.IsNullOrEmpty(x.RoleId?.Value))
+                              .Select(x => x.RoleId.Value.ToGuid())
+                              .ToList();
+            var roles = _dataService.GetDbSet<Role>()
+                                    .Where(x => roleIds.Contains(x.Id))
+                                    .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
                     && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
                 {
                     dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.RoleId?.Value)
+                    && roles.TryGetValue(dto.RoleId.Value, out Role role))
+                {
+                    dto.RoleId.Name = role.Name;
                 }
             }
         }
@@ -83,7 +96,7 @@ namespace Application.Services.Users
                 Id = entity.Id.ToString(),
                 UserName = entity.Name,
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
-                RoleId = entity.RoleId.ToString(),
+                RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
@@ -99,7 +112,7 @@ namespace Application.Services.Users
 
             entity.Email = dto.Email;
             entity.Name = dto.UserName;
-            entity.RoleId = Guid.Parse(dto.RoleId);
+            entity.RoleId = Guid.Parse(dto.RoleId?.Value);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
