@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.PickingTypes;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -15,8 +16,9 @@ namespace Application.Services.PickingTypes
 {
     public class PickingTypesService : DictonaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
-        public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)

@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Injections;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -14,8 +15,9 @@ namespace Application.Services.Injections
 {
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
-        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Injection entity, InjectionDto dto)

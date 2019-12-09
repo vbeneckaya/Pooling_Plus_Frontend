@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Articles;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -21,8 +22,8 @@ namespace Application.Services.Articles
         private readonly IHistoryService _historyService;
 
         public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                               IHistoryService historyService) 
-            : base(dataService, userProvider, triggersService, validationService)
+                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;

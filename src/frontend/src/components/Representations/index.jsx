@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {Button, Confirm, Dropdown, Form, Input, Message, Modal, Popup} from 'semantic-ui-react';
@@ -7,7 +7,7 @@ import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
 import {
     deleteRepresentationRequest,
-    editRepresentationRequest,
+    editRepresentationRequest, getRepresentationsRequest,
     representationNameSelector,
     representationSelector,
     representationsSelector,
@@ -37,6 +37,11 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
 
     const list = useSelector(state => representationsSelector(state));
 
+    useEffect(() => {
+        console.log('representationFields', representationFields);
+        setSelectedFields(representationFields);
+    }, [representationFields]);
+
     const newOpen = () => {
         setIsNew(true);
         setName('');
@@ -52,6 +57,9 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     };
 
     const onOpen = () => {
+        dispatch(getRepresentationsRequest({
+            key: gridName
+        }));
         setModalOpen(true);
     };
 
@@ -181,7 +189,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         <Dropdown.Menu>
                             <Dropdown.Item
                                 text={t('default_representation')}
-                                onClick={() => changeRepresentation(null)}
+                                onClick={() => changeRepresentation(null, true)}
                             />
                             {representations && Object.keys(representations).length ? (
                                 <>
@@ -190,7 +198,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                                         .map(key => (
                                             <Dropdown.Item
                                                 text={key}
-                                                onClick={() => changeRepresentation(key)}
+                                                onClick={() => changeRepresentation(key, true)}
                                             />
                                         ))}
                                 </>

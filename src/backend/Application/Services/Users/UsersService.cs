@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
@@ -17,8 +18,9 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -55,7 +57,7 @@ namespace Application.Services.Users
             }
         }
 
-        protected override void FillLookupNames(IEnumerable<UserDto> dtos)
+        protected override IEnumerable<UserDto> FillLookupNames(IEnumerable<UserDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -64,6 +66,13 @@ namespace Application.Services.Users
                                        .Where(x => carrierIds.Contains(x.Id))
                                        .ToDictionary(x => x.Id.ToString());
 
+            var roleIds = dtos.Where(x => !string.IsNullOrEmpty(x.RoleId?.Value))
+                              .Select(x => x.RoleId.Value.ToGuid())
+                              .ToList();
+            var roles = _dataService.GetDbSet<Role>()
+                                    .Where(x => roleIds.Contains(x.Id))
+                                    .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
@@ -71,6 +80,14 @@ namespace Application.Services.Users
                 {
                     dto.CarrierId.Name = carrier.Title;
                 }
+
+                if (!string.IsNullOrEmpty(dto.RoleId?.Value)
+                    && roles.TryGetValue(dto.RoleId.Value, out Role role))
+                {
+                    dto.RoleId.Name = role.Name;
+                }
+
+                yield return dto;
             }
         }
 
@@ -83,7 +100,7 @@ namespace Application.Services.Users
                 Id = entity.Id.ToString(),
                 UserName = entity.Name,
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
-                RoleId = entity.RoleId.ToString(),
+                RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
@@ -99,7 +116,7 @@ namespace Application.Services.Users
 
             entity.Email = dto.Email;
             entity.Name = dto.UserName;
-            entity.RoleId = Guid.Parse(dto.RoleId);
+            entity.RoleId = Guid.Parse(dto.RoleId?.Value);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();

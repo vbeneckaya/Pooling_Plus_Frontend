@@ -9,11 +9,11 @@ using FieldInfo = Domain.Services.FieldProperties.FieldInfo;
 
 namespace Application.Shared.Excel.Columns
 {
-    public class EnumExcelColumn<TEnum> : IExcelColumn where TEnum : Enum
+    public class StateExcelColumn<TEnum> : IExcelColumn where TEnum : Enum
     {
         private readonly string _lang;
 
-        public EnumExcelColumn(string lang)
+        public StateExcelColumn(string lang)
         {
             _lang = lang;
         }
@@ -25,7 +25,7 @@ namespace Application.Shared.Excel.Columns
 
         public void FillValue(object entity, ExcelRange cell)
         {
-            string value = (Property.GetValue(entity) as LookUpDto )?.Value;
+            string value = Property.GetValue(entity)?.ToString();
             value = (value ?? string.Empty).Translate(_lang);
             cell.Value = value;
         }
@@ -54,7 +54,7 @@ namespace Application.Shared.Excel.Columns
                     validCellValue = valueNames.FirstOrDefault(n => n.ToLower() == lowerCellValue);
                 }
 
-                Property.SetValue(entity, new LookUpDto(validCellValue));
+                Property.SetValue(entity, validCellValue);
             }
 
             return null;

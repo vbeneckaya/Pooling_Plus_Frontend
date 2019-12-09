@@ -100,6 +100,8 @@ namespace Application.Shared
             switch (field.FieldType)
             {
                 case FieldType.Date: return ValidateDate(field, value);
+                case FieldType.Time: return ValidateTime(field, value);
+
                 default: return true;
             }
         }
@@ -114,6 +116,18 @@ namespace Application.Shared
         {
             var dateValue = value.ToDate();
             return string.IsNullOrEmpty(value) || dateValue.HasValue;
+        }
+
+        /// <summary>
+        /// Validate time
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool ValidateTime(FieldInfo field, string value)
+        {
+            var timeValue = value.ToTimeSpan();
+            return string.IsNullOrEmpty(value) || timeValue.HasValue;
         }
     }
 }

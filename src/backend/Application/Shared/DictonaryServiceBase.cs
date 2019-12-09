@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -30,14 +31,18 @@ namespace Application.Shared
 
         protected readonly ITriggersService _triggersService;
 
+        protected readonly IFieldDispatcherService _fieldDispatcherService;
+
         private readonly IValidationService _validationService;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService)
         {
             _dataService = dataService;
             _userProvider = userProvider;
             _triggersService = triggersService;
             _validationService = validationService;
+            _fieldDispatcherService = fieldDispatcherService;
         }
 
         public TListDto Get(Guid id)
@@ -54,7 +59,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(result);
+            result = FillLookupNames(result);
             Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
@@ -99,7 +104,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(a.Items);
+            a.Items = FillLookupNames(a.Items).ToList();
             Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
@@ -240,7 +245,7 @@ namespace Application.Shared
             Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(dtos);
+            dtos = FillLookupNames(dtos);
             Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -341,13 +346,14 @@ namespace Application.Shared
             return _validationService.Validate(dto);
         }
 
-        protected virtual void FillLookupNames(IEnumerable<TListDto> dtos)
+        protected virtual IEnumerable<TListDto> FillLookupNames(IEnumerable<TListDto> dtos)
         {
+            return dtos;
         }
 
-        protected void FillLookupNames(TListDto dto)
+        protected TListDto FillLookupNames(TListDto dto)
         {
-            FillLookupNames(new[] { dto });
+            return FillLookupNames(new[] { dto }).FirstOrDefault();
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
@@ -359,7 +365,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TListDto>(_dataService, _userProvider);
+            return new ExcelMapper<TListDto>(_dataService, _userProvider, _fieldDispatcherService);
         }
 
         public ValidateResult Delete(Guid id)

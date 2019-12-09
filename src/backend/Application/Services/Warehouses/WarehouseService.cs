@@ -10,6 +10,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -28,8 +29,8 @@ namespace Application.Services.Warehouses
         private readonly ICleanAddressService _cleanAddressService;
 
         public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService, validationService)
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -63,7 +64,7 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
-        protected override void FillLookupNames(IEnumerable<WarehouseDto> dtos)
+        protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
         {
             var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
                                      .Select(x => x.PickingTypeId.Value.ToGuid())
@@ -79,6 +80,7 @@ namespace Application.Services.Warehouses
                 {
                     dto.PickingTypeId.Name = pickingType.Name;
                 }
+                yield return dto;
             }
         }
 
@@ -137,8 +139,8 @@ namespace Application.Services.Warehouses
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
-            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
-                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
+            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
 
@@ -146,11 +148,6 @@ namespace Application.Services.Warehouses
         {
             var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetPickingTypeNameById(Guid id)
-        {
-            return GetPickingTypeNameById((Guid?)id);
         }
 
         private string GetPickingTypeNameById(Guid? id)
