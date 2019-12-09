@@ -20,11 +20,13 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
+        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
 
-        public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
+        public UnionOrders(ICommonDataService dataService, IHistoryService historyService, IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer)
             : base(dataService)
         {
             _historyService = historyService;
+            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             Color = AppColor.Orange;
         }
         
@@ -46,8 +48,12 @@ namespace Application.BusinessModels.Orders.Actions
             var setter = new FieldSetter<Shipping>(shipping, _historyService);
 
             setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
-            setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
             
+            var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
+
+            if (tarifficationType != shipping.TarifficationType)
+                setter.UpdateField(s => s.TarifficationType, tarifficationType);
+
             setter.SaveHistoryLog();
 
             shippingDbSet.Add(shipping);

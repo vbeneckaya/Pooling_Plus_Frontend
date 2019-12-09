@@ -188,6 +188,8 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.DeliveryCost, dto.DeliveryCost, new DeliveryCostHandler(!isInjection));
             setter.UpdateField(e => e.ActualDeliveryCost, dto.ActualDeliveryCost);
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
+            if (!string.IsNullOrEmpty(dto.TarifficationType?.Value))
+                setter.UpdateField(e => e.TarifficationType, MapFromStateDto<TarifficationType>(dto.TarifficationType.Value));
 
             /*end of map dto to entity fields*/
 

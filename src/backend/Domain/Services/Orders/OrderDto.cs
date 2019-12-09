@@ -210,5 +210,8 @@ namespace Domain.Services.Orders
         public decimal? ActualDeliveryCost { get; set; }
 
         public string Source { get; set; }
+        
+        [FieldType(FieldType.Enum, source: nameof(TarifficationType))]
+        public LookUpDto TarifficationType { get; set; }
     }
 }

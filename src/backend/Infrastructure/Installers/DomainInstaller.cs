@@ -92,6 +92,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ICommonDataService, CommonDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+            services.AddScoped<IShippingTarifficationTypeDeterminer, ShippingTarifficationTypeDeterminer>();
 
             services.AddScoped<ITriggersService, TriggersService>();
 
@@ -171,6 +172,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
+            services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
