@@ -117,19 +117,20 @@ namespace Application.Shared.Excel
 
         private void FillDefaultColumnOrder(List<string> columns)
         {
-            List<string> propNames;
             if (columns != null && columns.Any())
             {
-                propNames = columns.Select(s => s.ToLower()).ToList();
+                List<string> propNames = columns.Select(s => s.ToLower()).ToList();
+                foreach (var column in _columns)
+                {
+                    column.Value.ColumnIndex = propNames.IndexOf(column.Key);
+                }
             }
             else
             {
-                propNames = typeof(TDto).GetProperties().Select(p => p.Name.ToLower()).ToList();
-            }
-
-            foreach (var column in _columns)
-            {
-                column.Value.ColumnIndex = propNames.IndexOf(column.Key);
+                foreach (var column in _columns)
+                {
+                    column.Value.ColumnIndex = column.Value.Field.OrderNumber;
+                }
             }
 
             int columnIndex = 0;
