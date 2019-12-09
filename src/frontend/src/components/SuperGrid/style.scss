@@ -260,6 +260,7 @@ tbody {
     height: max-content;
     z-index: 2;
     min-height: 88px;
+    flex-direction: column !important;
 
     .row {
         padding-top: 0 !important;
