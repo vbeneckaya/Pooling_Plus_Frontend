@@ -41,9 +41,15 @@ namespace Application.BusinessModels.Orders.Actions
             if (shipping.Status == ShippingState.ShippingConfirmed)
             {
                 shipping.Status = ShippingState.ShippingRequestSent;
+
+                string orderNumbers = string.Join(", ", orders.Select(x => x.OrderNumber));
+                _historyService.Save(shipping.Id, "shippingAddOrdersResendRequest", shipping.ShippingNumber, orderNumbers);
             }
+
+            var allOrders = _dataService.GetDbSet<Order>().Where(x => x.ShippingId == shipping.Id).ToList();
+            allOrders.AddRange(orders);
             
-            UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
+            UnionOrderInShipping(allOrders, orders, shipping, _historyService);
 
             return new AppActionResult
             {

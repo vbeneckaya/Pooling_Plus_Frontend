@@ -52,7 +52,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             shippingDbSet.Add(shipping);
             
-            UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
+            UnionOrderInShipping(orders, orders, shipping, _historyService);
 
             return new AppActionResult
             {
