@@ -153,6 +153,10 @@ namespace Domain.Persistables
         /// </summary>
         public TimeSpan? ClientAvisationTime { get; set; }
         /// <summary>
+        /// Время авизации у клиента выбрано вручную
+        /// </summary>
+        public bool ManualClientAvisationTime { get; set; }
+        /// <summary>
         /// Комментарии по заказу
         /// </summary>
         public string OrderComments { get; set; }

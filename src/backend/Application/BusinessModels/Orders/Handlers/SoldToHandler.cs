@@ -39,6 +39,11 @@ namespace Application.BusinessModels.Orders.Handlers
                     setter.UpdateField(o => o.DeliveryCity, soldToWarehouse.City);
                     setter.UpdateField(o => o.DeliveryRegion, soldToWarehouse.Region);
                     setter.UpdateField(o => o.DeliveryType, soldToWarehouse.DeliveryType);
+
+                    if (!order.ManualClientAvisationTime)
+                    {
+                        setter.UpdateField(o => o.ClientAvisationTime, soldToWarehouse.AvisaleTime);
+                    }
                 }
                 else
                 {
