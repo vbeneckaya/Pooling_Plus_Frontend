@@ -80,6 +80,11 @@ namespace Application.Shared
             return null;
         }
 
+        protected virtual IChangeTracker ConfigureChangeTacker()
+        {
+            return null;
+        }
+
         public TDto Get(Guid id)
         {
             string entityName = typeof(TEntity).Name;
@@ -285,6 +290,14 @@ namespace Application.Shared
             _triggersService.Execute();
             Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
+
+
+            var trackConfig = this.ConfigureChangeTacker();
+
+            if (trackConfig != null)
+            {
+                trackConfig.LogTrackedChanges<TEntity>();
+            }
 
             _dataService.SaveChanges();
             Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);

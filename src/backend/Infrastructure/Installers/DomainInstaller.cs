@@ -125,6 +125,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<IValidationService, ValidationService>();
             services.AddScoped<IFieldSetterFactory, FieldSetterFactory>();
+            services.AddScoped<IChangeTrackerFactory, ChangeTrackerFactory>();
 
             /*end of add service implementation*/
 

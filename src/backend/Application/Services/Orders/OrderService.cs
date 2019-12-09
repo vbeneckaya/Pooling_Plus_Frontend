@@ -32,6 +32,8 @@ namespace Application.Services.Orders
     {
         private readonly IHistoryService _historyService;
 
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
+
         public OrdersService(
             IHistoryService historyService,
             IAuditDataService dataService,
@@ -41,7 +43,8 @@ namespace Application.Services.Orders
             IServiceProvider serviceProvider,
             ITriggersService triggersService,
             IValidationService validationService,
-            IFieldSetterFactory fieldSetterFactory)
+            IFieldSetterFactory fieldSetterFactory,
+            IChangeTrackerFactory changeTrackerFactory)
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService, validationService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
@@ -59,6 +62,12 @@ namespace Application.Services.Orders
                 WeightKg = orders.Sum(o => o.WeightKg ?? 0M)
             };
             return result;
+        }
+
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Order>();
         }
 
         public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
