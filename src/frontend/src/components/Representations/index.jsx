@@ -189,7 +189,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         <Dropdown.Menu>
                             <Dropdown.Item
                                 text={t('default_representation')}
-                                onClick={() => changeRepresentation(null)}
+                                onClick={() => changeRepresentation(null, true)}
                             />
                             {representations && Object.keys(representations).length ? (
                                 <>
@@ -198,7 +198,7 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                                         .map(key => (
                                             <Dropdown.Item
                                                 text={key}
-                                                onClick={() => changeRepresentation(key)}
+                                                onClick={() => changeRepresentation(key, true)}
                                             />
                                         ))}
                                 </>

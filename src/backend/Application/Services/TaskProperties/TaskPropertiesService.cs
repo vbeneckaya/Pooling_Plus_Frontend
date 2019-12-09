@@ -3,6 +3,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.TaskProperties;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -14,8 +15,9 @@ namespace Application.Services.TaskProperties
 {
     public class TaskPropertiesService : DictonaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
     {
-        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                     IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(TaskProperty entity, TaskPropertyDto dto)

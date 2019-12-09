@@ -84,7 +84,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(result);
+            result = FillLookupNames(result);
             Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
@@ -104,7 +104,7 @@ namespace Application.Shared
             Log.Information("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(result);
+            result = (TFormDto)FillLookupNames(result);
             Log.Information("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
@@ -157,7 +157,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(a.Items);
+            a.Items = FillLookupNames(a.Items).ToList();
             Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
@@ -592,13 +592,14 @@ namespace Application.Shared
             return result;
         }
 
-        protected virtual void FillLookupNames(IEnumerable<TDto> dtos)
+        protected virtual IEnumerable<TDto> FillLookupNames(IEnumerable<TDto> dtos)
         {
+            return dtos;
         }
 
-        protected void FillLookupNames(TDto dto)
+        protected TDto FillLookupNames(TDto dto)
         {
-            FillLookupNames(new[] { dto });
+            return FillLookupNames(new[] { dto }).FirstOrDefault();
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
@@ -693,7 +694,7 @@ namespace Application.Shared
             Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(dtos);
+            dtos = FillLookupNames(dtos).ToList();
             Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -706,12 +707,12 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TFormDto>(_dataService, _userIdProvider);
+            return new ExcelMapper<TFormDto>(_dataService, _userIdProvider, _fieldDispatcherService);
         }
 
         protected virtual ExcelMapper<TDto> CreateExportExcelMapper()
         {
-            return new ExcelMapper<TDto>(_dataService, _userIdProvider);
+            return new ExcelMapper<TDto>(_dataService, _userIdProvider, _fieldDispatcherService);
         }
 
         protected TimeSpan? ParseTime(string value)

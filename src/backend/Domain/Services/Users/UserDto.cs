@@ -16,8 +16,8 @@ namespace Domain.Services.Users
 
         public string Role { get; set; }
 
-        [FieldType(FieldType.Text), IsRequired]
-        public string RoleId { get; set; }
+        [FieldType(FieldType.Select), IsRequired]
+        public LookUpDto RoleId { get; set; }
 
         public string Password { get; set; }
 
