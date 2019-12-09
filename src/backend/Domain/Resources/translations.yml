@@ -519,6 +519,7 @@ ru:
   Warehouse.WarehouseName.ValueIsRequired: "Укажите Наименование склада"
   Warehouse.DeliveryType.ValueIsRequired: "Укажите Способ доставки"
   Warehouse.DuplicatedRecord: "Склад доставки с таким значением Sold To уже существует"
+  Warehouse.AvisaleTime.InvalidValueFormat: "Время авизации имеет неверный формат"
 
   waybill: "Транспортная накладная"
   waybillTorg12: "Товарная накладная(Торг-12)"
@@ -1058,6 +1059,7 @@ en:
   Warehouse.City.ValueIsRequired: "City cannot be empty"
   Warehouse.Region.ValueIsRequired: "Region cannot be empty"
   Warehouse.DuplicatedRecord: "Delivery warehouse with the same Sold To already exists"
+  Warehouse.AvisaleTime.InvalidValueFormat: "Avisale time has invalid format"
 
   waybill: "Waybill"
   waybillTorg12: "Waybill Torg-12"
