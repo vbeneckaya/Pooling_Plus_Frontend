@@ -180,7 +180,7 @@ const DroppableLabel = ({ items, droppableId, name, t, search }) => (
                         padding: 5,
                         width: '100%',
                         border: '1px solid #eee',
-                        height: 'calc(100vh - 500px)',
+                        height: 'calc(55vh - 50px)',
                         minHeight: 200,
                         overflowY: 'auto',
                     }}
