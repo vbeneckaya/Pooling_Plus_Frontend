@@ -20,23 +20,19 @@ namespace Application.Shared
             Func<T, string> nameLoader = null)
         {
             T oldValue = property.Compile()(Entity);
-
-            if (Equals(oldValue, newValue)) return false;
-            
-            var propertyBody = property.Body as MemberExpression;
-
-            if (propertyBody == null) return false;
-           
-            var propertyInfo = propertyBody.Member as PropertyInfo;
-
-            if (propertyInfo == null) return false;
-
-            string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
-            //if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
-            //{
-            //    _validationErrors.Add($"{propertyInfo.Name} is Read Only");
-            //    return false;
-            //}
+            if (!Equals(oldValue, newValue))
+            {
+                var propertyBody = property.Body as MemberExpression;
+                if (propertyBody != null)
+                {
+                    var propertyInfo = propertyBody.Member as PropertyInfo;
+                    if (propertyInfo != null)
+                    {
+                        string modelFieldName = propertyInfo.Name.ToLowerFirstLetter();
+                        if (_readOnlyFields != null && _readOnlyFields.Contains(modelFieldName))
+                        {
+                            return false;
+                        }
 
             //if (fieldHandler != null)
             //{

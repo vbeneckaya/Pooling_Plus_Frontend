@@ -14,7 +14,7 @@ namespace API.Controllers
         [HttpPost("search")]
         public IEnumerable<StateDto> GetAll()
         {
-            var values = Enum.GetValues(typeof(T));
+            var values = Extensions.GetOrderedEnum<T>();
             var result = new List<StateDto>();
             foreach (var value in values)
             {
@@ -34,7 +34,7 @@ namespace API.Controllers
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var values = Enum.GetValues(typeof(T));
+            var values = Extensions.GetOrderedEnum<T>();
             var result = new List<LookUpDto>();
             foreach (var value in values)
             {

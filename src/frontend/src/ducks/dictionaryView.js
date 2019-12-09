@@ -41,7 +41,7 @@ const initial = {
     list: [],
     card: {},
     totalCount: 0,
-    error: null,
+    error: [],
     progress: false,
     cardProgress: false,
     importProgress: false,
@@ -98,7 +98,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 card: {},
-                error: null,
+                error: [],
             };
         case CLEAR_ERROR:
             return {
@@ -108,7 +108,7 @@ export default (state = initial, { type, payload }) => {
         case SAVE_DICTIONARY_CARD_SUCCESS:
             return {
                 ...state,
-                error: null,
+                error: [],
                 progress: false,
             };
         case SAVE_DICTIONARY_CARD_ERROR:
@@ -272,7 +272,7 @@ export function* getListSaga({ payload }) {
 
         yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { ...result, isConcat } });
     } catch (error) {
-        yield put({ type: GET_DICTIONARY_LIST_ERROR, payload: error });
+        yield put({ type: GET_DICTIONARY_LIST_ERROR });
     }
 }
 
@@ -361,8 +361,7 @@ function* exportToExcelSaga({ payload }) {
         yield put({ type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS });
     } catch (e) {
         yield put({
-            type: DICTIONARY_EXPORT_TO_EXCEL_ERROR,
-            payload: e,
+            type: DICTIONARY_EXPORT_TO_EXCEL_ERROR
         });
     }
 }

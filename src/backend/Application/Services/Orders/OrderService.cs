@@ -293,7 +293,52 @@ namespace Application.Services.Orders
             }
         }
 
-        public override void MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
+        protected override void FillLookupNames(IEnumerable<OrderDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
+                                     .Select(x => x.PickingTypeId.Value.ToGuid())
+                                     .ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                                           .Where(x => pickingTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var shippingWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
+                                           .Select(x => x.ShippingWarehouseId.Value.ToGuid())
+                                           .ToList();
+            var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
+                                                 .Where(x => shippingWarehouseIds.Contains(x.Id))
+                                                 .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
+                    && pickingTypes.TryGetValue(dto.PickingTypeId.Value, out PickingType pickingType))
+                {
+                    dto.PickingTypeId.Name = pickingType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value)
+                    && shippingWarehouses.TryGetValue(dto.ShippingWarehouseId.Value, out ShippingWarehouse shippingWarehouse))
+                {
+                    dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
+                }
+            }
+        }
+
+        public override ValidateResult MapFromFormDtoToEntity(Order entity, OrderFormDto dto)
         {
             dto.ArticlesCount = (dto.Items?.Count).GetValueOrDefault();
 

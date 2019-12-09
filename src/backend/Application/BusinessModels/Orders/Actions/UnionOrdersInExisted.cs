@@ -21,11 +21,9 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
 
-        private readonly ICommonDataService _dataService;
-
         public UnionOrdersInExisted(ICommonDataService dataService, IHistoryService historyService)
+            : base(dataService)
         {
-            _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
         }
@@ -39,6 +37,11 @@ namespace Application.BusinessModels.Orders.Actions
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
+
+            if (shipping.Status == ShippingState.ShippingConfirmed)
+            {
+                shipping.Status = ShippingState.ShippingRequestSent;
+            }
             
             UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
 

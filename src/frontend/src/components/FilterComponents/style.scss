@@ -17,8 +17,6 @@
 }
 
 .small-column {
-    max-width: 50px !important;
-    min-width: 50px !important;
     width: 50px !important;
     padding-left: 15px !important;
     position: sticky;
@@ -86,6 +84,7 @@
     margin-top: 10px;
     min-width: 220px;
     font-size: 12px !important;
+    display: grid;
 
     .field {
         margin-bottom: 7px !important;
@@ -122,6 +121,7 @@
 .facet {
     display: flex;
     align-items: center;
+    width: 100%;
     &-field {
         -webkit-line-clamp: 2;
         overflow: hidden;

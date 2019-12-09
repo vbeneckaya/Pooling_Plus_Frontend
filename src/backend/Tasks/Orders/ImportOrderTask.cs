@@ -3,6 +3,7 @@ using Domain.Services.Injections;
 using Domain.Services.Orders;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Warehouses;
+using Domain.Shared;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Renci.SshNet;
@@ -162,9 +163,11 @@ namespace Tasks.Orders
 
                 decimal weightUomCoeff = docRoot.ParseUom("E1EDK01/GEWEI", new[] { "GRM", "GR", "KGM", "KG" }, new[] { 0.001M, 0.001M, 1M, 1M }, 1);
 
+                string soldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
+
                 dto.OrderNumber = orderNumber;
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
-                dto.SoldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0') ?? dto.SoldTo;
+                dto.SoldTo = string.IsNullOrEmpty(soldTo) ? dto.SoldTo : new LookUpDto(soldTo);
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
                 dto.BoxesCount = docRoot.ParseDecimal("E1EDK01/Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
@@ -173,8 +176,8 @@ namespace Tasks.Orders
                 string shippingAddressCode = docRoot.SelectSingleNode("E1EDP01/WERKS")?.InnerText;
                 var shippingWarehouse = shippingWarehousesService.GetByCode(shippingAddressCode);
                 dto.ShippingAddress = shippingWarehouse?.Address ?? dto.ShippingAddress;
-                dto.ShippingCity = shippingWarehouse?.City ?? dto.ShippingCity;
-                dto.ShippingWarehouseId = shippingWarehouse?.Id.ToString() ?? dto.ShippingWarehouseId;
+                dto.ShippingCity = string.IsNullOrEmpty(shippingWarehouse?.City) ? dto.ShippingCity : new LookUpDto(shippingWarehouse.City);
+                dto.ShippingWarehouseId = shippingWarehouse?.Id == null ? dto.ShippingWarehouseId : new LookUpDto(shippingWarehouse.Id.ToString(), shippingWarehouse.WarehouseName);
 
                 string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
                 string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
@@ -184,12 +187,12 @@ namespace Tasks.Orders
                     deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
 
-                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo);
+                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
                 if (deliveryWarehouse == null)
                 {
                     dto.ClientName = null;
                     dto.DeliveryAddress = deliveryAddress;
-                    dto.DeliveryCity = deliveryCity;
+                    dto.DeliveryCity = string.IsNullOrEmpty(deliveryCity) ? null : new LookUpDto(deliveryCity);
                     dto.DeliveryRegion = null;
                     dto.PickingTypeId = null;
                     dto.TransitDays = null;
@@ -201,7 +204,7 @@ namespace Tasks.Orders
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
                     updWarehouses.Add(deliveryWarehouse);
 
-                    dto.DeliveryCity = deliveryWarehouse.City;
+                    dto.DeliveryCity = string.IsNullOrEmpty(deliveryWarehouse.City) ? null : new LookUpDto(deliveryWarehouse.City);
                     dto.DeliveryAddress = deliveryWarehouse.Address;
                 }
 
@@ -220,7 +223,7 @@ namespace Tasks.Orders
                 if (missedRequiredFields.Any())
                 {
                     string fields = string.Join(", ", missedRequiredFields);
-                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ ({processedCount}/{totalCount}) не создан.", 
+                    Log.Error("В файле {fileName} отсутствуют следующие обязательные поля: {fields}. Заказ ({processedCount}/{totalCount}) не создан.",
                               fileName, fields, processedCount, totalCount);
                 }
                 else
@@ -244,7 +247,7 @@ namespace Tasks.Orders
                         string nart = itemRoot.SelectSingleNode("E1EDP19/IDTNR")?.InnerText?.TrimStart('0');
                         if (string.IsNullOrEmpty(nart))
                         {
-                            Log.Warning("Пустое значение NART в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.", 
+                            Log.Warning("Пустое значение NART в позиции #{entryInd} заказа ({processedCount}/{totalCount}) из файла {fileName}, пропуск.",
                                         entryInd, processedCount, totalCount, fileName);
                             continue;
                         }
@@ -319,7 +322,7 @@ namespace Tasks.Orders
             {
                 yield return "Плательщик";
             }
-            if (string.IsNullOrEmpty(dto.SoldTo))
+            if (string.IsNullOrEmpty(dto.SoldTo?.Value))
             {
                 yield return "Номер заказа клиента";
             }

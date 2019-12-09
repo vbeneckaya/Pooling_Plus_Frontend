@@ -31,6 +31,4 @@ const HeaderCellComponent = ({row}) => {
     );
 };
 
-export default React.memo(HeaderCellComponent, (prevProps, nextProps) => {
-    return prevProps.row.name === nextProps.row.name
-});
+export default React.memo(HeaderCellComponent);

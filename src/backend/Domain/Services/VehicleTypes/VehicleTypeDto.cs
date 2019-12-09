@@ -1,6 +1,7 @@
 ﻿using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.VehicleTypes
 {
@@ -13,10 +14,10 @@ namespace Domain.Services.VehicleTypes
         public string Name { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(Tonnages)), OrderNumber(2)]
-        public string TonnageId { get; set; }
+        public LookUpDto TonnageId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(BodyTypes)), OrderNumber(3)]
-        public string BodyTypeId { get; set; }
+        public LookUpDto BodyTypeId { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(4)]
         public string PalletsCount { get; set; }

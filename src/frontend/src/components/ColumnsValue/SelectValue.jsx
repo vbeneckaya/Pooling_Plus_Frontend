@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../ducks/lookup';
 import TextCropping from './TextCropping';
 
-const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width}) => {
-    const dispatch = useDispatch();
+const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width, valueText}) => {
+    /*const dispatch = useDispatch();
 
     let lookup = useSelector(state => valuesListSelector(state, source)) || [];
 
@@ -20,9 +20,9 @@ const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width}
     }, []);
 
     const valueText = lookup && lookup.length && lookup.find(x => x.value === value);
-
+*/
     return <TextCropping width={width}
-                         indexColumn={indexColumn}>{showRawValue ? value : valueText ? valueText.name : ''}</TextCropping>;
+                         indexColumn={indexColumn}>{value ? showRawValue ? value : valueText : ''}</TextCropping>;
 };
 
 export default SelectValue;

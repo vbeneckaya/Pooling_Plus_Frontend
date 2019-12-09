@@ -77,6 +77,25 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
+        protected override void FillLookupNames(IEnumerable<WarehouseDto> dtos)
+        {
+            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
+                                     .Select(x => x.PickingTypeId.Value.ToGuid())
+                                     .ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                                           .Where(x => pickingTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
+                    && pickingTypes.TryGetValue(dto.PickingTypeId.Value, out PickingType pickingType))
+                {
+                    dto.PickingTypeId.Name = pickingType.Name;
+                }
+            }
+        }
+
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
@@ -195,12 +214,13 @@ namespace Application.Services.Warehouses
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))

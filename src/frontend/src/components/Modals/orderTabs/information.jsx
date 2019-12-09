@@ -1,8 +1,8 @@
-import React, {useEffect, useCallback} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Form, Grid, Segment} from 'semantic-ui-react';
-import {useDispatch, useSelector} from 'react-redux';
-import {valuesListSelector} from '../../../ducks/lookup';
+import React, { useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Form, Grid, Segment } from 'semantic-ui-react';
+import { useDispatch, useSelector } from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../ducks/lookup';
 import FormField from '../../BaseComponents';
 import {
     BIG_TEXT_TYPE,
@@ -12,51 +12,31 @@ import {
     SOLD_TO_TYPE,
     TEXT_TYPE,
 } from '../../../constants/columnTypes';
-import {addError, clearError} from '../../../ducks/gridCard';
+import { addError, clearError } from '../../../ducks/gridCard';
 
 const Information = ({
-                         form,
-                         onChange,
-                         isNotUniqueNumber,
-                         uniquenessNumberCheck,
-                         settings,
-                         error,
-                         load,
-                     }) => {
+    form,
+    onChange,
+    isNotUniqueNumber,
+    uniquenessNumberCheck,
+    settings,
+    error,
+    load,
+}) => {
     const { t } = useTranslation();
-    const dispatch = useDispatch();
 
-    const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-
-    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
-
+    const handleChangeSoldTo = useCallback((e, {name, value}) => {
+        console.log('value');
         onChange(e, {
             name,
-            value,
+            value: {
+                value: value.value,
+                name: value.value
+            },
         });
-        onChange(e, {name: 'clientName', value: ext.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: ext.address});
+        onChange(e, {name: 'clientName', value: value.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: value.address});
     }, []);
-
-    useEffect(
-        () => {
-            if (
-                form.soldTo &&
-                valuesList.length &&
-                !valuesList.find(item => item.value === form.soldTo)
-            ) {
-                dispatch(
-                    addError({
-                        name: 'soldTo',
-                        message: t('soldTo_error'),
-                    }),
-                );
-            } else {
-                dispatch(clearError('soldTo'));
-            }
-        },
-        [valuesList, form.soldTo],
-    );
 
 
     return (

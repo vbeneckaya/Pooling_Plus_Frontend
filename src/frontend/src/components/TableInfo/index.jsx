@@ -8,9 +8,10 @@ import Search from '../Search';
 import './style.scss';
 import CellValue from '../ColumnsValue';
 import { withTranslation } from 'react-i18next';
-import HeaderCellComponent from "./components/header-cell";
-import BodyCellComponent from "./components/body-cell";
-import _ from "lodash";
+import HeaderCellComponent from './components/header-cell';
+import BodyCellComponent from './components/body-cell';
+import _ from 'lodash';
+import BodyCell from '../SuperGrid/components/body_cell';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -25,33 +26,13 @@ class TableInfo extends Component {
         filter: '',
     };
 
-    shouldComponentUpdate(nextProps) {
-        /* if (nextProps.list.length !== this.props.list.length) {
-             return true
-         }
-
-         if (this.props.loading !== nextProps.loading) {
-             return true
-         }
-
-         if (!_.isEqual(Array.from(nextProps.headerRow), Array.from(this.props.headerRow))) {
-             return true
-         }
-
-         if (_.isEqual(nextProps.list, this.props.list)) {
-             return false
-         }*/
-
-        return true
-    }
-
     componentDidMount() {
         this.load();
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.name !== prevProps.name) {
-            console.log('listupdate')
+            console.log('listupdate');
         }
     }
 
@@ -111,7 +92,7 @@ class TableInfo extends Component {
     };
 
     exportToExcel = () => {
-        this.props.exportToExcel && this.props.exportToExcel(this.mapData())
+        this.props.exportToExcel && this.props.exportToExcel(this.mapData());
     };
 
     onFilePicked = e => {
@@ -124,6 +105,10 @@ class TableInfo extends Component {
         this.props.importFromExcel(data, () => this.load(false, true));
 
         e.target.value = null;
+    };
+
+    handleToggleIsActive = (event, {itemID, checked}) => {
+        this.props.toggleIsActive(event, {itemID, checked}, this.load);
     };
 
     render() {
@@ -147,25 +132,29 @@ class TableInfo extends Component {
             importLoader,
             exportLoader,
             exportToExcel,
-            totalCount
+            totalCount,
         } = this.props;
 
         const { filter } = this.state;
 
         return (
             <div className={className}>
-                <Loader active={loading && !list.length} size="huge" className="table-loader">Loading</Loader>
+                <Loader active={loading && !list.length} size="huge" className="table-loader">
+                    Loading
+                </Loader>
                 <div className="table-header-menu">
                     <h2>{t(title)}</h2>
                     <Grid>
                         <Grid.Row>
                             <Grid.Column width={7}>
                                 <Search
-                                    isAuto
                                     value={filter}
+                                    className="search-input"
                                     onChange={this.changeFullTextFilter}
                                 />
-                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
+                                <span className="records-counter">
+                                    {t('totalCount', {count: totalCount})}
+                                </span>
                             </Grid.Column>
                             <Grid.Column width={9} textAlign="right">
                                 <input
@@ -243,18 +232,22 @@ class TableInfo extends Component {
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
                                                       column={column}
-                                                      value={row[column.name]}
-                                                      id={row.id}
-                                                      toggleIsActive={(
-                                                          event,
-                                                          {itemID, checked},
-                                                      ) =>
-                                                          toggleIsActive(
-                                                              event,
-                                                              {itemID, checked},
-                                                              this.load,
-                                                          )
+                                                      value={
+                                                          row[column.name] &&
+                                                          typeof row[column.name] === 'object' &&
+                                                          !Array.isArray(row[column.name])
+                                                              ? row[column.name].value
+                                                              : row[column.name]
                                                       }
+                                                      valueText={
+                                                          row[column.name] &&
+                                                          typeof row[column.name] === 'object' &&
+                                                          !Array.isArray(row[column.name])
+                                                              ? row[column.name].name
+                                                              : null
+                                                      }
+                                                      id={row.id}
+                                                      toggleIsActive={this.handleToggleIsActive}
                                                       indexRow={i}
                                                       indexColumn={index}
                                                       t={t}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
@@ -81,11 +81,11 @@ const List = () => {
         );
     };
 
-    const handleChangeActiveItem = (e, { name }) => {
+    const handleChangeActiveItem = useCallback((e, {name}) => {
         setActiveItem(name);
-    };
+    }, []);
 
-    const handleChangSettings = (fieldName, accessType, state = null, isExt) => {
+    const handleChangSettings = useCallback((fieldName, accessType, state = null, isExt) => {
         dispatch(
             editFieldsSettingRequest({
                 params: {
@@ -101,9 +101,9 @@ const List = () => {
                 },
             }),
         );
-    };
+    }, [activeItem, role]);
 
-    const handleToggleHidden = (fieldName, isExt) => {
+    const handleToggleHidden = useCallback((fieldName, isExt) => {
         dispatch(
             toggleHidenStateRequest({
                 params: {
@@ -115,7 +115,11 @@ const List = () => {
                 callbackSuccess: getSettings
             })
         )
-    };
+    }, [activeItem, role]);
+
+    const handleChangeRole = useCallback((e, {value}) => {
+        setRole(value);
+    }, []);
 
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
@@ -130,9 +134,7 @@ const List = () => {
                 changeActiveItem={handleChangeActiveItem}
                 rolesList={rolesList}
                 role={role}
-                changeRole={(e, { value }) => {
-                    setRole(value);
-                }}
+                changeRole={handleChangeRole}
                 t={t}
             />
             <div className={`scroll-table-container`} ref={containerRef}>

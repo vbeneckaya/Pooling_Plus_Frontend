@@ -104,7 +104,52 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        protected override IFieldSetter<Shipping> ConfigureHandlers(IFieldSetter<Shipping> setter, ShippingFormDto dto)
+        protected override void FillLookupNames(IEnumerable<ShippingDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
+                                     .Select(x => x.VehicleTypeId.Value.ToGuid())
+                                     .ToList();
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                                           .Where(x => vehicleTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var bodyTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.BodyTypeId?.Value))
+                                  .Select(x => x.BodyTypeId.Value.ToGuid())
+                                  .ToList();
+            var bodyTypes = _dataService.GetDbSet<BodyType>()
+                                        .Where(x => bodyTypeIds.Contains(x.Id))
+                                        .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
+                    && vehicleTypes.TryGetValue(dto.VehicleTypeId.Value, out VehicleType vehicleType))
+                {
+                    dto.VehicleTypeId.Name = vehicleType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.BodyTypeId?.Value)
+                    && bodyTypes.TryGetValue(dto.BodyTypeId.Value, out BodyType bodyType))
+                {
+                    dto.BodyTypeId.Name = bodyType.Name;
+                }
+            }
+        }
+
+        public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
             return setter
                 .AddHandler(e => e.CarrierId, new CarrierIdHandler(_dataService, _historyService))
@@ -303,7 +348,7 @@ namespace Application.Services.Shippings
                 if (order.ShippingWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    string key = $"L-{order.ShippingWarehouseId.ToString()}";
+                    string key = $"L-{order.ShippingWarehouseId.ToString()}-{order.ShippingDate?.ToString("dd.MM.yyyy")}";
                     if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
@@ -326,7 +371,7 @@ namespace Application.Services.Shippings
                 if (order.DeliveryWarehouseId.HasValue)
                 {
                     RoutePointDto point;
-                    string key = $"U-{order.DeliveryWarehouseId.ToString()}";
+                    string key = $"U-{order.DeliveryWarehouseId.ToString()}-{order.DeliveryDate?.ToString("dd.MM.yyyy")}";
                     if (!points.TryGetValue(key, out point))
                     {
                         point = new RoutePointDto
@@ -347,7 +392,7 @@ namespace Application.Services.Shippings
                 }
             }
 
-            var pointsList = points.Values.OrderBy(p => p.PlannedDate)
+            var pointsList = points.Values.OrderBy(p => p.PlannedDate.ParseDate())
                                           .ThenBy(p => p.IsLoading ? 0 : 1)
                                           .ThenBy(p => p.VehicleStatus)
                                           .ThenBy(p => p.WarehouseName)
@@ -496,6 +541,11 @@ namespace Application.Services.Shippings
             || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
+        }
+
+        protected override ValidateResult ValidateDto(ShippingFormDto dto)
+        {
+            return new ValidateResult(null, dto.Id);
         }
 
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()

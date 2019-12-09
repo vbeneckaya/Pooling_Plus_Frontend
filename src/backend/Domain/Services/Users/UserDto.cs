@@ -1,5 +1,6 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.Users
 {
@@ -15,8 +16,8 @@ namespace Domain.Services.Users
 
         public string Role { get; set; }
 
-        [FieldType(FieldType.Text), IsRequired]
-        public string RoleId { get; set; }
+        [FieldType(FieldType.Select), IsRequired]
+        public LookUpDto RoleId { get; set; }
 
         public string Password { get; set; }
 
@@ -25,6 +26,6 @@ namespace Domain.Services.Users
         public string FieldsConfig { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies))]
-        public string CarrierId { get; set; }
+        public LookUpDto CarrierId { get; set; }
     }
 }

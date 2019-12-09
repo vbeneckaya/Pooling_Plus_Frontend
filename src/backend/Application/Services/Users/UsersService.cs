@@ -57,6 +57,37 @@ namespace Application.Services.Users
             }
         }
 
+        protected override void FillLookupNames(IEnumerable<UserDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var roleIds = dtos.Where(x => !string.IsNullOrEmpty(x.RoleId?.Value))
+                              .Select(x => x.RoleId.Value.ToGuid())
+                              .ToList();
+            var roles = _dataService.GetDbSet<Role>()
+                                    .Where(x => roleIds.Contains(x.Id))
+                                    .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.RoleId?.Value)
+                    && roles.TryGetValue(dto.RoleId.Value, out Role role))
+                {
+                    dto.RoleId.Name = role.Name;
+                }
+            }
+        }
 
         public override UserDto MapFromEntityToDto(User entity)
         {
@@ -67,10 +98,10 @@ namespace Application.Services.Users
                 Id = entity.Id.ToString(),
                 UserName = entity.Name,
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
-                RoleId = entity.RoleId.ToString(),
+                RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
-                CarrierId = entity.CarrierId?.ToString()
+                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
             };
         }
 
@@ -83,10 +114,10 @@ namespace Application.Services.Users
 
             entity.Email = dto.Email;
             entity.Name = dto.UserName;
-            entity.RoleId = Guid.Parse(dto.RoleId);
+            entity.RoleId = Guid.Parse(dto.RoleId?.Value);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
-            entity.CarrierId = dto.CarrierId.ToGuid();
+            entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
 
@@ -108,25 +139,10 @@ namespace Application.Services.Users
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            //if (string.IsNullOrEmpty(dto.Email))
-            //{
-            //    result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
-
-            //if (string.IsNullOrEmpty(dto.UserName))
-            //{
-            //    result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
-
             if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
                 result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
-
-            //if (string.IsNullOrEmpty(dto.RoleId))
-            //{
-            //    result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
-            //}
 
             var hasDuplicates = this._dataService.GetDbSet<User>()
                 .Where(i => i.Id != dto.Id.ToGuid())

@@ -21,15 +21,12 @@ const CellValue = (
     {
         type,
         value = '',
-        stateColors = [],
+        valueText,
         id,
-        key_id,
         toggleIsActive,
-        isTranslate,
         source,
         indexRow,
         indexColumn,
-        name,
         modalCard,
         showRawValue,
         width,
@@ -43,6 +40,7 @@ const CellValue = (
             <SelectValue
                 width={width}
                 value={value}
+                valueText={valueText}
                 source={source}
                 indexRow={indexRow}
                 indexColumn={indexColumn}
@@ -64,6 +62,7 @@ const CellValue = (
     }
 
     if (type === LABELS_TYPE) {
+        console.log(value);
         return (
             <>
                 {!value
@@ -80,7 +79,7 @@ const CellValue = (
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {t(value)}
+                {value ? t(valueText) : ''}
             </TextCropping>
         );
     }
@@ -100,15 +99,15 @@ const CellValue = (
     }
 
     if (type === LINK_TYPE) {
-        return React.cloneElement(
-            modalCard,
+        return modalCard ? React.cloneElement(
+            modalCard(),
             null,
             <div className="link-cell">
                 <TextCropping width={width} indexColumn={indexColumn}>
                     {value}
                 </TextCropping>
             </div>,
-        );
+        ) : value;
     }
 
     if (type === LOCAL_DATE_TIME) {
@@ -126,4 +125,4 @@ const CellValue = (
     );
 };
 
-export default CellValue;
+export default React.memo(CellValue);

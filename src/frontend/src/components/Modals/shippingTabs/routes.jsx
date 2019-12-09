@@ -11,27 +11,23 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
 
     useEffect(() => {
         if (!stateColors.length) {
-            dispatch(
-                getLookupRequest({
-                    name: 'vehicleState',
-                    isForm: true,
-                    isSearch: true,
-                }),
-            );
+            dispatch(getLookupRequest({
+                name: 'vehicleState',
+                isForm: true,
+                isSearch: true,
+            }));
         }
     }, []);
 
-    const handleChange = useCallback(
-        (point, index) => {
-            const newPoints = [...points];
-            newPoints[index] = point;
-            onChange(null, {
-                name: 'routePoints',
-                value: newPoints,
-            });
-        },
-        [points],
-    );
+
+    const handleChange = useCallback((point, index) => {
+        const newPoints = [...points];
+        newPoints[index] = point;
+        onChange(null, {
+            name: 'routePoints',
+            value: newPoints,
+        });
+    }, [points]);
 
     const pointsTabs = [];
 

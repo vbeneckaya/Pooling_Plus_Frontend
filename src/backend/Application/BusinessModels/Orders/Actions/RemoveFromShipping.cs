@@ -43,7 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
 
-            if (_dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id))
+            if (!_dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id && x.Id != order.Id))
             {
                 shipping.Status = ShippingState.ShippingCanceled;
                 _historyService.Save(shipping.Id, "shippingSetCancelled", shipping.ShippingNumber);

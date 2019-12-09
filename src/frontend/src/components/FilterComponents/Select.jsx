@@ -1,103 +1,117 @@
-import React, { useEffect } from 'react';
-import { Button, Checkbox, Dimmer, Form, Icon, Input, Loader, Popup } from 'semantic-ui-react';
+import React, {useState, useEffect, useRef} from 'react';
+import {Checkbox, Dimmer, Form, Input, Loader, Visibility} from 'semantic-ui-react';
 
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import {useSelector, useDispatch} from 'react-redux';
 import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
+import {PAGE_SIZE} from '../../constants/settings';
+import Search from "../Search";
 
-class Facet extends React.Component {
-    state = {};
+const Facet = ({t, source, name, onChange, value}) => {
+    const dispatch = useDispatch();
 
-    setFilter = (e, { value }) => {
-        this.setState({ filter: value.toLowerCase() });
+    let [filter, setFilter] = useState(null);
+    let [items, setItems] = useState([]);
+    let [counter, setCounter] = useState(PAGE_SIZE);
+
+    const valuesList = useSelector(state => listSelector(state, filter, t));
+    const loading = useSelector(state => progressSelector(state));
+
+    console.log('valueslist', valuesList);
+
+    const context = useRef(null);
+
+    useEffect(() => {
+        handleOpen();
+        return clearFilter;
+    }, []);
+
+    useEffect(
+        () => {
+            changeItems();
+        },
+        [valuesList, counter],
+    );
+
+    useEffect(() => {
+        console.log('filter');
+        context.current.scrollTop = 0;
+        setCounter(PAGE_SIZE);
+    }, [filter]);
+
+    const changeItems = () => {
+        setItems(valuesList.slice(0, counter));
     };
 
-    clearFilter = () => {
-        this.setState({ filter: '' });
-        this.props.clearLookup();
+    const handleSetFilter = (e, {value}) => {
+        setFilter(value);
     };
 
-    handleOpen = () => {
-        const { source, getList } = this.props;
-
-        getList({
-            name: source,
-            params: {},
-        });
+    const clearFilter = () => {
+        setFilter(null);
+        dispatch(clearLookup());
     };
 
-    componentDidMount() {
-        this.handleOpen();
-    }
+    const handleOpen = () => {
+        dispatch(
+            getLookupRequest({
+                name: source,
+                params: {},
+            }),
+        );
+    };
 
-    componentWillUnmount() {
-        this.clearFilter();
-    }
-
-    handleRestClick = () => {
-        const {name, onChange} = this.props;
-
+    const handleRestClick = () => {
         if (onChange !== undefined) onChange(null, { name: name, value: null });
     };
 
-    toggle = (e, { value }) => {
-        const {name, onChange} = this.props;
-        let values = this.props.value ? this.props.value.split('|') : [];
+    const toggle = (e, {value: newValue}) => {
+        let values = value ? value.split('|') : [];
 
-        if (values.some(x => x === value)) {
-            values.splice(values.indexOf(value), 1);
+        if (values.some(x => x === newValue)) {
+            values.splice(values.indexOf(newValue), 1);
         } else {
-            values.push(value);
+            values.push(newValue);
         }
         if (onChange !== undefined) onChange(e, { name: name, value: values.join('|') });
     };
 
-    render() {
-        const {
-            value,
-            valuesList = [],
-            loading,
-            t,
-        } = this.props;
+    const scroll = () => {
+        console.log('scroll', counter, valuesList.length);
+        if (counter < valuesList.length) {
+            setCounter(prevState => prevState + PAGE_SIZE);
+        }
+    };
 
-        let values = value ? value.split('|') : [];
+    let values = value ? value.split('|') : [];
 
-        let items = valuesList.filter(item => item.name) || [];
-
-        items = items.map(x => {
-            return {
-                value: x.value,
-                name: t(x.name),
-                isActive: x.isActive,
-            };
-        });
-
-        if (this.state.filter)
-            items = items.filter(
-                x => values.includes(x.value) || x.name.toLowerCase().includes(this.state.filter),
-            );
-
-
-        return (
-            <div className="facet-input">
-                <Form>
-                    {/*<label className="label-in-popup">{t(name)}</label>*/}
-                    <div>
-                        <Input
-                            fluid
-                            size="mini"
-                            icon="search"
-                            value={this.state.filter}
-                            onChange={this.setFilter}
-                        />
-                    </div>
-                    <div className="reset-selected">
-                        <span onClick={this.handleRestClick}>{t('reset_selected')}</span>
-                    </div>
-                    <div className="select-facet-values">
-                        <Dimmer active={loading} inverted>
-                            <Loader size="small">Loading</Loader>
-                        </Dimmer>
+    return (
+        <div className="facet-input">
+            <Form>
+                {/*<label className="label-in-popup">{t(name)}</label>*/}
+                <div>
+                    <Search
+                        fluid
+                        size="mini"
+                        placeholder=""
+                        isAuto
+                        onChange={handleSetFilter}
+                    />
+                    {/* <Input
+                        fluid
+                        size="mini"
+                        icon="search"
+                        value={filter}
+                        onChange={handleSetFilter}
+                    />*/}
+                </div>
+                <div className="reset-selected">
+                    <span onClick={handleRestClick}>{t('reset_selected')}</span>
+                </div>
+                <div className="select-facet-values" ref={context}>
+                    <Dimmer active={loading} inverted>
+                        <Loader size="small">Loading</Loader>
+                    </Dimmer>
+                    <div style={{position: 'relative'}}>
                         {items &&
                         items.map(x => {
                             let label = <label>{x.name}</label>;
@@ -109,40 +123,30 @@ class Facet extends React.Component {
                                     <Checkbox
                                         value={x.value}
                                         checked={values.includes(x.value)}
-                                        onChange={this.toggle}
+                                        onChange={toggle}
                                         label={label}
                                     />
                                 </Form.Field>
                             );
                         })}
+                        <Visibility
+                            continuous={true}
+                            once={false}
+                            context={context.current}
+                            onTopVisible={scroll}
+                            style={{
+                                position: 'absolute',
+                                bottom: "20px",
+                                left: 0,
+                                right: 0,
+                                zIndex: -1,
+                            }}
+                        />
                     </div>
-                </Form>
-            </div>
-        );
-    }
-}
-
-const mapStateToProps = state => {
-    return {
-        valuesList: listSelector(state),
-        loading: progressSelector(state),
-    };
+                </div>
+            </Form>
+        </div>
+    );
 };
 
-const mapDispatchToProps = dispatch => {
-    return {
-        getList: params => {
-            dispatch(getLookupRequest(params));
-        },
-        clearLookup: () => {
-            dispatch(clearLookup());
-        },
-    };
-};
-
-export default withTranslation()(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(Facet),
-);
+export default Facet;

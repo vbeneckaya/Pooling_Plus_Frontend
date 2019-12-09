@@ -121,7 +121,7 @@ export const representationSelector = createSelector(
                 if (actualItem) {
                     actualRepresentation.push({
                         ...actualItem,
-                        width: item.width || 100
+                        width: item.width
                     });
                 }
             });
@@ -172,8 +172,7 @@ function* saveRepresentationSaga({ payload }) {
         const params = {
             ...list,
             [name]: value.map(item => ({
-                ...item,
-                width: 100
+                ...item
             })),
         };
 
