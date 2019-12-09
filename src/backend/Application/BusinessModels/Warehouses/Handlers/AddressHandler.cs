@@ -15,22 +15,28 @@ namespace Application.BusinessModels.Warehouses.Handlers
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
+        private readonly bool _isManual;
 
-        public AddressHandler(ICommonDataService dataService, IHistoryService historyService, ICleanAddressService cleanAddressService)
+        public AddressHandler(ICommonDataService dataService, IHistoryService historyService, ICleanAddressService cleanAddressService, bool isManual)
         {
             _dataService = dataService;
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+            _isManual = isManual;
         }
 
         public void AfterChange(Warehouse entity, string oldValue, string newValue)
         {
-            var cleanAddress = string.IsNullOrEmpty(newValue) ? null : _cleanAddressService.CleanAddress(newValue);
+            string rawAddress = _isManual ? newValue : $"{entity.City} {newValue}";
+            var cleanAddress = string.IsNullOrEmpty(newValue) ? null : _cleanAddressService.CleanAddress(rawAddress);
             entity.ValidAddress = cleanAddress?.ResultAddress;
             entity.PostalCode = cleanAddress?.PostalCode;
             entity.Region = cleanAddress?.Region;
             entity.Area = cleanAddress?.Area;
-            entity.City = cleanAddress?.City ?? cleanAddress?.Region;
+            if (_isManual)
+            {
+                entity.City = cleanAddress?.City ?? cleanAddress?.Region;
+            }
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;
             entity.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;

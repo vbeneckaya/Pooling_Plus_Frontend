@@ -89,13 +89,15 @@ namespace Application.Services.Warehouses
             bool isNew = string.IsNullOrEmpty(dto.Id);
             var setter = new FieldSetter<Warehouse>(entity, _historyService);
 
+            bool isInjection = dto.AdditionalInfo == "INJECTION";
+
             if (!string.IsNullOrEmpty(dto.Id))
                 setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
             setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
             setter.UpdateField(e => e.SoldToNumber, dto.SoldToNumber);
             setter.UpdateField(e => e.Region, dto.Region, new RegionHandler(_dataService, _historyService));
             setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
+            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection));
             setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId?.Value) ? (Guid?)null : Guid.Parse(dto.PickingTypeId.Value), 
                                new PickingTypeIdHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
             setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));

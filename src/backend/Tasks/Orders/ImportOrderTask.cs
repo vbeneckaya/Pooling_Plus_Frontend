@@ -202,6 +202,7 @@ namespace Tasks.Orders
                 {
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
+                    deliveryWarehouse.AdditionalInfo = "INJECTION";
                     updWarehouses.Add(deliveryWarehouse);
 
                     dto.DeliveryCity = string.IsNullOrEmpty(deliveryWarehouse.City) ? null : new LookUpDto(deliveryWarehouse.City);
