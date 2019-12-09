@@ -64,6 +64,7 @@ const Filter = props => {
                             key={'facet' + x.name}
                             index={i}
                             name={x.name}
+                            displayNameKey={x.displayNameKey}
                             sort={props.sort}
                             setSort={props.setSort}
                             type={x.type}
