@@ -35,8 +35,6 @@ namespace Application.Shared
         public abstract TFormDto MapFromEntityToFormDto(TEntity entity);
         public abstract LookUpDto MapFromEntityToLookupDto(TEntity entity);
 
-        protected abstract ValidateResult ValidateDto(TFormDto dto);
-
         public abstract IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids);
 
         public abstract IQueryable<TEntity> ApplyRestrictions(IQueryable<TEntity> query);

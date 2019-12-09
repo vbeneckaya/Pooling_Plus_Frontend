@@ -149,7 +149,7 @@ namespace Application.Services.Shippings
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
+        protected override IFieldSetter<Shipping> ConfigureHandlers(IFieldSetter<Shipping> setter, ShippingFormDto dto)
         {
             return setter
                 .AddHandler(e => e.CarrierId, new CarrierIdHandler(_dataService, _historyService))
@@ -173,13 +173,16 @@ namespace Application.Services.Shippings
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
                     .ForMember(t => t.Id, e => e.MapFrom((s) => s.Id.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryType)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType)))
-                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => !string.IsNullOrEmpty(s.TarifficationType)))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType)))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.ToGuid()))
-                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.ToGuid()))
-                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
+                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.BodyTypeId != null))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
                     .ForMember(t => t.BlankArrival, e => e.MapFrom((s) => s.BlankArrival.GetValueOrDefault()))
@@ -541,11 +544,6 @@ namespace Application.Services.Shippings
             || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
-        }
-
-        protected override ValidateResult ValidateDto(ShippingFormDto dto)
-        {
-            return new ValidateResult(null, dto.Id);
         }
 
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()

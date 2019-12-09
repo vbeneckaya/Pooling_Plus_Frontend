@@ -34,17 +34,20 @@ namespace Application.Shared
                             return false;
                         }
 
-            //if (fieldHandler != null)
-            //{
-            //    string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
-            //    if (!string.IsNullOrEmpty(error))
-            //    {
-            //        _validationErrors.Add(error);
-            //        return false;
-            //    }
-            //}
+                        //if (fieldHandler != null)
+                        //{
+                        //    string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
+                        //    if (!string.IsNullOrEmpty(error))
+                        //    {
+                        //        _validationErrors.Add(error);
+                        //        return false;
+                        //    }
+                        //}
+                    }
+                }
+            }
 
-            propertyInfo.SetValue(Entity, newValue);
+            //propertyInfo.SetValue(Entity, newValue);
 
             if (fieldHandler != null)
             {

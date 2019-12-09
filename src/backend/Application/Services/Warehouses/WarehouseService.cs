@@ -224,8 +224,10 @@ namespace Application.Services.Warehouses
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(s.DeliveryType)));
+                    .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
             });
             return result;
         }
