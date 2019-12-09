@@ -277,7 +277,7 @@ class SuperGrid extends Component {
         console.log('sum', sum);
 
         this.timer = setTimeout(() => {
-            const {editRepresentation, representationName, name} = this.props;
+            const {editRepresentation, representationName, name, getRepresentations} = this.props;
 
             editRepresentation({
                 key: name,
@@ -285,7 +285,7 @@ class SuperGrid extends Component {
                 oldName: representationName,
                 value: columns,
                 callbackSuccess: () => {
-                    //dispatch(getRepresentationsRequest({key: gridName}));
+                    //getRepresentations({key: name});
                 },
             });
         }, 2000);
