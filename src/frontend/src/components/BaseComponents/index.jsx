@@ -36,7 +36,7 @@ const getTypeFacet = {
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
     [LOCAL_DATE_TIME]: <DateTime />,
-    [TIME_TYPE]: <Text/>,
+    [TIME_TYPE]: <Text type="time"/>,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
     [BOOLEAN_TYPE]: <Bool />,
@@ -55,13 +55,6 @@ const FormField = props => {
         type: props.typeValue,
         key: props.name
     };
-
-    if (props.type === TIME_TYPE) {
-        params = {
-            ...params,
-            type: 'time'
-        }
-    }
 
     if ((props.settings && props.settings === SETTINGS_TYPE_SHOW) || props.isReadOnly) {
         params = {
@@ -111,11 +104,9 @@ const FormField = props => {
              return <Text {...params} />
      }*/
 
-    console.log('props.type', props.type)
-
     return React.cloneElement(
-        getTypeFacet[props.type],
-        {...params},
+        getTypeFacet[props.type] || <TEXT_TYPE/>,
+        params,
     );
 };
 
