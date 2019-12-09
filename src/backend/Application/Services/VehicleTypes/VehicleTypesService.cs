@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
@@ -18,9 +19,11 @@ namespace Application.Services.VehicleTypes
 {
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
-        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
-        { }
+        public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
+        {
+        }
 
         public override DetailedValidationResult MapFromDtoToEntity(VehicleType entity, VehicleTypeDto dto)
         {
@@ -60,7 +63,7 @@ namespace Application.Services.VehicleTypes
                 .FirstOrDefault(i => i.Name == dto.Name);
         }
 
-        protected override void FillLookupNames(IEnumerable<VehicleTypeDto> dtos)
+        protected override IEnumerable<VehicleTypeDto> FillLookupNames(IEnumerable<VehicleTypeDto> dtos)
         {
             var tonnageIds = dtos.Where(x => !string.IsNullOrEmpty(x.TonnageId?.Value))
                                  .Select(x => x.TonnageId.Value.ToGuid())
@@ -89,6 +92,8 @@ namespace Application.Services.VehicleTypes
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
+
+                yield return dto;
             }
         }
 
@@ -131,9 +136,9 @@ namespace Application.Services.VehicleTypes
 
         protected override ExcelMapper<VehicleTypeDto> CreateExcelMapper()
         {
-            return new ExcelMapper<VehicleTypeDto>(_dataService, _userProvider)
-                .MapColumn(w => w.TonnageId, new DictionaryReferenceExcelColumn(GetTonnageIdByName, GetTonnageNameById))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById));
+            return new ExcelMapper<VehicleTypeDto>(_dataService, _userProvider, _fieldDispatcherService)
+                .MapColumn(w => w.TonnageId, new DictionaryReferenceExcelColumn(GetTonnageIdByName))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
         }
 
         private Guid? GetTonnageIdByName(string name)
@@ -142,22 +147,10 @@ namespace Application.Services.VehicleTypes
             return entry?.Id;
         }
 
-        private string GetTonnageNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<Tonnage>().Find(id);
-            return entry?.Name;
-        }
-
         private Guid? GetBodyTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetBodyTypeNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<BodyType>().Find(id);
-            return entry?.Name;
         }
     }
 }

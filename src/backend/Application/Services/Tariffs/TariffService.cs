@@ -2,12 +2,12 @@ using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -21,8 +21,9 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
-        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService) 
-            : base(dataService, userProvider, triggersService, validationService) 
+        public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
         {
         }
 
@@ -146,7 +147,7 @@ namespace Application.Services.Tariffs
             return string.IsNullOrEmpty(dateString) || dateString.ToDate().HasValue;
         }
 
-        protected override void FillLookupNames(IEnumerable<TariffDto> dtos)
+        protected override IEnumerable<TariffDto> FillLookupNames(IEnumerable<TariffDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -188,6 +189,8 @@ namespace Application.Services.Tariffs
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
+
+                yield return dto;
             }
         }
 
@@ -250,11 +253,11 @@ namespace Application.Services.Tariffs
         protected override ExcelMapper<TariffDto> CreateExcelMapper()
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
-            return new ExcelMapper<TariffDto>(_dataService, _userProvider)
+            return new ExcelMapper<TariffDto>(_dataService, _userProvider, _fieldDispatcherService)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
-                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById));
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
         }
 
         private Guid? GetCarrierIdByName(string name)
@@ -263,34 +266,16 @@ namespace Application.Services.Tariffs
             return entry?.Id;
         }
 
-        private string GetCarrierNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<TransportCompany>().Find(id);
-            return entry?.Title;
-        }
-
         private Guid? GetVehicleTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
-        private string GetVehicleTypeNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
-            return entry?.Name;
-        }
-
         private Guid? GetBodyTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetBodyTypeNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<BodyType>().GetById(id);
-            return entry?.Name;
         }
 
         protected override IQueryable<Tariff> ApplySearch(IQueryable<Tariff> query, SearchFormDto form)
