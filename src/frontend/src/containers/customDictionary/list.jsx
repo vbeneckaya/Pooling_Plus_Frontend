@@ -102,7 +102,8 @@ class List extends Component {
                 importLoader={importLoader}
                 exportLoader={exportLoader}
                 newModal={isCreateBtn ? newModal : null}
-                modalCard={this.getCard}
+
+                cardLink={'/dictionary/:name/:id'}
             />
         );
     }

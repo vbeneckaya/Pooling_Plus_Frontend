@@ -93,6 +93,7 @@ const Login = () => {
                                         ))}
                                         <Button
                                             floated="right"
+                                            primary
                                             api={login_btn.api}
                                             loading={loginProgress}
                                         >

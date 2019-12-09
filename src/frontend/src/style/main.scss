@@ -190,7 +190,8 @@ i.blue.icon {
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: flex-start;
-    padding: 0 -15px;
+    padding: 15px 0;
+    width: 100% !important;
 
     .field:not(.wide) {
         width: 33.3% !important;

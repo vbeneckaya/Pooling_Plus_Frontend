@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
+import {withRouter} from 'react-router-dom';
 import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 import {debounce} from 'throttle-debounce';
@@ -107,6 +108,16 @@ class TableInfo extends Component {
         this.props.toggleIsActive(event, {itemID, checked}, this.load);
     };
 
+    handleRowClick = (e, id) => {
+        const {history, cardLink, name} = this.props;
+
+        if (!cardLink) {
+            e.stopPropagation()
+        } else {
+            history.push(cardLink.replace(':name', name).replace(':id', id))
+        }
+    };
+
     render() {
         const {
             headerRow,
@@ -129,9 +140,12 @@ class TableInfo extends Component {
             exportLoader,
             exportToExcel,
             totalCount,
+            history
         } = this.props;
 
         const { filter } = this.state;
+
+        console.log('this.props', this.props);
 
         return (
             <div className={className}>
@@ -214,7 +228,7 @@ class TableInfo extends Component {
                                           props={{ row, loadList: this.load, name }}
                                           key={`modal_${row.id}`}
                                       >
-                                          <Table.Row key={row.id}>
+                                          <Table.Row key={row.id} onClick={(e) => this.handleRowClick(e, row.id)}>
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}_${index}`}
@@ -272,4 +286,4 @@ TableInfo.defaultProps = {
     loadList: () => {},
 };
 
-export default withTranslation()(TableInfo);
+export default withTranslation()(withRouter(TableInfo));

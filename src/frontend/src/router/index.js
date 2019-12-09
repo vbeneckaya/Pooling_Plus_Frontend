@@ -4,7 +4,8 @@ import { withRouter } from 'react-router';
 import { useSelector } from 'react-redux';
 import { FIELDS_SETTING_LINK, GRID_LINK, LOGIN_LINK, ROLES_LINK, USERS_LINK } from './links';
 import CustomGrid from '../containers/customGrid/list';
-import CustomDictionary from '../containers/customDictionary/list';
+import CustomDictionaryList from '../containers/customDictionary/list';
+import CustomDictionaryCard from '../containers/customDictionary/card_new';
 import PrivateRoute from './privateRoute';
 import Login from '../containers/login';
 import RolesList from '../containers/roles/roles_list';
@@ -31,7 +32,8 @@ const MainRoute = withRouter(props => {
                 component={() => <Redirect to={homePage} />}
             />
             <PrivateRoute path="/grid/:name" component={CustomGrid}/>
-            <PrivateRoute path="/dictionary/:name" component={CustomDictionary}/>
+            <PrivateRoute path="/dictionary/:name/:id" component={CustomDictionaryCard}/>
+            <PrivateRoute path="/dictionary/:name" component={CustomDictionaryList}/>
             <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={RolesList}/>
             <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={UsersList}/>
             <PrivateRoute exact path={FIELDS_SETTING_LINK} permission="editFieldProperties" component={FieldsSetting}/>
