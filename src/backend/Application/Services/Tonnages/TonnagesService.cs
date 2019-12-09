@@ -2,9 +2,9 @@
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Tonnages;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -17,9 +17,9 @@ namespace Application.Services.Tonnages
 {
     public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
-        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
+        public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)

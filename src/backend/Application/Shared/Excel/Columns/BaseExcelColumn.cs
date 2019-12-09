@@ -3,12 +3,14 @@ using Domain.Shared;
 using OfficeOpenXml;
 using System;
 using System.Reflection;
+using FieldInfo = Domain.Services.FieldProperties.FieldInfo;
 
 namespace Application.Shared.Excel.Columns
 {
     public class BaseExcelColumn : IExcelColumn
     {
         public PropertyInfo Property { get; set; }
+        public FieldInfo Field { get; set; }
         public string Title { get; set; }
         public int ColumnIndex { get; set; }
         public string Language { get; set; }
@@ -30,6 +32,14 @@ namespace Application.Shared.Excel.Columns
                 if (value.HasValue)
                 {
                     cell.Value = (value == true ? "Yes" : "No").Translate(Language);
+                }
+            }
+            else if (Property.PropertyType == typeof(LookUpDto))
+            {
+                LookUpDto value = (LookUpDto)Property.GetValue(entity);
+                if (value != null)
+                {
+                    cell.Value = value.Value;
                 }
             }
             else
@@ -118,6 +128,10 @@ namespace Application.Shared.Excel.Columns
                         };
                     }
                 }
+            }
+            else if (Property.PropertyType == typeof(LookUpDto))
+            {
+                Property.SetValue(entity, new LookUpDto(cell.Value?.ToString()));
             }
             else
             {

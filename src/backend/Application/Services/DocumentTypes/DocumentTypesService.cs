@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.DocumentTypes;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -16,9 +17,9 @@ namespace Application.Services.DocumentTypes
 
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
-        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
+        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)

@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -31,20 +32,24 @@ namespace Application.Shared
 
         protected readonly ITriggersService _triggersService;
 
+        protected readonly IFieldDispatcherService _fieldDispatcherService;
+
         private readonly IValidationService _validationService;
 
         private readonly IFieldSetterFactory _fieldSetterFactory;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService, IFieldSetterFactory fieldSetterFactory)
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
         {
             _dataService = dataService;
             _userProvider = userProvider;
             _triggersService = triggersService;
             _validationService = validationService;
+            _fieldDispatcherService = fieldDispatcherService;
             _fieldSetterFactory = fieldSetterFactory;
         }
 
-        protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter)
+        protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TListDto dto)
         {
             return null;
         }
@@ -63,7 +68,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(result);
+            result = FillLookupNames(result);
             Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
@@ -108,7 +113,7 @@ namespace Application.Shared
             Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(a.Items);
+            a.Items = FillLookupNames(a.Items).ToList();
             Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
@@ -249,7 +254,7 @@ namespace Application.Shared
             Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            FillLookupNames(dtos);
+            dtos = FillLookupNames(dtos);
             Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -319,7 +324,7 @@ namespace Application.Shared
 
             // Change handlers
 
-            var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>());
+            var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), dto);
 
             if (setter != null)
             {
@@ -358,13 +363,14 @@ namespace Application.Shared
             return _validationService.Validate(dto);
         }
 
-        protected virtual void FillLookupNames(IEnumerable<TListDto> dtos)
+        protected virtual IEnumerable<TListDto> FillLookupNames(IEnumerable<TListDto> dtos)
         {
+            return dtos;
         }
 
-        protected void FillLookupNames(TListDto dto)
+        protected TListDto FillLookupNames(TListDto dto)
         {
-            FillLookupNames(new[] { dto });
+            return FillLookupNames(new[] { dto }).FirstOrDefault();
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
@@ -376,7 +382,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TListDto>(_dataService, _userProvider);
+            return new ExcelMapper<TListDto>(_dataService, _userProvider, _fieldDispatcherService);
         }
 
         public ValidateResult Delete(Guid id)

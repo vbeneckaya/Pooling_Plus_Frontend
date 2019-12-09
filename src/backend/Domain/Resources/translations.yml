@@ -389,6 +389,8 @@ ru:
   ShippingWarehouse.DuplicatedRecord: "Склад отгрузки с таким значением Код уже существует"
 
   shipping_actions: "Действия с перевозками"
+  shippingAddOrder: "Заказ {0} включен в перевозку {1}"
+  shippingAddOrdersResendRequest: "Заявка на перевозку {0} направлена в транспортную компанию повторно в связи с добавлением заказа {1}"
   shippingAddress: "Адрес отгрузки"
   shippingArhive: "В архиве"
   shippingAvisationTime: "Время авизации на складе отгрузки"
@@ -519,6 +521,7 @@ ru:
   Warehouse.WarehouseName.ValueIsRequired: "Укажите Наименование склада"
   Warehouse.DeliveryType.ValueIsRequired: "Укажите Способ доставки"
   Warehouse.DuplicatedRecord: "Склад доставки с таким значением Sold To уже существует"
+  Warehouse.AvisaleTime.InvalidValueFormat: "Время авизации имеет неверный формат"
 
   waybill: "Транспортная накладная"
   waybillTorg12: "Товарная накладная(Торг-12)"
@@ -928,6 +931,8 @@ en:
   ShippingWarehouse.DuplicatedRecord: "Shipping warehouse with the same Code already exists"
 
   shipping_actions: "Shipping Actions"
+  shippingAddOrder: "Order {0} is added to shipping {1}"
+  shippingAddOrdersResendRequest: "Shipping request {0} is send to carrier again after adding order {1}"
   shippingAddress: "Shipping WH address"
   shippingArhive: "ShippingArhive"
   shippingAvisationTime: "Warehouse's avisation time"
@@ -1058,6 +1063,7 @@ en:
   Warehouse.City.ValueIsRequired: "City cannot be empty"
   Warehouse.Region.ValueIsRequired: "Region cannot be empty"
   Warehouse.DuplicatedRecord: "Delivery warehouse with the same Sold To already exists"
+  Warehouse.AvisaleTime.InvalidValueFormat: "Avisale time has invalid format"
 
   waybill: "Waybill"
   waybillTorg12: "Waybill Torg-12"

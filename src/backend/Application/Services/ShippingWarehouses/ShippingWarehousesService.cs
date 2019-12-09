@@ -8,6 +8,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
@@ -26,16 +27,15 @@ namespace Application.Services.ShippingWarehouses
         private readonly ICleanAddressService _cleanAddressService;
 
         public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService,
-                                         IFieldSetterFactory fieldSetterFactory)
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory)
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
         }
 
-        protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter)
+        protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter, ShippingWarehouseDto dto)
         {
             return setter
                 .AddHandler(e => e.WarehouseName, new ShippingWarehouseNameHandler(_dataService, _historyService))

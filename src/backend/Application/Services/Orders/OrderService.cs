@@ -305,7 +305,7 @@ namespace Application.Services.Orders
             }
         }
 
-        protected override void FillLookupNames(IEnumerable<OrderDto> dtos)
+        protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -347,6 +347,8 @@ namespace Application.Services.Orders
                 {
                     dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
                 }
+
+                yield return dto;
             }
         }
 
@@ -718,13 +720,13 @@ namespace Application.Services.Orders
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
             return base.CreateExportExcelMapper()
-                .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
-                .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName, GetShippingWarehouseNameById))
-                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
-                .MapColumn(i => i.Status, new EnumExcelColumn<OrderState>(lang))
-                .MapColumn(i => i.OrderShippingStatus, new EnumExcelColumn<ShippingState>(lang))
-                .MapColumn(i => i.ShippingStatus, new EnumExcelColumn<VehicleState>(lang))
-                .MapColumn(i => i.DeliveryStatus, new EnumExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
+                .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName))
+                .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(i => i.Status, new StateExcelColumn<OrderState>(lang))
+                .MapColumn(i => i.OrderShippingStatus, new StateExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.ShippingStatus, new StateExcelColumn<VehicleState>(lang))
+                .MapColumn(i => i.DeliveryStatus, new StateExcelColumn<VehicleState>(lang))
                 .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
@@ -735,21 +737,10 @@ namespace Application.Services.Orders
             return entry?.Id;
         }
 
-        private string GetPickingTypeNameById(Guid id)
-        {
-            return GetPickingTypeNameById((Guid?)id);
-        }
-
         private Guid? GetShippingWarehouseIdByName(string name)
         {
             var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetShippingWarehouseNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<ShippingWarehouse>().Find(id);
-            return entry?.WarehouseName;
         }
 
         private Guid? GetCarrierIdByName(string name)
@@ -761,11 +752,6 @@ namespace Application.Services.Orders
         private string GetCarrierNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
-        }
-
-        private string GetCarrierNameById(Guid id)
-        {
-            return GetCarrierNameById((Guid?)id);
         }
     }
 }

@@ -104,7 +104,7 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        protected override void FillLookupNames(IEnumerable<ShippingDto> dtos)
+        protected override IEnumerable<ShippingDto> FillLookupNames(IEnumerable<ShippingDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -146,6 +146,8 @@ namespace Application.Services.Shippings
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
+
+                yield return dto;
             }
         }
 
@@ -550,10 +552,10 @@ namespace Application.Services.Shippings
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
             return base.CreateExportExcelMapper()
-                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName, GetCarrierNameById))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName, GetBodyTypeNameById))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName, GetVehicleTypeNameById))
-                .MapColumn(i => i.Status, new EnumExcelColumn<ShippingState>(lang))
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
@@ -564,34 +566,16 @@ namespace Application.Services.Shippings
             return entry?.Id;
         }
 
-        private string GetCarrierNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<TransportCompany>().Find(id);
-            return entry?.Title;
-        }
-
         private Guid? GetVehicleTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
-        private string GetVehicleTypeNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<VehicleType>().GetById(id);
-            return entry?.Name;
-        }
-
         private Guid? GetBodyTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetBodyTypeNameById(Guid id)
-        {
-            var entry = _dataService.GetDbSet<BodyType>().GetById(id);
-            return entry?.Name;
         }
     }
 }

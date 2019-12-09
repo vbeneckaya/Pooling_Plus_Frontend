@@ -8,6 +8,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Articles;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -22,9 +23,9 @@ namespace Application.Services.Articles
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
-        public ArticlesService(IAuditDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                               IHistoryService historyService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory)
+        public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -43,7 +44,7 @@ namespace Application.Services.Articles
             }
         }
 
-        protected override IFieldSetter<Article> ConfigureHandlers(IFieldSetter<Article> setter)
+        protected override IFieldSetter<Article> ConfigureHandlers(IFieldSetter<Article> setter, ArticleDto dto)
         {
             return setter
                 .AddHandler(e => e.Spgr, new SpgrHandler(_dataService, _historyService))

@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Permissions;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
@@ -21,9 +22,9 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)

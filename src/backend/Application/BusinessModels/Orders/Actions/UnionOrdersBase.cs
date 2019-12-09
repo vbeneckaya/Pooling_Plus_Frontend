@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -41,22 +40,22 @@ namespace Application.BusinessModels.Orders.Actions
             return result;
         }
 
-        protected void UnionOrderInShipping(IEnumerable<Order> orders, Shipping shipping, DbSet<Shipping> shippingDbSet, IHistoryService historyService)
+        protected void UnionOrderInShipping(IEnumerable<Order> allOrders, IEnumerable<Order> newOrders, Shipping shipping, IHistoryService historyService)
         {
-            var tempRange = FindCommonTempRange(orders);
-            decimal? downtime = orders.Any(o => o.TrucksDowntime.HasValue)
-                ? orders.Sum(o => o.TrucksDowntime ?? 0)
+            var tempRange = FindCommonTempRange(allOrders);
+            decimal? downtime = allOrders.Any(o => o.TrucksDowntime.HasValue)
+                ? allOrders.Sum(o => o.TrucksDowntime ?? 0)
                 : (decimal?) null;
-            int? palletsCount = orders.Any(o => o.PalletsCount.HasValue) ? orders.Sum(o => o.PalletsCount ?? 0) : (int?) null;
-            int? actualPalletsCount = orders.Any(o => o.ActualPalletsCount.HasValue)
-                ? orders.Sum(o => o.ActualPalletsCount ?? 0)
+            int? palletsCount = allOrders.Any(o => o.PalletsCount.HasValue) ? allOrders.Sum(o => o.PalletsCount ?? 0) : (int?) null;
+            int? actualPalletsCount = allOrders.Any(o => o.ActualPalletsCount.HasValue)
+                ? allOrders.Sum(o => o.ActualPalletsCount ?? 0)
                 : (int?) null;
-            int? confirmedPalletsCount = orders.Any(o => o.ConfirmedPalletsCount.HasValue)
-                ? orders.Sum(o => o.ConfirmedPalletsCount ?? 0)
+            int? confirmedPalletsCount = allOrders.Any(o => o.ConfirmedPalletsCount.HasValue)
+                ? allOrders.Sum(o => o.ConfirmedPalletsCount ?? 0)
                 : (int?) null;
-            decimal? weight = orders.Any(o => o.WeightKg.HasValue) ? orders.Sum(o => o.WeightKg ?? 0) : (decimal?) null;
-            decimal? actualWeight = orders.Any(o => o.ActualWeightKg.HasValue)
-                ? orders.Sum(o => o.ActualWeightKg ?? 0)
+            decimal? weight = allOrders.Any(o => o.WeightKg.HasValue) ? allOrders.Sum(o => o.WeightKg ?? 0) : (decimal?) null;
+            decimal? actualWeight = allOrders.Any(o => o.ActualWeightKg.HasValue)
+                ? allOrders.Sum(o => o.ActualWeightKg ?? 0)
                 : (decimal?) null;
 
             shipping.TemperatureMin = tempRange?.Key;
@@ -68,24 +67,23 @@ namespace Application.BusinessModels.Orders.Actions
             shipping.ActualWeightKg = actualWeight;
             shipping.TrucksDowntime = downtime;
 
-            var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
+            var loadingArrivalTime = allOrders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
             shipping.LoadingArrivalTime = loadingArrivalTime;
 
-            var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
+            var loadingDepartureTime = allOrders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
             shipping.LoadingDepartureTime = loadingDepartureTime;
             
-            foreach (var order in orders)
+            foreach (var order in allOrders)
             {
                 order.ShippingId = shipping.Id;
-                order.ShippingNumber = shipping.ShippingNumber;
                 order.Status = OrderState.InShipping;
-                order.OrderShippingStatus = shipping.Status;
 
                 order.ShippingStatus = VehicleState.VehicleWaiting;
                 order.DeliveryStatus = VehicleState.VehicleEmpty;
                 order.CarrierId = shipping.CarrierId;
 
                 historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
+                historyService.Save(shipping.Id, "shippingAddOrder", order.OrderNumber, shipping.ShippingNumber);
             }
         }
 

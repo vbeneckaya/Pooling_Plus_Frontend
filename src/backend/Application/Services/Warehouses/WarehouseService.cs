@@ -11,6 +11,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -28,22 +29,24 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
 
-        public WarehousesService(IAuditDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory)
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
         }
 
-        protected override IFieldSetter<Warehouse> ConfigureHandlers(IFieldSetter<Warehouse> setter)
+        protected override IFieldSetter<Warehouse> ConfigureHandlers(IFieldSetter<Warehouse> setter, WarehouseDto dto)
         {
+            bool isInjection = dto.AdditionalInfo == "INJECTION";
+
             return setter
                 .AddHandler(e => e.WarehouseName, new WarehouseNameHandler(_dataService, _historyService))
                 .AddHandler(e => e.Region, new RegionHandler(_dataService, _historyService))
                 .AddHandler(e => e.City, new CityHandler(_dataService, _historyService))
-                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService))
+                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
                 .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
@@ -77,7 +80,7 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
-        protected override void FillLookupNames(IEnumerable<WarehouseDto> dtos)
+        protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
         {
             var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
                                      .Select(x => x.PickingTypeId.Value.ToGuid())
@@ -93,6 +96,7 @@ namespace Application.Services.Warehouses
                 {
                     dto.PickingTypeId.Name = pickingType.Name;
                 }
+                yield return dto;
             }
         }
 
@@ -133,8 +137,8 @@ namespace Application.Services.Warehouses
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
-            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
-                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
+            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
 
@@ -142,11 +146,6 @@ namespace Application.Services.Warehouses
         {
             var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetPickingTypeNameById(Guid id)
-        {
-            return GetPickingTypeNameById((Guid?)id);
         }
 
         private string GetPickingTypeNameById(Guid? id)

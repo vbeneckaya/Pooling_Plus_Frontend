@@ -1,14 +1,12 @@
-using System;
-using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Shared;
+using System;
 
 namespace Domain.Services.Orders
 {
     public class OrderDto : IDto
     {
-        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]

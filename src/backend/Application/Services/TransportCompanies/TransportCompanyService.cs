@@ -4,6 +4,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
@@ -16,9 +17,9 @@ namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()

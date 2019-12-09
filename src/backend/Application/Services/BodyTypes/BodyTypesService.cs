@@ -2,10 +2,10 @@
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.BodyTypes;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -17,9 +17,9 @@ namespace Application.Services.BodyTypes
 {
     public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
-        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldSetterFactory) 
+        public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)

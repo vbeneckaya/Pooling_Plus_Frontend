@@ -1,4 +1,3 @@
-using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Shared;
@@ -7,7 +6,6 @@ namespace Domain.Services.Warehouses
 {
     public class WarehouseDto : IDto
     {
-        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
@@ -16,31 +14,25 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Text), OrderNumber(2), IsRequired]
         public string SoldToNumber { get; set; }
 
-        [ExcelIgnore]
         public string PostalCode { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(3), IsReadOnly]
         public string Region { get; set; }
 
-        [ExcelIgnore]
         public string Area { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(4)]
         public string City { get; set; }
 
-        [ExcelIgnore]
         public string Street { get; set; }
 
-        [ExcelIgnore]
         public string House { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(5)]
         public string Address { get; set; }
 
-        [ExcelIgnore]
         public string ValidAddress { get; set; }
 
-        [ExcelIgnore]
         public string UnparsedAddressParts { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(PickingTypes)), OrderNumber(6)]
@@ -63,5 +55,7 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; }
+
+        public string AdditionalInfo { get; set; }
     }
 }
