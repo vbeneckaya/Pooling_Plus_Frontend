@@ -2,7 +2,7 @@ import React, {useMemo, useCallback, useState, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import CardLayout from '../../components/CardLayout';
-import {Button, Icon, Popup} from 'semantic-ui-react';
+import {Button, Confirm, Icon, Popup} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
@@ -17,11 +17,13 @@ const CardNew = props => {
     console.log('props', props);
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    const {match, defaultForm, columns: propsColumns} = props;
+    const {match, defaultForm, columns: propsColumns, history} = props;
     const {params = {}} = match;
     const {name, id} = params;
 
     let [form, setForm] = useState({...defaultForm});
+    let [confirmation, setConfirmation] = useState({open: false});
+    let [notChangeForm, setNotChangeForm] = useState(true);
 
     const columns = useSelector(
         state => (propsColumns ? propsColumns : columnsSelector(state, name)),
@@ -63,7 +65,7 @@ const CardNew = props => {
     const getActionsFooter = useCallback(() => {
         return (
             <div>
-                <Button color="grey">{t('CancelButton')}</Button>
+                <Button color="grey" onClick={handleClose}>{t('CancelButton')}</Button>
                 <Button color="blue">{t('SaveButton')}</Button>
             </div>
         );
@@ -72,7 +74,7 @@ const CardNew = props => {
     const getActionsHeader = useCallback(() => {
         return (
             <div>
-                {canDelete ?
+                {canDelete ? (
                     <Popup
                         content={t('delete')}
                         position="bottom right"
@@ -82,17 +84,45 @@ const CardNew = props => {
                             </Button>
                         }
                     />
-                    : null}
+                ) : null}
             </div>
         );
     }, []);
 
-    const handleChange = useCallback((event, {name, value}) => {
-        setForm(form => ({
-            ...form,
-            [name]: value,
-        }));
-    }, []);
+    const handleChange = useCallback(
+        (event, {name, value}) => {
+            if (notChangeForm) {
+                setNotChangeForm(false);
+            }
+            setForm(form => ({
+                ...form,
+                [name]: value,
+            }));
+        },
+        [notChangeForm],
+    );
+
+    const confirmClose = () => {
+        history.goBack();
+    };
+
+
+    const handleClose = () => {
+        if (notChangeForm) {
+            confirmClose();
+        } else {
+            setConfirmation({
+                open: true,
+                content: t('confirm_close_dictionary'),
+                onCancel: () => {
+                    setConfirmation({
+                        confirmation: {open: false},
+                    });
+                },
+                onConfirm: confirmClose,
+            });
+        }
+    };
 
     return (
         <CardLayout title={title} actionsFooter={getActionsFooter} actionsHeader={getActionsHeader}>
@@ -110,6 +140,14 @@ const CardNew = props => {
                     );
                 })}
             </div>
+            <Confirm
+                dimmer="blurring"
+                open={confirmation.open}
+                onCancel={confirmation.onCancel}
+                cancelButton={t('cancelConfirm')}
+                onConfirm={confirmation.onConfirm}
+                content={confirmation.content}
+            />
         </CardLayout>
     );
 };
