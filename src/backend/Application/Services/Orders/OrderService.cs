@@ -121,47 +121,6 @@ namespace Application.Services.Orders
             return result;
         }
 
-
-        protected override DetailedValidationResult ValidateDto(OrderFormDto dto)
-        {
-            var lang = _userIdProvider.GetCurrentUser()?.Language;
-
-            DetailedValidationResult result = base.ValidateDto(dto);
-
-            //if (string.IsNullOrEmpty(dto.OrderNumber))
-            //    result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-            //if (string.IsNullOrEmpty(dto.ClientOrderNumber))
-            //    result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-            //if (string.IsNullOrEmpty(dto.OrderDate))
-            //    result.AddError(nameof(dto.OrderDate), "emptyOrderDate".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-
-            //if (string.IsNullOrEmpty(dto.SoldTo))
-            //    result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
-
-            // TODO: add read only fields validation
-
-            //bool isNew = string.IsNullOrEmpty(dto.Id);
-
-            //IEnumerable<string> readOnlyFields = null;
-            //if (!isNew)
-            //{
-            //    var userId = _userIdProvider.GetCurrentUserId();
-            //    if (userId != null)
-            //    {
-            //        string stateName = entity.Status.ToString().ToLowerFirstLetter();
-            //        readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Orders, stateName, null, null, userId);
-            //    }
-            //}
-
-            return result;
-        }
-
         protected override IFieldSetter<Order> ConfigureHandlers(IFieldSetter<Order> setter, OrderFormDto dto)
         {
             bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
