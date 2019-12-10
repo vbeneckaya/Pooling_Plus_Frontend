@@ -173,6 +173,7 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
+            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -189,6 +190,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)

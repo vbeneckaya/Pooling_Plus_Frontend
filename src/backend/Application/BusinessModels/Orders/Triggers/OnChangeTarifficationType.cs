@@ -9,19 +9,16 @@ using Application.Shared;
 
 namespace Application.BusinessModels.Orders.Triggers
 {
-    public class OnChangePalletsCountOrDeliveryRegion : ITrigger<Order>
+    public class OnChangeTarifficationType : ITrigger<Order>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
-        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
 
-        public OnChangePalletsCountOrDeliveryRegion(ICommonDataService dataService, 
-            IHistoryService historyService, 
-            IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer)
+        public OnChangeTarifficationType(ICommonDataService dataService, 
+            IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
-            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
         }
 
         public void Execute(Order entity)
@@ -36,11 +33,18 @@ namespace Application.BusinessModels.Orders.Triggers
             
                 var orders = _dataService.GetDbSet<Order>()
                     .Where(x => x.ShippingId == entityShippingId);
+
+                foreach (var orderInShipping in orders)
+                {
+                    if (orderInShipping.TarifficationType != entity.TarifficationType)
+                    {
+                        var setterOrderInShipping = new FieldSetter<Order>(orderInShipping, _historyService);
+                        setterOrderInShipping.UpdateField(s => s.TarifficationType, entity.TarifficationType);
+                    }
+                }
             
-                var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
-            
-                if (tarifficationType != shipping.TarifficationType)
-                    setter.UpdateField(s => s.TarifficationType, tarifficationType);
+                if (entity.TarifficationType != shipping.TarifficationType)
+                    setter.UpdateField(s => s.TarifficationType, entity.TarifficationType);
             }
         }
 
@@ -48,8 +52,7 @@ namespace Application.BusinessModels.Orders.Triggers
         {
             var watchProperties = new[]
             {
-                nameof(Order.DeliveryRegion),
-                nameof(Order.PalletsCount),
+                nameof(Order.TarifficationType),
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }
