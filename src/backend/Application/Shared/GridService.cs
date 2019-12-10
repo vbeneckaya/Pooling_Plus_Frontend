@@ -249,7 +249,7 @@ namespace Application.Shared
 
                 // Change handlers
 
-                var updateChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+                var updateChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
 
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
@@ -290,7 +290,9 @@ namespace Application.Shared
 
             MapFromFormDtoToEntity(entity, entityFrom);
 
-            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+            dbSet.Add(entity);
+
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
 
             // Change handlers
 
@@ -303,8 +305,6 @@ namespace Application.Shared
 
             Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
-
-            dbSet.Add(entity);
 
             _triggersService.Execute();
             Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);

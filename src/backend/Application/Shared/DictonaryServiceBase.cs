@@ -326,7 +326,12 @@ namespace Application.Shared
 
             MapFromDtoToEntity(entity, dto);
 
-            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+            if (isNew)
+            {
+                dbSet.Add(entity);
+            }
+
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
 
             // Change handlers
 
@@ -349,7 +354,6 @@ namespace Application.Shared
 
             if (isNew)
             {
-                dbSet.Add(entity);
                 result.ResultType = ValidateResultType.Created;
             }
             else
