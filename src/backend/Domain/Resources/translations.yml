@@ -903,7 +903,7 @@ en:
   returnShippingAccountNo: "Invoice No. for return freight"
   reset_selected: "Reset selected"
   rollbackOrder: "Rollback order"
-  rollbackShipping: "Shipping order"
+  rollbackShipping: "Rollback shipping"
   role: "Role"
   roleNotFound: "Role not found"
   roles: "Roles"
