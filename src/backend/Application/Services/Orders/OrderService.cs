@@ -204,6 +204,10 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.DeliveryCity, e => e.Condition((s) => s.DeliveryCity != null))
+                    .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity.Value))
+                    .ForMember(t => t.ShippingCity, e => e.Condition((s) => s.ShippingCity != null))
+                    .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity.Value))
                     .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
