@@ -2,7 +2,9 @@ export const LOGIN_LINK = '/login';
 export const ROLES_LINK = '/roles';
 export const USERS_LINK = '/users';
 export const GRID_LINK = '/grid/:name';
-export const DICTIONARY_LINK = '/dictionary/:name';
+export const DICTIONARY_LIST_LINK = '/dictionary/:name';
+export const DICTIONARY_CARD_LINK = '/dictionary/:name/:id';
+export const DICTIONARY_NEW_LINK = '/dictionary/:name/new';
 export const FIELDS_SETTING_LINK = '/fields_setting';
 
 

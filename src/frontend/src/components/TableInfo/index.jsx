@@ -131,6 +131,7 @@ class TableInfo extends Component {
             groupActions,
             toggleIsActive,
             newModal,
+            newLink,
             t,
             name,
             modalCard,
@@ -161,7 +162,23 @@ class TableInfo extends Component {
                                 <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
                             </Grid.Column>
                             <Grid.Column width={11} textAlign="right">
-                                {newModal ? newModal(t, this.load, name) : null}
+                                {/*{newModal ? newModal(t, this.load, name) : null}*/}
+                                {
+                                    newLink
+                                        ? <Popup
+                                            content={t('add_record')}
+                                            position="bottom right"
+                                            trigger={
+                                                <Button
+                                                    icon="add"
+                                                    onClick={() => {
+                                                        history.push(newLink.replace(':name', name))
+                                                    }}
+                                                />
+                                            }
+                                        />
+                                        : null
+                                }
                                 {isImportBtn ? (
                                     <Popup
                                         content={t('importFromExcel')}

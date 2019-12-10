@@ -21,6 +21,7 @@ import {
 } from '../../ducks/dictionaryView';
 import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK} from "../../router/links";
 
 const newModal = (t, load, name) => (
     <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
@@ -101,9 +102,8 @@ class List extends Component {
                 exportToExcel={this.handleExportToExcel}
                 importLoader={importLoader}
                 exportLoader={exportLoader}
-                newModal={isCreateBtn ? newModal : null}
-
-                cardLink={'/dictionary/:name/:id'}
+                newLink={isCreateBtn ? DICTIONARY_NEW_LINK : null}
+                cardLink={DICTIONARY_CARD_LINK}
             />
         );
     }
