@@ -62,7 +62,7 @@ namespace Application.BusinessModels.Orders.Actions
                 _shippingCalculationService.RecalculateShipping(shipping, orders);
 
                 var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
-                var changeTracker = _changeTrackerFactory.CreateChangeTracker();
+                var changeTracker = _changeTrackerFactory.CreateChangeTracker().TrackAll<Shipping>();
                 changeTracker.LogTrackedChanges(changes);
             }
             

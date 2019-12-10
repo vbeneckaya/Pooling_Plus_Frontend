@@ -55,7 +55,9 @@ namespace Application.BusinessModels.Orders.Actions
             UnionOrderInShipping(orders, orders, shipping, _historyService);
 
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
-            var changeTracker = _changeTrackerFactory.CreateChangeTracker();
+            var changeTracker = _changeTrackerFactory.CreateChangeTracker()
+                                                     .TrackAll<Shipping>()
+                                                     .Remove<Shipping>(x => x.Id);
             changeTracker.LogTrackedChanges(changes);
 
             return new AppActionResult
