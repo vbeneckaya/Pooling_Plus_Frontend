@@ -9,6 +9,11 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
+        <member name="M:API.Controllers.ClientNameController.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
         <member name="T:API.Controllers.FieldPropertiesController">
             <summary>
             Настройка полей

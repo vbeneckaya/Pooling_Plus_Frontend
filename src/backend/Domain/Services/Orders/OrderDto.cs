@@ -27,8 +27,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(5), IsReadOnly]
-        public string ClientName { get; set; }
+        [FieldType(FieldType.Select, source: nameof(ClientName), showRawValue: true), IsDefault, OrderNumber(5), IsReadOnly]
+        public LookUpDto ClientName { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
         public LookUpDto SoldTo { get; set; }

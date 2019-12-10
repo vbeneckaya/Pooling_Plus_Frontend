@@ -1,14 +1,17 @@
 using Application.BusinessModels.Orders.Handlers;
-using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Extensions;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using AutoMapper;
+using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Orders;
@@ -20,11 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using DAL.Queries;
-using Domain.Services.Translations;
-using Application.Services.Triggers;
-using Domain.Services;
-using Application.BusinessModels.Shared.Handlers;
 
 namespace Application.Services.Orders
 {
@@ -171,6 +169,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
+                    .ForMember(t => t.ClientName, e => e.Condition((s) => s.ClientName != null))
+                    .ForMember(t => t.ClientName, e => e.MapFrom((s) => s.ClientName.Value))
                     .ForMember(t => t.Status, e => e.Condition((s) => !string.IsNullOrEmpty(s.Status)))
                     .ForMember(t => t.Status, e => e.MapFrom((s) => MapFromStateDto<OrderState>(s.Status)))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
@@ -213,6 +213,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
+                    .ForMember(t => t.ClientName, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ClientName) ? null : new LookUpDto(s.ClientName)))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
@@ -460,7 +461,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
-                         .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
+                         .WhereAnd(searchForm.Filter.ClientName.ApplyOptionsFilter<Order, string>(i => i.ClientName, ref parameters))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryAddress.ApplyStringFilter<Order>(i => i.DeliveryAddress, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCity.ApplyStringFilter<Order>(i => i.DeliveryCity, ref parameters))
