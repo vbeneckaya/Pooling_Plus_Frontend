@@ -50,6 +50,9 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     };
 
     const editOpen = () => {
+        dispatch(getRepresentationsRequest({
+            key: gridName
+        }));
         setIsNew(false);
         setName(representationName);
         setSelectedFields(representationFields);
@@ -57,9 +60,6 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     };
 
     const onOpen = () => {
-        dispatch(getRepresentationsRequest({
-            key: gridName
-        }));
         setModalOpen(true);
     };
 
