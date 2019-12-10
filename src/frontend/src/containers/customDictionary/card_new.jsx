@@ -7,7 +7,7 @@ import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
     cardProgressSelector,
-    cardSelector,
+    cardSelector, clearDictionaryCard,
     columnsSelector, deleteDictionaryEntryRequest,
     errorSelector,
     getCardRequest,
@@ -15,7 +15,6 @@ import {
 } from '../../ducks/dictionaryView';
 
 const CardNew = props => {
-    console.log('props', props);
     const {t} = useTranslation();
     const dispatch = useDispatch();
     const {match, defaultForm, columns: propsColumns, history} = props;
@@ -36,6 +35,10 @@ const CardNew = props => {
 
     useEffect(() => {
         id && dispatch(getCardRequest({id, name}));
+
+        return () => {
+            dispatch(clearDictionaryCard());
+        }
     }, []);
 
     useEffect(

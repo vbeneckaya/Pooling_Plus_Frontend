@@ -14,6 +14,7 @@ import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
 import RoleCard from "../roles/role_card";
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, NEW_USER_LINK, USER_LINK} from "../../router/links";
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
@@ -60,9 +61,9 @@ export class UsersList extends Component {
                 list={list}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
-                newModal={newModal}
                 loadList={loadList}
-                modalCard={this.getCard}
+                newLink={NEW_USER_LINK}
+                cardLink={USER_LINK}
             />
         );
     }

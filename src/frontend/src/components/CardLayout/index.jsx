@@ -12,7 +12,9 @@ const CardLayout = ({title, actionsFooter, actionsHeader, children, onClose}) =>
                     </Button>
                     {title}
                 </div>
-                <div className="card-header-panel_actions">{actionsHeader()}</div>
+                {
+                    actionsHeader && <div className="card-header-panel_actions">{actionsHeader()}</div>
+                }
             </div>
             <div className="card-content">
                 <div className="card-content-block">{children}</div>
