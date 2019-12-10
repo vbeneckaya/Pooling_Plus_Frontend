@@ -2,15 +2,16 @@ import React, {useMemo, useCallback, useState, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import CardLayout from '../../components/CardLayout';
-import {Button, Confirm, Icon, Popup} from 'semantic-ui-react';
+import {Button, Confirm, Dimmer, Icon, Loader, Popup} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
     cardProgressSelector,
     cardSelector,
-    columnsSelector,
+    columnsSelector, deleteDictionaryEntryRequest,
     errorSelector,
     getCardRequest,
+    saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
 
 const CardNew = props => {
@@ -65,11 +66,44 @@ const CardNew = props => {
     const getActionsFooter = useCallback(() => {
         return (
             <div>
-                <Button color="grey" onClick={handleClose}>{t('CancelButton')}</Button>
-                <Button color="blue">{t('SaveButton')}</Button>
+                <Button color="grey" onClick={handleClose}>
+                    {t('CancelButton')}
+                </Button>
+                <Button color="blue" onClick={handleSave}>{t('SaveButton')}</Button>
             </div>
         );
-    }, []);
+    }, [form, notChangeForm]);
+
+    const handleSave = () => {
+        let params = {
+            ...form,
+        };
+
+        if (id) {
+            params = {
+                ...params,
+                id,
+            };
+        }
+
+        dispatch(
+            saveDictionaryCardRequest({
+                params,
+                name,
+                callbackSuccess: confirmClose,
+            }),
+        );
+    };
+
+    const handleDelete = () => {
+        /* const { id, deleteEntry, name } = this.props;*/
+
+        dispatch(deleteDictionaryEntryRequest({
+            name,
+            id,
+            callbackSuccess: confirmClose,
+        }));
+    };
 
     const getActionsHeader = useCallback(() => {
         return (
@@ -79,7 +113,7 @@ const CardNew = props => {
                         content={t('delete')}
                         position="bottom right"
                         trigger={
-                            <Button icon>
+                            <Button icon onClick={handleDelete}>
                                 <Icon name="trash alternate outline"/>
                             </Button>
                         }
@@ -106,7 +140,6 @@ const CardNew = props => {
         history.goBack();
     };
 
-
     const handleClose = () => {
         if (notChangeForm) {
             confirmClose();
@@ -125,7 +158,11 @@ const CardNew = props => {
     };
 
     return (
-        <CardLayout title={title} actionsFooter={getActionsFooter} actionsHeader={getActionsHeader}>
+        <CardLayout title={title} actionsFooter={getActionsFooter} actionsHeader={getActionsHeader}
+                    onClose={handleClose}>
+            <Dimmer active={loading} inverted>
+                <Loader size="huge">Loading</Loader>
+            </Dimmer>
             <div className="ui form dictionary-edit">
                 {columns.map(column => {
                     return (

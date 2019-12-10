@@ -68,7 +68,7 @@ const CellValue = (
                 {!value
                     ? t('All')
                     : value.map((n, i) => (
-                        <Label key={i} className="label-margin">
+                        <Label key={n.name} className="label-margin">
                             {t(n.name)}
                         </Label>
                     ))}

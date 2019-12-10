@@ -71,7 +71,7 @@ class Result extends Component {
                         {columns &&
                         columns.map((column, indexColumn) => (
                             <BodyCell
-                                key={`cell_${row.id}_${column.name}_${indexRow}`}
+                                key={`cell_${row.id}_${column.name}`}
                                 value={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].value : row[column.name]}
                                 valueText={row[column.name] && typeof row[column.name] === 'object' ? row[column.name].name : null}
                                 status={row.status}

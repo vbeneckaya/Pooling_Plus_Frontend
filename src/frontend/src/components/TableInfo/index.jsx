@@ -231,7 +231,7 @@ class TableInfo extends Component {
                                           <Table.Row key={row.id} onClick={(e) => this.handleRowClick(e, row.id)}>
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
-                                                      key={`cell_${row.id}_${column.name}_${index}`}
+                                                      key={`cell_${row.id}_${column.name}`}
                                                       column={column}
                                                       value={
                                                           row[column.name] &&
