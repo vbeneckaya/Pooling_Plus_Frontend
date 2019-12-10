@@ -49,7 +49,7 @@ const UserCard = props => {
 
     const title = useMemo(
         () => (id ? t('edit_user', {name: user.userName}) : `${t('create_user_title')}`),
-        [id],
+        [id, user],
     );
 
     const getActionsFooter = useCallback(
@@ -166,7 +166,7 @@ const UserCard = props => {
                     isRequired
                     error={error['roleId']}
                     type={SELECT_TYPE}
-                    onChange={handleRoleChange}
+                    onChange={handleChange}
                 />
                 <FormField
                     fluid

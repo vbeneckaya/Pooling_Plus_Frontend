@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {withTranslation} from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 
-import { rolesColumns } from '../../constants/rolesColumns';
+import {rolesColumns} from '../../constants/rolesColumns';
 import {
     getRolesRequest,
     progressSelector,
@@ -12,9 +12,9 @@ import {
     toggleRoleActiveRequest,
     totalCountSelector,
 } from '../../ducks/roles';
-import { Button, Icon } from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 import RoleCard from './role_card';
-import Card from "../customDictionary/card";
+import {NEW_ROLE_LINK, ROLE_LINK} from "../../router/links";
 
 const newModal = (t, load) => (
     <RoleCard title={t('create_role_title')} id={null} loadList={load}>
@@ -61,11 +61,11 @@ export class RolesList extends Component {
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}
-                newModal={newModal}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
                 loadList={loadList}
-                modalCard={this.getCard}
+                newLink={NEW_ROLE_LINK}
+                cardLink={ROLE_LINK}
             />
         );
     }
