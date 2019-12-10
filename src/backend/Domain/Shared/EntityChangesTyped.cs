@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Domain.Shared
 {
-    public class EntityChangesDto<TEntity> where TEntity : class, IPersistable
+    public class EntityChanges<TEntity> where TEntity : class, IPersistable
     {
         public TEntity Entity { get; set; }
-        public List<EntityFieldChangesDto> FieldChanges { get; set; }
+        public List<EntityFieldChanges> FieldChanges { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Orders.Triggers;
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
@@ -34,6 +35,7 @@ using Application.Services.VehicleTypes;
 using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
 using Application.Shared;
+using Application.Shared.FieldSetter;
 using DAL;
 using DAL.Services;
 using Domain.Persistables;
@@ -90,6 +92,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IUserSettingsService, UserSettingsService>();
 
             services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
 
@@ -121,6 +124,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IProfileService, ProfileService>();
 
             services.AddScoped<IValidationService, ValidationService>();
+            services.AddScoped<IFieldSetterFactory, FieldSetterFactory>();
+            services.AddScoped<IChangeTrackerFactory, ChangeTrackerFactory>();
 
             /*end of add service implementation*/
 

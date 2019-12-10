@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
 using Application.Services.Triggers;
@@ -11,6 +12,7 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Shippings;
@@ -29,6 +31,9 @@ namespace Application.Services.Shippings
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
+
+
         public ShippingsService(
             IHistoryService historyService,
             ICommonDataService dataService,
@@ -36,11 +41,15 @@ namespace Application.Services.Shippings
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService, 
             IServiceProvider serviceProvider, 
-            ITriggersService triggersService)
-            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService)
+            ITriggersService triggersService,
+            IValidationService validationService,
+            IFieldSetterFactory fieldSetterFactory,
+            IChangeTrackerFactory changeTrackerFactory)
+            : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService, validationService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -93,9 +102,10 @@ namespace Application.Services.Shippings
         public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
         {
             var result = _dataService.GetDbSet<Shipping>()
-                            .Where(x => ids.Contains(x.Id))
-                            .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
-                            .ToList();
+                .Where(x => ids.Contains(x.Id))
+                .Select(x => new EntityStatusDto { Id = x.Id.ToString(), Status = x.Status.ToString() })
+                .ToList();
+
             return result;
         }
 
@@ -146,7 +156,77 @@ namespace Application.Services.Shippings
             }
         }
 
-        public override ValidateResult MapFromDtoToEntity(Shipping entity, ShippingDto dto)
+        protected override IFieldSetter<Shipping> ConfigureHandlers(IFieldSetter<Shipping> setter, ShippingFormDto dto)
+        {
+            return setter
+                .AddHandler(e => e.CarrierId, new CarrierIdHandler(_dataService, _historyService))
+                .AddHandler(e => e.PalletsCount, new PalletsCountHandler())
+                .AddHandler(e => e.ActualPalletsCount, new ActualPalletsCountHandler())
+                .AddHandler(e => e.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler())
+                .AddHandler(e => e.WeightKg, new WeightKgHandler())
+                .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler())
+                .AddHandler(e => e.LoadingArrivalTime, new LoadingArrivalTimeHandler(_dataService, _historyService))
+                .AddHandler(e => e.LoadingDepartureTime, new LoadingDepartureTimeHandler(_dataService, _historyService))
+                .AddHandler(e => e.TotalDeliveryCost, new TotalDeliveryCostHandler())
+                .AddHandler(e => e.DeliveryCostWithoutVAT, new DeliveryCostWithoutVATHandler(_historyService))
+                .AddHandler(e => e.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler(_historyService))
+                .AddHandler(e => e.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler(_historyService))
+                .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler());
+        }
+
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Shipping>()
+                .Remove<Shipping>(i => i.Id);
+        }
+
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ShippingDto, Shipping>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s) => s.Id.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
+                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.BodyTypeId != null))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.Value.ToGuid()))
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
+                    .ForMember(t => t.BlankArrival, e => e.MapFrom((s) => s.BlankArrival.GetValueOrDefault()))
+                    .ForMember(t => t.Waybill, e => e.MapFrom((s) => s.Waybill.GetValueOrDefault()))
+                    .ForMember(t => t.WaybillTorg12, e => e.MapFrom((s) => s.WaybillTorg12.GetValueOrDefault()))
+                    .ForMember(t => t.TransportWaybill, e => e.MapFrom((s) => s.TransportWaybill.GetValueOrDefault()))
+                    .ForMember(t => t.Invoice, e => e.MapFrom((s) => s.Invoice.GetValueOrDefault()))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.DocumentsReturnDate)))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
+                    .ForMember(t => t.CostsConfirmedByShipper, e => e.MapFrom((s) => s.CostsConfirmedByShipper.GetValueOrDefault()))
+                    .ForMember(t => t.CostsConfirmedByCarrier, e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
+
+                cfg.CreateMap<ShippingDto, ShippingFormDto>();
+
+                cfg.CreateMap<Shipping, ShippingDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId?.ToString()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
+            });
+            return result;
+        }
+
+        public override void MapFromDtoToEntity(Shipping entity, ShippingDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
 
@@ -161,67 +241,13 @@ namespace Application.Services.Shippings
                 }
             }
 
-            var setter = new FieldSetter<Shipping>(entity, _historyService, readOnlyFields);
-
-            if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.ShippingNumber, dto.ShippingNumber);
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType?.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType.Value));
-            setter.UpdateField(e => e.TemperatureMin, dto.TemperatureMin);
-            setter.UpdateField(e => e.TemperatureMax, dto.TemperatureMax);
-            setter.UpdateField(e => e.TarifficationType, string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value));
-            setter.UpdateField(e => e.CarrierId, string.IsNullOrEmpty(dto.CarrierId?.Value) ? null : dto.CarrierId.Value.ToGuid(), new CarrierIdHandler(_dataService, _historyService), nameLoader: GetCarrierNameById);
-            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId?.Value) ? null : dto.VehicleTypeId.Value.ToGuid(), nameLoader: GetVehicleTypeNameById);
-            setter.UpdateField(e => e.BodyTypeId, string.IsNullOrEmpty(dto.BodyTypeId?.Value) ? null : dto.BodyTypeId.Value.ToGuid(), nameLoader: GetBodyTypeNameById);
-            setter.UpdateField(e => e.PalletsCount, dto.PalletsCount, new PalletsCountHandler());
-            setter.UpdateField(e => e.ActualPalletsCount, dto.ActualPalletsCount, new ActualPalletsCountHandler());
-            setter.UpdateField(e => e.ConfirmedPalletsCount, dto.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler());
-            setter.UpdateField(e => e.WeightKg, dto.WeightKg, new WeightKgHandler());
-            setter.UpdateField(e => e.ActualWeightKg, dto.ActualWeightKg, new ActualWeightKgHandler());
-            setter.UpdateField(e => e.PlannedArrivalTimeSlotBDFWarehouse, dto.PlannedArrivalTimeSlotBDFWarehouse);
-            setter.UpdateField(e => e.LoadingArrivalTime, ParseDateTime(dto.LoadingArrivalTime), new LoadingArrivalTimeHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.LoadingDepartureTime, ParseDateTime(dto.LoadingDepartureTime), new LoadingDepartureTimeHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.DeliveryInvoiceNumber, dto.DeliveryInvoiceNumber);
-            setter.UpdateField(e => e.DeviationReasonsComments, dto.DeviationReasonsComments);
-            setter.UpdateField(e => e.TotalDeliveryCost, dto.TotalDeliveryCost, new TotalDeliveryCostHandler());
-            setter.UpdateField(e => e.OtherCosts, dto.OtherCosts);
-            setter.UpdateField(e => e.DeliveryCostWithoutVAT, dto.DeliveryCostWithoutVAT, new DeliveryCostWithoutVATHandler(_historyService));
-            setter.UpdateField(e => e.ReturnCostWithoutVAT, dto.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler(_historyService));
-            setter.UpdateField(e => e.InvoiceAmountWithoutVAT, dto.InvoiceAmountWithoutVAT);
-            setter.UpdateField(e => e.AdditionalCostsWithoutVAT, dto.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler(_historyService));
-            setter.UpdateField(e => e.AdditionalCostsComments, dto.AdditionalCostsComments);
-            setter.UpdateField(e => e.TrucksDowntime, dto.TrucksDowntime, new TrucksDowntimeHandler());
-            setter.UpdateField(e => e.ReturnRate, dto.ReturnRate);
-            setter.UpdateField(e => e.AdditionalPointRate, dto.AdditionalPointRate);
-            setter.UpdateField(e => e.DowntimeRate, dto.DowntimeRate);
-            setter.UpdateField(e => e.BlankArrivalRate, dto.BlankArrivalRate);
-            setter.UpdateField(e => e.BlankArrival, dto.BlankArrival ?? false);
-            setter.UpdateField(e => e.Waybill, dto.Waybill ?? false);
-            setter.UpdateField(e => e.WaybillTorg12, dto.WaybillTorg12 ?? false);
-            setter.UpdateField(e => e.TransportWaybill, dto.TransportWaybill ?? false);
-            setter.UpdateField(e => e.Invoice, dto.Invoice ?? false);
-            setter.UpdateField(e => e.DocumentsReturnDate, ParseDateTime(dto.DocumentsReturnDate));
-            setter.UpdateField(e => e.ActualDocumentsReturnDate, ParseDateTime(dto.ActualDocumentsReturnDate));
-            setter.UpdateField(e => e.InvoiceNumber, dto.InvoiceNumber);
-            setter.UpdateField(e => e.CostsConfirmedByShipper, dto.CostsConfirmedByShipper ?? false);
-            setter.UpdateField(e => e.CostsConfirmedByCarrier, dto.CostsConfirmedByCarrier ?? false);
-            /*end of map dto to entity fields*/
-
-            setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
-
-            string errors = setter.ValidationErrors;
-            return new ValidateResult(errors, entity.Id.ToString());
+            _mapper.Map(dto, entity);
         }
 
-        public override ValidateResult MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
+        public override void MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
-            var result = MapFromDtoToEntity(entity, dto);
-            if (!result.IsError)
-            {
-                result = SaveRoutePoints(entity, dto);
-            }
-            return result;
+            MapFromDtoToEntity(entity, dto);
+            SaveRoutePoints(entity, dto);
         }
 
         public override ShippingDto MapFromEntityToDto(Shipping entity)
@@ -284,28 +310,23 @@ namespace Application.Services.Shippings
                         Order order;
                         if (ordersDict.TryGetValue(orderId, out order))
                         {
-                            var setter = new FieldSetter<Order>(order, _historyService);
-
                             if (pointDto.IsLoading)
                             {
-                                setter.UpdateField(o => o.ShippingDate, ParseDateTime(pointDto.PlannedDate));
-                                setter.UpdateField(o => o.LoadingArrivalTime, ParseDateTime(pointDto.ArrivalTime));
-                                setter.UpdateField(o => o.LoadingDepartureTime, ParseDateTime(pointDto.DepartureTime));
+                                order.ShippingDate = ParseDateTime(pointDto.PlannedDate);
+                                order.LoadingArrivalTime = ParseDateTime(pointDto.ArrivalTime);
+                                order.LoadingDepartureTime = ParseDateTime(pointDto.DepartureTime);
                                 if (!string.IsNullOrEmpty(pointDto.VehicleStatus))
-                                    setter.UpdateField(e => e.ShippingStatus, MapFromStateDto<VehicleState>(pointDto.VehicleStatus));
+                                    order.ShippingStatus = MapFromStateDto<VehicleState>(pointDto.VehicleStatus);
                             }
                             else
                             {
-                                setter.UpdateField(o => o.DeliveryDate, ParseDateTime(pointDto.PlannedDate));
-                                setter.UpdateField(o => o.UnloadingArrivalTime, ParseDateTime(pointDto.ArrivalTime));
-                                setter.UpdateField(o => o.UnloadingDepartureTime, ParseDateTime(pointDto.DepartureTime));
-                                setter.UpdateField(o => o.TrucksDowntime, pointDto.TrucksDowntime);
+                                order.DeliveryDate = ParseDateTime(pointDto.PlannedDate);
+                                order.UnloadingArrivalTime = ParseDateTime(pointDto.ArrivalTime);
+                                order.UnloadingDepartureTime = ParseDateTime(pointDto.DepartureTime);
+                                order.TrucksDowntime = pointDto.TrucksDowntime;
                                 if (!string.IsNullOrEmpty(pointDto.VehicleStatus))
-                                    setter.UpdateField(e => e.DeliveryStatus, MapFromStateDto<VehicleState>(pointDto.VehicleStatus));
+                                    order.DeliveryStatus = MapFromStateDto<VehicleState>(pointDto.VehicleStatus);
                             }
-
-                            setter.ApplyAfterActions();
-                            setter.SaveHistoryLog();
                         }
                     }
                 }
@@ -313,10 +334,8 @@ namespace Application.Services.Shippings
                 var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();
                 var loadingDepartureTime = orders.Select(i => i.LoadingDepartureTime).Where(i => i != null).Min();
 
-                var shipSetter = new FieldSetter<Shipping>(entity, _historyService);
-                shipSetter.UpdateField(s => s.LoadingArrivalTime, loadingArrivalTime);
-                shipSetter.UpdateField(s => s.LoadingDepartureTime, loadingDepartureTime);
-                shipSetter.SaveHistoryLog();
+                entity.LoadingArrivalTime = loadingArrivalTime;
+                entity.LoadingDepartureTime = loadingDepartureTime;
             }
 
             return new ValidateResult(null, entity.Id.ToString());
@@ -396,29 +415,6 @@ namespace Application.Services.Shippings
                                           .ThenBy(p => p.WarehouseName)
                                           .ToList();
             return pointsList;
-        }
-
-        private MapperConfiguration ConfigureMapper()
-        {
-            var lang = _userIdProvider.GetCurrentUser()?.Language;
-            var result = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<ShippingDto, ShippingFormDto>();
-
-                cfg.CreateMap<Shipping, ShippingDto>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
-                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
-                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
-                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
-            });
-            return result;
         }
 
         public override IQueryable<Shipping> ApplySearchForm(IQueryable<Shipping> query, FilterFormDto<ShippingFilterDto> searchForm, List<string> columns = null)
@@ -562,11 +558,6 @@ namespace Application.Services.Shippings
             || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
-        }
-
-        protected override ValidateResult ValidateDto(ShippingFormDto dto)
-        {
-            return new ValidateResult(null, dto.Id);
         }
 
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()

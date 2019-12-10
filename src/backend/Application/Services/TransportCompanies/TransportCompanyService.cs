@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
@@ -17,8 +18,8 @@ namespace Application.Services.TransportCompanies
     public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
+                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()

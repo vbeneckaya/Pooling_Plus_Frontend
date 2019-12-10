@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
@@ -35,14 +36,26 @@ namespace Application.Shared
 
         private readonly IValidationService _validationService;
 
+        private readonly IFieldSetterFactory _fieldSetterFactory;
+
         protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService)
+                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
         {
             _dataService = dataService;
             _userProvider = userProvider;
             _triggersService = triggersService;
             _validationService = validationService;
             _fieldDispatcherService = fieldDispatcherService;
+            _fieldSetterFactory = fieldSetterFactory;
+        }
+
+        protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TListDto dto)
+        {
+            return null;
+        }
+        protected virtual IChangeTracker ConfigureChangeTacker()
+        {
+            return null;
         }
 
         public TListDto Get(Guid id)
@@ -299,30 +312,51 @@ namespace Application.Shared
                 dto.Id = entity.Id.ToString();
             }
 
+            // Validation step
+
             var result = ValidateDto(dto);
             
             if (result.IsError)
             {
+                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
                 return result;
             }
 
+            // Mapping
+
             MapFromDtoToEntity(entity, dto);
+
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+
+            // Change handlers
+
+            var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), dto);
+
+            if (setter != null)
+            {
+                setter.Appy(changes);
+            }
+            
+            var trackConfig = this.ConfigureChangeTacker();
+
+            if (trackConfig != null)
+            {
+                trackConfig.LogTrackedChanges(changes);
+            }
 
             Log.Information("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (!result.IsError)
+            if (isNew)
             {
-                if (isNew)
-                {
-                    dbSet.Add(entity);
-                    result.ResultType = ValidateResultType.Created;
-                }
-                else
-                {
-                    //dbSet.Update(entityFromDb);
-                    result.ResultType = ValidateResultType.Updated;
-                }
+                dbSet.Add(entity);
+                result.ResultType = ValidateResultType.Created;
+            }
+            else
+            {
+                //dbSet.Update(entityFromDb);
+                result.ResultType = ValidateResultType.Updated;
+            }
 
                 _triggersService.Execute();
                 Log.Information("{entityName}.SaveOrCreateInner (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -331,12 +365,7 @@ namespace Application.Shared
                 _dataService.SaveChanges();
                 Log.Information("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
-                Log.Information($"Запись {entity.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
-            }
-            else
-            {
-                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
-            }
+            Log.Information($"Запись {entity.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
 
             return result;
         }

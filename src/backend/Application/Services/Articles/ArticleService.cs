@@ -1,8 +1,10 @@
 using Application.BusinessModels.Articles.Handlers;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Articles;
@@ -20,13 +22,15 @@ namespace Application.Services.Articles
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
         public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
+                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -42,57 +46,27 @@ namespace Application.Services.Articles
             }
         }
 
+        protected override IFieldSetter<Article> ConfigureHandlers(IFieldSetter<Article> setter, ArticleDto dto)
+        {
+            return setter
+                .AddHandler(e => e.Spgr, new SpgrHandler(_dataService, _historyService))
+                .AddHandler(e => e.Description, new DescriptionHandler(_dataService, _historyService))
+                .AddHandler(e => e.CountryOfOrigin, new CountryOfOriginHandler(_dataService, _historyService))
+                .AddHandler(e => e.ShelfLife, new ShelfLifeHandler(_dataService, _historyService))
+                .AddHandler(e => e.Ean, new EanHandler(_dataService, _historyService));
+        }
+
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Article>()
+                .Remove<Article>(i => i.Id);
+        }
+
         public override DetailedValidationResult MapFromDtoToEntity(Article entity, ArticleDto dto)
         {
-            var setter = new FieldSetter<Article>(entity, _historyService);
-
-            if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.Spgr, dto.Spgr, new SpgrHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Description, dto.Description, new DescriptionHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Nart, dto.Nart);
-            setter.UpdateField(e => e.CountryOfOrigin, dto.CountryOfOrigin, new CountryOfOriginHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.ShelfLife, dto.ShelfLife, new ShelfLifeHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Status, dto.Status);
-            setter.UpdateField(e => e.Ean, dto.Ean, new EanHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.UnitLengthGoodsMm, dto.UnitLengthGoodsMm);
-            setter.UpdateField(e => e.WidthUnitsGoodsMm, dto.WidthUnitsGoodsMm);
-            setter.UpdateField(e => e.UnitHeightGoodsMm, dto.UnitHeightGoodsMm);
-            setter.UpdateField(e => e.WeightUnitsGrossProductG, dto.WeightUnitsGrossProductG);
-            setter.UpdateField(e => e.WeightUnitsNetGoodsG, dto.WeightUnitsNetGoodsG);
-            setter.UpdateField(e => e.EanShrink, dto.EanShrink);
-            setter.UpdateField(e => e.PiecesInShrink, dto.PiecesInShrink);
-            setter.UpdateField(e => e.LengthShrinkMm, dto.LengthShrinkMm);
-            setter.UpdateField(e => e.WidthShrinkMm, dto.WidthShrinkMm);
-            setter.UpdateField(e => e.HeightShrinkMm, dto.HeightShrinkMm);
-            setter.UpdateField(e => e.GrossShrinkWeightG, dto.GrossShrinkWeightG);
-            setter.UpdateField(e => e.NetWeightShrinkG, dto.NetWeightShrinkG);
-            setter.UpdateField(e => e.EanBox, dto.EanBox);
-            setter.UpdateField(e => e.PiecesInABox, dto.PiecesInABox);
-            setter.UpdateField(e => e.BoxLengthMm, dto.BoxLengthMm);
-            setter.UpdateField(e => e.WidthOfABoxMm, dto.WidthOfABoxMm);
-            setter.UpdateField(e => e.BoxHeightMm, dto.BoxHeightMm);
-            setter.UpdateField(e => e.GrossBoxWeightG, dto.GrossBoxWeightG);
-            setter.UpdateField(e => e.NetBoxWeightG, dto.NetBoxWeightG);
-            setter.UpdateField(e => e.PiecesInALayer, dto.PiecesInALayer);
-            setter.UpdateField(e => e.LayerLengthMm, dto.LayerLengthMm);
-            setter.UpdateField(e => e.LayerWidthMm, dto.LayerWidthMm);
-            setter.UpdateField(e => e.LayerHeightMm, dto.LayerHeightMm);
-            setter.UpdateField(e => e.GrossLayerWeightMm, dto.GrossLayerWeightMm);
-            setter.UpdateField(e => e.NetWeightMm, dto.NetWeightMm);
-            setter.UpdateField(e => e.EanPallet, dto.EanPallet);
-            setter.UpdateField(e => e.PiecesOnAPallet, dto.PiecesOnAPallet);
-            setter.UpdateField(e => e.PalletLengthMm, dto.PalletLengthMm);
-            setter.UpdateField(e => e.WidthOfPalletsMm, dto.WidthOfPalletsMm);
-            setter.UpdateField(e => e.PalletHeightMm, dto.PalletHeightMm);
-            setter.UpdateField(e => e.GrossPalletWeightG, dto.GrossPalletWeightG);
-            setter.UpdateField(e => e.NetWeightPalletsG, dto.NetWeightPalletsG);
-
-            setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
-
-            string errors = setter.ValidationErrors;
-            return new DetailedValidationResult(errors, entity.Id.ToString());
+            _mapper.Map(dto, entity);
+            return null;
         }
 
         public override ArticleDto MapFromEntityToDto(Article entity)
@@ -117,6 +91,9 @@ namespace Application.Services.Articles
             {
                 cfg.CreateMap<Article, ArticleDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
+
+                cfg.CreateMap<ArticleDto, Article>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()));
             });
             return result;
         }

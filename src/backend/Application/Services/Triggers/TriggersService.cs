@@ -33,7 +33,7 @@ namespace Application.Services.Triggers
             RunTriggers(tariffChanges);
         }
 
-        private void RunTriggers<TEntity>(IEnumerable<EntityChangesDto<TEntity>> changes) where TEntity : class, IPersistable
+        private void RunTriggers<TEntity>(IEnumerable<EntityChanges<TEntity>> changes) where TEntity : class, IPersistable
         {
             var triggers = _serviceProvider.GetService<IEnumerable<ITrigger<TEntity>>>();
             if (triggers.Any())

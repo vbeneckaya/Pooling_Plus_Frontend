@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Triggers
             }
         }
 
-        public bool IsTriggered(EntityChangesDto<Order> changes)
+        public bool IsTriggered(EntityChanges<Order> changes)
         {
             var watchProperties = new[]
             {
