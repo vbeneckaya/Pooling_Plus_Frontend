@@ -27,7 +27,7 @@ namespace Application.Shared
             _dataService = dataService;
             _historyService = historyService;
         }
-        public IChangeTracker Add<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+        public IChangeTracker Add<TEntity>(Expression<Func<TEntity, object>> property)
         {
             var typeName = typeof(TEntity).Name;
             var propName = this.GetPropertyName(property);
@@ -43,7 +43,7 @@ namespace Application.Shared
             config.Properties.Add(propertyName);
         }
 
-        public IChangeTracker Remove<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> property)
+        public IChangeTracker Remove<TEntity>(Expression<Func<TEntity, object>> property)
         {
             var typeName = typeof(TEntity).Name;
 
@@ -83,19 +83,17 @@ namespace Application.Shared
             });
         }
 
-        public void LogTrackedChanges<TEntity>() where TEntity : class, IPersistable
+        public void LogTrackedChanges<TEntity>(EntityChanges<TEntity> change) where TEntity : class, IPersistable
         {
-            var changes = GetTrackedChanges<TEntity>();
-
-            foreach (var change in changes)
-            {
+            //foreach (var change in changes)
+            //{
                 foreach (var field in change.FieldChanges)
                 {
                     _historyService.Save(change.Entity.Id, "fieldChanged",
                                          field.FieldName.ToLowerFirstLetter(),
                                          field.OldValue, field.NewValue);
                 }
-            }
+            //}
         }
 
         private EntityTrackerConfiguration GetTypeConfiguration(string typeName)

@@ -31,6 +31,9 @@ namespace Application.Services.Shippings
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
+
+
         public ShippingsService(
             IHistoryService historyService,
             IAuditDataService dataService,
@@ -40,11 +43,13 @@ namespace Application.Services.Shippings
             IServiceProvider serviceProvider, 
             ITriggersService triggersService,
             IValidationService validationService,
-            IFieldSetterFactory fieldSetterFactory)
+            IFieldSetterFactory fieldSetterFactory,
+            IChangeTrackerFactory changeTrackerFactory)
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider, triggersService, validationService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -167,6 +172,13 @@ namespace Application.Services.Shippings
                 .AddHandler(e => e.ReturnCostWithoutVAT, new ReturnCostWithoutVATHandler(_historyService))
                 .AddHandler(e => e.AdditionalCostsWithoutVAT, new AdditionalCostsWithoutVATHandler(_historyService))
                 .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler());
+        }
+
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Shipping>()
+                .Remove<Shipping>(i => i.Id);
         }
 
         private MapperConfiguration ConfigureMapper()

@@ -28,14 +28,16 @@ namespace Application.Services.Warehouses
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
         public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         protected override IFieldSetter<Warehouse> ConfigureHandlers(IFieldSetter<Warehouse> setter, WarehouseDto dto)
@@ -51,6 +53,14 @@ namespace Application.Services.Warehouses
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
                 .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
+        }
+        
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Warehouse>()
+                .Remove<Warehouse>(i => i.Id)
+                .Remove<Warehouse>(i => i.IsActive);
         }
 
         public WarehouseDto GetBySoldTo(string soldToNumber)

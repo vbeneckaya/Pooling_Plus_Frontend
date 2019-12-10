@@ -25,14 +25,17 @@ namespace Application.Services.ShippingWarehouses
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
+
 
         public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter, ShippingWarehouseDto dto)
@@ -41,6 +44,16 @@ namespace Application.Services.ShippingWarehouses
                 .AddHandler(e => e.WarehouseName, new ShippingWarehouseNameHandler(_dataService, _historyService))
                 .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService))
                 .AddHandler(e => e.City, new CityHandler(_dataService, _historyService));
+        }
+        
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .Add<ShippingWarehouse>(i => i.Code)
+                .Add<ShippingWarehouse>(i => i.WarehouseName)
+                .Add<ShippingWarehouse>(i => i.Address)
+                .Add<ShippingWarehouse>(i => i.Region)
+                .Add<ShippingWarehouse>(i => i.City);
         }
 
         public ShippingWarehouse GetByCode(string code)

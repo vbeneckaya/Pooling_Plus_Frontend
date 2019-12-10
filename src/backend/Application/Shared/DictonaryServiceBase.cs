@@ -53,6 +53,10 @@ namespace Application.Shared
         {
             return null;
         }
+        protected virtual IChangeTracker ConfigureChangeTacker()
+        {
+            return null;
+        }
 
         public TListDto Get(Guid id)
         {
@@ -322,14 +326,22 @@ namespace Application.Shared
 
             MapFromDtoToEntity(entity, dto);
 
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+
             // Change handlers
 
             var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), dto);
 
             if (setter != null)
             {
-                var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
                 setter.Appy(changes);
+            }
+            
+            var trackConfig = this.ConfigureChangeTacker();
+
+            if (trackConfig != null)
+            {
+                trackConfig.LogTrackedChanges(changes);
             }
 
             Log.Information("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);

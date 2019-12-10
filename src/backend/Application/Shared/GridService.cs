@@ -233,6 +233,8 @@ namespace Application.Shared
                 return result;
             }
 
+            var trackConfig = this.ConfigureChangeTacker();
+
             if (!string.IsNullOrEmpty(entityFrom.Id))
             {
                 var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
@@ -247,12 +249,13 @@ namespace Application.Shared
 
                 // Change handlers
 
+                var updateChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
                 if (setter != null)
                 {
-                    var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
-                    setter.Appy(changes);
+                    setter.Appy(updateChanges);
                 }
 
                 Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -264,7 +267,12 @@ namespace Application.Shared
                     Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                     sw.Restart();
 
-                    _dataService.SaveChanges();
+                    if (trackConfig != null)
+                    {
+                        trackConfig.LogTrackedChanges<TEntity>(updateChanges);
+                    }
+
+                _dataService.SaveChanges();
                     Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
                 return new ValidateResult
@@ -282,6 +290,17 @@ namespace Application.Shared
 
             MapFromFormDtoToEntity(entity, entityFrom);
 
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault();
+
+            // Change handlers
+
+            var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
+
+            if (updateSetter != null)
+            {
+                updateSetter.Appy(changes);
+            }
+
             Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -291,12 +310,9 @@ namespace Application.Shared
             Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-
-            var trackConfig = this.ConfigureChangeTacker();
-
             if (trackConfig != null)
             {
-                trackConfig.LogTrackedChanges<TEntity>();
+                trackConfig.LogTrackedChanges<TEntity>(changes);
             }
 
             _dataService.SaveChanges();

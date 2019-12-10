@@ -49,6 +49,7 @@ namespace Application.Services.Orders
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -67,7 +68,10 @@ namespace Application.Services.Orders
         protected override IChangeTracker ConfigureChangeTacker()
         {
             return _changeTrackerFactory.CreateChangeTracker()
-                .TrackAll<Order>();
+                .TrackAll<Order>()
+                .Remove<Order>(i => i.Id)
+                .Remove<Order>(i => i.Status)
+                .Remove<Order>(i => i.Source);
         }
 
         public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
@@ -192,6 +196,8 @@ namespace Application.Services.Orders
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
@@ -200,6 +206,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
                     .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
+                    .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
                     .ForMember(t => t.Status, e => e.Condition((s) => !string.IsNullOrEmpty(s.Status)))
                     .ForMember(t => t.Status, e => e.MapFrom((s) => MapFromStateDto<OrderState>(s.Status)))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
@@ -234,13 +242,16 @@ namespace Application.Services.Orders
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
-                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s, t) => s.OrderDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId?.ToString()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
+                    .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
+                    .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
+                    .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => s.DeliveryDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
@@ -255,8 +266,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId?.ToString()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));

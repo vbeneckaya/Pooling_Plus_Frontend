@@ -22,13 +22,15 @@ namespace Application.Services.Articles
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
         public ArticlesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+                               IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -52,6 +54,13 @@ namespace Application.Services.Articles
                 .AddHandler(e => e.CountryOfOrigin, new CountryOfOriginHandler(_dataService, _historyService))
                 .AddHandler(e => e.ShelfLife, new ShelfLifeHandler(_dataService, _historyService))
                 .AddHandler(e => e.Ean, new EanHandler(_dataService, _historyService));
+        }
+
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Article>()
+                .Remove<Article>(i => i.Id);
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(Article entity, ArticleDto dto)
