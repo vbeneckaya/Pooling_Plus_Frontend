@@ -1,6 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
 using Application.Services.Shippings;
-using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -20,11 +19,16 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
-            : base(dataService)
+        public UnionOrders(ICommonDataService dataService, 
+                           IHistoryService historyService, 
+                           IShippingCalculationService shippingCalculationService,
+                           IChangeTrackerFactory changeTrackerFactory)
+            : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Orange;
         }
         
@@ -49,6 +53,10 @@ namespace Application.BusinessModels.Orders.Actions
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, orders, shipping, _historyService);
+
+            var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
+            var changeTracker = _changeTrackerFactory.CreateChangeTracker();
+            changeTracker.LogTrackedChanges(changes);
 
             return new AppActionResult
             {

@@ -95,6 +95,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+            services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
 
             services.AddScoped<ITriggersService, TriggersService>();
 
