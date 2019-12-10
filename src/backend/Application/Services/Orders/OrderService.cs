@@ -289,18 +289,6 @@ namespace Application.Services.Orders
             if (isNew)
             {
                 InitializeNewOrder(entity, isInjection);
-            }
-
-            var hasChanges = _dataService.GetChanges<Order>().Any(x => x.Entity.Id == entity.Id);
-
-            bool isCreated = false;
-            if (hasChanges)
-            {
-                isCreated = CheckRequiredFields(entity);
-            }
-
-            if (isNew && !isCreated)
-            {
                 _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
             }
 
@@ -413,40 +401,6 @@ namespace Application.Services.Orders
                 Value = entity.Id.ToString(),
                 Name = entity.OrderNumber
             };
-        }
-
-        private string GetPickingTypeNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
-        }
-
-        private string GetShippingWarehouseNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
-        }
-
-        private bool CheckRequiredFields(Order order)
-        {
-            if (order.Status == OrderState.Draft)
-            {
-                bool hasRequiredFields =
-                       !string.IsNullOrEmpty(order.SoldTo)
-                    && !string.IsNullOrEmpty(order.ShippingAddress)
-                    && !string.IsNullOrEmpty(order.DeliveryAddress)
-                    && !string.IsNullOrEmpty(order.Payer)
-                    && order.ShippingWarehouseId.HasValue
-                    && order.DeliveryWarehouseId.HasValue
-                    && order.ShippingDate.HasValue
-                    && order.DeliveryDate.HasValue;
-
-                if (hasRequiredFields)
-                {
-                    order.Status = OrderState.Created;
-                    _historyService.Save(order.Id, "orderSetCreated", order.OrderNumber);
-                    return true;
-                }
-            }
-            return false;
         }
 
         private void InitializeNewOrder(Order order, bool isInjection)
