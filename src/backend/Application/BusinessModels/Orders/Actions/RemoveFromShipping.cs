@@ -1,5 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.Shared;
+using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -17,13 +17,19 @@ namespace Application.BusinessModels.Orders.Actions
     public class RemoveFromShipping : IAppAction<Order>
     {
         private readonly IHistoryService _historyService;
-
         private readonly ICommonDataService _dataService;
+        private readonly IShippingCalculationService _shippingCalculationService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        public RemoveFromShipping(ICommonDataService dataService, IHistoryService historyService)
+        public RemoveFromShipping(ICommonDataService dataService, 
+                                  IHistoryService historyService, 
+                                  IShippingCalculationService shippingCalculationService,
+                                  IChangeTrackerFactory changeTrackerFactory)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _shippingCalculationService = shippingCalculationService;
+            _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Blue;
         }
 
@@ -43,7 +49,8 @@ namespace Application.BusinessModels.Orders.Actions
 
             _historyService.Save(order.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
 
-            if (!_dataService.GetDbSet<Order>().Any(x => x.ShippingId.HasValue && x.ShippingId.Value == shipping.Id && x.Id != order.Id))
+            var orders = _dataService.GetDbSet<Order>().Where(x => x.ShippingId == shipping.Id && x.Id != order.Id).ToList();
+            if (!orders.Any())
             {
                 shipping.Status = ShippingState.ShippingCanceled;
                 _historyService.Save(shipping.Id, "shippingSetCancelled", shipping.ShippingNumber);
@@ -51,6 +58,12 @@ namespace Application.BusinessModels.Orders.Actions
             else
             {
                 _historyService.Save(shipping.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
+
+                _shippingCalculationService.RecalculateShipping(shipping, orders);
+
+                var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
+                var changeTracker = _changeTrackerFactory.CreateChangeTracker().TrackAll<Shipping>();
+                changeTracker.LogTrackedChanges(changes);
             }
             
             return new AppActionResult

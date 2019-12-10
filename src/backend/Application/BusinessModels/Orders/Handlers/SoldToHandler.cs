@@ -37,6 +37,11 @@ namespace Application.BusinessModels.Orders.Handlers
                     order.DeliveryCity = soldToWarehouse.City;
                     order.DeliveryRegion = soldToWarehouse.Region;
                     order.DeliveryType = soldToWarehouse.DeliveryType;
+
+                    if (!order.ManualClientAvisationTime)
+                    {
+                        order.ClientAvisationTime = soldToWarehouse.AvisaleTime;
+                    }
                 }
                 else
                 {

@@ -184,6 +184,7 @@ namespace Application.Services.Shippings
         private MapperConfiguration ConfigureMapper()
         {
             var lang = _userIdProvider.GetCurrentUser()?.Language;
+
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
@@ -196,7 +197,7 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
                     .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
-                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.BodyTypeId != null))
+                    .ForMember(t => t.BodyTypeId, e => e.Condition((s) => s.BodyTypeId != null))
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
@@ -276,21 +277,6 @@ namespace Application.Services.Shippings
             formDto.RoutePoints = GetRoutePoints(entity, orders);
 
             return formDto;
-        }
-
-        private string GetCarrierNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
-        }
-
-        private string GetVehicleTypeNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<VehicleType>(id.Value)?.Name;
-        }
-
-        private string GetBodyTypeNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<BodyType>(id.Value)?.Name;
         }
 
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)

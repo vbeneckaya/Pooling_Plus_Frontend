@@ -60,7 +60,7 @@ namespace DAL.Services
         private List<EntityFieldChanges> GetFieldChanges(EntityEntry entity)
         {
             var fieldChanges = new List<EntityFieldChanges>();
-            foreach (var field in entity.Properties.Where(x => x.IsModified).ToList())
+            foreach (var field in entity.Properties.Where(x => x.IsModified || entity.State == EntityState.Added).ToList())
             {
                 var fieldChange = new EntityFieldChanges
                 {

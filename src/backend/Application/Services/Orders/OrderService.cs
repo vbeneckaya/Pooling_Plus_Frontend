@@ -291,7 +291,7 @@ namespace Application.Services.Orders
                 InitializeNewOrder(entity, isInjection);
             }
 
-            var hasChanges = _dataService.GetChanges<Order>().Any();
+            var hasChanges = _dataService.GetChanges<Order>().Any(x => x.Entity.Id == entity.Id);
 
             bool isCreated = false;
             if (hasChanges)
@@ -477,7 +477,6 @@ namespace Application.Services.Orders
                             OrderId = entity.Id
                         };
                         MapFromItemDtoToEntity(item, itemDto, true, isManual);
-                        _dataService.GetDbSet<OrderItem>().Add(item);
 
                         _historyService.Save(entity.Id, "orderItemAdded", item.Nart, item.Quantity);
                     }
@@ -512,7 +511,12 @@ namespace Application.Services.Orders
             entity.Nart = dto.Nart;
             entity.Quantity = dto.Quantity ?? 0;
 
-            var change = _dataService.GetChanges<OrderItem>().FirstOrDefault();
+            if (isNew)
+            {
+                _dataService.GetDbSet<OrderItem>().Add(entity);
+            }
+
+            var change = _dataService.GetChanges<OrderItem>().FirstOrDefault(x => x.Entity.Id == entity.Id);
             setter.Appy(change);
 
             if (isManual && change.FieldChanges.Any())
