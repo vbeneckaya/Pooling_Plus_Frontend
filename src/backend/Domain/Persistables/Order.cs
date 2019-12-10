@@ -318,5 +318,10 @@ namespace Domain.Persistables
         /// Способ тарификации
         /// </summary>
         public TarifficationType? TarifficationType { get; set; }
+        
+        /// <summary>
+        /// Тип ТС
+        /// </summary>
+        public Guid? VehicleTypeId { get; set; }
     }
 }

@@ -213,5 +213,9 @@ namespace Domain.Services.Orders
         
         [FieldType(FieldType.Enum, source: nameof(TarifficationType))]
         public LookUpDto TarifficationType { get; set; }
+        
+        [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
+        public LookUpDto VehicleTypeId { get; set; }
+        
     }
 }

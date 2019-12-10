@@ -190,6 +190,7 @@ namespace Application.Services.Orders
             setter.UpdateField(e => e.Source, dto.Source, ignoreChanges: true);
             if (!string.IsNullOrEmpty(dto.TarifficationType?.Value))
                 setter.UpdateField(e => e.TarifficationType, MapFromStateDto<TarifficationType>(dto.TarifficationType.Value));
+            setter.UpdateField(e => e.VehicleTypeId, string.IsNullOrEmpty(dto.VehicleTypeId?.Value) ? null : dto.VehicleTypeId.Value.ToGuid(), nameLoader: GetVehicleTypeNameById);
 
             /*end of map dto to entity fields*/
 
@@ -279,6 +280,15 @@ namespace Application.Services.Orders
             var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
                                                  .Where(x => shippingWarehouseIds.Contains(x.Id))
                                                  .ToDictionary(x => x.Id.ToString());
+            
+            var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
+                .Select(x => x.VehicleTypeId.Value.ToGuid())
+                .ToList();
+            
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                .Where(x => vehicleTypeIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+            
 
             foreach (var dto in dtos)
             {
@@ -300,6 +310,13 @@ namespace Application.Services.Orders
                     dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
                 }
 
+                if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
+                    && vehicleTypes.TryGetValue(dto.VehicleTypeId.Value, out VehicleType vehicleType))
+                {
+                    dto.VehicleTypeId.Name = vehicleType.Name;
+                }
+                
+                
                 yield return dto;
             }
         }
@@ -363,6 +380,11 @@ namespace Application.Services.Orders
         private string GetShippingWarehouseNameById(Guid? id)
         {
             return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
+        }
+        
+        private string GetVehicleTypeNameById(Guid? id)
+        {
+            return id == null ? null : _dataService.GetById<VehicleType>(id.Value)?.Name;
         }
 
         private bool CheckRequiredFields(Order order)
@@ -492,7 +514,9 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
+                    ;
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
@@ -722,7 +746,9 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.ShippingStatus, new StateExcelColumn<VehicleState>(lang))
                 .MapColumn(i => i.DeliveryStatus, new StateExcelColumn<VehicleState>(lang))
                 .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
-                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                ;
         }
 
         private Guid? GetPickingTypeIdByName(string name)
@@ -747,5 +773,11 @@ namespace Application.Services.Orders
         {
             return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
+        
+        private Guid? GetVehicleTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }        
     }
 }
