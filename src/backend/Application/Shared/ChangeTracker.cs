@@ -85,6 +85,8 @@ namespace Application.Shared
 
         public void LogTrackedChanges<TEntity>(EntityChanges<TEntity> change) where TEntity : class, IPersistable
         {
+            if (change?.FieldChanges == null) return;
+
             var config = GetTypeConfiguration(typeof(TEntity).Name);
 
             var changes = change.FieldChanges.Where(f => config.Properties.Contains(f.FieldName)).ToList();
