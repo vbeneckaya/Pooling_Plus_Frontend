@@ -26,6 +26,8 @@ namespace Application.Shared.FieldSetter
 
         public void Appy(EntityChanges<TEntity> changes)
         {
+            if (changes?.FieldChanges == null) return;
+
             foreach (var change in changes.FieldChanges)
             {
                 if (this._afterActions.ContainsKey(change.FieldName))
