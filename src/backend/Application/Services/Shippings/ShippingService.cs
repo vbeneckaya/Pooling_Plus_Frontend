@@ -36,7 +36,7 @@ namespace Application.Services.Shippings
 
         public ShippingsService(
             IHistoryService historyService,
-            IAuditDataService dataService,
+            ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService, 

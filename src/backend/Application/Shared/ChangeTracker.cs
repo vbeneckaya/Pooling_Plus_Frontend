@@ -85,15 +85,16 @@ namespace Application.Shared
 
         public void LogTrackedChanges<TEntity>(EntityChanges<TEntity> change) where TEntity : class, IPersistable
         {
-            //foreach (var change in changes)
-            //{
-                foreach (var field in change.FieldChanges)
-                {
-                    _historyService.Save(change.Entity.Id, "fieldChanged",
-                                         field.FieldName.ToLowerFirstLetter(),
-                                         field.OldValue, field.NewValue);
-                }
-            //}
+            var config = TypeConfigurations[typeof(TEntity).Name];
+
+            var changes = change.FieldChanges.Where(f => config.Properties.Contains(f.FieldName)).ToList();
+
+            foreach (var field in changes)
+            {
+                _historyService.Save(change.Entity.Id, "fieldChanged",
+                                        field.FieldName.ToLowerFirstLetter(),
+                                        field.OldValue, field.NewValue);
+            }
         }
 
         private EntityTrackerConfiguration GetTypeConfiguration(string typeName)

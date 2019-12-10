@@ -36,7 +36,7 @@ namespace Application.Services.Orders
 
         public OrdersService(
             IHistoryService historyService,
-            IAuditDataService dataService,
+            ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService, 
