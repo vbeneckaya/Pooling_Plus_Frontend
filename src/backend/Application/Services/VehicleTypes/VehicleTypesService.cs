@@ -1,4 +1,5 @@
-﻿using Application.Services.Triggers;
+﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
@@ -20,8 +21,8 @@ namespace Application.Services.VehicleTypes
     public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
         public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
         }
 

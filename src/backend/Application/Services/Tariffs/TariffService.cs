@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
@@ -22,8 +23,8 @@ namespace Application.Services.Tariffs
     public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
+                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
         }
 

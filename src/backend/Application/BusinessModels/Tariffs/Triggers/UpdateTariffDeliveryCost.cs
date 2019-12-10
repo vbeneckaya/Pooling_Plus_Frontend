@@ -32,7 +32,7 @@ namespace Application.BusinessModels.Tariffs.Triggers
             }
         }
 
-        public bool IsTriggered(EntityChangesDto<Tariff> changes)
+        public bool IsTriggered(EntityChanges<Tariff> changes)
         {
             return changes?.FieldChanges?.Count > 0;
         }

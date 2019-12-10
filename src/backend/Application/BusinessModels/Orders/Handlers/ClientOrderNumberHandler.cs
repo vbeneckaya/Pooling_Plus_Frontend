@@ -17,10 +17,8 @@ namespace Application.BusinessModels.Orders.Handlers
             else
                 newOrderType = OrderType.OR;
 
-            var setter = new FieldSetter<Order>(order, _historyService);
-            setter.UpdateField(o => o.OrderType, newOrderType);
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
-            setter.SaveHistoryLog();
+            order.OrderType = newOrderType;
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)

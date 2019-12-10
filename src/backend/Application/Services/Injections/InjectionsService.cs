@@ -1,4 +1,5 @@
-﻿using Application.Services.Triggers;
+﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
@@ -16,8 +17,8 @@ namespace Application.Services.Injections
     public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
         public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService) 
+                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Injection entity, InjectionDto dto)

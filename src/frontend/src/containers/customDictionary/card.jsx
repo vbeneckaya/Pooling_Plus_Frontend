@@ -68,9 +68,7 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clearCard, load } = this.props;
-
-        load && load(this.state.form);
+        const {loadList, clearCard} = this.props;
 
         this.setState({
             ...initialState,
@@ -112,7 +110,7 @@ class Card extends Component {
     };
 
     handleSave = () => {
-        const { id, save, name } = this.props;
+        const {id, save, name, load} = this.props;
         const { form } = this.state;
 
         let params = {
@@ -129,7 +127,10 @@ class Card extends Component {
         save({
             params,
             name,
-            callbackSuccess: this.confirmClose,
+            callbackSuccess: () => {
+                load && load(form);
+                this.confirmClose();
+            }
         });
     };
 

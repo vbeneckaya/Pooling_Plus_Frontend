@@ -55,5 +55,7 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; }
+
+        public string AdditionalInfo { get; set; }
     }
 }

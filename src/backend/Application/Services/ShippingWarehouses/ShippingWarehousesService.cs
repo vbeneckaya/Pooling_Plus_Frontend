@@ -1,9 +1,11 @@
-﻿using Application.BusinessModels.ShippingWarehouses.Handlers;
+﻿using Application.BusinessModels.Shared.Handlers;
+using Application.BusinessModels.ShippingWarehouses.Handlers;
 using Application.Services.Addresses;
 using Application.Services.Triggers;
 using Application.Shared;
 using AutoMapper;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.FieldProperties;
@@ -23,14 +25,35 @@ namespace Application.Services.ShippingWarehouses
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
+
 
         public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService)
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+            _changeTrackerFactory = changeTrackerFactory;
+        }
+
+        protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter, ShippingWarehouseDto dto)
+        {
+            return setter
+                .AddHandler(e => e.WarehouseName, new ShippingWarehouseNameHandler(_dataService, _historyService))
+                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService))
+                .AddHandler(e => e.City, new CityHandler(_dataService, _historyService));
+        }
+        
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .Add<ShippingWarehouse>(i => i.Code)
+                .Add<ShippingWarehouse>(i => i.WarehouseName)
+                .Add<ShippingWarehouse>(i => i.Address)
+                .Add<ShippingWarehouse>(i => i.Region)
+                .Add<ShippingWarehouse>(i => i.City);
         }
 
         public ShippingWarehouse GetByCode(string code)
@@ -58,26 +81,8 @@ namespace Application.Services.ShippingWarehouses
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
         {
-            var setter = new FieldSetter<ShippingWarehouse>(entity, _historyService);
+            this._mapper.Map(dto, entity);
 
-            if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.Code, dto.Code);
-            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
-            setter.UpdateField(e => e.ValidAddress, dto.ValidAddress, ignoreChanges: true);
-            setter.UpdateField(e => e.PostalCode, dto.PostalCode, ignoreChanges: true);
-            setter.UpdateField(e => e.Region, dto.Region);
-            setter.UpdateField(e => e.Area, dto.Area, ignoreChanges: true);
-            setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Street, dto.Street, ignoreChanges: true);
-            setter.UpdateField(e => e.House, dto.House, ignoreChanges: true);
-            setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
-
-            setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
-
-            string errors = setter.ValidationErrors;
             return null;
         }
 
@@ -120,6 +125,9 @@ namespace Application.Services.ShippingWarehouses
             {
                 cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
+
+                cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()));
             });
             return result;
         }

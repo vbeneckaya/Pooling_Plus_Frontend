@@ -18,27 +18,30 @@ namespace Application.BusinessModels.Orders.Handlers
 
         public void AfterChange(Order order, string oldValue, string newValue)
         {
-            var setter = new FieldSetter<Order>(order, _historyService);
-
             if (!string.IsNullOrEmpty(order.SoldTo))
             {
 
                 var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    setter.UpdateField(o => o.ClientName, soldToWarehouse.WarehouseName);
-                    setter.UpdateField(o => o.PickingFeatures, soldToWarehouse.PickingFeatures);
+                    order.ClientName = soldToWarehouse.WarehouseName;
+                    order.PickingFeatures = soldToWarehouse.PickingFeatures;
 
                     if (soldToWarehouse.PickingTypeId.HasValue)
-                        setter.UpdateField(o => o.PickingTypeId, soldToWarehouse.PickingTypeId, nameLoader: GetPickingTypeNameById);
+                        order.PickingTypeId = soldToWarehouse.PickingTypeId;
 
-                    setter.UpdateField(o => o.TransitDays, soldToWarehouse.LeadtimeDays);
+                    order.TransitDays = soldToWarehouse.LeadtimeDays;
 
-                    setter.UpdateField(o => o.DeliveryWarehouseId, soldToWarehouse.Id, ignoreChanges: true);
-                    setter.UpdateField(o => o.DeliveryAddress, soldToWarehouse.Address);
-                    setter.UpdateField(o => o.DeliveryCity, soldToWarehouse.City);
-                    setter.UpdateField(o => o.DeliveryRegion, soldToWarehouse.Region);
-                    setter.UpdateField(o => o.DeliveryType, soldToWarehouse.DeliveryType);
+                    order.DeliveryWarehouseId = soldToWarehouse.Id;
+                    order.DeliveryAddress = soldToWarehouse.Address;
+                    order.DeliveryCity = soldToWarehouse.City;
+                    order.DeliveryRegion = soldToWarehouse.Region;
+                    order.DeliveryType = soldToWarehouse.DeliveryType;
+
+                    if (!order.ManualClientAvisationTime)
+                    {
+                        order.ClientAvisationTime = soldToWarehouse.AvisaleTime;
+                    }
                 }
                 else
                 {
@@ -46,10 +49,8 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            setter.UpdateField(o => o.ShippingDate, order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0));
-            setter.UpdateField(o => o.OrderChangeDate, DateTime.UtcNow, ignoreChanges: true);
-
-            setter.SaveHistoryLog();
+            order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, string oldValue, string newValue)

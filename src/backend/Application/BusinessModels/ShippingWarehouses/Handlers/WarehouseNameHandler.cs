@@ -9,12 +9,12 @@ using System.Linq;
 
 namespace Application.BusinessModels.ShippingWarehouses.Handlers
 {
-    public class WarehouseNameHandler : IFieldHandler<ShippingWarehouse, string>
+    public class ShippingWarehouseNameHandler : IFieldHandler<ShippingWarehouse, string>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
-        public WarehouseNameHandler(ICommonDataService dataService, IHistoryService historyService)
+        public ShippingWarehouseNameHandler(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;

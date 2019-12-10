@@ -34,37 +34,28 @@ namespace Application.Shared
                             return false;
                         }
 
-                        if (fieldHandler != null)
-                        {
-                            string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
-                            if (!string.IsNullOrEmpty(error))
-                            {
-                                _validationErrors.Add(error);
-                                return false;
-                            }
-                        }
-
-                        propertyInfo.SetValue(Entity, newValue);
-
-                        if (!ignoreChanges)
-                        {
-                            if (fieldHandler != null)
-                            {
-                                _afterActions.Add(() => fieldHandler.AfterChange(Entity, oldValue, newValue));
-                            }
-
-                            string fieldName = propertyInfo.Name;
-                            object historyOldValue = nameLoader == null || oldValue == null ? (object)oldValue : nameLoader(oldValue);
-                            object historyNewValue = nameLoader == null || newValue == null ? (object)newValue : nameLoader(newValue);
-                            _historyActions[fieldName] = () => SaveHistory(fieldName, historyOldValue, historyNewValue);
-                        }
-
-                        HasChanges = true;
-                        return true;
+                        //if (fieldHandler != null)
+                        //{
+                        //    string error = fieldHandler.ValidateChange(Entity, oldValue, newValue);
+                        //    if (!string.IsNullOrEmpty(error))
+                        //    {
+                        //        _validationErrors.Add(error);
+                        //        return false;
+                        //    }
+                        //}
                     }
                 }
             }
-            return false;
+
+            //propertyInfo.SetValue(Entity, newValue);
+
+            if (fieldHandler != null)
+            {
+                _afterActions.Add(() => fieldHandler.AfterChange(Entity, oldValue, newValue));
+            }
+
+            HasChanges = true;
+            return true;
         }
 
         public void ApplyAfterActions()
@@ -75,36 +66,21 @@ namespace Application.Shared
             }
         }
 
-        public void SaveHistoryLog()
-        {
-            foreach (var action in _historyActions.Values)
-            {
-                action();
-            }
-        }
-
         public TEntity Entity { get; }
 
         public bool HasChanges { get; private set; } = false;
 
-        public string ValidationErrors => string.Join(". ", _validationErrors);
+        //public string ValidationErrors => string.Join(". ", _validationErrors);
 
-        private void SaveHistory(string fieldName, object oldValue, object newValue)
-        {
-            _historyService.Save(Entity.Id, "fieldChanged", fieldName?.ToLowerFirstLetter(), oldValue, newValue);
-        }
-
-        public FieldSetter(TEntity entity, IHistoryService historyService, IEnumerable<string> readOnlyFields = null)
+        public FieldSetter(TEntity entity, IEnumerable<string> readOnlyFields = null)
         {
             Entity = entity;
-            _historyService = historyService;
             _readOnlyFields = readOnlyFields?.ToList();
         }
 
-        private readonly IHistoryService _historyService;
         private readonly List<string> _readOnlyFields;
         private readonly List<Action> _afterActions = new List<Action>();
         private readonly Dictionary<string, Action> _historyActions = new Dictionary<string, Action>();
-        private readonly List<string> _validationErrors = new List<string>();
+        //private readonly List<string> _validationErrors = new List<string>();
     }
 }
