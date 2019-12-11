@@ -52,6 +52,7 @@ namespace Application.Services.Warehouses
                 .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
                 .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
+                .AddHandler(e => e.AvisaleTime, new AvisaleTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
         }
         
