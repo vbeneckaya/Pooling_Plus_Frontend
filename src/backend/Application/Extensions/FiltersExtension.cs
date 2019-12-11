@@ -1,5 +1,5 @@
 ﻿using Domain.Extensions;
-using Microsoft.EntityFrameworkCore;
+using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -294,21 +294,39 @@ namespace Application.Extensions
             if (string.IsNullOrEmpty(fieldName)) return string.Empty;
 
             var values = search.Split("|", StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (!values.Any()) return string.Empty;
 
-            StringBuilder inValue = new StringBuilder();
-            foreach (string value in values)
+            string emptyFilterPart = null;
+            if (values.Contains(LookUpDto.EmptyValue))
             {
-                if (inValue.Length > 0)
-                {
-                    inValue.Append(',');
-                }
-                int paramInd = parameters.Count();
-                parameters.Add(parameterValueLookup(value));
-                inValue.Append($"{{{paramInd}}}");
+                emptyFilterPart = $@"""{fieldName}"" is null";
             }
 
-            return $@"""{fieldName}"" in ({inValue})";
+            string inFilterPart = null;
+            var nonEmptyValues = values.Where(x => x != LookUpDto.EmptyValue);
+            if (nonEmptyValues.Any())
+            {
+                StringBuilder inValue = new StringBuilder();
+                foreach (string value in nonEmptyValues)
+                {
+                    if (inValue.Length > 0)
+                    {
+                        inValue.Append(',');
+                    }
+                    int paramInd = parameters.Count();
+                    parameters.Add(parameterValueLookup(value));
+                    inValue.Append($"{{{paramInd}}}");
+                }
+                inFilterPart = $@"""{fieldName}"" in ({inValue})";
+            }
+
+            if (!string.IsNullOrEmpty(emptyFilterPart) && !string.IsNullOrEmpty(inFilterPart))
+            {
+                return $"({emptyFilterPart} or {inFilterPart})";
+            }
+            else
+            {
+                return emptyFilterPart ?? inFilterPart ?? string.Empty;
+            }
         }
 
         private static string ApplyTimeRangeFilterBase<TModel>(this string search, string field, ref List<object> parameters)
