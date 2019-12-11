@@ -112,20 +112,20 @@ export const progressSelector = createSelector(
 
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
-    (state, key) => (state[key] ? state[key] : []),
+    (state, key) => (state[key] ? state[key].filter(item => !item.isFilterOnly) : []),
 );
 
 export const totalCounterSelector = createSelector(
     [
         stateSelector,
-        (state, key) => key,
+        (state, key) => valuesListSelector(state, key),
         (state, key, t) => t,
         (state, key, t, filter) => filter,
         (state, key, t, filter, isTranslate) => isTranslate,
     ],
-    (state, key, t, filter, isTranslate) =>
-        state[key]
-            ? state[key]
+    (state, list, t, filter, isTranslate) =>
+        list
+            ? list
                   .map(item => ({
                       ...item,
                       value: item.value,
@@ -140,15 +140,15 @@ export const totalCounterSelector = createSelector(
 export const listFromSelectSelector = createSelector(
     [
         stateSelector,
-        (state, key) => key,
+        (state, key) => valuesListSelector(state, key),
         (state, key, t) => t,
         (state, key, t, filter) => filter,
         (state, key, t, filter, isTranslate) => isTranslate,
         (state, key, t, filter, isTranslate, counter) => counter,
     ],
-    (state, key, t, filter, isTranslate, counter) => {
-        return state[key]
-            ? state[key]
+    (state, list, t, filter, isTranslate, counter) => {
+        return list
+            ? list
                   .map(item => ({
                       ...item,
                       value: item.value,
