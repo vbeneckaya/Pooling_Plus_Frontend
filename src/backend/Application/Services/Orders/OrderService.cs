@@ -143,7 +143,7 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.WeightKg, new WeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler())
-                .AddHandler(e => e.ClientAvisationTime, new ClientAvisationTimeHandler())
+                .AddHandler(e => e.ClientAvisationTime, new ClientAvisationTimeHandler(!isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeHandler(!isInjection))
                 .AddHandler(e => e.LoadingArrivalTime, new LoadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.LoadingDepartureTime, new LoadingDepartureTimeHandler(_dataService, _historyService))
