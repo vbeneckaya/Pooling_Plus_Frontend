@@ -176,6 +176,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
 
+            services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
         }
 

@@ -41,7 +41,7 @@ namespace Application.BusinessModels.Warehouses.Handlers
             entity.House = cleanAddress?.House;
             entity.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;
 
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.SoldTo == entity.SoldToNumber
                                                 && x.DeliveryAddress != newValue

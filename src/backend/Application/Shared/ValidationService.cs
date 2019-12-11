@@ -5,7 +5,6 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using System.Linq;
 
 namespace Application.Shared
 {
@@ -36,9 +35,7 @@ namespace Application.Shared
         /// <returns></returns>
         public DetailedValidationResult Validate<TDto>(TDto dto)
         {
-            var prefix = typeof(TDto).Name.Replace("Dto", "");
-
-            var fields = this._fieldDispatcher.GetDtoFields<TDto>();
+            var fields = _fieldDispatcher.GetDtoFields<TDto>();
 
             var lang = _userProvider.GetCurrentUser()?.Language;
 
@@ -49,6 +46,7 @@ namespace Application.Shared
                 var property = typeof(TDto).GetProperty(field.Name);
                 var value = property.GetValue(dto)?.ToString();
                 var propertyName = property.Name.ToLowerFirstLetter();
+                var propertyDisplayName = propertyName.Translate(lang);
 
                 // Validate format
 
@@ -57,19 +55,19 @@ namespace Application.Shared
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.InvalidValueFormat}".Translate(lang),
+                        Message = "InvalidValueFormat".Translate(lang, propertyDisplayName),
                         ResultType = ValidationErrorType.InvalidValueFormat
                     });
                 }
 
                 // Validate IsRequred
 
-                if (!this.ValidateIsRequired(field, value))
+                if (!ValidateIsRequired(field, value))
                 {
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.ValueIsRequired}".Translate(lang),
+                        Message = "ValueIsRequired".Translate(lang, propertyDisplayName),
                         ResultType = ValidationErrorType.ValueIsRequired
                     });
                 }

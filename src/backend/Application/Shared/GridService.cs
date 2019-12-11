@@ -199,7 +199,7 @@ namespace Application.Shared
             return result;
         }
 
-        protected virtual DetailedValidationResult ValidateDto(TFormDto dto)
+        protected virtual DetailedValidationResult ValidateDto(TDto dto)
         {
             return _validationService.Validate(dto);
         }

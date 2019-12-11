@@ -121,47 +121,6 @@ namespace Application.Services.Orders
             return result;
         }
 
-
-        protected override DetailedValidationResult ValidateDto(OrderFormDto dto)
-        {
-            var lang = _userIdProvider.GetCurrentUser()?.Language;
-
-            DetailedValidationResult result = base.ValidateDto(dto);
-
-            //if (string.IsNullOrEmpty(dto.OrderNumber))
-            //    result.AddError(nameof(dto.OrderNumber), "emptyOrderNumber".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-            //if (string.IsNullOrEmpty(dto.ClientOrderNumber))
-            //    result.AddError(nameof(dto.ClientOrderNumber), "emptyClientOrderNumber".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-            //if (string.IsNullOrEmpty(dto.OrderDate))
-            //    result.AddError(nameof(dto.OrderDate), "emptyOrderDate".Translate(lang),
-            //        ValidationErrorType.ValueIsRequired);
-
-
-            //if (string.IsNullOrEmpty(dto.SoldTo))
-            //    result.AddError(nameof(dto.SoldTo), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
-
-            // TODO: add read only fields validation
-
-            //bool isNew = string.IsNullOrEmpty(dto.Id);
-
-            //IEnumerable<string> readOnlyFields = null;
-            //if (!isNew)
-            //{
-            //    var userId = _userIdProvider.GetCurrentUserId();
-            //    if (userId != null)
-            //    {
-            //        string stateName = entity.Status.ToString().ToLowerFirstLetter();
-            //        readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Orders, stateName, null, null, userId);
-            //    }
-            //}
-
-            return result;
-        }
-
         protected override IFieldSetter<Order> ConfigureHandlers(IFieldSetter<Order> setter, OrderFormDto dto)
         {
             bool isInjection = dto.AdditionalInfo?.Contains("INJECTION") ?? false;
@@ -289,18 +248,6 @@ namespace Application.Services.Orders
             if (isNew)
             {
                 InitializeNewOrder(entity, isInjection);
-            }
-
-            var hasChanges = _dataService.GetChanges<Order>().Any(x => x.Entity.Id == entity.Id);
-
-            bool isCreated = false;
-            if (hasChanges)
-            {
-                isCreated = CheckRequiredFields(entity);
-            }
-
-            if (isNew && !isCreated)
-            {
                 _historyService.Save(entity.Id, "orderSetDraft", entity.OrderNumber);
             }
 
@@ -413,40 +360,6 @@ namespace Application.Services.Orders
                 Value = entity.Id.ToString(),
                 Name = entity.OrderNumber
             };
-        }
-
-        private string GetPickingTypeNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<PickingType>(id.Value)?.Name;
-        }
-
-        private string GetShippingWarehouseNameById(Guid? id)
-        {
-            return id == null ? null : _dataService.GetById<ShippingWarehouse>(id.Value)?.WarehouseName;
-        }
-
-        private bool CheckRequiredFields(Order order)
-        {
-            if (order.Status == OrderState.Draft)
-            {
-                bool hasRequiredFields =
-                       !string.IsNullOrEmpty(order.SoldTo)
-                    && !string.IsNullOrEmpty(order.ShippingAddress)
-                    && !string.IsNullOrEmpty(order.DeliveryAddress)
-                    && !string.IsNullOrEmpty(order.Payer)
-                    && order.ShippingWarehouseId.HasValue
-                    && order.DeliveryWarehouseId.HasValue
-                    && order.ShippingDate.HasValue
-                    && order.DeliveryDate.HasValue;
-
-                if (hasRequiredFields)
-                {
-                    order.Status = OrderState.Created;
-                    _historyService.Save(order.Id, "orderSetCreated", order.OrderNumber);
-                    return true;
-                }
-            }
-            return false;
         }
 
         private void InitializeNewOrder(Order order, bool isInjection)

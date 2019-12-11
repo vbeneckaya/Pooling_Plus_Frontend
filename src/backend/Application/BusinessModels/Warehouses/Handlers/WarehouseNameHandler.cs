@@ -22,7 +22,7 @@ namespace Application.BusinessModels.Warehouses.Handlers
 
         public void AfterChange(Warehouse entity, string oldValue, string newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.SoldTo == entity.SoldToNumber
                                                 && x.ClientName != newValue
