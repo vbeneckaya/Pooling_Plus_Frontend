@@ -5,6 +5,8 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Shared
@@ -18,14 +20,17 @@ namespace Application.Shared
 
         private readonly IUserProvider _userProvider;
 
+        private readonly IConfiguration _configuration;
+
         /// <summary>
         /// Create ValidationService instance
         /// </summary>
         /// <param name="fieldDispatcher"></param>
-        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider)
+        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider, IConfiguration configuration)
         {
             _fieldDispatcher = fieldDispatcher;
             _userProvider = userProvider;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -73,9 +78,42 @@ namespace Application.Shared
                         ResultType = ValidationErrorType.ValueIsRequired
                     });
                 }
+
+                if (field.FieldType == FieldType.Password)
+                {
+                    validationResult.AddErrors(ValidatePassword(field, value, prefix, lang));
+                }
+
             }
 
             return validationResult;
+        }
+
+        /// <summary>
+        /// Validate Password
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <param name="prefix"></param>
+        /// <param name="lang"></param>
+        /// <returns></returns>
+        private IEnumerable<ValidationResultItem> ValidatePassword(FieldInfo field, string value, string prefix, string lang)
+        {
+            if (string.IsNullOrEmpty(value)) yield return null;
+
+            var passwordConfig = _configuration.GetSection("PasswordRules");
+
+            var passwordMinLength = passwordConfig["MinLength"].ToInt();
+
+            if (passwordMinLength.HasValue && value.Length < passwordMinLength)
+            {
+                yield return new ValidationResultItem
+                {
+                    Name = field.Name.ToLowerFirstLetter(),
+                    Message = $"{prefix}.{field.Name}.{ValidationErrorType.PasswordMinLength}".Translate(lang),
+                    ResultType = ValidationErrorType.PasswordMinLength
+                };
+            }
         }
 
         /// <summary>

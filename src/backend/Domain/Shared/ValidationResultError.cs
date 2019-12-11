@@ -23,6 +23,8 @@ namespace Domain.Shared
 
         DuplicatedRecord,
 
-        Exception
+        Exception,
+
+        PasswordMinLength
     }
 }
