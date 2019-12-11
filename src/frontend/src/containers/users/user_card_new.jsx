@@ -124,10 +124,7 @@ const UserCard = props => {
     };
 
     return (
-        <CardLayout title={title} actionsFooter={getActionsFooter} onClose={handleClose}>
-            <Dimmer active={loading} inverted>
-                <Loader size="huge">Loading</Loader>
-            </Dimmer>
+        <CardLayout title={title} actionsFooter={getActionsFooter} onClose={handleClose} loading={loading}>
             <Form className="user-form">
                 <FormField
                     type={TEXT_TYPE}

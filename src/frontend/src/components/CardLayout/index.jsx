@@ -1,8 +1,38 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
 import './style.scss';
-import {Button, Icon} from 'semantic-ui-react';
+import {Button, Dimmer, Icon, Loader, Menu} from 'semantic-ui-react';
+import * as Scroll from 'react-scroll';
+import Block from "./components/block";
 
-const CardLayout = ({title, actionsFooter, actionsHeader, children, onClose}) => {
+const CardLayout = ({
+                        title,
+                        actionsFooter,
+                        actionsHeader,
+                        children,
+                        onClose,
+                        content,
+                        loading,
+                    }) => {
+    const {t} = useTranslation();
+    let [activeItem, setActiveItem] = useState();
+
+    const handleItemClick = (e, {item}) => {
+        setActiveItem(item);
+        Scroll.scroller.scrollTo(item, {
+            duration: 1500,
+            delay: 100,
+            offset: -120,
+        });
+    };
+
+    useEffect(
+        () => {
+            content && content() && content().length && setActiveItem(content()[0].menuItem);
+        },
+        [content],
+    );
+
     return (
         <div>
             <div className="card-header-panel">
@@ -12,12 +42,39 @@ const CardLayout = ({title, actionsFooter, actionsHeader, children, onClose}) =>
                     </Button>
                     {title}
                 </div>
-                {
-                    actionsHeader && <div className="card-header-panel_actions">{actionsHeader()}</div>
-                }
+                {actionsHeader && (
+                    <div className="card-header-panel_actions">{actionsHeader()}</div>
+                )}
             </div>
             <div className="card-content">
-                <div className="card-content-block">{children}</div>
+                {content ? (
+                    <>
+                        <Menu pointing secondary vertical>
+                            {content().map(item => (
+                                <Menu.Item
+                                    key={`menu-item-${item.menuItem}`}
+                                    name={t(item.menuItem)}
+                                    item={item.menuItem}
+                                    active={activeItem === item.menuItem}
+                                    to={item.menuItem}
+                                    onClick={handleItemClick}
+                                />
+                            ))}
+                        </Menu>
+                        <div className="card-content-block_menu">
+                            {content().map(item => (
+                                <Block item={item} loading={loading}/>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="card-content-block">
+                        <Loader active={loading} size="huge" className="card-content-block_loader">
+                            Loading
+                        </Loader>
+                        {children}
+                    </div>
+                )}
             </div>
             <div className="card-actions-panel">{actionsFooter()}</div>
             <style>

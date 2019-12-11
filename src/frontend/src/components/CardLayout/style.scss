@@ -45,6 +45,19 @@
 .card-content {
     width: 100%;
     padding: 120px 0 94px 0;
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+    .ui.secondary.pointing.menu {
+        position: sticky;
+        top: 120px;
+        background-color: #f9f9f9 !important;
+        height: max-content;
+        .item {
+            color: #4d4d4d !important;
+        }
+    }
 
     &-block {
         background-color: #fff;
@@ -55,7 +68,44 @@
         position: relative;
         width: 960px;
         display: flex;
-        justify-content: center;
-        margin: auto;
+        margin: 0 32px;
+        flex-direction: column;
+
+        &:not(:last-child) {
+            margin-bottom: 24px;
+        }
+
+        &_menu {
+            flex-direction: column;
+        }
+
+        &_loader {
+            top: calc(50vh) !important;
+        }
+
+        &_header {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 15px 24px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+
+            &_accordion {
+                :hover {
+                    cursor: pointer;
+                }
+            }
+        }
+
+        &_open {
+            display: block;
+            transition: all 2s linear;
+        }
+
+        &_close {
+            display: none;
+        }
     }
 }

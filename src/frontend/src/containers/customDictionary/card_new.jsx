@@ -162,10 +162,7 @@ const CardNew = props => {
 
     return (
         <CardLayout title={title} actionsFooter={getActionsFooter} actionsHeader={getActionsHeader}
-                    onClose={handleClose}>
-            <Dimmer active={loading} inverted>
-                <Loader size="huge">Loading</Loader>
-            </Dimmer>
+                    onClose={handleClose} loading={loading}>
             <div className="ui form dictionary-edit">
                 {columns.map(column => {
                     return (

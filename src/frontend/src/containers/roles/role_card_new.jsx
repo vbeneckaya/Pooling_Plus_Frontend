@@ -3,18 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     allActionsSelector,
-    allPermissionsSelector, clearRolesCard, createRoleRequest,
-    errorSelector, getAllActionsRequest, getAllPermissionsRequest, getRoleCardRequest,
+    allPermissionsSelector,
+    clearRolesCard,
+    createRoleRequest,
+    errorSelector,
+    getAllActionsRequest,
+    getAllPermissionsRequest,
+    getRoleCardRequest,
     progressSelector,
     roleCardSelector,
 } from '../../ducks/roles';
-import CardLayout from "../../components/CardLayout";
-import {Button, Dimmer, Form, Loader, Tab} from "semantic-ui-react";
-import FormField from "../../components/BaseComponents";
-import {sortFunc} from "../../utils/sort";
-import {TEXT_TYPE} from "../../constants/columnTypes";
+import CardLayout from '../../components/CardLayout';
+import {Button, Dimmer, Form, Loader, Tab} from 'semantic-ui-react';
+import FormField from '../../components/BaseComponents';
+import {sortFunc} from '../../utils/sort';
+import {TEXT_TYPE} from '../../constants/columnTypes';
 
-const RoleCard = (props) => {
+const RoleCard = props => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const { match, history } = props;
@@ -32,20 +37,23 @@ const RoleCard = (props) => {
     useEffect(() => {
         id && dispatch(getRoleCardRequest(id));
         dispatch(getAllPermissionsRequest());
-        dispatch(getAllActionsRequest())
+        dispatch(getAllActionsRequest());
 
         return () => {
             dispatch(clearRolesCard());
         };
     }, []);
 
-    useEffect(() => {
-        setForm(form => ({
-            ...form,
-            ...role,
-            permissions: role.permissions ? role.permissions.map(item => item.code) : [],
-        }));
-    }, [role]);
+    useEffect(
+        () => {
+            setForm(form => ({
+                ...form,
+                ...role,
+                permissions: role.permissions ? role.permissions.map(item => item.code) : [],
+            }));
+        },
+        [role],
+    );
 
     const title = useMemo(
         () => (id ? t('edit_role', { name: role.name }) : `${t('create_role_title')}`),
@@ -97,7 +105,6 @@ const RoleCard = (props) => {
     };
 
     const mapData = () => {
-
         return {
             ...form,
             permissions: form.permissions.map(item => ({
@@ -107,10 +114,7 @@ const RoleCard = (props) => {
     };
 
     const handleSave = () => {
-
-        dispatch(
-            createRoleRequest({ params: mapData(), callbackFunc: handleClose })
-        );
+        dispatch(createRoleRequest({params: mapData(), callbackFunc: handleClose}));
     };
 
     const getActionsFooter = useCallback(
@@ -129,104 +133,96 @@ const RoleCard = (props) => {
         [form],
     );
 
+    const getContent = useCallback(() => {
+        return [
+            {
+                menuItem: 'general',
+                render: () => (
+                    <Form className="role-form">
+                        <FormField
+                            name="name"
+                            value={form['name']}
+                            type={TEXT_TYPE}
+                            isRequired
+                            error={error['name']}
+                            onChange={handleChange}
+                        />
+                        <Form.Field>
+                            <label>{t('permissions')}</label>
+                        </Form.Field>
+                        {allPermissions.map(permission => (
+                            <Form.Field key={permission.code}>
+                                <Form.Checkbox
+                                    label={t(permission.name)}
+                                    value={permission.code}
+                                    checked={
+                                        permissions && permissions.includes(permission.code)
+                                    }
+                                    disabled={
+                                        (permissions &&
+                                            ([2, 4, 5, 6].includes(permission.code) &&
+                                                !permissions.includes(1))) ||
+                                        ([10, 11, 12].includes(permission.code) &&
+                                            !permissions.includes(7))
+                                    }
+                                    onChange={handlePermissions}
+                                />
+                            </Form.Field>
+                        ))}
+                    </Form>
+                ),
+            },
+            {
+                menuItem: 'order_actions',
+                render: () => (
+                    <Form className="role-form">
+                        {sortFunc(orderActions, t).map(action => (
+                            <Form.Field key={action}>
+                                <Form.Checkbox
+                                    label={t(action)}
+                                    value={action}
+                                    checked={actions && actions.includes(action)}
+                                    onChange={handleActions}
+                                />
+                            </Form.Field>
+                        ))}
+                    </Form>
+                ),
+            },
+            {
+                menuItem: 'shipping_actions',
+                render: () => (
+                    <Form className="role-form">
+                        {sortFunc(shippingActions, t).map(action => (
+                            <Form.Field key={action}>
+                                <Form.Checkbox
+                                    label={t(action)}
+                                    value={action}
+                                    checked={actions && actions.includes(action)}
+                                    onChange={handleActions}
+                                />
+                            </Form.Field>
+                        ))}
+                    </Form>
+                ),
+            },
+        ];
+    }, [form, error]);
+
     const permissions = useMemo(() => form.permissions || [], [form]);
     const actions = useMemo(() => form.actions || [], [form]);
     const orderActions = useMemo(() => allActions.orderActions || [], [allActions]);
     const shippingActions = useMemo(() => allActions.shippingActions || [], [allActions]);
 
-    console.log('permissions', permissions);
-
     return (
-        <CardLayout title={title} actionsFooter={getActionsFooter} onClose={handleClose}>
-            <Dimmer active={loading} inverted className="table-loader">
-                <Loader size="huge">Loading</Loader>
-            </Dimmer>
-            <Form className="user-form">
-                <FormField
-                    name="name"
-                    value={form['name']}
-                    type={TEXT_TYPE}
-                    isRequired
-                    error={error['name']}
-                    onChange={handleChange}
-                />
-                {/*<Form.Field>
-                            <label>{t('name')}</label>
-                            <Input value={name} name="name"  />
-                        </Form.Field>*/}
-                {/*<Form.Field>
-                            <label>{t('permissions')}</label>
-                        </Form.Field>*/}
-                <Tab
-                    panes={[
-                        {
-                            menuItem: t('general'),
-                            render: () => (
-                                <Tab.Pane>
-                                    {allPermissions.map(permission => (
-                                        <Form.Field key={permission.code}>
-                                            <Form.Checkbox
-                                                label={t(permission.name)}
-                                                value={permission.code}
-                                                checked={permissions && permissions.includes(
-                                                    permission.code,
-                                                )}
-                                                disabled={permissions &&
-                                                ([2, 4, 5, 6].includes(
-                                                    permission.code,
-                                                    ) &&
-                                                    !permissions.includes(1)) ||
-                                                ([10, 11, 12].includes(
-                                                    permission.code,
-                                                    ) &&
-                                                    !permissions.includes(7))
-                                                }
-                                                onChange={handlePermissions}
-                                            />
-                                        </Form.Field>
-                                    ))}
-                                </Tab.Pane>
-                            ),
-                        },
-                        {
-                            menuItem: t('order_actions'),
-                            render: () => (
-                                <Tab.Pane>
-                                    {sortFunc(orderActions, t).map(action => (
-                                        <Form.Field key={action}>
-                                            <Form.Checkbox
-                                                label={t(action)}
-                                                value={action}
-                                                checked={actions && actions.includes(action)}
-                                                onChange={handleActions}
-                                            />
-                                        </Form.Field>
-                                    ))}
-                                </Tab.Pane>
-                            ),
-                        },
-                        {
-                            menuItem: t('shipping_actions'),
-                            render: () => (
-                                <Tab.Pane>
-                                    {sortFunc(shippingActions, t).map(action => (
-                                        <Form.Field key={action}>
-                                            <Form.Checkbox
-                                                label={t(action)}
-                                                value={action}
-                                                checked={actions && actions.includes(action)}
-                                                onChange={handleActions}
-                                            />
-                                        </Form.Field>
-                                    ))}
-                                </Tab.Pane>
-                            ),
-                        },
-                    ]}
-                />
-            </Form>
-        </CardLayout>
-    )
+        <CardLayout
+            title={title}
+            actionsFooter={getActionsFooter}
+            content={getContent}
+            onClose={handleClose}
+            loading={loading}
+        />
+    );
 };
 
 export default RoleCard;
