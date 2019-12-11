@@ -8,6 +8,7 @@ using Domain.Shared;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Application.Shared
 {
@@ -81,7 +82,12 @@ namespace Application.Shared
 
                 if (field.FieldType == FieldType.Password)
                 {
-                    validationResult.AddErrors(ValidatePassword(field, value, prefix, lang));
+                    var result = ValidatePassword(field, value, prefix, lang);
+
+                    if (result != null)
+                    {
+                        validationResult.AddError(result);
+                    }
                 }
 
             }
@@ -97,9 +103,12 @@ namespace Application.Shared
         /// <param name="prefix"></param>
         /// <param name="lang"></param>
         /// <returns></returns>
-        private IEnumerable<ValidationResultItem> ValidatePassword(FieldInfo field, string value, string prefix, string lang)
+        private ValidationResultItem ValidatePassword(FieldInfo field, string value, string prefix, string lang)
         {
-            if (string.IsNullOrEmpty(value)) yield return null;
+            if (string.IsNullOrEmpty(value)) return null;
+
+
+            List<string> errorMessages = new List<string>();
 
             var passwordConfig = _configuration.GetSection("PasswordRules");
 
@@ -107,13 +116,24 @@ namespace Application.Shared
 
             if (passwordMinLength.HasValue && value.Length < passwordMinLength)
             {
-                yield return new ValidationResultItem
-                {
-                    Name = field.Name.ToLowerFirstLetter(),
-                    Message = $"{prefix}.{field.Name}.{ValidationErrorType.PasswordMinLength}".Translate(lang),
-                    ResultType = ValidationErrorType.PasswordMinLength
-                };
+                errorMessages.Add("PasswordValidation.MinLength");
             }
+
+            var isMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]&");
+
+            if (!isMatch)
+            {
+                errorMessages.Add("PasswordValidation.ValidCharacters");
+            }
+
+            var message = string.Join(", ", errorMessages.Select(i => i.Translate(lang)));
+
+            return new ValidationResultItem
+            {
+                Name = field.Name.ToLowerFirstLetter(),
+                Message = message,
+                ResultType = ValidationErrorType.InvalidPassword
+            };
         }
 
         /// <summary>

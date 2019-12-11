@@ -25,6 +25,6 @@ namespace Domain.Shared
 
         Exception,
 
-        PasswordMinLength
+        InvalidPassword
     }
 }
