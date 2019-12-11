@@ -252,6 +252,27 @@ namespace Application.Services.Orders
                 result.AddError(nameof(dto.DeliveryDate), "InvalidDeliveryOrShippingDate".Translate(lang), ValidationErrorType.InvalidDateRange);
             }
 
+            var loadingDepartureTime = dto.LoadingDepartureTime.ToDateTime();
+            var loadingArrivalTime = dto.LoadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && loadingArrivalTime.HasValue && loadingDepartureTime < loadingArrivalTime)
+            {
+                result.AddError(nameof(dto.LoadingArrivalTime), "InvalidLoadingDepartureOrArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            var unloadingDepartureTime = dto.UnloadingDepartureTime.ToDateTime();
+            var unloadingArrivalTime = dto.UnloadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime < loadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingArrivalTime), "InvalidUnloadingArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            if (unloadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime > unloadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingDepartureTime), "InvalidUnloadingDepartureTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
             return result;
         }
 
