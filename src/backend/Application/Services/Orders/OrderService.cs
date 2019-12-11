@@ -238,6 +238,23 @@ namespace Application.Services.Orders
             return result;
         }
 
+        protected override DetailedValidationResult ValidateDto(OrderDto dto)
+        {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            var result = base.ValidateDto(dto);
+
+            var deliveryDate = dto.DeliveryDate.ToDate();
+            var shippingDate = dto.ShippingDate.ToDate();
+
+            if (deliveryDate.HasValue && shippingDate.HasValue && shippingDate > deliveryDate)
+            {
+                result.AddError(nameof(dto.DeliveryDate), "InvalidDeliveryOrShippingDate".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            return result;
+        }
+
         public override void MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);

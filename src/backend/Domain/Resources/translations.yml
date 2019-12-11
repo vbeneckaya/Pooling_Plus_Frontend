@@ -178,6 +178,7 @@ ru:
   information: "Информация"
   inShipping: "В перевозке"
   InvalidValueFormat: "{0} имеет неверный формат"
+  InvalidDeliveryOrShippingDate: "Дата отгрузки не может быть больше даты доставки"
   invoice: "Счет-фактура"
   invoiceAmountExcludingVAT: "Сумма по ТТН, без НДС"
   invoiceAmountWithoutVAT: "Сумма по ТТН, без НДС"
