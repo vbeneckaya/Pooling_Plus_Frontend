@@ -169,5 +169,10 @@ namespace Domain.Persistables
         /// </summary>
         public int? NetWeightPalletsG { get; set; }
         /*end of fields*/
+
+        public override string ToString()
+        {
+            return Description;
+        }
     }
 }

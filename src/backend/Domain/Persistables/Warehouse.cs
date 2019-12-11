@@ -86,5 +86,9 @@ namespace Domain.Persistables
         /// </summary>
         public TimeSpan? AvisaleTime { get; set; }
 
+        public override string ToString()
+        {
+            return WarehouseName;
+        }
     }
 }
