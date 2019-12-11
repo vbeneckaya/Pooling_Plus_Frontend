@@ -1,6 +1,7 @@
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Orders.Triggers;
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
@@ -34,6 +35,7 @@ using Application.Services.VehicleTypes;
 using Application.Services.WarehouseCity;
 using Application.Services.Warehouses;
 using Application.Shared;
+using Application.Shared.FieldSetter;
 using DAL;
 using DAL.Services;
 using Domain.Persistables;
@@ -68,6 +70,7 @@ using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace Infrastructure.Installers
 {
@@ -89,8 +92,10 @@ namespace Infrastructure.Installers
             services.AddScoped<IUserSettingsService, UserSettingsService>();
 
             services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+            services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
 
             services.AddScoped<ITriggersService, TriggersService>();
 
@@ -120,6 +125,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IProfileService, ProfileService>();
 
             services.AddScoped<IValidationService, ValidationService>();
+            services.AddScoped<IFieldSetterFactory, FieldSetterFactory>();
+            services.AddScoped<IChangeTrackerFactory, ChangeTrackerFactory>();
 
             /*end of add service implementation*/
 
@@ -127,6 +134,11 @@ namespace Infrastructure.Installers
             AddShippingBusinessModels(services);
             AddDictionariesBusinessModels(services);
 
+            InitDatabase(services, configuration, migrateDb);
+        }
+
+        private static void InitDatabase(IServiceCollection services, IConfiguration configuration, bool migrateDb)
+        {
             var connectionString = configuration.GetConnectionString("DefaultDatabase");
 
             var buildServiceProvider = services.AddEntityFrameworkNpgsql()
@@ -136,11 +148,15 @@ namespace Infrastructure.Installers
                 })
                 .BuildServiceProvider();
 
+            var appDbContext = buildServiceProvider.GetService<AppDbContext>();
+
             if (migrateDb)
             {
-                var appDbContext = buildServiceProvider.GetService<AppDbContext>();
                 appDbContext.Migrate(connectionString);
             }
+
+            var shippingsCount = appDbContext.Shippings.Count();
+            ShippingNumberProvider.InitLastNumber(shippingsCount);
         }
 
         private static void AddOrderBusinessModels(IServiceCollection services)
@@ -160,6 +176,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
 
+            services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
         }
 

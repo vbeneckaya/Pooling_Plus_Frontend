@@ -1,4 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
@@ -6,6 +7,8 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Permissions;
 using Domain.Services.Roles;
 using Domain.Services.Translations;
@@ -19,8 +22,9 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -75,12 +79,6 @@ namespace Application.Services.Roles
 
         public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             
@@ -89,28 +87,23 @@ namespace Application.Services.Roles
             entity.Actions = dto.Actions?.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(RoleDto dto)
+        protected override DetailedValidationResult ValidateDto(RoleDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Name))
-            {
-                result.AddError(nameof(dto.Name), "roles.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = this._dataService.GetDbSet<Role>()
+            var hasDuplicates = !result.IsError && this._dataService.GetDbSet<Role>()
                 .Where(i => i.Id != dto.Id.ToGuid())
                 .Where(i => i.Name == dto.Name)
                 .Any();
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Name), "roles.duplicateRole".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "Role.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
@@ -135,8 +128,7 @@ namespace Application.Services.Roles
 
         public IEnumerable<PermissionInfo> GetAllPermissions()
         {
-            return Enum.GetValues(typeof(RolePermissions))
-                .Cast<RolePermissions>()
+            return Domain.Extensions.Extensions.GetOrderedEnum<RolePermissions>()
                 .Where(x => x != RolePermissions.None)
                 .Select(i => new PermissionInfo
                 {

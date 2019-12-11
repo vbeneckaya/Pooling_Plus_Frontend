@@ -1,7 +1,10 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -13,8 +16,9 @@ namespace Application.Services.Translations
 {
     public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
-        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public IEnumerable<TranslationDto> GetAll()

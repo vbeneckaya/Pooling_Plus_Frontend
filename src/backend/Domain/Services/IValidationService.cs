@@ -7,6 +7,6 @@ namespace Domain.Services
 {
     public interface IValidationService
     {
-        ValidatedRecord<TDto> Validate<TDto>(TDto dto);
+        DetailedValidationResult Validate<TDto>(TDto dto);
     }
 }

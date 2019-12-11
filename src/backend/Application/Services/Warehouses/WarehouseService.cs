@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Warehouses.Handlers;
 using Application.Services.Addresses;
 using Application.Services.Triggers;
@@ -9,6 +10,8 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -25,14 +28,40 @@ namespace Application.Services.Warehouses
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService) 
-            : base(dataService, userProvider, triggersService)
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
+            _changeTrackerFactory = changeTrackerFactory;
+        }
+
+        protected override IFieldSetter<Warehouse> ConfigureHandlers(IFieldSetter<Warehouse> setter, WarehouseDto dto)
+        {
+            bool isInjection = dto.AdditionalInfo == "INJECTION";
+
+            return setter
+                .AddHandler(e => e.WarehouseName, new WarehouseNameHandler(_dataService, _historyService))
+                .AddHandler(e => e.Region, new RegionHandler(_dataService, _historyService))
+                .AddHandler(e => e.City, new CityHandler(_dataService, _historyService))
+                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))
+                .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
+                .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
+                .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
+                .AddHandler(e => e.AvisaleTime, new AvisaleTimeHandler(_dataService, _historyService))
+                .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
+        }
+        
+        protected override IChangeTracker ConfigureChangeTacker()
+        {
+            return _changeTrackerFactory.CreateChangeTracker()
+                .TrackAll<Warehouse>()
+                .Remove<Warehouse>(i => i.Id)
+                .Remove<Warehouse>(i => i.IsActive);
         }
 
         public WarehouseDto GetBySoldTo(string soldToNumber)
@@ -62,35 +91,32 @@ namespace Application.Services.Warehouses
             return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
         }
 
+        protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
+        {
+            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
+                                     .Select(x => x.PickingTypeId.Value.ToGuid())
+                                     .ToList();
+            var pickingTypes = _dataService.GetDbSet<PickingType>()
+                                           .Where(x => pickingTypeIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
+                    && pickingTypes.TryGetValue(dto.PickingTypeId.Value, out PickingType pickingType))
+                {
+                    dto.PickingTypeId.Name = pickingType.Name;
+                }
+                yield return dto;
+            }
+        }
+
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             bool isNew = string.IsNullOrEmpty(dto.Id);
-            var setter = new FieldSetter<Warehouse>(entity, _historyService);
 
-            if (!string.IsNullOrEmpty(dto.Id))
-                setter.UpdateField(e => e.Id, Guid.Parse(dto.Id), ignoreChanges: true);
-            setter.UpdateField(e => e.WarehouseName, dto.WarehouseName, new WarehouseNameHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.SoldToNumber, dto.SoldToNumber);
-            setter.UpdateField(e => e.Region, dto.Region, new RegionHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.City, dto.City, new CityHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.Address, dto.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService));
-            setter.UpdateField(e => e.PickingTypeId, string.IsNullOrEmpty(dto.PickingTypeId) ? (Guid?)null : Guid.Parse(dto.PickingTypeId), 
-                               new PickingTypeIdHandler(_dataService, _historyService), nameLoader: GetPickingTypeNameById);
-            setter.UpdateField(e => e.LeadtimeDays, dto.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.CustomerWarehouse, dto.CustomerWarehouse);
-            setter.UpdateField(e => e.PickingFeatures, dto.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.DeliveryType, string.IsNullOrEmpty(dto.DeliveryType) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(dto.DeliveryType), new DeliveryTypeHandler(_dataService, _historyService));
-            setter.UpdateField(e => e.IsActive, dto.IsActive ?? true, ignoreChanges: true);
-
-            setter.ApplyAfterActions();
-            setter.SaveHistoryLog();
-
+            _mapper.Map(dto, entity);
+           
             if (isNew)
             {
                 var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
@@ -106,8 +132,8 @@ namespace Application.Services.Warehouses
                 }
             }
 
-            string errors = setter.ValidationErrors;
-            return new DetailedValidationResult(errors, entity.Id.ToString());
+            //string errors = setter.ValidationErrors
+            return null;
         }
 
         public override WarehouseDto MapFromEntityToDto(Warehouse entity)
@@ -122,8 +148,8 @@ namespace Application.Services.Warehouses
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
-            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider)
-                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName, GetPickingTypeNameById))
+            return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
+                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
         }
 
@@ -131,11 +157,6 @@ namespace Application.Services.Warehouses
         {
             var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private string GetPickingTypeNameById(Guid id)
-        {
-            return GetPickingTypeNameById((Guid?)id);
         }
 
         private string GetPickingTypeNameById(Guid? id)
@@ -184,33 +205,18 @@ namespace Application.Services.Warehouses
                 );
         }
 
-        private DetailedValidationResult ValidateDto(WarehouseDto dto)
+        protected override DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.SoldToNumber))
-            {
-                result.AddError(nameof(dto.SoldToNumber), "emptySoldTo".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.WarehouseName))
-            {
-                result.AddError(nameof(dto.WarehouseName), "emptyWarehouseName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.DeliveryType))
-            {
-                result.AddError(nameof(dto.DeliveryType), "emptyDeliveryType".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = _dataService.GetDbSet<Warehouse>()
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<Warehouse>()
                                             .Where(x => x.SoldToNumber == dto.SoldToNumber && x.Id.ToString() != dto.Id)
                                             .Any();
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.SoldToNumber), "duplicateSoldTo".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
@@ -218,12 +224,20 @@ namespace Application.Services.Warehouses
 
         private MapperConfiguration ConfigureMapper()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId?.ToString()))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType?.ToString()?.ToLowerFirstLetter()));
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+
+                cfg.CreateMap<WarehouseDto, Warehouse>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
             });
             return result;
         }

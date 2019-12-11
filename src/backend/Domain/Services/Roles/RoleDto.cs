@@ -8,7 +8,7 @@ namespace Domain.Services.Roles
     {
         public string Id { get; set; }
 
-        [IsRequired]
+        [FieldType(Enums.FieldType.Text), IsRequired]
         public string Name { get; set; }
 
         public bool IsActive { get; set; }

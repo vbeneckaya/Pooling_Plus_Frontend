@@ -27,9 +27,7 @@ namespace Application.BusinessModels.Orders.Handlers
 
                 foreach (Order updOrder in ordersToUpdate)
                 {
-                    var setter = new FieldSetter<Order>(updOrder, _historyService);
-                    setter.UpdateField(o => o.DeliveryStatus, newValue);
-                    setter.SaveHistoryLog();
+                    updOrder.DeliveryStatus = newValue;
                 }
             }
         }

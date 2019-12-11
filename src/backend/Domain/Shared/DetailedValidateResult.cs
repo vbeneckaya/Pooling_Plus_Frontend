@@ -6,7 +6,9 @@ namespace Domain.Shared
 {
     public class DetailedValidationResult: ValidateResult
     {
-        public DetailedValidationResult() { }
+        public DetailedValidationResult()
+        {
+        }
 
         public DetailedValidationResult(string error, string id): base(error, id) 
         {

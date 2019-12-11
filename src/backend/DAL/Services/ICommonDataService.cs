@@ -12,7 +12,7 @@ namespace DAL.Services
 
         TEntity GetById<TEntity>(Guid id) where TEntity : class, IPersistable;
 
-        IEnumerable<EntityChangesDto<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable;
+        IEnumerable<EntityChanges<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable;
 
         void Remove<TEntity>(TEntity entity) where TEntity : class, IPersistable;
 

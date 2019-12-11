@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Domain.Services.Translations;
+using Domain.Shared;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Domain.Services.Translations;
-using Domain.Shared;
-using OfficeOpenXml;
+using FieldInfo = Domain.Services.FieldProperties.FieldInfo;
 
 namespace Application.Shared.Excel.Columns
 {
@@ -18,12 +19,13 @@ namespace Application.Shared.Excel.Columns
         }
 
         public PropertyInfo Property { get; set; }
+        public FieldInfo Field { get; set; }
         public string Title { get; set; }
         public int ColumnIndex { get; set; }
 
         public void FillValue(object entity, ExcelRange cell)
         {
-            string value = Property.GetValue(entity)?.ToString();
+            string value = (Property.GetValue(entity) as LookUpDto )?.Value;
             value = (value ?? string.Empty).Translate(_lang);
             cell.Value = value;
         }
@@ -52,7 +54,7 @@ namespace Application.Shared.Excel.Columns
                     validCellValue = valueNames.FirstOrDefault(n => n.ToLower() == lowerCellValue);
                 }
 
-                Property.SetValue(entity, validCellValue);
+                Property.SetValue(entity, new LookUpDto(validCellValue));
             }
 
             return null;

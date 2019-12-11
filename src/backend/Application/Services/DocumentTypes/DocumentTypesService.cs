@@ -1,8 +1,11 @@
-﻿using Application.Services.Triggers;
+﻿using Application.BusinessModels.Shared.Handlers;
+using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.DocumentTypes;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -14,41 +17,31 @@ namespace Application.Services.DocumentTypes
 
     public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
-        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
-        private DetailedValidationResult ValidateDto(DocumentTypeDto dto)
+        protected override DetailedValidationResult ValidateDto(DocumentTypeDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
+            DetailedValidationResult result = base.ValidateDto(dto);
 
-            if (string.IsNullOrEmpty(dto.Name))
-            {
-                result.AddError(nameof(dto.Name), "documentType.emptyName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            var hasDuplicates = _dataService.GetDbSet<DocumentType>()
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<DocumentType>()
                                             .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
                                             .Any();
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Name), "documentType.duplicated".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "DocumentType.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

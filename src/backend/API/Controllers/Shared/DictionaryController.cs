@@ -51,7 +51,7 @@ namespace API.Controllers.Shared
             sw.Start();
 
             var result = _service.ForSelect().OrderBy(x => x.Name).ToList();
-            Log.Debug("{entityName}.ForSelect: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ForSelect: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }

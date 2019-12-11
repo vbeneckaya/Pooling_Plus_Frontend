@@ -19,6 +19,7 @@ const Text = ({
                   autoComplete,
 }) => {
     const { t } = useTranslation();
+    console.log('text');
 
     return (
         <Form.Field>

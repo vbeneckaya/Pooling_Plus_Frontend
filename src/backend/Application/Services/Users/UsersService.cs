@@ -1,9 +1,12 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
@@ -16,8 +19,9 @@ namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService) 
-            : base(dataService, userProvider, triggersService) 
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -54,6 +58,39 @@ namespace Application.Services.Users
             }
         }
 
+        protected override IEnumerable<UserDto> FillLookupNames(IEnumerable<UserDto> dtos)
+        {
+            var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
+                                 .Select(x => x.CarrierId.Value.ToGuid())
+                                 .ToList();
+            var carriers = _dataService.GetDbSet<TransportCompany>()
+                                       .Where(x => carrierIds.Contains(x.Id))
+                                       .ToDictionary(x => x.Id.ToString());
+
+            var roleIds = dtos.Where(x => !string.IsNullOrEmpty(x.RoleId?.Value))
+                              .Select(x => x.RoleId.Value.ToGuid())
+                              .ToList();
+            var roles = _dataService.GetDbSet<Role>()
+                                    .Where(x => roleIds.Contains(x.Id))
+                                    .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
+                    && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
+                {
+                    dto.CarrierId.Name = carrier.Title;
+                }
+
+                if (!string.IsNullOrEmpty(dto.RoleId?.Value)
+                    && roles.TryGetValue(dto.RoleId.Value, out Role role))
+                {
+                    dto.RoleId.Name = role.Name;
+                }
+
+                yield return dto;
+            }
+        }
 
         public override UserDto MapFromEntityToDto(User entity)
         {
@@ -64,21 +101,15 @@ namespace Application.Services.Users
                 Id = entity.Id.ToString(),
                 UserName = entity.Name,
                 Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
-                RoleId = entity.RoleId.ToString(),
+                RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
-                CarrierId = entity.CarrierId?.ToString()
+                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
             };
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
-            var validateResult = ValidateDto(dto);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
-
             if (!string.IsNullOrEmpty(dto.Id)) 
                 entity.Id = Guid.Parse(dto.Id);
 
@@ -86,10 +117,10 @@ namespace Application.Services.Users
 
             entity.Email = dto.Email;
             entity.Name = dto.UserName;
-            entity.RoleId = Guid.Parse(dto.RoleId);
+            entity.RoleId = Guid.Parse(dto.RoleId?.Value);
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
-            entity.CarrierId = dto.CarrierId.ToGuid();
+            entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
 
@@ -102,33 +133,18 @@ namespace Application.Services.Users
             if (!string.IsNullOrEmpty(dto.Password)) 
                 entity.PasswordHash = dto.Password.GetHash();
 
-            return new DetailedValidationResult(null, entity.Id.ToString());
+            return null;
         }
 
-        private DetailedValidationResult ValidateDto(UserDto dto)
+        protected override DetailedValidationResult ValidateDto(UserDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
-            DetailedValidationResult result = new DetailedValidationResult();
-
-            if (string.IsNullOrEmpty(dto.Email))
-            {
-                result.AddError(nameof(dto.Email), "users.emptyEmail".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.UserName))
-            {
-                result.AddError(nameof(dto.UserName), "users.emptyUserName".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
+            DetailedValidationResult result = base.ValidateDto(dto);
 
             if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
-                result.AddError(nameof(dto.Password), "users.emptyPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
-            }
-
-            if (string.IsNullOrEmpty(dto.RoleId))
-            {
-                result.AddError(nameof(dto.RoleId), "users.emptyRoleId".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
             var hasDuplicates = this._dataService.GetDbSet<User>()
@@ -138,7 +154,7 @@ namespace Application.Services.Users
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Email), "users.duplicatedUser".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

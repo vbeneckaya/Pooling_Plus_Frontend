@@ -11,8 +11,9 @@ import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
-import {Confirm, Loader} from 'semantic-ui-react';
+import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
+import { editRepresentationRequest } from '../../ducks/representations';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -20,6 +21,7 @@ const initState = (storageFilterItem, storageSortItem) => ({
     sort: storageSortItem ? JSON.parse(localStorage.getItem(storageSortItem)) || {} : {},
     fullText: '',
     selectedRows: new Set(),
+    columns: [],
 });
 
 const CreateButton = ({ button, ...res }) => {
@@ -38,14 +40,9 @@ class SuperGrid extends Component {
     }
 
     componentDidMount() {
-        console.log('00000')
+        this.timer = null;
         this.props.autoUpdateStart(this.mapData());
     }
-
-    componentWillUnmount() {
-        console.log('clear')
-    }
-
 
     componentDidUpdate(prevProps) {
         const { selectedRows } = this.state;
@@ -67,8 +64,17 @@ class SuperGrid extends Component {
             this.setSelected(newSelectedRow);
         }
 
-        if (this.props.name !== prevProps.name) {
-            this.props.autoUpdateStart(this.mapData());
+        if (prevProps.columns !== this.props.columns) {
+            console.log('777');
+            const {columns} = this.props;
+            const width = this.container.scrollWidth - 50;
+
+            this.setState({
+                columns: columns.map(item => ({
+                    ...item,
+                    width: item.width || parseInt(width / columns.length)
+                })),
+            }, this.updatingFilter);
         }
     }
 
@@ -137,7 +143,7 @@ class SuperGrid extends Component {
         }, this.debounceSetFilterApiAndLoadList);
     };
 
-    setSort = (sort) => {
+    setSort = sort => {
         const { storageSortItem } = this.props;
 
         storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify(sort));
@@ -186,7 +192,7 @@ class SuperGrid extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
+        this.setState({ fullText: value, page: 1 }, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {
@@ -213,10 +219,20 @@ class SuperGrid extends Component {
     };
 
     updatingFilter = () => {
-        const { filters } = this.state;
-        const { columns, storageFilterItem } = this.props;
+        const { filters, sort } = this.state;
+        const { storageSortItem, columns } = this.props;
 
         let newFilter = {};
+
+        console.log('sort', sort, columns.find(item => item.name === sort.name));
+
+        if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
+            this.setState({
+                sort: {}
+            }, this.loadAndResetContainerScroll);
+
+            storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify({}));
+        }
 
         Object.keys(filters).forEach(key => {
             if (columns.find(item => item.name === key)) {
@@ -249,11 +265,47 @@ class SuperGrid extends Component {
         this.container.scrollTop = 0;
     };
 
+    resizeColumn = (size, index) => {
+        const {columns} = this.state;
+
+        clearTimeout(this.timer);
+        this.setState(prevState => {
+            const nextColumns = [...prevState.columns];
+            nextColumns[index] = {
+                ...nextColumns[index],
+                width: size.width,
+            };
+            return {
+                columns: nextColumns,
+            };
+        });
+
+        let sum = 0;
+
+        columns.forEach(item => {
+            sum = sum + item.width + columns.length + 50;
+        });
+        console.log('sum', sum);
+
+        this.timer = setTimeout(() => {
+            const {editRepresentation, representationName, name, getRepresentations} = this.props;
+
+            editRepresentation({
+                key: name,
+                name: representationName,
+                oldName: representationName,
+                value: columns,
+                callbackSuccess: () => {
+                    //getRepresentations({key: name});
+                },
+            });
+        }, 2000);
+    };
+
     render() {
-        const { filters, sort, fullText, selectedRows } = this.state;
+        const { filters, sort, fullText, selectedRows, columns } = this.state;
         const {
             totalCount: count = 0,
-            columns,
             rows = [],
             progress,
             modalCard,
@@ -276,7 +328,9 @@ class SuperGrid extends Component {
 
         return (
             <>
-                <Loader active={progress && !rows.length} size="huge" className="table-loader">Loading</Loader>
+                <Loader active={progress && !rows.length} size="huge" className="table-loader">
+                    Loading
+                </Loader>
                 <HeaderSearchGrid
                     createButton={
                         createButton && (
@@ -311,6 +365,8 @@ class SuperGrid extends Component {
                         unstackable
                         celled={false}
                         selectable={false}
+                        columns={columns}
+                        fixed
                         headerRow={
                             <Filter
                                 columns={columns}
@@ -325,6 +381,7 @@ class SuperGrid extends Component {
                                 setFilter={this.setFilter}
                                 setSort={this.setSort}
                                 setSelectedAll={this.setSelectedAll}
+                                resizeColumn={this.resizeColumn}
                             />
                         }
                         context={this.container}

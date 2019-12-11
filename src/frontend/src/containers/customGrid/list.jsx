@@ -19,7 +19,11 @@ import {
     getAllIdsRequest,
     invokeActionRequest,
 } from '../../ducks/gridActions';
-import { representationFromGridSelector } from '../../ducks/representations';
+import {
+    editRepresentationRequest,
+    representationFromGridSelector,
+    representationNameSelector,
+} from '../../ducks/representations';
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -81,6 +85,13 @@ class List extends Component {
         this.setState({ confirmation: { open: false } });
     };
 
+    modalCard = () => {
+        const {stopUpdate, match = {}} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
+        return <Card stopUpdate={stopUpdate} name={name}/>;
+    };
+
     render() {
         const {
             columns = [],
@@ -94,18 +105,24 @@ class List extends Component {
             isCreateBtn,
             getActions,
             getAllIds,
+            editRepresentation,
+            representationName,
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
         const { confirmation } = this.state;
 
         return (
-            <div className="container">
+            <div
+                className="container"
+            >
                 <SuperGrid
                     key={name}
                     columns={columns}
                     rows={list}
                     name={name}
+                    editRepresentation={editRepresentation}
+                    representationName={representationName}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -116,7 +133,7 @@ class List extends Component {
                     getActions={getActions}
                     groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
-                    modalCard={<Card stopUpdate={stopUpdate} name={name} />}
+                    modalCard={this.modalCard}
                     createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
@@ -126,7 +143,7 @@ class List extends Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = dispatch => {
     return {
         autoUpdate: params => {
             dispatch(autoUpdateStart(params));
@@ -143,10 +160,13 @@ function mapDispatchToProps(dispatch) {
         getAllIds: params => {
             dispatch(getAllIdsRequest(params));
         },
+        editRepresentation: params => {
+            dispatch(editRepresentationRequest(params));
+        },
     };
-}
+};
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
     const { match = {} } = ownProps;
     const { params = {} } = match;
     const { name = '' } = params;
@@ -158,8 +178,9 @@ function mapStateToProps(state, ownProps) {
         progress: progressSelector(state),
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
+        representationName: representationNameSelector(state, name),
     };
-}
+};
 
 export default withTranslation()(
     withRouter(

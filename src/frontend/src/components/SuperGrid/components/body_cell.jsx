@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import CellValue from '../../ColumnsValue';
 import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import FormField from '../../BaseComponents';
 import { LINK_TYPE } from '../../../constants/columnTypes';
 import { ORDERS_GRID } from '../../../constants/grids';
+import _ from 'lodash';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -14,34 +15,38 @@ const ModalComponent = ({ element, props, children }) => {
 };
 
 const BodyCell = ({
-                      row,
-                      column,
-                      loadList,
-                      indexRow,
-                      indexColumn,
-                      modalCard,
-                      gridName,
-                      t,
-                      checkForEditing,
-                      invokeMassUpdate,
-                  }) => {
+                      value,
+                      valueText,
+    column,
+    loadList,
+    indexRow,
+    indexColumn,
+    modalCard,
+    gridName,
+    t,
+    checkForEditing,
+    invokeMassUpdate,
+                      status,
+                      rowId,
+                      rowNumber,
+}) => {
     const contextRef = useRef(null);
 
     let [open, setOpen] = useState(false);
-    let [value, setValue] = useState(null);
+    let [valueForm, setValue] = useState(null);
     let [progress, setProgress] = useState(false);
 
     const copyToClipboard = () => {
         const text = contextRef.current && contextRef.current.textContent;
         navigator.clipboard &&
-        navigator.clipboard.writeText(text).then(
-            () => {
-                toast.info(t('copied_to_clipboard_success'));
-            },
-            error => {
-                toast.error(t('copied_to_clipboard_error', {error}));
-            },
-        );
+            navigator.clipboard.writeText(text).then(
+                () => {
+                    toast.info(t('copied_to_clipboard_success'));
+                },
+                error => {
+                    toast.error(t('copied_to_clipboard_error', { error }));
+                },
+            );
     };
 
     const handleClick = (rowId, fieldName, state) => {
@@ -57,13 +62,14 @@ const BodyCell = ({
             },
             callbackFunc: () => {
                 setProgress(false);
-            }
+            },
         });
     };
 
     const handleOpen = () => {
+        console.log('open', value);
         setOpen(true);
-        setValue(row[column.name]);
+        setValue(valueText ? {value, name: valueText} : value);
     };
 
     const handleClose = () => {
@@ -75,52 +81,62 @@ const BodyCell = ({
         setProgress(true);
         handleClose();
         invokeMassUpdate({
-            ids: [row.id],
+            ids: [rowId],
             name: gridName,
             field: column.name,
-            value,
+            value: valueForm,
             callbackSuccess: () => {
                 loadList(false, true);
             },
             callbackFunc: () => {
                 setProgress(false);
-            }
+            },
         });
     };
+
+    const handleChange = useCallback((e, { value }) => {
+        setValue(value);
+    }, []);
+
+    const handleCellClick = e => {
+        column.type !== LINK_TYPE ? handleClick(rowId, column.name, status) : e.stopPropagation();
+    };
+
+    const getModalCard = useCallback(() => {
+        return (
+            <ModalComponent
+                element={modalCard()}
+                props={{
+                    id: rowId,
+                    status,
+                    loadList,
+                    title: `edit_${gridName}`,
+                }}
+                key={`modal_${rowId}`}
+            />
+        );
+    }, []);
+
+    //console.log('BodyCell');
 
     return (
         <>
             <Table.Cell className="value-cell">
                 <div className="cell-grid">
                     <div
-                        className={`cell-grid-value ${
-                            row[column.name] !== null ? '' : 'cell-grid-value_empty'
-                            }`}
+                        className={`cell-grid-value ${value ? '' : 'cell-grid-value_empty'}`}
                         ref={contextRef}
-                        onClick={e =>
-                            column.type !== LINK_TYPE
-                                ? handleClick(row.id, column.name, row.status)
-                                : e.stopPropagation()
-                        }
+                        onClick={handleCellClick}
                     >
                         <CellValue
                             {...column}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
-                            value={row[column.name]}
+                            value={value}
+                            valueText={valueText}
                             width={column.width}
                             t={t}
-                            modalCard={
-                                <ModalComponent
-                                    element={modalCard}
-                                    props={{
-                                        ...row,
-                                        loadList,
-                                        title: `edit_${gridName}`,
-                                    }}
-                                    key={`modal_${row.id}`}
-                                />
-                            }
+                            modalCard={getModalCard}
                         />
                     </div>
                     <div>
@@ -128,12 +144,12 @@ const BodyCell = ({
                             <Loader active={true} size="mini" />
                         ) : (
                             <>
-                                {row[column.name] !== null ? (
+                                {value !== null ? (
                                     <div className="cell-grid-copy-btn">
                                         <Icon
                                             name="clone outline"
                                             size="small"
-                                            onClick={() => copyToClipboard(row[column.name])}
+                                            onClick={copyToClipboard}
                                         />
                                     </div>
                                 ) : null}
@@ -145,20 +161,14 @@ const BodyCell = ({
             <Modal open={open} size="tiny" closeOnDimmerClick={false}>
                 <Modal.Header>
                     {t(`edit_${gridName}`, {
-                        number: gridName === ORDERS_GRID ? row.orderNumber : row.shippingNumber,
-                        status: t(row.status),
+                        number: rowNumber,
+                        status: t(status),
                     })}
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
-                        <Form>
-                            <FormField
-                                {...column}
-                                value={value}
-                                onChange={(e, { value }) => {
-                                    setValue(value);
-                                }}
-                            />
+                        <Form onSubmit={handleSave}>
+                            <FormField {...column} value={valueForm} onChange={handleChange}/>
                         </Form>
                     </Modal.Description>
                 </Modal.Content>
@@ -166,7 +176,7 @@ const BodyCell = ({
                     <Button onClick={handleClose}>{t('cancelConfirm')}</Button>
                     <Button
                         color="primary"
-                        disabled={value === row[column.name]}
+                        disabled={_.isEqual(valueForm, value)}
                         onClick={handleSave}
                     >
                         {t('SaveButton')}
@@ -177,11 +187,17 @@ const BodyCell = ({
     );
 };
 
-export default React.memo(BodyCell, (prevProps = {}, nextProps = {}) => {
-    return (
-        prevProps.value === nextProps.value &&
-        prevProps.column.width === nextProps.column.width/* &&
-        nextProps.isEqual(prevProps.checkProgress, nextProps.checkProgress) &&
-        nextProps.isEqual(prevProps.editProgress, nextProps.editProgress)*/
-    );
-});
+export default React.memo(
+    BodyCell /*, (prevProps, nextProps) => {
+    return prevProps.column === nextProps.column &&
+        prevProps.loadList === nextProps.loadList &&
+        prevProps.indexRow === nextProps.indexRow &&
+        prevProps.indexColumn === nextProps.indexColumn &&
+        prevProps.modalCard === nextProps.modalCard &&
+        prevProps.gridName === nextProps.gridName &&
+        prevProps.t === nextProps.t &&
+        prevProps.checkForEditing === nextProps.checkForEditing &&
+        prevProps.invokeMassUpdate === nextProps.invokeMassUpdate &&
+        _.isEqual(prevProps.row, nextProps.row)
+}*/,
+);

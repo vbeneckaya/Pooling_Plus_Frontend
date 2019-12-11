@@ -1,3 +1,4 @@
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared.Excel;
 using DAL.Queries;
@@ -5,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -25,14 +27,35 @@ namespace Application.Shared
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
         protected readonly ICommonDataService _dataService;
+
         protected readonly IUserProvider _userProvider;
+
         protected readonly ITriggersService _triggersService;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService)
+        protected readonly IFieldDispatcherService _fieldDispatcherService;
+
+        private readonly IValidationService _validationService;
+
+        private readonly IFieldSetterFactory _fieldSetterFactory;
+
+        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
         {
             _dataService = dataService;
             _userProvider = userProvider;
             _triggersService = triggersService;
+            _validationService = validationService;
+            _fieldDispatcherService = fieldDispatcherService;
+            _fieldSetterFactory = fieldSetterFactory;
+        }
+
+        protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TListDto dto)
+        {
+            return null;
+        }
+        protected virtual IChangeTracker ConfigureChangeTacker()
+        {
+            return null;
         }
 
         public TListDto Get(Guid id)
@@ -42,11 +65,15 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetDbSet<TEntity>().GetById(id);
-            Log.Debug("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToDto(entity);
-            Log.Debug("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            result = FillLookupNames(result);
+            Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -69,7 +96,7 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearch(dbSet, form);
-            Log.Debug("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (form.Take == 0)
@@ -79,7 +106,7 @@ namespace Application.Shared
             var entities = ApplySort(query, form)
                 .Skip(form.Skip)
                 .Take(form.Take).ToList();
-            Log.Debug("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var a = new SearchResult<TListDto>
@@ -87,7 +114,11 @@ namespace Application.Shared
                 TotalCount = totalCount,
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
-            Log.Debug("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            a.Items = FillLookupNames(a.Items).ToList();
+            Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -129,14 +160,14 @@ namespace Application.Shared
                 }
             }
 
-            Log.Debug("{entityName}.Import (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Import (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var importResult = new ImportResult();
             importResult.Results.AddRange(entitiesFrom.Select(i => i.Result));
 
             var result = MapFromImportResult(importResult);
-            Log.Debug("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Import (Convert result to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -153,23 +184,15 @@ namespace Application.Shared
             sw.Start();
 
             var excel = new ExcelPackage(fileStream);
-            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var workSheet = excel.Workbook.Worksheets[0];//.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
             var dtos = excelMapper.LoadEntries(workSheet).ToList();
-            Log.Debug("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            //if (excelMapper.Errors.Any(e => e.IsError))
-            //{
-            //    var result = new ImportResult();
-            //    result.Results.AddRange(excelMapper.Errors);
-
-            //    return MapFromImportResult(result);
-            //}
-
             var importResult = Import(dtos);
-            Log.Debug("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return importResult;
         }
@@ -224,25 +247,29 @@ namespace Application.Shared
             
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = ApplySearch(dbSet, form);
-            Log.Debug("{entityName}.ExportToExcel (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var entities = ApplySort(query, form).ToList();
-            Log.Debug("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var dtos = entities.Select(MapFromEntityToDto);
-            Log.Debug("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            dtos = FillLookupNames(dtos);
+            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             var excelMapper = CreateExcelMapper();
             excelMapper.FillSheet(workSheet, dtos, user.Language);
-            Log.Debug("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return new MemoryStream(excel.GetAsByteArray());
         }
 
-        public ValidateResult SaveOrCreate(TListDto entityFrom)
+        public DetailedValidationResult SaveOrCreate(TListDto entityFrom)
         {
             return SaveOrCreateInner(entityFrom, false);
         }
@@ -260,7 +287,7 @@ namespace Application.Shared
             }
         }
 
-        protected DetailedValidationResult SaveOrCreateInner(TListDto entityFrom, bool isImport)
+        protected DetailedValidationResult SaveOrCreateInner(TListDto dto, bool isImport)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
@@ -268,55 +295,98 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entityFromDb = isImport ? FindByKey(entityFrom) : FindById(entityFrom);
-            var isNew = entityFromDb == null;
-            Log.Debug("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            var entity = isImport ? FindByKey(dto) : FindById(dto);
+            var isNew = entity == null;
+            Log.Information("{entityName}.SaveOrCreateInner (Find entity): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (isNew)
             {
-                entityFromDb = new TEntity
+                entity = new TEntity
                 {
                     Id = Guid.NewGuid()
                 };
             }
             else if (isImport)
             {
-                entityFrom.Id = entityFromDb.Id.ToString();
+                dto.Id = entity.Id.ToString();
             }
 
-            var result = MapFromDtoToEntity(entityFromDb, entityFrom);
-            Log.Debug("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            // Validation step
+
+            var result = ValidateDto(dto);
+            
+            if (result.IsError)
+            {
+                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+                return result;
+            }
+
+            // Mapping
+
+            MapFromDtoToEntity(entity, dto);
+
+            if (isNew)
+            {
+                dbSet.Add(entity);
+            }
+
+            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
+
+            // Change handlers
+
+            var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), dto);
+
+            if (setter != null)
+            {
+                setter.Appy(changes);
+            }
+            
+            var trackConfig = this.ConfigureChangeTacker();
+
+            if (trackConfig != null)
+            {
+                trackConfig.LogTrackedChanges(changes);
+            }
+
+            Log.Information("{entityName}.SaveOrCreateInner (Apply updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (!result.IsError)
+            if (isNew)
             {
-                if (isNew)
-                {
-                    dbSet.Add(entityFromDb);
-                    result.ResultType = ValidateResultType.Created;
-                }
-                else
-                {
-                    //dbSet.Update(entityFromDb);
-                    result.ResultType = ValidateResultType.Updated;
-                }
-
-                _triggersService.Execute();
-                Log.Debug("{entityName}.SaveOrCreateInner (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-                sw.Restart();
-
-                _dataService.SaveChanges();
-                Log.Debug("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-
-                Log.Information($"Запись {entityFromDb.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+                result.ResultType = ValidateResultType.Created;
             }
             else
             {
-                Log.Information($"Не удалось сохранить запись в справочник {typeof(TEntity)}: {result.Error}.");
+                //dbSet.Update(entityFromDb);
+                result.ResultType = ValidateResultType.Updated;
             }
 
+                _triggersService.Execute();
+                Log.Information("{entityName}.SaveOrCreateInner (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                _dataService.SaveChanges();
+                Log.Information("{entityName}.SaveOrCreateInner (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information($"Запись {entity.Id} в справочнике {typeof(TEntity)} {(isNew ? "создана" : "обновлена")}.");
+
             return result;
+        }
+        
+        protected virtual DetailedValidationResult ValidateDto(TListDto dto)
+        {
+            return _validationService.Validate(dto);
+        }
+
+        protected virtual IEnumerable<TListDto> FillLookupNames(IEnumerable<TListDto> dtos)
+        {
+            return dtos;
+        }
+
+        protected TListDto FillLookupNames(TListDto dto)
+        {
+            return FillLookupNames(new[] { dto }).FirstOrDefault();
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
@@ -328,7 +398,7 @@ namespace Application.Shared
 
         protected virtual ExcelMapper<TListDto> CreateExcelMapper()
         {
-            return new ExcelMapper<TListDto>(_dataService, _userProvider);
+            return new ExcelMapper<TListDto>(_dataService, _userProvider, _fieldDispatcherService);
         }
 
         public ValidateResult Delete(Guid id)

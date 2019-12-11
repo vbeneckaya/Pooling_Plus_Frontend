@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Extensions;
 using System;
 
 namespace Domain.Persistables
@@ -11,10 +12,12 @@ namespace Domain.Persistables
         /// <summary>
         /// Db primary key
         /// </summary>    
+        [IgnoreHistory]
         public Guid Id { get; set; }
         /// <summary>
         /// Статус
         /// </summary>
+        [IgnoreHistory]
         public OrderState Status { get; set; }
         /// <summary>
         /// Номер накладной BDF
@@ -59,6 +62,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата отгрузки введена вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualShippingDate { get; set; }
         /// <summary>
         /// Дней в пути
@@ -71,6 +75,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата доставки введена вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualDeliveryDate { get; set; }
         /// <summary>
         /// Кол-во арт.
@@ -91,6 +96,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Предварительное кол-во паллет введено вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualPalletsCount { get; set; }
         /// <summary>
         /// Подтвежденное кол-во паллет
@@ -153,16 +159,23 @@ namespace Domain.Persistables
         /// </summary>
         public TimeSpan? ClientAvisationTime { get; set; }
         /// <summary>
+        /// Время авизации у клиента выбрано вручную
+        /// </summary>
+        [IgnoreHistory]
+        public bool ManualClientAvisationTime { get; set; }
+        /// <summary>
         /// Комментарии по заказу
         /// </summary>
         public string OrderComments { get; set; }
         /// <summary>
         /// Тип комплектации
         /// </summary>
+        [ReferenceType(typeof(PickingType))]
         public Guid? PickingTypeId { get; set; }
         /// <summary>
         /// Тип комплектации выбран вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualPickingTypeId { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
@@ -231,6 +244,8 @@ namespace Domain.Persistables
         /// <summary>
         /// Перевозка
         /// </summary>
+        [IgnoreHistory]
+        [ReferenceType(typeof(Shipping))]
         public Guid? ShippingId { get; set; }
         /// <summary>
         /// Номер перевозки
@@ -239,18 +254,23 @@ namespace Domain.Persistables
         /// <summary>
         /// Статус перевозки
         /// </summary>
+        [IgnoreHistory]
         public ShippingState? OrderShippingStatus { get; set; }
         /// <summary>
         /// Склад отгрузки
         /// </summary>
+        [ReferenceType(typeof(ShippingWarehouse))]
         public Guid? ShippingWarehouseId { get; set; }
         /// <summary>
         /// Склад доставки
         /// </summary>
+        [IgnoreHistory]
+        [ReferenceType(typeof(Warehouse))]
         public Guid? DeliveryWarehouseId { get; set; }
         /// <summary>
         /// Активный?
         /// </summary>
+        [IgnoreHistory]
         public bool IsActive { get; set; }
         /*end of fields*/
 
@@ -262,6 +282,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата изменения
         /// </summary>
+        [IgnoreHistory]
         public DateTime? OrderChangeDate { get; set; }
 
         /// <summary>
@@ -277,6 +298,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Источник данных в заказе (список инжекций)
         /// </summary>
+        [IgnoreHistory]
         public string Source { get; set; }
 
         /// <summary>
@@ -287,6 +309,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Транспортная компания
         /// </summary>
+        [ReferenceType(typeof(TransportCompany))]
         public Guid? CarrierId { get; set; }
 
         /// <summary>
@@ -307,6 +330,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Базовая стоимость введена вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualDeliveryCost { get; set; }
 
         /// <summary>

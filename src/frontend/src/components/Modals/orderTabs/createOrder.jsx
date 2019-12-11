@@ -7,22 +7,26 @@ import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constan
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const { t } = useTranslation();
 
-    const handleChangeSoldTo = useCallback((e, {name, value, ext}) => {
+    const handleChangeSoldTo = useCallback((e, {name, value}) => {
+        console.log('value', value);
         onChange(e, {
             name,
-            value,
+            value: {
+                value: value.value,
+                name: value.value
+            },
         });
-        onChange(e, {name: 'clientName', value: ext.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: ext.address});
+        onChange(e, {name: 'clientName', value: value.warehouseName});
+        onChange(e, {name: 'deliveryAddress', value: value.address});
     }, []);
 
-    const handleChangeShippingWarehouseId = useCallback((e, {name, value, ext}) => {
+    const handleChangeShippingWarehouseId = useCallback((e, {name, value}) => {
         onChange(e, {
             name,
             value,
         });
 
-        onChange(e, {name: 'shippingAddress', value: ext.address});
+        onChange(e, {name: 'shippingAddress', value: value.address});
     }, []);
 
     return (

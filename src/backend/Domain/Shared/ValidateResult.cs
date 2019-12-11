@@ -5,6 +5,15 @@ namespace Domain.Shared
         public string Value { get; set; }
         public string Name { get; set; }
 
+        public LookUpDto() { }
+
+        public LookUpDto(string value) : this(value, value) { }
+
+        public LookUpDto(string value, string name)
+        {
+            Value = value;
+            Name = name;
+        }
     }
 
     public class ValidateResult

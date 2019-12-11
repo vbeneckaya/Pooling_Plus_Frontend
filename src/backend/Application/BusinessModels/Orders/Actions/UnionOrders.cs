@@ -1,5 +1,5 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.Shared;
+using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -19,13 +19,16 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
+        private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        private readonly ICommonDataService _dataService;
-
-        public UnionOrders(ICommonDataService dataService, IHistoryService historyService)
+        public UnionOrders(ICommonDataService dataService, 
+                           IHistoryService historyService, 
+                           IShippingCalculationService shippingCalculationService,
+                           IChangeTrackerFactory changeTrackerFactory)
+            : base(dataService, shippingCalculationService)
         {
-            _dataService = dataService;
             _historyService = historyService;
+            _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Orange;
         }
         
@@ -33,28 +36,29 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
-            var shippingsCount = shippingDbSet.Count();
 
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
-                ShippingNumber = string.Format("SH{0:000000}", shippingsCount + 1),
+                ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ShippingCreationDate = DateTime.UtcNow
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
-            var setter = new FieldSetter<Shipping>(shipping, _historyService);
-
-            setter.UpdateField(s => s.DeliveryType, DeliveryType.Delivery);
-            setter.UpdateField(s => s.TarifficationType, TarifficationType.Ftl);
+            shipping.DeliveryType = DeliveryType.Delivery;
+            shipping.TarifficationType = TarifficationType.Ftl;
             
-            setter.SaveHistoryLog();
-
             shippingDbSet.Add(shipping);
             
-            UnionOrderInShipping(orders, shipping, shippingDbSet, _historyService);
+            UnionOrderInShipping(orders, orders, shipping, _historyService);
+
+            var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
+            var changeTracker = _changeTrackerFactory.CreateChangeTracker()
+                                                     .TrackAll<Shipping>()
+                                                     .Remove<Shipping>(x => x.Id);
+            changeTracker.LogTrackedChanges(changes);
 
             return new AppActionResult
             {

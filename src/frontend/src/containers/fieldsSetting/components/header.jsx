@@ -12,6 +12,8 @@ const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, chan
         { key: 'Любая компания', value: 'null', text: t('Любая компания') },
     ];*/
 
+    console.log('header');
+
     return (
         <Menu>
             {gridsList && gridsList.length
@@ -43,10 +45,4 @@ const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, chan
     );
 };
 
-export default React.memo(Header, (prevProps, nextProps) => {
-    return (
-        nextProps.role === prevProps.role &&
-        _.isEqual(prevProps.rolesList, nextProps.rolesList) &&
-        prevProps.activeItem === nextProps.activeItem
-    );
-});
+export default React.memo(Header);

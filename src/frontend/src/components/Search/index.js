@@ -27,7 +27,7 @@ class Search extends React.Component {
 
         this.setState({value});
 
-        if (!value) {
+        if (!value || this.props.isAuto) {
             this.timer = setTimeout(this.triggerChange, 300);
         }
     };
@@ -46,15 +46,17 @@ class Search extends React.Component {
     };*/
 
     render() {
-        const {t} = this.props;
+        const {t, placeholder, fluid, size, className} = this.props;
 
         return (
             <Input
                 icon="search"
-                className="search-input"
+                className={className}
+                fluid={fluid}
+                size={size}
                 onKeyDown={this.handleKeyPress}
                 onChange={this.handleChange}
-                placeholder={t('search_all_fields')}
+                placeholder={placeholder === undefined ? t('search_all_fields') : placeholder}
                 value={this.state.value}
             />
         );

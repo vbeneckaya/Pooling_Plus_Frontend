@@ -1,21 +1,24 @@
-import React, {useState} from 'react';
-import Select from './Select';
-import {useDispatch, useSelector} from 'react-redux';
-import {getLookupRequest, valuesListSelector} from '../../ducks/lookup';
-import {columnsSelector} from '../../ducks/dictionaryView';
-import {userPermissionsSelector} from '../../ducks/profile';
+import React, { useEffect } from 'react';
+import Select from './Select_new';
+import { useDispatch, useSelector } from 'react-redux';
+import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
+import { columnsSelector } from '../../ducks/dictionaryView';
+import { userPermissionsSelector } from '../../ducks/profile';
 import Card from '../../containers/customDictionary/card';
-import {Button, Icon, Popup} from 'semantic-ui-react';
-import {SETTINGS_TYPE_EDIT} from '../../constants/formTypes';
-import {useTranslation} from 'react-i18next';
+import { Button, Icon, Popup } from 'semantic-ui-react';
+import { SETTINGS_TYPE_EDIT } from '../../constants/formTypes';
+import { useTranslation } from 'react-i18next';
+import { addError, clearError } from '../../ducks/gridCard';
 
 const SoldToField = props => {
-    const {value, settings, error, textValue, deliveryAddress, onChange, name} = props;
+    const { value, settings, error, textValue, deliveryAddress, onChange, name } = props;
     const dispatch = useDispatch();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+
+    console.log('value', value);
 
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
-    const soldToItem = valuesList.find(item => item.value === value) || {};
+    const soldToItem = value ? valuesList.find(item => item.value === value.value) || {} : {};
     const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
     const columnsEdit = columns.map(item => {
         if (item.name === 'soldToNumber') {
@@ -26,7 +29,7 @@ const SoldToField = props => {
         } else return item;
     });
     const defaultForm = {
-        soldToNumber: textValue,
+        soldToNumber: textValue ? textValue.name : null,
         address: deliveryAddress,
     };
     const userPermissions = useSelector(state => userPermissionsSelector(state));
@@ -38,14 +41,39 @@ const SoldToField = props => {
                 isForm: true,
                 callbackSuccess: result => {
                     onChange(null, {
-                        value: form.soldToNumber,
+                        value: {
+                            ...form,
+                            value: form.soldToNumber,
+                            name: form.soldToNumber
+                        },
                         name,
-                        ext: result.find(x => x.value === form.soldToNumber),
                     });
                 },
             }),
         );
     };
+
+    useEffect(() => {
+        dispatch(
+            getLookupRequest({
+                name: 'soldTo',
+                isForm: true,
+            }),
+        );
+    }, []);
+
+    useEffect(() => {
+        if (value && valuesList.length && !valuesList.find(item => item.value === value.value)) {
+            dispatch(
+                addError({
+                    name: 'soldTo',
+                    message: t('soldTo_error'),
+                }),
+            );
+        } else if (error) {
+            dispatch(clearError('soldTo'));
+        }
+    }, [valuesList, value]);
 
     return (
         <Select {...props}>
@@ -64,7 +92,7 @@ const SoldToField = props => {
                                     load={handleLoad}
                                 >
                                     <Button icon>
-                                        <Icon name="add"/>
+                                        <Icon name="add" />
                                     </Button>
                                 </Card>
                             </div>
@@ -84,7 +112,7 @@ const SoldToField = props => {
                                     load={handleLoad}
                                 >
                                     <Button icon>
-                                        <Icon name="edit"/>
+                                        <Icon name="edit" />
                                     </Button>
                                 </Card>
                             </div>

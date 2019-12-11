@@ -1,69 +1,131 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services;
+using Domain.Services.FieldProperties;
+using Domain.Services.Translations;
+using Domain.Services.UserProvider;
 using Domain.Shared;
-using System.Linq;
-using System.Reflection;
 
 namespace Application.Shared
 {
+    /// <summary>
+    /// Validation service
+    /// </summary>
     public class ValidationService : IValidationService
     {
-        public ValidatedRecord<TDto> Validate<TDto>(TDto dto)
+        private readonly IFieldDispatcherService _fieldDispatcher;
+
+        private readonly IUserProvider _userProvider;
+
+        /// <summary>
+        /// Create ValidationService instance
+        /// </summary>
+        /// <param name="fieldDispatcher"></param>
+        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider)
         {
-            var properties = typeof(TDto)
-                .GetProperties()
-                .Where(i => i.GetCustomAttributes(false).Any(j => j.GetType() == typeof(FieldTypeAttribute)));
+            _fieldDispatcher = fieldDispatcher;
+            _userProvider = userProvider;
+        }
 
-            var validationResult = new ValidatedRecord<TDto>(dto);
+        /// <summary>
+        /// Validate Dto
+        /// </summary>
+        /// <typeparam name="TDto"></typeparam>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public DetailedValidationResult Validate<TDto>(TDto dto)
+        {
+            var fields = _fieldDispatcher.GetDtoFields<TDto>();
 
-            foreach (var property in properties)
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
+            var validationResult = new DetailedValidationResult();
+
+            foreach (var field in fields)
             {
-                // Validate format
-                var formatResult = ValidatePropertyType(property, dto);
+                var property = typeof(TDto).GetProperty(field.Name);
+                var value = property.GetValue(dto)?.ToString();
+                var propertyName = property.Name.ToLowerFirstLetter();
+                var propertyDisplayName = propertyName.Translate(lang);
 
-                if (formatResult != null)
+                // Validate format
+
+                if (!ValidatePropertyFormat(field, value))
                 {
-                    validationResult.Result.AddError(formatResult);
+                    validationResult.AddError(new ValidationResultItem
+                    {
+                        Name = propertyName,
+                        Message = "InvalidValueFormat".Translate(lang, propertyDisplayName),
+                        ResultType = ValidationErrorType.InvalidValueFormat
+                    });
                 }
 
                 // Validate IsRequred
+
+                if (!ValidateIsRequired(field, value))
+                {
+                    validationResult.AddError(new ValidationResultItem
+                    {
+                        Name = propertyName,
+                        Message = "ValueIsRequired".Translate(lang, propertyDisplayName),
+                        ResultType = ValidationErrorType.ValueIsRequired
+                    });
+                }
             }
 
             return validationResult;
         }
 
-        private ValidationResultItem ValidatePropertyType<TDto>(PropertyInfo property, TDto dto)
+        /// <summary>
+        /// Validate mandatory field
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool ValidateIsRequired(FieldInfo field, string value)
         {
-            var fieldType = (FieldTypeAttribute)property.GetCustomAttributes(false)
-                .FirstOrDefault(j => j.GetType() == typeof(FieldTypeAttribute));
+            return !field.IsRequired || !string.IsNullOrEmpty(value);
+        }
 
-            if (fieldType == null) return null;
-
-            switch (fieldType.Type)
+        /// <summary>
+        /// Validate field format
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool ValidatePropertyFormat(FieldInfo field, string value)
+        {
+            switch (field.FieldType)
             {
-                case FieldType.Date: return ValidateDate(property, dto);
-                default: return null;
+                case FieldType.Date: return ValidateDate(field, value);
+                case FieldType.Time: return ValidateTime(field, value);
+
+                default: return true;
             }
         }
 
-        private ValidationResultItem ValidateDate<TDto>(PropertyInfo property, TDto dto)
+        /// <summary>
+        /// Validate date
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool ValidateDate(FieldInfo field, string value)
         {
-            var strValue = property.GetValue(dto)?.ToString();
-
-            var dateValue = strValue.ToDate();
-
-            if (!string.IsNullOrEmpty(strValue) && !dateValue.HasValue)
-            {
-                return new ValidationResultItem
-                {
-                    Name = property.Name/*.ToLowerfirstLetter()*/,
-                    ResultType = ValidationErrorType.InvalidValueFormat
-                };
-            }
-
-            return null;
+            var dateValue = value.ToDate();
+            return string.IsNullOrEmpty(value) || dateValue.HasValue;
         }
 
+        /// <summary>
+        /// Validate time
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private bool ValidateTime(FieldInfo field, string value)
+        {
+            var timeValue = value.ToTimeSpan();
+            return string.IsNullOrEmpty(value) || timeValue.HasValue;
+        }
     }
 }

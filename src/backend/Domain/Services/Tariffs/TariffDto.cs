@@ -1,31 +1,30 @@
-using Application.Shared.Excel.Columns;
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.Tariffs
 {
     public class TariffDto : IDto
     {
-        [ExcelIgnore]
         public string Id { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), OrderNumber(1), IsFixedPosition, IsRequired]
-        public string ShipmentCity { get; set; }
+        public LookUpDto ShipmentCity { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), OrderNumber(2), IsFixedPosition, IsRequired]
-        public string DeliveryCity { get; set; }
+        public LookUpDto DeliveryCity { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
-        public string TarifficationType { get; set; }
+        public LookUpDto TarifficationType { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition, IsRequired]
-        public string CarrierId { get; set; }
+        public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
-        public string VehicleTypeId { get; set; }
+        public LookUpDto VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(BodyTypes)), OrderNumber(4)]
-        public string BodyTypeId { get; set; }
+        public LookUpDto BodyTypeId { get; set; }
 
         [FieldType(FieldType.Date), OrderNumber(6)]
         public string StartWinterPeriod { get; set; }
@@ -33,10 +32,10 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Date), OrderNumber(7)]
         public string EndWinterPeriod { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(8)]
+        [FieldType(FieldType.Date), OrderNumber(8), IsRequired]
         public string EffectiveDate { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(9)]
+        [FieldType(FieldType.Date), OrderNumber(9), IsRequired]
         public string ExpirationDate { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(10)]

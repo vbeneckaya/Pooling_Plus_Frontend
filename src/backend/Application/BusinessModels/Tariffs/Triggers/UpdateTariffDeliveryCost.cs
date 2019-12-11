@@ -21,14 +21,18 @@ namespace Application.BusinessModels.Tariffs.Triggers
 
         public void Execute(Tariff entity)
         {
-            var shippings = _dataService.GetDbSet<Shipping>().Where(x => x.Status == ShippingState.ShippingCreated).ToList();
+            var shippings = _dataService.GetDbSet<Shipping>()
+                                .Where(x => x.Status == ShippingState.ShippingCreated 
+                                            || x.Status == ShippingState.ShippingRequestSent 
+                                            || x.Status == ShippingState.ShippingRejectedByTc)
+                                .ToList();
             foreach (var shipping in shippings)
             {
                 _calcService.UpdateDeliveryCost(shipping);
             }
         }
 
-        public bool IsTriggered(EntityChangesDto<Tariff> changes)
+        public bool IsTriggered(EntityChanges<Tariff> changes)
         {
             return changes?.FieldChanges?.Count > 0;
         }
