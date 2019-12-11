@@ -46,7 +46,7 @@ class Search extends React.Component {
     };*/
 
     render() {
-        const {t, placeholder, fluid, size, className} = this.props;
+        const {t, placeholder, fluid, size, className, autoFocus} = this.props;
 
         return (
             <Input
@@ -54,6 +54,7 @@ class Search extends React.Component {
                 className={className}
                 fluid={fluid}
                 size={size}
+                autoFocus={autoFocus}
                 onKeyDown={this.handleKeyPress}
                 onChange={this.handleChange}
                 placeholder={placeholder === undefined ? t('search_all_fields') : placeholder}

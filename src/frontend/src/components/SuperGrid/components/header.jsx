@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {Button, Grid, Icon, Popup} from 'semantic-ui-react';
+import {Button, Grid, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ import {
     setRepresentationRequest,
 } from '../../../ducks/representations';
 import AllFilters from './all_filters';
+import Icon from "../../CustomIcon";
 
 const Header = ({
     createButton,
@@ -218,11 +219,13 @@ const Header = ({
                         position="bottom right"
                         trigger={
                             <Button
-                                icon="clear-filter"
+                                icon
                                 className={`clear-filter-btn`}
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
-                            />
+                            >
+                                <Icon name="clear-filter"/>
+                            </Button>
                         }
                     />
                     <Search
