@@ -16,7 +16,7 @@ namespace Application.BusinessModels.Orders.Handlers
         public void AfterChange(Order order, TimeSpan? oldValue, TimeSpan? newValue)
         {
             order.OrderChangeDate = DateTime.UtcNow;
-            order.ManualClientAvisationTime = isManual;
+            order.ManualClientAvisationTime = _isManual;
         }
 
         public string ValidateChange(Order order, TimeSpan? oldValue, TimeSpan? newValue)
