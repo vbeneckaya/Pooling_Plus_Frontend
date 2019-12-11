@@ -188,7 +188,15 @@ namespace Application.Services.Shippings
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s) => s.Id.ToGuid()))
+                    .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.Status, e => e.Ignore())
+                    .ForMember(t => t.ManualActualPalletsCount, e => e.Ignore())
+                    .ForMember(t => t.ManualActualWeightKg, e => e.Ignore())
+                    .ForMember(t => t.ManualConfirmedPalletsCount, e => e.Ignore())
+                    .ForMember(t => t.ManualPalletsCount, e => e.Ignore())
+                    .ForMember(t => t.ManualTotalDeliveryCost, e => e.Ignore())
+                    .ForMember(t => t.ManualTrucksDowntime, e => e.Ignore())
+                    .ForMember(t => t.ManualWeightKg, e => e.Ignore())
                     .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
                     .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))

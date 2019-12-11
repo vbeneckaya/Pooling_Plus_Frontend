@@ -258,70 +258,76 @@ namespace Application.Shared
                     setter.Appy(updateChanges);
                 }
 
+                var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+
                 Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 //dbSet.Update(entityFromDb);
 
-                    _triggersService.Execute();
-                    Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-                    sw.Restart();
+                _triggersService.Execute();
+                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
 
-                    if (trackConfig != null)
-                    {
-                        trackConfig.LogTrackedChanges<TEntity>(updateChanges);
-                    }
+                if (trackConfig != null)
+                {
+                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
+                }
 
                 _dataService.SaveChanges();
-                    Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
                 return new ValidateResult
                 {
                     Id = entityFromDb.Id.ToString()
                 };
             }
-
-            var entity = new TEntity
+            else
             {
-                Id = Guid.NewGuid()
-            };
+                var entity = new TEntity
+                {
+                    Id = Guid.NewGuid()
+                };
 
-            // Mapping
+                // Mapping
 
-            MapFromFormDtoToEntity(entity, entityFrom);
+                MapFromFormDtoToEntity(entity, entityFrom);
 
-            dbSet.Add(entity);
+                dbSet.Add(entity);
 
-            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
+                var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
 
-            // Change handlers
+                // Change handlers
 
-            var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
+                var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
-            if (updateSetter != null)
-            {
-                updateSetter.Appy(changes);
+                if (updateSetter != null)
+                {
+                    updateSetter.Appy(changes);
+                }
+
+                var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
+
+                Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                _triggersService.Execute();
+                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                if (trackConfig != null)
+                {
+                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
+                }
+
+                _dataService.SaveChanges();
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+                return new ValidateResult
+                {
+                    Id = entity.Id.ToString()
+                };
             }
-
-            Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-            sw.Restart();
-
-            _triggersService.Execute();
-            Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-            sw.Restart();
-
-            if (trackConfig != null)
-            {
-                trackConfig.LogTrackedChanges<TEntity>(changes);
-            }
-
-            _dataService.SaveChanges();
-            Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
-
-            return new ValidateResult
-            {
-                Id = entity.Id.ToString()
-            };
         }
 
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
