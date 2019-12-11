@@ -119,14 +119,23 @@ namespace Application.Shared
                 errorMessages.Add("PasswordValidation.MinLength");
             }
 
-            var isMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]&");
+            var validCharactersMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]*$");
 
-            if (!isMatch)
+            if (!validCharactersMatch)
             {
                 errorMessages.Add("PasswordValidation.ValidCharacters");
             }
 
-            var message = string.Join(", ", errorMessages.Select(i => i.Translate(lang)));
+            var strongMatch = Regex.IsMatch(value, @"\d+");
+
+            if (!strongMatch)
+            {
+                errorMessages.Add("PasswordValidation.StrongPassword");
+            }
+
+            if (!errorMessages.Any()) return null;
+
+            var message = string.Join(". ", errorMessages.Select(i => i.Translate(lang)));
 
             return new ValidationResultItem
             {
