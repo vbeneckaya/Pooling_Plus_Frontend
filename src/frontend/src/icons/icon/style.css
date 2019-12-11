@@ -26,36 +26,40 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-1 {
+    font-size: 1.5em !important;
+}
+
 .icon-9 {
-    font-size: 9px;
+    font-size: 9px !important;
 }
 
 .icon-12 {
-    font-size: 12px;
+    font-size: 12px !important;
 }
 
 .icon-14 {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 .icon-16 {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 .icon-24 {
-    font-size: 24px;
+    font-size: 24px !important;
 }
 
 .icon-32 {
-    font-size: 32px;
+    font-size: 32px !important;
 }
 
 .icon-40 {
-    font-size: 40px;
+    font-size: 40px !important;
 }
 
 .icon-48 {
-    font-size: 48px;
+    font-size: 48px !important;
 }
 
 .icon-checkbox:before {

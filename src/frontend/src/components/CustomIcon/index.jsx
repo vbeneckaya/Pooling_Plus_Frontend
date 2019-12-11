@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 class Icon extends Component {
     render() {
-        const {color, size = 24, name, className, onClick} = this.props,
+        const {color, size, name, className, onClick} = this.props,
             style = {color};
 
         return (
@@ -27,7 +27,6 @@ Icon.propTypes = {
 
 Icon.defaultProps = {
     color: 'rgba(0,0,0,.6)',
-    size: 24,
     onClick: () => {
     },
 };
