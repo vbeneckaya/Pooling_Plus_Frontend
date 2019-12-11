@@ -18,5 +18,10 @@ namespace Domain.Persistables
         /// Транспортная компания
         /// </summary>
         public Guid? CarrierId { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

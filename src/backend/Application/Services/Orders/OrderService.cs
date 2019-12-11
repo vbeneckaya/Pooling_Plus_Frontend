@@ -141,7 +141,7 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.WeightKg, new WeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler())
-                .AddHandler(e => e.ClientAvisationTime, new ClientAvisationTimeHandler())
+                .AddHandler(e => e.ClientAvisationTime, new ClientAvisationTimeHandler(!isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeHandler(!isInjection))
                 .AddHandler(e => e.LoadingArrivalTime, new LoadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.LoadingDepartureTime, new LoadingDepartureTimeHandler(_dataService, _historyService))
@@ -160,7 +160,18 @@ namespace Application.Services.Orders
                 cfg.CreateMap<OrderDto, OrderFormDto>();
 
                 cfg.CreateMap<OrderDto, Order>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.Status, e => e.Ignore())
+                    .ForMember(t => t.DeliveryRegion, e => e.Ignore())
+                    .ForMember(t => t.ManualClientAvisationTime, e => e.Ignore())
+                    .ForMember(t => t.ManualDeliveryCost, e => e.Ignore())
+                    .ForMember(t => t.ManualDeliveryDate, e => e.Ignore())
+                    .ForMember(t => t.ManualPalletsCount, e => e.Ignore())
+                    .ForMember(t => t.ManualPickingTypeId, e => e.Ignore())
+                    .ForMember(t => t.ManualShippingDate, e => e.Ignore())
+                    .ForMember(t => t.ShippingId, e => e.Ignore())
+                    .ForMember(t => t.ShippingNumber, e => e.Ignore())
+                    .ForMember(t => t.OrderShippingStatus, e => e.Ignore())
                     .ForMember(t => t.DeliveryCity, e => e.Condition((s) => s.DeliveryCity != null))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity.Value))
                     .ForMember(t => t.ShippingCity, e => e.Condition((s) => s.ShippingCity != null))
@@ -171,8 +182,6 @@ namespace Application.Services.Orders
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
                     .ForMember(t => t.ClientName, e => e.Condition((s) => s.ClientName != null))
                     .ForMember(t => t.ClientName, e => e.MapFrom((s) => s.ClientName.Value))
-                    .ForMember(t => t.Status, e => e.Condition((s) => !string.IsNullOrEmpty(s.Status)))
-                    .ForMember(t => t.Status, e => e.MapFrom((s) => MapFromStateDto<OrderState>(s.Status)))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
@@ -236,6 +245,44 @@ namespace Application.Services.Orders
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
             });
+            return result;
+        }
+
+        protected override DetailedValidationResult ValidateDto(OrderDto dto)
+        {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            var result = base.ValidateDto(dto);
+
+            var deliveryDate = dto.DeliveryDate.ToDate();
+            var shippingDate = dto.ShippingDate.ToDate();
+
+            if (deliveryDate.HasValue && shippingDate.HasValue && shippingDate > deliveryDate)
+            {
+                result.AddError(nameof(dto.DeliveryDate), "InvalidDeliveryOrShippingDate".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            var loadingDepartureTime = dto.LoadingDepartureTime.ToDateTime();
+            var loadingArrivalTime = dto.LoadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && loadingArrivalTime.HasValue && loadingDepartureTime < loadingArrivalTime)
+            {
+                result.AddError(nameof(dto.LoadingArrivalTime), "InvalidLoadingDepartureOrArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            var unloadingDepartureTime = dto.UnloadingDepartureTime.ToDateTime();
+            var unloadingArrivalTime = dto.UnloadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime < loadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingArrivalTime), "InvalidUnloadingArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            if (unloadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime > unloadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingDepartureTime), "InvalidUnloadingDepartureTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
             return result;
         }
 
