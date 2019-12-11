@@ -247,6 +247,44 @@ namespace Application.Services.Orders
             return result;
         }
 
+        protected override DetailedValidationResult ValidateDto(OrderDto dto)
+        {
+            var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            var result = base.ValidateDto(dto);
+
+            var deliveryDate = dto.DeliveryDate.ToDate();
+            var shippingDate = dto.ShippingDate.ToDate();
+
+            if (deliveryDate.HasValue && shippingDate.HasValue && shippingDate > deliveryDate)
+            {
+                result.AddError(nameof(dto.DeliveryDate), "InvalidDeliveryOrShippingDate".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            var loadingDepartureTime = dto.LoadingDepartureTime.ToDateTime();
+            var loadingArrivalTime = dto.LoadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && loadingArrivalTime.HasValue && loadingDepartureTime < loadingArrivalTime)
+            {
+                result.AddError(nameof(dto.LoadingArrivalTime), "InvalidLoadingDepartureOrArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            var unloadingDepartureTime = dto.UnloadingDepartureTime.ToDateTime();
+            var unloadingArrivalTime = dto.UnloadingArrivalTime.ToDateTime();
+
+            if (loadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime < loadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingArrivalTime), "InvalidUnloadingArrivalTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            if (unloadingDepartureTime.HasValue && unloadingArrivalTime.HasValue && unloadingArrivalTime > unloadingDepartureTime)
+            {
+                result.AddError(nameof(dto.UnloadingDepartureTime), "InvalidUnloadingDepartureTime".Translate(lang), ValidationErrorType.InvalidDateRange);
+            }
+
+            return result;
+        }
+
         public override void MapFromDtoToEntity(Order entity, OrderDto dto)
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
