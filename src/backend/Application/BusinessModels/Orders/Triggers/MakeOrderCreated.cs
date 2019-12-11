@@ -27,7 +27,7 @@ namespace Application.BusinessModels.Orders.Triggers
                 && order.ShippingWarehouseId.HasValue
                 && order.DeliveryWarehouseId.HasValue
                 && order.ShippingDate.HasValue
-                && order.DeliveryDate.HasValue;
+                && (order.DeliveryDate.HasValue || order.DeliveryType != DeliveryType.Delivery);
 
             if (order.Status == OrderState.Draft && hasRequiredFields)
             {
