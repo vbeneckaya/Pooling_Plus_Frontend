@@ -99,6 +99,11 @@ const UserCard = props => {
         [notChangeForm],
     );
 
+    const handleRoleChange = useCallback((event, {name, value}) => {
+        handleChange(event, {name, value});
+        handleChange(event, {name: 'carrierId', value: null})
+    }, []);
+
     const confirmClose = () => {
         history.goBack();
     };
@@ -118,9 +123,6 @@ const UserCard = props => {
                 onConfirm: confirmClose,
             });
         }
-    };
-
-    const handleRoleChange = () => {
     };
 
     return (
@@ -163,7 +165,7 @@ const UserCard = props => {
                     isRequired
                     error={error['roleId']}
                     type={SELECT_TYPE}
-                    onChange={handleChange}
+                    onChange={handleRoleChange}
                 />
                 <FormField
                     fluid
