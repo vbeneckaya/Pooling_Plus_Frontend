@@ -15,6 +15,7 @@ using Domain.Services;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Orders;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using Domain.Shared.FormFilters;

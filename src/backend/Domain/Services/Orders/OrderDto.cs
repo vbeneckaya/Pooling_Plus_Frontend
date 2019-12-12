@@ -171,7 +171,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsDefault, OrderNumber(3), IsReadOnly]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4), IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(4), IsReadOnly]
         public string OrderShippingStatus { get; set; }
 
         public bool? IsActive { get; set; }

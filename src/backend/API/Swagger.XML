@@ -99,6 +99,16 @@
             Поиск по номеру
             </summary>
         </member>
+        <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
+            <summary>
+            Все доступные статусы с цветами
+            </summary>
+        </member>
+        <member name="M:API.Controllers.OrderShippingStatusController.ForSelect">
+            <summary>
+            Все доступные статусы
+            </summary>
+        </member>
         <member name="M:API.Controllers.ProfileController.Info">
             <summary>
             Получение профиля текущего пользователя

@@ -6,6 +6,7 @@ using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
 using Application.BusinessModels.Tariffs.Triggers;
+using Application.Services;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -119,6 +120,8 @@ namespace Infrastructure.Installers
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
             services.AddScoped<IBodyTypesService, BodyTypesService>();
             services.AddScoped<ITonnagesService, TonnagesService>();
+            services.AddScoped<IStateService, StateService>();
+            services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
