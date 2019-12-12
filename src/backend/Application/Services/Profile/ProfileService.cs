@@ -55,7 +55,7 @@ namespace Application.Services.Profile
                 result.AddError(nameof(dto.Email), "userEmailIsInvalid".Translate(lang), ValidationErrorType.InvalidValueFormat);
 
             if (dataService.GetDbSet<User>().Any(x => x.Email == dto.Email && x.Id != user.Id))
-                result.AddError(nameof(dto.Email), "userEmailIsNotAvailable".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
 
             if (string.IsNullOrEmpty(dto.UserName))
                 result.AddError(nameof(dto.UserName), "userNameIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired);

@@ -479,7 +479,7 @@ ru:
   usersCount: "Пользователи"
   users.emptyRoleId: "Укажите роль пользователя"
   users.emptyUserName: "Укажите Ф.И.О. пользователя"
-  User.DuplicatedRecord: "Пользователь с такм Email уже существует"
+  User.DuplicatedRecord: "Пользователь с таким Email уже существует"
   validation.createdCountMessage: "Создано записей: {0} "
   validation.updatedCountMessage: "Обновлено записей: {0}"
   validation.duplicatedRecordErrorMessage: "Дублирующихся записей: {0}"
