@@ -47,9 +47,17 @@ namespace Application.Services.FieldProperties
                     orderNumber = orderNumberAttr.Value;
                 }
 
+                string displayNameKey = prop.Name.ToLowerFirstLetter();
+                if (Attribute.IsDefined(prop, typeof(DisplayNameKeyAttribute)))
+                {
+                    var keyAttr = (DisplayNameKeyAttribute)Attribute.GetCustomAttribute(prop, typeof(DisplayNameKeyAttribute));
+                    displayNameKey = keyAttr.Key;
+                }
+
                 var fieldInfo = new FieldInfo
                 {
                     Name = prop.Name,
+                    DisplayNameKey = displayNameKey,
                     FieldType = fieldTypeAttr.Type,
                     ReferenceSource = fieldTypeAttr.Source,
                     ShowRawReferenceValue = fieldTypeAttr.ShowRawValue,

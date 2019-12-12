@@ -95,6 +95,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+            services.AddScoped<IShippingTarifficationTypeDeterminer, ShippingTarifficationTypeDeterminer>();
             services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
 
             services.AddScoped<ITriggersService, TriggersService>();
@@ -179,6 +180,9 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
+            services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
+            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
+            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeVehicleTypeId>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -195,6 +199,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)
