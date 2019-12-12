@@ -29,10 +29,7 @@ namespace Application.BusinessModels.Orders.Handlers
                     counts.Add(newValue);
 
                     var shippingActualPalletsCount = counts.Any(x => x.HasValue) ? counts.Sum(x => x ?? 0) : (int?)null;
-
-                    var setter = new FieldSetter<Shipping>(shipping, _historyService);
-                    setter.UpdateField(s => s.ActualPalletsCount, shippingActualPalletsCount);
-                    setter.SaveHistoryLog();
+                    shipping.ActualPalletsCount = shippingActualPalletsCount;
                 }
             }
         }

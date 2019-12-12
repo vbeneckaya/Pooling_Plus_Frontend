@@ -5,7 +5,7 @@ namespace Application.BusinessModels.Shared.Triggers
 {
     public interface ITrigger<TEntity> where TEntity : class, IPersistable
     {
-        bool IsTriggered(EntityChangesDto<TEntity> changes);
+        bool IsTriggered(EntityChanges<TEntity> changes);
         void Execute(TEntity entity);
     }
 }

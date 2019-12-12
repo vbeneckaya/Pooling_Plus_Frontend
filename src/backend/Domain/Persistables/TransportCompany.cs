@@ -32,5 +32,10 @@ namespace Domain.Persistables
         /// Активен
         /// </summary>
         public bool IsActive { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DAL;
 using DAL.Queries;
+using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
@@ -15,9 +16,10 @@ namespace Application.Services.History
     {
         public HistoryDto Get(Guid entityId)
         {
-            var entries = _db.HistoryEntries.Where(e => e.PersistableId == entityId)
-                                            .OrderByDescending(e => e.CreatedAt)
-                                            .ToList();
+            var entries = _dataService.GetDbSet<HistoryEntry>()
+                .Where(e => e.PersistableId == entityId)
+                .OrderByDescending(e => e.CreatedAt)
+                .ToList();
 
             var user = _userProvider.GetCurrentUser();
             var dtos = entries.Select(e => ConvertEntityToDto(e, user.Language)).ToList();
@@ -53,7 +55,7 @@ namespace Application.Services.History
                 MessageKey = messageKey,
                 MessageArgs = strArgs
             };
-            _db.HistoryEntries.Add(entry);
+            _dataService.GetDbSet<HistoryEntry>().Add(entry);
         }
 
         private HistoryEntryDto ConvertEntityToDto(HistoryEntry entity, string lang)
@@ -99,7 +101,7 @@ namespace Application.Services.History
             }
             else
             {
-                Role role = user.RoleId.HasValue ? _db.Roles.GetById(user.RoleId.Value) : null;
+                Role role = user.RoleId.HasValue ? _dataService.GetById<Role>(user.RoleId.Value) : null;
                 if (role == null)
                 {
                     return user.Name;
@@ -111,13 +113,13 @@ namespace Application.Services.History
             }
         }
 
-        public HistoryService(AppDbContext db, IUserProvider userProvider)
+        public HistoryService(ICommonDataService dataService, IUserProvider userProvider)
         {
-            _db = db;
+            _dataService = dataService;
             _userProvider = userProvider;
         }
 
-        private readonly AppDbContext _db;
+        private readonly ICommonDataService _dataService;
         private readonly IUserProvider _userProvider;
     }
 }

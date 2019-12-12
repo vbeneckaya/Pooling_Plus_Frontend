@@ -1,4 +1,4 @@
-import { format } from 'date-fns/esm';
+import format from 'date-fns/format';
 import moment from 'moment';
 
 export const parseDate = dateString => {
@@ -21,11 +21,11 @@ export const parseDateTime = dateString => {
     return isNaN(d.getTime()) ? null : d;
 };
 
-export const dateToString = (date, dateFormat = 'dd.MM.YYYY') => {
+export const dateToString = (date, dateFormat = 'dd.MM.yyyy') => {
     return format(date, dateFormat);
 };
 
-export const formatDate = (date, dateFormat = 'dd.MM.YYYY') => {
+export const formatDate = (date, dateFormat = 'dd.MM.yyyy') => {
     if (!date) return null;
 
     return format(date, dateFormat);

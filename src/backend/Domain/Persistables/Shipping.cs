@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Domain.Enums;
+using Domain.Extensions;
+using System;
 
 namespace Domain.Persistables
-{   
+{
     /// <summary>
     /// Перевозка
     /// </summary>
@@ -12,6 +12,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Db primary key
         /// </summary>    
+        [IgnoreHistory]
         public Guid Id { get; set; }
         /// <summary>
         /// Номер перевозки
@@ -36,15 +37,18 @@ namespace Domain.Persistables
         /// <summary>
         /// Транспортная компания
         /// </summary>
+        [ReferenceType(typeof(TransportCompany))]
         public Guid? CarrierId { get; set; }
         /// <summary>
         /// Тип ТС
         /// </summary>
+        [ReferenceType(typeof(VehicleType))]
         public Guid? VehicleTypeId { get; set; }
 
         /// <summary>
         /// Тип кузова
         /// </summary>
+        [ReferenceType(typeof(BodyType))]
         public Guid? BodyTypeId { get; set; }
 
         /// <summary>
@@ -54,6 +58,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Предварительное кол-во паллет введено вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualPalletsCount { get; set; }
         /// <summary>
         /// Фактическое кол-во паллет
@@ -62,6 +67,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Фактическое кол-во паллет введено вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualActualPalletsCount { get; set; }
         /// <summary>
         /// Подтвержденное кол-во паллет
@@ -70,6 +76,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Подтвержденное кол-во паллет введено вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualConfirmedPalletsCount { get; set; }
         /// <summary>
         /// Плановый вес, кг
@@ -78,6 +85,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Плановый вес введен вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualWeightKg { get; set; }
         /// <summary>
         /// Фактический вес, кг
@@ -86,6 +94,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Фактический вес введен вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualActualWeightKg { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
@@ -114,6 +123,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Общая стоимость перевозки введена вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualTotalDeliveryCost { get; set; }
         /// <summary>
         /// Прочее
@@ -146,6 +156,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Кол-во часов простоя машин введено вручную
         /// </summary>
+        [IgnoreHistory]
         public bool ManualTrucksDowntime { get; set; }
         /// <summary>
         /// Ставка за возврат
@@ -198,6 +209,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Статус
         /// </summary>
+        [IgnoreHistory]
         public ShippingState? Status { get; set; }
         /// <summary>
         /// Расходы подтверждена грузоотправителем
@@ -210,6 +222,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Дата создания перевозки
         /// </summary>
+        [IgnoreHistory]
         public DateTime? ShippingCreationDate { get; set; }
 
         /*end of fields*/

@@ -209,7 +209,7 @@ namespace Application.Shared.Excel
             string lang = _userProvider.GetCurrentUser()?.Language;
 
             _fieldDispatcherService.GetDtoFields<TDto>()
-                    .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.Select)
+                    .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
                     .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
                     .ToList()
                     .ForEach(AddColumn);

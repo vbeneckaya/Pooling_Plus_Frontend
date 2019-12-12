@@ -34,7 +34,7 @@ namespace Application.BusinessModels.ShippingWarehouses.Handlers
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;
 
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.ShippingWarehouseId == entity.Id
                                                 && x.ShippingAddress != newValue

@@ -44,7 +44,7 @@ const Select = ({
     let [open, setOpen] = useState(false);
     // let [items, setItems] = useState([]);
     let [counter, setCounter] = useState(PAGE_SIZE);
-    let [searchQuery, setSearchQuery] = useState(null);
+    let [searchQuery, setSearchQuery] = useState('');
     let [filter, setFilter] = useState('');
 
     const valuesList = useSelector(state =>

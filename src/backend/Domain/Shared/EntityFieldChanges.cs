@@ -1,6 +1,6 @@
 ﻿namespace Domain.Shared
 {
-    public class EntityFieldChangesDto
+    public class EntityFieldChanges
     {
         public string FieldName { get; set; }
         public object OldValue { get; set; }

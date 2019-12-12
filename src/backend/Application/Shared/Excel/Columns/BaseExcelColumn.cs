@@ -34,6 +34,14 @@ namespace Application.Shared.Excel.Columns
                     cell.Value = (value == true ? "Yes" : "No").Translate(Language);
                 }
             }
+            else if (Property.PropertyType == typeof(LookUpDto))
+            {
+                LookUpDto value = (LookUpDto)Property.GetValue(entity);
+                if (value != null)
+                {
+                    cell.Value = value.Value;
+                }
+            }
             else
             {
                 cell.Value = Property.GetValue(entity);
@@ -120,6 +128,10 @@ namespace Application.Shared.Excel.Columns
                         };
                     }
                 }
+            }
+            else if (Property.PropertyType == typeof(LookUpDto))
+            {
+                Property.SetValue(entity, new LookUpDto(cell.Value?.ToString()));
             }
             else
             {

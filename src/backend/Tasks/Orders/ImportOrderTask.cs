@@ -151,7 +151,7 @@ namespace Tasks.Orders
             {
                 ++processedCount;
 
-                string orderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='002']/BELNR")?.InnerText;
+                string orderNumber = docRoot.SelectSingleNode("E1EDK02[QUALF='002']/BELNR")?.InnerText?.TrimStart('0');
                 OrderFormDto dto = ordersService.GetFormByNumber(orderNumber);
                 bool isNew = dto == null;
                 if (dto == null)
@@ -202,6 +202,7 @@ namespace Tasks.Orders
                 {
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
+                    deliveryWarehouse.AdditionalInfo = "INJECTION";
                     updWarehouses.Add(deliveryWarehouse);
 
                     dto.DeliveryCity = string.IsNullOrEmpty(deliveryWarehouse.City) ? null : new LookUpDto(deliveryWarehouse.City);

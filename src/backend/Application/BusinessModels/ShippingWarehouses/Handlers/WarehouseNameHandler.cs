@@ -9,12 +9,12 @@ using System.Linq;
 
 namespace Application.BusinessModels.ShippingWarehouses.Handlers
 {
-    public class WarehouseNameHandler : IFieldHandler<ShippingWarehouse, string>
+    public class ShippingWarehouseNameHandler : IFieldHandler<ShippingWarehouse, string>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
 
-        public WarehouseNameHandler(ICommonDataService dataService, IHistoryService historyService)
+        public ShippingWarehouseNameHandler(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
@@ -22,7 +22,7 @@ namespace Application.BusinessModels.ShippingWarehouses.Handlers
 
         public void AfterChange(ShippingWarehouse entity, string oldValue, string newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.ShippingWarehouseId == entity.Id
                                                 && validStatuses.Contains(x.Status)
