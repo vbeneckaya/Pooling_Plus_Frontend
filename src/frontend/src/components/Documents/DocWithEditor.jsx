@@ -15,6 +15,7 @@ import {
     getDocumentTypesRequest,
 } from '../../ducks/documents';
 import { editCardRequest } from '../../ducks/gridCard';
+import ConfirmDialog from "../ConfirmDialog";
 
 const DocWithEditor = ({
     okButtonText,
@@ -255,12 +256,18 @@ const DocWithEditor = ({
                     <Button icon="check" positive content={okButtonText} onClick={handleSave} />
                 </Modal.Actions>
             </Modal>
-            <Confirm
+            {/*<Confirm
                 open={confirmation.open}
                 content={confirmation.content}
                 onCancel={confirmation.cancel}
                 cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.confirm}
+            />*/}
+            <ConfirmDialog
+                open={confirmation.open}
+                content={confirmation.content}
+                onYesClick={confirmation.confirm}
+                onNoClick={confirmation.cancel}
             />
         </DocView>
     );

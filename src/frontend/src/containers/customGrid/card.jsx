@@ -98,6 +98,9 @@ const Card = props => {
                     closeConfirmation();
                     onClose();
                 },
+                () => {
+                    closeConfirmation();
+                }
             );
         }
     };
@@ -150,11 +153,12 @@ const Card = props => {
         setConfirmation({ open: false });
     };
 
-    const showConfirmation = (content, onConfirm, onCancel) => {
+    const showConfirmation = (content, onYes, onNo, onCancel) => {
         setConfirmation({
             open: true,
             content,
-            onConfirm,
+            onYes,
+            onNo,
             onCancel,
         });
     };
@@ -177,7 +181,8 @@ const Card = props => {
                     },
                 }),
             );
-        });
+            },
+            closeConfirmation);
     };
 
     const handleUniquenessCheck = callbackFunc => {
@@ -297,8 +302,9 @@ const Card = props => {
             <ConfirmDialog
                 open={confirmation.open}
                 content={confirmation.content}
-                onYesClick={confirmation.onConfirm}
-                onNoClick={confirmation.onCancel || closeConfirmation}
+                onYesClick={confirmation.onYes}
+                onNoClick={confirmation.onNo}
+                onCancelClick={confirmation.onCancel}
             />
         </Modal>
     );

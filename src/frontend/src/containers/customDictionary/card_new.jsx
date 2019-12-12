@@ -7,13 +7,15 @@ import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
     cardProgressSelector,
-    cardSelector, clearDictionaryCard,
-    columnsSelector, deleteDictionaryEntryRequest,
+    cardSelector,
+    clearDictionaryCard,
+    columnsSelector,
+    deleteDictionaryEntryRequest,
     errorSelector,
     getCardRequest,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
-import ConfirmDialog from "../../components/ConfirmDialog";
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 const CardNew = props => {
     const {t} = useTranslation();
@@ -39,7 +41,7 @@ const CardNew = props => {
 
         return () => {
             dispatch(clearDictionaryCard());
-        }
+        };
     }, []);
 
     useEffect(
@@ -67,16 +69,21 @@ const CardNew = props => {
         [name, id],
     );
 
-    const getActionsFooter = useCallback(() => {
-        return (
-            <>
-                <Button color="grey" onClick={handleClose}>
-                    {t('CancelButton')}
-                </Button>
-                <Button color="blue" onClick={handleSave}>{t('SaveButton')}</Button>
-            </>
-        );
-    }, [form, notChangeForm]);
+    const getActionsFooter = useCallback(
+        () => {
+            return (
+                <>
+                    <Button color="grey" onClick={handleClose}>
+                        {t('CancelButton')}
+                    </Button>
+                    <Button color="blue" onClick={handleSave}>
+                        {t('SaveButton')}
+                    </Button>
+                </>
+            );
+        },
+        [form, notChangeForm],
+    );
 
     const handleSave = () => {
         let params = {
@@ -94,7 +101,7 @@ const CardNew = props => {
             saveDictionaryCardRequest({
                 params,
                 name,
-                callbackSuccess: confirmClose,
+                callbackSuccess: onClose,
             }),
         );
     };
@@ -102,11 +109,13 @@ const CardNew = props => {
     const handleDelete = () => {
         /* const { id, deleteEntry, name } = this.props;*/
 
-        dispatch(deleteDictionaryEntryRequest({
-            name,
-            id,
-            callbackSuccess: confirmClose,
-        }));
+        dispatch(
+            deleteDictionaryEntryRequest({
+                name,
+                id,
+                callbackSuccess: onClose,
+            }),
+        );
     };
 
     const getActionsHeader = useCallback(() => {
@@ -141,29 +150,38 @@ const CardNew = props => {
     );
 
     const confirmClose = () => {
+        setConfirmation({open: false});
+    };
+
+    const onClose = () => {
         history.goBack();
     };
 
     const handleClose = () => {
         if (notChangeForm) {
-            confirmClose();
+            onClose();
         } else {
             setConfirmation({
                 open: true,
-                content: t('confirm_close_dictionary'),
-                onCancel: () => {
-                    setConfirmation({
-                        confirmation: {open: false},
-                    });
+                content: t('confirm_close'),
+                onYes: () => {
+                    confirmClose();
+                    handleSave();
                 },
-                onConfirm: confirmClose,
+                onCancel: confirmClose,
+                onNo: onClose,
             });
         }
     };
 
     return (
-        <CardLayout title={title} actionsFooter={getActionsFooter} actionsHeader={getActionsHeader}
-                    onClose={handleClose} loading={loading}>
+        <CardLayout
+            title={title}
+            actionsFooter={getActionsFooter}
+            actionsHeader={getActionsHeader}
+            onClose={handleClose}
+            loading={loading}
+        >
             <div className="ui form dictionary-edit">
                 {columns.map(column => {
                     return (
@@ -189,8 +207,9 @@ const CardNew = props => {
             <ConfirmDialog
                 open={confirmation.open}
                 content={confirmation.content}
-                onYesClick={confirmation.onConfirm}
-                onNoClick={confirmation.onCancel}
+                onYesClick={confirmation.onYes}
+                onNoClick={confirmation.onNo}
+                onCancelClick={confirmation.onCancel}
             />
         </CardLayout>
     );

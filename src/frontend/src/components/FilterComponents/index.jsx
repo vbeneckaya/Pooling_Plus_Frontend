@@ -125,7 +125,6 @@ const FacetField = ({
                         }
                         pinned
                         basic
-                        hideOnScroll
                         position={'bottom center'}
                         className="from-popup"
                         on="click"

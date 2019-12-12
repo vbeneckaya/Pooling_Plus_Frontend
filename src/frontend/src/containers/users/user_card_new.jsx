@@ -13,6 +13,7 @@ import {
     errorSelector,
     createUserRequest,
 } from '../../ducks/users';
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const UserCard = props => {
     const {t} = useTranslation();
@@ -81,7 +82,7 @@ const UserCard = props => {
         dispatch(
             createUserRequest({
                 params,
-                callbackFunc: confirmClose,
+                callbackFunc: onClose,
             }),
         );
     };
@@ -105,22 +106,26 @@ const UserCard = props => {
     }, []);
 
     const confirmClose = () => {
+        setConfirmation({open: false});
+    };
+
+    const onClose = () => {
         history.goBack();
     };
 
     const handleClose = () => {
         if (notChangeForm) {
-            confirmClose();
+            onClose();
         } else {
             setConfirmation({
                 open: true,
-                content: t('confirm_close_dictionary'),
-                onCancel: () => {
-                    setConfirmation({
-                        confirmation: {open: false},
-                    });
+                content: t('confirm_close'),
+                onCancel: confirmClose,
+                onYes: () => {
+                    confirmClose();
+                    handleSave();
                 },
-                onConfirm: confirmClose,
+                onNo: onClose
             });
         }
     };
@@ -194,13 +199,20 @@ const UserCard = props => {
                     />
                 </Form.Field>
             </Form>
-            <Confirm
+            {/*<Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel}
                 cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
+            />*/}
+            <ConfirmDialog
+                open={confirmation.open}
+                content={confirmation.content}
+                onYesClick={confirmation.onYes}
+                onNoClick={confirmation.onNo}
+                onCancelClick={confirmation.onCancel}
             />
         </CardLayout>
     );

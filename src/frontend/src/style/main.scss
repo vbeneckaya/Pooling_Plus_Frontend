@@ -462,6 +462,11 @@ i.red.icon {
     background-color: #9a0000 !important;
 }
 
+.ui.inverted.red.basic.button:hover, .ui.inverted.red.basic.buttons .button:hover, .ui.inverted.red.buttons .basic.button:hover {
+    box-shadow: 0 0 0 2px #9a0000 inset !important;
+    color: #9a0000 !important;
+}
+
 i.green.icon {
     color: #1f5d39 !important;
 }
@@ -469,6 +474,11 @@ i.green.icon {
 .ui.green.button,
 .ui.green.label {
     background-color: #1f5d39 !important;
+}
+
+.ui.inverted.green.button, .ui.inverted.green.buttons .button {
+    color: #35af43 !important;
+    box-shadow: 0 0 0 2px #35af43 inset !important;
 }
 
 i.orange.icon {
