@@ -23,6 +23,7 @@ import {
     progressActionNameSelector,
 } from '../../ducks/gridActions';
 import { ORDERS_GRID } from '../../constants/grids';
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const getModal = {
     orders: <OrderModal />,
@@ -285,13 +286,19 @@ const Card = props => {
                     </Button>
                 </div>
             </Modal.Actions>
-            <Confirm
+            {/*<Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel || closeConfirmation}
                 cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
+            />*/}
+            <ConfirmDialog
+                open={confirmation.open}
+                content={confirmation.content}
+                onYesClick={confirmation.onConfirm}
+                onNoClick={confirmation.onCancel || closeConfirmation}
             />
         </Modal>
     );

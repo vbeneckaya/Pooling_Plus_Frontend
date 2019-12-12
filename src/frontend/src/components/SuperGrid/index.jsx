@@ -13,7 +13,8 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
-import { editRepresentationRequest } from '../../ducks/representations';
+import ConfirmDialog from "../ConfirmDialog";
+
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -65,7 +66,6 @@ class SuperGrid extends Component {
         }
 
         if (prevProps.columns !== this.props.columns) {
-            console.log('777');
             const {columns} = this.props;
             const width = this.container.scrollWidth - 50;
 
@@ -412,13 +412,19 @@ class SuperGrid extends Component {
                         />
                     ) : null}
                 </div>
-                <Confirm
+                {/*<Confirm
                     dimmer="blurring"
                     open={confirmation.open}
                     onCancel={closeConfirmation}
                     onConfirm={confirmation.onConfirm}
                     cancelButton={t('cancelConfirm')}
                     content={confirmation.content}
+                />*/}
+                <ConfirmDialog
+                    open={confirmation.open}
+                    content={confirmation.content}
+                    onYesClick={confirmation.onConfirm}
+                    onNoClick={closeConfirmation}
                 />
             </>
         );

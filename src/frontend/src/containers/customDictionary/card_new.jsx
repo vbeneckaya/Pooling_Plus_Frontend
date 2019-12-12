@@ -13,6 +13,7 @@ import {
     getCardRequest,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const CardNew = props => {
     const {t} = useTranslation();
@@ -177,13 +178,19 @@ const CardNew = props => {
                     );
                 })}
             </div>
-            <Confirm
+            {/*<Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel}
                 cancelButton={t('cancelConfirm')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
+            />*/}
+            <ConfirmDialog
+                open={confirmation.open}
+                content={confirmation.content}
+                onYesClick={confirmation.onConfirm}
+                onNoClick={confirmation.onCancel}
             />
         </CardLayout>
     );
