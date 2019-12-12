@@ -337,5 +337,15 @@ namespace Domain.Persistables
         /// Фактическая стоимость, без НДС
         /// </summary>
         public decimal? ActualDeliveryCost { get; set; }
+
+        /// <summary>
+        /// Способ тарификации
+        /// </summary>
+        public TarifficationType? TarifficationType { get; set; }
+        
+        /// <summary>
+        /// Тип ТС
+        /// </summary>
+        public Guid? VehicleTypeId { get; set; }
     }
 }
