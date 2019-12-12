@@ -9,6 +9,7 @@ namespace Domain.Services.Orders
     {
         public string Id { get; set; }
 
+        [DisplayNameKey("Order.Status")]
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 

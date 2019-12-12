@@ -56,6 +56,7 @@ const FacetField = ({
                         index,
                         handleResize,
                         width,
+                        displayNameKey
                     }) => {
     const { t } = useTranslation();
     let sort = null;
@@ -101,7 +102,7 @@ const FacetField = ({
     return (
         <div className="facet" ref={thRef}>
             <div className="facet-field" onClick={handleSort} ref={contextRef}>
-                {t(name)}
+                {t(displayNameKey)}
             </div>
             <div className="facet-actions">
                 <div className={value ? 'facet-actions__filter_active' : 'facet-actions__filter'}>
