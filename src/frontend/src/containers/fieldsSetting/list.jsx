@@ -137,7 +137,7 @@ const List = () => {
                 changeRole={handleChangeRole}
                 t={t}
             />
-            <div className={`scroll-table-container`} ref={containerRef}>
+            <div className={`scroll-table-container field-settings-table`} ref={containerRef}>
                 <InfiniteScrollTable
                     className="grid-table table-info"
                     onBottomVisible={() => {}}

@@ -1,23 +1,20 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { Button, Container, Dimmer, Grid, Icon, Loader, Table } from 'semantic-ui-react';
+import React, {Component} from 'react';
+import {withTranslation} from 'react-i18next';
+import {withRouter} from 'react-router-dom';
+import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
-import { debounce } from 'throttle-debounce';
-import { PAGE_SIZE } from '../../constants/settings';
+import {debounce} from 'throttle-debounce';
+import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import CellValue from '../ColumnsValue';
-import { withTranslation } from 'react-i18next';
-import HeaderCellComponent from './components/header-cell';
-import BodyCellComponent from './components/body-cell';
-import _ from 'lodash';
-import BodyCell from '../SuperGrid/components/body_cell';
+import HeaderCellComponent from "./components/header-cell";
+import BodyCellComponent from "./components/body-cell";
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
         return <>{children}</>;
     }
-    return React.cloneElement(element, props, children);
+    return React.cloneElement(element(props), props, children);
 };
 
 class TableInfo extends Component {
@@ -111,6 +108,16 @@ class TableInfo extends Component {
         this.props.toggleIsActive(event, {itemID, checked}, this.load);
     };
 
+    handleRowClick = (e, id) => {
+        const {history, cardLink, name} = this.props;
+
+        if (!cardLink) {
+            e.stopPropagation()
+        } else {
+            history.push(cardLink.replace(':name', name).replace(':id', id))
+        }
+    };
+
     render() {
         const {
             headerRow,
@@ -124,6 +131,7 @@ class TableInfo extends Component {
             groupActions,
             toggleIsActive,
             newModal,
+            newLink,
             t,
             name,
             modalCard,
@@ -133,78 +141,88 @@ class TableInfo extends Component {
             exportLoader,
             exportToExcel,
             totalCount,
+            history
         } = this.props;
 
         const { filter } = this.state;
+
+        console.log('this.props', this.props);
 
         return (
             <div className={className}>
                 <Loader active={loading && !list.length} size="huge" className="table-loader">
                     Loading
                 </Loader>
-                <div className="table-header-menu">
-                    <h2>{t(title)}</h2>
-                    <Grid>
+                    <Grid className="table-header-menu">
                         <Grid.Row>
-                            <Grid.Column width={7}>
+                            <Grid.Column width={5} verticalAlign="middle">
+                                <span className="table-header-menu_title">
+                                    {t(name)}
+                                </span>
+                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
+                            </Grid.Column>
+                            <Grid.Column width={11} textAlign="right">
+                                {/*{newModal ? newModal(t, this.load, name) : null}*/}
+                                {
+                                    newLink
+                                        ? <Popup
+                                            content={t('add_record')}
+                                            position="bottom right"
+                                            trigger={
+                                                <Button
+                                                    icon="add"
+                                                    onClick={() => {
+                                                        history.push(newLink.replace(':name', name))
+                                                    }}
+                                                />
+                                            }
+                                        />
+                                        : null
+                                }
+                                {isImportBtn ? (
+                                    <Popup
+                                        content={t('importFromExcel')}
+                                        position="bottom right"
+                                        trigger={
+                                            <Button
+                                                icon="upload"
+                                                loading={importLoader}
+                                                onClick={this.importFromExcel}
+                                            />
+                                        }
+                                    />
+                                ) : null}
+                                {isExportBtn ? (
+                                    <Popup
+                                        content={
+                                            t('exportToExcel') // todo
+                                        }
+                                        position="bottom right"
+                                        trigger={
+                                            <Button
+                                                icon="download"
+                                                loading={exportLoader}
+                                                onClick={this.exportToExcel}
+                                            />
+                                        }
+                                    />
+                                ) : null}
                                 <Search
                                     value={filter}
                                     className="search-input"
                                     onChange={this.changeFullTextFilter}
                                 />
-                                <span className="records-counter">
-                                    {t('totalCount', {count: totalCount})}
-                                </span>
-                            </Grid.Column>
-                            <Grid.Column width={9} textAlign="right">
-                                <input
-                                    type="file"
-                                    ref={instance => {
-                                        this.fileUploader = instance;
-                                    }}
-                                    style={{ display: 'none' }}
-                                    onChange={this.onFilePicked}
-                                />
-
-                                {isImportBtn ? (
-                                    <Button
-                                        color="green"
-                                        loading={importLoader}
-                                        onClick={this.importFromExcel}
-                                    >
-                                        <Icon name="upload" />
-                                        {t('importFromExcel')}
-                                    </Button>
-                                ) : null}
-                                {isExportBtn ? (
-                                    <Button
-                                        color="green"
-                                        loading={exportLoader}
-                                        onClick={this.exportToExcel}
-                                    >
-                                        <Icon name="download" />
-                                        {t('exportToExcel')}
-                                    </Button>
-                                ) : null}
-                                {newModal ? newModal(t, this.load, name) : null}
-                                {groupActions &&
-                                    groupActions().map(action => {
-                                        return (
-                                            action.visible && (
-                                                <Button
-                                                    color={action.color}
-                                                    loading={action.loading}
-                                                    onClick={action.action}
-                                                >
-                                                    {action.buttonName}
-                                                </Button>
-                                            )
-                                        );
-                                    })}
                             </Grid.Column>
                         </Grid.Row>
+                        <input
+                            type="file"
+                            ref={instance => {
+                                this.fileUploader = instance;
+                            }}
+                            style={{ display: 'none' }}
+                            onChange={this.onFilePicked}
+                        />
                     </Grid>
-                </div>
                 <div
                     className={`scroll-table-container`}
                     ref={instance => {
@@ -224,13 +242,13 @@ class TableInfo extends Component {
                                   list.map((row, i) => (
                                       <ModalComponent
                                           element={modalCard}
-                                          props={{ id: row.id, loadList: this.load, name }}
+                                          props={{ row, loadList: this.load, name }}
                                           key={`modal_${row.id}`}
                                       >
-                                          <Table.Row key={row.id}>
+                                          <Table.Row key={row.id} onClick={(e) => this.handleRowClick(e, row.id)}>
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
-                                                      key={`cell_${row.id}_${column.name}_${index}`}
+                                                      key={`cell_${row.id}_${column.name}`}
                                                       column={column}
                                                       value={
                                                           row[column.name] &&
@@ -285,4 +303,4 @@ TableInfo.defaultProps = {
     loadList: () => {},
 };
 
-export default withTranslation()(TableInfo);
+export default withTranslation()(withRouter(TableInfo));

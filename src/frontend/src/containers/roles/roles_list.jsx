@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import {withTranslation} from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 
-import { rolesColumns } from '../../constants/rolesColumns';
+import {rolesColumns} from '../../constants/rolesColumns';
 import {
     getRolesRequest,
     progressSelector,
@@ -12,14 +12,13 @@ import {
     toggleRoleActiveRequest,
     totalCountSelector,
 } from '../../ducks/roles';
-import { Button, Icon } from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 import RoleCard from './role_card';
+import {NEW_ROLE_LINK, ROLE_LINK} from "../../router/links";
 
 const newModal = (t, load) => (
     <RoleCard title={t('create_role_title')} id={null} loadList={load}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_role')}
-        </Button>
+        <Button icon="add"/>
     </RoleCard>
 );
 
@@ -46,22 +45,27 @@ export class RolesList extends Component {
         ];
     };
 
+    getCard = ({row, loadList, name}) => {
+        const { t } = this.props;
+
+        return <RoleCard title={t('edit_role', { name: row.name })} loadList={loadList}/>
+    };
+
     render() {
         const { list, loadList, totalCount, loading, t } = this.props;
 
         return (
             <TableInfo
                 headerRow={rolesColumns}
-                title={t('roles')}
+                name='roles'
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}
-                isShowActions
-                actions={this.getActions}
-                newModal={newModal}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
                 loadList={loadList}
+                newLink={NEW_ROLE_LINK}
+                cardLink={ROLE_LINK}
             />
         );
     }

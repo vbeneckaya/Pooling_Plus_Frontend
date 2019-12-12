@@ -12,7 +12,7 @@ const BodyCellComponent = ({column, children, value, valueText, indexColumn, ind
         setWidth(cellRef.current.offsetWidth);
     }, []);
 
-    console.log('cell');
+    //console.log('cell');
 
     return (
         <td

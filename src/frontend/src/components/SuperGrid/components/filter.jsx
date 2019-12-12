@@ -54,7 +54,7 @@ const Filter = props => {
                     onResize={(e, {size}) => handleResize(e, {size, index: i})}
                 >
                     <Table.HeaderCell
-                        key={'th' + x.name + i}
+                        key={'th' + x.name}
                         style={{width: `${x.width}px`}}
                         className={`column-facet column-${x.name && x.name
                             .toLowerCase()

@@ -124,7 +124,9 @@ const FacetField = ({
                             />
                         }
                         pinned
-                        position={index === 0 ? 'bottom left' : 'bottom right'}
+                        basic
+                        hideOnScroll
+                        position={'bottom center'}
                         className="from-popup"
                         on="click"
                     />

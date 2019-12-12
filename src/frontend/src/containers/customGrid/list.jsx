@@ -28,9 +28,7 @@ import {
 const CreateButton = ({ t, ...res }) => {
     return (
         <Card {...res}>
-            <Button color="blue" className="create-button">
-                {t(`create_${res.name}`)}
-            </Button>
+            <Button icon="add"/>
         </Card>
     );
 };
@@ -48,33 +46,40 @@ class List extends Component {
         this.props.stopUpdate({isClear: true});
     }
 
+    mapActions = (item, t, invokeAction, name) => ({
+        ...item,
+        name: `${t(item.name)}`,
+        action: (rows, clearSelectedRows) => {
+            this.showConfirmation(
+                `${t('Are you sure to complete')} "${t(item.name)}" ${
+                    rows.length > 1 ? `${t('for')} ` + rows.length : ''
+                    }?`,
+                () => {
+                    this.closeConfirmation();
+                    invokeAction({
+                        ids: rows,
+                        name,
+                        actionName: item.name,
+                        callbackSuccess: () => {
+                            clearSelectedRows();
+                        },
+                    });
+                },
+            );
+        },
+    });
+
     getGroupActions = () => {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
 
-        return actions.map(item => ({
-            ...item,
-            name: `${t(item.name)} ${item.ids.length > 1 ? `(${item.ids.length})` : ''}`,
-            action: (rows, clearSelectedRows) => {
-                this.showConfirmation(
-                    `${t('Are you sure to complete')} "${t(item.name)}" ${
-                        rows.length > 1 ? `${t('for')} ` + rows.length : ''
-                    }?`,
-                    () => {
-                        this.closeConfirmation();
-                        invokeAction({
-                            ids: rows,
-                            name,
-                            actionName: item.name,
-                            callbackSuccess: () => {
-                                clearSelectedRows();
-                            },
-                        });
-                    },
-                );
-            },
-        }));
+        let obj = {
+            require: actions.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
+            other: actions.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
+        };
+
+        return obj;
     };
 
     showConfirmation = (content, onConfirm) => {
