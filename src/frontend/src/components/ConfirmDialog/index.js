@@ -13,7 +13,7 @@ const ConfirmDialog = ({ content, open, onNoClick, onYesClick, onCancelClick }) 
     const handleCancelClick = () => {onCancelClick()};
 
     return (
-        <Modal open={open} basic size="small">
+        <Modal open={open} size="small" dimmer="blurring">
             {/*<Header icon='archive' content='Archive Old Messages' />*/}
             <Modal.Content>
                 <p>{content}</p>
@@ -21,16 +21,16 @@ const ConfirmDialog = ({ content, open, onNoClick, onYesClick, onCancelClick }) 
             <Modal.Actions className="confirm-dialog-actions">
                 <div>
                     {onCancelClick && (
-                        <Button basic color="grey" inverted onClick={handleCancelClick}>
+                        <Button basic onClick={handleCancelClick}>
                             {t('cancelConfirm')}
                         </Button>
                     )}
                 </div>
                 <div>
-                    <Button basic color="red" inverted onClick={handleNoClick}>
+                    <Button onClick={handleNoClick}>
                         <Icon name="remove" /> {t('No')}
                     </Button>
-                    <Button color="green" inverted onClick={handleYesClick}>
+                    <Button color="blue" onClick={handleYesClick}>
                         <Icon name="checkmark" /> {t('Yes')}
                     </Button>
                 </div>
