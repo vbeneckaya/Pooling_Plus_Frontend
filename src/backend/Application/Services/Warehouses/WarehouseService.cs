@@ -230,7 +230,8 @@ namespace Application.Services.Warehouses
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
+                    .ForMember(t => t.AvisaleTime, e => e.MapFrom((s) => s.AvisaleTime == null ? null : s.AvisaleTime.Value.ToString(@"hh\:mm")));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
