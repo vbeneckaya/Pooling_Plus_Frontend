@@ -49,6 +49,10 @@
     justify-content: center;
     position: relative;
 
+    > div {
+        display: flex;
+    }
+
     .ui.secondary.pointing.menu {
         position: sticky;
         top: 120px;

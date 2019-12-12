@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useTranslation} from 'react-i18next';
 import './style.scss';
 import {Button, Dimmer, Icon, Loader, Menu} from 'semantic-ui-react';
 import * as Scroll from 'react-scroll';
-import Block from "./components/block";
+import Block from './components/block';
 
 const CardLayout = ({
                         title,
@@ -15,6 +15,9 @@ const CardLayout = ({
                         loading,
                     }) => {
     const {t} = useTranslation();
+
+    const contentRef = useRef(null);
+
     let [activeItem, setActiveItem] = useState();
 
     const handleItemClick = (e, {item}) => {
@@ -33,6 +36,8 @@ const CardLayout = ({
         [content],
     );
 
+    console.log('content', contentRef && contentRef.current && contentRef.current.offsetWidth);
+
     return (
         <div>
             <div className="card-header-panel">
@@ -48,7 +53,7 @@ const CardLayout = ({
             </div>
             <div className="card-content">
                 {content ? (
-                    <>
+                    <div ref={contentRef}>
                         <Menu pointing secondary vertical>
                             {content().map(item => (
                                 <Menu.Item
@@ -66,7 +71,7 @@ const CardLayout = ({
                                 <Block item={item} loading={loading}/>
                             ))}
                         </div>
-                    </>
+                    </div>
                 ) : (
                     <div className="card-content-block">
                         <Loader active={loading} size="huge" className="card-content-block_loader">
@@ -76,7 +81,15 @@ const CardLayout = ({
                     </div>
                 )}
             </div>
-            <div className="card-actions-panel">{actionsFooter()}</div>
+            <div className="card-actions-panel">
+                <div
+                    style={{
+                        width: contentRef && contentRef.current && (contentRef.current.offsetWidth - 64),
+                    }}
+                >
+                    {actionsFooter()}
+                </div>
+            </div>
             <style>
                 {
                     '\

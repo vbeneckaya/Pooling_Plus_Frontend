@@ -120,14 +120,14 @@ const RoleCard = props => {
     const getActionsFooter = useCallback(
         () => {
             return (
-                <div>
+                <>
                     <Button color="grey" onClick={handleClose}>
                         {t('CancelButton')}
                     </Button>
                     <Button color="blue" onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
-                </div>
+                </>
             );
         },
         [form],
