@@ -99,7 +99,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                     <Grid.Column>
                         <FormField
                             name="clientName"
-                            type={TEXT_TYPE}
+                            type={SELECT_TYPE}
                             isDisabled
                             error={error['clientName']}
                             value={form['clientName']}

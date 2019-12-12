@@ -28,8 +28,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsDefault, OrderNumber(6)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(5), IsReadOnly]
-        public string ClientName { get; set; }
+        [FieldType(FieldType.Select, source: nameof(ClientName), showRawValue: true), IsDefault, OrderNumber(5), IsReadOnly]
+        public LookUpDto ClientName { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
         public LookUpDto SoldTo { get; set; }
@@ -171,7 +171,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text), IsDefault, OrderNumber(3), IsReadOnly]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(4), IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(4), IsReadOnly]
         public string OrderShippingStatus { get; set; }
 
         public bool? IsActive { get; set; }
