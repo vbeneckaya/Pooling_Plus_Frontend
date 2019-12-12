@@ -13,7 +13,6 @@ namespace Domain.Enums
         Date,
         Time,
         Link,
-        LocalDateTime,
-        Password
+        LocalDateTime
     }
 }

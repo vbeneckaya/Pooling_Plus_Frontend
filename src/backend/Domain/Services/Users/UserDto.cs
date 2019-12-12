@@ -19,7 +19,6 @@ namespace Domain.Services.Users
         [FieldType(FieldType.Select), IsRequired]
         public LookUpDto RoleId { get; set; }
 
-        [FieldType(FieldType.Password)]
         public string Password { get; set; }
 
         public bool IsActive { get; set; }

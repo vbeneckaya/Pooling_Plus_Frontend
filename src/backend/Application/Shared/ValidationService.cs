@@ -27,11 +27,10 @@ namespace Application.Shared
         /// Create ValidationService instance
         /// </summary>
         /// <param name="fieldDispatcher"></param>
-        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider, IConfiguration configuration)
+        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider)
         {
             _fieldDispatcher = fieldDispatcher;
             _userProvider = userProvider;
-            _configuration = configuration;
         }
 
         /// <summary>
@@ -79,70 +78,9 @@ namespace Application.Shared
                         ResultType = ValidationErrorType.ValueIsRequired
                     });
                 }
-
-                if (field.FieldType == FieldType.Password)
-                {
-                    var result = ValidatePassword(field, value, prefix, lang);
-
-                    if (result != null)
-                    {
-                        validationResult.AddError(result);
-                    }
-                }
-
             }
 
             return validationResult;
-        }
-
-        /// <summary>
-        /// Validate Password
-        /// </summary>
-        /// <param name="field"></param>
-        /// <param name="value"></param>
-        /// <param name="prefix"></param>
-        /// <param name="lang"></param>
-        /// <returns></returns>
-        private ValidationResultItem ValidatePassword(FieldInfo field, string value, string prefix, string lang)
-        {
-            if (string.IsNullOrEmpty(value)) return null;
-
-
-            List<string> errorMessages = new List<string>();
-
-            var passwordConfig = _configuration.GetSection("PasswordRules");
-
-            var passwordMinLength = passwordConfig["MinLength"].ToInt();
-
-            if (passwordMinLength.HasValue && value.Length < passwordMinLength)
-            {
-                errorMessages.Add("PasswordValidation.MinLength");
-            }
-
-            var validCharactersMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]*$");
-
-            if (!validCharactersMatch)
-            {
-                errorMessages.Add("PasswordValidation.ValidCharacters");
-            }
-
-            var strongMatch = Regex.IsMatch(value, @"\d+");
-
-            if (!strongMatch)
-            {
-                errorMessages.Add("PasswordValidation.StrongPassword");
-            }
-
-            if (!errorMessages.Any()) return null;
-
-            var message = string.Join(". ", errorMessages.Select(i => i.Translate(lang)));
-
-            return new ValidationResultItem
-            {
-                Name = field.Name.ToLowerFirstLetter(),
-                Message = message,
-                ResultType = ValidationErrorType.InvalidPassword
-            };
         }
 
         /// <summary>
