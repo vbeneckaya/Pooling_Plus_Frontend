@@ -12,7 +12,7 @@ import {
     columnsSelector,
     deleteDictionaryEntryRequest,
     errorSelector,
-    getCardRequest,
+    getCardRequest, progressSelector,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
 
@@ -32,6 +32,7 @@ const CardNew = props => {
     );
     const canDelete = useSelector(state => canDeleteSelector(state, name));
     const loading = useSelector(state => cardProgressSelector(state));
+    const progress = useSelector(state => progressSelector(state));
     const card = useSelector(state => cardSelector(state));
     const error = useSelector(state => errorSelector(state));
 
@@ -75,13 +76,13 @@ const CardNew = props => {
                     <Button color="grey" onClick={handleClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" onClick={handleSave}>
+                    <Button color="blue" disabled={notChangeForm} loading={progress} onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
                 </>
             );
         },
-        [form, notChangeForm],
+        [form, notChangeForm, progress],
     );
 
     const handleSave = () => {

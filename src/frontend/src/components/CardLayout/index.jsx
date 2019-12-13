@@ -22,7 +22,7 @@ const CardLayout = ({
 
     const handleItemClick = (e, {item}) => {
         setActiveItem(item);
-        Scroll.scroller.scrollTo(item, {
+        Scroll && Scroll.scroller && Scroll.scroller.scrollTo && Scroll.scroller.scrollTo(item, {
             duration: 1500,
             delay: 100,
             offset: -120,
@@ -74,7 +74,7 @@ const CardLayout = ({
                     </div>
                 ) : (
                     <div className="card-content-block">
-                        <Loader active={loading} size="huge" className="card-content-block_loader">
+                        <Loader active={loading} size="huge">
                             Loading
                         </Loader>
                         {children}

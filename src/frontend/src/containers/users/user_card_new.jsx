@@ -11,7 +11,7 @@ import {
     progressSelector,
     userCardSelector,
     errorSelector,
-    createUserRequest,
+    createUserRequest, saveProgressSelector,
 } from '../../ducks/users';
 
 const UserCard = props => {
@@ -26,6 +26,7 @@ const UserCard = props => {
     let [notChangeForm, setNotChangeForm] = useState(true);
 
     const loading = useSelector(state => progressSelector(state));
+    const progress = useSelector(state => saveProgressSelector(state));
     const user = useSelector(state => userCardSelector(state));
     const error = useSelector(state => errorSelector(state)) || {};
 
@@ -59,13 +60,13 @@ const UserCard = props => {
                     <Button color="grey" onClick={handleClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" onClick={handleSave}>
+                    <Button color="blue" disabled={notChangeForm} loading={progress} onClick={handleSave}>
                         {t('SaveButton')}
                     </Button>
                 </>
             );
         },
-        [form, notChangeForm],
+        [form, notChangeForm, progress],
     );
 
     const handleSave = () => {
