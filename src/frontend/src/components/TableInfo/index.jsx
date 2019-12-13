@@ -182,7 +182,13 @@ class TableInfo extends Component {
                                                 <Button
                                                     icon="add"
                                                     onClick={() => {
-                                                        history.push(newLink.replace(':name', name))
+                                                        history.push({
+                                                            pathname: newLink.replace(':name', name),
+                                                            state: {
+                                                                ...this.mapData().filter,
+                                                                pathname: history.location.pathname
+                                                            }
+                                                        })
                                                     }}
                                                 />
                                             }

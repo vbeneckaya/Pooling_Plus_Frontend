@@ -56,7 +56,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
         dispatch(
             editProfileSettingsRequest({
                 form,
-                callbackSuccess: onClose,
+                callbackSuccess: handleClose,
             }),
         );
     };
@@ -91,6 +91,11 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
         }
     };
 
+    const handleClose = () => {
+        setPassword({});
+        onClose();
+    };
+
     console.log('form', passwordForm);
 
     return (
@@ -99,7 +104,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
             open={modalOpen}
             closeOnDimmerClick={false}
             onOpen={onOpen}
-            onClose={onClose}
+            onClose={handleClose}
             closeIcon
             size="mini"
         >
@@ -133,10 +138,9 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
                         <Segment>
                             <FormField
                                 name="oldPassword"
-                                type={TEXT_TYPE}
-                                typeValue="password"
-                                autoComplete="new-password"
+                                type={PASSWORD_TYPE}
                                 value={passwordForm['oldPassword']}
+                                error={error['oldPassword']}
                                 onChange={handleChangePassword}
                             />
                             <FormField
@@ -166,7 +170,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
                 </Modal.Description>
             </Modal.Content>
             <Modal.Actions>
-                <Button color="grey" onClick={onClose}>
+                <Button color="grey" onClick={handleClose}>
                     {t('CancelButton')}
                 </Button>
                 <Button color="blue" loading={progressEdit} onClick={handleSave}>
