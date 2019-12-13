@@ -13,7 +13,6 @@ import {
     representationsSelector,
     saveRepresentationRequest,
 } from '../../ducks/representations';
-import ConfirmDialog from "../ConfirmDialog";
 
 const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, representations }) => {
     const representationFields =
@@ -274,19 +273,13 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
                         </Button>
                     </div>
                 </Modal.Actions>
-                {/*<Confirm
+                <Confirm
                     dimmer="blurring"
                     open={confirmation.open}
                     onCancel={closeConfirmation}
                     cancelButton={t('cancelConfirm')}
                     onConfirm={confirmation.onConfirm}
                     content={confirmation.content}
-                />*/}
-                <ConfirmDialog
-                    open={confirmation.open}
-                    content={confirmation.content}
-                    onYesClick={confirmation.onConfirm}
-                    onNoClick={closeConfirmation}
                 />
             </Modal>
         </>

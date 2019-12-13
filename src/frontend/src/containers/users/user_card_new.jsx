@@ -13,7 +13,6 @@ import {
     errorSelector,
     createUserRequest,
 } from '../../ducks/users';
-import ConfirmDialog from "../../components/ConfirmDialog";
 
 const UserCard = props => {
     const {t} = useTranslation();
@@ -122,13 +121,9 @@ const UserCard = props => {
         } else {
             setConfirmation({
                 open: true,
-                content: t('confirm_close'),
+                content: t('confirm_close_dictionary'),
                 onCancel: confirmClose,
-                onYes: () => {
-                    confirmClose();
-                    handleSave();
-                },
-                onNo: onClose
+                onConfirm: onClose
             });
         }
     };
@@ -202,20 +197,14 @@ const UserCard = props => {
                     />
                 </Form.Field>
             </Form>
-            {/*<Confirm
+            <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel}
                 cancelButton={t('cancelConfirm')}
+                confirmButton={t('Yes')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
-            />*/}
-            <ConfirmDialog
-                open={confirmation.open}
-                content={confirmation.content}
-                onYesClick={confirmation.onYes}
-                onNoClick={confirmation.onNo}
-                onCancelClick={confirmation.onCancel}
             />
         </CardLayout>
     );

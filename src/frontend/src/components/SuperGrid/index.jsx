@@ -13,7 +13,6 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
-import ConfirmDialog from "../ConfirmDialog";
 
 
 const initState = (storageFilterItem, storageSortItem) => ({
@@ -412,19 +411,13 @@ class SuperGrid extends Component {
                         />
                     ) : null}
                 </div>
-                {/*<Confirm
+                <Confirm
                     dimmer="blurring"
                     open={confirmation.open}
                     onCancel={closeConfirmation}
                     onConfirm={confirmation.onConfirm}
                     cancelButton={t('cancelConfirm')}
                     content={confirmation.content}
-                />*/}
-                <ConfirmDialog
-                    open={confirmation.open}
-                    content={confirmation.content}
-                    onYesClick={confirmation.onConfirm}
-                    onNoClick={closeConfirmation}
                 />
             </>
         );

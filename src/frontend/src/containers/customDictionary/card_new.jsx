@@ -15,7 +15,6 @@ import {
     getCardRequest,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
-import ConfirmDialog from '../../components/ConfirmDialog';
 
 const CardNew = props => {
     const {t} = useTranslation();
@@ -166,13 +165,9 @@ const CardNew = props => {
         } else {
             setConfirmation({
                 open: true,
-                content: t('confirm_close'),
-                onYes: () => {
-                    confirmClose();
-                    handleSave();
-                },
+                content: t('confirm_close_dictionary'),
                 onCancel: confirmClose,
-                onNo: onClose,
+                onConfirm: onClose,
             });
         }
     };
@@ -199,21 +194,22 @@ const CardNew = props => {
                     );
                 })}
             </div>
-            {/*<Confirm
+            <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel}
                 cancelButton={t('cancelConfirm')}
+                confirmButton={t('Yes')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
-            />*/}
-            <ConfirmDialog
+            />
+            {/*<ConfirmDialog
                 open={confirmation.open}
                 content={confirmation.content}
                 onYesClick={confirmation.onYes}
                 onNoClick={confirmation.onNo}
                 onCancelClick={confirmation.onCancel}
-            />
+            />*/}
         </CardLayout>
     );
 };

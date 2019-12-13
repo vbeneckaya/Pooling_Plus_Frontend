@@ -23,7 +23,6 @@ import {
     progressActionNameSelector,
 } from '../../ducks/gridActions';
 import { ORDERS_GRID } from '../../constants/grids';
-import ConfirmDialog from "../../components/ConfirmDialog";
 
 const getModal = {
     orders: <OrderModal />,
@@ -89,11 +88,7 @@ const Card = props => {
             loadList && loadList(false, true);
         } else {
             showConfirmation(
-                t('confirm_close'),
-                () => {
-                    closeConfirmation();
-                    handleSave();
-                },
+                t('confirm_close_dictionary'),
                 () => {
                     closeConfirmation();
                     onClose();
@@ -153,12 +148,11 @@ const Card = props => {
         setConfirmation({ open: false });
     };
 
-    const showConfirmation = (content, onYes, onNo, onCancel) => {
+    const showConfirmation = (content, onConfirm, onCancel) => {
         setConfirmation({
             open: true,
             content,
-            onYes,
-            onNo,
+            onConfirm,
             onCancel,
         });
     };
@@ -291,20 +285,14 @@ const Card = props => {
                     </Button>
                 </div>
             </Modal.Actions>
-            {/*<Confirm
+            <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
                 onCancel={confirmation.onCancel || closeConfirmation}
                 cancelButton={t('cancelConfirm')}
+                confirmButton={t('Yes')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
-            />*/}
-            <ConfirmDialog
-                open={confirmation.open}
-                content={confirmation.content}
-                onYesClick={confirmation.onYes}
-                onNoClick={confirmation.onNo}
-                onCancelClick={confirmation.onCancel}
             />
         </Modal>
     );
