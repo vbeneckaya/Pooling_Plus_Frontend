@@ -11,6 +11,7 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Extensions;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -22,15 +23,18 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+        private readonly IDeliveryCostCalcService _calcService;
 
         public UnionOrdersInExisted(ICommonDataService dataService, 
                                     IHistoryService historyService, 
                                     IShippingCalculationService shippingCalculationService,
-                                    IChangeTrackerFactory changeTrackerFactory)
+                                    IChangeTrackerFactory changeTrackerFactory, 
+                                    IDeliveryCostCalcService calcService)
             : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            _calcService = calcService;
             Color = AppColor.Orange;
         }
         
@@ -39,7 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
 
-            orders = orders.Where(x => x.Status == OrderState.Confirmed);
+            orders = orders.Where(x => x.Status == OrderState.Confirmed).ToList();
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
@@ -60,6 +64,30 @@ namespace Application.BusinessModels.Orders.Actions
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
             var changeTracker = _changeTrackerFactory.CreateChangeTracker().TrackAll<Shipping>();
             changeTracker.LogTrackedChanges(changes);
+            
+            foreach (var orderForAddInShipping in orders)
+            {
+                if (orderForAddInShipping.VehicleTypeId != shipping.VehicleTypeId)
+                {
+                    _historyService.Save(orderForAddInShipping.Id, "fieldChanged",
+                        nameof(orderForAddInShipping.VehicleTypeId).ToLowerFirstLetter(),
+                        orderForAddInShipping.VehicleTypeId, shipping.VehicleTypeId);
+                    
+                    orderForAddInShipping.VehicleTypeId = shipping.VehicleTypeId;
+                }
+                
+                if (orderForAddInShipping.TarifficationType != shipping.TarifficationType)
+                {
+                    _historyService.Save(orderForAddInShipping.Id, "fieldChanged",
+                        nameof(orderForAddInShipping.TarifficationType).ToLowerFirstLetter(),
+                        orderForAddInShipping.TarifficationType, shipping.TarifficationType);
+                    
+                    orderForAddInShipping.TarifficationType = shipping.TarifficationType;
+                }
+                orderForAddInShipping.TarifficationType = shipping.TarifficationType;
+            }
+            
+            _calcService.UpdateDeliveryCost(shipping);
 
             return new AppActionResult
             {
