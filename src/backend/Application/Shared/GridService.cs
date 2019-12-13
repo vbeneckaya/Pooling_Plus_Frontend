@@ -361,7 +361,7 @@ namespace Application.Shared
                 }
 
                 var validEntities = entities.Where(e => action.IsAvailable(e));
-                if (validEntities.Any())
+                if (validEntities.Any() && ids.Count() == validEntities.Count())
                 {
                     var actionDto = result.FirstOrDefault(x => x.Name == actionName);
                     if (actionDto == null)
