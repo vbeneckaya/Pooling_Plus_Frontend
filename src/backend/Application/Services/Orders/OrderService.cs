@@ -25,6 +25,7 @@ using Domain.Services.Translations;
 using Application.Services.Triggers;
 using Domain.Services;
 using Application.BusinessModels.Shared.Handlers;
+using DAL.Extensions;
 
 namespace Application.Services.Orders
 {
@@ -585,17 +586,19 @@ namespace Application.Services.Orders
 
         private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var searchDateFormat = "dd.MM.yyyy HH:mm";
+            var searchDateFormat = "dd.mm.yyyy HH24:MI";
 
             if (string.IsNullOrEmpty(search)) return query;
+
+            search = search.ToLower().Trim();
 
             var isInt = int.TryParse(search, out int searchInt);
             var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
-            var pickingTypes = _dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+            var pickingTypes = _dataService.GetDbSet<PickingType>().Where(i => i.Name.ToLower().Contains(search));
 
-            var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+            var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
 
             var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
@@ -638,49 +641,53 @@ namespace Application.Services.Orders
                 .ToList();
 
             return query.Where(i =>
-                   columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("clientName") && !string.IsNullOrEmpty(i.ClientName) && i.ClientName.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("orderDate") && i.OrderDate.HasValue && i.OrderDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                   columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.ToLower().Contains(search)
+                || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
+                || columns.Contains("clientName") && !string.IsNullOrEmpty(i.ClientName) && i.ClientName.ToLower().Contains(search)
+                || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.ToLower().Contains(search)
+                || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.ToLower().Contains(search)
+                || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.ToLower().Contains(search)
+                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.ToLower().Contains(search)
+                || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.ToLower().Contains(search)
+                || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.ToLower().Contains(search)
+                || columns.Contains("deliveryAddress") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.ToLower().Contains(search)
+                || columns.Contains("clientOrderNumber") && !string.IsNullOrEmpty(i.ClientOrderNumber) && i.ClientOrderNumber.ToLower().Contains(search)
+                || columns.Contains("returnInformation") && !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.ToLower().Contains(search)
+                || columns.Contains("returnShippingAccountNo") && !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.ToLower().Contains(search)
+                || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.ToLower().Contains(search)
+                || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.ToLower().Contains(search)
+                || columns.Contains("deviationsComment") && !string.IsNullOrEmpty(i.DeviationsComment) && i.DeviationsComment.ToLower().Contains(search)
+
                 || columns.Contains("temperatureMin") && isInt && i.TemperatureMin == searchInt
                 || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
-                || columns.Contains("shippingDate") && i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("transitDays") && isInt && i.TransitDays == searchInt
-                || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryAddress") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryDate") && i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("articlesCount") && isInt && i.ArticlesCount == searchInt
+                || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
+                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
+
+                || columns.Contains("orderDate") && i.OrderDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("shippingDate") && i.ShippingDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("deliveryDate") && i.DeliveryDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("unloadingArrivalTime") && i.UnloadingArrivalTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("unloadingDepartureTime") && i.UnloadingDepartureTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("plannedReturnDate") && i.PlannedReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("actualReturnDate") && i.ActualReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("orderCreationDate") && i.OrderCreationDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("orderChangeDate") && i.OrderChangeDate.Value.SqlFormat(searchDateFormat).Contains(search)
+
+                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
+                || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
+
                 || columns.Contains("boxesCount") && isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount <= searchDecimal + precision
                 || columns.Contains("confirmedBoxesCount") && isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount <= searchDecimal + precision
                 || columns.Contains("confirmedPalletsCount") && isDecimal && i.ConfirmedPalletsCount >= searchDecimal - precision && i.ConfirmedPalletsCount <= searchDecimal + precision
-                || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
-                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
                 || columns.Contains("actualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
                 || columns.Contains("orderAmountExcludingVAT") && isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT <= searchDecimal + precision
-                || columns.Contains("clientOrderNumber") && !string.IsNullOrEmpty(i.ClientOrderNumber) && i.ClientOrderNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("unloadingArrivalTime") && i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("unloadingDepartureTime") && i.UnloadingDepartureTime.HasValue && i.UnloadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("trucksDowntime") && isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
-                || columns.Contains("returnInformation") && !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("returnShippingAccountNo") && !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("plannedReturnDate") && i.PlannedReturnDate.HasValue && i.PlannedReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("actualReturnDate") && i.ActualReturnDate.HasValue && i.ActualReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
-                || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
-                || columns.Contains("orderCreationDate") && i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("orderChangeDate") && i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("deviationsComment") && !string.IsNullOrEmpty(i.DeviationsComment) && i.DeviationsComment.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("deliveryCost") && isDecimal && i.DeliveryCost >= searchDecimal - precision && i.DeliveryCost <= searchDecimal + precision
                 || columns.Contains("actualDeliveryCost") && isDecimal && i.ActualDeliveryCost >= searchDecimal - precision && i.ActualDeliveryCost <= searchDecimal + precision
 
