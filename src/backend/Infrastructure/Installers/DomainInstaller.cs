@@ -181,6 +181,17 @@ namespace Infrastructure.Installers
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
 
+            services.AddScoped<IAppAction<Order>, SendOrderShippingToTk>();
+            services.AddScoped<IAppAction<Order>, ConfirmOrderShipping>();
+            services.AddScoped<IAppAction<Order>, RejectRequestOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CancelRequestOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CompleteOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CancelOrderShipping>();
+            services.AddScoped<IAppAction<Order>, ProblemOrderShipping>();
+            services.AddScoped<IAppAction<Order>, BillingOrderShipping>();
+            services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();
+            services.AddScoped<IAppAction<Order>, RollbackOrderShipping>();
+
             services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
