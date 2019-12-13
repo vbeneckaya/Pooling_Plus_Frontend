@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace Application.Services.BodyTypes
 {
-    public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
+    public class BodyTypesService : DictionaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
         public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

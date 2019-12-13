@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Application.Services.ShippingWarehouses
 {
-    public class ShippingWarehousesService : DictonaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
+    public class ShippingWarehousesService : DictionaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;

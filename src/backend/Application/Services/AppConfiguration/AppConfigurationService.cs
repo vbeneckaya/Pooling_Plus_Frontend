@@ -17,7 +17,7 @@ using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
-using Domain.Services.LegalPersons;
+using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
@@ -260,15 +260,15 @@ namespace Application.Services.AppConfiguration
                 });
             }
 
-            var legalPersonColumns = ExtractColumnsFromDto<LegalPersonDto>(roleId);
+            var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
             dicts.Add(new UserConfigurationDictionaryItem
             {
-                Name = GetName<LegalPersonService>(),
+                Name = GetName<CompanyService>(),
                 CanCreateByForm = true,
                 CanExportToExcel = true,
                 CanImportFromExcel = false,
                 ShowOnHeader = false,
-                Columns = legalPersonColumns
+                Columns = companyColumns
             });
 
             return dicts;

@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace Application.Services.Users
 {
-    public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
+    public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                             IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

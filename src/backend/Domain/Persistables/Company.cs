@@ -7,7 +7,7 @@ namespace Domain.Persistables
     /// <summary>
     /// Юр. лица
     /// </summary>
-    public class LegalPerson : IPersistable
+    public class Company : IPersistable
     {
         public Guid Id { get; set; }
 

@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace Application.Services.Tonnages
 {
-    public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
+    public class TonnagesService : DictionaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
         public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

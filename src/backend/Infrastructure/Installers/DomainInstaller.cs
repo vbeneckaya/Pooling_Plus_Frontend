@@ -50,7 +50,7 @@ using Domain.Services.Files;
 using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
-using Domain.Services.LegalPersons;
+using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Profile;
@@ -118,7 +118,7 @@ namespace Infrastructure.Installers
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
             services.AddScoped<IBodyTypesService, BodyTypesService>();
             services.AddScoped<ITonnagesService, TonnagesService>();
-            services.AddScoped<ILegalPersonsService, LegalPersonService>();
+            services.AddScoped<ICompaniesService, CompanyService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();

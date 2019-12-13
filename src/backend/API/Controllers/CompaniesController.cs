@@ -2,7 +2,7 @@
 using Domain.Persistables;
 using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
-using Domain.Services.LegalPersons;
+using Domain.Services.Companies;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Route("api/legalPerson")]
-    public class LegalPersonsController : DictionaryController<ILegalPersonsService, LegalPerson, LegalPersonDto>
+    [Route("api/company")]
+    public class CompaniesController : DictionaryController<ICompaniesService, Company, CompanyDto>
     {
-        public LegalPersonsController(ILegalPersonsService service) : base(service) { }
+        public CompaniesController(ICompaniesService service) : base(service) { }
 
     }
 }

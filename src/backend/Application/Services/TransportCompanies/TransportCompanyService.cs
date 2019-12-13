@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace Application.Services.TransportCompanies
 {
-    public class TransportCompaniesService : DictonaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
+    public class TransportCompaniesService : DictionaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                          IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

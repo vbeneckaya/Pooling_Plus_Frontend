@@ -21,7 +21,7 @@ using System.Text;
 
 namespace Application.Shared
 {
-    public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
+    public abstract class DictionaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
         public abstract DetailedValidationResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
@@ -38,7 +38,7 @@ namespace Application.Shared
 
         private readonly IFieldSetterFactory _fieldSetterFactory;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+        protected DictionaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                        IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
         {
             _dataService = dataService;

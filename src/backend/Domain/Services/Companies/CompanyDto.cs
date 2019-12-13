@@ -1,9 +1,9 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
 
-namespace Domain.Services.LegalPersons
+namespace Domain.Services.Companies
 {
-    public class LegalPersonDto : IDto
+    public class CompanyDto : IDto
     {
         public string Id { get; set; }
 

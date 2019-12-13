@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Application.Services.VehicleTypes
 {
-    public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
+    public class VehicleTypesService : DictionaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
         public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

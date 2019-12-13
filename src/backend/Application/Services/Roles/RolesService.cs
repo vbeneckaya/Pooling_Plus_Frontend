@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Application.Services.Roles
 {
-    public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
+    public class RolesService : DictionaryServiceBase<Role, RoleDto>, IRolesService
     {
         public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                             IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

@@ -5,11 +5,11 @@ using ThinkingHome.Migrator.Framework.Extensions;
 namespace DAL.Migrations
 {
     [Migration(201912121502)]
-    public class AddLegalPersonTable : Migration
+    public class AddCompanyTable : Migration
     {
         public override void Apply()
         {
-            Database.AddTable("LegalPersons",
+            Database.AddTable("Companies",
                 new Column("Id", DbType.Guid, ColumnProperty.PrimaryKey),
                 new Column("Name", DbType.String.WithSize(255)),
                 new Column("IsActive", DbType.Boolean, defaultValue: true));

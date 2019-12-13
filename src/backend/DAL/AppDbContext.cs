@@ -47,7 +47,7 @@ namespace DAL
         public DbSet<FieldPropertyItem> FieldPropertyItems { get; set; }
         public DbSet<FieldPropertyItemVisibility> FieldPropertyVisibilityItems { get; set; }
 
-        public DbSet<LegalPerson> LegalPersons { get; set; }
+        public DbSet<Company> Companies { get; set; }
 
         /*end of add DbSets*/
 

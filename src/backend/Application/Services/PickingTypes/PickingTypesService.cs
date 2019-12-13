@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace Application.Services.PickingTypes
 {
-    public class PickingTypesService : DictonaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
+    public class PickingTypesService : DictionaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
         public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
