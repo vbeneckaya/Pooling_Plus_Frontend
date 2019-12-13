@@ -86,6 +86,8 @@ namespace Application.Services.Shippings
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
                                            .Where(x => x.CarrierId == shipping.CarrierId
+                                                        && x.VehicleTypeId == null
+                                                        && x.BodyTypeId == null
                                                         && x.TarifficationType == shipping.TarifficationType
                                                         && x.ShipmentCity == shippingCity
                                                         && x.DeliveryCity == deliveryCity
