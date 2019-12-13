@@ -362,26 +362,6 @@ function* changePasswordSaga({ payload }) {
     }
 }
 
-function* changeLocation() {
-    while (true) {
-        const { payload } = yield take('@@router/LOCATION_CHANGE');
-        const { location } = payload;
-        const { pathname } = location;
-
-        if (pathname.includes('dictionary')) {
-            yield put(clearDictionaryInfo());
-        }
-
-        if (pathname.includes('grid')) {
-            yield put(
-                autoUpdateStop({
-                    isClear: true,
-                }),
-            );
-        }
-    }
-}
-
 export function* saga() {
     yield all([
         takeEvery(GET_USER_PROFILE_REQUEST, getUserProfileSaga),
@@ -389,5 +369,4 @@ export function* saga() {
         takeEvery(EDIT_PROFILE_SETTINGS_REQUEST, editProfileSettingsSaga),
         takeEvery(CHANGE_PASSWORD_REQUEST, changePasswordSaga),
     ]);
-    yield spawn(changeLocation);
 }
