@@ -224,7 +224,8 @@ i.blue.icon {
     }*/
 }
 
-.user-form, .role-form {
+.user-form,
+.role-form {
     width: 100%;
     padding: 24px;
 }
@@ -449,7 +450,9 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .ui.toggle.checkbox input:checked ~ .box:before,
-.ui.toggle.checkbox input:checked ~ label:before {
+.ui.toggle.checkbox input:checked ~ label:before,
+.ui.toggle.checkbox input:focus:checked ~ .box:before,
+.ui.toggle.checkbox input:focus:checked ~ label:before {
     background-color: #18a8cc !important;
 }
 
@@ -462,7 +465,9 @@ i.red.icon {
     background-color: #9a0000 !important;
 }
 
-.ui.inverted.red.basic.button:hover, .ui.inverted.red.basic.buttons .button:hover, .ui.inverted.red.buttons .basic.button:hover {
+.ui.inverted.red.basic.button:hover,
+.ui.inverted.red.basic.buttons .button:hover,
+.ui.inverted.red.buttons .basic.button:hover {
     box-shadow: 0 0 0 2px #9a0000 inset !important;
     color: #9a0000 !important;
 }
@@ -476,7 +481,8 @@ i.green.icon {
     background-color: #1f5d39 !important;
 }
 
-.ui.inverted.green.button, .ui.inverted.green.buttons .button {
+.ui.inverted.green.button,
+.ui.inverted.green.buttons .button {
     color: #35af43 !important;
     box-shadow: 0 0 0 2px #35af43 inset !important;
 }
