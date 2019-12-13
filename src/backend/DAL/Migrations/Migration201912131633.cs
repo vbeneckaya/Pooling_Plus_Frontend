@@ -3,12 +3,18 @@ using ThinkingHome.Migrator.Framework;
 
 namespace DAL.Migrations
 {
-    [Migration(201912091722)]
-    public class AddTarifficationTypeIdToTariffs : Migration
+    [Migration(201912131633)]
+    public class ClearNullRolePropertySettings : Migration
     {
         public override void Apply()
         {
-            Database.AddColumn("Orders", new Column("TarifficationType", DbType.Int32, ColumnProperty.Null));
+            Database.ExecuteNonQuery(@"
+                DELETE FROM ""FieldPropertyItems""
+                WHERE ""RoleId"" IS null;");
+
+            Database.ExecuteNonQuery(@"
+                DELETE FROM ""FieldPropertyVisibilityItems""
+                WHERE ""RoleId"" IS null;");
         }
     }
 }
