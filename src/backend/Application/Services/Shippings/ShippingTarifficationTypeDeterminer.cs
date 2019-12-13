@@ -11,9 +11,9 @@ namespace Application.Services.Shippings
         {
             if (orders.Any(x => 
                     !string.IsNullOrEmpty(x.DeliveryRegion) && 
-                    (x.DeliveryRegion.Contains("Москва") ||
-                     x.DeliveryRegion.Contains("Московская область") ||
-                     x.DeliveryRegion.Contains("Новосибирская область"))
+                    (x.DeliveryRegion.Contains("Москва г") ||
+                     x.DeliveryRegion.Contains("Московская обл") ||
+                     x.DeliveryRegion.Contains("Новосибирская обл"))
                 ) || 
                 orders.Sum(x => x.PalletsCount) > 24)
                 return TarifficationType.Ftl;
