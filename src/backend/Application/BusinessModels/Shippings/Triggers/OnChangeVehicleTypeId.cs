@@ -32,20 +32,23 @@ namespace Application.BusinessModels.Shippings.Triggers
             
             foreach (var orderInShipping in orders)
             {
-                VehicleType oldVehicleType = null;
-                VehicleType newVehicleType  = null;
-                        
-                if (orderInShipping.VehicleTypeId.HasValue)
-                    oldVehicleType = vehicleTypes.GetById(orderInShipping.VehicleTypeId.Value);
+                if (orderInShipping.VehicleTypeId != entity.VehicleTypeId)
+                {
+                    VehicleType oldVehicleType = null;
+                    VehicleType newVehicleType = null;
 
-                if (entity.VehicleTypeId.HasValue)
-                    newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
-                        
-                orderInShipping.VehicleTypeId = entity.VehicleTypeId;
-                        
-                _historyService.Save(orderInShipping.Id, "fieldChanged",
-                    nameof(entity.VehicleTypeId).ToLowerFirstLetter(),
-                    oldVehicleType, newVehicleType);
+                    if (orderInShipping.VehicleTypeId.HasValue)
+                        oldVehicleType = vehicleTypes.GetById(orderInShipping.VehicleTypeId.Value);
+
+                    if (entity.VehicleTypeId.HasValue)
+                        newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
+
+                    orderInShipping.VehicleTypeId = entity.VehicleTypeId;
+
+                    _historyService.Save(orderInShipping.Id, "fieldChanged",
+                        nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
+                        oldVehicleType, newVehicleType);
+                }
             }
         }
 

@@ -3,16 +3,23 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
+using Application.Services.Shippings;
+using Domain.Extensions;
+using Domain.Services.History;
 
 namespace Application.BusinessModels.Orders.Triggers
 {
     public class OnChangeTarifficationType : ITrigger<Order>
     {
         private readonly ICommonDataService _dataService;
+        private readonly IHistoryService _historyService;
+        private readonly IDeliveryCostCalcService _calcService;          
 
-        public OnChangeTarifficationType(ICommonDataService dataService)
+        public OnChangeTarifficationType(ICommonDataService dataService, IHistoryService historyService, IDeliveryCostCalcService calcService)
         {
             _dataService = dataService;
+            _historyService = historyService;
+            _calcService = calcService;            
         }
 
         public void Execute(Order entity)
@@ -28,10 +35,24 @@ namespace Application.BusinessModels.Orders.Triggers
 
                 foreach (var orderInShipping in orders)
                 {
-                    orderInShipping.TarifficationType = entity.TarifficationType;
+                    if (orderInShipping.TarifficationType != entity.TarifficationType)
+                    {
+                        _historyService.Save(orderInShipping.Id, "fieldChanged",
+                            nameof(entity.TarifficationType).ToLowerFirstLetter(),
+                            orderInShipping.TarifficationType, entity.TarifficationType);
+                    
+                        orderInShipping.TarifficationType = entity.TarifficationType;
+                    }
                 }
 
-                shipping.TarifficationType = entity.TarifficationType;
+                if (shipping.TarifficationType != entity.TarifficationType)
+                {
+                    _historyService.Save(shipping.Id, "fieldChanged",
+                        nameof(shipping.TarifficationType).ToLowerFirstLetter(),
+                        shipping.TarifficationType, entity.TarifficationType);
+                    
+                    shipping.TarifficationType = entity.TarifficationType;
+                }
             }
         }
 

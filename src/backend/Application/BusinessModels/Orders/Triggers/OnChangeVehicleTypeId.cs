@@ -53,7 +53,7 @@ namespace Application.BusinessModels.Orders.Triggers
                         orderInShipping.VehicleTypeId = entity.VehicleTypeId;
                         
                         _historyService.Save(orderInShipping.Id, "fieldChanged",
-                            nameof(entity.VehicleTypeId).ToLowerFirstLetter(),
+                            nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
                             oldVehicleType, newVehicleType);
                     }
                 }
