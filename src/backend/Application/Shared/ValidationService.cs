@@ -5,6 +5,10 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Application.Shared
 {
@@ -17,14 +21,17 @@ namespace Application.Shared
 
         private readonly IUserProvider _userProvider;
 
+        private readonly IConfiguration _configuration;
+
         /// <summary>
         /// Create ValidationService instance
         /// </summary>
         /// <param name="fieldDispatcher"></param>
-        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider)
+        public ValidationService(IFieldDispatcherService fieldDispatcher, IUserProvider userProvider, IConfiguration configuration)
         {
             _fieldDispatcher = fieldDispatcher;
             _userProvider = userProvider;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -35,7 +42,9 @@ namespace Application.Shared
         /// <returns></returns>
         public DetailedValidationResult Validate<TDto>(TDto dto)
         {
-            var fields = _fieldDispatcher.GetDtoFields<TDto>();
+            var prefix = typeof(TDto).Name.Replace("Dto", "");
+
+            var fields = this._fieldDispatcher.GetDtoFields<TDto>();
 
             var lang = _userProvider.GetCurrentUser()?.Language;
 
@@ -46,7 +55,6 @@ namespace Application.Shared
                 var property = typeof(TDto).GetProperty(field.Name);
                 var value = property.GetValue(dto)?.ToString();
                 var propertyName = property.Name.ToLowerFirstLetter();
-                var propertyDisplayName = propertyName.Translate(lang);
 
                 // Validate format
 
@@ -55,25 +63,86 @@ namespace Application.Shared
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = "InvalidValueFormat".Translate(lang, propertyDisplayName),
+                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.InvalidValueFormat}".Translate(lang),
                         ResultType = ValidationErrorType.InvalidValueFormat
                     });
                 }
 
                 // Validate IsRequred
 
-                if (!ValidateIsRequired(field, value))
+                if (!this.ValidateIsRequired(field, value))
                 {
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = "ValueIsRequired".Translate(lang, propertyDisplayName),
+                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.ValueIsRequired}".Translate(lang),
                         ResultType = ValidationErrorType.ValueIsRequired
                     });
                 }
+
+                if (field.FieldType == FieldType.Password)
+                {
+                    var result = ValidatePassword(field, value, prefix, lang);
+
+                    if (result != null)
+                    {
+                        validationResult.AddError(result);
+                    }
+                }
+
             }
 
             return validationResult;
+        }
+
+        /// <summary>
+        /// Validate Password
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="value"></param>
+        /// <param name="prefix"></param>
+        /// <param name="lang"></param>
+        /// <returns></returns>
+        private ValidationResultItem ValidatePassword(FieldInfo field, string value, string prefix, string lang)
+        {
+            if (string.IsNullOrEmpty(value)) return null;
+
+
+            List<string> errorMessages = new List<string>();
+
+            var passwordConfig = _configuration.GetSection("PasswordRules");
+
+            var passwordMinLength = passwordConfig["MinLength"].ToInt();
+
+            if (passwordMinLength.HasValue && value.Length < passwordMinLength)
+            {
+                errorMessages.Add("PasswordValidation.MinLength");
+            }
+
+            var validCharactersMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]*$");
+
+            if (!validCharactersMatch)
+            {
+                errorMessages.Add("PasswordValidation.ValidCharacters");
+            }
+
+            var strongMatch = Regex.IsMatch(value, @"\d+");
+
+            if (!strongMatch)
+            {
+                errorMessages.Add("PasswordValidation.StrongPassword");
+            }
+
+            if (!errorMessages.Any()) return null;
+
+            var message = string.Join(". ", errorMessages.Select(i => i.Translate(lang)));
+
+            return new ValidationResultItem
+            {
+                Name = field.Name.ToLowerFirstLetter(),
+                Message = message,
+                ResultType = ValidationErrorType.InvalidPassword
+            };
         }
 
         /// <summary>

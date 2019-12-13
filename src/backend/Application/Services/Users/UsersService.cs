@@ -11,24 +11,18 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Services.Users;
 using Domain.Shared;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Application.Services.Users
 {
     public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
     {
-        private readonly IConfiguration _configuration;
-
         public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IConfiguration configuration) 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
-        {
-            _configuration = configuration;
-        }
+        { }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
@@ -153,13 +147,6 @@ namespace Application.Services.Users
                 result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
             }
 
-            var passwordValidation = ValidatePassword(dto.Password, lang);
-
-            if (passwordValidation != null)
-            {
-                result.AddError(passwordValidation);
-            }
-
             var hasDuplicates = this._dataService.GetDbSet<User>()
                 .Where(i => i.Id != dto.Id.ToGuid())
                 .Where(i => i.Email == dto.Email)
@@ -171,47 +158,6 @@ namespace Application.Services.Users
             }
 
             return result;
-        }
-
-        private ValidationResultItem ValidatePassword(string value, string lang)
-        {
-            if (string.IsNullOrEmpty(value)) return null;
-
-            List<string> errorMessages = new List<string>();
-
-            var passwordConfig = _configuration.GetSection("PasswordRules");
-
-            var passwordMinLength = passwordConfig["MinLength"].ToInt();
-
-            if (passwordMinLength.HasValue && value.Length < passwordMinLength)
-            {
-                errorMessages.Add("User.Password.MinLength");
-            }
-
-            var validCharactersMatch = Regex.IsMatch(value, @"^[A-Za-z\d@$!%*?&]*$");
-
-            if (!validCharactersMatch)
-            {
-                errorMessages.Add("User.Password.ValidCharacters");
-            }
-
-            var strongMatch = Regex.IsMatch(value, @"\d+");
-
-            if (!strongMatch)
-            {
-                errorMessages.Add("User.Password.StrongPassword");
-            }
-
-            if (!errorMessages.Any()) return null;
-
-            var message = string.Join(". ", errorMessages.Select(i => i.Translate(lang)));
-
-            return new ValidationResultItem
-            {
-                Name = nameof(UserDto.Password).ToLowerFirstLetter(),
-                Message = message,
-                ResultType = ValidationErrorType.InvalidPassword
-            };
         }
 
         protected override IQueryable<User> ApplySort(IQueryable<User> query, SearchFormDto form)
