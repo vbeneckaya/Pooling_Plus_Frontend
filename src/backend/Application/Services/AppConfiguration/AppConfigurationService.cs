@@ -17,6 +17,7 @@ using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
+using Domain.Services.LegalPersons;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
@@ -229,6 +230,8 @@ namespace Application.Services.AppConfiguration
                     Columns = bodyTypeColumns
                 });
 
+
+
                 var tonnageColumns = ExtractColumnsFromDto<TonnageDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
                 {
@@ -256,6 +259,17 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 });
             }
+
+            var legalPersonColumns = ExtractColumnsFromDto<LegalPersonDto>(roleId);
+            dicts.Add(new UserConfigurationDictionaryItem
+            {
+                Name = GetName<LegalPersonService>(),
+                CanCreateByForm = true,
+                CanExportToExcel = true,
+                CanImportFromExcel = false,
+                ShowOnHeader = false,
+                Columns = legalPersonColumns
+            });
 
             return dicts;
         }
