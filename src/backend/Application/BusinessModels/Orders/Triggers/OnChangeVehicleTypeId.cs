@@ -58,7 +58,15 @@ namespace Application.BusinessModels.Orders.Triggers
                     }
                 }
 
-                shipping.VehicleTypeId = entity.VehicleTypeId;
+                if (shipping.VehicleTypeId != entity.VehicleTypeId)
+                {
+                    _historyService.Save(shipping.Id, "fieldChanged",
+                        nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
+                        shipping.VehicleTypeId, entity.VehicleTypeId);
+                    
+                    shipping.VehicleTypeId = entity.VehicleTypeId;
+                    _calcService.UpdateDeliveryCost(shipping);
+                }
             }
         }
 

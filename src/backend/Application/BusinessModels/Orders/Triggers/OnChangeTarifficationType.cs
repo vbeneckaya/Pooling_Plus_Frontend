@@ -52,6 +52,7 @@ namespace Application.BusinessModels.Orders.Triggers
                         shipping.TarifficationType, entity.TarifficationType);
                     
                     shipping.TarifficationType = entity.TarifficationType;
+                    _calcService.UpdateDeliveryCost(shipping);
                 }
             }
         }
