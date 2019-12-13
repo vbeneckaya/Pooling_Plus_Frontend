@@ -345,7 +345,7 @@ namespace Application.Shared
             Log.Information("{entityName}.GetActions (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var result = new List<ActionDto>();
+            var actionDtos = new Dictionary<string, ActionInfo>();
 
             var entities = dbSet.Where(x => ids.Contains(x.Id)).ToList();
             Log.Information("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -355,7 +355,7 @@ namespace Application.Shared
             foreach (var action in singleActions)
             {
                 string actionName = action.GetType().Name.ToLowerFirstLetter();
-                if (role?.Actions != null && !role.Actions.Contains(actionName))
+                if ((role?.Actions != null && !role.Actions.Contains(actionName)) || actionDtos.ContainsKey(actionName))
                 {
                     continue;
                 }
@@ -363,16 +363,7 @@ namespace Application.Shared
                 var validEntities = entities.Where(e => action.IsAvailable(e));
                 if (validEntities.Any() && ids.Count() == validEntities.Count())
                 {
-                    var actionDto = result.FirstOrDefault(x => x.Name == actionName);
-                    if (actionDto == null)
-                    {
-                        result.Add(new ActionDto
-                        {
-                            Color = action.Color.ToString().ToLowerFirstLetter(),
-                            Name = actionName,
-                            Ids = validEntities.Select(x => x.Id.ToString())
-                        });
-                    }
+                    actionDtos[actionName] = ConvertActionToDto(action, actionName, ids);
                 }
             }
             Log.Information("{entityName}.GetActions (Find single actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
@@ -384,29 +375,52 @@ namespace Application.Shared
                 foreach (var action in groupActions)
                 {
                     string actionName = action.GetType().Name.ToLowerFirstLetter();
-                    if (role?.Actions != null && !role.Actions.Contains(actionName))
+                    if ((role?.Actions != null && !role.Actions.Contains(actionName)) || actionDtos.ContainsKey(actionName))
                     {
                         continue;
                     }
 
                     if (action.IsAvailable(entities))
                     {
-                        var actionDto = result.FirstOrDefault(x => x.Name == actionName);
-                        if (actionDto == null)
-                        {
-                            result.Add(new ActionDto
-                            {
-                                Color = action.Color.ToString().ToLowerFirstLetter(),
-                                Name = actionName,
-                                Ids = ids.Select(x=>x.ToString())
-                            });                        
-                        }
+                        actionDtos[actionName] = ConvertActionToDto(action, actionName, ids);
                     }                    
                 }
             }
             Log.Information("{entityName}.GetActions (Find group actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
+            var result = actionDtos.OrderBy(x => x.Value.OrderNumber)
+                                   .Select(x => x.Value.Dto)
+                                   .ToList();
             return result;
+        }
+
+        private ActionInfo ConvertActionToDto<T>(IAction<T> action, string actionName, IEnumerable<Guid> ids)
+        {
+            string group = null;
+            foreach (var attr in action.GetType().GetCustomAttributes(typeof(ActionGroupAttribute), false))
+            {
+                group = (attr as ActionGroupAttribute)?.Group;
+            }
+
+            int orderNumber = 0;
+            foreach (var attr in action.GetType().GetCustomAttributes(typeof(OrderNumberAttribute), false))
+            {
+                orderNumber = (attr as OrderNumberAttribute)?.Value ?? orderNumber;
+            }
+
+            var dto = new ActionDto
+            {
+                Color = action.Color.ToString().ToLowerFirstLetter(),
+                Name = actionName,
+                Group = group,
+                Ids = ids.Select(x => x.ToString())
+            };
+
+            return new ActionInfo
+            {
+                Dto = dto,
+                OrderNumber = orderNumber
+            };
         }
 
         public AppActionResult InvokeAction(string name, Guid id)
@@ -871,6 +885,12 @@ namespace Application.Shared
                                                 .Select(x => x.Value)
                                                 .FirstOrDefault();
             return string.Compare(accessType, editValue, true) == 0;
+        }
+
+        private class ActionInfo
+        {
+            public ActionDto Dto { get; set; }
+            public int OrderNumber { get; set; }
         }
     }
 }

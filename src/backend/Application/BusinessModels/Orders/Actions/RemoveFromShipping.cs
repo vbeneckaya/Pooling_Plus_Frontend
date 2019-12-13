@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -14,6 +15,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Убрать из перевозки
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(8)]
     public class RemoveFromShipping : IAppAction<Order>
     {
         private readonly IHistoryService _historyService;

@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -16,6 +17,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Объеденить заказы
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(4)]
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;

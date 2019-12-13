@@ -1,6 +1,7 @@
 using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -12,6 +13,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Заказ потерян
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(10)]
     public class RecordFactOfLoss : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

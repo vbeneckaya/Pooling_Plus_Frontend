@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -13,6 +14,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Отправить перевозку в ТК
     /// </summary>
+    [ActionGroup(nameof(Shipping)), OrderNumber(14)]
     public class SendOrderShippingToTk : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

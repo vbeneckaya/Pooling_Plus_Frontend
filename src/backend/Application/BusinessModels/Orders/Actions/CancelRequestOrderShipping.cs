@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -13,6 +14,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Отменить заявку
     /// </summary>
+    [ActionGroup(nameof(Shipping)), OrderNumber(15)]
     public class CancelRequestOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

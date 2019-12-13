@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shippings.Actions;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -10,6 +11,7 @@ using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
+    [ActionGroup(nameof(Shipping)), OrderNumber(20)]
     public class ProblemOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

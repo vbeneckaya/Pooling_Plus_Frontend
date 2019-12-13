@@ -3,6 +3,7 @@ using Application.Services.Shippings;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -16,6 +17,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Объеденить заказы в существующую
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(3)]
     public class UnionOrdersInExisted : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
