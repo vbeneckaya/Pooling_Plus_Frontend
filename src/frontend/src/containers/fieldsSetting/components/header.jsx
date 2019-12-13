@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, changeRole, t }) => {
     const rolesListOptions = [
-        { key: 'any_role', value: 'null', text: t('any_role') },
+        /*{ key: 'any_role', value: 'null', text: t('any_role') },*/
         ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
     ];
 

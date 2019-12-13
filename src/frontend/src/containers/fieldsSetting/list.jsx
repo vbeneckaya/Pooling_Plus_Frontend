@@ -33,7 +33,7 @@ const List = () => {
     const editProgress = useSelector(state => editProgressSelector(state)) || false;
 
     let [activeItem, setActiveItem] = useState(gridsList[0] || '');
-    let [role, setRole] = useState('null');
+    let [role, setRole] = useState(null);
     let [company, setCompany] = useState('null');
 
     const statusList =
@@ -61,11 +61,17 @@ const List = () => {
         activeItem && getSettings();
     }, [role, activeItem]);
 
+    useEffect(() => {
+        if (!role && rolesList.length) {
+            setRole(rolesList[0].value)
+        }
+    }, [rolesList])
+
     const getSettings = () => {
         dispatch(
             getFieldsSettingRequest({
                 forEntity: activeItem,
-                roleId: role === 'null' ? undefined : role,
+                roleId: /*role === 'null' ? undefined :*/ role,
             }),
         );
     };

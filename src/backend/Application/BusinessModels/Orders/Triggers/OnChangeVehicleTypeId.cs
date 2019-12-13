@@ -53,12 +53,20 @@ namespace Application.BusinessModels.Orders.Triggers
                         orderInShipping.VehicleTypeId = entity.VehicleTypeId;
                         
                         _historyService.Save(orderInShipping.Id, "fieldChanged",
-                            nameof(entity.VehicleTypeId).ToLowerFirstLetter(),
+                            nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
                             oldVehicleType, newVehicleType);
                     }
                 }
 
-                shipping.VehicleTypeId = entity.VehicleTypeId;
+                if (shipping.VehicleTypeId != entity.VehicleTypeId)
+                {
+                    _historyService.Save(shipping.Id, "fieldChanged",
+                        nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
+                        shipping.VehicleTypeId, entity.VehicleTypeId);
+                    
+                    shipping.VehicleTypeId = entity.VehicleTypeId;
+                    _calcService.UpdateDeliveryCost(shipping);
+                }
             }
         }
 
