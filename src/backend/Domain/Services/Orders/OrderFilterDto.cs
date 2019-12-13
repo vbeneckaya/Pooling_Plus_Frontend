@@ -311,5 +311,10 @@
         /// Фактическая стоимость, без НДС
         /// </summary>
         public string ActualDeliveryCost { get; set; }
+
+        /// <summary>
+        /// Тип ТС
+        /// </summary>
+        public string VehicleTypeId { get; set; }
     }
 }

@@ -20,7 +20,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 const CardNew = props => {
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    const {match, defaultForm, columns: propsColumns, history} = props;
+    const {match, defaultForm, columns: propsColumns, history, location} = props;
     const {params = {}} = match;
     const {name, id} = params;
 
@@ -154,7 +154,10 @@ const CardNew = props => {
     };
 
     const onClose = () => {
-        history.goBack();
+        history.push({
+            pathname: location.state.pathname,
+            state: {...location.state}
+        });
     };
 
     const handleClose = () => {

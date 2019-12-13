@@ -1,36 +1,37 @@
-using Domain.Services;
+using Domain.Services.Orders;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace API.Controllers
 {
-    public class StateController<T> :  Controller
+    [Route("api/orderShippingStatus")]
+    public class OrderShippingStatusController : Controller
     {
-        private readonly IStateService _stateService;
+        private readonly IOrderShippingStatusService _stateService;
 
-        public StateController(IStateService stateService)
+        public OrderShippingStatusController(IOrderShippingStatusService stateService)
         {
             _stateService = stateService;
         }
 
         /// <summary>
-        /// Р’СЃРµ РґРѕСЃС‚СѓРїРЅС‹Рµ СЃС‚Р°С‚СѓСЃС‹ СЃ С†РІРµС‚Р°РјРё
+        /// Все доступные статусы с цветами
         /// </summary>
         [HttpPost("search")]
         public IEnumerable<StateDto> GetAll()
         {
-            var result = _stateService.GetAll<T>();
+            var result = _stateService.GetAll();
             return result;
         }
 
         /// <summary>
-        /// Р’СЃРµ РґРѕСЃС‚СѓРїРЅС‹Рµ СЃС‚Р°С‚СѓСЃС‹
+        /// Все доступные статусы
         /// </summary>
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var result = _stateService.ForSelect<T>();
+            var result = _stateService.ForSelect();
             return result;
         }
     }

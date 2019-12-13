@@ -24,13 +24,20 @@ class TableInfo extends Component {
     };
 
     componentDidMount() {
-        this.load();
-    }
+        const { location, history } = this.props;
+        const { state } = location;
 
-    componentDidUpdate(prevProps) {
-        if (this.props.name !== prevProps.name) {
-            console.log('listupdate');
+        if (state) {
+            this.setState({
+                filter: state.search
+            }, () => {
+                history.replace(location.pathname, null);
+                this.load();
+            })
+        } else {
+            this.load();
         }
+
     }
 
     mapData = (isConcat, isReload) => {
@@ -72,7 +79,6 @@ class TableInfo extends Component {
         this.setState({filter: value, page: 1}, this.load);
     };
 
-    debounceSetFilterApiAndLoadList = debounce(300, this.load);
 
     headerRowComponent = () => (
         <Table.Row>
@@ -114,7 +120,13 @@ class TableInfo extends Component {
         if (!cardLink) {
             e.stopPropagation()
         } else {
-            history.push(cardLink.replace(':name', name).replace(':id', id))
+            history.push({
+                pathname: cardLink.replace(':name', name).replace(':id', id),
+                state: {
+                    ...this.mapData().filter,
+                    pathname: history.location.pathname
+                }
+            })
         }
     };
 
@@ -145,8 +157,6 @@ class TableInfo extends Component {
         } = this.props;
 
         const { filter } = this.state;
-
-        console.log('this.props', this.props);
 
         return (
             <div className={className}>

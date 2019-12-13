@@ -70,7 +70,7 @@ const Information = ({
                                         <Grid.Column>
                                             <FormField
                                                 name="clientName"
-                                                type={TEXT_TYPE}
+                                                type={SELECT_TYPE}
                                                 settings={settings['clientName']}
                                                 isDisabled
                                                 value={form['clientName']}

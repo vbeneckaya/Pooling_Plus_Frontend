@@ -1,6 +1,7 @@
 ﻿using DAL;
 using Domain.Persistables;
 using Domain.Services.Warehouses;
+using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +25,7 @@ namespace Application.Services.Warehouses
                     Id = wh.Id.ToString(),
                     Name = $"{wh.SoldToNumber} ({wh.WarehouseName})",
                     Value = wh.SoldToNumber,
-                    WarehouseName = wh.WarehouseName,
+                    WarehouseName = new LookUpDto(wh.WarehouseName),
                     Address = wh.Address,
                     City = wh.City,
                     Region = wh.Region,

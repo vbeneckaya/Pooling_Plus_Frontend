@@ -342,10 +342,11 @@ namespace Domain.Persistables
         /// Способ тарификации
         /// </summary>
         public TarifficationType? TarifficationType { get; set; }
-        
+
         /// <summary>
         /// Тип ТС
         /// </summary>
+        [ReferenceType(typeof(VehicleType))]
         public Guid? VehicleTypeId { get; set; }
     }
 }

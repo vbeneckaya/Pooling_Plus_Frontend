@@ -22,7 +22,7 @@ import {TEXT_TYPE} from '../../constants/columnTypes';
 const RoleCard = props => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const { match, history } = props;
+    const { match, history, location } = props;
     const { params = {} } = match;
     const { id } = params;
 
@@ -61,7 +61,10 @@ const RoleCard = props => {
     );
 
     const handleClose = () => {
-        history.goBack();
+        history.push({
+            pathname: location.state.pathname,
+            state: {...location.state}
+        });
     };
 
     const handleChange = useCallback((e, { name, value }) => {
