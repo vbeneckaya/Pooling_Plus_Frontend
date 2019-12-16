@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
+import {withRouter} from 'react-router-dom';
 import {Button, Checkbox, Loader, Table} from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import {connect} from 'react-redux';
@@ -31,7 +32,7 @@ class Result extends Component {
         const {
             columns = [],
             rows = [],
-            modalCard,
+            cardLink,
             actions,
             isShowActions,
             selectedRows,
@@ -42,7 +43,10 @@ class Result extends Component {
             t,
             checkForEditing,
             invokeMassUpdate,
+            history
         } = this.props;
+
+        console.log('history', history)
 
         return (
             <Table.Body>
@@ -82,10 +86,11 @@ class Result extends Component {
                                 indexColumn={indexColumn}
                                 loadList={loadList}
                                 gridName={name}
-                                modalCard={modalCard}
+                                cardLink={cardLink}
                                 t={t}
                                 checkForEditing={checkForEditing}
                                 invokeMassUpdate={invokeMassUpdate}
+                                history={history}
                             />
                         ))}
                         <Table.Cell/>
@@ -144,9 +149,9 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withTranslation()(
+export default withTranslation()(withRouter(
     connect(
         null,
         mapDispatchToProps,
     )(Result),
-);
+));

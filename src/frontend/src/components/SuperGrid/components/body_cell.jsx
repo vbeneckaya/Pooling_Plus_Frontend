@@ -29,6 +29,8 @@ const BodyCell = ({
                       status,
                       rowId,
                       rowNumber,
+                      cardLink,
+                      history,
 }) => {
     const contextRef = useRef(null);
 
@@ -135,8 +137,11 @@ const BodyCell = ({
                             value={value}
                             valueText={valueText}
                             width={column.width}
+                            gridName={gridName}
+                            rowId={rowId}
                             t={t}
-                            modalCard={getModalCard}
+                            history={history}
+                            cardLink={cardLink}
                         />
                     </div>
                     <div>

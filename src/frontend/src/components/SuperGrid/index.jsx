@@ -261,7 +261,9 @@ class SuperGrid extends Component {
 
     loadAndResetContainerScroll = () => {
         this.loadList();
-        this.container.scrollTop = 0;
+        if (this.container && this.container.scrollTop) {
+            this.container.scrollTop = 0;
+        }
     };
 
     resizeColumn = (size, index) => {
@@ -307,7 +309,7 @@ class SuperGrid extends Component {
             totalCount: count = 0,
             rows = [],
             progress,
-            modalCard,
+            cardLink,
             catalogsFromGrid,
             actions,
             isShowActions,
@@ -391,7 +393,7 @@ class SuperGrid extends Component {
                             rows={rows}
                             progress={progress}
                             name={name}
-                            modalCard={modalCard}
+                            cardLink={cardLink}
                             actions={actions}
                             onlyOneCheck={onlyOneCheck}
                             loadList={this.loadList}
