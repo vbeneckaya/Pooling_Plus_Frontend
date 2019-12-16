@@ -124,7 +124,7 @@ const Select = ({
                     isRequired ? ' *' : ''
                 }`}</label>
             ) : null}
-            <div className="form-select">
+            <div className={`form-select ${isDisabled ? 'form-select_disabled' : ''}`}>
                 <Dropdown
                     placeholder={placeholder}
                     fluid

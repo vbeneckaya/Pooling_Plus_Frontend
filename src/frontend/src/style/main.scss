@@ -406,7 +406,7 @@ input::-webkit-calendar-picker-indicator {
 .react-datepicker__input-container {
     border: none !important;
     border-radius: 4px !important;
-    box-shadow: inset 0 0 0 1px #b3b3b3 !important;
+    /* box-shadow: inset 0 0 0 1px #b3b3b3 !important;*/
 }
 
 .ui.input.focus > input,

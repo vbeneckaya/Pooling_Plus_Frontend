@@ -150,4 +150,21 @@ input::-webkit-inner-spin-button {
     button {
         margin-left: 8px !important;
     }
+
+    &_disabled {
+        opacity: .8;
+        background: rgba(1, 1, 1, 0.05);
+    }
+}
+
+.ui.input:hover, .react-datepicker-wrapper:hover {
+    input {
+        border-color: rgba(34, 36, 38, .35) !important;
+        box-shadow: none;
+    }
+}
+
+.ui.form textarea {
+    border-color: rgba(34, 36, 38, .35) !important;
+    box-shadow: none;
 }
