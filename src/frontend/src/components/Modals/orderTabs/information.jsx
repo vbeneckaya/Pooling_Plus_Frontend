@@ -21,7 +21,6 @@ const Information = ({
     uniquenessNumberCheck,
     settings,
     error,
-    load,
 }) => {
     const { t } = useTranslation();
 
@@ -55,6 +54,7 @@ const Information = ({
                                                 type={TEXT_TYPE}
                                                 settings={settings['clientOrderNumber']}
                                                 value={form['clientOrderNumber']}
+                                                error={error['clientOrderNumber']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -64,6 +64,7 @@ const Information = ({
                                                 type={TEXT_TYPE}
                                                 settings={settings['payer']}
                                                 value={form['payer']}
+                                                error={error['payer']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -74,6 +75,7 @@ const Information = ({
                                                 settings={settings['clientName']}
                                                 isDisabled
                                                 value={form['clientName']}
+                                                error={error['clientName']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -83,6 +85,7 @@ const Information = ({
                                                 value={form['pickingTypeId']}
                                                 type={SELECT_TYPE}
                                                 settings={settings['pickingTypeId']}
+                                                error={error['pickingTypeId']}
                                                 source="pickingTypes"
                                                 onChange={onChange}
                                             />
@@ -95,6 +98,7 @@ const Information = ({
                                                 value={form['orderDate']}
                                                 type={DATE_TYPE}
                                                 settings={settings['orderDate']}
+                                                error={error['orderDate']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -105,6 +109,7 @@ const Information = ({
                                                 isDisabled
                                                 type={SELECT_TYPE}
                                                 settings={settings['orderType']}
+                                                error={error['orderType']}
                                                 isTranslate
                                                 source="orderType"
                                                 onChange={onChange}
@@ -133,6 +138,7 @@ const Information = ({
                                                         name="temperatureMin"
                                                         value={form['temperatureMin']}
                                                         type={NUMBER_TYPE}
+                                                        error={error['temperatureMin']}
                                                         settings={settings['temperatureMin']}
                                                         onChange={onChange}
                                                     />
@@ -141,6 +147,7 @@ const Information = ({
                                                         noLabel
                                                         name="temperatureMax"
                                                         value={form['temperatureMax']}
+                                                        error={error['temperatureMax']}
                                                         type={NUMBER_TYPE}
                                                         settings={settings['temperatureMax']}
                                                         onChange={onChange}
@@ -168,6 +175,7 @@ const Information = ({
                                                 rows={2}
                                                 isDisabled
                                                 type={BIG_TEXT_TYPE}
+                                                error={error['shippingAddress']}
                                                 settings={settings['shippingAddress']}
                                                 onChange={onChange}
                                             />
@@ -176,6 +184,7 @@ const Information = ({
                                             <FormField
                                                 name="deliveryAddress"
                                                 value={form['deliveryAddress']}
+                                                error={error['deliveryAddress']}
                                                 isDisabled
                                                 type={BIG_TEXT_TYPE}
                                                 settings={settings['deliveryAddress']}
@@ -189,6 +198,7 @@ const Information = ({
                                             <FormField
                                                 name="shippingDate"
                                                 value={form['shippingDate']}
+                                                error={error['shippingDate']}
                                                 type={DATE_TYPE}
                                                 settings={settings['shippingDate']}
                                                 onChange={onChange}
@@ -198,6 +208,7 @@ const Information = ({
                                             <FormField
                                                 name="deliveryDate"
                                                 value={form['deliveryDate']}
+                                                error={error['deliveryDate']}
                                                 type={DATE_TYPE}
                                                 settings={settings['deliveryDate']}
                                                 onChange={onChange}
@@ -220,6 +231,7 @@ const Information = ({
                                             <FormField
                                                 name="palletsCount"
                                                 text="prepare"
+                                                error={error['palletsCount']}
                                                 value={form['palletsCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['palletsCount']}
@@ -231,6 +243,7 @@ const Information = ({
                                                 name="actualPalletsCount"
                                                 text="plan"
                                                 value={form['actualPalletsCount']}
+                                                error={error['actualPalletsCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
@@ -241,6 +254,7 @@ const Information = ({
                                                 name="confirmedPalletsCount"
                                                 text="fact"
                                                 value={form['confirmedPalletsCount']}
+                                                error={error['confirmedPalletsCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['confirmedPalletsCount']}
                                                 onChange={onChange}
@@ -264,6 +278,7 @@ const Information = ({
                                                 name="boxesCount"
                                                 text="prepare"
                                                 value={form['boxesCount']}
+                                                error={error['boxesCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['boxesCount']}
                                                 onChange={onChange}
@@ -274,6 +289,7 @@ const Information = ({
                                                 name="confirmedBoxesCount"
                                                 text="fact"
                                                 value={form['confirmedBoxesCount']}
+                                                error={error['confirmedBoxesCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['confirmedBoxesCount']}
                                                 onChange={onChange}
@@ -298,6 +314,7 @@ const Information = ({
                                                 name="weightKg"
                                                 text="planWeigth"
                                                 value={form['weightKg']}
+                                                error={error['weightKg']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['weightKg']}
                                                 onChange={onChange}
@@ -308,6 +325,7 @@ const Information = ({
                                                 name="actualWeightKg"
                                                 text="factWeigth"
                                                 value={form['actualWeightKg']}
+                                                error={error['actualWeightKg']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['actualWeightKg']}
                                                 onChange={onChange}

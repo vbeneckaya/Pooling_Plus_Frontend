@@ -4,7 +4,7 @@ import { Form, Grid } from 'semantic-ui-react';
 import FormField from '../../BaseComponents';
 import { BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE } from '../../../constants/columnTypes';
 
-const Returns = ({ form, onChange, settings }) => {
+const Returns = ({form, onChange, settings, error}) => {
     const { t } = useTranslation();
 
     return (
@@ -17,11 +17,13 @@ const Returns = ({ form, onChange, settings }) => {
                             value={form['returnShippingAccountNo']}
                             type={TEXT_TYPE}
                             settings={settings['returnShippingAccountNo']}
+                            error={error['returnShippingAccountNo']}
                             onChange={onChange}
                         />
                         <FormField
                             name="plannedReturnDate"
                             value={form['plannedReturnDate']}
+                            error={error['plannedReturnDate']}
                             type={DATE_TYPE}
                             settings={settings['plannedReturnDate']}
                             onChange={onChange}
@@ -31,6 +33,7 @@ const Returns = ({ form, onChange, settings }) => {
                         <FormField
                             name="returnInformation"
                             value={form['returnInformation']}
+                            error={error['returnInformation']}
                             rows={5}
                             type={BIG_TEXT_TYPE}
                             settings={settings['returnInformation']}
@@ -43,6 +46,7 @@ const Returns = ({ form, onChange, settings }) => {
                         <FormField
                             name="actualReturnDate"
                             value={form['actualReturnDate']}
+                            error={error['actualReturnDate']}
                             type={DATE_TYPE}
                             settings={settings['actualReturnDate']}
                             onChange={onChange}
@@ -52,6 +56,7 @@ const Returns = ({ form, onChange, settings }) => {
                         <FormField
                             name="majorAdoptionNumber"
                             value={form['majorAdoptionNumber']}
+                            error={error['majorAdoptionNumber']}
                             type={TEXT_TYPE}
                             settings={settings['majorAdoptionNumber']}
                             onChange={onChange}
