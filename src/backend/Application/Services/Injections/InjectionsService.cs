@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Application.Services.Injections
 {
-    public class InjectionsService : DictonaryServiceBase<Injection, InjectionDto>, IInjectionsService
+    public class InjectionsService : DictionaryServiceBase<Injection, InjectionDto>, IInjectionsService
     {
         public InjectionsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                  IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

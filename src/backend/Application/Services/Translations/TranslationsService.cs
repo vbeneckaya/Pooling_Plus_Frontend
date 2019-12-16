@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Application.Services.Translations
 {
-    public class TranslationsService : DictonaryServiceBase<Translation, TranslationDto>, ITranslationsService
+    public class TranslationsService : DictionaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
         public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

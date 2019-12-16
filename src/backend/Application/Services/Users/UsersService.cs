@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace Application.Services.Users
 {
-    public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
+    public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                             IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
@@ -74,6 +74,14 @@ namespace Application.Services.Users
                                     .Where(x => roleIds.Contains(x.Id))
                                     .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
@@ -86,6 +94,12 @@ namespace Application.Services.Users
                     && roles.TryGetValue(dto.RoleId.Value, out Role role))
                 {
                     dto.RoleId.Name = role.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
                 }
 
                 yield return dto;
@@ -104,7 +118,8 @@ namespace Application.Services.Users
                 RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
-                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
+                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
             };
         }
 
@@ -121,6 +136,7 @@ namespace Application.Services.Users
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
 

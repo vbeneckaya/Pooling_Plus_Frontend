@@ -20,7 +20,10 @@ namespace Domain.Services.VehicleTypes
         [FieldType(FieldType.Number), OrderNumber(4)]
         public string PalletsCount { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(5)]
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(5)]
+        public LookUpDto CompanyId { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(6)]
         public bool? IsActive { get; set; }
     }
 }
