@@ -583,6 +583,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Order, Guid?>(i => i.VehicleTypeId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
+                         .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Order, TarifficationType>(i => i.TarifficationType, ref parameters))
                          .WhereAnd(searchForm.Filter.DeviationsComment.ApplyStringFilter<Order>(i => i.DeviationsComment, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCost.ApplyNumericFilter<Order>(i => i.DeliveryCost, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualDeliveryCost.ApplyNumericFilter<Order>(i => i.ActualDeliveryCost, ref parameters));
