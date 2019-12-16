@@ -217,6 +217,8 @@ namespace Domain.Services.Orders
         
         [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
         public LookUpDto VehicleTypeId { get; set; }
-        
+
+        [FieldType(FieldType.Select, source: nameof(Companies))]
+        public LookUpDto CompanyId { get; set; }
     }
 }
