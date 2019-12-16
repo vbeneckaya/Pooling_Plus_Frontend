@@ -362,8 +362,10 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.disabled.input,
-.ui.input:not(.disabled) input[disabled],
+.ui.disabled.input, .ui.input:not(.disabled) input[disabled] {
+    opacity: 1 !important;
+}
+
 .ui.disabled.search,
 .ui.form .disabled.field,
 .ui.form .disabled.fields .field,
