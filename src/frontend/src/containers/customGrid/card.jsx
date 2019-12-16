@@ -128,6 +128,7 @@ const Card = props => {
                 callbackSuccess: () => {
                     if (form.id) {
                         loadCard();
+                        getActions();
                     } else {
                         onClose();
                     }
