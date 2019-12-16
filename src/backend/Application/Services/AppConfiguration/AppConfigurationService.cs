@@ -31,6 +31,8 @@ using Domain.Services.Warehouses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DAL.Services;
+using Domain.Persistables;
 
 namespace Application.Services.AppConfiguration
 {
@@ -39,17 +41,20 @@ namespace Application.Services.AppConfiguration
     {
         private readonly IIdentityService _identityService;
         private readonly IUserProvider _userProvider;
+        private readonly ICommonDataService _dataService;
         private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
         public AppConfigurationService(
-            IIdentityService identityService, 
-            IUserProvider userProvider, 
+            IIdentityService identityService,
+            IUserProvider userProvider,
+            ICommonDataService dataService,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService)
         {
             _identityService = identityService;
             _userProvider = userProvider;
+            _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldPropertiesService = fieldPropertiesService;
         }
@@ -105,6 +110,9 @@ namespace Application.Services.AppConfiguration
         public IEnumerable<UserConfigurationDictionaryItem> GetDictionariesConfiguration(Guid? roleId)
         {
             var dicts = new List<UserConfigurationDictionaryItem>();
+
+            var userId = _userProvider.GetCurrentUserId();
+            var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
 
             var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
             var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
@@ -260,16 +268,21 @@ namespace Application.Services.AppConfiguration
                 });
             }
 
-            var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
-            dicts.Add(new UserConfigurationDictionaryItem
+            var canEditCompanies = _identityService.HasPermissions(RolePermissions.CompaniesEdit);
+
+            if (canEditCompanies)
             {
-                Name = GetName<CompanyService>(),
-                CanCreateByForm = true,
-                CanExportToExcel = true,
-                CanImportFromExcel = false,
-                ShowOnHeader = false,
-                Columns = companyColumns
-            });
+                var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<CompanyService>(),
+                    CanCreateByForm = true,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = false,
+                    ShowOnHeader = false,
+                    Columns = companyColumns
+                });
+            }
 
             return dicts;
         }

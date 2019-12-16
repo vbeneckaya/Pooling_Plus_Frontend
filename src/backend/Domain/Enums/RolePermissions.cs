@@ -124,7 +124,7 @@ namespace Domain.Enums
         /// <summary>
         /// Настройка полей
         /// </summary>
-        [OrderNumber(20)]
+        [OrderNumber(21)]
         FieldsSettings = 23,
 
         /// <summary>
@@ -132,5 +132,11 @@ namespace Domain.Enums
         /// </summary>
         [OrderNumber(11)]
         ShippingWarehousesEdit = 24,
+
+        /// <summary>
+        /// Редактирование юридических лиц
+        /// </summary>
+        [OrderNumber(20)]
+        CompaniesEdit = 25,
     }
 }
