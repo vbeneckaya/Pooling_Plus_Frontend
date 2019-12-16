@@ -60,9 +60,18 @@ namespace Application.BusinessModels.Orders.Triggers
 
                 if (shipping.VehicleTypeId != entity.VehicleTypeId)
                 {
+                    VehicleType oldVehicleType = null;
+                    VehicleType newVehicleType  = null;
+                    
+                    if (shipping.VehicleTypeId.HasValue)
+                        oldVehicleType = vehicleTypes.GetById(shipping.VehicleTypeId.Value);
+
+                    if (entity.VehicleTypeId.HasValue)
+                        newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
+                    
                     _historyService.Save(shipping.Id, "fieldChanged",
                         nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
-                        shipping.VehicleTypeId, entity.VehicleTypeId);
+                        oldVehicleType, newVehicleType);
                     
                     shipping.VehicleTypeId = entity.VehicleTypeId;
                     _calcService.UpdateDeliveryCost(shipping);
