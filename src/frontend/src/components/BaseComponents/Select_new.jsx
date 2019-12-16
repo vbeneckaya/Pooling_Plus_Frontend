@@ -70,7 +70,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, {value, name});
+        onChange(e, {value: value ? value : {}, name});
         handleClose();
     };
 
@@ -131,6 +131,8 @@ const Select = ({
                     selection
                     loading={progress}
                     search
+                    clearable={value.value}
+                    value={value.value}
                     searchQuery={searchQuery}
                     text={value ? value.name : null}
                     error={error}
@@ -143,6 +145,7 @@ const Select = ({
                     onSearchChange={handleSearchChange}
                     onFocus={handleFocus}
                     open={open}
+                    onChange={handleChange}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>
                         {valuesList && valuesList.length ? (
