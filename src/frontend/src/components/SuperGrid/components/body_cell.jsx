@@ -15,8 +15,8 @@ const ModalComponent = ({ element, props, children }) => {
 };
 
 const BodyCell = ({
-                      value,
-                      valueText,
+    value,
+    valueText,
     column,
     loadList,
     indexRow,
@@ -26,11 +26,11 @@ const BodyCell = ({
     t,
     checkForEditing,
     invokeMassUpdate,
-                      status,
-                      rowId,
-                      rowNumber,
-                      cardLink,
-                      history,
+    status,
+    rowId,
+    rowNumber,
+    cardLink,
+    history,
 }) => {
     const contextRef = useRef(null);
 
@@ -71,7 +71,7 @@ const BodyCell = ({
     const handleOpen = () => {
         console.log('open', value);
         setOpen(true);
-        setValue(valueText ? {value, name: valueText} : value);
+        setValue(valueText ? { value, name: valueText } : value);
     };
 
     const handleClose = () => {
@@ -173,7 +173,7 @@ const BodyCell = ({
                 <Modal.Content>
                     <Modal.Description>
                         <Form onSubmit={handleSave}>
-                            <FormField {...column} value={valueForm} onChange={handleChange}/>
+                            <FormField {...column} value={valueForm} onChange={handleChange} />
                         </Form>
                     </Modal.Description>
                 </Modal.Content>

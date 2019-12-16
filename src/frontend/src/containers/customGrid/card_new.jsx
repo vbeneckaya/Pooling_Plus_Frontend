@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
@@ -36,20 +36,44 @@ const SelfComponent = props => {
 };
 
 const Card = props => {
-    const {match, stopUpdate, loadList, title, children, onClose: beforeClose} = props;
+    const {t} = useTranslation();
+    const dispatch = useDispatch();
+    const {match} = props;
     const {params = {}} = match;
     const {name, id} = params;
-    let [modalOpen, setModalOpen] = useState(false);
+
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
     let [confirmation, setConfirmation] = useState({open: false});
     let [isNotUniqueNumber, setIsNotUnqueNumber] = useState(false);
-    const {t} = useTranslation();
-    const dispatch = useDispatch();
+
+    const title = useMemo(
+        () => (id ? t(`edit_${name}`) : t(`new_${name}`)),
+        [name, id],
+    );
 
     const card = useSelector(state => cardSelector(state));
     const settings = useSelector(state => settingsFormSelector(state, card.status));
     const error = useSelector(state => errorSelector(state));
+
+    useEffect(() => {
+        dispatch(clearActions());
+        id && loadCard();
+        id && getActions();
+    }, []);
+
+    useEffect(
+        () => {
+            if (notChangeForm) {
+                Object.keys(form).forEach(key => {
+                    if (form[key] !== card[key]) {
+                        setNotChangeForm(false);
+                    }
+                });
+            }
+        },
+        [form],
+    );
 
     const loadCard = () => {
         dispatch(
@@ -74,22 +98,15 @@ const Card = props => {
         );
     };
 
-    const onOpen = () => {
-        dispatch(clearActions());
-        id && loadCard();
-        id && getActions();
-        stopUpdate && stopUpdate();
-        setModalOpen(true);
-    };
+
 
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
-            beforeClose ? beforeClose() : setModalOpen(false);
+
             setNotChangeForm(true);
             dispatch(clearGridCard());
             setForm({});
             setIsNotUnqueNumber(false);
-            loadList && loadList(false, true);
         } else {
             showConfirmation(
                 t('confirm_close_dictionary'),
@@ -111,18 +128,6 @@ const Card = props => {
         }));
     }, []);
 
-    useEffect(
-        () => {
-            if (notChangeForm) {
-                Object.keys(form).forEach(key => {
-                    if (form[key] !== card[key]) {
-                        setNotChangeForm(false);
-                    }
-                });
-            }
-        },
-        [form],
-    );
 
     const saveOrEditForm = () => {
         dispatch(
@@ -201,7 +206,7 @@ const Card = props => {
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-    const disableSave = progressActionName || notChangeForm || isNotUniqueNumber;
+    const disableSave = progressActionName || notChangeForm;
 
     return (
         <>
@@ -212,7 +217,6 @@ const Card = props => {
                     load={loadCard}
                     settings={settings}
                     uniquenessNumberCheck={handleUniquenessCheck}
-                    isNotUniqueNumber={isNotUniqueNumber}
                     error={error}
                     onClose={onClose}
                     onChangeForm={onChangeForm}
@@ -223,8 +227,6 @@ const Card = props => {
                     form={form}
                     load={loadCard}
                     settings={settings}
-                    uniquenessNumberCheck={handleUniquenessCheck}
-                    isNotUniqueNumber={isNotUniqueNumber}
                     error={error}
                     onClose={onClose}
                     onChangeForm={onChangeForm}
