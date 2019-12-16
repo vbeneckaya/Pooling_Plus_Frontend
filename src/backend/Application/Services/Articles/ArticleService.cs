@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Application.Services.Articles
 {
-    public class ArticlesService : DictonaryServiceBase<Article, ArticleDto>, IArticlesService
+    public class ArticlesService : DictionaryServiceBase<Article, ArticleDto>, IArticlesService
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;

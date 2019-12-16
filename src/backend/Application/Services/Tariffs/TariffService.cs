@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace Application.Services.Tariffs
 {
-    public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
+    public class TariffsService : DictionaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

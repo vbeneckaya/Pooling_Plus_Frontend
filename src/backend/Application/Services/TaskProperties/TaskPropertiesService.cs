@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Application.Services.TaskProperties
 {
-    public class TaskPropertiesService : DictonaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
+    public class TaskPropertiesService : DictionaryServiceBase<TaskProperty, TaskPropertyDto>, ITaskPropertiesService
     {
         public TaskPropertiesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                      IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 

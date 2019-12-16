@@ -19,7 +19,7 @@ using System.Text.RegularExpressions;
 
 namespace Application.Services.Users
 {
-    public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
+    public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         private readonly IConfiguration _configuration;
 

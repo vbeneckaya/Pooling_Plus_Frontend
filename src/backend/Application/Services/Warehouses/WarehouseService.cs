@@ -23,7 +23,7 @@ using System.Linq;
 
 namespace Application.Services.Warehouses
 {
-    public class WarehousesService : DictonaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
+    public class WarehousesService : DictionaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
