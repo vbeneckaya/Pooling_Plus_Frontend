@@ -31,6 +31,8 @@ using Domain.Services.Warehouses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Services.Clients;
+using Application.Services.Clients;
 
 namespace Application.Services.AppConfiguration
 {
@@ -199,6 +201,22 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = canEditTransportCompanies,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditTransportCompanies,
+                    ShowOnHeader = false,
+                    Columns = columns
+                });
+            }
+
+            var canEditClients = _identityService.HasPermissions(RolePermissions.ClientsEdit);
+
+            if (canEditClients)
+            {
+                var columns = ExtractColumnsFromDto<ClientDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ClientsService>(),
+                    CanCreateByForm = canEditClients,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = false,
                     ShowOnHeader = false,
                     Columns = columns
                 });
