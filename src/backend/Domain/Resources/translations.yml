@@ -378,7 +378,7 @@ ru:
   returnShippingAccountNo: "№ счета за перевозку возврата"
   reset_selected: "Сбросить выбранное"
   rollbackOrder: "Откатить заказ"
-  rollbackOrderShipping: "Откатить заказ"
+  rollbackOrderShipping: "Откатить перевозку"
   rollbackShipping: "Откатить перевозку"
   role: "Роль"
   roleNotFound: "Роль не найдена"
