@@ -55,6 +55,7 @@ namespace Application.Shared
                 var property = typeof(TDto).GetProperty(field.Name);
                 var value = property.GetValue(dto)?.ToString();
                 var propertyName = property.Name.ToLowerFirstLetter();
+                var propertyDisplayName = propertyName.Translate(lang);
 
                 // Validate format
 
@@ -63,7 +64,7 @@ namespace Application.Shared
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.InvalidValueFormat}".Translate(lang),
+                        Message = "InvalidValueFormat".Translate(lang, propertyDisplayName),
                         ResultType = ValidationErrorType.InvalidValueFormat
                     });
                 }
@@ -75,7 +76,7 @@ namespace Application.Shared
                     validationResult.AddError(new ValidationResultItem
                     {
                         Name = propertyName,
-                        Message = $"{prefix}.{property.Name}.{ValidationErrorType.ValueIsRequired}".Translate(lang),
+                        Message = "ValueIsRequired".Translate(lang, propertyDisplayName),
                         ResultType = ValidationErrorType.ValueIsRequired
                     });
                 }
