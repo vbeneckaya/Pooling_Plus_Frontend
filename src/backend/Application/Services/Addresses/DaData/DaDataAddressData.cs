@@ -44,7 +44,7 @@ namespace Application.Services.Addresses.DaData
         public string House { get; set; }
 
         [JsonProperty("block")]
-        public string Building { get; set; }
+        public string Block { get; set; }
 
         [JsonProperty("flat")]
         public string Office { get; set; }

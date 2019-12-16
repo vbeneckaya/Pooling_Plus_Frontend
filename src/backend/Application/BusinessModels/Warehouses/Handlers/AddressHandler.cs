@@ -35,7 +35,7 @@ namespace Application.BusinessModels.Warehouses.Handlers
             entity.Area = cleanAddress?.Area;
             if (_isManual)
             {
-                entity.City = cleanAddress?.City ?? cleanAddress?.Region;
+                entity.City = cleanAddress?.City ?? cleanAddress?.Settlement ?? cleanAddress?.Region;
             }
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;
