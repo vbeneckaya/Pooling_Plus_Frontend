@@ -24,10 +24,20 @@ namespace Application.Services.TransportCompanies
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
             var carriers = _dataService.GetDbSet<TransportCompany>()
                 .Where(i => i.IsActive)
                 .OrderBy(c => c.Title)
                 .ToList();
+
+            var empty = new LookUpDto
+            {
+                Name = "emptyValue".Translate(lang),
+                Value = LookUpDto.EmptyValue,
+                IsFilterOnly = true
+            };
+            yield return empty;
 
             foreach (TransportCompany carrier in carriers)
             {

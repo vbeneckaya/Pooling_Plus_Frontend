@@ -88,15 +88,14 @@ const Card = props => {
             loadList && loadList(false, true);
         } else {
             showConfirmation(
-                t('confirm_close'),
-                () => {
-                    closeConfirmation();
-                    handleSave();
-                },
+                t('confirm_close_dictionary'),
                 () => {
                     closeConfirmation();
                     onClose();
                 },
+                () => {
+                    closeConfirmation();
+                }
             );
         }
     };
@@ -129,6 +128,7 @@ const Card = props => {
                 callbackSuccess: () => {
                     if (form.id) {
                         loadCard();
+                        getActions();
                     } else {
                         onClose();
                     }
@@ -176,7 +176,8 @@ const Card = props => {
                     },
                 }),
             );
-        });
+            },
+            closeConfirmation);
     };
 
     const handleUniquenessCheck = callbackFunc => {
@@ -290,6 +291,7 @@ const Card = props => {
                 open={confirmation.open}
                 onCancel={confirmation.onCancel || closeConfirmation}
                 cancelButton={t('cancelConfirm')}
+                confirmButton={t('Yes')}
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />

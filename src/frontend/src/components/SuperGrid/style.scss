@@ -1,11 +1,18 @@
 .scroll-grid-container {
     display: grid;
     overflow: auto;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 150px);
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     grid-template-rows: auto 76px;
+    background-color: white;
+    border-radius: 0 0 5px 5px;
+}
+
+tbody {
+    color: #4d4d4d !important;
 }
 
 .grid_small {
@@ -24,6 +31,10 @@
 
 .ui.grid {
     margin-bottom: 1px;
+}
+
+.ui.table thead th {
+    background-color: white !important;
 }
 
 .grid-action-btn {
@@ -95,7 +106,10 @@
 }
 
 .grid-header-panel {
-    margin-bottom: 0 !important;
+    margin: 0 !important;
+    border: 1px solid #e6e6e6;
+    background-color: white;
+    width: 100%;
     .create-button {
         height: 33px;
         min-width: 150px;
@@ -119,8 +133,9 @@
         flex-grow: 1;
 
         label {
-            font-weight: bold;
+            font-weight: 500;
             padding-right: 8px;
+            color: #4d4d4d !important;
         }
 
         .field {
@@ -136,9 +151,11 @@
 }
 
 .records-counter {
-    margin-top: 8px;
     white-space: nowrap;
     margin-right: 10px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #4d4d4d !important;
 }
 
 .grid-row > td > div {
@@ -151,14 +168,18 @@
 
 .grid-row td {
     /*cursor: pointer;*/
-    background-color: #fbfdff;
+    //background-color: #fbfdff;
 }
 
 .grid-row {
     .link-cell {
-        color: #2185d0;
-        /* text-decoration-line: underline;*/
+        color: #18a8cc !important;;
+
         width: 100%;
+
+        &:hover {
+            text-decoration-line: underline;
+        }
     }
     /*.address-cell {
         max-width: 100px;
@@ -169,7 +190,7 @@
     }*/
 
     &-selected td{
-        background-color: rgba(222, 236, 255, 1);;
+        background-color: rgba(24, 168, 204, .12);
     }
 }
 
@@ -188,7 +209,7 @@
 }
 
 .grid-row:hover td {
-    background-color: rgba(222, 236, 255, .5);
+    background-color: rgba(0, 0, 0, .06);
 }
 
 .grid-row td,
@@ -225,7 +246,7 @@
 }
 
 .grid-footer-panel {
-    background-color: #f9fafb;
+    background-color: white;
     /*white-space: nowrap;*/
     position: -webkit-sticky;
     position: sticky;
@@ -239,6 +260,7 @@
     height: max-content;
     z-index: 2;
     min-height: 88px;
+    flex-direction: column !important;
 
     .row {
         padding-top: 0 !important;
@@ -394,10 +416,11 @@ $teal: #b5eae7;
 .footer-info {
     display: flex;
     white-space: nowrap;
-    padding: 1rem;
+    padding-bottom: 1rem;
+    color: #4d4d4d !important;
 
     &-value {
-        font-weight: bold;
+        font-weight: 500;
         padding-left: 8px;
     }
 
@@ -417,12 +440,19 @@ $teal: #b5eae7;
 .footer-info-label {
     display: flex;
     font-weight: bold;
-    color: #2185d0;
+    color: #18a8cc;
     align-items: baseline;
     padding-bottom: 8px;
 
     &:hover {
         cursor: pointer;
+    }
+}
+
+.ellipsis-actions-btn {
+    height: 23.94px;
+    i {
+        vertical-align: text-top;
     }
 }
 
@@ -448,6 +478,8 @@ $teal: #b5eae7;
     label {
         padding-right: 8px;
         margin: 0 !important;
+        font-weight: 500 !important;
+        color: #4d4d4d !important;
     }
 
     &-fields {
@@ -527,11 +559,4 @@ $teal: #b5eae7;
     justify-content: space-between;
     align-items: end;
     margin-bottom: 12px;
-}
-
-i.icon.clear-filter {
-    &:before {
-        content: url("../../image/clear-filter.svg");
-
-    }
 }

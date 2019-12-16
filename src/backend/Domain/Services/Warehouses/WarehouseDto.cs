@@ -8,6 +8,7 @@ namespace Domain.Services.Warehouses
     {
         public string Id { get; set; }
 
+        [DisplayNameKey("Warehouse.WarehouseName")]
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string WarehouseName { get; set; }
 

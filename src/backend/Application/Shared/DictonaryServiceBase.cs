@@ -132,7 +132,7 @@ namespace Application.Shared
 
             return query.Where(customer =>
                 stringProperties.Any(prop =>
-                    (string)prop.GetValue(customer, null) == form.Search));
+                    ((string)prop.GetValue(customer, null) ?? "").ToLower().Contains(form.Search.ToLower())));
         }
 
         protected virtual IQueryable<TEntity> ApplySort(IQueryable<TEntity> query, SearchFormDto form)

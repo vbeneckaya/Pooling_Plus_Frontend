@@ -25,6 +25,8 @@ namespace Domain.Shared
 
         Exception,
 
-        InvalidDateRange
+        InvalidDateRange,
+
+        InvalidPassword
     }
 }

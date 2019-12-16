@@ -129,10 +129,20 @@ namespace Application.Services.VehicleTypes
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
             var vehicleTypes = _dataService.GetDbSet<VehicleType>()
                 .Where(i => i.IsActive)
                 .OrderBy(c => c.Name)
                 .ToList();
+
+            var empty = new LookUpDto
+            {
+                Name = "emptyValue".Translate(lang),
+                Value = LookUpDto.EmptyValue,
+                IsFilterOnly = true
+            };
+            yield return empty;
 
             foreach (VehicleType vehicleType in vehicleTypes)
             {

@@ -1,6 +1,7 @@
 ﻿using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.Translations;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace Application.BusinessModels.Orders.Actions
 {
+    [ActionGroup(nameof(Order)), OrderNumber(12)]
     public class DeleteOrder : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

@@ -56,6 +56,13 @@ const FormField = props => {
         key: props.name
     };
 
+    if (!props.text && props.displayNameKey) {
+        params = {
+            ...params,
+            text: props.displayNameKey
+        }
+    }
+
     if (props.type === TIME_TYPE) {
         params = {
             ...params,

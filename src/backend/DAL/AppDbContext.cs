@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DAL.Extensions;
 using Domain.Persistables;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 using Microsoft.Extensions.Logging;
 using ThinkingHome.Migrator;
 
@@ -16,6 +18,11 @@ namespace DAL
         }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.ReplaceService<ICompositeMethodCallTranslator, CustomSqlMethodCallTranslator>();
         }
 
         public DbSet<User> Users { get; set; }

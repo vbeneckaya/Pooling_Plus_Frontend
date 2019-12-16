@@ -63,7 +63,8 @@ const SoldToField = props => {
     }, []);
 
     useEffect(() => {
-        if (value && valuesList.length && !valuesList.find(item => item.value === value.value)) {
+        console.log('^^', value);
+        if (value && Object.keys(value).length && valuesList.length && !valuesList.find(item => item.value === value.value)) {
             dispatch(
                 addError({
                     name: 'soldTo',

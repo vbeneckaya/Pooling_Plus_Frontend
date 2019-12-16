@@ -24,7 +24,7 @@ const StateValue = ({value, source, indexRow, indexColumn, width}) => {
         }
     }, []);
 
-    const state = stateColors.find(x => x.name === value);
+    const state = stateColors.find(x => x.value === value);
     const color = state ? state.color : 'grey';
 
     return (

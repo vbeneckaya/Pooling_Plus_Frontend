@@ -13,12 +13,12 @@ import {
 import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
+import RoleCard from "../roles/role_card";
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, NEW_USER_LINK, USER_LINK} from "../../router/links";
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_user')}
-        </Button>
+        <Button icon="add" />
     </UserCard>
 );
 
@@ -43,6 +43,11 @@ export class UsersList extends Component {
             </UserCard>,
         ];
     };
+    getCard = ({row, loadList, name}) => {
+        const { t } = this.props;
+
+        return <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={loadList} />
+    };
 
     render() {
         const { list, loadList, totalCount, loading, t } = this.props;
@@ -50,16 +55,15 @@ export class UsersList extends Component {
         return (
             <TableInfo
                 headerRow={usersColumns}
-                title={t('users')}
+                name="users"
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}
-                isShowActions
-                actions={this.getActions}
                 toggleIsActive={this.handleToggleIsActive}
                 totalCount={totalCount}
-                newModal={newModal}
                 loadList={loadList}
+                newLink={NEW_USER_LINK}
+                cardLink={USER_LINK}
             />
         );
     }
