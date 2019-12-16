@@ -131,8 +131,8 @@ const Select = ({
                     selection
                     loading={progress}
                     search
-                    clearable={value.value}
-                    value={value.value}
+                    clearable={value && value.value}
+                    value={value && value.value}
                     searchQuery={searchQuery}
                     text={value ? value.name : null}
                     error={error}
