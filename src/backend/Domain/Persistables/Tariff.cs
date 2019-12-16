@@ -201,6 +201,13 @@ namespace Domain.Persistables
         /// Ставка LTL 33
         /// </summary>
         public decimal? LtlRate33 { get; set; }
+
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
+
+
         /*end of fields*/
     }
 }

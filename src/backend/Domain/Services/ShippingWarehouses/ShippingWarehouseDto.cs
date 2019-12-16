@@ -1,5 +1,6 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.ShippingWarehouses
 {
@@ -37,7 +38,10 @@ namespace Domain.Services.ShippingWarehouses
 
         public string RegionId { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(6)]
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(6)]
+        public LookUpDto CompanyId { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(7)]
         public bool? IsActive { get; set; }
     }
 }
