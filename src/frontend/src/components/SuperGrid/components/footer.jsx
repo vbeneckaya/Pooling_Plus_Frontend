@@ -88,31 +88,75 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                                 />
                             ))
                             : null}
-                        {
-                            groupActions &&
-                            groupActions().other.length
-                                ? <Dropdown
-                                    icon="ellipsis horizontal"
-                                    floating
-                                    button
-                                    upward
-                                    className="icon mini ellipsis-actions-btn"
+                        {groupActions && groupActions().other.length ? (
+                            <Dropdown
+                                icon="ellipsis horizontal"
+                                floating
+                                button
+                                upward
+                                className="icon mini ellipsis-actions-btn"
                             >
                                 <Dropdown.Menu>
                                     <Dropdown.Menu scrolling>
-                                        {groupActions().other.map(action => (
-                                            <Dropdown.Item
-                                                key={action.name}
-                                                text={action.name}
-                                                label={{color: action.color, empty: true, circular: true}}
-                                                onClick={() => action.action(action.ids, clearSelectedRows)}
-                                            />
-                                        ))}
+                                        {groupActions().order.length &&
+                                        groupActions().shipping.length ? (
+                                            <>
+                                                {groupActions().order.map(action => (
+                                                    <Dropdown.Item
+                                                        key={action.name}
+                                                        text={action.name}
+                                                        label={{
+                                                            color: action.color,
+                                                            empty: true,
+                                                            circular: true,
+                                                        }}
+                                                        onClick={() =>
+                                                            action.action(
+                                                                action.ids,
+                                                                clearSelectedRows,
+                                                            )
+                                                        }
+                                                    />
+                                                ))}
+                                                <Dropdown.Divider/>
+                                                {groupActions().shipping.map(action => (
+                                                    <Dropdown.Item
+                                                        key={action.name}
+                                                        text={action.name}
+                                                        label={{
+                                                            color: action.color,
+                                                            empty: true,
+                                                            circular: true,
+                                                        }}
+                                                        onClick={() =>
+                                                            action.action(
+                                                                action.ids,
+                                                                clearSelectedRows,
+                                                            )
+                                                        }
+                                                    />
+                                                ))}
+                                            </>
+                                        ) : (
+                                            groupActions().other.map(action => (
+                                                <Dropdown.Item
+                                                    key={action.name}
+                                                    text={action.name}
+                                                    label={{
+                                                        color: action.color,
+                                                        empty: true,
+                                                        circular: true,
+                                                    }}
+                                                    onClick={() =>
+                                                        action.action(action.ids, clearSelectedRows)
+                                                    }
+                                                />
+                                            ))
+                                        )}
                                     </Dropdown.Menu>
                                 </Dropdown.Menu>
                             </Dropdown>
-                                : null
-                        }
+                        ) : null}
                     </div>
                 </Grid.Column>
                 <Grid.Column width={8} floated="right">
