@@ -263,7 +263,7 @@ namespace Application.Services.AppConfiguration
             var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
             dicts.Add(new UserConfigurationDictionaryItem
             {
-                Name = GetName<CompanyService>(),
+                Name = GetName<CompaniesService>(),
                 CanCreateByForm = true,
                 CanExportToExcel = true,
                 CanImportFromExcel = false,

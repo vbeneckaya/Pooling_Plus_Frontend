@@ -77,6 +77,27 @@ namespace Application.Services.Roles
             }
         }
 
+        protected override IEnumerable<RoleDto> FillLookupNames(IEnumerable<RoleDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+                yield return dto;
+            }
+        }
+
         public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))
@@ -86,6 +107,7 @@ namespace Application.Services.Roles
             entity.IsActive = dto.IsActive;
             entity.Actions = dto.Actions?.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
 
             return null;
         }
@@ -122,7 +144,8 @@ namespace Application.Services.Roles
                     Code = i,
                     Name = i.GetPermissionName()
                 }),
-                UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count()
+                UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count(),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
             };
         }
 

@@ -34,6 +34,7 @@ namespace Application.Services.VehicleTypes
             entity.Name = dto.Name;
             entity.TonnageId = dto.TonnageId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.PalletsCount = dto.PalletsCount.ToInt();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
@@ -80,6 +81,14 @@ namespace Application.Services.VehicleTypes
                                         .Where(x => bodyTypeIds.Contains(x.Id))
                                         .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.TonnageId?.Value)
@@ -94,6 +103,12 @@ namespace Application.Services.VehicleTypes
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
 
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
                 yield return dto;
             }
         }
@@ -106,6 +121,7 @@ namespace Application.Services.VehicleTypes
                 Name = entity.Name,
                 TonnageId = entity.TonnageId == null ? null : new LookUpDto(entity.TonnageId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 PalletsCount = entity.PalletsCount?.ToString(),
                 IsActive = entity.IsActive
             };

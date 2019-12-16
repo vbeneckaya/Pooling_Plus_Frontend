@@ -15,9 +15,9 @@ using System.Linq;
 
 namespace Application.Services.BodyTypes
 {
-    public class CompanyService : DictionaryServiceBase<Company, CompanyDto>, ICompaniesService
+    public class CompaniesService : DictionaryServiceBase<Company, CompanyDto>, ICompaniesService
     {
-        public CompanyService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+        public CompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
         { }

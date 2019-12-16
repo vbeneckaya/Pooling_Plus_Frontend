@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [Route("api/company")]
+    [Route("api/companies")]
     public class CompaniesController : DictionaryController<ICompaniesService, Company, CompanyDto>
     {
         public CompaniesController(ICompaniesService service) : base(service) { }

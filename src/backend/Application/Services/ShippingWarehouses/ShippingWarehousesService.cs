@@ -56,6 +56,44 @@ namespace Application.Services.ShippingWarehouses
                 .Add<ShippingWarehouse>(i => i.City);
         }
 
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
+
+                cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()));
+            });
+            return result;
+        }
+
+        protected override IEnumerable<ShippingWarehouseDto> FillLookupNames(IEnumerable<ShippingWarehouseDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                                     .Select(x => x.CompanyId.Value.ToGuid())
+                                     .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
+                yield return dto;
+            }
+        }
+
         public ShippingWarehouse GetByCode(string code)
         {
             return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Code == code && x.IsActive);
@@ -116,19 +154,6 @@ namespace Application.Services.ShippingWarehouses
                 result.AddError(nameof(dto.Code), "ShippingWarehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return result;
-        }
-
-        private MapperConfiguration ConfigureMapper()
-        {
-            var result = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
-
-                cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()));
-            });
             return result;
         }
     }

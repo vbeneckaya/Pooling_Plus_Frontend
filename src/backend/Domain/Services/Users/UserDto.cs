@@ -27,5 +27,8 @@ namespace Domain.Services.Users
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies))]
         public LookUpDto CarrierId { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(Companies))]
+        public LookUpDto CompanyId { get; set; }
     }
 }
