@@ -24,7 +24,6 @@ namespace Application.BusinessModels.Orders.Handlers
                 var soldToWarehouse = _dataService.GetDbSet<Warehouse>().FirstOrDefault(x => x.SoldToNumber == order.SoldTo);
                 if (soldToWarehouse != null)
                 {
-                    order.ClientName = soldToWarehouse.WarehouseName;
                     order.PickingFeatures = soldToWarehouse.PickingFeatures;
 
                     if (soldToWarehouse.PickingTypeId.HasValue)

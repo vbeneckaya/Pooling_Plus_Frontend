@@ -182,8 +182,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
-                    .ForMember(t => t.ClientName, e => e.Condition((s) => s.ClientName != null))
-                    .ForMember(t => t.ClientName, e => e.MapFrom((s) => s.ClientName.Value))
+                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
@@ -228,7 +228,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
-                    .ForMember(t => t.ClientName, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ClientName) ? null : new LookUpDto(s.ClientName)))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
@@ -345,7 +345,14 @@ namespace Application.Services.Orders
             var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
                                                  .Where(x => shippingWarehouseIds.Contains(x.Id))
                                                  .ToDictionary(x => x.Id.ToString());
-            
+
+            var clientIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
+                                .Select(x => x.ClientId.Value.ToGuid())
+                                .ToList();
+            var clients = _dataService.GetDbSet<Client>()
+                                      .Where(x => clientIds.Contains(x.Id))
+                                      .ToDictionary(x => x.Id.ToString());
+
             var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
                 .Select(x => x.VehicleTypeId.Value.ToGuid())
                 .ToList();
@@ -380,8 +387,13 @@ namespace Application.Services.Orders
                 {
                     dto.VehicleTypeId.Name = vehicleType.Name;
                 }
-                
-                
+
+                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
+                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
+                {
+                    dto.ClientId.Name = client.Name;
+                }
+
                 yield return dto;
             }
         }
@@ -532,7 +544,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
-                         .WhereAnd(searchForm.Filter.ClientName.ApplyOptionsFilter<Order, string>(i => i.ClientName, ref parameters))
+                         .WhereAnd(searchForm.Filter.ClientId.ApplyOptionsFilter<Order, Guid?>(i => i.ClientId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryAddress.ApplyStringFilter<Order>(i => i.DeliveryAddress, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCity.ApplyStringFilter<Order>(i => i.DeliveryCity, ref parameters))
@@ -626,6 +638,8 @@ namespace Application.Services.Orders
 
             var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
 
+            var clients = _dataService.GetDbSet<Client>().Where(i => i.Name.ToLower().Contains(search));
+
             var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
             var orderTypes = _dataService.GetDbSet<Translation>()
@@ -669,7 +683,6 @@ namespace Application.Services.Orders
             return query.Where(i =>
                    columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.ToLower().Contains(search)
                 || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
-                || columns.Contains("clientName") && !string.IsNullOrEmpty(i.ClientName) && i.ClientName.ToLower().Contains(search)
                 || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.ToLower().Contains(search)
                 || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.ToLower().Contains(search)
                 || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.ToLower().Contains(search)
@@ -719,6 +732,7 @@ namespace Application.Services.Orders
 
                 || columns.Contains("pickingTypeId") && pickingTypes.Any(p => p.Id == i.PickingTypeId)
                 || columns.Contains("carrierId") && carriers.Any(p => p.Id == i.CarrierId)
+                || columns.Contains("clientId") && clients.Any(p => p.Id == i.ClientId)
                 || columns.Contains("orderType") && orderTypes.Contains(i.OrderType)
                 || columns.Contains("orderShippingStatus") && orderShippingStates.Contains(i.OrderShippingStatus)
                 || columns.Contains("deliveryStatus") && vehicleStates.Contains(i.DeliveryStatus)

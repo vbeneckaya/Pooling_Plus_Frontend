@@ -21,9 +21,9 @@
         public string ShippingNumber { get; set; }
 
         /// <summary>
-        /// ClientName
+        /// Client
         /// </summary>
-        public string ClientName { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
         /// Order Date
