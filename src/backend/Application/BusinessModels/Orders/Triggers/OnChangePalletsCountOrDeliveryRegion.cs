@@ -29,7 +29,9 @@ namespace Application.BusinessModels.Orders.Triggers
 
         public void Execute(Order entity)
         {
-            if (entity.Status == OrderState.Draft || entity.Status == OrderState.Created ||
+            if (entity.Status == OrderState.Draft || 
+                entity.Status == OrderState.Created || 
+                entity.Status == OrderState.Confirmed ||
                 entity.Status == OrderState.InShipping)
             {
                 if (entity.ShippingId.HasValue)
