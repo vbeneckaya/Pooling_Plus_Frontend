@@ -61,14 +61,14 @@ const SoldToField = props => {
     }, []);
 
     useEffect(() => {
-        if (value && Object.keys(value).length && valuesList.length && !valuesList.find(item => item.value === value.value)) {
+        if (value && valuesList.length && !valuesList.find(item => item.value === value.value)) {
             dispatch(
                 addError({
                     name: 'soldTo',
                     message: t('soldTo_error'),
                 }),
             );
-        } else if (error) {
+        } else if (error && value) {
             dispatch(clearError('soldTo'));
         }
     }, [valuesList, value]);

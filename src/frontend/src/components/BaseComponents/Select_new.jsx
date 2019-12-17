@@ -70,7 +70,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, {value: value ? value : {}, name});
+        onChange(e, {value: value ? value : null, name});
         handleClose();
     };
 
