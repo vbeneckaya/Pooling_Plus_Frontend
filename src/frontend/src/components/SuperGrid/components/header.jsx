@@ -102,6 +102,8 @@ const Header = ({
         goToCard(false, null, name);
     };
 
+    console.log('filter', filter);
+
     return (
         <Grid className="grid-header-panel">
             <Grid.Row>
@@ -242,6 +244,7 @@ const Header = ({
                     <Search
                         searchValue={searchValue}
                         className="search-input"
+                        value={filter.filter.filter.search}
                         onChange={searchOnChange}
                     />
                 </Grid.Column>

@@ -43,7 +43,7 @@ const MainRoute = withRouter(props => {
                 component={() => <Redirect to={homePage} />}
             />
             <PrivateRoute exact path={GRID_NEW_LINK} component={CustomGridCard}/>
-            <PrivateRoute exact path={GRID_CARD_LINK} component={CustomGridCard}/>
+            <PrivateRoute exact path={GRID_CARD_LINK} component={(props) => CustomGridCard(props)}/>
             <PrivateRoute exact path={GRID_LIST_LINK} component={CustomGrid}/>
             <PrivateRoute exact path={DICTIONARY_NEW_LINK} component={CustomDictionaryCard}/>
             <PrivateRoute exact path={DICTIONARY_CARD_LINK} component={CustomDictionaryCard}/>
