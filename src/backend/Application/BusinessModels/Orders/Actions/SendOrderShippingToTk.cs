@@ -14,7 +14,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Отправить перевозку в ТК
     /// </summary>
-    [ActionGroup(nameof(Shipping)), OrderNumber(14)]
+    [ActionGroup(nameof(Shipping)), OrderNumber(14), ActionAccess(ActionAccess.GridOnly)]
     public class SendOrderShippingToTk : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;
