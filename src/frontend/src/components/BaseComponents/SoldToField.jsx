@@ -71,7 +71,7 @@ const SoldToField = props => {
         } else if (error && value) {
             dispatch(clearError('soldTo'));
         }
-    }, [valuesList, value]);
+    }, [valuesList.length, value]);
 
     return (
         <Select {...props}>

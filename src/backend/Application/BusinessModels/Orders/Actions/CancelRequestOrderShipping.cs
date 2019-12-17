@@ -14,7 +14,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Отменить заявку
     /// </summary>
-    [ActionGroup(nameof(Shipping)), OrderNumber(15)]
+    [ActionGroup(nameof(Shipping)), OrderNumber(15), ActionAccess(ActionAccess.GridOnly)]
     public class CancelRequestOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;
