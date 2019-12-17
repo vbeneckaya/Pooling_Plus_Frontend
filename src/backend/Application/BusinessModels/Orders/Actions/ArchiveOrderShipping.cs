@@ -11,7 +11,7 @@ using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions
 {
-    [ActionGroup(nameof(Shipping)), OrderNumber(22)]
+    [ActionGroup(nameof(Shipping)), OrderNumber(22), ActionAccess(ActionAccess.GridOnly)]
     public class ArchiveOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;
