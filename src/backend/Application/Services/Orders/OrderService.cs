@@ -437,7 +437,7 @@ namespace Application.Services.Orders
         private void InitializeNewOrder(Order order, bool isInjection)
         {
             order.IsActive = true;
-            order.Status = OrderState.Draft;
+            order.Status = OrderState.Created;
             order.OrderCreationDate = DateTime.UtcNow;
             order.OrderChangeDate = DateTime.UtcNow;
             order.ShippingStatus = VehicleState.VehicleEmpty;

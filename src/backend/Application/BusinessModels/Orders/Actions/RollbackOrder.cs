@@ -32,18 +32,9 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var newState = new OrderState?();
             
-            if (order.Status == OrderState.Canceled){
-                if (!string.IsNullOrEmpty(order.SoldTo) &&
-                    !string.IsNullOrEmpty(order.Payer) &&
-                    !string.IsNullOrEmpty(order.DeliveryAddress) &&
-                    !string.IsNullOrEmpty(order.ShippingAddress) &&
-                    order.ShippingDate != null && 
-                    (order.DeliveryType == null || order.DeliveryType == DeliveryType.Delivery) && order.DeliveryDate != null ||
-                    order.DeliveryType == DeliveryType.SelfDelivery)
-                    newState = OrderState.Created;
-                else
-                    newState = OrderState.Draft;
-            
+            if (order.Status == OrderState.Canceled)
+            {
+                newState = OrderState.Created;
             }
 
             if (order.Status == OrderState.Confirmed)

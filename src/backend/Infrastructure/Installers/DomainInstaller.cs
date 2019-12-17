@@ -192,7 +192,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();
             services.AddScoped<IAppAction<Order>, RollbackOrderShipping>();
 
-            services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
             services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
