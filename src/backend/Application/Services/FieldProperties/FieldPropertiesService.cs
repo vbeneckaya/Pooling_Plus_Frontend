@@ -199,6 +199,7 @@ namespace Application.Services.FieldProperties
             
             
             var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
+                                                            && x.RoleId == roleId
                                             && x.FieldName == dto.FieldName);
 
             if (visibilityItem == null)
