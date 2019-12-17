@@ -105,23 +105,23 @@ namespace Application.Services.AppConfiguration
         {
             var dicts = new List<UserConfigurationDictionaryItem>();
 
-            var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-            var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+            //var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+            //var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-            if (canViewTariffs || canEditTariffs)
-            {
-                var columns = ExtractColumnsFromDto<TariffDto>(roleId);
-                dicts.Add(new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<TariffsService>(),
-                    CanCreateByForm = canEditTariffs,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = canEditTariffs,
-                    CanDelete = true,
-                    ShowOnHeader = true,
-                    Columns = columns
-                }); ;
-            }
+            //if (canViewTariffs || canEditTariffs)
+            //{
+            //    var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+            //    dicts.Add(new UserConfigurationDictionaryItem
+            //    {
+            //        Name = GetName<TariffsService>(),
+            //        CanCreateByForm = canEditTariffs,
+            //        CanExportToExcel = true,
+            //        CanImportFromExcel = canEditTariffs,
+            //        CanDelete = true,
+            //        ShowOnHeader = true,
+            //        Columns = columns
+            //    }); ;
+            //}
 
             var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
 
@@ -155,21 +155,21 @@ namespace Application.Services.AppConfiguration
                 });
             }
 
-            var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
+            //var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
 
-            if (canEditArticles)
-            {
-                var columns = ExtractColumnsFromDto<ArticleDto>(roleId);
-                dicts.Add(new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<ArticlesService>(),
-                    CanCreateByForm = canEditArticles,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = canEditArticles,
-                    ShowOnHeader = false,
-                    Columns = columns
-                });
-            }
+            //if (canEditArticles)
+            //{
+            //    var columns = ExtractColumnsFromDto<ArticleDto>(roleId);
+            //    dicts.Add(new UserConfigurationDictionaryItem
+            //    {
+            //        Name = GetName<ArticlesService>(),
+            //        CanCreateByForm = canEditArticles,
+            //        CanExportToExcel = true,
+            //        CanImportFromExcel = canEditArticles,
+            //        ShowOnHeader = false,
+            //        Columns = columns
+            //    });
+            //}
 
             var canEditPickingTypes = _identityService.HasPermissions(RolePermissions.PickingTypesEdit);
 

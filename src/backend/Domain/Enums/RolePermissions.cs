@@ -64,14 +64,14 @@ namespace Domain.Enums
         /// <summary>
         /// Просмотр тарифов
         /// </summary>
-        [OrderNumber(9)]
-        TariffsView = 13,
+        //[OrderNumber(9)]
+        //TariffsView = 13,
 
         /// <summary>
         /// Редактирование тарифов
         /// </summary>
-        [OrderNumber(10)]
-        TariffsEdit = 14,
+        //[OrderNumber(10)]
+        //TariffsEdit = 14,
 
         /// <summary>
         /// Редактирование складов доставки
@@ -82,8 +82,8 @@ namespace Domain.Enums
         /// <summary>
         /// Редактирование артикулов
         /// </summary>
-        [OrderNumber(13)]
-        ArticlesEdit = 16,
+        //[OrderNumber(13)]
+        //ArticlesEdit = 16,
 
         /// <summary>
         /// Редактирование типов комплектаций
