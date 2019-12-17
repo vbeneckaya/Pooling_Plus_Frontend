@@ -40,7 +40,7 @@ const EditField = ({value, name, onChange, datalist, error = [], isDisabled}) =>
 const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    let [items, setItems] = useState([...form.items]);
+    let [items, setItems] = useState([...form.items || []]);
     let [indexEdit, setIndexEdit] = useState(null);
     let [error, setError] = useState([]);
 
@@ -175,7 +175,7 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {columns.length && items.length
+                            {columns && items && columns.length && items.length
                                 ? items.map((row, index) => (
                                     <Table.Row key={row.id}>
                                         {columns.map(column => (

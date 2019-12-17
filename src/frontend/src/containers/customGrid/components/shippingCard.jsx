@@ -10,8 +10,20 @@ import Accounts from './shippingTabs/accounts';
 import Card from '../../../containers/customGrid/card';
 import {useSelector} from 'react-redux';
 import {userPermissionsSelector} from '../../../ducks/profile';
+import CardLayout from '../../../components/CardLayout';
 
-const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, settings, title}) => {
+const ShippingCard = ({
+                          form,
+                          onChangeForm,
+                          name,
+                          id,
+                          onClose: beforeClose,
+                          settings,
+                          title,
+                          actionsFooter,
+                          onClose,
+                          actionsHeader,
+                      }) => {
     const {t} = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state));
     const {orders = []} = form;
@@ -21,19 +33,17 @@ const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, setti
         setRouteActiveIndex(activeIndex);
     }, []);
 
-    const getPanes = [
-        {
-            menuItem: t('information'),
-            render: () => (
-                <Tab.Pane className="tabs-card">
+    const getPanes = () => {
+        const obj = [
+            {
+                menuItem: t('information'),
+                render: () => (
                     <Information form={form} onChange={onChangeForm} settings={settings}/>
-                </Tab.Pane>
-            ),
-        },
-        {
-            menuItem: t('route'),
-            render: () => (
-                <Tab.Pane className="tabs-card">
+                ),
+            },
+            {
+                menuItem: t('route'),
+                render: () => (
                     <Routes
                         form={form}
                         routeActiveIndex={routeActiveIndex}
@@ -41,47 +51,40 @@ const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, setti
                         tabChange={handleTabChange}
                         onChange={onChangeForm}
                     />
-                </Tab.Pane>
-            ),
-        },
-        {
-            menuItem: t('accounts'),
-            render: () => (
-                <Tab.Pane className="tabs-card">
-                    <Accounts form={form} settings={settings} onChange={onChangeForm}/>
-                </Tab.Pane>
-            ),
-        },
-    ];
+                ),
+            },
+            {
+                menuItem: t('accounts'),
+                render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}/>,
+            },
+        ];
 
-    if (userPermissions.includes(10) || userPermissions.includes(11)) {
-        getPanes.push({
-            menuItem: t('documents'),
-            render: () => (
-                <Tab.Pane className="tabs-card">
+        if (userPermissions.includes(10) || userPermissions.includes(11)) {
+            obj.push({
+                menuItem: t('documents'),
+                render: () => (
                     <Documents
                         gridName={name}
                         cardId={id}
                         isEditPermissions={userPermissions.includes(11)}
                     />
-                </Tab.Pane>
-            ),
-        });
-    }
+                ),
+            });
+        }
 
-    if (userPermissions.includes(12)) {
-        getPanes.push({
-            menuItem: t('history'),
-            render: () => (
-                <Tab.Pane className="tabs-card">
-                    <History cardId={id} status={form.status}/>
-                </Tab.Pane>
-            ),
-        });
-    }
+        if (userPermissions.includes(12)) {
+            obj.push({
+                menuItem: t('history'),
+                render: () => <History cardId={id} status={form.status}/>,
+            });
+        }
+
+        return obj;
+    };
 
     return (
-        <div className="vertical-menu-card">
+        <>
+            {/*<div className="vertical-menu-card">
             <Menu vertical>
                 <Menu.Item header>Заказы</Menu.Item>
                 {orders.map(order => (
@@ -99,7 +102,16 @@ const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, setti
             <div className="shipping-card-content">
                 <Tab panes={getPanes}/>
             </div>
-        </div>
+        </div>*/}
+            <CardLayout
+                title={title}
+                actionsFooter={actionsFooter}
+                actionsHeader={actionsHeader}
+                content={getPanes}
+                onClose={onClose}
+                loading={false}
+            />
+        </>
     );
 };
 

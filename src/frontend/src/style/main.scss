@@ -261,6 +261,11 @@ i.blue.icon {
     .ui.checkbox {
         padding: 4px 0;
     }
+
+    &_history {
+        max-height: 500px;
+        overflow: auto;
+    }
 }
 
 .ext-tabs-card {
@@ -327,6 +332,15 @@ i.blue.icon {
     justify-content: space-between;
 }
 
+.grid-card-header {
+    display: flex;
+    align-items: center;
+
+    > div:not(:last-child) {
+        margin-right: 12px;
+    }
+}
+
 .history-who {
     font-size: 12px;
     font-weight: 500;
@@ -364,7 +378,8 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.disabled.input, .ui.input:not(.disabled) input[disabled] {
+.ui.disabled.input,
+.ui.input:not(.disabled) input[disabled] {
     opacity: 1 !important;
 }
 

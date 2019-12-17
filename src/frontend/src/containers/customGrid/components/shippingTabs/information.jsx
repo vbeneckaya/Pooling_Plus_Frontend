@@ -8,7 +8,7 @@ const Information = ({form = {}, onChange, settings}) => {
     const {t} = useTranslation();
 
     return (
-        <Form>
+        <Form className="tabs-card">
             <Grid>
                 {/* <Grid.Row>
                     <Grid.Column>

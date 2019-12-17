@@ -6,7 +6,7 @@ import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
 
 const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     const dispatch = useDispatch();
-    const {routePoints: points} = form;
+    const {routePoints: points = []} = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
     useEffect(() => {
@@ -30,6 +30,8 @@ const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     }, [points]);
 
     const pointsTabs = [];
+
+    console.log('form', form);
 
     points.forEach((point, i) => {
         const state = stateColors.find(x => x.name === point.vehicleStatus);
@@ -60,7 +62,7 @@ const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     });
 
     return (
-        <div>
+        <div className="tabs-card">
             <Tab
                 className="all-tabs"
                 panes={pointsTabs}

@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 import {withRouter} from 'react-router-dom';
 
-import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
+import {Button, Confirm, Dimmer, Dropdown, Icon, Loader, Modal, Popup} from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -26,15 +26,6 @@ import {
 import {ORDERS_GRID} from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
-
-const getModal = {
-    orders: <OrderModal/>,
-    shippings: <ShippingModal/>,
-};
-
-const SelfComponent = props => {
-    return React.cloneElement(<Card/>, props);
-};
 
 const Card = props => {
     const {t} = useTranslation();
@@ -206,7 +197,6 @@ const Card = props => {
         );
     };
 
-
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
@@ -220,7 +210,12 @@ const Card = props => {
                     <Button color="grey" onClick={onClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" disabled={disableSave} loading={progress} onClick={handleSave}>
+                    <Button
+                        color="blue"
+                        disabled={disableSave}
+                        loading={progress}
+                        onClick={handleSave}
+                    >
                         {t('SaveButton')}
                     </Button>
                 </>
@@ -229,11 +224,50 @@ const Card = props => {
         [form, disableSave, progress],
     );
 
+    const getActionsHeader = useCallback(() => {
+        return (
+            <div className="grid-card-header">
+                {name === ORDERS_GRID && form.shippingId ? (
+                    <div className="link-cell">{t('open_shipping', {number: form.shippingNumber})}</div>
+                ) : null}
+                <Dropdown
+                    icon="ellipsis horizontal"
+                    floating
+                    button
+                    pointing="top right"
+                    className="icon"
+                >
+                    <Dropdown.Menu>
+                        <Dropdown.Menu scrolling>
+                            {
+                                actions && actions.map(action => (
+                                        <Dropdown.Item
+                                            key={action.name}
+                                            text={t(action.name)}
+                                            label={{
+                                                color: action.color,
+                                                empty: true,
+                                                circular: true,
+                                            }}
+                                            onClick={() => invokeAction(action.name)}
+                                        />
+                                    )
+                                )
+                            }
+                        </Dropdown.Menu>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
+        );
+    }, [form]);
+
     return (
         <>
             {name === ORDERS_GRID ? (
                 <OrderCard
                     {...props}
+                    id={id}
+                    name={name}
                     form={form}
                     title={title}
                     settings={settings}
@@ -242,18 +276,21 @@ const Card = props => {
                     onClose={onClose}
                     onChangeForm={onChangeForm}
                     actionsFooter={getActionsFooter}
+                    actionsHeader={getActionsHeader}
                 />
             ) : (
                 <ShippingCard
                     {...props}
                     title={title}
+                    id={id}
+                    name={name}
                     form={form}
-                    load={loadCard}
                     settings={settings}
                     error={error}
                     onClose={onClose}
                     onChangeForm={onChangeForm}
                     actionsFooter={getActionsFooter}
+                    actionsHeader={getActionsHeader}
                 />
             )}
             <Confirm

@@ -25,6 +25,7 @@ const OrderCard = ({
                        title,
                        onClose,
                        actionsFooter,
+                       actionsHeader,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
@@ -95,10 +96,11 @@ const OrderCard = ({
 
     return (
         <>
-            {form.id ? (
+            {id ? (
                 <CardLayout
                     title={title}
                     actionsFooter={actionsFooter}
+                    actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}
                     loading={false}

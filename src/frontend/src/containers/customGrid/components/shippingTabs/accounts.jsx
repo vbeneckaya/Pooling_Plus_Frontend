@@ -8,7 +8,7 @@ const Accounts = ({form = {}, onChange, settings}) => {
     const {t} = useTranslation();
 
     return (
-        <Form>
+        <Form className="tabs-card">
             <Grid>
                 <Grid.Row columns={2} stretched>
                     <Grid.Column>
