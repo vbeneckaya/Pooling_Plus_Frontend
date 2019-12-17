@@ -22,6 +22,9 @@ const OrderCard = ({
     uniquenessNumberCheck,
     settings,
     error,
+                       title,
+                       onClose,
+                       actionsFooter,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
@@ -90,24 +93,21 @@ const OrderCard = ({
         return obj;
     };
 
-    const handleClose = () => {};
-    const getActionsFooter = () => {};
-
     return (
         <>
             {form.id ? (
                 <CardLayout
-                    title={''}
-                    actionsFooter={getActionsFooter}
+                    title={title}
+                    actionsFooter={actionsFooter}
                     content={getPanes}
-                    onClose={handleClose}
+                    onClose={onClose}
                     loading={false}
                 />
             ) : (
                 <CardLayout
-                    title={''}
-                    actionsFooter={getActionsFooter}
-                    onClose={handleClose}
+                    title={title}
+                    actionsFooter={actionsFooter}
+                    onClose={onClose}
                     loading={false}
                 >
                     <CreateOrder

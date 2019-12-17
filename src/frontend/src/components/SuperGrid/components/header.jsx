@@ -19,10 +19,10 @@ import {
     setRepresentationRequest,
 } from '../../../ducks/representations';
 import AllFilters from './all_filters';
-import Icon from "../../CustomIcon";
+import Icon from '../../CustomIcon';
 
 const Header = ({
-    createButton,
+                    isCreateBtn,
     searchValue,
     searchOnChange,
     counter,
@@ -33,6 +33,7 @@ const Header = ({
     name,
     setSelected,
     filter,
+                    goToCard,
 }) => {
     const { t } = useTranslation();
 
@@ -95,6 +96,10 @@ const Header = ({
                 },
             }),
         );
+    };
+
+    const handleGoToCard = () => {
+        goToCard(false, null, name);
     };
 
     return (
@@ -185,7 +190,13 @@ const Header = ({
                     <span className="records-counter">{t('totalCount', {count: counter})}</span>
                 </Grid.Column>
                 <Grid.Column width={10} className="grid-right-elements">
-                    {createButton}
+                    {isCreateBtn && (
+                        <Popup
+                            content={t('add_record')}
+                            position="bottom right"
+                            trigger={<Button icon="add" onClick={handleGoToCard}/>}
+                        />
+                    )}
                     {isImportBtn && (
                         <Popup
                             content={t('importFromExcel')}

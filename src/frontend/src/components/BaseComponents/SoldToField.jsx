@@ -15,8 +15,6 @@ const SoldToField = props => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    console.log('value', value);
-
     const valuesList = useSelector(state => valuesListSelector(state, 'soldTo')) || [];
     const soldToItem = value ? valuesList.find(item => item.value === value.value) || {} : {};
     const columns = useSelector(state => columnsSelector(state, 'warehouses')) || [];
@@ -63,7 +61,6 @@ const SoldToField = props => {
     }, []);
 
     useEffect(() => {
-        console.log('^^', value);
         if (value && Object.keys(value).length && valuesList.length && !valuesList.find(item => item.value === value.value)) {
             dispatch(
                 addError({

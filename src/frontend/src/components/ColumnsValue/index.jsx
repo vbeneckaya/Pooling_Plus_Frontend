@@ -33,9 +33,9 @@ const CellValue = ({
                        t,
                        isDisabled,
                        cardLink,
-                       history,
                        gridName,
                        rowId,
+                       goToCard
                    }) => {
     if (type === SELECT_TYPE) {
         return (
@@ -64,7 +64,7 @@ const CellValue = ({
     }
 
     if (type === LABELS_TYPE) {
-        console.log(value);
+
         return (
             <>
                 {!value
@@ -123,12 +123,12 @@ const CellValue = ({
         ) : value;*/
 
         const handleGoToCard = () => {
-            history.push(cardLink.replace(':id', rowId).replace(':name', gridName));
+            goToCard(true, rowId, gridName);
         };
 
         return (
             <>
-                {cardLink ? (
+                {goToCard ? (
                     <div className="link-cell" onClick={handleGoToCard}>
                         <TextCropping width={width} indexColumn={indexColumn}>
                             {value}

@@ -142,7 +142,7 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
     };
 
     return (
-        <>
+        <div className="tabs-card">
             <Grid>
                 <Grid.Row columns="equal">
                     <Grid.Column width={4}>
@@ -162,7 +162,7 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
                         </Button>
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row>
+                <Grid.Row className="padding-14">
                     <Table className="wider container-margin-top-bottom">
                         <Table.Header>
                             <Table.Row>
@@ -258,7 +258,7 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
                     </Table>
                 </Grid.Row>
             </Grid>
-        </>
+        </div>
     );
 };
 

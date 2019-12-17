@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
+import {withRouter} from 'react-router-dom';
 
 import {Button, Confirm, Dimmer, Loader, Modal} from 'semantic-ui-react';
 import {
@@ -23,8 +24,8 @@ import {
     progressActionNameSelector,
 } from '../../ducks/gridActions';
 import {ORDERS_GRID} from '../../constants/grids';
-import OrderCard from "./components/orderCard";
-import ShippingCard from "./components/shippingCard";
+import OrderCard from './components/orderCard';
+import ShippingCard from './components/shippingCard';
 
 const getModal = {
     orders: <OrderModal/>,
@@ -38,18 +39,23 @@ const SelfComponent = props => {
 const Card = props => {
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    const {match} = props;
+    const {match, history, location} = props;
     const {params = {}} = match;
     const {name, id} = params;
 
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
     let [confirmation, setConfirmation] = useState({open: false});
-    let [isNotUniqueNumber, setIsNotUnqueNumber] = useState(false);
 
     const title = useMemo(
-        () => (id ? t(`edit_${name}`) : t(`new_${name}`)),
-        [name, id],
+        () =>
+            id
+                ? t(`edit_${name}`, {
+                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
+                    status: t(form.status),
+                })
+                : t(`new_${name}`),
+        [name, id, form],
     );
 
     const card = useSelector(state => cardSelector(state));
@@ -98,15 +104,10 @@ const Card = props => {
         );
     };
 
-
-
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
-
-            setNotChangeForm(true);
             dispatch(clearGridCard());
-            setForm({});
-            setIsNotUnqueNumber(false);
+            closeConfirmation();
         } else {
             showConfirmation(
                 t('confirm_close_dictionary'),
@@ -127,7 +128,6 @@ const Card = props => {
             [name]: value,
         }));
     }, []);
-
 
     const saveOrEditForm = () => {
         dispatch(
@@ -155,7 +155,10 @@ const Card = props => {
     };
 
     const closeConfirmation = () => {
-        setConfirmation({open: false});
+        history.push({
+            pathname: location.state.pathname,
+            state: {...location.state},
+        });
     };
 
     const showConfirmation = (content, onConfirm, onCancel) => {
@@ -203,10 +206,28 @@ const Card = props => {
         );
     };
 
+
     const loading = useSelector(state => progressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
     const disableSave = progressActionName || notChangeForm;
+    const progress = false;
+
+    const getActionsFooter = useCallback(
+        () => {
+            return (
+                <>
+                    <Button color="grey" onClick={onClose}>
+                        {t('CancelButton')}
+                    </Button>
+                    <Button color="blue" disabled={disableSave} loading={progress} onClick={handleSave}>
+                        {t('SaveButton')}
+                    </Button>
+                </>
+            );
+        },
+        [form, disableSave, progress],
+    );
 
     return (
         <>
@@ -214,22 +235,25 @@ const Card = props => {
                 <OrderCard
                     {...props}
                     form={form}
-                    load={loadCard}
+                    title={title}
                     settings={settings}
                     uniquenessNumberCheck={handleUniquenessCheck}
                     error={error}
                     onClose={onClose}
                     onChangeForm={onChangeForm}
+                    actionsFooter={getActionsFooter}
                 />
             ) : (
                 <ShippingCard
                     {...props}
+                    title={title}
                     form={form}
                     load={loadCard}
                     settings={settings}
                     error={error}
                     onClose={onClose}
                     onChangeForm={onChangeForm}
+                    actionsFooter={getActionsFooter}
                 />
             )}
             <Confirm

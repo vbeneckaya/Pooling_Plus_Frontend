@@ -13,6 +13,7 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
+import {withRouter} from "react-router-dom";
 
 
 const initState = (storageFilterItem, storageSortItem) => ({
@@ -223,8 +224,6 @@ class SuperGrid extends Component {
 
         let newFilter = {};
 
-        console.log('sort', sort, columns.find(item => item.name === sort.name));
-
         if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
             this.setState({
                 sort: {}
@@ -286,7 +285,6 @@ class SuperGrid extends Component {
         columns.forEach(item => {
             sum = sum + item.width + columns.length + 50;
         });
-        console.log('sum', sum);
 
         this.timer = setTimeout(() => {
             const {editRepresentation, representationName, name, getRepresentations} = this.props;
@@ -303,6 +301,18 @@ class SuperGrid extends Component {
         }, 2000);
     };
 
+    handleGoToCard = (isEdit, id, name) => {
+        const {history, cardLink, newLink} = this.props;
+
+        history.push({
+            pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
+            state: {
+                ...this.mapData().filter,
+                pathname: history.location.pathname
+            }
+        })
+    };
+
     render() {
         const { filters, sort, fullText, selectedRows, columns } = this.state;
         const {
@@ -316,7 +326,7 @@ class SuperGrid extends Component {
             confirmation = {},
             closeConfirmation = () => {},
             groupActions,
-            createButton,
+            isCreateBtn,
             extGrid,
             onlyOneCheck,
             checkAllDisabled,
@@ -333,16 +343,8 @@ class SuperGrid extends Component {
                     Loading
                 </Loader>
                 <HeaderSearchGrid
-                    createButton={
-                        createButton && (
-                            <CreateButton
-                                button={createButton}
-                                loadList={this.loadList}
-                                stopUpdate={autoUpdateStop}
-                                name={name}
-                            />
-                        )
-                    }
+                    isCreateBtn={isCreateBtn}
+                    goToCard={this.handleGoToCard}
                     name={name}
                     loadList={this.loadList}
                     searchValue={fullText}
@@ -393,7 +395,7 @@ class SuperGrid extends Component {
                             rows={rows}
                             progress={progress}
                             name={name}
-                            cardLink={cardLink}
+                            goToCard={this.handleGoToCard}
                             actions={actions}
                             onlyOneCheck={onlyOneCheck}
                             loadList={this.loadList}
@@ -447,4 +449,4 @@ SuperGrid.defaultProps = {
     disabledCheck: () => {},
 };
 
-export default withTranslation()(SuperGrid);
+export default withTranslation()(withRouter(SuperGrid));

@@ -36,8 +36,6 @@ const CardLayout = ({
         [content],
     );
 
-    console.log('content', contentRef && contentRef.current && contentRef.current.offsetWidth);
-
     return (
         <div>
             <div className="card-header-panel">

@@ -29,7 +29,7 @@ const Documents = ({gridName, cardId, isEditPermissions}) => {
     const loading = useSelector(state => progressSelector(state));
 
     return (
-        <div className="flex-container">
+        <div className="flex-container tabs-card">
             <Dimmer active={loading} inverted>
                 <Loader size="huge">Loading</Loader>
             </Dimmer>

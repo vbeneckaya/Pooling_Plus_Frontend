@@ -11,7 +11,7 @@ import Card from '../../../containers/customGrid/card';
 import {useSelector} from 'react-redux';
 import {userPermissionsSelector} from '../../../ducks/profile';
 
-const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, settings}) => {
+const ShippingCard = ({form, onChangeForm, name, id, onClose: beforeClose, settings, title}) => {
     const {t} = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state));
     const {orders = []} = form;

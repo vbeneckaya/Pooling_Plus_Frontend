@@ -30,7 +30,7 @@ const BodyCell = ({
     rowId,
     rowNumber,
     cardLink,
-    history,
+                      goToCard,
 }) => {
     const contextRef = useRef(null);
 
@@ -69,7 +69,6 @@ const BodyCell = ({
     };
 
     const handleOpen = () => {
-        console.log('open', value);
         setOpen(true);
         setValue(valueText ? { value, name: valueText } : value);
     };
@@ -140,8 +139,7 @@ const BodyCell = ({
                             gridName={gridName}
                             rowId={rowId}
                             t={t}
-                            history={history}
-                            cardLink={cardLink}
+                            goToCard={goToCard}
                         />
                     </div>
                     <div>

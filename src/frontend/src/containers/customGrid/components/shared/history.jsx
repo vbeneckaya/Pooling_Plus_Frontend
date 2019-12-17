@@ -26,7 +26,7 @@ const History = ({cardId, status}) => {
     const loading = useSelector(state => progressSelector(state));
 
     return (
-        <div>
+        <div className="tabs-card">
             <Grid>
                 <Dimmer active={loading} inverted>
                     <Loader size="huge">Loading</Loader>

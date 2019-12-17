@@ -32,7 +32,7 @@ class Result extends Component {
         const {
             columns = [],
             rows = [],
-            cardLink,
+            goToCard,
             actions,
             isShowActions,
             selectedRows,
@@ -42,11 +42,8 @@ class Result extends Component {
             progress,
             t,
             checkForEditing,
-            invokeMassUpdate,
-            history
+            invokeMassUpdate
         } = this.props;
-
-        console.log('history', history)
 
         return (
             <Table.Body>
@@ -86,11 +83,10 @@ class Result extends Component {
                                 indexColumn={indexColumn}
                                 loadList={loadList}
                                 gridName={name}
-                                cardLink={cardLink}
+                                goToCard={goToCard}
                                 t={t}
                                 checkForEditing={checkForEditing}
                                 invokeMassUpdate={invokeMassUpdate}
-                                history={history}
                             />
                         ))}
                         <Table.Cell/>
@@ -149,9 +145,9 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default withTranslation()(withRouter(
+export default withTranslation()(
     connect(
         null,
         mapDispatchToProps,
     )(Result),
-));
+);

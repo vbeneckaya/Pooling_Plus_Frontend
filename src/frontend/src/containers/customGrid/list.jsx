@@ -143,7 +143,7 @@ class List extends Component {
                     groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
                     modalCard={this.modalCard}
-                    createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
+                    isCreateBtn={isCreateBtn}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
                     newLink={isCreateBtn ? GRID_NEW_LINK : null}

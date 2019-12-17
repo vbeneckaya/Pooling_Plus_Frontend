@@ -10,8 +10,6 @@ const PasswordField = ({value = "", onChange, noLabel, isDisabled, isRequired, t
         setShow(prevState => !prevState);
     };
 
-    console.log('value', value);
-
     return (
         <Form.Field>
             {!noLabel ? (

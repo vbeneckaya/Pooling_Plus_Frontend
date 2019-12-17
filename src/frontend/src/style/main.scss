@@ -138,6 +138,10 @@ i.blue.icon {
     }
 }
 
+.padding-14 {
+    padding: 14px !important;
+}
+
 .card-columns {
     padding: 8px 0;
     display: flex !important;
@@ -231,9 +235,7 @@ i.blue.icon {
 }
 
 .tabs-card {
-    height: 67vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 24px 32px;
 
     .ui.grid > .row:not(:last-child) {
         padding-bottom: 0 !important;

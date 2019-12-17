@@ -25,7 +25,6 @@ const Information = ({
     const { t } = useTranslation();
 
     const handleChangeSoldTo = useCallback((e, {name, value}) => {
-        console.log('value');
         onChange(e, {
             name,
             value: value.value ? {

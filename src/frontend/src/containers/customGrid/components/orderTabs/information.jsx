@@ -25,7 +25,6 @@ const Information = ({
     const {t} = useTranslation();
 
     const handleChangeSoldTo = useCallback((e, {name, value}) => {
-        console.log('value');
         onChange(e, {
             name,
             value: value.value ? {
@@ -39,7 +38,7 @@ const Information = ({
 
 
     return (
-        <Form>
+        <Form className="tabs-card">
             <Grid>
                 <Grid.Row>
                     <Grid.Column>
