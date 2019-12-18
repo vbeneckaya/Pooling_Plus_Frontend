@@ -1,7 +1,10 @@
 using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.FieldProperties;
@@ -54,8 +57,7 @@ namespace Application.Services.TransportCompanies
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
-            entity.ContractNumber = dto.ContractNumber;
-            entity.DateOfPowerOfAttorney = dto.DateOfPowerOfAttorney;
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -67,8 +69,12 @@ namespace Application.Services.TransportCompanies
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
+            var companyId = dto.CompanyId?.Value?.ToGuid();
+
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
-                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower() && x.Id.ToString() != dto.Id)
+                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower())
+                                            .Where(x => x.Id.ToString() != dto.Id)
+                                            .Where(x =>  x.CompanyId == null || x.CompanyId == companyId)
                                             .Any();
 
             if (hasDuplicates)
@@ -85,10 +91,30 @@ namespace Application.Services.TransportCompanies
             {
                 Id = entity.Id.ToString(),
                 Title = entity.Title,
-                ContractNumber = entity.ContractNumber,
-                DateOfPowerOfAttorney = entity.DateOfPowerOfAttorney,
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 IsActive = entity.IsActive
             };
+        }
+
+        protected override IEnumerable<TransportCompanyDto> FillLookupNames(IEnumerable<TransportCompanyDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+             .Select(x => x.CompanyId.Value.ToGuid())
+             .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
+                yield return dto;
+            }
         }
 
         protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
@@ -102,6 +128,18 @@ namespace Application.Services.TransportCompanies
         {
             return _dataService.GetDbSet<TransportCompany>()
                 .FirstOrDefault(i => i.Title == dto.Title);
+        }
+
+        protected override ExcelMapper<TransportCompanyDto> CreateExcelMapper()
+        {
+            return base.CreateExcelMapper()
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
     }
 }

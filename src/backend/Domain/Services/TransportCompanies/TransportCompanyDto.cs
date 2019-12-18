@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.TransportCompanies
 {
@@ -10,13 +11,11 @@ namespace Domain.Services.TransportCompanies
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string Title { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(2)]
-        public string ContractNumber { get; set; }
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(2)]
+        public LookUpDto CompanyId { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(3)]
-        public string DateOfPowerOfAttorney { get; set; }
-
-        [FieldType(FieldType.Boolean), OrderNumber(4)]
+        [FieldType(FieldType.Boolean), OrderNumber(3)]
         public bool? IsActive { get; set; }
+        public object CarrierId { get; set; }
     }
 }
