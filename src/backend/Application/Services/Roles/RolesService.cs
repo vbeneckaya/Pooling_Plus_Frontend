@@ -68,7 +68,6 @@ namespace Application.Services.Roles
 
             var entities = _dataService.GetDbSet<Role>()
                 .Where(x => x.IsActive)
-                .Where(x => user.CompanyId == null || user.CompanyId == x.CompanyId)
                 .OrderBy(x => x.Name)
                 .ToList();
 
@@ -206,6 +205,25 @@ namespace Application.Services.Roles
             return _dataService.GetDbSet<Role>()
                 .Where(i => i.Name == dto.Name)
                 .FirstOrDefault();
+        }
+
+        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var entities = _dataService.GetDbSet<Role>()
+                .Where(x => x.IsActive);
+
+            if (companyId.HasValue)
+            {
+                entities = entities.Where(i => i.CompanyId == companyId.Value);
+            }
+
+            return entities.OrderBy(x => x.Name)
+                .Select(i => new LookUpDto
+                {
+                    Name = i.Name,
+                    Value = i.Id.ToString()
+                });
         }
     }
 }

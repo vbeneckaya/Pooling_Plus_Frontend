@@ -1,9 +1,11 @@
 using API.Controllers.Shared;
 using Domain.Persistables;
 using Domain.Services.Roles;
+using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
@@ -81,6 +83,15 @@ namespace API.Controllers
                 Log.Error(e, $"Failed to get actions list");
                 return StatusCode(500);
             }
+        }
+
+        /// <summary>
+        /// Получение данных для выпадающего списка отфильтрованного по юр. лицу
+        /// </summary>
+        [HttpGet("forSelectByCompany/{companyId}")]
+        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
+        {
+            return _service.ForSelectByCompany(companyId);
         }
     }
 }

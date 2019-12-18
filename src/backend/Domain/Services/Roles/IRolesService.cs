@@ -15,5 +15,7 @@ namespace Domain.Services.Roles
         RoleActionsDto GetAllActions();
 
         RoleDto MapFromEntityToDto(Role entity);
+
+        IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId);
     }
 }
