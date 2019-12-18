@@ -69,7 +69,7 @@ namespace Application.BusinessModels.Orders.Triggers
                     if (entity.VehicleTypeId.HasValue)
                         newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
                     
-                    _historyService.Save(shipping.Id, "fieldChangedIdBy",
+                    _historyService.Save(shipping.Id, "fieldChangedBy",
                         nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
                         oldVehicleType, newVehicleType, "onChangeInIncludedOrder");
 
