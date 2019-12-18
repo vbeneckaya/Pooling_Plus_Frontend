@@ -298,6 +298,11 @@
         public string DeliveryType { get; set; }
 
         /// <summary>
+        /// Способ тарификации
+        /// </summary>
+        public string TarifficationType { get; set; }
+
+        /// <summary>
         /// Комментарий (причины отклонения от графика)
         /// </summary>
         public string DeviationsComment { get; set; }
@@ -311,5 +316,10 @@
         /// Фактическая стоимость, без НДС
         /// </summary>
         public string ActualDeliveryCost { get; set; }
+
+        /// <summary>
+        /// Тип ТС
+        /// </summary>
+        public string VehicleTypeId { get; set; }
     }
 }

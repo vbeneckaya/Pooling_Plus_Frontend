@@ -44,7 +44,12 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return shipping.Status == ShippingState.ShippingConfirmed;
+            return IsAvailable(shipping.Status);
+        }
+
+        public bool IsAvailable(ShippingState? shippingStatus)
+        {
+            return shippingStatus == ShippingState.ShippingConfirmed;
         }
     }
 }

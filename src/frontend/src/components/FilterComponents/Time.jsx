@@ -38,6 +38,7 @@ const Facet = ({ name, text, value, onChange, sort, setSort }) => {
             fluid
             name={name}
             autoComplete="off"
+            autoFocus
             value={value || ''}
             placeholder={t(name)}
             label={{ basic: true, content: '' }}

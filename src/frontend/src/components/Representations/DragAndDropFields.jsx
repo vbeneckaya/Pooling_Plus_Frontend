@@ -87,8 +87,8 @@ class DnDList extends React.Component {
     componentDidUpdate(prevProps) {
         if (prevProps.left !== this.props.left || prevProps.right !== this.props.right) {
             this.state = {
-                items: sortFunc(this.props.left.map(x => ({id: x.name, content: x})), this.props.t, 'id'),
-                selected: this.props.right.map(x => ({id: x.name, content: x})),
+                items: sortFunc(this.props.left.map(x => ({id: x.displayNameKey, content: x})), this.props.t, 'id'),
+                selected: this.props.right.map(x => ({id: x.displayNameKey, content: x})),
             };
         }
     }
@@ -202,7 +202,7 @@ const DroppableLabel = ({ items, droppableId, name, t, search }) => (
                                             )}
                                         >
                                             <Label style={{ width: '100%' }}>
-                                                {t(item.content.name)}
+                                                {t(item.content.displayNameKey)}
                                             </Label>
                                         </div>
                                     )}

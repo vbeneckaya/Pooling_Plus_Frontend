@@ -9,6 +9,11 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
+        <member name="M:API.Controllers.ClientNameController.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
         <member name="T:API.Controllers.FieldPropertiesController">
             <summary>
             Настройка полей
@@ -92,6 +97,16 @@
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
             Поиск по номеру
+            </summary>
+        </member>
+        <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
+            <summary>
+            Все доступные статусы с цветами
+            </summary>
+        </member>
+        <member name="M:API.Controllers.OrderShippingStatusController.ForSelect">
+            <summary>
+            Все доступные статусы
             </summary>
         </member>
         <member name="M:API.Controllers.ProfileController.Info">

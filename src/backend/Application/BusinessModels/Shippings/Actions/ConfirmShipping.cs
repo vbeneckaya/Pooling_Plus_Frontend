@@ -1,5 +1,4 @@
 ﻿using Application.BusinessModels.Shared.Actions;
-using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -47,7 +46,12 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return shipping.Status == ShippingState.ShippingRequestSent;
+            return IsAvailable(shipping.Status);
+        }
+
+        public bool IsAvailable(ShippingState? shippingStatus)
+        {
+            return shippingStatus == ShippingState.ShippingRequestSent;
         }
     }
 }

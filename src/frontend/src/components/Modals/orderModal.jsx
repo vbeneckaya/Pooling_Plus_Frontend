@@ -50,6 +50,7 @@ const OrderModal = ({
                         onChange={onChangeForm}
                         gridName={name}
                         load={load}
+                        error={error}
                         settings={settings}
                     />
                 </Tab.Pane>
@@ -59,7 +60,7 @@ const OrderModal = ({
             menuItem: t('returns'),
             render: () => (
                 <Tab.Pane className="tabs-card">
-                    <Returns form={form} settings={settings} onChange={onChangeForm} />
+                    <Returns form={form} settings={settings} error={error} onChange={onChangeForm}/>
                 </Tab.Pane>
             ),
         },

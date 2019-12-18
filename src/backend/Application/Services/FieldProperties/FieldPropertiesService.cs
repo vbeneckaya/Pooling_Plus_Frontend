@@ -8,6 +8,7 @@ using Domain.Persistables;
 using Domain.Services.FieldProperties;
 using Domain.Services.Orders;
 using Domain.Services.Shippings;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 
@@ -39,6 +40,8 @@ namespace Application.Services.FieldProperties
 
             if (userId != null)
                 roleId = _dataService.GetById<User>(userId.Value)?.RoleId;
+
+            string lang = _userProvider.GetCurrentUser()?.Language;
 
             var fieldMatrixItems = _dataService.GetDbSet<FieldPropertyItem>()
                                                .Where(x => x.ForEntity == forEntityType
@@ -87,6 +90,7 @@ namespace Application.Services.FieldProperties
                 result.Add(new FieldForFieldProperties
                 {
                     FieldName = fieldName.Name,
+                    DisplayName = fieldName.DisplayNameKey.Translate(lang),
                     AccessTypes = accessTypes,
                     isReadOnly = fieldName.IsReadOnly,
                     isHidden = isHidden
@@ -195,6 +199,7 @@ namespace Application.Services.FieldProperties
             
             
             var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
+                                                            && x.RoleId == roleId
                                             && x.FieldName == dto.FieldName);
 
             if (visibilityItem == null)

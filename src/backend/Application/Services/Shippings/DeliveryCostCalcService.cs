@@ -27,8 +27,6 @@ namespace Application.Services.Shippings
             if (shipping.Status == null
                 || !validState.Contains(shipping.Status.Value)
                 || shipping.CarrierId == null
-                || shipping.VehicleTypeId == null
-                || shipping.BodyTypeId == null
                 || shipping.TarifficationType == null)
             {
                 return;
@@ -36,25 +34,26 @@ namespace Application.Services.Shippings
 
             var orders = _commonDataService.GetDbSet<Order>()
                                            .Where(x => x.ShippingId == shipping.Id)
+                                           .ToList()
+                                           .Where(x => !string.IsNullOrEmpty(x.ShippingCity)
+                                                    && !string.IsNullOrEmpty(x.DeliveryCity))
                                            .ToList();
-
-            var hasSkippingOrders = orders.Where(x => x.DeliveryType != DeliveryType.Delivery
-                                                    || x.PalletsCount == null
-                                                    || x.PalletsCount <= 0
-                                                    || x.ShippingDate == null
-                                                    || x.DeliveryDate == null
-                                                    || string.IsNullOrEmpty(x.ShippingCity)
-                                                    || string.IsNullOrEmpty(x.DeliveryCity))
-                                          .Any();
-            if (hasSkippingOrders)
-            {
-                return;
-            }
 
             Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
 
             foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientName }))
             {
+                var hasIncompleteOrders = group.Where(x => x.DeliveryType != DeliveryType.Delivery
+                                                            || x.PalletsCount == null
+                                                            || x.PalletsCount <= 0
+                                                            || x.ShippingDate == null
+                                                            || x.DeliveryDate == null)
+                                               .Any();
+                if (hasIncompleteOrders)
+                {
+                    continue;
+                }
+
                 decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable());
                 foreach (var order in group)
                 {
@@ -87,6 +86,8 @@ namespace Application.Services.Shippings
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
                                            .Where(x => x.CarrierId == shipping.CarrierId
+                                                        && x.VehicleTypeId == null
+                                                        && x.BodyTypeId == null
                                                         && x.TarifficationType == shipping.TarifficationType
                                                         && x.ShipmentCity == shippingCity
                                                         && x.DeliveryCity == deliveryCity

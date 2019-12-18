@@ -6,6 +6,7 @@ using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
 using Application.BusinessModels.Tariffs.Triggers;
+using Application.Services;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
@@ -96,6 +97,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
+            services.AddScoped<IShippingTarifficationTypeDeterminer, ShippingTarifficationTypeDeterminer>();
             services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
 
             services.AddScoped<ITriggersService, TriggersService>();
@@ -107,6 +109,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
+            services.AddScoped<IClientNameService, ClientNameService>();
             services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
@@ -119,6 +122,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IBodyTypesService, BodyTypesService>();
             services.AddScoped<ITonnagesService, TonnagesService>();
             services.AddScoped<ICompaniesService, CompaniesService>();
+            services.AddScoped<IStateService, StateService>();
+            services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
@@ -178,8 +183,22 @@ namespace Infrastructure.Installers
             services.AddScoped<IGroupAppAction<Order>, UnionOrders>();
             services.AddScoped<IGroupAppAction<Order>, UnionOrdersInExisted>();
 
+            services.AddScoped<IAppAction<Order>, SendOrderShippingToTk>();
+            services.AddScoped<IAppAction<Order>, ConfirmOrderShipping>();
+            services.AddScoped<IAppAction<Order>, RejectRequestOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CancelRequestOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CompleteOrderShipping>();
+            services.AddScoped<IAppAction<Order>, CancelOrderShipping>();
+            services.AddScoped<IAppAction<Order>, ProblemOrderShipping>();
+            services.AddScoped<IAppAction<Order>, BillingOrderShipping>();
+            services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();
+            services.AddScoped<IAppAction<Order>, RollbackOrderShipping>();
+
             services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
+            services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
+            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
+            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeVehicleTypeId>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -196,6 +215,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)

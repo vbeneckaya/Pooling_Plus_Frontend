@@ -15,7 +15,7 @@ import {
 import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
-import { DICTIONARY_LINK, GRID_LINK } from '../../router/links';
+import {DICTIONARY_LIST_LINK, GRID_LINK} from '../../router/links';
 import Profile from '../../containers/users/profile';
 
 const Header = () => {
@@ -79,7 +79,7 @@ const Header = () => {
                                       className="large"
                                       key={item}
                                       as={Link}
-                                      to={DICTIONARY_LINK.replace(':name', item)}
+                                      to={DICTIONARY_LIST_LINK.replace(':name', item)}
                                       name={item}
                                       active={activeItem.includes(item)}
                                   >
@@ -117,7 +117,7 @@ const Header = () => {
                                                 <Dropdown.Item
                                                     key={item}
                                                     as={Link}
-                                                    to={DICTIONARY_LINK.replace(':name', item)}
+                                                    to={DICTIONARY_LIST_LINK.replace(':name', item)}
                                                     active={activeItem.includes(item)}
                                                     name={item}
                                                 >
