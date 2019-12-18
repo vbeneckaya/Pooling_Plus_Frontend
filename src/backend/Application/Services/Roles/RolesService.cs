@@ -64,8 +64,11 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var user = _userProvider.GetCurrentUser();
+
             var entities = _dataService.GetDbSet<Role>()
                 .Where(x => x.IsActive)
+                .Where(x => user.CompanyId == null || user.CompanyId == x.CompanyId)
                 .OrderBy(x => x.Name)
                 .ToList();
 
@@ -78,6 +81,7 @@ namespace Application.Services.Roles
                 };
             }
         }
+
         public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
         {
             var currentUserId = _userProvider.GetCurrentUserId();
