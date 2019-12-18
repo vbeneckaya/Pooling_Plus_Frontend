@@ -2,6 +2,7 @@
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.DocumentTypes;
@@ -15,7 +16,7 @@ using System.Linq;
 namespace Application.Services.DocumentTypes
 {
 
-    public class DocumentTypesService : DictonaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
+    public class DocumentTypesService : DictionaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
         public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                     IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
@@ -25,6 +26,7 @@ namespace Application.Services.DocumentTypes
         public override DetailedValidationResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
         {
             entity.Name = dto.Name;
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -45,6 +47,28 @@ namespace Application.Services.DocumentTypes
             }
 
             return result;
+        }
+
+        protected override IEnumerable<DocumentTypeDto> FillLookupNames(IEnumerable<DocumentTypeDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+             .Select(x => x.CompanyId.Value.ToGuid())
+             .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
+                yield return dto;
+            }
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -70,6 +94,7 @@ namespace Application.Services.DocumentTypes
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 IsActive = entity.IsActive
             };
         }

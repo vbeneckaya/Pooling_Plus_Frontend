@@ -348,5 +348,10 @@ namespace Domain.Persistables
         /// </summary>
         [ReferenceType(typeof(VehicleType))]
         public Guid? VehicleTypeId { get; set; }
+
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
     }
 }

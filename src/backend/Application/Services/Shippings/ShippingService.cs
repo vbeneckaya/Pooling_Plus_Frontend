@@ -133,6 +133,14 @@ namespace Application.Services.Shippings
                                         .Where(x => bodyTypeIds.Contains(x.Id))
                                         .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
@@ -151,6 +159,12 @@ namespace Application.Services.Shippings
                     && bodyTypes.TryGetValue(dto.BodyTypeId.Value, out BodyType bodyType))
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
                 }
 
                 yield return dto;
@@ -218,7 +232,9 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.DocumentsReturnDate)))
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
                     .ForMember(t => t.CostsConfirmedByShipper, e => e.MapFrom((s) => s.CostsConfirmedByShipper.GetValueOrDefault()))
-                    .ForMember(t => t.CostsConfirmedByCarrier, e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
+                    .ForMember(t => t.CostsConfirmedByCarrier, e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()))
+                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()));
 
                 cfg.CreateMap<ShippingDto, ShippingFormDto>();
 
@@ -233,7 +249,8 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")));
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
             });
             return result;
         }
@@ -251,6 +268,11 @@ namespace Application.Services.Shippings
                     string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
                     readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings, stateName, null, null, userId);
                 }
+            }
+            else 
+            {
+                var user = _userIdProvider.GetCurrentUser();
+                entity.CompanyId = user.CompanyId;
             }
 
             _mapper.Map(dto, entity);

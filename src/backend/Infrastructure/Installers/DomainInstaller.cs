@@ -51,6 +51,7 @@ using Domain.Services.Files;
 using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
+using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Profile;
@@ -122,6 +123,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITonnagesService, TonnagesService>();
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
+            services.AddScoped<ICompaniesService, CompaniesService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
