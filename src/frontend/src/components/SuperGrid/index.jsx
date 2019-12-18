@@ -85,6 +85,12 @@ class SuperGrid extends Component {
             const { columns } = this.props;
             const width = this.container.scrollWidth - 50;
 
+            this.setState({
+                columns: columns.map(item => ({
+                    ...item,
+                    width: item.width || parseInt(width / columns.length)
+                })),
+            });
             this.setState(
                 {
                     columns: columns.map(item => ({
