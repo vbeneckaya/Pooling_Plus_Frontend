@@ -85,6 +85,12 @@ namespace Application.Services.Articles
                 .ThenBy(i => i.Id);
         }
 
+        public override Article FindByKey(ArticleDto dto)
+        {
+            return _dataService.GetDbSet<Article>()
+                .FirstOrDefault(i => i.Nart == dto.Nart);
+        }
+
         private MapperConfiguration ConfigureMapper()
         {
             var result = new MapperConfiguration(cfg =>
