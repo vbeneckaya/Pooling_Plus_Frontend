@@ -97,8 +97,7 @@ class SuperGrid extends Component {
                         ...item,
                         width: item.width || parseInt(width / columns.length),
                     })),
-                },
-                this.updatingFilter,
+                }
             );
         }
     }
