@@ -66,7 +66,9 @@ namespace Application.BusinessModels.Orders.Triggers
                                 shipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInIncludedOrder");
                     
                             shipping.TarifficationType = tarifficationType;
-                            _calcService.UpdateDeliveryCost(shipping);
+
+                            if(!shipping.ManualTarifficationType)
+                                _calcService.UpdateDeliveryCost(shipping);
                         }
                     }
                 }

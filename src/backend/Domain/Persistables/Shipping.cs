@@ -224,6 +224,10 @@ namespace Domain.Persistables
         /// </summary>
         [IgnoreHistory]
         public DateTime? ShippingCreationDate { get; set; }
+        
+        [IgnoreHistory]
+        public bool ManualTarifficationType { get; set; }
+
 
         /// <summary>
         /// Юр. лицо

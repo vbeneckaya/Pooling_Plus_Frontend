@@ -73,7 +73,7 @@ class SuperGrid extends Component {
                     ...item,
                     width: item.width || parseInt(width / columns.length)
                 })),
-            }, this.updatingFilter);
+            });
         }
     }
 
@@ -223,7 +223,7 @@ class SuperGrid extends Component {
 
         let newFilter = {};
 
-        console.log('sort', sort, columns.find(item => item.name === sort.name));
+        console.log('vvv');
 
         if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
             this.setState({

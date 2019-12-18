@@ -40,7 +40,11 @@ namespace Application.BusinessModels.Shippings.Triggers
                     orderInShipping.TarifficationType = entity.TarifficationType;
                 }
             }
-            _calcService.UpdateDeliveryCost(entity);
+
+            if (!entity.ManualTarifficationType)
+                _calcService.UpdateDeliveryCost(entity);
+            else
+                entity.ManualTarifficationType = true;
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)
