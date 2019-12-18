@@ -52,9 +52,9 @@ namespace Application.BusinessModels.Orders.Triggers
                         
                         orderInShipping.VehicleTypeId = entity.VehicleTypeId;
                         
-                        _historyService.Save(orderInShipping.Id, "fieldChanged",
+                        _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                             nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
-                            oldVehicleType, newVehicleType);
+                            oldVehicleType, newVehicleType, "onChangeInOtherOrderInShipping");
                     }
                 }
 
@@ -69,10 +69,10 @@ namespace Application.BusinessModels.Orders.Triggers
                     if (entity.VehicleTypeId.HasValue)
                         newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
                     
-                    _historyService.Save(shipping.Id, "fieldChanged",
+                    _historyService.Save(shipping.Id, "fieldChangedIdBy",
                         nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
-                        oldVehicleType, newVehicleType);
-                    
+                        oldVehicleType, newVehicleType, "onChangeInIncludedOrder");
+
                     shipping.VehicleTypeId = entity.VehicleTypeId;
                     _calcService.UpdateDeliveryCost(shipping);
                 }

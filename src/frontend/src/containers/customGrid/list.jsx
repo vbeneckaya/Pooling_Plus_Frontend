@@ -73,12 +73,13 @@ class List extends Component {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
+        const actionsFromGrid = actions.filter(item => item.allowedFromGrid);
 
         let obj = {
-            require: actions.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            other: actions.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            order: actions.filter((item, index) => index >= 3).filter(item => item.group === "Order").map(item => this.mapActions(item, t, invokeAction, name)),
-            shipping: actions.filter((item, index) => index >= 3).filter(item => item.group === "Shipping").map(item => this.mapActions(item, t, invokeAction, name)),
+            require: actionsFromGrid.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
+            other: actionsFromGrid.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
+            order: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Order").map(item => this.mapActions(item, t, invokeAction, name)),
+            shipping: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Shipping").map(item => this.mapActions(item, t, invokeAction, name)),
         };
 
         return obj;

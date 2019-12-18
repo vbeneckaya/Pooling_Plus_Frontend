@@ -37,9 +37,9 @@ namespace Application.BusinessModels.Orders.Triggers
                 {
                     if (orderInShipping.TarifficationType != entity.TarifficationType)
                     {
-                        _historyService.Save(orderInShipping.Id, "fieldChanged",
+                        _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                             nameof(entity.TarifficationType).ToLowerFirstLetter(),
-                            orderInShipping.TarifficationType, entity.TarifficationType);
+                            orderInShipping.TarifficationType, entity.TarifficationType, "onChangeInOtherOrderInShipping");
                     
                         orderInShipping.TarifficationType = entity.TarifficationType;
                     }
@@ -47,9 +47,9 @@ namespace Application.BusinessModels.Orders.Triggers
 
                 if (shipping.TarifficationType != entity.TarifficationType)
                 {
-                    _historyService.Save(shipping.Id, "fieldChanged",
+                    _historyService.Save(shipping.Id, "fieldChangedBy",
                         nameof(shipping.TarifficationType).ToLowerFirstLetter(),
-                        shipping.TarifficationType, entity.TarifficationType);
+                        shipping.TarifficationType, entity.TarifficationType, "onChangeInIncludedOrder");
                     
                     shipping.TarifficationType = entity.TarifficationType;
                     _calcService.UpdateDeliveryCost(shipping);
