@@ -245,7 +245,7 @@ const Card = props => {
                     <Dropdown
                         text={t('orders')}
                         pointing="top right"
-                        className="link-cell"
+                        className="dropdown-blue"
                         scrolling
                     >
                         <Dropdown.Menu>
