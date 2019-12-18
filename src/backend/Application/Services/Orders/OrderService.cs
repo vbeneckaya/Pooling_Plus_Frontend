@@ -150,7 +150,8 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.UnloadingArrivalTime, new UnloadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.UnloadingDepartureTime, new UnloadingDepartureTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler(_dataService, _historyService))
-                .AddHandler(e => e.DeliveryCost, new DeliveryCostHandler(!isInjection));
+                .AddHandler(e => e.DeliveryCost, new DeliveryCostHandler(!isInjection))
+                .AddHandler(e => e.CarrierId, new CarrierHandler(_dataService, _historyService));
         }
 
         private MapperConfiguration ConfigureMapper()
