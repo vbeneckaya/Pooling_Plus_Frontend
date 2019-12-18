@@ -307,17 +307,16 @@ namespace Application.Shared
 
                 var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
 
+                if (trackConfig != null)
+                {
+                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
+                }
                 Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 _triggersService.Execute();
                 Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
                 sw.Restart();
-
-                if (trackConfig != null)
-                {
-                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
-                }
 
                 _dataService.SaveChanges();
                 Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
