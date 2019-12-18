@@ -2,6 +2,7 @@ using Application.BusinessModels.Shared.Actions;
 using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -16,18 +17,22 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Объеденить заказы
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(4)]
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
+        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
         public UnionOrders(ICommonDataService dataService, 
                            IHistoryService historyService, 
+                           IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
                            IShippingCalculationService shippingCalculationService,
                            IChangeTrackerFactory changeTrackerFactory)
             : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
+            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Orange;
         }
@@ -48,8 +53,8 @@ namespace Application.BusinessModels.Orders.Actions
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
             shipping.DeliveryType = DeliveryType.Delivery;
-            shipping.TarifficationType = TarifficationType.Ftl;
-            
+            shipping.TarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
+
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, orders, shipping, _historyService);

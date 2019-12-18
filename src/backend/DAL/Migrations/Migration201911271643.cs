@@ -2,7 +2,7 @@ using ThinkingHome.Migrator.Framework;
 
 namespace DAL.Migrations
 {
-    [Migration(201927111643)]
+    [Migration(201911271643)]
     public class AddRollbackActionsToRole : Migration
     {
         public override void Apply()

@@ -67,10 +67,10 @@ const Facet = ({ value, onChange, sort, setSort, name, source, getList }) => {
                         </label>
                     );
                     return (
-                        <Form.Field key={x.name}>
+                        <Form.Field key={x.value}>
                             <Checkbox
-                                value={x.name}
-                                checked={values.includes(x.name)}
+                                value={x.value}
+                                checked={values.includes(x.value)}
                                 onChange={toggle}
                                 label={label}
                             />

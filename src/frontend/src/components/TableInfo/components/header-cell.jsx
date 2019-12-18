@@ -26,7 +26,7 @@ const HeaderCellComponent = ({row}) => {
                     : null
             }
         >
-            {t(row.name)}
+            {t(row.displayNameKey)}
         </th>
     );
 };

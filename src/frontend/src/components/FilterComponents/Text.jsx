@@ -29,6 +29,7 @@ const Facet = ({name, text, value, onChange, sort, setSort}) => {
                 value={value || ''}
                 autoComplete="off"
                 placeholder={t(name)}
+                autoFocus
                 onChange={onChange}
             />
             {/*<Popup trigger={input} content={t(name)} className="from-popup" on="focus" />

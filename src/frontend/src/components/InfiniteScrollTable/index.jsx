@@ -5,39 +5,39 @@ import { Table, Visibility } from 'semantic-ui-react';
 import './style.scss';
 
 const InfiniteScrollTable = ({
-    children,
-    header,
-    headerRow,
-    onBottomVisible,
-    unstackable,
-    celled,
-    selectable,
-    className,
-    context,
-    style,
-    structured,
+                                 children,
+                                 header,
+                                 headerRow,
+                                 onBottomVisible,
+                                 unstackable,
+                                 celled,
+                                 selectable,
+                                 className,
+                                 context,
+                                 style,
+                                 structured,
                                  fixed,
                                  columns = [],
-}) => {
-    const tableRef = useRef(null);
+                             }) => {
     let [width, setWidth] = useState(0);
     let [extWidth, setExtWidth] = useState();
 
     useEffect(
         () => {
             let sum = 0;
+            const contextWidth = context ? context.offsetWidth - 10 : 0;
 
             columns.forEach(item => {
                 sum = sum + item.width;
             });
-            setExtWidth(tableRef.current.scrollWidth - 50 - sum);
+            setExtWidth(contextWidth - 50 - sum);
             setWidth(sum + 50);
         },
-        [columns],
+        [columns, context],
     );
 
     return (
-        <div style={{position: 'relative', ...style}} ref={tableRef}>
+        <div style={{position: 'relative', ...style}}>
             <Table
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}
@@ -45,7 +45,7 @@ const InfiniteScrollTable = ({
                 structured={structured}
                 className={className || ''}
                 fixed={fixed}
-                style={{width: '100%', minWidth: width}}
+                style={{minWidth: width}}
             >
                 <Table.Header>{React.cloneElement(headerRow, {extWidth})}</Table.Header>
 
@@ -68,4 +68,4 @@ const InfiniteScrollTable = ({
     );
 };
 
-export default React.memo(InfiniteScrollTable);
+export default InfiniteScrollTable;

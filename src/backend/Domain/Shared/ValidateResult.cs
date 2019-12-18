@@ -2,8 +2,11 @@ namespace Domain.Shared
 {
     public class LookUpDto
     {
+        public const string EmptyValue = "###EMPTY###";
+
         public string Value { get; set; }
         public string Name { get; set; }
+        public bool IsFilterOnly { get; set; }
 
         public LookUpDto() { }
 

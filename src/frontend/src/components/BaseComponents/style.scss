@@ -74,8 +74,13 @@
     text-overflow: ellipsis;
 }
 
+.ui.form .field > label {
+    color: #4d4d4d !important;
+    font-weight: 500 !important;
+}
+
 .label-disabled {
-    color: rgba(95, 95, 95, 0.87) !important;
+    color: #999 !important;
 }
 
 .react-datepicker-popper {
@@ -145,4 +150,22 @@ input::-webkit-inner-spin-button {
     button {
         margin-left: 8px !important;
     }
+
+    /* &_disabled {
+         opacity: .8;
+         background: rgba(1, 1, 1, 0.05);
+     }*/
 }
+
+.ui.input:hover, .react-datepicker-wrapper:hover {
+    input {
+        border-color: rgba(34, 36, 38, .35) !important;
+        box-shadow: none;
+    }
+}
+
+.ui.form textarea:hover {
+    border-color: rgba(34, 36, 38, .35) !important;
+    box-shadow: none;
+}
+

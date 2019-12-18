@@ -13,6 +13,7 @@ import { saga as historySaga } from '../ducks/history';
 import { saga as fieldsSettingSaga } from '../ducks/fieldsSetting';
 import {saga as gridColumnEditSaga} from '../ducks/gridColumnEdit';
 import { saga as usersSaga } from '../ducks/users';
+import {saga as generalSaga} from '../ducks/general';
 
 export default function* rootSaga() {
     yield all([
@@ -30,5 +31,6 @@ export default function* rootSaga() {
         loginSaga(),
         rolesSaga(),
         usersSaga(),
+        generalSaga(),
     ]);
 }

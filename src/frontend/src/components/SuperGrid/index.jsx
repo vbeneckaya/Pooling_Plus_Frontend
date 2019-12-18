@@ -13,7 +13,7 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
-import { editRepresentationRequest } from '../../ducks/representations';
+
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -65,7 +65,6 @@ class SuperGrid extends Component {
         }
 
         if (prevProps.columns !== this.props.columns) {
-            console.log('777');
             const {columns} = this.props;
             const width = this.container.scrollWidth - 50;
 
@@ -406,6 +405,7 @@ class SuperGrid extends Component {
                         <Footer
                             gridName={name}
                             groupActions={groupActions}
+                            selectedRows={selectedRows}
                             clearSelectedRows={this.clearSelectedRows}
                             load={this.loadList}
                         />

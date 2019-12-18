@@ -23,6 +23,7 @@ const TableBody = ({
             <Table.Cell className="table-fields-setting_name">
                 <FieldCell
                     field={column.fieldName}
+                    fieldName={column.displayName}
                     isDisabled={column.isReadOnly || column.isHidden}
                     isExt={isExt}
                     t={t}

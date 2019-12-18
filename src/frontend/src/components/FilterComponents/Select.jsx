@@ -94,6 +94,7 @@ const Facet = ({t, source, name, onChange, value}) => {
                         size="mini"
                         placeholder=""
                         isAuto
+                        autoFocus
                         onChange={handleSetFilter}
                     />
                     {/* <Input

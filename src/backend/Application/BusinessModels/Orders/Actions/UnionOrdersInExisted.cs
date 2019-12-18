@@ -3,6 +3,7 @@ using Application.Services.Shippings;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
@@ -10,25 +11,30 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Extensions;
 
 namespace Application.BusinessModels.Orders.Actions
 {
     /// <summary>
     /// Объеденить заказы в существующую
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(3)]
     public class UnionOrdersInExisted : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+        private readonly IDeliveryCostCalcService _calcService;
 
         public UnionOrdersInExisted(ICommonDataService dataService, 
                                     IHistoryService historyService, 
                                     IShippingCalculationService shippingCalculationService,
-                                    IChangeTrackerFactory changeTrackerFactory)
+                                    IChangeTrackerFactory changeTrackerFactory, 
+                                    IDeliveryCostCalcService calcService)
             : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            _calcService = calcService;
             Color = AppColor.Orange;
         }
         
@@ -37,7 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
 
-            orders = orders.Where(x => x.Status == OrderState.Confirmed);
+            orders = orders.Where(x => x.Status == OrderState.Confirmed).ToList();
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
@@ -58,6 +64,40 @@ namespace Application.BusinessModels.Orders.Actions
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
             var changeTracker = _changeTrackerFactory.CreateChangeTracker().TrackAll<Shipping>();
             changeTracker.LogTrackedChanges(changes);
+            
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>();
+            
+            foreach (var orderForAddInShipping in orders)
+            {
+                if (orderForAddInShipping.VehicleTypeId != shipping.VehicleTypeId)
+                {
+                    VehicleType oldVehicleType = null;
+                    VehicleType newVehicleType  = null;
+                    
+                    if (shipping.VehicleTypeId.HasValue)
+                        oldVehicleType = vehicleTypes.GetById(shipping.VehicleTypeId.Value);
+
+                    if (orderForAddInShipping.VehicleTypeId.HasValue)
+                        newVehicleType = vehicleTypes.GetById(orderForAddInShipping.VehicleTypeId.Value);
+                    
+                    _historyService.Save(shipping.Id, "fieldChangedBy",
+                        nameof(shipping.VehicleTypeId).ToLowerFirstLetter(),
+                        oldVehicleType, newVehicleType, "unionOrdersInExisted");
+
+                    orderForAddInShipping.VehicleTypeId = shipping.VehicleTypeId;
+                }
+                
+                if (orderForAddInShipping.TarifficationType != shipping.TarifficationType)
+                {
+                    _historyService.Save(orderForAddInShipping.Id, "fieldChangedBy",
+                        nameof(orderForAddInShipping.TarifficationType).ToLowerFirstLetter(),
+                        orderForAddInShipping.TarifficationType, shipping.TarifficationType, "unionOrdersInExisted");
+                    
+                    orderForAddInShipping.TarifficationType = shipping.TarifficationType;
+                }
+            }
+            
+            _calcService.UpdateDeliveryCost(shipping);
 
             return new AppActionResult
             {
