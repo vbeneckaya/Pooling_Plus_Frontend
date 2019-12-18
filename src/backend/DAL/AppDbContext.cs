@@ -50,6 +50,7 @@ namespace DAL
         public DbSet<Country> Countries { get; set; }
         public DbSet<Tonnage> Tonnages { get; set; }
         public DbSet<BodyType> BodyTypes { get; set; }
+        public DbSet<ProductType> ProductTypes { get; set; }
 
         public DbSet<FieldPropertyItem> FieldPropertyItems { get; set; }
         public DbSet<FieldPropertyItemVisibility> FieldPropertyVisibilityItems { get; set; }

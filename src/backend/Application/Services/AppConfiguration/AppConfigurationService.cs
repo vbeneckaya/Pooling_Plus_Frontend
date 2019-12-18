@@ -3,6 +3,7 @@ using Application.Services.BodyTypes;
 using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
+using Application.Services.ProductTypes;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
@@ -14,12 +15,13 @@ using Domain.Enums;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
+using Domain.Services.Companies;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
-using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
+using Domain.Services.ProductTypes;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
@@ -167,6 +169,22 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = canEditArticles,
                     CanExportToExcel = true,
                     CanImportFromExcel = canEditArticles,
+                    ShowOnHeader = false,
+                    Columns = columns
+                });
+            }
+
+            var canEditProductTypes = _identityService.HasPermissions(RolePermissions.ProductTypesEdit);
+
+            if (canEditProductTypes)
+            {
+                var columns = ExtractColumnsFromDto<ProductTypeDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ProductTypesService>(),
+                    CanCreateByForm = canEditProductTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = false,
                     ShowOnHeader = false,
                     Columns = columns
                 });
