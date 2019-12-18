@@ -23,6 +23,7 @@ const ShippingCard = ({
                           actionsFooter,
                           onClose,
                           actionsHeader,
+                          loading,
                       }) => {
     const {t} = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state));
@@ -109,7 +110,7 @@ const ShippingCard = ({
                 actionsHeader={actionsHeader}
                 content={getPanes}
                 onClose={onClose}
-                loading={false}
+                loading={loading}
             />
         </>
     );

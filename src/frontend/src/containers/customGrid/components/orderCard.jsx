@@ -26,6 +26,7 @@ const OrderCard = ({
                        onClose,
                        actionsFooter,
                        actionsHeader,
+                       loading,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
@@ -58,7 +59,7 @@ const OrderCard = ({
                     />
                 ),
             },
-            {
+            /*{
                 menuItem: 'returns',
                 render: () => (
                     <Returns
@@ -68,7 +69,7 @@ const OrderCard = ({
                         onChange={onChangeForm}
                     />
                 ),
-            },
+            },*/
         ];
 
         if (userPermissions.includes(4) || userPermissions.includes(5)) {
@@ -103,14 +104,14 @@ const OrderCard = ({
                     actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}
-                    loading={false}
+                    loading={loading}
                 />
             ) : (
                 <CardLayout
                     title={title}
                     actionsFooter={actionsFooter}
                     onClose={onClose}
-                    loading={false}
+                    loading={loading}
                 >
                     <CreateOrder
                         form={form}

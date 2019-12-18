@@ -6,7 +6,7 @@ import { Button, Confirm, Dropdown } from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
-    editCardRequest,
+    editCardRequest, editProgressSelector,
     errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
@@ -202,10 +202,10 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
+    const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
     const disableSave = progressActionName || notChangeForm;
-    const progress = false;
 
     const getActionsFooter = useCallback(() => {
         return (
@@ -213,12 +213,12 @@ const Card = props => {
                 <Button color="grey" onClick={onClose}>
                     {t('CancelButton')}
                 </Button>
-                <Button color="blue" disabled={disableSave} loading={progress} onClick={handleSave}>
+                <Button color="blue" disabled={disableSave} loading={editLoading} onClick={handleSave}>
                     {t('SaveButton')}
                 </Button>
             </>
         );
-    }, [form, disableSave, progress, name]);
+    }, [form, disableSave, editLoading, name]);
 
     const goToCard = (gridName, cardId) => {
         const { state } = location;
@@ -300,6 +300,7 @@ const Card = props => {
                     form={form}
                     title={title}
                     settings={settings}
+                    loading={loading}
                     uniquenessNumberCheck={handleUniquenessCheck}
                     error={error}
                     onClose={onClose}
@@ -314,6 +315,7 @@ const Card = props => {
                     id={id}
                     name={name}
                     form={form}
+                    loading={loading}
                     settings={settings}
                     error={error}
                     onClose={onClose}

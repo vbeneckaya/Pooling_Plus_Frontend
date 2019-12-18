@@ -204,13 +204,6 @@ const CardNew = props => {
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />
-            {/*<ConfirmDialog
-                open={confirmation.open}
-                content={confirmation.content}
-                onYesClick={confirmation.onYes}
-                onNoClick={confirmation.onNo}
-                onCancelClick={confirmation.onCancel}
-            />*/}
         </CardLayout>
     );
 };

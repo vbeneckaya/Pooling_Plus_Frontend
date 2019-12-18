@@ -221,6 +221,7 @@ const gridName = (state, name) => name;
 const idSelector = createSelector(stateSelector, state => state.data.id);
 
 export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
 
 export const cardSelector = createSelector(stateSelector, state => state.data);
 
