@@ -1,6 +1,8 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
@@ -86,6 +88,18 @@ namespace Application.Services.Tonnages
 
                 yield return dto;
             }
+        }
+
+        protected override ExcelMapper<TonnageDto> CreateExcelMapper()
+        {
+            return base.CreateExcelMapper()
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()

@@ -3,6 +3,8 @@ using Application.BusinessModels.ShippingWarehouses.Handlers;
 using Application.Services.Addresses;
 using Application.Services.Triggers;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using AutoMapper;
 using DAL.Services;
 using Domain.Extensions;
@@ -133,6 +135,18 @@ namespace Application.Services.ShippingWarehouses
                 return null;
             }
             return _mapper.Map<ShippingWarehouseDto>(entity);
+        }
+
+        protected override ExcelMapper<ShippingWarehouseDto> CreateExcelMapper()
+        {
+            return new ExcelMapper<ShippingWarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
 
         protected override IQueryable<ShippingWarehouse> ApplySort(IQueryable<ShippingWarehouse> query, SearchFormDto form)

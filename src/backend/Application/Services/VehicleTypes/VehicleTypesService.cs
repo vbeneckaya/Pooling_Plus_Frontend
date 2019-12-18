@@ -179,9 +179,16 @@ namespace Application.Services.VehicleTypes
 
         protected override ExcelMapper<VehicleTypeDto> CreateExcelMapper()
         {
-            return new ExcelMapper<VehicleTypeDto>(_dataService, _userProvider, _fieldDispatcherService)
+            return base.CreateExcelMapper()
                 .MapColumn(w => w.TonnageId, new DictionaryReferenceExcelColumn(GetTonnageIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+        
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
 
         private Guid? GetTonnageIdByName(string name)
