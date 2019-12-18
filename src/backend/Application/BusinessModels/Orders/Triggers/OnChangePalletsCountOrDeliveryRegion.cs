@@ -51,21 +51,19 @@ namespace Application.BusinessModels.Orders.Triggers
                         {
                             if (orderInShipping.TarifficationType != tarifficationType)
                             {
-                                _historyService.Save(orderInShipping.Id, "fieldChanged",
+                                _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                                     nameof(orderInShipping.TarifficationType).ToLowerFirstLetter(),
-                                    orderInShipping.TarifficationType, tarifficationType);
+                                    orderInShipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInOtherOrderInShipping");
                     
                                 orderInShipping.TarifficationType = tarifficationType;
                             }
                         }
 
-                        shipping.TarifficationType = tarifficationType;
-                
                         if (shipping.TarifficationType != tarifficationType)
                         {
-                            _historyService.Save(shipping.Id, "fieldChanged",
+                            _historyService.Save(shipping.Id, "fieldChangedBy",
                                 nameof(shipping.TarifficationType).ToLowerFirstLetter(),
-                                shipping.TarifficationType, tarifficationType);
+                                shipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInIncludedOrder");
                     
                             shipping.TarifficationType = tarifficationType;
                             _calcService.UpdateDeliveryCost(shipping);
@@ -77,9 +75,9 @@ namespace Application.BusinessModels.Orders.Triggers
                     var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(new []{entity});
                     if (entity.TarifficationType != tarifficationType)
                     {
-                        _historyService.Save(entity.Id, "fieldChanged",
+                        _historyService.Save(entity.Id, "fieldChangedBy",
                             nameof(entity.TarifficationType).ToLowerFirstLetter(),
-                            entity.TarifficationType, tarifficationType);
+                            entity.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegion");
                     
                         entity.TarifficationType = tarifficationType;
                     }

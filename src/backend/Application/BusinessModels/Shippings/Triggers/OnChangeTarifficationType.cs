@@ -33,9 +33,9 @@ namespace Application.BusinessModels.Shippings.Triggers
             {
                 if (orderInShipping.TarifficationType != entity.TarifficationType)
                 {
-                    _historyService.Save(orderInShipping.Id, "fieldChanged",
+                    _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                         nameof(entity.TarifficationType).ToLowerFirstLetter(),
-                        orderInShipping.TarifficationType, entity.TarifficationType);
+                        orderInShipping.TarifficationType, entity.TarifficationType, "onChangeInShipping");
                     
                     orderInShipping.TarifficationType = entity.TarifficationType;
                 }
