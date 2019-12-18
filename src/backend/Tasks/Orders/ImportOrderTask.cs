@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Microsoft.EntityFrameworkCore.Internal;
 using Tasks.Common;
 using Tasks.Helpers;
 
@@ -186,8 +187,8 @@ namespace Tasks.Orders
                 {
                     deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
-
-                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
+                
+                var deliveryWarehouse = updWarehouses.FirstOrDefault(x=>x.SoldToNumber == dto.SoldTo?.Value) ?? warehousesService.GetBySoldTo(dto.SoldTo?.Value);
                 if (deliveryWarehouse == null)
                 {
                     dto.ClientName = null;
@@ -203,7 +204,9 @@ namespace Tasks.Orders
                     deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
                     deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
                     deliveryWarehouse.AdditionalInfo = "INJECTION";
-                    updWarehouses.Add(deliveryWarehouse);
+
+                    if (!updWarehouses.Any(x => x.SoldToNumber == dto.SoldTo?.Value))
+                        updWarehouses.Add(deliveryWarehouse);
 
                     dto.DeliveryCity = string.IsNullOrEmpty(deliveryWarehouse.City) ? null : new LookUpDto(deliveryWarehouse.City);
                     dto.DeliveryAddress = deliveryWarehouse.Address;
