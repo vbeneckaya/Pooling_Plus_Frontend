@@ -30,6 +30,7 @@ i.blue.icon {
     position: relative;
 }
 
+
 .Toastify__toast {
     position: relative;
     min-height: 1em;
@@ -194,7 +195,7 @@ i.blue.icon {
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: flex-start;
-    padding: 24px 15px 0 15px;
+    padding: 24px 32px;
     width: 100% !important;
 
     .field:not(.wide) {
