@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -20,8 +21,9 @@ namespace Application.Services.Users
     public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -181,6 +183,20 @@ namespace Application.Services.Users
             return query
                 .OrderBy(i => i.Email)
                 .ThenBy(i => i.Id);
+        }
+        public override IQueryable<User> ApplyRestrictions(IQueryable<User> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId);
+            }
+
+            return query;
         }
 
         public override User FindByKey(UserDto dto)

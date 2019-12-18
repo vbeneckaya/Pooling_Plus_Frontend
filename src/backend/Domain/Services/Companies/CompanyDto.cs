@@ -12,5 +12,7 @@ namespace Domain.Services.Companies
 
         [FieldType(FieldType.Boolean), OrderNumber(2)]
         public bool? IsActive { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

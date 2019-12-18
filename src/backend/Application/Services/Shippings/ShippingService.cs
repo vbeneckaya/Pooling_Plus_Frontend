@@ -92,6 +92,13 @@ namespace Application.Services.Shippings
                 query = query
                     .Where(x => x.CarrierId == user.CarrierId);
 
+            // Local user restrictions
+
+            if (user.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
             return query;
         }
 

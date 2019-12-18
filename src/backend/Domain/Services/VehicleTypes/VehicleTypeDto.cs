@@ -25,5 +25,7 @@ namespace Domain.Services.VehicleTypes
 
         [FieldType(FieldType.Boolean), OrderNumber(6)]
         public bool? IsActive { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

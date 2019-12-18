@@ -145,5 +145,7 @@ namespace Domain.Services.Tariffs
 
         [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(45)]
         public LookUpDto CompanyId { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

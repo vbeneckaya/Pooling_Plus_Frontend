@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Permissions;
 using Domain.Services.Roles;
@@ -23,8 +24,9 @@ namespace Application.Services.Roles
     public class RolesService : DictionaryServiceBase<Role, RoleDto>, IRolesService
     {
         public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -75,6 +77,20 @@ namespace Application.Services.Roles
                     Value = entity.Id.ToString()
                 };
             }
+        }
+        public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId);
+            }
+
+            return query;
         }
 
         protected override IEnumerable<RoleDto> FillLookupNames(IEnumerable<RoleDto> dtos)

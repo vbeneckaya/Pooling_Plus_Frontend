@@ -16,5 +16,7 @@ namespace Domain.Services.DocumentTypes
 
         [FieldType(FieldType.Boolean), OrderNumber(4)]
         public bool? IsActive { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

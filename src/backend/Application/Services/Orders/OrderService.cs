@@ -98,6 +98,13 @@ namespace Application.Services.Orders
             if (user.CarrierId.HasValue) 
                 query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            // Local user restrictions
+
+            if (user.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
             return query;
         }        
         
@@ -763,8 +770,7 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
-                ;
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName));
         }
 
         private Guid? GetPickingTypeIdByName(string name)

@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
@@ -23,8 +24,9 @@ namespace Application.Services.Tariffs
     public class TariffsService : DictionaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                              IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
         }
 
@@ -331,6 +333,21 @@ namespace Application.Services.Tariffs
                 );
         }
 
+        public override IQueryable<Tariff> ApplyRestrictions(IQueryable<Tariff> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         public override Tariff FindByKey(TariffDto dto)
         {
             var effectiveDate = dto.EffectiveDate.ToDate();
@@ -358,6 +375,18 @@ namespace Application.Services.Tariffs
                         && i.TarifficationType == tarifficationType
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == shipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == deliveryCity);
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var entity = _dataService.GetById<Tariff>(id);
+
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tariff.CompanyId).ToLower());
+            companyId.IsReadOnly = entity.CompanyId != null;
+
+            return configuration;
         }
     }
 }

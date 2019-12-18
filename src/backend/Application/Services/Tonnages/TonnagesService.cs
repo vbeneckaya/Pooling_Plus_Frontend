@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Tonnages;
 using Domain.Services.Translations;
@@ -19,8 +20,9 @@ namespace Application.Services.Tonnages
     public class TonnagesService : DictionaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
         public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                               IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)
@@ -110,10 +112,37 @@ namespace Application.Services.Tonnages
                 .ThenBy(i => i.Id);
         }
 
+        public override IQueryable<Tonnage> ApplyRestrictions(IQueryable<Tonnage> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         public override Tonnage FindByKey(TonnageDto dto)
         {
             return _dataService.GetDbSet<Tonnage>()
                 .FirstOrDefault(i => i.Name == dto.Name);
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var entity = _dataService.GetById<Tonnage>(id);
+
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tonnage.CompanyId).ToLower());
+            companyId.IsReadOnly = entity.CompanyId != null;
+
+            return configuration;
         }
     }
 }
