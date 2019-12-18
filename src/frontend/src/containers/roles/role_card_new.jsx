@@ -17,7 +17,7 @@ import CardLayout from '../../components/CardLayout';
 import {Button, Dimmer, Form, Loader, Tab} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {sortFunc} from '../../utils/sort';
-import {TEXT_TYPE} from '../../constants/columnTypes';
+import {SELECT_TYPE, TEXT_TYPE} from '../../constants/columnTypes';
 
 const RoleCard = props => {
     const { t } = useTranslation();
@@ -148,6 +148,14 @@ const RoleCard = props => {
                             type={TEXT_TYPE}
                             isRequired
                             error={error['name']}
+                            onChange={handleChange}
+                        />
+                        <FormField
+                            name="companyId"
+                            value={form['companyId']}
+                            type={SELECT_TYPE}
+                            source="companies"
+                            error={error['companyId']}
                             onChange={handleChange}
                         />
                         <Form.Field>
