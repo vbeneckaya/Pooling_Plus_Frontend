@@ -210,15 +210,11 @@ namespace Application.Services.Roles
         public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
         {
             var user = _userProvider.GetCurrentUser();
-            var entities = _dataService.GetDbSet<Role>()
-                .Where(x => x.IsActive);
 
-            if (companyId.HasValue)
-            {
-                entities = entities.Where(i => i.CompanyId == companyId.Value);
-            }
-
-            return entities.OrderBy(x => x.Name)
+            return _dataService.GetDbSet<Role>()
+                .Where(i => i.CompanyId == companyId)
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
                 .Select(i => new LookUpDto
                 {
                     Name = i.Name,
