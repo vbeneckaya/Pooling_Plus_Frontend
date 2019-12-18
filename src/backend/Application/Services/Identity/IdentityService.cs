@@ -29,16 +29,10 @@ namespace Application.Services.Identity
         
         private readonly ICommonDataService _dataService;
 
-        private readonly ITranslationsService _translationsService;
-
-        private readonly IRolesService _rolesService;
-
-        public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService, IRolesService rolesService, ITranslationsService translationsService)
+        public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService)
         {
             this._userIdProvider = userIdProvider;
             this._dataService = dataService;
-            this._rolesService = rolesService;
-            this._translationsService = translationsService;
         }
 
         public VerificationResultWith<TokenModel> GetToken(IdentityModel model)
@@ -92,7 +86,20 @@ namespace Application.Services.Identity
             {   
                 UserName = user.Name,
                 UserRole = role?.Name,
-                Role = role != null ? _rolesService.MapFromEntityToDto(role) : null
+                Role = role != null ? new RoleDto
+                {
+                    Id = role.Id.ToString(),
+                    Name = role.Name,
+                    IsActive = role.IsActive,
+                    Actions = role.Actions,
+                    Permissions = role?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
+                    {
+                        Code = i,
+                        Name = i.GetPermissionName()
+                    }),
+                    UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
+                    CompanyId = role.CompanyId == null ? null : new LookUpDto(role.CompanyId.ToString()),
+                } : null
             };
         }
 
