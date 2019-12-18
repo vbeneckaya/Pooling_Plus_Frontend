@@ -255,7 +255,7 @@ function* invokeMassUpdateSaga({ payload }) {
         const {ids, callbackSuccess, name, field, value, callbackFunc} = payload;
         const result = yield postman.post(`/${name}/invokeBulkUpdate/${field}`, {
             ids,
-            value: typeof value === 'object' ? value.value : value,
+            value: value && typeof value === 'object' ? value.value : value,
         });
         if (result.isError) {
             toast.error(result.message);
