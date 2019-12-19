@@ -3,7 +3,7 @@ import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import roles from '../mocks/roles';
 import {toast} from 'react-toastify';
-import {errorMapping} from "../utils/errorMapping";
+import {errorMapping} from '../utils/errorMapping';
 
 const TYPE_API = 'roles';
 
@@ -33,6 +33,10 @@ const GET_ALL_ACTIONS_REQUEST = 'GET_ALL_ACTIONS_REQUEST';
 const GET_ALL_ACTIONS_SUCCESS = 'GET_ALL_ACTIONS_SUCCESS';
 const GET_ALL_ACTIONS_ERROR = 'GET_ALL_ACTIONS_ERROR';
 
+const GET_ROLES_BY_COMPANY_REQUEST = 'GET_ROLES_BY_COMPANY_REQUEST';
+const GET_ROLES_BY_COMPANY_SUCCESS = 'GET_ROLES_BY_COMPANY_SUCCESS';
+const GET_ROLES_BY_COMPANY_ERROR = 'GET_ROLES_BY_COMPANY_ERROR';
+
 const CLEAR_ROLES_INFO = 'CLEAR_ROLES_INFO';
 const CLEAR_ROLE_CARD = 'CLEAR_ROLE_CARD';
 
@@ -43,6 +47,7 @@ const CLEAR_ERROR = 'CLEAR_ERROR';
 const initial = {
     list: [],
     card: {},
+    listByCompany: [],
     error: [],
     permissions: [],
     actions: {},
@@ -124,6 +129,11 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 actions: {},
             };
+        case GET_ROLES_BY_COMPANY_SUCCESS:
+            return {
+                ...state,
+                listByCompany: payload,
+            };
         default:
             return state;
     }
@@ -188,8 +198,15 @@ export const getAllActionsRequest = payload => {
 export const clearError = payload => {
     return {
         type: CLEAR_ERROR,
-        payload
-    }
+        payload,
+    };
+};
+
+export const getListByCompanyRequest = payload => {
+    return {
+        type: GET_ROLES_BY_COMPANY_REQUEST,
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -216,6 +233,8 @@ export const errorSelector = createSelector(stateSelector, state => errorMapping
 
 export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 export const allActionsSelector = createSelector(stateSelector, state => state.actions);
+
+export const rolesByCompanySelector = createSelector(stateSelector, state => state.listByCompany);
 
 //*  SAGA  *//
 
@@ -329,6 +348,22 @@ function* getAllActionsSaga({payload}) {
     }
 }
 
+function* getRolesByCompanySaga({payload}) {
+    try {
+        const {companyId} = payload;
+        const result = yield postman.get(`/${TYPE_API}/forSelectByCompany${companyId ? '/' + companyId : ''}`);
+
+        yield put({
+            type: GET_ROLES_BY_COMPANY_SUCCESS,
+            payload: result,
+        });
+    } catch (e) {
+        yield put({
+            type: GET_ROLES_BY_COMPANY_ERROR,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
@@ -337,5 +372,6 @@ export function* saga() {
         takeEvery(TOGGLE_ROLE_ACTIVE_REQUEST, toggleRoleActiveSaga),
         takeEvery(GET_ALL_PERMISSIONS_REQUEST, getAllPermissionsSaga),
         takeEvery(GET_ALL_ACTIONS_REQUEST, getAllActionsSaga),
+        takeEvery(GET_ROLES_BY_COMPANY_REQUEST, getRolesByCompanySaga),
     ]);
 }

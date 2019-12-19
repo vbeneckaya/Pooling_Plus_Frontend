@@ -2,15 +2,16 @@ import React from 'react';
 import { Dropdown, Menu } from 'semantic-ui-react';
 import _ from 'lodash';
 
-const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, changeRole, t }) => {
+const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t, changeCompany, companiesList, disabledCompany}) => {
     const rolesListOptions = [
         /*{ key: 'any_role', value: 'null', text: t('any_role') },*/
         ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
     ];
 
-    /*const companyListOptions = [
-        { key: 'Любая компания', value: 'null', text: t('Любая компания') },
-    ];*/
+    const companyListOptions = [
+        {key: 'all', value: 'null', text: t('All')},
+        ...companiesList.map(x => ({key: x.name, value: x.value, text: x.name}))
+    ];
 
     console.log('header');
 
@@ -28,6 +29,10 @@ const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, chan
                       </Menu.Item>
                   ))
                 : null}
+            <Menu.Item>
+                <Dropdown value={company} selection options={companyListOptions} onChange={changeCompany}
+                          disabled={disabledCompany}/>
+            </Menu.Item>
             <Menu.Item>
                 <Dropdown value={role} selection options={rolesListOptions} onChange={changeRole} />
             </Menu.Item>
