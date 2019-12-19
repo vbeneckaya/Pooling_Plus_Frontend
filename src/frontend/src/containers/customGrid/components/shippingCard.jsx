@@ -1,13 +1,10 @@
-import React, {useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-
-import {Menu, Tab} from 'semantic-ui-react';
 import Information from './shippingTabs/information';
 import Routes from './shippingTabs/routes';
 import Documents from './shared/documents';
 import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
-import Card from '../../../containers/customGrid/card';
 import {useSelector} from 'react-redux';
 import {userPermissionsSelector} from '../../../ducks/profile';
 import CardLayout from '../../../components/CardLayout';

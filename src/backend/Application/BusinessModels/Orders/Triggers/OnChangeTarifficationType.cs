@@ -52,7 +52,10 @@ namespace Application.BusinessModels.Orders.Triggers
                         shipping.TarifficationType, entity.TarifficationType, "onChangeInIncludedOrder");
                     
                     shipping.TarifficationType = entity.TarifficationType;
-                    _calcService.UpdateDeliveryCost(shipping);
+                    shipping.ManualTarifficationType = true;
+                    
+                    if(!shipping.ManualTarifficationType)
+                        _calcService.UpdateDeliveryCost(shipping);
                 }
             }
         }

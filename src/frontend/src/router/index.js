@@ -12,7 +12,7 @@ import {
     USERS_LINK
 } from './links';
 import CustomGrid from '../containers/customGrid/list';
-import CustomGridCard from '../containers/customGrid/card_new';
+import CustomGridCard from '../containers/customGrid/card';
 import CustomDictionaryList from '../containers/customDictionary/list';
 import CustomDictionaryCard from '../containers/customDictionary/card_new';
 import PrivateRoute from './privateRoute';

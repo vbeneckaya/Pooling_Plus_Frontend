@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Microsoft.EntityFrameworkCore.Internal;
 using Tasks.Common;
 using Tasks.Helpers;
 
@@ -141,12 +142,42 @@ namespace Tasks.Orders
                 doc.Load(reader);
             }
 
-            List<OrderFormDto> orders = new List<OrderFormDto>();
             List<WarehouseDto> updWarehouses = new List<WarehouseDto>();
             var docRoots = doc.SelectNodes("//IDOC");
+            
+            foreach (XmlNode docRoot in docRoots)
+            {
+                string soldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
+                string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
+                string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
+                string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
+                
+                if (!string.IsNullOrEmpty(deliveryAddress2))
+                {
+                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
+                }
+                
+                var deliveryWarehouse = warehousesService.GetBySoldTo(soldTo);
+                if (deliveryWarehouse != null)
+                {
+                    deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
+                    deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
+                    deliveryWarehouse.AdditionalInfo = "INJECTION";
+                }
+                
+                if (!updWarehouses.Any(x => x.SoldToNumber == soldTo))
+                    updWarehouses.Add(deliveryWarehouse);
+            }
+
+            if (updWarehouses.Any()) 
+                warehousesService.Import(updWarehouses);
 
             int totalCount = docRoots.Count;
             int processedCount = 0;
+
+            
+            var orders = new List<OrderFormDto>();
+            
             foreach (XmlNode docRoot in docRoots)
             {
                 ++processedCount;
@@ -186,7 +217,7 @@ namespace Tasks.Orders
                 {
                     deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
-
+                
                 var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
                 if (deliveryWarehouse == null)
                 {
@@ -196,16 +227,6 @@ namespace Tasks.Orders
                     dto.PickingTypeId = null;
                     dto.TransitDays = null;
                     dto.DeliveryType = null;
-                }
-                else
-                {
-                    deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
-                    deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
-                    deliveryWarehouse.AdditionalInfo = "INJECTION";
-                    updWarehouses.Add(deliveryWarehouse);
-
-                    dto.DeliveryCity = string.IsNullOrEmpty(deliveryWarehouse.City) ? null : new LookUpDto(deliveryWarehouse.City);
-                    dto.DeliveryAddress = deliveryWarehouse.Address;
                 }
 
                 if (isNew)
@@ -297,7 +318,6 @@ namespace Tasks.Orders
             bool isSuccess = orders.Any();
             if (isSuccess)
             {
-                warehousesService.Import(updWarehouses);
                 ordersService.Import(orders);
             }
 

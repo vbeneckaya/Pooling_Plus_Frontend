@@ -1,20 +1,18 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Confirm, Dimmer, Loader, Modal } from 'semantic-ui-react';
+import {Button, Confirm, Dropdown} from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
-    editCardRequest,
+    editCardRequest, editProgressSelector,
     errorSelector,
     getCardRequest,
     isUniqueNumberRequest,
     progressSelector,
     settingsFormSelector,
 } from '../../ducks/gridCard';
-import OrderModal from '../../components/Modals/orderModal';
-import ShippingModal from '../../components/Modals/shippingModal';
 import {
     actionsCardSelector,
     clearActions,
@@ -22,30 +20,53 @@ import {
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
-import { ORDERS_GRID } from '../../constants/grids';
-
-const getModal = {
-    orders: <OrderModal />,
-    shippings: <ShippingModal />,
-};
-
-const SelfComponent = props => {
-    return React.cloneElement(<Card />, props);
-};
+import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
+import OrderCard from './components/orderCard';
+import ShippingCard from './components/shippingCard';
+import {GRID_CARD_LINK} from "../../router/links";
 
 const Card = props => {
-    const { name, id, stopUpdate, loadList, title, children, onClose: beforeClose } = props;
-    let [modalOpen, setModalOpen] = useState(false);
+    const {t} = useTranslation();
+    const dispatch = useDispatch();
+    const {match, history, location} = props;
+    const {params = {}} = match;
+    const {name, id} = params;
+
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
     let [confirmation, setConfirmation] = useState({ open: false });
-    let [isNotUniqueNumber, setIsNotUnqueNumber] = useState(false);
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
+
+    const title = useMemo(
+        () =>
+            id
+                ? t(`edit_${name}`, {
+                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
+                    status: t(form.status),
+                })
+                : t(`new_${name}`),
+        [name, id, form],
+    );
 
     const card = useSelector(state => cardSelector(state));
     const settings = useSelector(state => settingsFormSelector(state, card.status));
     const error = useSelector(state => errorSelector(state));
+
+    useEffect(() => {
+        console.log('!!!!');
+        dispatch(clearActions());
+        id && loadCard();
+        id && getActions();
+    }, []);
+
+    useEffect(() => {
+        if (notChangeForm) {
+            Object.keys(form).forEach(key => {
+                if (form[key] !== card[key]) {
+                    setNotChangeForm(false);
+                }
+            });
+        }
+    }, [form]);
 
     const loadCard = () => {
         dispatch(
@@ -70,22 +91,10 @@ const Card = props => {
         );
     };
 
-    const onOpen = () => {
-        dispatch(clearActions());
-        id && loadCard();
-        id && getActions();
-        stopUpdate && stopUpdate();
-        setModalOpen(true);
-    };
-
     const onClose = isConfirm => {
         if (!isConfirm || notChangeForm) {
-            beforeClose ? beforeClose() : setModalOpen(false);
-            setNotChangeForm(true);
             dispatch(clearGridCard());
-            setForm({});
-            setIsNotUnqueNumber(false);
-            loadList && loadList(false, true);
+            closeConfirmation();
         } else {
             showConfirmation(
                 t('confirm_close_dictionary'),
@@ -95,7 +104,7 @@ const Card = props => {
                 },
                 () => {
                     closeConfirmation();
-                }
+                },
             );
         }
     };
@@ -106,19 +115,6 @@ const Card = props => {
             [name]: value,
         }));
     }, []);
-
-    useEffect(
-        () => {
-            if (notChangeForm) {
-                Object.keys(form).forEach(key => {
-                    if (form[key] !== card[key]) {
-                        setNotChangeForm(false);
-                    }
-                });
-            }
-        },
-        [form],
-    );
 
     const saveOrEditForm = () => {
         dispatch(
@@ -146,7 +142,18 @@ const Card = props => {
     };
 
     const closeConfirmation = () => {
-        setConfirmation({ open: false });
+        const {state} = location;
+        const {pathname, gridLocation} = state;
+
+        console.log('back', state);
+
+        history.replace({
+            pathname: pathname,
+            state: {
+                ...state,
+                pathname: gridLocation
+            },
+        });
     };
 
     const showConfirmation = (content, onConfirm, onCancel) => {
@@ -159,25 +166,28 @@ const Card = props => {
     };
 
     const invokeAction = actionName => {
-        showConfirmation(`${t('Are you sure to complete')} "${t(actionName)}"?`, () => {
-            closeConfirmation();
-            dispatch(
-                invokeActionRequest({
-                    ids: [id],
-                    name,
-                    actionName,
-                    callbackSuccess: () => {
-                        if (actionName.toLowerCase().includes('delete')) {
-                            onClose();
-                        } else {
-                            loadCard();
-                            getActions();
-                        }
-                    },
-                }),
-            );
+        showConfirmation(
+            `${t('Are you sure to complete')} "${t(actionName)}"?`,
+            () => {
+                closeConfirmation();
+                dispatch(
+                    invokeActionRequest({
+                        ids: [id],
+                        name,
+                        actionName,
+                        callbackSuccess: () => {
+                            if (actionName.toLowerCase().includes('delete')) {
+                                onClose();
+                            } else {
+                                loadCard();
+                                getActions();
+                            }
+                        },
+                    }),
+                );
             },
-            closeConfirmation);
+            closeConfirmation,
+        );
     };
 
     const handleUniquenessCheck = callbackFunc => {
@@ -186,106 +196,136 @@ const Card = props => {
                 number: form.orderNumber,
                 fieldName: 'orderNumber',
                 errorText: t('number_already_exists'),
-                callbackSuccess: callbackFunc
+                callbackSuccess: callbackFunc,
             }),
         );
     };
 
     const loading = useSelector(state => progressSelector(state));
+    const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-    const disableSave = progressActionName || notChangeForm || isNotUniqueNumber;
+    const disableSave = progressActionName || notChangeForm;
+
+    const getActionsFooter = useCallback(() => {
+        return (
+            <>
+                <Button color="grey" onClick={onClose}>
+                    {t('CancelButton')}
+                </Button>
+                <Button color="blue" disabled={disableSave} loading={editLoading} onClick={handleSave}>
+                    {t('SaveButton')}
+                </Button>
+            </>
+        );
+    }, [form, disableSave, editLoading, name]);
+
+    const goToCard = (gridName, cardId) => {
+        const {state} = location;
+        console.log('to', state);
+        history.replace({
+            pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
+            state: {
+                ...state,
+                pathname: history.location.pathname,
+                gridLocation: state.gridLocation ? state.gridLocation : state.pathname,
+            }
+        })
+    };
+
+    const getActionsHeader = useCallback(() => {
+        return (
+            <div className="grid-card-header" onClick={() => goToCard(SHIPPINGS_GRID, form.shippingId)}>
+                {name === ORDERS_GRID && form.shippingId ? (
+                    <div className="link-cell">
+                        {t('open_shipping', {number: form.shippingNumber})}
+                    </div>
+                ) : null}
+                {name === SHIPPINGS_GRID && form.orders && form.orders.length ? (
+                    <Dropdown
+                        text={t('orders')}
+                        pointing="top right"
+                        className="dropdown-blue"
+                        scrolling
+                    >
+                        <Dropdown.Menu>
+                            {form.orders.map(order => (
+                                <Dropdown.Item
+                                    className="link-cell"
+                                    key={order.id}
+                                    text={order.orderNumber}
+                                    onClick={() => {
+                                        goToCard(ORDERS_GRID, order.id)
+                                    }}
+                                />
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                ) : null}
+                <Dropdown
+                    icon="ellipsis horizontal"
+                    floating
+                    button
+                    pointing="top right"
+                    className="icon"
+                    scrolling
+                >
+                    <Dropdown.Menu>
+                        {actions &&
+                        actions
+                            .filter(item => item.allowedFromForm)
+                            .map(action => (
+                                <Dropdown.Item
+                                    key={action.name}
+                                    text={t(action.name)}
+                                    label={{
+                                        color: action.color,
+                                        empty: true,
+                                        circular: true,
+                                    }}
+                                    onClick={() => invokeAction(action.name)}
+                                />
+                            ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
+        );
+    }, [form, actions, name]);
 
     return (
-        <Modal
-            dimmer="blurring"
-            className="card-modal"
-            trigger={children}
-            open={modalOpen}
-            onOpen={onOpen}
-            onClose={onClose}
-            closeOnDimmerClick={false}
-            closeIcon
-            size="large"
-        >
-            <Modal.Header>
-                {t(title, {
-                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
-                    status: t(form.status),
-                })}
-            </Modal.Header>
-            <Modal.Content scrolling>
-                <Dimmer active={loading} inverted>
-                    <Loader size="huge">Loading</Loader>
-                </Dimmer>
-                <Modal.Description>
-                    {name === ORDERS_GRID ? (
-                        <OrderModal
-                            {...props}
-                            form={form}
-                            load={loadCard}
-                            settings={settings}
-                            uniquenessNumberCheck={handleUniquenessCheck}
-                            isNotUniqueNumber={isNotUniqueNumber}
-                            error={error}
-                            onClose={onClose}
-                            onChangeForm={onChangeForm}
-                        />
-                    ) : (
-                        <ShippingModal
-                            {...props}
-                            form={form}
-                            load={loadCard}
-                            settings={settings}
-                            uniquenessNumberCheck={handleUniquenessCheck}
-                            isNotUniqueNumber={isNotUniqueNumber}
-                            error={error}
-                            onClose={onClose}
-                            onChangeForm={onChangeForm}
-                        />
-                    )}
-                </Modal.Description>
-            </Modal.Content>
-            <Modal.Actions className="grid-card-actions">
-                <div>
-                    {name === ORDERS_GRID && form.shippingId ? (
-                        <SelfComponent
-                            {...props}
-                            name="shippings"
-                            id={form.shippingId}
-                            title={`edit_shippings`}
-                            onClose={onClose}
-                        >
-                            <Button>{t('open_shipping', { number: form.shippingNumber })}</Button>
-                        </SelfComponent>
-                    ) : null}
-                    {actions &&
-                        actions.filter(item => item.allowedFromForm).map(item => (
-                            <Button
-                                color={item.color}
-								size="small"
-                                loading={progressActionName === item.name}
-                                disabled={progressActionName}
-                                onClick={() => invokeAction(item.name)}
-                            >
-                                {t(item.name)}
-                            </Button>
-                        ))}
-                </div>
-                <div>
-                    <Button
-                        color="grey"
-						size="small"
-                        disabled={progressActionName}
-                        onClick={() => onClose(true)}
-                    >
-                        {t('CancelButton')}
-                    </Button>
-                    <Button color="blue" size="small" disabled={disableSave} onClick={handleSave}>
-                        {t('SaveButton')}
-                    </Button>
-                </div>
-            </Modal.Actions>
+        <React.Fragment>
+            {name === ORDERS_GRID ? (
+                <OrderCard
+                    {...props}
+                    id={id}
+                    name={name}
+                    form={form}
+                    title={title}
+                    settings={settings}
+                    loading={loading}
+                    uniquenessNumberCheck={handleUniquenessCheck}
+                    error={error}
+                    onClose={onClose}
+                    onChangeForm={onChangeForm}
+                    actionsFooter={getActionsFooter}
+                    actionsHeader={getActionsHeader}
+                />
+            ) : (
+                <ShippingCard
+                    {...props}
+                    title={title}
+                    id={id}
+                    name={name}
+                    form={form}
+                    loading={loading}
+                    settings={settings}
+                    error={error}
+                    onClose={onClose}
+                    onChangeForm={onChangeForm}
+                    actionsFooter={getActionsFooter}
+                    actionsHeader={getActionsHeader}
+                />
+            )}
             <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
@@ -295,7 +335,7 @@ const Card = props => {
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />
-        </Modal>
+        </React.Fragment>
     );
 };
 

@@ -40,7 +40,7 @@ namespace Application.BusinessModels.Orders.Triggers
 
                     var shipping = _dataService.GetById<Shipping>(entityShippingId);
 
-                    if (shipping.Status == ShippingState.ShippingCreated)
+                    if (shipping.Status == ShippingState.ShippingCreated && !shipping.ManualTarifficationType)
                     {
                         var orders = _dataService.GetDbSet<Order>()
                             .Where(x => x.ShippingId == entityShippingId);
@@ -66,7 +66,9 @@ namespace Application.BusinessModels.Orders.Triggers
                                 shipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInIncludedOrder");
                     
                             shipping.TarifficationType = tarifficationType;
-                            _calcService.UpdateDeliveryCost(shipping);
+
+                            if(!shipping.ManualTarifficationType)
+                                _calcService.UpdateDeliveryCost(shipping);
                         }
                     }
                 }

@@ -39,7 +39,7 @@ namespace Application.Services.Orders
             ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
-            IFieldPropertiesService fieldPropertiesService, 
+            IFieldPropertiesService fieldPropertiesService,
             IServiceProvider serviceProvider,
             ITriggersService triggersService,
             IValidationService validationService,
@@ -89,18 +89,18 @@ namespace Application.Services.Orders
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
         }
-        
+
         public override IQueryable<Order> ApplyRestrictions(IQueryable<Order> query)
         {
             var currentUserId = _userIdProvider.GetCurrentUserId();
             var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
-            
-            if (user.CarrierId.HasValue) 
+
+            if (user.CarrierId.HasValue)
                 query = query.Where(x => x.CarrierId == user.CarrierId);
 
             return query;
-        }        
-        
+        }
+
         public override string GetNumber(OrderFormDto dto)
         {
             return dto?.OrderNumber;
@@ -356,11 +356,11 @@ namespace Application.Services.Orders
             var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
                 .Select(x => x.VehicleTypeId.Value.ToGuid())
                 .ToList();
-            
+
             var vehicleTypes = _dataService.GetDbSet<VehicleType>()
                 .Where(x => vehicleTypeIds.Contains(x.Id))
                 .ToDictionary(x => x.Id.ToString());
-            
+
 
             foreach (var dto in dtos)
             {
@@ -782,11 +782,11 @@ namespace Application.Services.Orders
         {
             return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
-        
+
         private Guid? GetVehicleTypeIdByName(string name)
         {
             var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }        
+        }
     }
 }

@@ -270,7 +270,9 @@ function* setRepresentationSaga({ payload }) {
         const state = yield select(state => state.representations.representation);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
 
-        callbackSuccess && callbackSuccess();
+        setTimeout(() => {
+            callbackSuccess && callbackSuccess();
+        }, 500);
     } catch (e) {
         console.log('___error', e);
     }
