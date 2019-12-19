@@ -43,15 +43,16 @@ namespace Application.BusinessModels.Shippings.Triggers
 
             if (!entity.ManualTarifficationType)
                 _calcService.UpdateDeliveryCost(entity);
-            else
-                entity.ManualTarifficationType = true;
+            
+            
+            entity.ManualTarifficationType = true;
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)
         {
             var watchProperties = new[]
             {
-                nameof(Order.TarifficationType),
+                nameof(Shipping.TarifficationType),
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }
