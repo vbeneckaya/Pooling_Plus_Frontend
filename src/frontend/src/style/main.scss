@@ -30,6 +30,7 @@ i.blue.icon {
     position: relative;
 }
 
+
 .Toastify__toast {
     position: relative;
     min-height: 1em;
@@ -138,6 +139,10 @@ i.blue.icon {
     }
 }
 
+.padding-14 {
+    padding: 14px !important;
+}
+
 .card-columns {
     padding: 8px 0;
     display: flex !important;
@@ -190,7 +195,7 @@ i.blue.icon {
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: flex-start;
-    padding: 24px 15px 0 15px;
+    padding: 24px 32px;
     width: 100% !important;
 
     .field:not(.wide) {
@@ -231,9 +236,7 @@ i.blue.icon {
 }
 
 .tabs-card {
-    height: 67vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 24px 32px;
 
     .ui.grid > .row:not(:last-child) {
         padding-bottom: 0 !important;
@@ -258,6 +261,11 @@ i.blue.icon {
 
     .ui.checkbox {
         padding: 4px 0;
+    }
+
+    &_history {
+        max-height: 500px;
+        overflow: auto;
     }
 }
 
@@ -325,6 +333,15 @@ i.blue.icon {
     justify-content: space-between;
 }
 
+.grid-card-header {
+    display: flex;
+    align-items: center;
+
+    > div:not(:last-child) {
+        margin-right: 12px;
+    }
+}
+
 .history-who {
     font-size: 12px;
     font-weight: 500;
@@ -362,7 +379,8 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.disabled.input, .ui.input:not(.disabled) input[disabled] {
+.ui.disabled.input,
+.ui.input:not(.disabled) input[disabled] {
     opacity: 1 !important;
 }
 

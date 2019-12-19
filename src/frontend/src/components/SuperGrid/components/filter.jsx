@@ -32,8 +32,6 @@ const Filter = props => {
         resizeColumn(size, index);
     }, []);
 
-    console.log('extWidth', extWidth);
-
     return (
         <Table.Row className="sticky-header">
             <Table.HeaderCell className="small-column">

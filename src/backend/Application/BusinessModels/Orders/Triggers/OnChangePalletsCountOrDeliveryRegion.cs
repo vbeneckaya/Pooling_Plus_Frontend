@@ -4,6 +4,7 @@ using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
+using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.History;
 
@@ -28,41 +29,60 @@ namespace Application.BusinessModels.Orders.Triggers
 
         public void Execute(Order entity)
         {
-            if (entity.ShippingId.HasValue)
+            if (entity.Status == OrderState.Draft || 
+                entity.Status == OrderState.Created || 
+                entity.Status == OrderState.Confirmed ||
+                entity.Status == OrderState.InShipping)
             {
-                var entityShippingId = entity.ShippingId.Value;
-
-                var shipping = _dataService.GetById<Shipping>(entityShippingId);
-            
-                var orders = _dataService.GetDbSet<Order>()
-                    .Where(x => x.ShippingId == entityShippingId);
-            
-                var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
-
-                foreach (var orderInShipping in orders)
+                if (entity.ShippingId.HasValue)
                 {
-                    if (orderInShipping.TarifficationType != tarifficationType)
+                    var entityShippingId = entity.ShippingId.Value;
+
+                    var shipping = _dataService.GetById<Shipping>(entityShippingId);
+
+                    if (shipping.Status == ShippingState.ShippingCreated)
                     {
-                        _historyService.Save(orderInShipping.Id, "fieldChanged",
-                            nameof(orderInShipping.TarifficationType).ToLowerFirstLetter(),
-                            orderInShipping.TarifficationType, tarifficationType);
+                        var orders = _dataService.GetDbSet<Order>()
+                            .Where(x => x.ShippingId == entityShippingId);
+            
+                        var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
+
+                        foreach (var orderInShipping in orders)
+                        {
+                            if (orderInShipping.TarifficationType != tarifficationType)
+                            {
+                                _historyService.Save(orderInShipping.Id, "fieldChangedBy",
+                                    nameof(orderInShipping.TarifficationType).ToLowerFirstLetter(),
+                                    orderInShipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInOtherOrderInShipping");
                     
-                        orderInShipping.TarifficationType = tarifficationType;
+                                orderInShipping.TarifficationType = tarifficationType;
+                            }
+                        }
+
+                        if (shipping.TarifficationType != tarifficationType)
+                        {
+                            _historyService.Save(shipping.Id, "fieldChangedBy",
+                                nameof(shipping.TarifficationType).ToLowerFirstLetter(),
+                                shipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInIncludedOrder");
+                    
+                            shipping.TarifficationType = tarifficationType;
+                            _calcService.UpdateDeliveryCost(shipping);
+                        }
                     }
                 }
-
-                shipping.TarifficationType = tarifficationType;
-                
-                if (shipping.TarifficationType != tarifficationType)
+                else
                 {
-                    _historyService.Save(shipping.Id, "fieldChanged",
-                        nameof(shipping.TarifficationType).ToLowerFirstLetter(),
-                        shipping.TarifficationType, tarifficationType);
+                    var tarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(new []{entity});
+                    if (entity.TarifficationType != tarifficationType)
+                    {
+                        _historyService.Save(entity.Id, "fieldChangedBy",
+                            nameof(entity.TarifficationType).ToLowerFirstLetter(),
+                            entity.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegion");
                     
-                    shipping.TarifficationType = tarifficationType;
-                    _calcService.UpdateDeliveryCost(shipping);
+                        entity.TarifficationType = tarifficationType;
+                    }
+                
                 }
-
             }
         }
 

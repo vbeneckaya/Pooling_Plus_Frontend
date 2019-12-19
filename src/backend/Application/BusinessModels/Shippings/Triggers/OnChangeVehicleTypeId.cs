@@ -45,9 +45,9 @@ namespace Application.BusinessModels.Shippings.Triggers
 
                     orderInShipping.VehicleTypeId = entity.VehicleTypeId;
 
-                    _historyService.Save(orderInShipping.Id, "fieldChanged",
+                    _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                         nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
-                        oldVehicleType, newVehicleType);
+                        oldVehicleType, newVehicleType, "onChangeInShipping");
                 }
                 _calcService.UpdateDeliveryCost(entity);
             }

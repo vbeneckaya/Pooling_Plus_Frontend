@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {withTranslation} from 'react-i18next';
+import {withRouter} from 'react-router-dom';
 import {Button, Checkbox, Loader, Table} from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import {connect} from 'react-redux';
@@ -31,7 +32,7 @@ class Result extends Component {
         const {
             columns = [],
             rows = [],
-            modalCard,
+            goToCard,
             actions,
             isShowActions,
             selectedRows,
@@ -41,7 +42,7 @@ class Result extends Component {
             progress,
             t,
             checkForEditing,
-            invokeMassUpdate,
+            invokeMassUpdate
         } = this.props;
 
         return (
@@ -82,7 +83,7 @@ class Result extends Component {
                                 indexColumn={indexColumn}
                                 loadList={loadList}
                                 gridName={name}
-                                modalCard={modalCard}
+                                goToCard={goToCard}
                                 t={t}
                                 checkForEditing={checkForEditing}
                                 invokeMassUpdate={invokeMassUpdate}

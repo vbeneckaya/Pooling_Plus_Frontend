@@ -38,7 +38,6 @@ const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, repr
     const list = useSelector(state => representationsSelector(state));
 
     useEffect(() => {
-        console.log('representationFields', representationFields);
         setSelectedFields(representationFields);
     }, [representationFields]);
 

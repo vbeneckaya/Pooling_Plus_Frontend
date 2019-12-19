@@ -408,11 +408,19 @@ namespace Application.Shared
                 orderNumber = (attr as OrderNumberAttribute)?.Value ?? orderNumber;
             }
 
+            ActionAccess access = ActionAccess.Everywhere;
+            foreach (var attr in action.GetType().GetCustomAttributes(typeof(ActionAccessAttribute), false))
+            {
+                access = (attr as ActionAccessAttribute)?.Access ?? access;
+            }
+
             var dto = new ActionDto
             {
                 Color = action.Color.ToString().ToLowerFirstLetter(),
                 Name = actionName,
                 Group = group,
+                AllowedFromGrid = access != ActionAccess.FormOnly,
+                AllowedFromForm = access != ActionAccess.GridOnly,
                 Ids = ids.Select(x => x.ToString())
             };
 

@@ -13,7 +13,7 @@ import Result from './components/result';
 import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
-
+import { withRouter } from 'react-router-dom';
 
 const initState = (storageFilterItem, storageSortItem) => ({
     page: 1,
@@ -41,7 +41,24 @@ class SuperGrid extends Component {
 
     componentDidMount() {
         this.timer = null;
-        this.props.autoUpdateStart(this.mapData());
+        const { location, history } = this.props;
+        const { state } = location;
+
+        console.log('33333', state);
+
+        if (state) {
+            this.setState(
+                {
+                    fullText: state.filter.search,
+                },
+                () => {
+                    history.replace(location.pathname, null);
+                    this.props.autoUpdateStart(this.mapData());
+                },
+            );
+        } else {
+            this.props.autoUpdateStart(this.mapData());
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -65,15 +82,18 @@ class SuperGrid extends Component {
         }
 
         if (prevProps.columns !== this.props.columns) {
-            const {columns} = this.props;
+            const { columns } = this.props;
             const width = this.container.scrollWidth - 50;
 
-            this.setState({
-                columns: columns.map(item => ({
-                    ...item,
-                    width: item.width || parseInt(width / columns.length)
-                })),
-            }, this.updatingFilter);
+            this.setState(
+                {
+                    columns: columns.map(item => ({
+                        ...item,
+                        width: item.width || parseInt(width / columns.length),
+                    })),
+                },
+                this.updatingFilter,
+            );
         }
     }
 
@@ -223,12 +243,13 @@ class SuperGrid extends Component {
 
         let newFilter = {};
 
-        console.log('sort', sort, columns.find(item => item.name === sort.name));
-
         if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
-            this.setState({
-                sort: {}
-            }, this.loadAndResetContainerScroll);
+            this.setState(
+                {
+                    sort: {},
+                },
+                this.loadAndResetContainerScroll,
+            );
 
             storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify({}));
         }
@@ -261,11 +282,13 @@ class SuperGrid extends Component {
 
     loadAndResetContainerScroll = () => {
         this.loadList();
-        this.container.scrollTop = 0;
+        if (this.container && this.container.scrollTop) {
+            this.container.scrollTop = 0;
+        }
     };
 
     resizeColumn = (size, index) => {
-        const {columns} = this.state;
+        const { columns } = this.state;
 
         clearTimeout(this.timer);
         this.setState(prevState => {
@@ -284,10 +307,9 @@ class SuperGrid extends Component {
         columns.forEach(item => {
             sum = sum + item.width + columns.length + 50;
         });
-        console.log('sum', sum);
 
         this.timer = setTimeout(() => {
-            const {editRepresentation, representationName, name, getRepresentations} = this.props;
+            const { editRepresentation, representationName, name, getRepresentations } = this.props;
 
             editRepresentation({
                 key: name,
@@ -301,20 +323,34 @@ class SuperGrid extends Component {
         }, 2000);
     };
 
+    handleGoToCard = (isEdit, id, name) => {
+        const { history, cardLink, newLink } = this.props;
+
+        history.push({
+            pathname: isEdit
+                ? cardLink.replace(':name', name).replace(':id', id)
+                : newLink.replace(':name', name),
+            state: {
+                ...this.mapData().filter,
+                pathname: history.location.pathname,
+            },
+        });
+    };
+
     render() {
         const { filters, sort, fullText, selectedRows, columns } = this.state;
         const {
             totalCount: count = 0,
             rows = [],
             progress,
-            modalCard,
+            cardLink,
             catalogsFromGrid,
             actions,
             isShowActions,
             confirmation = {},
             closeConfirmation = () => {},
             groupActions,
-            createButton,
+            isCreateBtn,
             extGrid,
             onlyOneCheck,
             checkAllDisabled,
@@ -331,16 +367,8 @@ class SuperGrid extends Component {
                     Loading
                 </Loader>
                 <HeaderSearchGrid
-                    createButton={
-                        createButton && (
-                            <CreateButton
-                                button={createButton}
-                                loadList={this.loadList}
-                                stopUpdate={autoUpdateStop}
-                                name={name}
-                            />
-                        )
-                    }
+                    isCreateBtn={isCreateBtn}
+                    goToCard={this.handleGoToCard}
                     name={name}
                     loadList={this.loadList}
                     searchValue={fullText}
@@ -391,7 +419,7 @@ class SuperGrid extends Component {
                             rows={rows}
                             progress={progress}
                             name={name}
-                            modalCard={modalCard}
+                            goToCard={this.handleGoToCard}
                             actions={actions}
                             onlyOneCheck={onlyOneCheck}
                             loadList={this.loadList}
@@ -445,4 +473,4 @@ SuperGrid.defaultProps = {
     disabledCheck: () => {},
 };
 
-export default withTranslation()(SuperGrid);
+export default withTranslation()(withRouter(SuperGrid));

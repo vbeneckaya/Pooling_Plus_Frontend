@@ -16,8 +16,6 @@ const Facet = ({t, source, name, onChange, value}) => {
     const valuesList = useSelector(state => listSelector(state, filter, t));
     const loading = useSelector(state => progressSelector(state));
 
-    console.log('valueslist', valuesList);
-
     const context = useRef(null);
 
     useEffect(() => {
@@ -33,7 +31,6 @@ const Facet = ({t, source, name, onChange, value}) => {
     );
 
     useEffect(() => {
-        console.log('filter');
         context.current.scrollTop = 0;
         setCounter(PAGE_SIZE);
     }, [filter]);
@@ -76,7 +73,7 @@ const Facet = ({t, source, name, onChange, value}) => {
     };
 
     const scroll = () => {
-        console.log('scroll', counter, valuesList.length);
+
         if (counter < valuesList.length) {
             setCounter(prevState => prevState + PAGE_SIZE);
         }

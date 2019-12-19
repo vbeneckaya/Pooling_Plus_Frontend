@@ -14,7 +14,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Вернуть в предыдущий статус
     /// </summary>
-    [ActionGroup(nameof(Shipping)), OrderNumber(23)]
+    [ActionGroup(nameof(Shipping)), OrderNumber(23), ActionAccess(ActionAccess.GridOnly)]
     public class RollbackOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;

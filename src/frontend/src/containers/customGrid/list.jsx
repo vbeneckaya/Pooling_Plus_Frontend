@@ -24,6 +24,8 @@ import {
     representationFromGridSelector,
     representationNameSelector,
 } from '../../ducks/representations';
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, GRID_CARD_LINK, GRID_NEW_LINK} from "../../router/links";
+import TableInfo from "../../components/TableInfo";
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -73,12 +75,13 @@ class List extends Component {
         const { t, actions, invokeAction, match } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
+        const actionsFromGrid = actions.filter(item => item.allowedFromGrid);
 
         let obj = {
-            require: actions.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            other: actions.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            order: actions.filter((item, index) => index >= 3).filter(item => item.group === "Order").map(item => this.mapActions(item, t, invokeAction, name)),
-            shipping: actions.filter((item, index) => index >= 3).filter(item => item.group === "Shipping").map(item => this.mapActions(item, t, invokeAction, name)),
+            require: actionsFromGrid.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
+            other: actionsFromGrid.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
+            order: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Order").map(item => this.mapActions(item, t, invokeAction, name)),
+            shipping: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Shipping").map(item => this.mapActions(item, t, invokeAction, name)),
         };
 
         return obj;
@@ -141,9 +144,11 @@ class List extends Component {
                     groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
                     modalCard={this.modalCard}
-                    createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
+                    isCreateBtn={isCreateBtn}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
+                    newLink={isCreateBtn ? GRID_NEW_LINK : null}
+                    cardLink={GRID_CARD_LINK}
                 />
             </div>
         );

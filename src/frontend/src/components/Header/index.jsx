@@ -15,7 +15,7 @@ import {
 import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
-import {DICTIONARY_LIST_LINK, GRID_LINK} from '../../router/links';
+import {DICTIONARY_LIST_LINK, GRID_LIST_LINK} from '../../router/links';
 import Profile from '../../containers/users/profile';
 
 const Header = () => {
@@ -66,7 +66,7 @@ const Header = () => {
                                     className="large"
                                     key={item}
                                     as={Link}
-                                    to={GRID_LINK.replace(':name', item)}
+                                    to={GRID_LIST_LINK.replace(':name', item)}
                                     name={item}
                                     active={activeItem.includes(item)}
                                 >

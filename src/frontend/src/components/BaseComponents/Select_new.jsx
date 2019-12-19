@@ -70,7 +70,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, {value: value ? value : {}, name});
+        onChange(e, {value: value ? value : null, name});
         handleClose();
     };
 
@@ -100,7 +100,6 @@ const Select = ({
     };
 
     const scroll = () => {
-        console.log('scroll', totalCounter);
         if (counter < totalCounter) {
             setCounter(prevState => prevState + PAGE_SIZE);
         }
@@ -114,8 +113,6 @@ const Select = ({
         toggle(true);
         handleOpen();
     };
-
-    console.log('select', value);
 
     return (
         <Form.Field>

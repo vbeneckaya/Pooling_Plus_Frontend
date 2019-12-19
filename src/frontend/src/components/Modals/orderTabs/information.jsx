@@ -25,16 +25,15 @@ const Information = ({
     const { t } = useTranslation();
 
     const handleChangeSoldTo = useCallback((e, {name, value}) => {
-        console.log('value');
         onChange(e, {
             name,
-            value: value.value ? {
+            value: value && value.value ? {
                 value: value.value,
                 name: value.value
-            } : {},
+            } : null,
         });
-        onChange(e, {name: 'clientName', value: value.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: value.address});
+        onChange(e, {name: 'clientName', value: value ? value.warehouseName : null});
+        onChange(e, {name: 'deliveryAddress', value: value ? value.address : null});
     }, []);
 
 

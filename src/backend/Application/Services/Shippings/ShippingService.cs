@@ -514,13 +514,11 @@ namespace Application.Services.Shippings
                 .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
                 .ToList();
 
-            var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => !string.IsNullOrEmpty(i.Title) && i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id).ToList();
 
-            var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
-                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id).ToList();
+            var transportCompanies = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
+
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>().Where(i => i.Name.ToLower().Contains(search));
+
 
             return query.Where(i =>
                columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
@@ -555,8 +553,8 @@ namespace Application.Services.Shippings
 
             || columns.Contains("tarifficationType") && tarifficationTypes.Contains(i.TarifficationType)
             || columns.Contains("deliveryType") && deliveryTypes.Contains(i.DeliveryType)
-            || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v == i.VehicleTypeId)
-            || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
+            || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v.Id == i.VehicleTypeId)
+            || columns.Contains("carrierId") && transportCompanies.Any(t => t.Id == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
         }

@@ -260,7 +260,7 @@ const Card = props => {
                         </SelfComponent>
                     ) : null}
                     {actions &&
-                        actions.map(item => (
+                        actions.filter(item => item.allowedFromForm).map(item => (
                             <Button
                                 color={item.color}
 								size="small"
