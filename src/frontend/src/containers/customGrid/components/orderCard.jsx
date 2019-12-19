@@ -1,16 +1,13 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { Tab } from 'semantic-ui-react';
+import {useSelector} from 'react-redux';
 import Information from './orderTabs/information';
 import Position from './orderTabs/position';
-import Returns from './orderTabs/returns';
 import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
 import CardLayout from '../../../components/CardLayout';
-import { userPermissionsSelector } from '../../../ducks/profile';
+import {userPermissionsSelector} from '../../../ducks/profile';
 
 const OrderCard = ({
     form,
@@ -31,34 +28,14 @@ const OrderCard = ({
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
     const getPanes = () => {
-        let obj = [
-            {
-                menuItem: 'information',
-                render: () => (
-                    <Information
-                        form={form}
-                        settings={settings}
-                        error={error}
-                        load={load}
-                        isNotUniqueNumber={isNotUniqueNumber}
-                        uniquenessNumberCheck={uniquenessNumberCheck}
-                        onChange={onChangeForm}
-                    />
-                ),
-            },
-            {
-                menuItem: 'position',
-                render: () => (
-                    <Position
-                        form={form}
-                        onChange={onChangeForm}
-                        gridName={name}
-                        load={load}
-                        error={error}
-                        settings={settings}
-                    />
-                ),
-            },
+        let obj = [{menuItem: 'information',
+            render: () => <Information form={form} settings={settings} error={error} load={load}
+                                       isNotUniqueNumber={isNotUniqueNumber}
+                                       uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>
+        }, {menuItem: 'position',
+            render: () => <Position form={form} onChange={onChangeForm} gridName={name} load={load} error={error}
+                                    settings={settings}/>
+        }];
             /*{
                 menuItem: 'returns',
                 render: () => (
@@ -70,7 +47,6 @@ const OrderCard = ({
                     />
                 ),
             },*/
-        ];
 
         if (userPermissions.includes(4) || userPermissions.includes(5)) {
             obj.push({
