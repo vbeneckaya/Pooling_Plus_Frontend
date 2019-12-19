@@ -31,7 +31,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
     return (
         <Form className="tabs-card">
             <Grid>
-                <Grid.Row columns={4}>
+                <Grid.Row columns={3}>
                     <Grid.Column>
                         <FormField
                             name="orderNumber"
@@ -47,7 +47,6 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="clientOrderNumber"
                             type={TEXT_TYPE}
-                            isRequired
                             error={error["clientOrderNumber"]}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
@@ -57,13 +56,12 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="orderDate"
                             type={DATE_TYPE}
-                            isRequired
                             error={error["orderDate"]}
                             value={form['orderDate']}
                             onChange={onChange}
                         />
                     </Grid.Column>
-                    <Grid.Column>
+                    {/* <Grid.Column>
                         <FormField
                             name="payer"
                             type={TEXT_TYPE}
@@ -71,10 +69,10 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             value={form['payer']}
                             onChange={onChange}
                         />
-                    </Grid.Column>
+                    </Grid.Column>*/}
                 </Grid.Row>
-                <Grid.Row columns={4}>
-                    <Grid.Column>
+                <Grid.Row columns={2}>
+                    {/*<Grid.Column>
                         <FormField
                             name="shippingWarehouseId"
                             type={SELECT_TYPE}
@@ -94,14 +92,14 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             source="soldTo"
                             onChange={handleChangeSoldTo}
                         />
-                    </Grid.Column>
+                    </Grid.Column>*/}
                     <Grid.Column>
                         <FormField
-                            name="clientName"
+                            name="clientId"
                             type={SELECT_TYPE}
-                            isDisabled
-                            error={error['clientName']}
-                            value={form['clientName']}
+                            isRequired
+                            error={error['clientId']}
+                            value={form['clientId']}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -109,6 +107,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="deliveryDate"
                             type={DATE_TYPE}
+                            isRequired
                             value={form['deliveryDate']}
                             error={error['deliveryDate']}
                             onChange={onChange}
@@ -120,9 +119,9 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="shippingAddress"
                             type={BIG_TEXT_TYPE}
+                            isRequired
                             value={form['shippingAddress']}
                             error={error['shippingAddress']}
-                            isDisabled
                             rows={2}
                             onChange={onChange}
                         />
@@ -131,9 +130,9 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="deliveryAddress"
                             type={BIG_TEXT_TYPE}
+                            isRequired
                             value={form['deliveryAddress']}
                             error={error['deliveryAddress']}
-                            isDisabled
                             rows={2}
                             onChange={onChange}
                         />
