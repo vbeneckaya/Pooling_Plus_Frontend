@@ -88,7 +88,7 @@ namespace API.Controllers
         /// <summary>
         /// Получение данных для выпадающего списка отфильтрованного по юр. лицу
         /// </summary>
-        [HttpGet("forSelectByCompany/{companyId}")]
+        [HttpGet("forSelectByCompany/{companyId?}")]
         public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
         {
             return _service.ForSelectByCompany(companyId);
