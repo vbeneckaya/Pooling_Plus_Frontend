@@ -11,13 +11,13 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
         console.log('value', value);
         onChange(e, {
             name,
-            value: {
+            value: value && value.value ? {
                 value: value.value,
                 name: value.value
-            },
+            } : null,
         });
-        onChange(e, {name: 'clientName', value: value.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: value.address});
+        onChange(e, {name: 'clientName', value: value ? value.warehouseName : null});
+        onChange(e, {name: 'deliveryAddress', value: value ? value.address : null});
     }, []);
 
     const handleChangeShippingWarehouseId = useCallback((e, {name, value}) => {
@@ -99,7 +99,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                     <Grid.Column>
                         <FormField
                             name="clientName"
-                            type={TEXT_TYPE}
+                            type={SELECT_TYPE}
                             isDisabled
                             error={error['clientName']}
                             value={form['clientName']}

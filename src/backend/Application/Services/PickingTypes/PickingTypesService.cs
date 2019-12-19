@@ -63,9 +63,19 @@ namespace Application.Services.PickingTypes
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
             var pickingTypes = _dataService.GetDbSet<PickingType>()
                 .Where(i => i.IsActive)
                 .OrderBy(c => c.Name).ToList();
+
+            var empty = new LookUpDto
+            {
+                Name = "emptyValue".Translate(lang),
+                Value = LookUpDto.EmptyValue,
+                IsFilterOnly = true
+            };
+            yield return empty;
 
             foreach (PickingType pickingType in pickingTypes)
             {

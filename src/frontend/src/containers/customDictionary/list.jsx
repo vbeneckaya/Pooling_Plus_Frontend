@@ -21,12 +21,11 @@ import {
 } from '../../ducks/dictionaryView';
 import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK} from "../../router/links";
 
 const newModal = (t, load, name) => (
     <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
-        <Button size="small" color="blue" className="grid-action-btn">
-            <Icon name="plus" /> {t('create_btn')}
-        </Button>
+        <Button icon="add" />
     </Card>
 );
 
@@ -58,6 +57,12 @@ class List extends Component {
             name,
             filter
         });
+    };
+
+    getCard = ({row, loadList, name}) => {
+        const { t, isCreateBtn } = this.props;
+
+        return isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id}/> : null
     };
 
     render() {
@@ -97,8 +102,8 @@ class List extends Component {
                 exportToExcel={this.handleExportToExcel}
                 importLoader={importLoader}
                 exportLoader={exportLoader}
-                newModal={isCreateBtn ? newModal : null}
-                modalCard={isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`}/> : null}
+                newLink={isCreateBtn ? DICTIONARY_NEW_LINK : null}
+                cardLink={DICTIONARY_CARD_LINK}
             />
         );
     }

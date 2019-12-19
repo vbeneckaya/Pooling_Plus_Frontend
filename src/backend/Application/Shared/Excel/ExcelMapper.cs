@@ -64,7 +64,7 @@ namespace Application.Shared.Excel
                 columnTitles.Add(worksheet.Cells[headRowIndex, colIndex]?.Value?.ToString());
             }
 
-            columnTitles = Unlocalize(columnTitles, _columns.Keys).ToList();
+            columnTitles = Unlocalize(columnTitles, _columns.Values.Select(x => x.Field)).ToList();
 
             FillColumnOrder(columnTitles);
 
@@ -110,26 +110,27 @@ namespace Application.Shared.Excel
         {
             foreach (var column in _columns.Where(c => c.Value.ColumnIndex >= 0))
             {
-                Translation local = _translations.FirstOrDefault(t => t.Name?.ToLower() == column.Key);
+                Translation local = _translations.FirstOrDefault(t => t.Name == column.Value.Field.DisplayNameKey);
                 column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key;
             }
         }
 
         private void FillDefaultColumnOrder(List<string> columns)
         {
-            List<string> propNames;
             if (columns != null && columns.Any())
             {
-                propNames = columns.Select(s => s.ToLower()).ToList();
+                List<string> propNames = columns.Select(s => s.ToLower()).ToList();
+                foreach (var column in _columns)
+                {
+                    column.Value.ColumnIndex = propNames.IndexOf(column.Key);
+                }
             }
             else
             {
-                propNames = typeof(TDto).GetProperties().Select(p => p.Name.ToLower()).ToList();
-            }
-
-            foreach (var column in _columns)
-            {
-                column.Value.ColumnIndex = propNames.IndexOf(column.Key);
+                foreach (var column in _columns)
+                {
+                    column.Value.ColumnIndex = column.Value.Field.OrderNumber;
+                }
             }
 
             int columnIndex = 0;
@@ -157,19 +158,26 @@ namespace Application.Shared.Excel
             }
         }
 
-        private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<string> fields)
+        private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<FieldInfo> fields)
         {
-            var fieldNamesSet = new HashSet<string>(fields.Select(x => x.ToLower()));
+            var fieldNamesSet = fields.ToDictionary(x => x.DisplayNameKey);
             foreach (string title in titles)
             {
                 if (string.IsNullOrEmpty(title))
                 {
-                    yield return title;
+                    yield return string.Empty;
                 }
                 else
                 {
-                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.Contains(t.Name.ToLower()));
-                    yield return (local?.Name ?? title)?.ToLower();
+                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.ContainsKey(t.Name));
+                    if (local == null)
+                    {
+                        yield return title?.ToLower();
+                    }
+                    else
+                    {
+                        yield return fieldNamesSet[local.Name].Name.ToLower();
+                    }
                 }
             }
         }

@@ -68,7 +68,7 @@ const CellValue = (
                 {!value
                     ? t('All')
                     : value.map((n, i) => (
-                        <Label key={i} className="label-margin">
+                        <Label key={n.name} className="label-margin">
                             {t(n.name)}
                         </Label>
                     ))}
@@ -85,7 +85,10 @@ const CellValue = (
     }
 
     if (type === ACTIVE_TYPE) {
-        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={toggleIsActive}/>;
+        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={(e, data) => {
+            e.stopPropagation();
+            toggleIsActive(e, data);
+        }}/>;
     }
 
     if (type === BOOLEAN_TYPE) {

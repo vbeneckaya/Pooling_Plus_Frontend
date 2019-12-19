@@ -7,6 +7,7 @@ using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using AutoMapper;
+using DAL.Extensions;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
@@ -197,16 +198,11 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.ManualTotalDeliveryCost, e => e.Ignore())
                     .ForMember(t => t.ManualTrucksDowntime, e => e.Ignore())
                     .ForMember(t => t.ManualWeightKg, e => e.Ignore())
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
-                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
-                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
-                    .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
-                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
-                    .ForMember(t => t.BodyTypeId, e => e.Condition((s) => s.BodyTypeId != null))
-                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => s.DeliveryType == null || string.IsNullOrEmpty(s.DeliveryType.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => s.TarifficationType == null || string.IsNullOrEmpty(s.TarifficationType.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId == null ? null : s.VehicleTypeId.Value.ToGuid()))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId == null ? null : s.BodyTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
                     .ForMember(t => t.BlankArrival, e => e.MapFrom((s) => s.BlankArrival.GetValueOrDefault()))
@@ -476,11 +472,13 @@ namespace Application.Services.Shippings
         {
             if (string.IsNullOrEmpty(search)) return query;
 
+            search = search.ToLower().Trim();
+
             var isInt = int.TryParse(search, out int searchInt);
             var isDecimal = decimal.TryParse(search.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
-            var searchDateFormat = "dd.MM.yyyy HH:mm";
+            var searchDateFormat = "dd.mm.yyyy HH24:MI";
 
             //TarifficationType search
 
@@ -511,20 +509,18 @@ namespace Application.Services.Shippings
                 .Select(i => (ShippingState?)Enum.Parse<ShippingState>(i.Name, true))
                 .ToList();
 
-            var transportCompanies = this._dataService.GetDbSet<TransportCompany>()
-                .Where(i => !string.IsNullOrEmpty(i.Title) && i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id).ToList();
 
-            var vehicleTypes = this._dataService.GetDbSet<VehicleType>()
-                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id).ToList();
+            var transportCompanies = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
+
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>().Where(i => i.Name.ToLower().Contains(search));
+
 
             return query.Where(i =>
-               columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search)
-            || columns.Contains("deliveryInvoiceNumber") && !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.Contains(search)
-            || columns.Contains("deviationReasonsComments") && !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.Contains(search)
-            || columns.Contains("additionalCostsComments") && !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.Contains(search)
-            || columns.Contains("invoiceNumber") && !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.Contains(search)
+               columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
+            || columns.Contains("deliveryInvoiceNumber") && !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.ToLower().Contains(search)
+            || columns.Contains("deviationReasonsComments") && !string.IsNullOrEmpty(i.DeviationReasonsComments) && i.DeviationReasonsComments.ToLower().Contains(search)
+            || columns.Contains("additionalCostsComments") && !string.IsNullOrEmpty(i.AdditionalCostsComments) && i.AdditionalCostsComments.ToLower().Contains(search)
+            || columns.Contains("invoiceNumber") && !string.IsNullOrEmpty(i.InvoiceNumber) && i.InvoiceNumber.ToLower().Contains(search)
             || columns.Contains("temperatureMin") && isInt && i.TemperatureMin == searchInt
             || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
             || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
@@ -543,15 +539,17 @@ namespace Application.Services.Shippings
             || columns.Contains("additionalPointRate") && isDecimal && i.AdditionalPointRate >= searchDecimal - precision && i.AdditionalPointRate <= searchDecimal + precision
             || columns.Contains("downtimeRate") && isDecimal && i.DowntimeRate >= searchDecimal - precision && i.DowntimeRate <= searchDecimal + precision
             || columns.Contains("blankArrivalRate") && isDecimal && i.BlankArrivalRate >= searchDecimal - precision && i.BlankArrivalRate <= searchDecimal + precision
-            || columns.Contains("shippingCreationDate") && i.ShippingCreationDate.HasValue && i.ShippingCreationDate.Value.ToString(searchDateFormat).Contains(search)
-            || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-            || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-            || columns.Contains("documentsReturnDate") && i.DocumentsReturnDate.HasValue && i.DocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-            || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
+
+            || columns.Contains("shippingCreationDate") && i.ShippingCreationDate.Value.SqlFormat(searchDateFormat).Contains(search)
+            || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.Value.SqlFormat(searchDateFormat).Contains(search)
+            || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.Value.SqlFormat(searchDateFormat).Contains(search)
+            || columns.Contains("documentsReturnDate") && i.DocumentsReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+            || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+
             || columns.Contains("tarifficationType") && tarifficationTypes.Contains(i.TarifficationType)
             || columns.Contains("deliveryType") && deliveryTypes.Contains(i.DeliveryType)
-            || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v == i.VehicleTypeId)
-            || columns.Contains("carrierId") && transportCompanies.Any(t => t == i.CarrierId)
+            || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v.Id == i.VehicleTypeId)
+            || columns.Contains("carrierId") && transportCompanies.Any(t => t.Id == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             );
         }

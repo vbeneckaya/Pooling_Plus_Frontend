@@ -1,17 +1,22 @@
 using Application.BusinessModels.Orders.Handlers;
-using Application.BusinessModels.Shared.Actions;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Extensions;
+using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
 using Application.Shared.Excel.Columns;
 using AutoMapper;
+using DAL.Extensions;
+using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Orders;
+using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 using Domain.Shared.FormFilters;
@@ -20,11 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using DAL.Queries;
-using Domain.Services.Translations;
-using Application.Services.Triggers;
-using Domain.Services;
-using Application.BusinessModels.Shared.Handlers;
 
 namespace Application.Services.Orders
 {
@@ -150,7 +150,8 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.UnloadingArrivalTime, new UnloadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.UnloadingDepartureTime, new UnloadingDepartureTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler(_dataService, _historyService))
-                .AddHandler(e => e.DeliveryCost, new DeliveryCostHandler(!isInjection));
+                .AddHandler(e => e.DeliveryCost, new DeliveryCostHandler(!isInjection))
+                .AddHandler(e => e.CarrierId, new CarrierHandler(_dataService, _historyService));
         }
 
         private MapperConfiguration ConfigureMapper()
@@ -174,33 +175,26 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingId, e => e.Ignore())
                     .ForMember(t => t.ShippingNumber, e => e.Ignore())
                     .ForMember(t => t.OrderShippingStatus, e => e.Ignore())
-                    .ForMember(t => t.DeliveryCity, e => e.Condition((s) => s.DeliveryCity != null))
-                    .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity.Value))
-                    .ForMember(t => t.ShippingCity, e => e.Condition((s) => s.ShippingCity != null))
-                    .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity.Value))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
-                    .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
-                    .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
+                    .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity == null ? null : s.DeliveryCity.Value))
+                    .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity == null ? null : s.ShippingCity.Value))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId == null ? null : s.ShippingWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo == null ? null : s.SoldTo.Value))
+                    .ForMember(t => t.ClientName, e => e.MapFrom((s) => s.ClientName == null ? null : s.ClientName.Value))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
-                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => s.DeliveryType == null || string.IsNullOrEmpty(s.DeliveryType.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s) => ParseDateTime(s.OrderDate)))
-                    .ForMember(t => t.OrderType, e => e.Condition((s) => s.OrderType != null && !string.IsNullOrEmpty(s.OrderType.Value)))
-                    .ForMember(t => t.OrderType, e => e.MapFrom((s) => MapFromStateDto<OrderType>(s.OrderType.Value)))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s) => s.OrderType == null || string.IsNullOrEmpty(s.OrderType.Value) ? (OrderType?)null : MapFromStateDto<OrderType>(s.OrderType.Value)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s) => ParseDateTime(s.ShippingDate)))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s) => ParseDateTime(s.DeliveryDate)))
                     .ForMember(t => t.BoxesCount, e => e.MapFrom((s) => Round(s.BoxesCount, 1)))
                     .ForMember(t => t.ConfirmedBoxesCount, e => e.MapFrom((s) => Round(s.ConfirmedBoxesCount, 1)))
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s) => ParseTime(s.ShippingAvisationTime)))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s) => ParseTime(s.ClientAvisationTime)))
-                    .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId == null ? null : s.PickingTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
                     .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
                     .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.UnloadingArrivalTime)))
@@ -209,7 +203,9 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s) => ParseDateTime(s.PlannedReturnDate)))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualReturnDate)))
-                    .ForMember(t => t.DocumentReturnStatus, e => e.MapFrom((s) => s.DocumentReturnStatus.GetValueOrDefault()));
+                    .ForMember(t => t.DocumentReturnStatus, e => e.MapFrom((s) => s.DocumentReturnStatus.GetValueOrDefault()))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId == null ? null : s.VehicleTypeId.Value.ToGuid()))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => s.TarifficationType == null || string.IsNullOrEmpty(s.TarifficationType.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(s.TarifficationType.Value)));
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
@@ -222,6 +218,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
+                    .ForMember(t => t.ClientName, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ClientName) ? null : new LookUpDto(s.ClientName)))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
@@ -239,7 +236,9 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
@@ -336,6 +335,15 @@ namespace Application.Services.Orders
             var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
                                                  .Where(x => shippingWarehouseIds.Contains(x.Id))
                                                  .ToDictionary(x => x.Id.ToString());
+            
+            var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
+                .Select(x => x.VehicleTypeId.Value.ToGuid())
+                .ToList();
+            
+            var vehicleTypes = _dataService.GetDbSet<VehicleType>()
+                .Where(x => vehicleTypeIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+            
 
             foreach (var dto in dtos)
             {
@@ -357,6 +365,13 @@ namespace Application.Services.Orders
                     dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
                 }
 
+                if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
+                    && vehicleTypes.TryGetValue(dto.VehicleTypeId.Value, out VehicleType vehicleType))
+                {
+                    dto.VehicleTypeId.Name = vehicleType.Name;
+                }
+                
+                
                 yield return dto;
             }
         }
@@ -507,7 +522,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
-                         .WhereAnd(searchForm.Filter.ClientName.ApplyStringFilter<Order>(i => i.ClientName, ref parameters))
+                         .WhereAnd(searchForm.Filter.ClientName.ApplyOptionsFilter<Order, string>(i => i.ClientName, ref parameters))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryAddress.ApplyStringFilter<Order>(i => i.DeliveryAddress, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCity.ApplyStringFilter<Order>(i => i.DeliveryCity, ref parameters))
@@ -556,7 +571,9 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters))
                          .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Order, Guid?>(i => i.VehicleTypeId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
+                         .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Order, TarifficationType>(i => i.TarifficationType, ref parameters))
                          .WhereAnd(searchForm.Filter.DeviationsComment.ApplyStringFilter<Order>(i => i.DeviationsComment, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCost.ApplyNumericFilter<Order>(i => i.DeliveryCost, ref parameters))
                          .WhereAnd(searchForm.Filter.ActualDeliveryCost.ApplyNumericFilter<Order>(i => i.ActualDeliveryCost, ref parameters));
@@ -585,17 +602,19 @@ namespace Application.Services.Orders
 
         private IQueryable<Order> ApplySearch(IQueryable<Order> query, string search, List<string> columns)
         {
-            var searchDateFormat = "dd.MM.yyyy HH:mm";
+            var searchDateFormat = "dd.mm.yyyy HH24:MI";
 
             if (string.IsNullOrEmpty(search)) return query;
+
+            search = search.ToLower().Trim();
 
             var isInt = int.TryParse(search, out int searchInt);
             var isDecimal = decimal.TryParse(search, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal searchDecimal);
             decimal precision = 0.01M;
 
-            var pickingTypes = _dataService.GetDbSet<PickingType>().Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+            var pickingTypes = _dataService.GetDbSet<PickingType>().Where(i => i.Name.ToLower().Contains(search));
 
-            var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.Contains(search, StringComparison.InvariantCultureIgnoreCase));
+            var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
 
             var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
@@ -638,49 +657,53 @@ namespace Application.Services.Orders
                 .ToList();
 
             return query.Where(i =>
-                   columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("clientName") && !string.IsNullOrEmpty(i.ClientName) && i.ClientName.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("orderDate") && i.OrderDate.HasValue && i.OrderDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                   columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.ToLower().Contains(search)
+                || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
+                || columns.Contains("clientName") && !string.IsNullOrEmpty(i.ClientName) && i.ClientName.ToLower().Contains(search)
+                || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.ToLower().Contains(search)
+                || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.ToLower().Contains(search)
+                || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.ToLower().Contains(search)
+                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.ToLower().Contains(search)
+                || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.ToLower().Contains(search)
+                || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.ToLower().Contains(search)
+                || columns.Contains("deliveryAddress") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.ToLower().Contains(search)
+                || columns.Contains("clientOrderNumber") && !string.IsNullOrEmpty(i.ClientOrderNumber) && i.ClientOrderNumber.ToLower().Contains(search)
+                || columns.Contains("returnInformation") && !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.ToLower().Contains(search)
+                || columns.Contains("returnShippingAccountNo") && !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.ToLower().Contains(search)
+                || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.ToLower().Contains(search)
+                || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.ToLower().Contains(search)
+                || columns.Contains("deviationsComment") && !string.IsNullOrEmpty(i.DeviationsComment) && i.DeviationsComment.ToLower().Contains(search)
+
                 || columns.Contains("temperatureMin") && isInt && i.TemperatureMin == searchInt
                 || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
-                || columns.Contains("shippingDate") && i.ShippingDate.HasValue && i.ShippingDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("transitDays") && isInt && i.TransitDays == searchInt
-                || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryAddress") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("deliveryDate") && i.DeliveryDate.HasValue && i.DeliveryDate.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("articlesCount") && isInt && i.ArticlesCount == searchInt
+                || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
+                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
+
+                || columns.Contains("orderDate") && i.OrderDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("shippingDate") && i.ShippingDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("deliveryDate") && i.DeliveryDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("unloadingArrivalTime") && i.UnloadingArrivalTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("unloadingDepartureTime") && i.UnloadingDepartureTime.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("plannedReturnDate") && i.PlannedReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("actualReturnDate") && i.ActualReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("orderCreationDate") && i.OrderCreationDate.Value.SqlFormat(searchDateFormat).Contains(search)
+                || columns.Contains("orderChangeDate") && i.OrderChangeDate.Value.SqlFormat(searchDateFormat).Contains(search)
+
+                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
+                || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
+
                 || columns.Contains("boxesCount") && isDecimal && i.BoxesCount >= searchDecimal - precision && i.BoxesCount <= searchDecimal + precision
                 || columns.Contains("confirmedBoxesCount") && isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount <= searchDecimal + precision
                 || columns.Contains("confirmedPalletsCount") && isDecimal && i.ConfirmedPalletsCount >= searchDecimal - precision && i.ConfirmedPalletsCount <= searchDecimal + precision
-                || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
-                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
                 || columns.Contains("actualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
                 || columns.Contains("orderAmountExcludingVAT") && isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT <= searchDecimal + precision
-                || columns.Contains("clientOrderNumber") && !string.IsNullOrEmpty(i.ClientOrderNumber) && i.ClientOrderNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("loadingArrivalTime") && i.LoadingArrivalTime.HasValue && i.LoadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("loadingDepartureTime") && i.LoadingDepartureTime.HasValue && i.LoadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("unloadingArrivalTime") && i.UnloadingArrivalTime.HasValue && i.UnloadingArrivalTime.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("unloadingDepartureTime") && i.UnloadingDepartureTime.HasValue && i.UnloadingDepartureTime.Value.ToString(searchDateFormat).Contains(search)
                 || columns.Contains("trucksDowntime") && isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
-                || columns.Contains("returnInformation") && !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("returnShippingAccountNo") && !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("plannedReturnDate") && i.PlannedReturnDate.HasValue && i.PlannedReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("actualReturnDate") && i.ActualReturnDate.HasValue && i.ActualReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("actualDocumentsReturnDate") && i.ActualDocumentsReturnDate.HasValue && i.ActualDocumentsReturnDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("majorAdoptionNumber") && !string.IsNullOrEmpty(i.MajorAdoptionNumber) && i.MajorAdoptionNumber.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("orderComments") && !string.IsNullOrEmpty(i.OrderComments) && i.OrderComments.Contains(search, StringComparison.InvariantCultureIgnoreCase)
-                || columns.Contains("shippingAvisationTime") && i.ShippingAvisationTime.HasValue && i.ShippingAvisationTime.ToString().Contains(search)
-                || columns.Contains("clientAvisationTime") && i.ClientAvisationTime.HasValue && i.ClientAvisationTime.ToString().Contains(search)
-                || columns.Contains("orderCreationDate") && i.OrderCreationDate.HasValue && i.OrderCreationDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("orderChangeDate") && i.OrderChangeDate.HasValue && i.OrderChangeDate.Value.ToString(searchDateFormat).Contains(search)
-                || columns.Contains("deviationsComment") && !string.IsNullOrEmpty(i.DeviationsComment) && i.DeviationsComment.Contains(search, StringComparison.InvariantCultureIgnoreCase)
                 || columns.Contains("deliveryCost") && isDecimal && i.DeliveryCost >= searchDecimal - precision && i.DeliveryCost <= searchDecimal + precision
                 || columns.Contains("actualDeliveryCost") && isDecimal && i.ActualDeliveryCost >= searchDecimal - precision && i.ActualDeliveryCost <= searchDecimal + precision
 
@@ -707,7 +730,10 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.ShippingStatus, new StateExcelColumn<VehicleState>(lang))
                 .MapColumn(i => i.DeliveryStatus, new StateExcelColumn<VehicleState>(lang))
                 .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
-                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                ;
         }
 
         private Guid? GetPickingTypeIdByName(string name)
@@ -732,5 +758,11 @@ namespace Application.Services.Orders
         {
             return id == null ? null : _dataService.GetById<TransportCompany>(id.Value)?.Title;
         }
+        
+        private Guid? GetVehicleTypeIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }        
     }
 }

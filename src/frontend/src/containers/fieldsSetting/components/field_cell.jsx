@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 
-const FieldCell = ({ field, t, changeSettings, isExt, isDisabled }) => {
+const FieldCell = ({field, t, changeSettings, isExt, isDisabled, fieldName}) => {
     let [open, setOpen] = useState(false);
 
     const toggle = () => setOpen((prevState) => (!prevState));
 
     return (
         <>
-            <b>{t(field)}</b>
+            <div className="cell-field-name">{t(fieldName)}</div>
             <Popup
                 trigger={<Button size="mini" disabled={isDisabled} className="margin-left-8"
                                  onClick={toggle}>{t('All')}</Button>}

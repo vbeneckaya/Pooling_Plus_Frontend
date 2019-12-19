@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Application.BusinessModels.Shared.Actions;
-using Application.Shared;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -17,6 +13,7 @@ namespace Application.BusinessModels.Orders.Actions
     /// <summary>
     /// Вернуть в предыдущий статус
     /// </summary>
+    [ActionGroup(nameof(Order)), OrderNumber(13)]
     public class RollbackOrder : IAppAction<Order>
     {
         private readonly IHistoryService _historyService;
@@ -75,13 +72,14 @@ namespace Application.BusinessModels.Orders.Actions
                     order.OrderNumber, 
                     newState.ToString().ToLowerFirstLetter());
             }
-            
+
+            string newStateName = newState?.ToString()?.ToLowerFirstLetter().Translate(user.Language);
             return new AppActionResult
             {
                 IsError = false,
                 Message = "orderRollback".Translate(user.Language, 
-                    order.OrderNumber, 
-                    newState.ToString().ToLowerFirstLetter())
+                    order.OrderNumber,
+                    newStateName)
             };
         }
 

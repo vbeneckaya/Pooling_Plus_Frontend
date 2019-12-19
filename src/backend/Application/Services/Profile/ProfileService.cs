@@ -3,6 +3,7 @@ using DAL.Queries;
 using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
+using Domain.Services;
 using Domain.Services.Profile;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -12,22 +13,25 @@ namespace Application.Services.Profile
 {
     public class ProfileService : IProfileService
     {
-        private readonly IUserProvider userProvider;
-        private readonly ICommonDataService dataService;
+        private readonly IUserProvider _userProvider;
+        private readonly ICommonDataService _dataService;
 
-        public ProfileService(IUserProvider userProvider, ICommonDataService dataService)
+        private readonly IValidationService _validationService;
+
+        public ProfileService(IUserProvider userProvider, ICommonDataService dataService, IValidationService validationService)
         {
-            this.userProvider = userProvider;
-            this.dataService = dataService;
+            this._userProvider = userProvider;
+            this._dataService = dataService;
+            this._validationService = validationService;
         }
         public ProfileDto GetProfile()
         {
-            var currentUserId = userProvider.GetCurrentUserId();
-            var user = dataService
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService
                 .GetDbSet<User>()
                 .GetById(currentUserId.Value);
 
-            var role = dataService
+            var role = _dataService
                 .GetDbSet<Role>()
                 .GetById(user.RoleId);
             
@@ -41,12 +45,12 @@ namespace Application.Services.Profile
 
         public ValidateResult Save(SaveProfileDto dto)
         {
-            var currentUserId = userProvider.GetCurrentUserId();
-            var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
             
-            var lang = userProvider.GetCurrentUser().Language;
-            
-            var result = new DetailedValidationResult();
+            var lang = _userProvider.GetCurrentUser().Language;
+
+            var result = this._validationService.Validate(dto);
             
             if (string.IsNullOrEmpty(dto.Email))
                 result.AddError(nameof(dto.Email), "userEmailIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired); 
@@ -54,8 +58,8 @@ namespace Application.Services.Profile
             if (!string.IsNullOrEmpty(dto.Email) && !IsValidEmail(dto.Email))
                 result.AddError(nameof(dto.Email), "userEmailIsInvalid".Translate(lang), ValidationErrorType.InvalidValueFormat);
 
-            if (dataService.GetDbSet<User>().Any(x => x.Email == dto.Email && x.Id != user.Id))
-                result.AddError(nameof(dto.Email), "userEmailIsNotAvailable".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            if (_dataService.GetDbSet<User>().Any(x => x.Email == dto.Email && x.Id != user.Id))
+                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
 
             if (string.IsNullOrEmpty(dto.UserName))
                 result.AddError(nameof(dto.UserName), "userNameIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired);
@@ -65,7 +69,7 @@ namespace Application.Services.Profile
                 user.Email = dto.Email;
                 user.Name = dto.UserName;
             
-                dataService.SaveChanges();
+                _dataService.SaveChanges();
             }
             
             return result;
@@ -73,32 +77,22 @@ namespace Application.Services.Profile
 
         public ValidateResult SetNewPassword(SetNewPasswordDto dto)
         {
-            var currentUserId = userProvider.GetCurrentUserId();
-            var user = dataService.GetDbSet<User>().GetById(currentUserId.Value);
-            var lang = userProvider.GetCurrentUser().Language;
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
+            var lang = _userProvider.GetCurrentUser().Language;
             
-            var result = new DetailedValidationResult();
+            var result = this._validationService.Validate(dto);
 
-            if (user.PasswordHash == dto.OldPassword.GetHash())
+            if (!string.IsNullOrEmpty(dto.OldPassword) && user.PasswordHash != dto.OldPassword.GetHash())
             {
-                if (string.IsNullOrEmpty(dto.NewPassword))
-                {
-                    result.AddError(nameof(dto.NewPassword), "users.emptyPassword".Translate(lang), ValidationErrorType.InvalidValueFormat);
-                    return result;
-                }
-
-                if (dto.NewPassword.Length < 6)
-                {
-                    result.AddError(nameof(dto.NewPassword), "shortPassword".Translate(lang), ValidationErrorType.InvalidValueFormat);
-                    return result;
-                }
-
-                user.PasswordHash = dto.NewPassword.GetHash();
-
-                dataService.SaveChanges();
-            }
-            else
                 result.AddError(nameof(dto.OldPassword), "wrongOldPassword".Translate(lang), ValidationErrorType.ValueIsRequired);
+            }
+
+            if (!result.IsError)
+            {
+                user.PasswordHash = dto.NewPassword.GetHash();
+                _dataService.SaveChanges();
+            }
 
             return result;
         }

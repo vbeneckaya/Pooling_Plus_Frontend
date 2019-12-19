@@ -37,6 +37,7 @@ const initial = {
     totalCount: 0,
     error: [],
     progress: false,
+    loadingProgress: false
 };
 
 //*  REDUCER  *//
@@ -45,6 +46,11 @@ export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_USERS_LIST_REQUEST:
         case GET_USER_CARD_REQUEST:
+            return {
+                ...state,
+                loadingProgress: true,
+                error: '',
+            };
         case CREATE_USER_REQUEST:
             return {
                 ...state,
@@ -54,7 +60,7 @@ export default (state = initial, { type, payload }) => {
         case GET_USERS_LIST_SUCCESS:
             return {
                 ...state,
-                progress: false,
+                loadingProgress: false,
                 error: '',
                 list: payload.isConcat ? [...state.list, ...payload.items] : payload.items,
                 totalCount: payload.totalCount,
@@ -62,7 +68,7 @@ export default (state = initial, { type, payload }) => {
         case GET_USER_CARD_SUCCESS:
             return {
                 ...state,
-                progress: false,
+                loadingProgress: false,
                 card: payload,
             };
         case CREATE_USER_SUCCESS:
@@ -73,6 +79,11 @@ export default (state = initial, { type, payload }) => {
             };
         case GET_USERS_LIST_ERROR:
         case GET_USER_CARD_ERROR:
+            return {
+                ...state,
+                loadingProgress: false,
+                error: payload,
+            };
         case CREATE_USER_ERROR:
             return {
                 ...state,
@@ -153,7 +164,8 @@ export const clearError = payload => {
 
 const stateSelector = state => state.users;
 export const usersListSelector = createSelector(stateSelector, state => state.list);
-export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const progressSelector = createSelector(stateSelector, state => state.loadingProgress);
+export const saveProgressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const userCardSelector = createSelector(stateSelector, state => state.card);
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));

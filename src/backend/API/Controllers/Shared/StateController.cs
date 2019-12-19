@@ -1,30 +1,26 @@
-using System;
-using System.Collections.Generic;
-using Domain.Extensions;
+using Domain.Services;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
     public class StateController<T> :  Controller
     {
+        private readonly IStateService _stateService;
+
+        public StateController(IStateService stateService)
+        {
+            _stateService = stateService;
+        }
+
         /// <summary>
         /// Все доступные статусы с цветами
         /// </summary>
         [HttpPost("search")]
         public IEnumerable<StateDto> GetAll()
         {
-            var values = Extensions.GetOrderedEnum<T>();
-            var result = new List<StateDto>();
-            foreach (var value in values)
-            {
-                result.Add(new StateDto
-                {
-                    Name = value.ToString().ToLowerFirstLetter(),
-                    Color = value.GetColor().ToString().ToLowerFirstLetter()                    
-                });
-            }
-
+            var result = _stateService.GetAll<T>();
             return result;
         }
 
@@ -34,17 +30,7 @@ namespace API.Controllers
         [HttpGet("forSelect")]
         public IEnumerable<LookUpDto> ForSelect()
         {
-            var values = Extensions.GetOrderedEnum<T>();
-            var result = new List<LookUpDto>();
-            foreach (var value in values)
-            {
-                result.Add(new LookUpDto
-                {
-                    Name = value.ToString().ToLowerFirstLetter(), 
-                    Value = value.ToString()
-                });
-            }
-
+            var result = _stateService.ForSelect<T>();
             return result;
         }
     }

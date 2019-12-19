@@ -5,6 +5,7 @@ namespace Domain.Services.FieldProperties
     public class FieldInfo
     {
         public string Name { get; set; }
+        public string DisplayNameKey { get; set; }
         public FieldType FieldType { get; set; }
         public string ReferenceSource { get; set; }
         public bool ShowRawReferenceValue { get; set; }

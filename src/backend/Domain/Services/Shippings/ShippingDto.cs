@@ -122,6 +122,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Text)]
         public string InvoiceNumber { get; set; }
 
+        [DisplayNameKey("Shipping.Status")]
         [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
 
