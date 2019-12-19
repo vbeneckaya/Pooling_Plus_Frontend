@@ -40,7 +40,7 @@ namespace Application.BusinessModels.Orders.Triggers
 
                     var shipping = _dataService.GetById<Shipping>(entityShippingId);
 
-                    if (shipping.Status == ShippingState.ShippingCreated)
+                    if (shipping.Status == ShippingState.ShippingCreated && !shipping.ManualTarifficationType)
                     {
                         var orders = _dataService.GetDbSet<Order>()
                             .Where(x => x.ShippingId == entityShippingId);
