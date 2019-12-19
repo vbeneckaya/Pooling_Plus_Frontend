@@ -80,7 +80,7 @@ const Header = ({
 
     useEffect(
         () => {
-            getRepresentations();
+            getRepresentations(updatingFilter);
         },
         [name],
     );
@@ -92,7 +92,7 @@ const Header = ({
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    !isEdit && clearFilter();
+                    !isEdit ? clearFilter() : updatingFilter();
                 },
             }),
         );
