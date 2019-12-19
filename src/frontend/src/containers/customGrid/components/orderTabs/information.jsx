@@ -46,7 +46,17 @@ const Information = ({
                             <label>{t('general info')}</label>
                             <Segment>
                                 <Grid>
-                                    <Grid.Row columns={4}>
+                                    <Grid.Row columns={3}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="orderNumber"
+                                                type={TEXT_TYPE}
+                                                value={form['orderNumber']}
+                                                error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
+                                                onBlur={uniquenessNumberCheck}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
                                         <Grid.Column>
                                             <FormField
                                                 name="clientOrderNumber"
@@ -59,22 +69,24 @@ const Information = ({
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="payer"
-                                                type={TEXT_TYPE}
-                                                settings={settings['payer']}
-                                                value={form['payer']}
-                                                error={error['payer']}
+                                                name="orderDate"
+                                                value={form['orderDate']}
+                                                type={DATE_TYPE}
+                                                settings={settings['orderDate']}
+                                                error={error['orderDate']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <FormField
-                                                name="clientName"
+                                                name="clientId"
                                                 type={SELECT_TYPE}
-                                                settings={settings['clientName']}
+                                                settings={settings['clientId']}
                                                 isDisabled
-                                                value={form['clientName']}
-                                                error={error['clientName']}
+                                                value={form['clientId']}
+                                                error={error['clientId']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -87,44 +99,6 @@ const Information = ({
                                                 error={error['pickingTypeId']}
                                                 source="pickingTypes"
                                                 onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                    <Grid.Row columns={4}>
-                                        <Grid.Column>
-                                            <FormField
-                                                name="orderDate"
-                                                value={form['orderDate']}
-                                                type={DATE_TYPE}
-                                                settings={settings['orderDate']}
-                                                error={error['orderDate']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <FormField
-                                                name="orderType"
-                                                value={form['orderType']}
-                                                isDisabled
-                                                type={SELECT_TYPE}
-                                                settings={settings['orderType']}
-                                                error={error['orderType']}
-                                                isTranslate
-                                                source="orderType"
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <FormField
-                                                name="soldTo"
-                                                value={form['soldTo']}
-                                                type={SOLD_TO_TYPE}
-                                                settings={settings['soldTo']}
-                                                error={error['soldTo']}
-                                                textValue={error && form['soldTo']}
-                                                source="soldTo"
-                                                onChange={handleChangeSoldTo}
-                                                deliveryAddress={form['deliveryAddress']}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -221,6 +195,157 @@ const Information = ({
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
+                        <Form.Field>
+                            <label>{t('Продукция в накладной')}</label>
+                            <Segment>
+                                <Grid>
+                                    <Grid.Row columns={3}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="Количество штук в накладной"
+                                                value={form["Количество штук в накладной"]}
+                                                error={error["Количество штук в накладной"]}
+                                                type={NUMBER_TYPE}
+                                                settings={settings["Количество штук в накладной"]}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="Стоимость товара в накладной"
+                                                value={form["Стоимость товара в накладной"]}
+                                                error={error["Стоимость товара в накладной"]}
+                                                type={NUMBER_TYPE}
+                                                settings={settings["Стоимость товара в накладной"]}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="orderType"
+                                                value={form['orderType']}
+                                                type={SELECT_TYPE}
+                                                settings={settings['orderType']}
+                                                error={error['orderType']}
+                                                isTranslate
+                                                source="orderType"
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row columns={3}>
+                                        <Grid.Column>
+                                            <Form.Field>
+                                                <label>{t('boxesCountGroup')}</label>
+                                                <Segment>
+                                                    <Grid>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="boxesCount"
+                                                                    text="prepare"
+                                                                    value={form['boxesCount']}
+                                                                    error={error['boxesCount']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['boxesCount']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="confirmedBoxesCount"
+                                                                    text="plan"
+                                                                    value={form['confirmedBoxesCount']}
+                                                                    error={error['confirmedBoxesCount']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['confirmedBoxesCount']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                    </Grid>
+                                                </Segment>
+                                            </Form.Field>
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Form.Field>
+                                                <label>{t('palletsCountGroup')}</label>
+                                                <Segment>
+                                                    <Grid>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="palletsCount"
+                                                                    text="prepare"
+                                                                    value={form['palletsCount']}
+                                                                    error={error['palletsCount']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['palletsCount']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="confirmedPalletsCount"
+                                                                    text="plan"
+                                                                    value={form['confirmedPalletsCount']}
+                                                                    error={error['confirmedPalletsCount']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['confirmedPalletsCount']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                    </Grid>
+                                                </Segment>
+                                            </Form.Field>
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <Form.Field>
+                                                <label>{t('weigth')}</label>
+                                                <Segment>
+                                                    <Grid>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="weightKg"
+                                                                    text="planWeigth"
+                                                                    value={form['weightKg']}
+                                                                    error={error['weightKg']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['weightKg']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                        <Grid.Row>
+                                                            <Grid.Column>
+                                                                <FormField
+                                                                    name="factWeigth"
+                                                                    text="factWeigth"
+                                                                    value={form['factWeigth']}
+                                                                    error={error['factWeigth']}
+                                                                    type={NUMBER_TYPE}
+                                                                    settings={settings['factWeigth']}
+                                                                    onChange={onChange}
+                                                                />
+                                                            </Grid.Column>
+                                                        </Grid.Row>
+                                                    </Grid>
+                                                </Segment>
+                                            </Form.Field>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+                        </Form.Field>
+                    </Grid.Column>
+
+                    {/*<Grid.Column>
                         <Form.Field>
                             <label>{t('palletsCountGroup')}</label>
                             <Segment className="mini-column">
@@ -334,7 +459,7 @@ const Information = ({
                                 </Grid>
                             </Segment>
                         </Form.Field>
-                    </Grid.Column>
+                    </Grid.Column>*/}
                 </Grid.Row>
             </Grid>
         </Form>

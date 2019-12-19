@@ -28,15 +28,36 @@ const OrderCard = ({
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
     const getPanes = () => {
-        let obj = [{menuItem: 'information',
-            render: () => <Information form={form} settings={settings} error={error} load={load}
-                                       isNotUniqueNumber={isNotUniqueNumber}
-                                       uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>
-        }, {menuItem: 'position',
-            render: () => <Position form={form} onChange={onChangeForm} gridName={name} load={load} error={error}
-                                    settings={settings}/>
-        }];
+        let obj = [
+            {
+                menuItem: 'information',
+                render: () => (
+                    <Information
+                        form={form}
+                        settings={settings}
+                        error={error}
+                        load={load}
+                        isNotUniqueNumber={isNotUniqueNumber}
+                        uniquenessNumberCheck={uniquenessNumberCheck}
+                        onChange={onChangeForm}
+                    />
+                ),
+            },
             /*{
+                menuItem: 'position',
+                render: () => (
+                    <Position
+                        form={form}
+                        onChange={onChangeForm}
+                        gridName={name}
+                        load={load}
+                        error={error}
+                        settings={settings}
+                    />
+                ),
+            },*/
+        ];
+        /*{
                 menuItem: 'returns',
                 render: () => (
                     <Returns
