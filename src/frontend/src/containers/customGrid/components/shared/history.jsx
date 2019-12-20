@@ -1,27 +1,11 @@
-import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-    clearHistory,
-    getHistoryRequest,
-    historySelector,
-    progressSelector,
-} from '../../../../ducks/history';
+import React from 'react';
+import {useSelector} from 'react-redux';
+import {historySelector, progressSelector,} from '../../../../ducks/history';
 import {Dimmer, Grid, Loader} from 'semantic-ui-react';
 import {dateToUTC} from '../../../../utils/dateTimeFormater';
 
-const History = ({cardId, status}) => {
-    const dispatch = useDispatch();
+const History = () => {
     const history = useSelector(state => historySelector(state));
-
-    useEffect(
-        () => {
-            dispatch(getHistoryRequest(cardId));
-            return () => {
-                dispatch(clearHistory());
-            };
-        },
-        [status],
-    );
 
     const loading = useSelector(state => progressSelector(state));
 
