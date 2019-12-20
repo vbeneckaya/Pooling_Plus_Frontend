@@ -1,38 +1,44 @@
-import React, {Component} from 'react';
-import {Form, Grid} from 'semantic-ui-react';
-import {withTranslation} from 'react-i18next';
+import React, { Component } from 'react';
+import { Form, Grid } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import FormField from '../../BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
-import {connect} from "react-redux";
-import {valuesListSelector} from "../../../ducks/lookup";
+import { BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE } from '../../../constants/columnTypes';
+import { connect } from 'react-redux';
+import { valuesListSelector } from '../../../ducks/lookup';
 
 class CreateOrder extends Component {
-
-    handleChangeSoldTo = (e, {name, value, ext}) => {
-        const {valuesList, onChange} = this.props;
+    handleChangeSoldTo = (e, { name, value, ext }) => {
+        const { valuesList, onChange } = this.props;
         const soldToItem = valuesList.find(item => item.value === value) || {};
 
         onChange(e, {
             name,
             value,
         });
-        onChange(e, {name: 'clientName', value: ext.warehouseName});
-        onChange(e, {name: 'deliveryAddress', value: ext.address});
+        onChange(e, { name: 'clientName', value: ext.warehouseName });
+        onChange(e, { name: 'deliveryAddress', value: ext.address });
     };
 
-    handleChangeShippingWarehouseId = (e, {name, value, ext}) => {
-        const {valuesList, onChange} = this.props;
+    handleChangeShippingWarehouseId = (e, { name, value, ext }) => {
+        const { valuesList, onChange } = this.props;
 
         onChange(e, {
             name,
             value,
         });
 
-        onChange(e, {name: 'shippingAddress', value: ext.address});
+        onChange(e, { name: 'shippingAddress', value: ext.address });
     };
 
     render() {
-        const {form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error, t} = this.props;
+        const {
+            form = {},
+            onChange,
+            isNotUniqueNumber,
+            uniquenessNumberCheck,
+            error,
+            t,
+        } = this.props;
         return (
             <Form className="tabs-card">
                 <Grid>
@@ -155,12 +161,15 @@ class CreateOrder extends Component {
 
 const mapStateToProps = state => {
     return {
-        valuesList: valuesListSelector(state, 'soldTo') || []
-    }
+        valuesList: valuesListSelector(state, 'soldTo') || [],
+    };
 };
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = () => {};
 
-};
-
-export default withTranslation()(connect(mapStateToProps, mapDispatchToProps)(CreateOrder));
+export default withTranslation()(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(CreateOrder),
+);

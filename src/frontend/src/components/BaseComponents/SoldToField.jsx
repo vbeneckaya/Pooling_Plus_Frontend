@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from './Select_new';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
@@ -111,7 +111,7 @@ const SoldToField = props => {
                         trigger={
                             <div>
                                 <Button icon onClick={handleOpenModal}>
-                                    <Icon name="add"/>
+                                    <Icon name="add" />
                                 </Button>
                             </div>
                         }
@@ -123,7 +123,7 @@ const SoldToField = props => {
                         trigger={
                             <div>
                                 <Button icon onClick={handleOpenModal}>
-                                    <Icon name="edit"/>
+                                    <Icon name="edit" />
                                 </Button>
                             </div>
                         }
@@ -144,23 +144,22 @@ const SoldToField = props => {
                 defaultForm={defaultForm}
                 load={handleLoad}
             >*/}
-            {
-                modalOpen
-                && <Card
+            {modalOpen && (
+                <Card
                     openModal={modalOpen}
                     isModal
                     match={{
                         params: {
                             name: 'warehouses',
-                            id: notSoldTo ? null : soldToItem.id
-                        }
+                            id: notSoldTo ? null : soldToItem.id,
+                        },
                     }}
                     load={handleLoad}
                     columns={notSoldTo ? columns : columnsEdit}
                     defaultForm={notSoldTo ? defaultForm : null}
                     onClose={handleCloseModal}
                 />
-            }
+            )}
         </Select>
     );
 };

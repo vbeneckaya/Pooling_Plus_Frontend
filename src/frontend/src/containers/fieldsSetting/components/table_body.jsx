@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, { useCallback } from 'react';
 import { Table } from 'semantic-ui-react';
 import FieldCell from './field_cell';
 import SettingCell from './setting_cell';
@@ -14,9 +14,12 @@ const TableBody = ({
     t,
     toggleHidden,
 }) => {
-    const handleOnChange = useCallback((e, {value, fieldName, status}) => {
-        changeSettings(fieldName, value, status, isExt);
-    }, [isExt]);
+    const handleOnChange = useCallback(
+        (e, { value, fieldName, status }) => {
+            changeSettings(fieldName, value, status, isExt);
+        },
+        [isExt],
+    );
 
     return (
         <Table.Row key={column.fieldName}>

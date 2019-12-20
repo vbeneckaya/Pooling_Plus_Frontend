@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import './style.scss';
 
-const Facet = ({name, text, value, onChange, sort, setSort}) => {
+const Facet = ({ name, text, value, onChange, sort, setSort }) => {
     const { t } = useTranslation();
 
     const input = (
@@ -19,7 +19,6 @@ const Facet = ({name, text, value, onChange, sort, setSort}) => {
             onChange={onChange}
         />
     );
-
 
     return (
         <div className="facet-input">

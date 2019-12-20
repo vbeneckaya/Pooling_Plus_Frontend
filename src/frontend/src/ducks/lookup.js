@@ -97,18 +97,16 @@ export const listSelector = createSelector(
                       name: t(item.name),
                       isActive: item.isActive,
                   }))
-                  .filter(x =>
-                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  .filter(
+                      x =>
+                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   )
             : [],
 );
 
 export const stateListSelector = createSelector(stateSelector, state => state.list);
 
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
+export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 export const valuesListSelector = createSelector(
     [stateSelector, (state, key) => key],
@@ -131,8 +129,9 @@ export const totalCounterSelector = createSelector(
                       value: item.value,
                       name: isTranslate ? t(item.name) : item.name,
                   }))
-                  .filter(x =>
-                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  .filter(
+                      x =>
+                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   ).length
             : 0,
 );
@@ -154,8 +153,9 @@ export const listFromSelectSelector = createSelector(
                       value: item.value,
                       name: isTranslate ? t(item.name) : item.name,
                   }))
-                  .filter(x =>
-                      filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                  .filter(
+                      x =>
+                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   )
                   .slice(0, counter)
             : [];

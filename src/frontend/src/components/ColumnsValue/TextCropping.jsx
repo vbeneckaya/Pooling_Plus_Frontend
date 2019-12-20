@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Popup } from 'semantic-ui-react';
-import {useSelector} from "react-redux";
-import {representationSelector} from "../../ducks/representations";
+import { useSelector } from 'react-redux';
+import { representationSelector } from '../../ducks/representations';
 
-const TextCropping = ({children, width: columnWidth, indexColumn}) => {
+const TextCropping = ({ children, width: columnWidth, indexColumn }) => {
     const valueRef = useRef(null);
     let [width, setWidth] = useState({
         scrollWidth: 0,
@@ -27,7 +27,7 @@ const TextCropping = ({children, width: columnWidth, indexColumn}) => {
             content={children}
             context={valueRef}
             disabled={width.scrollWidth <= width.offsetWidth}
-            position={indexColumn === 0 ? "top left" : "top right"}
+            position={indexColumn === 0 ? 'top left' : 'top right'}
             trigger={
                 <div className="column-overflow" ref={valueRef}>
                     {children}

@@ -10,14 +10,15 @@ import {
     getLookupRequest,
     listFromSelectSelector,
     listSelector,
-    progressSelector, totalCounterSelector,
+    progressSelector,
+    totalCounterSelector,
     valuesListSelector,
 } from '../../ducks/lookup';
 import { PAGE_SIZE } from '../../constants/settings';
 import { debounce } from 'throttle-debounce';
 
 const Select = ({
-                    value = {},
+    value = {},
     onChange,
     placeholder = '',
     isDisabled,
@@ -55,22 +56,28 @@ const Select = ({
     );
     const progress = false;
 
-    useEffect(() => {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            setFilter(searchQuery);
-        }, 300);
-    }, [searchQuery]);
+    useEffect(
+        () => {
+            clearTimeout(timer.current);
+            timer.current = setTimeout(() => {
+                setFilter(searchQuery);
+            }, 300);
+        },
+        [searchQuery],
+    );
 
-    useEffect(() => {
-        context.current.scrollTop = 0;
-        setCounter(PAGE_SIZE);
-    }, [filter]);
+    useEffect(
+        () => {
+            context.current.scrollTop = 0;
+            setCounter(PAGE_SIZE);
+        },
+        [filter],
+    );
 
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, {value: value ? value : null, name});
+        onChange(e, { value: value ? value : null, name });
         handleClose();
     };
 
@@ -152,7 +159,7 @@ const Select = ({
                                     selected={value && item.value === value.value}
                                     active={value && item.value === value.value}
                                     value={item.value}
-                                    onClick={e => handleChange(e, {value: item})}
+                                    onClick={e => handleChange(e, { value: item })}
                                 >
                                     {item.name}
                                 </Dropdown.Item>

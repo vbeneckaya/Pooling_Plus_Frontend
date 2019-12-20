@@ -2,8 +2,8 @@ import { all, put, takeEvery } from 'redux-saga/effects';
 import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import roles from '../mocks/roles';
-import {toast} from 'react-toastify';
-import {errorMapping} from "../utils/errorMapping";
+import { toast } from 'react-toastify';
+import { errorMapping } from '../utils/errorMapping';
 
 const TYPE_API = 'roles';
 
@@ -188,8 +188,8 @@ export const getAllActionsRequest = payload => {
 export const clearError = payload => {
     return {
         type: CLEAR_ERROR,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -313,7 +313,7 @@ function* getAllPermissionsSaga({ payload }) {
     }
 }
 
-function* getAllActionsSaga({payload}) {
+function* getAllActionsSaga({ payload }) {
     try {
         const result = yield postman.get(`/${TYPE_API}/allActions`);
 

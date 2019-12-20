@@ -1,8 +1,8 @@
-import React, {useMemo, useCallback, useState, useEffect} from 'react';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import CardLayout from '../../components/CardLayout';
-import {Button, Confirm, Dimmer, Icon, Loader, Modal, Popup} from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Icon, Loader, Modal, Popup } from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
@@ -17,7 +17,7 @@ import {
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
 
-const Content = ({columns, error, form, handleChange}) => {
+const Content = ({ columns, error, form, handleChange }) => {
     return (
         <div className="ui form dictionary-edit">
             {columns.map(column => {
@@ -37,7 +37,7 @@ const Content = ({columns, error, form, handleChange}) => {
 };
 
 const CardNew = props => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const {
         match = {},
@@ -50,11 +50,11 @@ const CardNew = props => {
         openModal,
         onClose: onCloseModal,
     } = props;
-    const {params = {}} = match;
-    const {name, id} = params;
+    const { params = {} } = match;
+    const { name, id } = params;
 
-    let [form, setForm] = useState({...defaultForm});
-    let [confirmation, setConfirmation] = useState({open: false});
+    let [form, setForm] = useState({ ...defaultForm });
+    let [confirmation, setConfirmation] = useState({ open: false });
     let [notChangeForm, setNotChangeForm] = useState(true);
 
     const columns = useSelector(
@@ -68,7 +68,7 @@ const CardNew = props => {
 
     useEffect(() => {
         console.log('454545');
-        id && dispatch(getCardRequest({id, name}));
+        id && dispatch(getCardRequest({ id, name }));
 
         return () => {
             dispatch(clearDictionaryCard());
@@ -170,7 +170,7 @@ const CardNew = props => {
                         position="bottom right"
                         trigger={
                             <Button icon onClick={handleDelete}>
-                                <Icon name="trash alternate outline"/>
+                                <Icon name="trash alternate outline" />
                             </Button>
                         }
                     />
@@ -180,7 +180,7 @@ const CardNew = props => {
     }, []);
 
     const handleChange = useCallback(
-        (event, {name, value}) => {
+        (event, { name, value }) => {
             if (notChangeForm) {
                 setNotChangeForm(false);
             }
@@ -193,16 +193,16 @@ const CardNew = props => {
     );
 
     const confirmClose = () => {
-        setConfirmation({open: false});
+        setConfirmation({ open: false });
     };
 
     const onClose = () => {
         isModal
             ? onCloseModal()
             : history.push({
-                pathname: location.state.pathname,
-                state: {...location.state},
-            });
+                  pathname: location.state.pathname,
+                  state: { ...location.state },
+              });
     };
 
     const handleClose = () => {

@@ -32,11 +32,11 @@ class SuperGrid extends Component {
     }
 
     pageLoading = () => {
-        const {getRepresentations, name} = this.props;
+        const { getRepresentations, name } = this.props;
 
         getRepresentations({
             key: name,
-            callBackFunc: (columns) => {
+            callBackFunc: columns => {
                 const width = this.container.scrollWidth - 50;
 
                 this.setState(
@@ -48,13 +48,13 @@ class SuperGrid extends Component {
                     },
                     () => this.props.autoUpdateStart(this.mapData()),
                 );
-            }
+            },
         });
     };
 
     componentDidMount() {
         this.timer = null;
-        const {location, history, getRepresentations, name} = this.props;
+        const { location, history, getRepresentations, name } = this.props;
         const { state } = location;
 
         if (state) {
@@ -65,7 +65,6 @@ class SuperGrid extends Component {
                 () => {
                     history.replace(location.pathname, null);
                     this.pageLoading();
-
                 },
             );
         } else {
@@ -110,7 +109,7 @@ class SuperGrid extends Component {
     }
 
     mapData = (isConcat, isReload) => {
-        const {columns, page, fullText} = this.state;
+        const { columns, page, fullText } = this.state;
         const { extParams, defaultFilter, name } = this.props;
 
         let filters = {};
@@ -226,8 +225,8 @@ class SuperGrid extends Component {
     };
 
     setSelectedAll = () => {
-        const {selectedRows} = this.state;
-        const {allIds = [], getAllIds, name} = this.props;
+        const { selectedRows } = this.state;
+        const { allIds = [], getAllIds, name } = this.props;
         let newSelectedRows = new Set();
 
         if (selectedRows.size) {
@@ -254,7 +253,7 @@ class SuperGrid extends Component {
 
     clearFilters = () => {
         this.setState(prevState => {
-            const {columns} = prevState;
+            const { columns } = prevState;
 
             return {
                 ...prevState,
@@ -279,8 +278,8 @@ class SuperGrid extends Component {
     };
 
     setFilterApiAndLoadList = () => {
-        const {editRepresentation, representationName, name} = this.props;
-        const {columns} = this.state;
+        const { editRepresentation, representationName, name } = this.props;
+        const { columns } = this.state;
 
         console.log('columns', columns);
 
@@ -353,7 +352,7 @@ class SuperGrid extends Component {
     };
 
     render() {
-        const {fullText, selectedRows, columns} = this.state;
+        const { fullText, selectedRows, columns } = this.state;
         const {
             totalCount: count = 0,
             rows = [],

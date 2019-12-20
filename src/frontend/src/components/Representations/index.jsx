@@ -1,20 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import {Button, Confirm, Dropdown, Form, Input, Message, Modal, Popup} from 'semantic-ui-react';
+import { Button, Confirm, Dropdown, Form, Input, Message, Modal, Popup } from 'semantic-ui-react';
 import Text from '../BaseComponents/Text';
 import DragAndDropFields from './DragAndDropFields';
 import { columnsGridSelector } from '../../ducks/gridList';
 import {
     deleteRepresentationRequest,
-    editRepresentationRequest, getRepresentationsRequest,
+    editRepresentationRequest,
+    getRepresentationsRequest,
     representationNameSelector,
     representationSelector,
     representationsSelector,
     saveRepresentationRequest,
 } from '../../ducks/representations';
 
-const FieldsConfig = ({gridName, getRepresentations, changeRepresentation, representations, representationName}) => {
+const FieldsConfig = ({
+    gridName,
+    getRepresentations,
+    changeRepresentation,
+    representations,
+    representationName,
+}) => {
     const representationFields =
         useSelector(state => representationSelector(state, gridName)) || [];
 
@@ -36,9 +43,12 @@ const FieldsConfig = ({gridName, getRepresentations, changeRepresentation, repre
 
     const list = useSelector(state => representationsSelector(state));
 
-    useEffect(() => {
-        setSelectedFields(representationFields);
-    }, [representationFields]);
+    useEffect(
+        () => {
+            setSelectedFields(representationFields);
+        },
+        [representationFields],
+    );
 
     const newOpen = () => {
         setIsNew(true);
@@ -48,9 +58,11 @@ const FieldsConfig = ({gridName, getRepresentations, changeRepresentation, repre
     };
 
     const editOpen = () => {
-        dispatch(getRepresentationsRequest({
-            key: gridName
-        }));
+        dispatch(
+            getRepresentationsRequest({
+                key: gridName,
+            }),
+        );
         setIsNew(false);
         setName(representationName);
         setSelectedFields(representationFields);
@@ -209,7 +221,10 @@ const FieldsConfig = ({gridName, getRepresentations, changeRepresentation, repre
                 <Popup
                     content={t('customize_representation')}
                     position="bottom right"
-                    trigger={<Button icon="cogs" disabled={!representationName} onClick={editOpen}/>}/>
+                    trigger={
+                        <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
+                    }
+                />
             </div>
             <Modal
                 dimmer="blurring"

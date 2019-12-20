@@ -16,27 +16,27 @@ import { Checkbox, Label } from 'semantic-ui-react';
 import StateValue from './StateValue';
 import SelectValue from './SelectValue';
 import TextCropping from './TextCropping';
-import {dateToUTC} from '../../utils/dateTimeFormater';
+import { dateToUTC } from '../../utils/dateTimeFormater';
 
 const CellValue = ({
-                       type,
-                       value = '',
-                       valueText,
-                       id,
-                       toggleIsActive,
-                       source,
-                       indexRow,
-                       indexColumn,
-                       modalCard,
-                       showRawValue,
-                       width,
-                       t,
-                       isDisabled,
-                       cardLink,
-                       gridName,
-                       rowId,
-                       goToCard
-                   }) => {
+    type,
+    value = '',
+    valueText,
+    id,
+    toggleIsActive,
+    source,
+    indexRow,
+    indexColumn,
+    modalCard,
+    showRawValue,
+    width,
+    t,
+    isDisabled,
+    cardLink,
+    gridName,
+    rowId,
+    goToCard,
+}) => {
     if (type === SELECT_TYPE) {
         return (
             <SelectValue
@@ -64,16 +64,15 @@ const CellValue = ({
     }
 
     if (type === LABELS_TYPE) {
-
         return (
             <>
                 {!value
                     ? t('All')
                     : value.map((n, i) => (
-                        <Label key={n.name} className="label-margin">
-                            {t(n.name)}
-                        </Label>
-                    ))}
+                          <Label key={n.name} className="label-margin">
+                              {t(n.name)}
+                          </Label>
+                      ))}
             </>
         );
     }
