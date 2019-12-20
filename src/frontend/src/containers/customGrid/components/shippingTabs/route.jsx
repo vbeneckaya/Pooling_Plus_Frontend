@@ -1,18 +1,18 @@
 import React, {useCallback} from 'react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
-import { Form, Grid } from 'semantic-ui-react';
-import FormField from '../../BaseComponents';
+import {Form, Grid} from 'semantic-ui-react';
+import FormField from '../../../../components/BaseComponents';
 import {
     BIG_TEXT_TYPE,
     DATE_TIME_TYPE, DATE_TYPE,
     NUMBER_TYPE,
     STATE_TYPE,
-} from '../../../constants/columnTypes';
-import {settingsExtSelector} from "../../../ducks/gridCard";
+} from '../../../../constants/columnTypes';
+import {settingsExtSelector} from "../../../../ducks/gridCard";
 
 const Route = ({name, form = {}, point = {}, onChange, pointChange, index, settings: baseSettings}) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const settings = useSelector(state => settingsExtSelector(state, form.status));
 
@@ -27,7 +27,7 @@ const Route = ({name, form = {}, point = {}, onChange, pointChange, index, setti
     }, [point]);
 
     return (
-        <Form style={{ paddingLeft: '12px' }}>
+        <Form style={{paddingLeft: '12px'}}>
             <Grid>
                 <Grid.Row columns={2}>
                     <Grid.Column>

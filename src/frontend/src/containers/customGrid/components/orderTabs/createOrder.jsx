@@ -1,14 +1,13 @@
 import React, {useEffect, useRef, useCallback} from 'react';
-import { Form, Grid } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
-import FormField from '../../BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../constants/columnTypes';
+import {Form, Grid} from 'semantic-ui-react';
+import {useTranslation} from 'react-i18next';
+import FormField from '../../../../components/BaseComponents';
+import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../../constants/columnTypes';
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const handleChangeSoldTo = useCallback((e, {name, value}) => {
-        console.log('value', value);
         onChange(e, {
             name,
             value: value && value.value ? {
@@ -26,7 +25,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
             value,
         });
 
-        onChange(e, {name: 'shippingAddress', value: value.address});
+        onChange(e, {name: 'shippingAddress', value: value ? value.address : null});
     }, []);
 
     return (

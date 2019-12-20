@@ -12,8 +12,6 @@ const Header = ({ gridsList, activeItem, changeActiveItem, rolesList, role, chan
         { key: 'Любая компания', value: 'null', text: t('Любая компания') },
     ];*/
 
-    console.log('header');
-
     return (
         <Menu className="field-settings-menu">
             {gridsList && gridsList.length

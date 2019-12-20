@@ -171,16 +171,22 @@ tbody {
     //background-color: #fbfdff;
 }
 
-.grid-row {
-    .link-cell {
-        color: #18a8cc !important;;
+.link-cell {
+    color: #18a8cc !important;
 
-        width: 100%;
+    width: 100%;
 
-        &:hover {
-            text-decoration-line: underline;
-        }
+    &:hover {
+        text-decoration-line: underline;
+        cursor: pointer;
     }
+}
+
+.dropdown-blue {
+    color: #18a8cc !important;
+}
+
+.grid-row {
     /*.address-cell {
         max-width: 100px;
 

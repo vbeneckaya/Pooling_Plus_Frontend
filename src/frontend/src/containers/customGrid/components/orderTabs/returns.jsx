@@ -1,14 +1,14 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Form, Grid } from 'semantic-ui-react';
-import FormField from '../../BaseComponents';
-import { BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE } from '../../../constants/columnTypes';
+import {useTranslation} from 'react-i18next';
+import {Form, Grid} from 'semantic-ui-react';
+import FormField from '../../../../components/BaseComponents';
+import {BIG_TEXT_TYPE, DATE_TYPE, TEXT_TYPE} from '../../../../constants/columnTypes';
 
 const Returns = ({form, onChange, settings, error}) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     return (
-        <Form>
+        <Form className="tabs-card">
             <Grid>
                 <Grid.Row columns={2} stretched>
                     <Grid.Column width={5}>

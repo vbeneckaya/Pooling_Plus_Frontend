@@ -10,8 +10,6 @@ const SettingCell = ({value, t, onChange, loading, isDisabled, status, fieldName
         { key: SETTINGS_TYPE_EDIT, value: SETTINGS_TYPE_EDIT, text: t(SETTINGS_TYPE_EDIT) },
     ];
 
-    console.log('SettingCell');
-
     return (
         <Dropdown
             options={availabilityListOptions}

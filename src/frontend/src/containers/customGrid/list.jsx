@@ -24,6 +24,8 @@ import {
     representationFromGridSelector,
     representationNameSelector,
 } from '../../ducks/representations';
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, GRID_CARD_LINK, GRID_NEW_LINK} from "../../router/links";
+import TableInfo from "../../components/TableInfo";
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -142,9 +144,11 @@ class List extends Component {
                     groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
                     modalCard={this.modalCard}
-                    createButton={isCreateBtn ? <CreateButton t={t} title={`new_${name}`} /> : null}
+                    isCreateBtn={isCreateBtn}
                     confirmation={confirmation}
                     closeConfirmation={this.closeConfirmation}
+                    newLink={isCreateBtn ? GRID_NEW_LINK : null}
+                    cardLink={GRID_CARD_LINK}
                 />
             </div>
         );
