@@ -198,7 +198,6 @@ namespace Tasks.Orders
 
                 dto.OrderNumber = orderNumber;
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
-                dto.SoldTo = string.IsNullOrEmpty(soldTo) ? dto.SoldTo : new LookUpDto(soldTo);
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
                 dto.BoxesCount = docRoot.ParseDecimal("E1EDK01/Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
@@ -218,16 +217,12 @@ namespace Tasks.Orders
                     deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
                 }
                 
-                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
-                if (deliveryWarehouse == null)
-                {
-                    dto.DeliveryAddress = deliveryAddress;
-                    dto.DeliveryCity = string.IsNullOrEmpty(deliveryCity) ? null : new LookUpDto(deliveryCity);
-                    dto.DeliveryRegion = null;
-                    dto.PickingTypeId = null;
-                    dto.TransitDays = null;
-                    dto.DeliveryType = null;
-                }
+                dto.DeliveryAddress = deliveryAddress;
+                dto.DeliveryCity = string.IsNullOrEmpty(deliveryCity) ? null : new LookUpDto(deliveryCity);
+                dto.DeliveryRegion = null;
+                dto.PickingTypeId = null;
+                dto.TransitDays = null;
+                dto.DeliveryType = null;
 
                 if (isNew)
                 {
@@ -341,10 +336,6 @@ namespace Tasks.Orders
             if (string.IsNullOrEmpty(dto.Payer))
             {
                 yield return "Плательщик";
-            }
-            if (string.IsNullOrEmpty(dto.SoldTo?.Value))
-            {
-                yield return "Номер заказа клиента";
             }
         }
     }

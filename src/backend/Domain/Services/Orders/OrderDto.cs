@@ -31,9 +31,6 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(5), IsRequired]
         public LookUpDto ClientId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(SoldTo), showRawValue: true), IsRequired]
-        public LookUpDto SoldTo { get; set; }
-
         [FieldType(FieldType.Number)]
         public int? TemperatureMin { get; set; }
 
@@ -89,10 +86,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
         public LookUpDto DeliveryCity { get; set; }
 
-        [FieldType(FieldType.BigText), IsReadOnly]
         public string ShippingAddress { get; set; }
 
-        [FieldType(FieldType.BigText), IsReadOnly]
         public string DeliveryAddress { get; set; }
 
         [FieldType(FieldType.State, source: nameof(VehicleState))]
@@ -178,8 +173,11 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: "ShippingWarehousesForOrderCreation"), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(ShippingAddress)), IsRequired]
         public LookUpDto ShippingWarehouseId { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(DeliveryAddress)), IsRequired]
+        public LookUpDto DeliveryWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsReadOnly]
         public DateTime? OrderChangeDate { get; set; }

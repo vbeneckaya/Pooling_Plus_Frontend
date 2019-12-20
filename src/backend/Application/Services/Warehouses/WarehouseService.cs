@@ -150,26 +150,7 @@ namespace Application.Services.Warehouses
 
         public override DetailedValidationResult MapFromDtoToEntity(Warehouse entity, WarehouseDto dto)
         {
-            bool isNew = string.IsNullOrEmpty(dto.Id);
-
             _mapper.Map(dto, entity);
-           
-            if (isNew)
-            {
-                var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.InShipping };
-                var orders = _dataService.GetDbSet<Order>()
-                                         .Where(x => x.SoldTo == entity.SoldToNumber
-                                                    && x.DeliveryWarehouseId == null
-                                                    && validStatuses.Contains(x.Status)
-                                                    && (x.ShippingId == null || x.OrderShippingStatus == ShippingState.ShippingCreated))
-                                         .ToList();
-                foreach (var order in orders)
-                {
-                    order.DeliveryWarehouseId = entity.Id;
-                }
-            }
-
-            //string errors = setter.ValidationErrors
             return null;
         }
 
