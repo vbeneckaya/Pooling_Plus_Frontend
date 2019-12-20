@@ -1,31 +1,39 @@
-import React, {useEffect, useRef, useCallback} from 'react';
-import {Form, Grid} from 'semantic-ui-react';
-import {useTranslation} from 'react-i18next';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { Form, Grid } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../../constants/columnTypes';
+import {
+    BIG_TEXT_TYPE,
+    DATE_TYPE,
+    SELECT_TYPE,
+    TEXT_TYPE,
+} from '../../../../constants/columnTypes';
 
-const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
-    const {t} = useTranslation();
+const CreateOrder = ({ form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error }) => {
+    const { t } = useTranslation();
 
-    const handleChangeSoldTo = useCallback((e, {name, value}) => {
+    const handleChangeSoldTo = useCallback((e, { name, value }) => {
         onChange(e, {
             name,
-            value: value && value.value ? {
-                value: value.value,
-                name: value.value
-            } : null,
+            value:
+                value && value.value
+                    ? {
+                          value: value.value,
+                          name: value.value,
+                      }
+                    : null,
         });
-        onChange(e, {name: 'clientName', value: value ? value.warehouseName : null});
-        onChange(e, {name: 'deliveryAddress', value: value ? value.address : null});
+        onChange(e, { name: 'clientName', value: value ? value.warehouseName : null });
+        onChange(e, { name: 'deliveryAddress', value: value ? value.address : null });
     }, []);
 
-    const handleChangeShippingWarehouseId = useCallback((e, {name, value}) => {
+    const handleChangeShippingWarehouseId = useCallback((e, { name, value }) => {
         onChange(e, {
             name,
             value,
         });
 
-        onChange(e, {name: 'shippingAddress', value: value ? value.address : null});
+        onChange(e, { name: 'shippingAddress', value: value ? value.address : null });
     }, []);
 
     return (
@@ -38,7 +46,10 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             type={TEXT_TYPE}
                             isRequired
                             value={form['orderNumber']}
-                            error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
+                            error={
+                                (isNotUniqueNumber && t('number_already_exists')) ||
+                                error['orderNumber']
+                            }
                             onBlur={uniquenessNumberCheck}
                             onChange={onChange}
                         />
@@ -48,7 +59,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="clientOrderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            error={error["clientOrderNumber"]}
+                            error={error['clientOrderNumber']}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
                         />
@@ -58,7 +69,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="orderDate"
                             type={DATE_TYPE}
                             isRequired
-                            error={error["orderDate"]}
+                            error={error['orderDate']}
                             value={form['orderDate']}
                             onChange={onChange}
                         />
@@ -67,7 +78,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="payer"
                             type={TEXT_TYPE}
-                            error={error["payer"]}
+                            error={error['payer']}
                             value={form['payer']}
                             onChange={onChange}
                         />
@@ -79,7 +90,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="shippingWarehouseId"
                             type={SELECT_TYPE}
                             value={form['shippingWarehouseId']}
-                            error={error["shippingWarehouseId"]}
+                            error={error['shippingWarehouseId']}
                             source="shippingWarehousesForOrderCreation"
                             onChange={handleChangeShippingWarehouseId}
                         />
@@ -90,7 +101,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             type={SELECT_TYPE}
                             isRequired
                             value={form['soldTo']}
-                            error={error["soldTo"]}
+                            error={error['soldTo']}
                             source="soldTo"
                             onChange={handleChangeSoldTo}
                         />

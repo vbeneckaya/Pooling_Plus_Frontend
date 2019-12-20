@@ -1,5 +1,5 @@
 import React from 'react';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Information from './orderTabs/information';
 import Position from './orderTabs/position';
 import Documents from './shared/documents';
@@ -7,7 +7,7 @@ import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
 import CardLayout from '../../../components/CardLayout';
-import {userPermissionsSelector} from '../../../ducks/profile';
+import { userPermissionsSelector } from '../../../ducks/profile';
 
 const OrderCard = ({
     form,
@@ -19,24 +19,45 @@ const OrderCard = ({
     uniquenessNumberCheck,
     settings,
     error,
-                       title,
-                       onClose,
-                       actionsFooter,
-                       actionsHeader,
-                       loading,
+    title,
+    onClose,
+    actionsFooter,
+    actionsHeader,
+    loading,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 
     const getPanes = () => {
-        let obj = [{menuItem: 'information',
-            render: () => <Information form={form} settings={settings} error={error} load={load}
-                                       isNotUniqueNumber={isNotUniqueNumber}
-                                       uniquenessNumberCheck={uniquenessNumberCheck} onChange={onChangeForm}/>
-        }, {menuItem: 'position',
-            render: () => <Position form={form} onChange={onChangeForm} gridName={name} load={load} error={error}
-                                    settings={settings}/>
-        }];
-            /*{
+        let obj = [
+            {
+                menuItem: 'information',
+                render: () => (
+                    <Information
+                        form={form}
+                        settings={settings}
+                        error={error}
+                        load={load}
+                        isNotUniqueNumber={isNotUniqueNumber}
+                        uniquenessNumberCheck={uniquenessNumberCheck}
+                        onChange={onChangeForm}
+                    />
+                ),
+            },
+            {
+                menuItem: 'position',
+                render: () => (
+                    <Position
+                        form={form}
+                        onChange={onChangeForm}
+                        gridName={name}
+                        load={load}
+                        error={error}
+                        settings={settings}
+                    />
+                ),
+            },
+        ];
+        /*{
                 menuItem: 'returns',
                 render: () => (
                     <Returns

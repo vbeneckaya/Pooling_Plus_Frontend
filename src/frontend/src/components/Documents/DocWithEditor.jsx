@@ -1,7 +1,7 @@
-﻿import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
-import {Button, Confirm, Form, Icon, Modal, Popup} from 'semantic-ui-react';
+﻿import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Confirm, Form, Icon, Modal, Popup } from 'semantic-ui-react';
 import FileUploader from './FileUploader';
 import DocView from './DocView';
 import WebCamUploader from './WebCamUploader';
@@ -14,7 +14,7 @@ import {
     editDocumentRequest,
     getDocumentTypesRequest,
 } from '../../ducks/documents';
-import {editCardRequest} from '../../ducks/gridCard';
+import { editCardRequest } from '../../ducks/gridCard';
 
 const DocWithEditor = ({
     okButtonText,
@@ -36,9 +36,12 @@ const DocWithEditor = ({
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
 
-    useEffect(() => {
-        setDocument(currentDocument ? Object.assign({}, currentDocument) : null);
-    }, [currentDocument])
+    useEffect(
+        () => {
+            setDocument(currentDocument ? Object.assign({}, currentDocument) : null);
+        },
+        [currentDocument],
+    );
 
     const handleOpen = () => {
         dispatch(getDocumentTypesRequest());

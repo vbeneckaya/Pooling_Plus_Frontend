@@ -30,7 +30,7 @@ const BodyCell = ({
     rowId,
     rowNumber,
     cardLink,
-                      goToCard,
+    goToCard,
 }) => {
     const contextRef = useRef(null);
 

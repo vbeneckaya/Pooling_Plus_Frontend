@@ -14,7 +14,7 @@ class Search extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.value !== this.state.value && this.props.value !== prevProps.value) {
-            this.setState({value: this.props.value})
+            this.setState({ value: this.props.value });
         }
     }
 
@@ -23,15 +23,15 @@ class Search extends React.Component {
     }
 
     triggerChange = () => {
-        const {value} = this.state;
+        const { value } = this.state;
 
-        this.props.onChange(null, {value});
+        this.props.onChange(null, { value });
     };
 
-    handleChange = (e, {value}) => {
+    handleChange = (e, { value }) => {
         clearTimeout(this.timer);
 
-        this.setState({value});
+        this.setState({ value });
 
         if (!value || this.props.isAuto) {
             this.timer = setTimeout(this.triggerChange, 300);
@@ -52,7 +52,7 @@ class Search extends React.Component {
     };*/
 
     render() {
-        const {t, placeholder, fluid, size, className, autoFocus} = this.props;
+        const { t, placeholder, fluid, size, className, autoFocus } = this.props;
 
         return (
             <Input

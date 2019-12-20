@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
     dictionariesHeaderSelector,
-    dictionariesMenuSelector, getProfileSettingsRequest,
+    dictionariesMenuSelector,
+    getProfileSettingsRequest,
     gridsMenuSelector,
     otherMenuSelector,
     rolesAndUsersMenu,
@@ -15,7 +16,7 @@ import {
 import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
-import {DICTIONARY_LIST_LINK, GRID_LIST_LINK} from '../../router/links';
+import { DICTIONARY_LIST_LINK, GRID_LIST_LINK } from '../../router/links';
 import Profile from '../../containers/users/profile';
 
 const Header = () => {
@@ -150,7 +151,9 @@ const Header = () => {
                                 <Menu.Menu>
                                     <Dropdown text={`${userName} (${userRole})`} item>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item onClick={onOpen}>{t('profile_settings')}</Dropdown.Item>
+                                            <Dropdown.Item onClick={onOpen}>
+                                                {t('profile_settings')}
+                                            </Dropdown.Item>
                                             <Dropdown.Item onClick={logOut}>
                                                 {t('exit')}
                                             </Dropdown.Item>
@@ -160,7 +163,7 @@ const Header = () => {
                             ) : null}
                         </div>
                     </Menu>
-                    <Profile open={openProfile} onOpen={onOpen} onClose={onClose}/>
+                    <Profile open={openProfile} onOpen={onOpen} onClose={onClose} />
                 </header>
             ) : null}
         </>

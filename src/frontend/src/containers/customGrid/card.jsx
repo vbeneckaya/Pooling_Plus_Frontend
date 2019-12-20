@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import {Button, Confirm, Dropdown} from 'semantic-ui-react';
+import { Button, Confirm, Dropdown } from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -21,18 +21,18 @@ import {
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
-import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
+import { ORDERS_GRID, SHIPPINGS_GRID } from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
-import {GRID_CARD_LINK} from '../../router/links';
-import {clearHistory, getHistoryRequest} from "../../ducks/history";
+import { GRID_CARD_LINK } from '../../router/links';
+import { clearHistory, getHistoryRequest } from '../../ducks/history';
 
 const Card = props => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const {match, history, location} = props;
-    const {params = {}} = match;
-    const {name, id} = params;
+    const { match, history, location } = props;
+    const { params = {} } = match;
+    const { name, id } = params;
 
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
@@ -42,9 +42,9 @@ const Card = props => {
         () =>
             id
                 ? t(`edit_${name}`, {
-                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
-                    status: t(form.status),
-                })
+                      number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
+                      status: t(form.status),
+                  })
                 : t(`new_${name}`),
         [name, id, form],
     );
@@ -105,8 +105,8 @@ const Card = props => {
     };
 
     const onClose = () => {
-        const {state} = location;
-        const {pathname, gridLocation} = state;
+        const { state } = location;
+        const { pathname, gridLocation } = state;
 
         history.replace({
             pathname: pathname,
@@ -135,7 +135,7 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = useCallback((e, {name, value}) => {
+    const onChangeForm = useCallback((e, { name, value }) => {
         setForm(prevState => ({
             ...prevState,
             [name]: value,
@@ -248,7 +248,7 @@ const Card = props => {
     );
 
     const goToCard = (gridName, cardId) => {
-        const {state} = location;
+        const { state } = location;
         console.log('to', state);
         history.replace({
             pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
@@ -269,7 +269,7 @@ const Card = props => {
                 >
                     {name === ORDERS_GRID && form.shippingId ? (
                         <div className="link-cell">
-                            {t('open_shipping', {number: form.shippingNumber})}
+                            {t('open_shipping', { number: form.shippingNumber })}
                         </div>
                     ) : null}
                     {name === SHIPPINGS_GRID && form.orders && form.orders.length ? (
@@ -303,18 +303,18 @@ const Card = props => {
                     >
                         <Dropdown.Menu>
                             {actions &&
-                            actions.filter(item => item.allowedFromForm).map(action => (
-                                <Dropdown.Item
-                                    key={action.name}
-                                    text={t(action.name)}
-                                    label={{
-                                        color: action.color,
-                                        empty: true,
-                                        circular: true,
-                                    }}
-                                    onClick={() => invokeAction(action.name)}
-                                />
-                            ))}
+                                actions.filter(item => item.allowedFromForm).map(action => (
+                                    <Dropdown.Item
+                                        key={action.name}
+                                        text={t(action.name)}
+                                        label={{
+                                            color: action.color,
+                                            empty: true,
+                                            circular: true,
+                                        }}
+                                        onClick={() => invokeAction(action.name)}
+                                    />
+                                ))}
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>

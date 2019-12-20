@@ -1,32 +1,35 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {useTranslation} from 'react-i18next';
+import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import './style.scss';
-import {Button, Dimmer, Icon, Loader, Menu} from 'semantic-ui-react';
+import { Button, Dimmer, Icon, Loader, Menu } from 'semantic-ui-react';
 import * as Scroll from 'react-scroll';
 import Block from './components/block';
 
 const CardLayout = ({
-                        title,
-                        actionsFooter,
-                        actionsHeader,
-                        children,
-                        onClose,
-                        content,
-                        loading,
-                    }) => {
-    const {t} = useTranslation();
+    title,
+    actionsFooter,
+    actionsHeader,
+    children,
+    onClose,
+    content,
+    loading,
+}) => {
+    const { t } = useTranslation();
 
     const contentRef = useRef(null);
 
     let [activeItem, setActiveItem] = useState();
 
-    const handleItemClick = (e, {item}) => {
+    const handleItemClick = (e, { item }) => {
         setActiveItem(item);
-        Scroll && Scroll.scroller && Scroll.scroller.scrollTo && Scroll.scroller.scrollTo(item, {
-            duration: 1500,
-            delay: 100,
-            offset: -120,
-        });
+        Scroll &&
+            Scroll.scroller &&
+            Scroll.scroller.scrollTo &&
+            Scroll.scroller.scrollTo(item, {
+                duration: 1500,
+                delay: 100,
+                offset: -120,
+            });
     };
 
     useEffect(
@@ -41,7 +44,7 @@ const CardLayout = ({
             <div className="card-header-panel">
                 <div className="card-header-panel_title">
                     <Button icon onClick={onClose}>
-                        <Icon name="arrow left"/>
+                        <Icon name="arrow left" />
                     </Button>
                     {title}
                 </div>
@@ -66,7 +69,7 @@ const CardLayout = ({
                         </Menu>
                         <div className="card-content-block_menu">
                             {content().map(item => (
-                                <Block item={item} loading={loading}/>
+                                <Block item={item} loading={loading} />
                             ))}
                         </div>
                     </div>
@@ -82,7 +85,8 @@ const CardLayout = ({
             <div className="card-actions-panel">
                 <div
                     style={{
-                        width: contentRef && contentRef.current && (contentRef.current.offsetWidth - 64),
+                        width:
+                            contentRef && contentRef.current && contentRef.current.offsetWidth - 64,
                     }}
                 >
                     {actionsFooter()}

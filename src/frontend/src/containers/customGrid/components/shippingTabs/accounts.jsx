@@ -1,11 +1,11 @@
 import React from 'react';
-import {Form, Grid, Segment} from 'semantic-ui-react';
-import {useTranslation} from 'react-i18next';
-import {BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE} from '../../../../constants/columnTypes';
+import { Form, Grid, Segment } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+import { BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE } from '../../../../constants/columnTypes';
 import FormField from '../../../../components/BaseComponents';
 
-const Accounts = ({form = {}, onChange, settings}) => {
-    const {t} = useTranslation();
+const Accounts = ({ form = {}, onChange, settings }) => {
+    const { t } = useTranslation();
 
     return (
         <Form className="tabs-card">
@@ -59,7 +59,7 @@ const Accounts = ({form = {}, onChange, settings}) => {
                     <Grid.Column>
                         <Form.Field>
                             <label>{t('reconciliation of expenses')}</label>
-                            <Segment style={{height: 'calc(100% - 22px)'}}>
+                            <Segment style={{ height: 'calc(100% - 22px)' }}>
                                 <Grid>
                                     <Grid.Row columns={2}>
                                         <Grid.Column>

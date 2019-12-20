@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {Button, Checkbox, Form, Icon, Input, Popup} from 'semantic-ui-react';
+import { Button, Checkbox, Form, Icon, Input, Popup } from 'semantic-ui-react';
 
 const Bool = ({ value, sort, name, setSort, text, onChange }) => {
     let items = [
@@ -29,20 +29,20 @@ const Bool = ({ value, sort, name, setSort, text, onChange }) => {
             {/* <label className="label-in-popup">{t(name)}</label>*/}
             {/*  <div className="boolean-facet-values">*/}
             {items &&
-            items.map(x => {
-                return (
-                    <Form.Field key={x.text}>
-                        <Checkbox
-                            radio
-                            label={x.text}
-                            name="checkboxRadioGroup"
-                            value={x.value}
-                            checked={x.value === value}
-                            onChange={() => handleChange(x.value)}
-                        />
-                    </Form.Field>
-                );
-            })}
+                items.map(x => {
+                    return (
+                        <Form.Field key={x.text}>
+                            <Checkbox
+                                radio
+                                label={x.text}
+                                name="checkboxRadioGroup"
+                                value={x.value}
+                                checked={x.value === value}
+                                onChange={() => handleChange(x.value)}
+                            />
+                        </Form.Field>
+                    );
+                })}
             {/*</div>*/}
         </Form>
     );

@@ -20,17 +20,23 @@ import {
     invokeActionRequest,
 } from '../../ducks/gridActions';
 import {
-    editRepresentationRequest, getRepresentationsRequest,
+    editRepresentationRequest,
+    getRepresentationsRequest,
     representationFromGridSelector,
     representationNameSelector,
 } from '../../ducks/representations';
-import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, GRID_CARD_LINK, GRID_NEW_LINK} from "../../router/links";
-import TableInfo from "../../components/TableInfo";
+import {
+    DICTIONARY_CARD_LINK,
+    DICTIONARY_NEW_LINK,
+    GRID_CARD_LINK,
+    GRID_NEW_LINK,
+} from '../../router/links';
+import TableInfo from '../../components/TableInfo';
 
 const CreateButton = ({ t, ...res }) => {
     return (
         <Card {...res}>
-            <Button icon="add"/>
+            <Button icon="add" />
         </Card>
     );
 };
@@ -45,7 +51,7 @@ class List extends Component {
     }
 
     componentWillUnmount() {
-        this.props.stopUpdate({isClear: true});
+        this.props.stopUpdate({ isClear: true });
     }
 
     mapActions = (item, t, invokeAction, name) => ({
@@ -55,7 +61,7 @@ class List extends Component {
             this.showConfirmation(
                 `${t('Are you sure to complete')} "${t(item.name)}" ${
                     rows.length > 1 ? `${t('for')} ` + rows.length : ''
-                    }?`,
+                }?`,
                 () => {
                     this.closeConfirmation();
                     invokeAction({
@@ -78,10 +84,20 @@ class List extends Component {
         const actionsFromGrid = actions.filter(item => item.allowedFromGrid);
 
         let obj = {
-            require: actionsFromGrid.filter((item, index) => index < 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            other: actionsFromGrid.filter((item, index) => index >= 3).map(item => this.mapActions(item, t, invokeAction, name)),
-            order: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Order").map(item => this.mapActions(item, t, invokeAction, name)),
-            shipping: actionsFromGrid.filter((item, index) => index >= 3).filter(item => item.group === "Shipping").map(item => this.mapActions(item, t, invokeAction, name)),
+            require: actionsFromGrid
+                .filter((item, index) => index < 3)
+                .map(item => this.mapActions(item, t, invokeAction, name)),
+            other: actionsFromGrid
+                .filter((item, index) => index >= 3)
+                .map(item => this.mapActions(item, t, invokeAction, name)),
+            order: actionsFromGrid
+                .filter((item, index) => index >= 3)
+                .filter(item => item.group === 'Order')
+                .map(item => this.mapActions(item, t, invokeAction, name)),
+            shipping: actionsFromGrid
+                .filter((item, index) => index >= 3)
+                .filter(item => item.group === 'Shipping')
+                .map(item => this.mapActions(item, t, invokeAction, name)),
         };
 
         return obj;
@@ -96,10 +112,10 @@ class List extends Component {
     };
 
     modalCard = () => {
-        const {stopUpdate, match = {}} = this.props;
-        const {params = {}} = match;
-        const {name = ''} = params;
-        return <Card stopUpdate={stopUpdate} name={name}/>;
+        const { stopUpdate, match = {} } = this.props;
+        const { params = {} } = match;
+        const { name = '' } = params;
+        return <Card stopUpdate={stopUpdate} name={name} />;
     };
 
     render() {
@@ -117,16 +133,14 @@ class List extends Component {
             getAllIds,
             editRepresentation,
             representationName,
-            getRepresentations
+            getRepresentations,
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
         const { confirmation } = this.state;
 
         return (
-            <div
-                className="container"
-            >
+            <div className="container">
                 <SuperGrid
                     key={name}
                     columns={columns}
@@ -179,7 +193,7 @@ const mapDispatchToProps = dispatch => {
         },
         getRepresentations: params => {
             dispatch(getRepresentationsRequest(params));
-        }
+        },
     };
 };
 

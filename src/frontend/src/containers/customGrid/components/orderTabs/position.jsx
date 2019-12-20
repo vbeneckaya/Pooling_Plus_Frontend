@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Button, Form, Grid, Icon, Table} from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Form, Grid, Icon, Table } from 'semantic-ui-react';
 import Text from '../../../../components/BaseComponents/Text';
-import {useDispatch, useSelector} from 'react-redux';
-import {cardSelector, editCardRequest, settingsExtSelector} from '../../../../ducks/gridCard';
-import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
+import { useDispatch, useSelector } from 'react-redux';
+import { cardSelector, editCardRequest, settingsExtSelector } from '../../../../ducks/gridCard';
+import { getLookupRequest, valuesListSelector } from '../../../../ducks/lookup';
 import Number from '../../../../components/BaseComponents/Number';
-import {SETTINGS_TYPE_EDIT, SETTINGS_TYPE_SHOW} from '../../../../constants/formTypes';
+import { SETTINGS_TYPE_EDIT, SETTINGS_TYPE_SHOW } from '../../../../constants/formTypes';
 import FormField from '../../../../components/BaseComponents';
-import {NUMBER_TYPE} from '../../../../constants/columnTypes';
+import { NUMBER_TYPE } from '../../../../constants/columnTypes';
 
-const EditField = ({value, name, onChange, datalist, error = [], isDisabled}) => {
+const EditField = ({ value, name, onChange, datalist, error = [], isDisabled }) => {
     return (
         <>
             {name === 'nart' ? (
@@ -37,10 +37,10 @@ const EditField = ({value, name, onChange, datalist, error = [], isDisabled}) =>
     );
 };
 
-const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
-    const {t} = useTranslation();
+const Position = ({ form, onChange, gridName, load, settings: baseSettings }) => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    let [items, setItems] = useState([...form.items || []]);
+    let [items, setItems] = useState([...(form.items || [])]);
     let [indexEdit, setIndexEdit] = useState(null);
     let [error, setError] = useState([]);
 
@@ -98,28 +98,31 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
     };
 
     const handleSaveItem = () => {
-        const {quantity, nart} = items[indexEdit];
+        const { quantity, nart } = items[indexEdit];
         if (nart && quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.')) {
             editPositions(items);
             setIndexEdit(null);
             setError([]);
         } else {
             if (!nart) {
-                setError(prevState => ([...prevState, 'nart']));
+                setError(prevState => [...prevState, 'nart']);
             } else {
-                setError((prevState = []) => prevState && prevState.filter(item => item !== 'nart'));
+                setError(
+                    (prevState = []) => prevState && prevState.filter(item => item !== 'nart'),
+                );
             }
 
             if (!(quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.'))) {
-                setError(prevState => ([...prevState, 'quantity']));
+                setError(prevState => [...prevState, 'quantity']);
             } else {
-                setError((prevState = []) => prevState && prevState.filter(item => item !== 'quantity'));
+                setError(
+                    (prevState = []) => prevState && prevState.filter(item => item !== 'quantity'),
+                );
             }
         }
-
     };
 
-    const handleChangeField = (e, {name, value}) => {
+    const handleChangeField = (e, { name, value }) => {
         const newColumns = [...items];
 
         newColumns[indexEdit] = {
@@ -171,88 +174,91 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
                                         {t(column.name)}
                                     </Table.HeaderCell>
                                 ))}
-                                <Table.HeaderCell/>
+                                <Table.HeaderCell />
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
                             {columns && items && columns.length && items.length
                                 ? items.map((row, index) => (
-                                    <Table.Row key={row.id}>
-                                        {columns.map(column => (
-                                            <>
-                                                {index === indexEdit &&
-                                                (column.name === 'nart' ||
-                                                    column.name === 'quantity') ? (
-                                                    <Table.Cell
-                                                        key={`cell_${row.id}_${
-                                                            column.name
-                                                            }_${index}`}
-                                                        className={`table-edit-field-${
-                                                            column.name
-                                                            }`}
-                                                    >
-                                                        <EditField
-                                                            value={row[column.name]}
-                                                            name={column.name}
-                                                            isDisabled={
-                                                                settings[column.name] ===
-                                                                SETTINGS_TYPE_SHOW
-                                                            }
-                                                            datalist={
-                                                                column.name === 'nart' && articles
-                                                            }
-                                                            error={error}
-                                                            onChange={handleChangeField}
-                                                        />
-                                                    </Table.Cell>
-                                                ) : (
-                                                    <Table.Cell
-                                                        key={`cell_${row.id}_${
-                                                            column.name
-                                                            }_${index}`}
-                                                    >
-                                                        {row[column.name]}
-                                                    </Table.Cell>
-                                                )}
-                                            </>
-                                        ))}
-                                        <Table.Cell textAlign="right" className="table-action-buttons">
-                                            {index === indexEdit ? (
-                                                <>
-                                                    <Button
-                                                        icon
-                                                        onClick={() => handleCancelItem(index)}
-                                                    >
-                                                        <Icon name="undo alternate"/>
-                                                    </Button>
-                                                    <Button
-                                                        icon
-                                                        onClick={() => handleSaveItem(index)}
-                                                    >
-                                                        <Icon name="check"/>
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Button
-                                                        disabled={indexEdit !== null}
-                                                        icon
-                                                        onClick={() => handleEditItem(index)}
-                                                    >
-                                                        <Icon name="pencil alternate"/>
-                                                    </Button>
-                                                    <Button
-                                                        disabled={indexEdit !== null}
-                                                        icon
-                                                        onClick={() => handleDeleteItem(index)}
-                                                    >
-                                                        <Icon name="trash alternate"/>
-                                                    </Button>
-                                                </>
-                                            )}
-                                        </Table.Cell>
-                                    </Table.Row>
-                                ))
+                                      <Table.Row key={row.id}>
+                                          {columns.map(column => (
+                                              <>
+                                                  {index === indexEdit &&
+                                                  (column.name === 'nart' ||
+                                                      column.name === 'quantity') ? (
+                                                      <Table.Cell
+                                                          key={`cell_${row.id}_${
+                                                              column.name
+                                                          }_${index}`}
+                                                          className={`table-edit-field-${
+                                                              column.name
+                                                          }`}
+                                                      >
+                                                          <EditField
+                                                              value={row[column.name]}
+                                                              name={column.name}
+                                                              isDisabled={
+                                                                  settings[column.name] ===
+                                                                  SETTINGS_TYPE_SHOW
+                                                              }
+                                                              datalist={
+                                                                  column.name === 'nart' && articles
+                                                              }
+                                                              error={error}
+                                                              onChange={handleChangeField}
+                                                          />
+                                                      </Table.Cell>
+                                                  ) : (
+                                                      <Table.Cell
+                                                          key={`cell_${row.id}_${
+                                                              column.name
+                                                          }_${index}`}
+                                                      >
+                                                          {row[column.name]}
+                                                      </Table.Cell>
+                                                  )}
+                                              </>
+                                          ))}
+                                          <Table.Cell
+                                              textAlign="right"
+                                              className="table-action-buttons"
+                                          >
+                                              {index === indexEdit ? (
+                                                  <>
+                                                      <Button
+                                                          icon
+                                                          onClick={() => handleCancelItem(index)}
+                                                      >
+                                                          <Icon name="undo alternate" />
+                                                      </Button>
+                                                      <Button
+                                                          icon
+                                                          onClick={() => handleSaveItem(index)}
+                                                      >
+                                                          <Icon name="check" />
+                                                      </Button>
+                                                  </>
+                                              ) : (
+                                                  <>
+                                                      <Button
+                                                          disabled={indexEdit !== null}
+                                                          icon
+                                                          onClick={() => handleEditItem(index)}
+                                                      >
+                                                          <Icon name="pencil alternate" />
+                                                      </Button>
+                                                      <Button
+                                                          disabled={indexEdit !== null}
+                                                          icon
+                                                          onClick={() => handleDeleteItem(index)}
+                                                      >
+                                                          <Icon name="trash alternate" />
+                                                      </Button>
+                                                  </>
+                                              )}
+                                          </Table.Cell>
+                                      </Table.Row>
+                                  ))
                                 : null}
                         </Table.Body>
                     </Table>

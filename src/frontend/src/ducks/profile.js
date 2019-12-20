@@ -7,8 +7,8 @@ import { logoutRequest } from './login';
 import { clearDictionaryInfo } from './dictionaryView';
 import result from '../components/SuperGrid/components/result';
 import { toast } from 'react-toastify';
-import {errorMapping} from '../utils/errorMapping';
-import {autoUpdateStop} from './gridList';
+import { errorMapping } from '../utils/errorMapping';
+import { autoUpdateStop } from './gridList';
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -266,7 +266,7 @@ export const errorSelector = createSelector(stateSelector, state => errorMapping
 
 function* getUserProfileSaga({ payload = {} }) {
     try {
-        const {url, isNotCofigUpdate} = payload;
+        const { url, isNotCofigUpdate } = payload;
         const userInfo = yield postman.get('/identity/userInfo');
         const config = isNotCofigUpdate ? {} : yield postman.get('/appConfiguration');
 
@@ -321,7 +321,7 @@ function* editProfileSettingsSaga({ payload }) {
 
             yield put({
                 type: GET_USER_PROFILE_SUCCESS,
-                payload: {userName: form.userName},
+                payload: { userName: form.userName },
             });
 
             callbackSuccess && callbackSuccess();
@@ -335,7 +335,7 @@ function* editProfileSettingsSaga({ payload }) {
 
 function* changePasswordSaga({ payload }) {
     try {
-        const {form, callbackSuccess, t} = payload;
+        const { form, callbackSuccess, t } = payload;
         const result = yield postman.post('/profile/setNewPassword', form);
 
         if (result.isError) {

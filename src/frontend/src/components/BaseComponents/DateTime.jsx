@@ -15,8 +15,8 @@ const DateTime = ({
     className,
     text,
     placeholder,
-                      isRequired,
-                      error,
+    isRequired,
+    error,
 }) => {
     const { t } = useTranslation();
 
@@ -39,7 +39,7 @@ const DateTime = ({
             {!noLabel ? (
                 <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
-                    }`}</label>
+                }`}</label>
             ) : null}
             <DatePicker
                 placeholderText={placeholder}
@@ -62,7 +62,9 @@ const DateTime = ({
                 popperPlacement={popperPlacement}
                 onChangeRaw={e => onChange(e, { name, value: e.target.value })}
             />
-            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
+            {error && typeof error === 'string' ? (
+                <span className="label-error">{error}</span>
+            ) : null}
         </Form.Field>
     );
 };

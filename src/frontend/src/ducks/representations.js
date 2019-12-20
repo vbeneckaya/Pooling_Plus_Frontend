@@ -123,7 +123,7 @@ export const representationSelector = createSelector(
                         ...actualItem,
                         width: item.width,
                         filter: item.filter,
-                        sort: item.sort
+                        sort: item.sort,
                     });
                 }
             });
@@ -157,7 +157,7 @@ function* getRepresentationsSaga({ payload }) {
             type: GET_REPRESENTATIONS_SUCCESS,
             payload: result.value ? JSON.parse(result.value) : {},
         });
-        const columns = yield select((state) => representationFromGridSelector(state, key));
+        const columns = yield select(state => representationFromGridSelector(state, key));
 
         callBackFunc && callBackFunc(columns);
     } catch (e) {
@@ -176,7 +176,7 @@ function* saveRepresentationSaga({ payload }) {
         const params = {
             ...list,
             [name]: value.map(item => ({
-                ...item
+                ...item,
             })),
         };
 

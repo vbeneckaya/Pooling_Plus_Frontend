@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
     Button,
     Checkbox,
@@ -11,24 +11,24 @@ import {
     Visibility,
 } from 'semantic-ui-react';
 
-import {connect} from 'react-redux';
-import {withTranslation} from 'react-i18next';
-import {clearLookup, getLookupRequest, listSelector, progressSelector} from '../../ducks/lookup';
+import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
+import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
 
 class Facet extends React.Component {
     state = {};
 
-    setFilter = (e, {value}) => {
-        this.setState({filter: value.toLowerCase()});
+    setFilter = (e, { value }) => {
+        this.setState({ filter: value.toLowerCase() });
     };
 
     clearFilter = () => {
-        this.setState({filter: ''});
+        this.setState({ filter: '' });
         this.props.clearLookup();
     };
 
     handleOpen = () => {
-        const {source, getList} = this.props;
+        const { source, getList } = this.props;
 
         getList({
             name: source,
@@ -45,13 +45,13 @@ class Facet extends React.Component {
     }
 
     handleRestClick = () => {
-        const {name, onChange} = this.props;
+        const { name, onChange } = this.props;
 
-        if (onChange !== undefined) onChange(null, {name: name, value: null});
+        if (onChange !== undefined) onChange(null, { name: name, value: null });
     };
 
-    toggle = (e, {value}) => {
-        const {name, onChange} = this.props;
+    toggle = (e, { value }) => {
+        const { name, onChange } = this.props;
         let values = this.props.value ? this.props.value.split('|') : [];
 
         if (values.some(x => x === value)) {
@@ -59,11 +59,11 @@ class Facet extends React.Component {
         } else {
             values.push(value);
         }
-        if (onChange !== undefined) onChange(e, {name: name, value: values.join('|')});
+        if (onChange !== undefined) onChange(e, { name: name, value: values.join('|') });
     };
 
     render() {
-        const {value, valuesList = [], loading, t} = this.props;
+        const { value, valuesList = [], loading, t } = this.props;
 
         let values = value ? value.split('|') : [];
 
@@ -104,22 +104,22 @@ class Facet extends React.Component {
                         </Dimmer>
                         <div>
                             {items &&
-                            items.map(x => {
-                                let label = <label>{x.name}</label>;
-                                return (
-                                    <Form.Field
-                                        key={x.value}
-                                        className={!x.isActive ? 'colorGrey' : ''}
-                                    >
-                                        <Checkbox
-                                            value={x.value}
-                                            checked={values.includes(x.value)}
-                                            onChange={this.toggle}
-                                            label={label}
-                                        />
-                                    </Form.Field>
-                                );
-                            })}
+                                items.map(x => {
+                                    let label = <label>{x.name}</label>;
+                                    return (
+                                        <Form.Field
+                                            key={x.value}
+                                            className={!x.isActive ? 'colorGrey' : ''}
+                                        >
+                                            <Checkbox
+                                                value={x.value}
+                                                checked={values.includes(x.value)}
+                                                onChange={this.toggle}
+                                                label={label}
+                                            />
+                                        </Form.Field>
+                                    );
+                                })}
                             <Visibility
                                 continuous={false}
                                 once={false}
