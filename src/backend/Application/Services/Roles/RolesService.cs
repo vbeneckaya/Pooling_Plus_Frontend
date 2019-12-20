@@ -203,5 +203,16 @@ namespace Application.Services.Roles
                 .Where(i => i.Name == dto.Name)
                 .FirstOrDefault();
         }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Role.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
+        }
     }
 }

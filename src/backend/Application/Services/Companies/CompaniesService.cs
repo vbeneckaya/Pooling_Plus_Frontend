@@ -81,6 +81,16 @@ namespace Application.Services.BodyTypes
 
         public override IQueryable<Company> ApplyRestrictions(IQueryable<Company> query)
         {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.Id == user.CompanyId);
+            }
+
             return query;
         }
 

@@ -135,12 +135,11 @@ namespace Application.Services.Tonnages
 
         public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
         {
-            var entity = _dataService.GetById<Tonnage>(id);
-
+            var user = _userProvider.GetCurrentUser();
             var configuration = base.GetDictionaryConfiguration(id);
 
             var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tonnage.CompanyId).ToLower());
-            companyId.IsReadOnly = entity.CompanyId != null;
+            companyId.IsReadOnly = user.CompanyId != null;
 
             return configuration;
         }
