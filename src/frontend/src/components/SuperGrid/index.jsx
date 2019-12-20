@@ -31,6 +31,27 @@ class SuperGrid extends Component {
         };
     }
 
+    pageLoading = () => {
+        const {getRepresentations, name} = this.props;
+
+        getRepresentations({
+            key: name,
+            callBackFunc: (columns) => {
+                const width = this.container.scrollWidth - 50;
+
+                this.setState(
+                    {
+                        columns: columns.map(item => ({
+                            ...item,
+                            width: item.width || parseInt(width / columns.length),
+                        })),
+                    },
+                    () => this.props.autoUpdateStart(this.mapData()),
+                );
+            }
+        });
+    };
+
     componentDidMount() {
         this.timer = null;
         const {location, history, getRepresentations, name} = this.props;
@@ -43,22 +64,12 @@ class SuperGrid extends Component {
                 },
                 () => {
                     history.replace(location.pathname, null);
-                    getRepresentations({
-                        key: name,
-                        callBackFunc: () => {
-                            this.props.autoUpdateStart(this.mapData());
-                        }
-                    });
+                    this.pageLoading();
 
                 },
             );
         } else {
-            getRepresentations({
-                key: name,
-                callBackFunc: () => {
-                    this.props.autoUpdateStart(this.mapData());
-                }
-            });
+            this.pageLoading();
         }
     }
 
@@ -82,7 +93,7 @@ class SuperGrid extends Component {
             this.setSelected(newSelectedRow);
         }
 
-        if (prevProps.columns !== this.props.columns) {
+        if (prevProps.representationName !== this.props.representationName) {
             const { columns } = this.props;
             const width = this.container.scrollWidth - 50;
 
@@ -111,9 +122,10 @@ class SuperGrid extends Component {
                 [column.name]: column.filter,
             };
 
-            if (column.sort) {
+            if (column.sort === true || column.sort === false) {
                 sort = {
-                    [column.name]: column.sort,
+                    name: column.name,
+                    desc: column.sort,
                 };
             }
         });
@@ -163,8 +175,6 @@ class SuperGrid extends Component {
     };
 
     setFilter = (e, { name, value }) => {
-        console.log('filter', name, value, this.state.columns);
-
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
             let index = nextColumns.findIndex(item => item.name === name);
@@ -183,8 +193,6 @@ class SuperGrid extends Component {
     };
 
     setSort = sort => {
-        console.log('sort', sort);
-
         this.setState(prevState => {
             const nextColumns = prevState.columns.map(column => ({
                 ...column,
@@ -268,39 +276,6 @@ class SuperGrid extends Component {
             },
             () => this.loadList(false, true),
         );
-    };
-
-    updatingFilter = () => {
-        /*const { filters, sort } = this.state;
-        const { storageSortItem, columns } = this.props;
-
-        let newFilter = {};
-
-        if (sort && sort.name && !columns.find(item => item.name === sort.name)) {
-            this.setState(
-                {
-                    sort: {},
-                },
-                this.loadAndResetContainerScroll,
-            );
-
-            storageSortItem && localStorage.setItem(storageSortItem, JSON.stringify({}));
-        }
-
-        Object.keys(filters).forEach(key => {
-            if (columns.find(item => item.name === key)) {
-                newFilter = {
-                    ...newFilter,
-                    [key]: filters[key],
-                };
-            }
-        });
-        this.setState(
-            {
-                filters: newFilter,
-            },
-            this.debounceSetFilterApiAndLoadList,
-        );*/
     };
 
     setFilterApiAndLoadList = () => {
@@ -417,7 +392,6 @@ class SuperGrid extends Component {
                     disabledClearFilter={!columns.find(column => column.filter)}
                     representationName={representationName}
                     clearFilter={this.clearFilters}
-                    updatingFilter={this.updatingFilter}
                     filter={this.mapData()}
                     setSelected={this.setSelected}
                 />

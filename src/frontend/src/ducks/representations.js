@@ -157,7 +157,9 @@ function* getRepresentationsSaga({ payload }) {
             type: GET_REPRESENTATIONS_SUCCESS,
             payload: result.value ? JSON.parse(result.value) : {},
         });
-        callBackFunc && callBackFunc();
+        const columns = yield select((state) => representationFromGridSelector(state, key));
+
+        callBackFunc && callBackFunc(columns);
     } catch (e) {
         yield put({
             type: GET_REPRESENTATIONS_ERROR,
