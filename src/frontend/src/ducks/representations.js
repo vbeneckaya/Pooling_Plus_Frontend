@@ -121,7 +121,9 @@ export const representationSelector = createSelector(
                 if (actualItem) {
                     actualRepresentation.push({
                         ...actualItem,
-                        width: item.width
+                        width: item.width,
+                        filter: item.filter,
+                        sort: item.sort
                     });
                 }
             });

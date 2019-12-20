@@ -20,7 +20,7 @@ import {
     invokeActionRequest,
 } from '../../ducks/gridActions';
 import {
-    editRepresentationRequest,
+    editRepresentationRequest, getRepresentationsRequest,
     representationFromGridSelector,
     representationNameSelector,
 } from '../../ducks/representations';
@@ -117,6 +117,7 @@ class List extends Component {
             getAllIds,
             editRepresentation,
             representationName,
+            getRepresentations
         } = this.props;
         const { params = {} } = match;
         const { name = '' } = params;
@@ -133,6 +134,7 @@ class List extends Component {
                     name={name}
                     editRepresentation={editRepresentation}
                     representationName={representationName}
+                    getRepresentations={getRepresentations}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -175,6 +177,9 @@ const mapDispatchToProps = dispatch => {
         editRepresentation: params => {
             dispatch(editRepresentationRequest(params));
         },
+        getRepresentations: params => {
+            dispatch(getRepresentationsRequest(params));
+        }
     };
 };
 

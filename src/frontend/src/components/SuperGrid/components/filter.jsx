@@ -14,23 +14,13 @@ const Filter = props => {
         resizeColumn,
         extWidth
     } = props;
-    let [customColumns, setColumns] = useState(columns);
-    let timer = useRef(null);
 
-    useEffect(
-        () => {
-            setColumns(columns);
-
-            return () => {
-                timer.current = null;
-            };
-        },
-        [columns],
-    );
 
     const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
     }, []);
+
+    console.log('columns', columns);
 
     return (
         <Table.Row className="sticky-header">
@@ -42,8 +32,8 @@ const Filter = props => {
                     onChange={setSelectedAll}
                 />
             </Table.HeaderCell>
-            {customColumns &&
-            customColumns.map((x, i) => (
+            {columns &&
+            columns.map((x, i) => (
                 <Resizable
                     key={`resizable_${x.name}`}
                     width={x.width}
@@ -63,10 +53,10 @@ const Filter = props => {
                             index={i}
                             name={x.name}
                             displayNameKey={x.displayNameKey}
-                            sort={props.sort}
+                            sort={x.sort}
                             setSort={props.setSort}
                             type={x.type}
-                            value={props.filters[x.name]}
+                            value={x.filter}
                             setFilter={props.setFilter}
                             source={x.source}
                             width={x.width}

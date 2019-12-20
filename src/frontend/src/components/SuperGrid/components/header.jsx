@@ -32,6 +32,7 @@ const Header = ({
     loadList,
     name,
     setSelected,
+                    representationName,
     filter,
                     goToCard,
 }) => {
@@ -107,82 +108,10 @@ const Header = ({
     return (
         <Grid className="grid-header-panel">
             <Grid.Row>
-                {/* <Grid.Column width={10}>
-                    {createButton}
-                    <Search searchValue={searchValue} className="search-input" onChange={searchOnChange}/>
-                    <span className="records-counter">{t('totalCount', { count: counter })}</span>
-                </Grid.Column>
-                <Grid.Column width={6} className="grid-right-elements">
-                    <input
-                        type="file"
-                        ref={fileUploader}
-                        style={{ display: 'none' }}
-                        onInput={onFilePicked}
-                    />
-                    <FieldsConfig
-                        gridName={name}
-                        getRepresentations={getRepresentations}
-                        changeRepresentation={changeRepresentation}
-                        representations={representations}
-                    />
-                    <Popup
-                        content={t('reset_filters')}
-                        position="bottom right"
-                        trigger={
-                            <Button
-                                icon="clear-filter"
-                                className={`clear-filter-btn`}
-                                onClick={clearFilter}
-                                disabled={disabledClearFilter}
-                            />
-                        }
-                    />
-                    {
-                        <Popup
-                            content={<AllFilters gridName={name} filter={filter}/>}
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon
-                                >
-                                    <Icon color="primary" name={"sliders horizontal"}/>
-                                </Button>
-                            }
-                            on="click"
-                        />
-                    }
-                    {isImportBtn && (
-                        <Popup
-                            content={t('importFromExcel')}
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon="upload"
-                                    loading={importLoader}
-                                    onClick={importExcel}
-                                />
-                            }
-                        />
-                    )}
-                    {isExportBtn && (
-                        <Popup
-                            content={
-                                t('exportToExcel') // todo
-                            }
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon="download"
-                                    loading={exportLoader}
-                                    onClick={exportExcel}
-                                />
-                            }
-                        />
-                    )}
-                </Grid.Column>*/}
                 <Grid.Column width={5}>
                     <FieldsConfig
                         gridName={name}
+                        representationName={representationName}
                         getRepresentations={getRepresentations}
                         changeRepresentation={changeRepresentation}
                         representations={representations}

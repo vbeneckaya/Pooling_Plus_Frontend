@@ -14,10 +14,9 @@ import {
     saveRepresentationRequest,
 } from '../../ducks/representations';
 
-const FieldsConfig = ({ gridName, getRepresentations, changeRepresentation, representations }) => {
+const FieldsConfig = ({gridName, getRepresentations, changeRepresentation, representations, representationName}) => {
     const representationFields =
         useSelector(state => representationSelector(state, gridName)) || [];
-    const representationName = useSelector(state => representationNameSelector(state, gridName));
 
     let [modalOpen, setModalOpen] = useState(false);
     let [isNew, setIsNew] = useState(true);
