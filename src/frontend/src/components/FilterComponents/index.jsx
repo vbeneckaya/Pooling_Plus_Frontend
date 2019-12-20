@@ -47,7 +47,7 @@ const Control = props => {
 
 const FacetField = ({
                         name,
-                        sort: sortObj,
+                        sort,
                         setSort,
                         type,
                         value,
@@ -59,20 +59,20 @@ const FacetField = ({
                         displayNameKey
                     }) => {
     const { t } = useTranslation();
-    let sort = null;
+    /*let sort = null;
 
     if (sortObj && sortObj.name === name) {
         sort = sortObj.desc ? 'desc' : 'asc';
-    }
+    }*/
 
     const handleSort = () => {
-        if (sort === 'desc') {
+        if (sort === true) {
             setSort({
                 name,
                 desc: false,
             });
-        } else if (sort === 'asc') {
-            setSort({});
+        } else if (sort === false) {
+            setSort(null);
         } else {
             setSort({
                 name,
@@ -97,7 +97,7 @@ const FacetField = ({
          [thRef.current],
      );*/
 
-    //console.log('facet');
+    console.log('facet', value);
 
     return (
         <div className="facet" ref={thRef}>
@@ -132,8 +132,8 @@ const FacetField = ({
                 </div>
 
                 <div className="facet-actions__sort">
-                    {sort && sort === 'asc' ? <Icon name="sort amount up" /> : null}
-                    {sort && sort === 'desc' ? <Icon name="sort amount down" /> : null}
+                    {sort === false ? <Icon name="sort amount up"/> : null}
+                    {sort === true ? <Icon name="sort amount down"/> : null}
                 </div>
             </div>
         </div>
