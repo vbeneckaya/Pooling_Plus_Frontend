@@ -88,7 +88,8 @@ namespace Application.Services.Warehouses
 
         public override Warehouse FindByKey(WarehouseDto dto)
         {
-            return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
+            return _dataService.GetDbSet<Warehouse>()
+                .Where(x => x.Address == dto.Address).FirstOrDefault();
         }
 
         protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
