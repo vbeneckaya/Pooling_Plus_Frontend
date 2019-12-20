@@ -25,6 +25,7 @@ import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
 import {GRID_CARD_LINK} from '../../router/links';
+import {clearHistory, getHistoryRequest} from "../../ducks/history";
 
 const Card = props => {
     const {t} = useTranslation();
@@ -53,10 +54,14 @@ const Card = props => {
     const error = useSelector(state => errorSelector(state));
 
     useEffect(() => {
-        console.log('!!!!');
         dispatch(clearActions());
         id && loadCard();
         id && getActions();
+        id && getHistory();
+
+        return () => {
+            dispatch(clearHistory());
+        };
     }, []);
 
     useEffect(
@@ -83,6 +88,10 @@ const Card = props => {
                 },
             }),
         );
+    };
+
+    const getHistory = () => {
+        dispatch(getHistoryRequest(id));
     };
 
     const getActions = () => {
@@ -142,6 +151,7 @@ const Card = props => {
                     if (form.id) {
                         loadCard();
                         getActions();
+                        getHistory();
                     } else {
                         handleClose();
                     }
@@ -189,6 +199,7 @@ const Card = props => {
                             } else {
                                 loadCard();
                                 getActions();
+                                getHistory();
                             }
                         },
                     }),
