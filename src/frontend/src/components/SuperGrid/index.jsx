@@ -33,7 +33,7 @@ class SuperGrid extends Component {
 
     componentDidMount() {
         this.timer = null;
-        const {location, history, getRepresentations} = this.props;
+        const {location, history, getRepresentations, name} = this.props;
         const { state } = location;
 
         if (state) {
@@ -43,13 +43,22 @@ class SuperGrid extends Component {
                 },
                 () => {
                     history.replace(location.pathname, null);
-                    getRepresentations();
-                    this.props.autoUpdateStart(this.mapData());
+                    getRepresentations({
+                        key: name,
+                        callBackFunc: () => {
+                            this.props.autoUpdateStart(this.mapData());
+                        }
+                    });
+
                 },
             );
         } else {
-            getRepresentations();
-            this.props.autoUpdateStart(this.mapData());
+            getRepresentations({
+                key: name,
+                callBackFunc: () => {
+                    this.props.autoUpdateStart(this.mapData());
+                }
+            });
         }
     }
 
@@ -77,12 +86,15 @@ class SuperGrid extends Component {
             const { columns } = this.props;
             const width = this.container.scrollWidth - 50;
 
-            this.setState({
-                columns: columns.map(item => ({
-                    ...item,
-                    width: item.width || parseInt(width / columns.length),
-                })),
-            }, this.loadList);
+            this.setState(
+                {
+                    columns: columns.map(item => ({
+                        ...item,
+                        width: item.width || parseInt(width / columns.length),
+                    })),
+                },
+                this.loadList,
+            );
         }
     }
 
@@ -101,8 +113,8 @@ class SuperGrid extends Component {
 
             if (column.sort) {
                 sort = {
-                    [column.name]: column.sort
-                }
+                    [column.name]: column.sort,
+                };
             }
         });
 
@@ -176,7 +188,7 @@ class SuperGrid extends Component {
         this.setState(prevState => {
             const nextColumns = prevState.columns.map(column => ({
                 ...column,
-                sort: null
+                sort: null,
             }));
             if (sort) {
                 let index = nextColumns.findIndex(item => item.name === sort.name);
@@ -186,14 +198,12 @@ class SuperGrid extends Component {
                 };
             }
 
-
             return {
                 ...prevState,
                 columns: [...nextColumns],
                 page: 1,
             };
         }, this.debounceSetFilterApiAndLoadList);
-
     };
 
     setSelected = item => {
@@ -243,7 +253,7 @@ class SuperGrid extends Component {
                 columns: columns.map(item => ({
                     ...item,
                     filter: '',
-                    sort: null
+                    sort: null,
                 })),
                 page: 1,
                 selectedRows: new Set(),
