@@ -79,12 +79,12 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(
-        () => {
-            getRepresentations(updatingFilter);
-        },
-        [name],
-    );
+    /* useEffect(
+         () => {
+             getRepresentations(updatingFilter);
+         },
+         [name],
+     );*/
 
     const changeRepresentation = (key, isEdit) => {
         dispatch(
