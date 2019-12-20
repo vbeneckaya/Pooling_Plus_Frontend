@@ -2,14 +2,16 @@
 using Domain.Extensions;
 using Domain.Shared;
 
-namespace Domain.Services.BodyTypes
+namespace Domain.Services.Clients
 {
-    public class BodyTypeDto: IDto
+    public class ClientDto : IDto
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
+        [FieldType(FieldType.Text), IsRequired, OrderNumber(1)]
         public string Name { get; set; }
+
+        public string PoolingId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(2)]
         public LookUpDto CompanyId { get; set; }

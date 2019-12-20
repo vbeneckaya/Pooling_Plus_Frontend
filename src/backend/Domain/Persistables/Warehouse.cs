@@ -90,6 +90,11 @@ namespace Domain.Persistables
         public TimeSpan? AvisaleTime { get; set; }
 
         /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
+
+        /// <summary>
         /// Клиент
         /// </summary>
         public Guid? ClientId { get; set; }

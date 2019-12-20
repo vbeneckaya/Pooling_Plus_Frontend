@@ -50,7 +50,10 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Time), OrderNumber(10)]
         public string AvisaleTime { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(11)]
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(11)]
+        public LookUpDto CompanyId { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(12)]
         public bool? IsActive { get; set; }
 
         public string AdditionalInfo { get; set; }

@@ -50,9 +50,13 @@ namespace DAL
         public DbSet<Country> Countries { get; set; }
         public DbSet<Tonnage> Tonnages { get; set; }
         public DbSet<BodyType> BodyTypes { get; set; }
+        public DbSet<Client> Clients { get; set; }
 
         public DbSet<FieldPropertyItem> FieldPropertyItems { get; set; }
         public DbSet<FieldPropertyItemVisibility> FieldPropertyVisibilityItems { get; set; }
+
+        public DbSet<Company> Companies { get; set; }
+
         /*end of add DbSets*/
 
         public void Migrate(string connectionString)
@@ -64,7 +68,7 @@ namespace DAL
 
                 using (var migrator = new Migrator("postgres", connectionString, Assembly.GetAssembly(typeof(AppDbContext)), logger))
                 {
-                    HashSet<long> applied = new HashSet<long>(migrator.GetAppliedMigrations());
+                  HashSet<long> applied = new HashSet<long>(migrator.GetAppliedMigrations());
                     foreach (var migrationInfo in migrator.AvailableMigrations.OrderBy(m => m.Version))
                     {
                         if (!applied.Contains(migrationInfo.Version))

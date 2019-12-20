@@ -23,7 +23,7 @@ using System.Linq;
 
 namespace Application.Services.Warehouses
 {
-    public class WarehousesService : DictonaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
+    public class WarehousesService : DictionaryServiceBase<Warehouse, WarehouseDto>, IWarehousesService
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
@@ -64,6 +64,29 @@ namespace Application.Services.Warehouses
                 .Remove<Warehouse>(i => i.IsActive);
         }
 
+        private MapperConfiguration ConfigureMapper()
+        {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Warehouse, WarehouseDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+
+                cfg.CreateMap<WarehouseDto, Warehouse>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+                    .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
+                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
+            });
+            return result;
+        }
+
         public WarehouseDto GetBySoldTo(string soldToNumber)
         {
             var entity = _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == soldToNumber).FirstOrDefault();
@@ -94,9 +117,17 @@ namespace Application.Services.Warehouses
 
         protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
         {
-            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
-                                     .Select(x => x.PickingTypeId.Value.ToGuid())
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                                     .Select(x => x.CompanyId.Value.ToGuid())
                                      .ToList();
+            
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
+                         .Select(x => x.PickingTypeId.Value.ToGuid())
+                         .ToList();
             var pickingTypes = _dataService.GetDbSet<PickingType>()
                                            .Where(x => pickingTypeIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
@@ -108,6 +139,13 @@ namespace Application.Services.Warehouses
                 {
                     dto.PickingTypeId.Name = pickingType.Name;
                 }
+
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
                 yield return dto;
             }
         }
@@ -220,27 +258,6 @@ namespace Application.Services.Warehouses
                 result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
-            return result;
-        }
-
-        private MapperConfiguration ConfigureMapper()
-        {
-            var lang = _userProvider.GetCurrentUser()?.Language;
-            var result = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Warehouse, WarehouseDto>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
-                    .ForMember(t => t.AvisaleTime, e => e.MapFrom((s) => s.AvisaleTime == null ? null : s.AvisaleTime.Value.ToString(@"hh\:mm")));
-
-                cfg.CreateMap<WarehouseDto, Warehouse>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
-                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
-                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
-            });
             return result;
         }
     }

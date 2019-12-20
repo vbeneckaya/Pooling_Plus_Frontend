@@ -11,6 +11,7 @@ using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
+using Application.Services.Clients;
 using Application.Services.Documents;
 using Application.Services.DocumentTypes;
 using Application.Services.FieldProperties;
@@ -44,6 +45,8 @@ using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
+using Domain.Services.Clients;
+using Domain.Services.Companies;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
@@ -120,8 +123,10 @@ namespace Infrastructure.Installers
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
             services.AddScoped<IBodyTypesService, BodyTypesService>();
             services.AddScoped<ITonnagesService, TonnagesService>();
+            services.AddScoped<ICompaniesService, CompaniesService>();
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
+            services.AddScoped<IClientsService, ClientsService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
