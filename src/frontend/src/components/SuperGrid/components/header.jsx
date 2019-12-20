@@ -18,7 +18,6 @@ import {
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
-import AllFilters from './all_filters';
 import Icon from '../../CustomIcon';
 
 const Header = ({
@@ -27,7 +26,6 @@ const Header = ({
     searchOnChange,
     counter,
     clearFilter,
-    updatingFilter,
     disabledClearFilter,
     loadList,
     name,
@@ -79,13 +77,6 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    /* useEffect(
-         () => {
-             getRepresentations(updatingFilter);
-         },
-         [name],
-     );*/
-
     const changeRepresentation = (key, isEdit) => {
         dispatch(
             setRepresentationRequest({
@@ -93,7 +84,6 @@ const Header = ({
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    !isEdit ? clearFilter() : updatingFilter();
                 },
             }),
         );
