@@ -120,13 +120,6 @@ namespace Application.Services.Articles
                 .FirstOrDefault(i => i.Nart == dto.Nart);
         }
 
-        private MapperConfiguration ConfigureMapper()
-        {
-            var result = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Article, ArticleDto>()
-                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
-
         protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
         {
             return query

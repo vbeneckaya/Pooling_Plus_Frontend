@@ -111,8 +111,11 @@ namespace Application.Services.Warehouses
 
         public override Warehouse FindByKey(WarehouseDto dto)
         {
+            var clientId = dto.ClientId?.Value.ToGuid();
+            var companyId = dto.CompanyId?.Value.ToGuid();
+
             return _dataService.GetDbSet<Warehouse>()
-                .Where(x => x.Address == dto.Address).FirstOrDefault();
+                .Where(x => x.Address == dto.Address && x.ClientId == clientId && x.CompanyId == companyId).FirstOrDefault();
         }
 
         protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
@@ -250,9 +253,8 @@ namespace Application.Services.Warehouses
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            var hasDuplicates = !result.IsError && _dataService.GetDbSet<Warehouse>()
-                                            .Where(x => x.SoldToNumber == dto.SoldToNumber && x.Id.ToString() != dto.Id)
-                                            .Any();
+            var hasDuplicates = !result.IsError && FindByKey(dto) != null;
+
             if (hasDuplicates)
             {
                 result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
