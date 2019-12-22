@@ -11,7 +11,6 @@ class CreateOrder extends Component {
     handleChangeSoldTo = (e, {name, value, ext}) => {
         const {valuesList, onChange} = this.props;
         const soldToItem = valuesList.find(item => item.value === value) || {};
-        console.log('values', soldToItem);
 
         onChange(e, {
             name,

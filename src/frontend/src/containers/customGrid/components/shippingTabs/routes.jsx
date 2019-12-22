@@ -1,12 +1,12 @@
 import React, {useCallback, useEffect} from 'react';
-import { Icon, Tab } from 'semantic-ui-react';
+import {Icon, Tab} from 'semantic-ui-react';
 import Route from './route';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLookupRequest, valuesListSelector } from '../../../ducks/lookup';
+import {useDispatch, useSelector} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
 
-const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
+const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     const dispatch = useDispatch();
-    const { routePoints: points } = form;
+    const {routePoints: points = []} = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
     useEffect(() => {
@@ -31,6 +31,8 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
 
     const pointsTabs = [];
 
+    console.log('form', form);
+
     points.forEach((point, i) => {
         const state = stateColors.find(x => x.name === point.vehicleStatus);
         const color = state ? state.color : 'grey';
@@ -39,7 +41,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
                 key: i,
                 content: (
                     <label>
-                        <Icon color={color} name="circle" />
+                        <Icon color={color} name="circle"/>
                         {point.warehouseName}
                     </label>
                 ),
@@ -60,12 +62,12 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
     });
 
     return (
-        <div>
+        <div className="tabs-card">
             <Tab
                 className="all-tabs"
                 panes={pointsTabs}
                 activeIndex={routeActiveIndex}
-                menu={{ vertical: true }}
+                menu={{vertical: true}}
                 menuPosition="left"
                 onTabChange={tabChange}
             />

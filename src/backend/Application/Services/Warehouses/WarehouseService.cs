@@ -45,7 +45,6 @@ namespace Application.Services.Warehouses
             bool isInjection = dto.AdditionalInfo == "INJECTION";
 
             return setter
-                .AddHandler(e => e.WarehouseName, new WarehouseNameHandler(_dataService, _historyService))
                 .AddHandler(e => e.Region, new RegionHandler(_dataService, _historyService))
                 .AddHandler(e => e.City, new CityHandler(_dataService, _historyService))
                 .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))

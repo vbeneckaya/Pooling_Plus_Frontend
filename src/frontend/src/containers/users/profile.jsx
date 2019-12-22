@@ -96,8 +96,6 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
         onClose();
     };
 
-    console.log('form', passwordForm);
-
     return (
         <Modal
             dimmer="blurring"

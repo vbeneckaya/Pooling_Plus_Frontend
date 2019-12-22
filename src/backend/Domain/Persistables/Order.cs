@@ -20,7 +20,7 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public OrderState Status { get; set; }
         /// <summary>
-        /// Номер накладной BDF
+        /// Номер накладной
         /// </summary>
         public string OrderNumber { get; set; }
         /// <summary>
@@ -40,9 +40,10 @@ namespace Domain.Persistables
         /// </summary>
         public string Payer { get; set; }
         /// <summary>
-        /// Название клиента
+        /// Клиент
         /// </summary>
-        public string ClientName { get; set; }
+        [ReferenceType(typeof(Client))]
+        public Guid? ClientId { get; set; }
         /// <summary>
         /// Sold-to
         /// </summary>

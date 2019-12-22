@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import DocWithEditor from '../../Documents/DocWithEditor';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import DocWithEditor from '../../../../components/Documents/DocWithEditor';
 import {
     clearDocuments,
     documentsSelector,
     getDocumentsRequest,
     progressSelector,
-} from '../../../ducks/documents';
-import { Dimmer, Loader } from 'semantic-ui-react';
+} from '../../../../ducks/documents';
+import {Dimmer, Loader} from 'semantic-ui-react';
 
-const Documents = ({ gridName, cardId, isEditPermissions }) => {
-    const { t } = useTranslation();
+const Documents = ({gridName, cardId, isEditPermissions}) => {
+    const {t} = useTranslation();
     const dispatch = useDispatch();
 
     const getDocuments = () => {
-        dispatch(getDocumentsRequest({ gridName, cardId }));
+        dispatch(getDocumentsRequest({gridName, cardId}));
     };
 
     useEffect(() => {
@@ -29,7 +29,7 @@ const Documents = ({ gridName, cardId, isEditPermissions }) => {
     const loading = useSelector(state => progressSelector(state));
 
     return (
-        <div className="flex-container">
+        <div className="flex-container tabs-card">
             <Dimmer active={loading} inverted>
                 <Loader size="huge">Loading</Loader>
             </Dimmer>

@@ -221,7 +221,6 @@ namespace Tasks.Orders
                 var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
                 if (deliveryWarehouse == null)
                 {
-                    dto.ClientName = null;
                     dto.DeliveryAddress = deliveryAddress;
                     dto.DeliveryCity = string.IsNullOrEmpty(deliveryCity) ? null : new LookUpDto(deliveryCity);
                     dto.DeliveryRegion = null;
