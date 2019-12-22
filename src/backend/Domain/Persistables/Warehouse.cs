@@ -74,7 +74,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Особенности комплектации
         /// </summary>
-        public string PickingFeatures { get; set; }
+        //public string PickingFeatures { get; set; }
         /// <summary>
         /// Способ доставки
         /// </summary>

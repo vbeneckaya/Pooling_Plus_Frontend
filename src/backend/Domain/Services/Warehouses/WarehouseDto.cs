@@ -12,7 +12,6 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string WarehouseName { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(2), IsRequired]
         public string SoldToNumber { get; set; }
 
         public string PostalCode { get; set; }

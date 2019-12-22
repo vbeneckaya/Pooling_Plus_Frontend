@@ -50,7 +50,6 @@ namespace Application.Services.Warehouses
                 .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
-                .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
                 .AddHandler(e => e.AvisaleTime, new AvisaleTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
         }
@@ -239,7 +238,6 @@ namespace Application.Services.Warehouses
                 || i.Region.ToLower().Contains(search)
                 || i.City.ToLower().Contains(search)
                 || i.Address.ToLower().Contains(search)
-                || i.PickingFeatures.ToLower().Contains(search)
                 //|| i.PickingTypeId != null && pickingTypes.Any(t => t == i.PickingTypeId)
                 //|| i.DeliveryType != null && deliveryTypes.Contains(i.DeliveryType)
                 || isInt && i.LeadtimeDays == searchInt
@@ -256,7 +254,7 @@ namespace Application.Services.Warehouses
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Address), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
