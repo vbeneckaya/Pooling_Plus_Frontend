@@ -45,9 +45,6 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Number), OrderNumber(8)]
         public int? LeadtimeDays { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(9)]
-        public bool CustomerWarehouse { get; set; }
-
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsRequired, OrderNumber(10)]
         public LookUpDto DeliveryType { get; set; }
 
