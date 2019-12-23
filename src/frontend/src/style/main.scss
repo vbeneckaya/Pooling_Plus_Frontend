@@ -265,6 +265,10 @@ i.blue.icon {
     &_history {
         max-height: 500px;
         overflow: auto;
+
+        .ui.grid > .row:nth-child(2n) {
+            background: #f9f9f9;
+        }
     }
 }
 
