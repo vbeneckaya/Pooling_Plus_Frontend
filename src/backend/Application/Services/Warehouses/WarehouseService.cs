@@ -88,12 +88,6 @@ namespace Application.Services.Warehouses
             return result;
         }
 
-        public WarehouseDto GetBySoldTo(string soldToNumber)
-        {
-            var entity = _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == soldToNumber).FirstOrDefault();
-            return MapFromEntityToDto(entity);
-        }
-
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<Warehouse>()
@@ -231,7 +225,6 @@ namespace Application.Services.Warehouses
 
             return query.Where(i =>
                    i.WarehouseName.ToLower().Contains(search)
-                || i.SoldToNumber.ToLower().Contains(search)
                 || i.Region.ToLower().Contains(search)
                 || i.City.ToLower().Contains(search)
                 || i.Address.ToLower().Contains(search)

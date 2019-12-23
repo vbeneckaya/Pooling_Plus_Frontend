@@ -19,11 +19,6 @@ namespace Domain.Persistables
         public string WarehouseName { get; set; }
 
         /// <summary>
-        /// SoldTo number
-        /// </summary>
-        public string SoldToNumber { get; set; }
-
-        /// <summary>
         /// Индекс
         /// </summary>
         public string PostalCode { get; set; }

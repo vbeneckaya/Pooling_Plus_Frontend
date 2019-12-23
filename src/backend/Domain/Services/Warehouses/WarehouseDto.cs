@@ -12,7 +12,7 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string WarehouseName { get; set; }
 
-        public string SoldToNumber { get; set; }
+        //public string SoldToNumber { get; set; }
 
         public string PostalCode { get; set; }
 
