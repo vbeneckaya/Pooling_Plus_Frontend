@@ -9,6 +9,7 @@ import { invokeMassUpdateRequest } from '../../../ducks/gridActions';
 import _ from 'lodash';
 import CellValue from '../../ColumnsValue';
 import { ORDERS_GRID } from '../../../constants/grids';
+import CustomCheckbox from "../../BaseComponents/CustomCheckbox";
 
 class Result extends Component {
     handleCheck = row => {
@@ -62,7 +63,7 @@ class Result extends Component {
                                     e.stopPropagation();
                                 }}
                             >
-                                <Checkbox
+                                <CustomCheckbox
                                     checked={!!selectedRows.has(row.id)}
                                     disabled={disabledCheck(row)}
                                     onChange={() => {
