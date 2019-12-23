@@ -270,6 +270,11 @@ function* deleteRepresentationSaga({ payload }) {
 
 function* setRepresentationSaga({ payload }) {
     try {
+        yield put(
+            getRepresentationsRequest({
+                key: payload.gridName,
+            }),
+        );
         const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.representation);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
