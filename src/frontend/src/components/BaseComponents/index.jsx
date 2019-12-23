@@ -29,6 +29,7 @@ import CheckBox from './Checkbox';
 import { clearError } from '../../ducks/gridCard';
 import SoldToField from './SoldToField';
 import PasswordField from './Password';
+import Number from "./Number";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
@@ -38,7 +39,7 @@ const getTypeFacet = {
     [LOCAL_DATE_TIME]: <DateTime />,
     [TIME_TYPE]: <Text/>,
     [SELECT_TYPE]: <Select />,
-    [NUMBER_TYPE]: <Text />,
+    [NUMBER_TYPE]: <Number/>,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <Select isTranslate />,
     [BIG_TEXT_TYPE]: <TextArea />,
