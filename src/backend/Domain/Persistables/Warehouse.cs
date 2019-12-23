@@ -70,7 +70,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Склад клиента
         /// </summary>
-        public bool CustomerWarehouse { get; set; }
+        //public bool CustomerWarehouse { get; set; }
         /// <summary>
         /// Особенности комплектации
         /// </summary>

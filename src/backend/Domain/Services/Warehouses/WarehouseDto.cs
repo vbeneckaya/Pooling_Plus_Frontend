@@ -57,6 +57,7 @@ namespace Domain.Services.Warehouses
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(Clients)), OrderNumber(11)]
         public LookUpDto ClientId { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(12)]

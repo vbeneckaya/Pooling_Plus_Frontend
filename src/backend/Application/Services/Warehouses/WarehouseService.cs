@@ -71,6 +71,7 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
@@ -79,6 +80,8 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
                     .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()))
+                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
             });
@@ -133,6 +136,13 @@ namespace Application.Services.Warehouses
                                            .Where(x => pickingTypeIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
+            var clinetIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
+             .Select(x => x.ClientId.Value.ToGuid())
+             .ToList();
+            var clients = _dataService.GetDbSet<Client>()
+                                           .Where(x => clinetIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
@@ -145,6 +155,12 @@ namespace Application.Services.Warehouses
                     && companies.TryGetValue(dto.CompanyId.Value, out Company company))
                 {
                     dto.CompanyId.Name = company.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
+                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
+                {
+                    dto.ClientId.Name = client.Name;
                 }
 
                 yield return dto;
