@@ -74,6 +74,21 @@ namespace Application.Services.Orders
                 .Remove<Order>(i => i.Source);
         }
 
+        protected override void ConfigureFieldAccessRules(Dictionary<string, Func<Order, bool>> rules)
+        {
+            Func<Order, bool> avisationTimeRule = (Order order) =>
+            {
+                var shippings = _dataService.GetDbSet<Shipping>()
+                    .Where(i => order.ShippingId == i.Id)
+                    .Where(i => i.Status != ShippingState.ShippingCreated && i.Status != ShippingState.ShippingRequestSent);
+
+                return !shippings.Any();
+            };
+
+            rules.Add(nameof(Order.ClientAvisationTime), avisationTimeRule);
+            rules.Add(nameof(Order.ShippingAvisationTime), avisationTimeRule);
+        }
+
         public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
         {
             var dbSet = _dataService.GetDbSet<Order>();

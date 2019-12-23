@@ -101,10 +101,10 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.State, source: nameof(VehicleState))]
         public string DeliveryStatus { get; set; }
 
-        [FieldType(FieldType.Time)]
+        [FieldType(FieldType.Time), AllowBulkUpdate]
         public string ShippingAvisationTime { get; set; }
 
-        [FieldType(FieldType.Time)]
+        [FieldType(FieldType.Time), AllowBulkUpdate]
         public string ClientAvisationTime { get; set; }
 
         [FieldType(FieldType.Text)]
