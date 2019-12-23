@@ -76,6 +76,7 @@ const OrderCard = ({
                     <Documents
                         gridName={name}
                         cardId={id}
+                        load={load}
                         isEditPermissions={userPermissions.includes(5)}
                     />
                 ),

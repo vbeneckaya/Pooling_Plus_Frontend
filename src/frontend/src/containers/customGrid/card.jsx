@@ -56,8 +56,6 @@ const Card = props => {
     useEffect(() => {
         dispatch(clearActions());
         id && loadCard();
-        id && getActions();
-        id && getHistory();
 
         return () => {
             dispatch(clearHistory());
@@ -78,7 +76,7 @@ const Card = props => {
     );
 
     const loadCard = () => {
-        dispatch(
+        id && dispatch(
             getCardRequest({
                 name,
                 id,
@@ -88,20 +86,14 @@ const Card = props => {
                 },
             }),
         );
-    };
-
-    const getHistory = () => {
-        dispatch(getHistoryRequest(id));
-    };
-
-    const getActions = () => {
-        dispatch(
+        id && dispatch(
             getActionsRequest({
                 name,
                 ids: [id],
                 isCard: true,
             }),
         );
+        id && dispatch(getHistoryRequest(id));
     };
 
     const onClose = () => {
@@ -150,8 +142,6 @@ const Card = props => {
                 callbackSuccess: () => {
                     if (form.id) {
                         loadCard();
-                        getActions();
-                        getHistory();
                     } else {
                         handleClose();
                     }
@@ -198,8 +188,6 @@ const Card = props => {
                                 onClose();
                             } else {
                                 loadCard();
-                                getActions();
-                                getHistory();
                             }
                         },
                     }),
@@ -329,6 +317,7 @@ const Card = props => {
                 <OrderCard
                     {...props}
                     id={id}
+                    load={loadCard}
                     name={name}
                     form={form}
                     title={title}
@@ -348,6 +337,7 @@ const Card = props => {
                     id={id}
                     name={name}
                     form={form}
+                    load={loadCard}
                     loading={loading}
                     settings={settings}
                     error={error}

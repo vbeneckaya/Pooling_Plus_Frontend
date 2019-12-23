@@ -24,6 +24,7 @@ const DocWithEditor = ({
     cardId,
     getDocuments,
     isEditPermissions,
+                           load,
 }) => {
     let [modalOpen, setModalOpen] = useState(false);
     let [confirmation, setConfirmation] = useState({ open: false });
@@ -49,6 +50,7 @@ const DocWithEditor = ({
     };
 
     const handleClose = () => {
+        load && load();
         setDocument(null);
         getDocuments();
         setModalOpen(false);
