@@ -64,10 +64,7 @@ namespace Domain.Persistables
         /// Leadtime, дней
         /// </summary>
         public int? LeadtimeDays { get; set; }
-        /// <summary>
-        /// Склад клиента
-        /// </summary>
-        public bool CustomerWarehouse { get; set; }
+
         /// <summary>
         /// Особенности комплектации
         /// </summary>

@@ -29,6 +29,8 @@ namespace Application.Shared
         where TDto : IDto, new() 
         where TFormDto : TDto, new()
     {
+        Dictionary<string, Func<TEntity, bool>> _rules = new Dictionary<string, Func<TEntity, bool>>();
+
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
@@ -45,6 +47,8 @@ namespace Application.Shared
         public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
+
+        protected virtual void ConfigureFieldAccessRules(Dictionary<string, Func<TEntity, bool>> rules) { }
 
         protected readonly IUserProvider _userIdProvider;
         protected readonly ICommonDataService _dataService;
@@ -73,6 +77,8 @@ namespace Application.Shared
             _triggersService = triggersService;
             _validationService = validationService;
             _fieldSetterFactory = fieldSetterFactory;
+
+            ConfigureFieldAccessRules(_rules);
         }
 
         protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TFormDto dto)
@@ -614,20 +620,24 @@ namespace Application.Shared
         public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
         {
             string entityName = typeof(TEntity).Name;
+            string propertyName = fieldName?.ToUpperFirstLetter();
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
 
-            var propertyType = typeof(TFormDto).GetProperty(fieldName?.ToUpperFirstLetter());
+            var propertyType = typeof(TFormDto).GetProperty(propertyName);
             if (propertyType == null)
-                throw new ArgumentException("Unknown field", nameof(fieldName));
+                throw new ArgumentException("Unknown field", nameof(propertyName));
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entities = dbSet.Where(x => ids.Contains(x.Id));
-            var dtos = entities.Select(MapFromEntityToFormDto).ToArray();
+            var entities = dbSet.Where(x => ids.Contains(x.Id)).ToList();
+            var validEntities = entities.Where(i => !_rules.ContainsKey(propertyName) || _rules[propertyName](i));
+
+            var dtos = validEntities.Select(MapFromEntityToFormDto).ToArray();
             Log.Information("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
