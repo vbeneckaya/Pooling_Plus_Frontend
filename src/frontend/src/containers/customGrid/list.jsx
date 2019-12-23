@@ -32,6 +32,7 @@ import {
     GRID_NEW_LINK,
 } from '../../router/links';
 import TableInfo from '../../components/TableInfo';
+import CustomCheckbox from "../../components/BaseComponents/CustomCheckbox";
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -141,6 +142,7 @@ class List extends Component {
 
         return (
             <div className="container">
+                <CustomCheckbox/>
                 <SuperGrid
                     key={name}
                     columns={columns}
