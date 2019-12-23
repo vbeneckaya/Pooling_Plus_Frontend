@@ -21,6 +21,7 @@ const ShippingCard = ({
                           onClose,
                           actionsHeader,
                           loading,
+                          load,
                       }) => {
     const {t} = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state));
@@ -64,6 +65,7 @@ const ShippingCard = ({
                     <Documents
                         gridName={name}
                         cardId={id}
+                        load={load}
                         isEditPermissions={userPermissions.includes(11)}
                     />
                 ),
