@@ -1,33 +1,34 @@
-import React, { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, {useCallback, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import Information from './shippingTabs/information';
 import Routes from './shippingTabs/routes';
 import Documents from './shared/documents';
 import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
-import { useSelector } from 'react-redux';
-import { userPermissionsSelector } from '../../../ducks/profile';
+import {useSelector} from 'react-redux';
+import {userPermissionsSelector} from '../../../ducks/profile';
 import CardLayout from '../../../components/CardLayout';
 
 const ShippingCard = ({
-    form,
-    onChangeForm,
-    name,
-    id,
-    onClose: beforeClose,
-    settings,
-    title,
-    actionsFooter,
-    onClose,
-    actionsHeader,
-    loading,
-}) => {
-    const { t } = useTranslation();
+                          form,
+                          onChangeForm,
+                          name,
+                          id,
+                          onClose: beforeClose,
+                          settings,
+                          title,
+                          actionsFooter,
+                          onClose,
+                          actionsHeader,
+                          loading,
+                          load,
+                      }) => {
+    const {t} = useTranslation();
     const userPermissions = useSelector(state => userPermissionsSelector(state));
-    const { orders = [] } = form;
+    const {orders = []} = form;
     let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
-    const handleTabChange = useCallback((e, { activeIndex }) => {
+    const handleTabChange = useCallback((e, {activeIndex}) => {
         setRouteActiveIndex(activeIndex);
     }, []);
 
@@ -36,7 +37,7 @@ const ShippingCard = ({
             {
                 menuItem: t('information'),
                 render: () => (
-                    <Information form={form} onChange={onChangeForm} settings={settings} />
+                    <Information form={form} onChange={onChangeForm} settings={settings}/>
                 ),
             },
             {
@@ -53,7 +54,7 @@ const ShippingCard = ({
             },
             {
                 menuItem: t('accounts'),
-                render: () => <Accounts form={form} settings={settings} onChange={onChangeForm} />,
+                render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}/>,
             },
         ];
 
@@ -64,6 +65,7 @@ const ShippingCard = ({
                     <Documents
                         gridName={name}
                         cardId={id}
+                        load={load}
                         isEditPermissions={userPermissions.includes(11)}
                     />
                 ),
@@ -73,7 +75,7 @@ const ShippingCard = ({
         if (userPermissions.includes(12)) {
             obj.push({
                 menuItem: t('history'),
-                render: () => <History cardId={id} status={form.status} />,
+                render: () => <History cardId={id} status={form.status}/>,
             });
         }
 
