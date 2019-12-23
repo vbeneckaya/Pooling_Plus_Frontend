@@ -142,7 +142,6 @@ class List extends Component {
 
         return (
             <div className="container">
-                <CustomCheckbox/>
                 <SuperGrid
                     key={name}
                     columns={columns}

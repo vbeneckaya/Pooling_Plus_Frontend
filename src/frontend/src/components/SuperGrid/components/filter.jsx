@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Checkbox, Table } from 'semantic-ui-react';
 import { Resizable } from 'react-resizable';
 import FacetField from '../../FilterComponents';
+import CustomCheckbox from "../../BaseComponents/CustomCheckbox";
 
 const Filter = props => {
     const {
@@ -24,9 +25,10 @@ const Filter = props => {
     return (
         <Table.Row className="sticky-header">
             <Table.HeaderCell className="small-column">
-                <Checkbox
+                <CustomCheckbox
                     indeterminate={indeterminate}
                     checked={all}
+                    multi
                     disabled={checkAllDisabled}
                     onChange={setSelectedAll}
                 />
