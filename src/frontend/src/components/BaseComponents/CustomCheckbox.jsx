@@ -1,24 +1,39 @@
 import React from 'react';
 import Icon from "../CustomIcon";
 
-const CustomCheckbox = ({checked, onChange, disabled, all, indeterminate}) => {
+const CustomCheckbox = ({checked, onChange, disabled, indeterminate, multi}) => {
     const handleOnChange = (e) => {
-        console.log('7777')
         onChange()
     };
 
     let icon = '';
+    let color = 'rgba(0, 0, 0, 0.4)';
 
-    if (checked) {
-        icon = "checkbox"
+    if (!multi) {
+        if (checked) {
+            icon = "checkbox";
+            color = "#18a8cc";
+        } else {
+            icon = "checkbox-empty"
+        }
     } else {
-        icon = "checkbox-empty"
+        if (checked) {
+            icon = "multi-checkbox"
+            color = "#18a8cc";
+        } else if (indeterminate) {
+            icon = "multi-checkbox-some-outline"
+            color = "#18a8cc";
+        } else {
+            icon = "multi-checkbox-empty"
+        }
     }
 
+
+
     return (
-        <div className="custom-checkbox">
-            <Icon name={checked ? "checkbox" : "checkbox-empty"} size="2"
-                  color={checked ? "#18a8cc" : "rgba(0, 0, 0, 0.4)"}/>
+        <div className={`custom-checkbox ${disabled ? 'custom-checkbox_disabled' : ''}`}>
+            <Icon name={icon} size="2"
+                  color={color}/>
             <input type="checkbox" checked={checked} disabled={disabled} onClick={handleOnChange}/>
         </div>
     )
