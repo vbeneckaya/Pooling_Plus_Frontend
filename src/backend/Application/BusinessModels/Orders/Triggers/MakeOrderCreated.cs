@@ -20,8 +20,7 @@ namespace Application.BusinessModels.Orders.Triggers
         public void Execute(Order order)
         {
             bool hasRequiredFields =
-                   !string.IsNullOrEmpty(order.SoldTo)
-                && !string.IsNullOrEmpty(order.ShippingAddress)
+                   !string.IsNullOrEmpty(order.ShippingAddress)
                 && !string.IsNullOrEmpty(order.DeliveryAddress)
                 && !string.IsNullOrEmpty(order.Payer)
                 && order.ShippingWarehouseId.HasValue
@@ -40,7 +39,6 @@ namespace Application.BusinessModels.Orders.Triggers
         {
             var watchProperties = new[]
             {
-                nameof(Order.SoldTo),
                 nameof(Order.ShippingAddress),
                 nameof(Order.DeliveryAddress),
                 nameof(Order.Payer),

@@ -127,10 +127,10 @@ namespace Application.Services.Orders
 
             return setter
                 .AddHandler(e => e.ShippingWarehouseId, new ShippingWarehouseHandler(_dataService, _historyService))
+                .AddHandler(e => e.DeliveryWarehouseId, new DeliveryWarehouseHandler(_dataService, _historyService))
                 .AddHandler(e => e.ShippingStatus, new ShippingStatusHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryStatus, new DeliveryStatusHandler(_dataService, _historyService))
                 .AddHandler(e => e.ClientOrderNumber, new ClientOrderNumberHandler(_historyService))
-                .AddHandler(e => e.SoldTo, new SoldToHandler(_dataService, _historyService))
                 .AddHandler(e => e.ShippingDate, new ShippingDateHandler(_dataService, _historyService, !isInjection))
                 .AddHandler(e => e.DeliveryDate, new DeliveryDateHandler(_dataService, _historyService, isInjection))
                 .AddHandler(e => e.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService))
@@ -180,8 +180,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity.Value))
                     .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
-                    .ForMember(t => t.SoldTo, e => e.Condition((s) => s.SoldTo != null))
-                    .ForMember(t => t.SoldTo, e => e.MapFrom((s) => s.SoldTo.Value))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.Condition((s) => s.DeliveryWarehouseId != null))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
@@ -226,8 +226,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
-                    .ForMember(t => t.SoldTo, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.SoldTo) ? null : new LookUpDto(s.SoldTo)))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString(), s.ShippingAddress)))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s, t) => s.DeliveryWarehouseId == null ? null : new LookUpDto(s.DeliveryWarehouseId.ToString(), s.DeliveryAddress)))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
@@ -339,13 +339,6 @@ namespace Application.Services.Orders
                                            .Where(x => pickingTypeIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
-            var shippingWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
-                                           .Select(x => x.ShippingWarehouseId.Value.ToGuid())
-                                           .ToList();
-            var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
-                                                 .Where(x => shippingWarehouseIds.Contains(x.Id))
-                                                 .ToDictionary(x => x.Id.ToString());
-
             var clientIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
                                 .Select(x => x.ClientId.Value.ToGuid())
                                 .ToList();
@@ -374,12 +367,6 @@ namespace Application.Services.Orders
                     && pickingTypes.TryGetValue(dto.PickingTypeId.Value, out PickingType pickingType))
                 {
                     dto.PickingTypeId.Name = pickingType.Name;
-                }
-
-                if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value)
-                    && shippingWarehouses.TryGetValue(dto.ShippingWarehouseId.Value, out ShippingWarehouse shippingWarehouse))
-                {
-                    dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
                 }
 
                 if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
@@ -576,7 +563,7 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Order>(i => i.ShippingNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingStatus.ApplyEnumFilter<Order, VehicleState>(i => i.ShippingStatus, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingWarehouseId.ApplyOptionsFilter<Order, Guid?>(i => i.ShippingWarehouseId, ref parameters, i => new Guid(i)))
-                         .WhereAnd(searchForm.Filter.SoldTo.ApplyOptionsFilter<Order, string>(i => i.SoldTo, ref parameters))
+                         .WhereAnd(searchForm.Filter.DeliveryWarehouseId.ApplyOptionsFilter<Order, Guid?>(i => i.DeliveryWarehouseId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.Status.ApplyEnumFilter<Order, OrderState>(i => i.Status, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Order>(i => i.TemperatureMax, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMin.ApplyNumericFilter<Order>(i => i.TemperatureMin, ref parameters))
@@ -683,13 +670,12 @@ namespace Application.Services.Orders
             return query.Where(i =>
                    columns.Contains("orderNumber") && !string.IsNullOrEmpty(i.OrderNumber) && i.OrderNumber.ToLower().Contains(search)
                 || columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
-                || columns.Contains("soldTo") && !string.IsNullOrEmpty(i.SoldTo) && i.SoldTo.ToLower().Contains(search)
                 || columns.Contains("payer") && !string.IsNullOrEmpty(i.Payer) && i.Payer.ToLower().Contains(search)
-                || columns.Contains("shippingAddress") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.ToLower().Contains(search)
+                || columns.Contains("shippingWarehouseId") && !string.IsNullOrEmpty(i.ShippingAddress) && i.ShippingAddress.ToLower().Contains(search)
                 || columns.Contains("shippingCity") && !string.IsNullOrEmpty(i.ShippingCity) && i.ShippingCity.ToLower().Contains(search)
                 || columns.Contains("deliveryRegion") && !string.IsNullOrEmpty(i.DeliveryRegion) && i.DeliveryRegion.ToLower().Contains(search)
                 || columns.Contains("deliveryCity") && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity.ToLower().Contains(search)
-                || columns.Contains("deliveryAddress") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.ToLower().Contains(search)
+                || columns.Contains("deliveryWarehouseId") && !string.IsNullOrEmpty(i.DeliveryAddress) && i.DeliveryAddress.ToLower().Contains(search)
                 || columns.Contains("clientOrderNumber") && !string.IsNullOrEmpty(i.ClientOrderNumber) && i.ClientOrderNumber.ToLower().Contains(search)
                 || columns.Contains("returnInformation") && !string.IsNullOrEmpty(i.ReturnInformation) && i.ReturnInformation.ToLower().Contains(search)
                 || columns.Contains("returnShippingAccountNo") && !string.IsNullOrEmpty(i.ReturnShippingAccountNo) && i.ReturnShippingAccountNo.ToLower().Contains(search)

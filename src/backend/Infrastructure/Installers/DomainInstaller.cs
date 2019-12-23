@@ -109,6 +109,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
+            services.AddScoped<IShippingAddressService, ShippingAddressService>();
+            services.AddScoped<IDeliveryAddressService, DeliveryAddressService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<ISoldToService, SoldToService>();
             services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();

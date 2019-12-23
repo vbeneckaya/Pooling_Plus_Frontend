@@ -45,10 +45,6 @@ namespace Domain.Persistables
         [ReferenceType(typeof(Client))]
         public Guid? ClientId { get; set; }
         /// <summary>
-        /// Sold-to
-        /// </summary>
-        public string SoldTo { get; set; }
-        /// <summary>
         /// Терморежим мин. °C
         /// </summary>
         public int? TemperatureMin { get; set; }
@@ -138,10 +134,12 @@ namespace Domain.Persistables
         /// <summary>
         /// Адрес отгрузки
         /// </summary>
+        [IgnoreHistory]
         public string ShippingAddress { get; set; }
         /// <summary>
         /// Адрес доставки
         /// </summary>
+        [IgnoreHistory]
         public string DeliveryAddress { get; set; }
         /// <summary>
         /// Статус отгрузки
