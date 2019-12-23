@@ -25,12 +25,14 @@ namespace Application.Services.Triggers
             var orderChanges = _dataService.GetChanges<Order>().ToList();
             var shippingChanges = _dataService.GetChanges<Shipping>().ToList();
             var tariffChanges = _dataService.GetChanges<Tariff>().ToList();
+            var warehouseChanges = _dataService.GetChanges<Warehouse>().ToList();
 
             _dataService.SaveChanges();
 
             RunTriggers(orderChanges);
             RunTriggers(shippingChanges);
             RunTriggers(tariffChanges);
+            RunTriggers(warehouseChanges);
         }
 
         private void RunTriggers<TEntity>(IEnumerable<EntityChanges<TEntity>> changes) where TEntity : class, IPersistable

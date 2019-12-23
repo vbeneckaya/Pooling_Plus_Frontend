@@ -27,16 +27,15 @@ namespace Application.Services.Warehouses
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
-        private readonly ICleanAddressService _cleanAddressService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                 IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                 IValidationService validationService, IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, 
+                                 IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
-            _cleanAddressService = cleanAddressService;
             _changeTrackerFactory = changeTrackerFactory;
         }
 
@@ -47,8 +46,6 @@ namespace Application.Services.Warehouses
             return setter
                 .AddHandler(e => e.WarehouseName, new WarehouseNameHandler(_dataService, _historyService))
                 .AddHandler(e => e.Region, new RegionHandler(_dataService, _historyService))
-                .AddHandler(e => e.City, new CityHandler(_dataService, _historyService))
-                .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
                 .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
