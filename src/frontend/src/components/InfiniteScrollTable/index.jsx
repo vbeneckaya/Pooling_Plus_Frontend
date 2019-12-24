@@ -25,7 +25,7 @@ const InfiniteScrollTable = ({
     useEffect(
         () => {
             let sum = 0;
-            const contextWidth = context ? context.offsetWidth - 10 : 0;
+            const contextWidth = context ? context.offsetWidth - 15 : 0;
 
             columns.forEach(item => {
                 sum = sum + item.width;

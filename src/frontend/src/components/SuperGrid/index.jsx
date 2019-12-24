@@ -38,7 +38,7 @@ class SuperGrid extends Component {
         getRepresentations({
             key: name,
             callBackFunc: columns => {
-                const width = this.container.scrollWidth - 50;
+                const width = this.container.offsetWidth - 65;
 
                 this.setState(
                     {
@@ -95,7 +95,7 @@ class SuperGrid extends Component {
 
         if (!_.isEqual(prevProps.columns, this.props.columns)) {
             const { columns } = this.props;
-            const width = this.container.offsetWidth - 50;
+            const width = this.container.offsetWidth - 65;
 
             this.setState(
                 {
