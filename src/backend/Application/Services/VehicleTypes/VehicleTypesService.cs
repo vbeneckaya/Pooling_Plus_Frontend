@@ -117,6 +117,8 @@ namespace Application.Services.VehicleTypes
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new VehicleTypeDto
             {
                 Id = entity.Id.ToString(),
@@ -125,7 +127,8 @@ namespace Application.Services.VehicleTypes
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 PalletsCount = entity.PalletsCount?.ToString(),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 

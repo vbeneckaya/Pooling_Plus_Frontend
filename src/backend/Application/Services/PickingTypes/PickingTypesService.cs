@@ -58,12 +58,15 @@ namespace Application.Services.PickingTypes
 
         public override PickingTypeDto MapFromEntityToDto(PickingType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new PickingTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 

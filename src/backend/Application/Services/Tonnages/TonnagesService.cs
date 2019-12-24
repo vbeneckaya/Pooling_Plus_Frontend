@@ -39,12 +39,15 @@ namespace Application.Services.Tonnages
 
         public override TonnageDto MapFromEntityToDto(Tonnage entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new TonnageDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 

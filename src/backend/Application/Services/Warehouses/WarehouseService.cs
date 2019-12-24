@@ -68,7 +68,9 @@ namespace Application.Services.Warehouses
 
         private MapperConfiguration ConfigureMapper()
         {
-            var lang = _userProvider.GetCurrentUser()?.Language;
+            var user = _userProvider.GetCurrentUser();
+
+            var lang = user?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
@@ -76,7 +78,7 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
-                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => s.CompanyId != null));
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))

@@ -37,11 +37,14 @@ namespace Application.Services.Articles
 
         private MapperConfiguration ConfigureMapper()
         {
+            var user = _userProvider.GetCurrentUser();
+
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Article, ArticleDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
 
                 cfg.CreateMap<ArticleDto, Article>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))

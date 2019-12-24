@@ -214,7 +214,9 @@ namespace Application.Services.Tariffs
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
         {
-            var lang = _userProvider.GetCurrentUser()?.Language;
+            var user = _userProvider.GetCurrentUser();
+            var lang = user?.Language;
+
             return new TariffDto
             {
                 Id = entity.Id.ToString(),
@@ -231,6 +233,7 @@ namespace Application.Services.Tariffs
                     entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
                 EffectiveDate = entity.EffectiveDate?.ToString("dd.MM.yyyy"),
                 ExpirationDate = entity.ExpirationDate?.ToString("dd.MM.yyyy"),
+                IsEditable = user.CompanyId == null || entity.CompanyId != null,
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
