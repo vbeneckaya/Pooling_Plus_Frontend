@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { Form, Icon, Input } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
 const PasswordField = ({
-    value = '',
-    onChange,
-    noLabel,
-    isDisabled,
-    isRequired,
-    text,
-    name,
-    onBlur,
-    error,
-}) => {
+                           value = '',
+                           onChange,
+                           noLabel,
+                           isDisabled,
+                           isRequired,
+                           text,
+                           name,
+                           onBlur,
+                           error,
+                       }) => {
     let [show, setShow] = useState(false);
     const { t } = useTranslation();
 

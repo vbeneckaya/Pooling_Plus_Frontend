@@ -65,7 +65,7 @@ export const editModalSelector = createSelector(stateSelector, state => state.ed
 
 function* checkForEditingSaga({ payload }) {
     try {
-        const { forEntity, fieldName, state, callbackSuccess, t, callbackFunc } = payload;
+        const {forEntity, fieldName, state, callbackSuccess, t, callbackFunc} = payload;
         const result = yield postman.post('/fieldProperties/getField', {
             forEntity,
             fieldName,

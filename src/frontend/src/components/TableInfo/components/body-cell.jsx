@@ -1,18 +1,18 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import CellValue from '../../ColumnsValue';
 import TextCropping from '../../ColumnsValue/TextCropping';
 
 const BodyCellComponent = ({
-    column,
-    children,
-    value,
-    valueText,
-    indexColumn,
-    indexRow,
-    toggleIsActive,
-    t,
-    id,
-}) => {
+                               column,
+                               children,
+                               value,
+                               valueText,
+                               indexColumn,
+                               indexRow,
+                               toggleIsActive,
+                               t,
+                               id,
+                           }) => {
     const cellRef = useRef(null);
     let [position, setPosition] = useState(null);
     let [width, setWidth] = useState(null);
@@ -31,10 +31,10 @@ const BodyCellComponent = ({
             style={
                 column.isFixedPosition
                     ? {
-                          left: position,
-                          maxWidth: '150px',
-                          minWidth: '150px',
-                      }
+                        left: position,
+                        maxWidth: '150px',
+                        minWidth: '150px',
+                    }
                     : null
             }
         >

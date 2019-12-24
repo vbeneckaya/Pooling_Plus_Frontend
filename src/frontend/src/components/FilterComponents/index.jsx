@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button, Icon, Popup } from 'semantic-ui-react';
+import React, {useRef, useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Button, Icon, Popup} from 'semantic-ui-react';
 import './style.scss';
 import {
     BIG_TEXT_TYPE,
@@ -31,8 +31,8 @@ const getTypeFacet = {
     [SELECT_TYPE]: <SelectFacet />,
     [DATE_TIME_TYPE]: <DateFacet />,
     [DATE_TYPE]: <DateFacet />,
-    [LOCAL_DATE_TIME]: <DateFacet />,
-    [TIME_TYPE]: <TimeFacet />,
+    [LOCAL_DATE_TIME]: <DateFacet/>,
+    [TIME_TYPE]: <TimeFacet/>,
     [STATE_TYPE]: <StateFacet />,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <SelectFacet />,
@@ -46,18 +46,18 @@ const Control = props => {
 };
 
 const FacetField = ({
-    name,
-    sort,
-    setSort,
-    type,
-    value,
-    setFilter,
-    source,
-    index,
-    handleResize,
-    width,
-    displayNameKey,
-}) => {
+                        name,
+                        sort,
+                        setSort,
+                        type,
+                        value,
+                        setFilter,
+                        source,
+                        index,
+                        handleResize,
+                        width,
+                        displayNameKey,
+                    }) => {
     const { t } = useTranslation();
     /*let sort = null;
 
@@ -132,8 +132,8 @@ const FacetField = ({
                 </div>
 
                 <div className="facet-actions__sort">
-                    {sort === false ? <Icon name="sort amount up" /> : null}
-                    {sort === true ? <Icon name="sort amount down" /> : null}
+                    {sort === false ? <Icon name="sort amount up"/> : null}
+                    {sort === true ? <Icon name="sort amount down"/> : null}
                 </div>
             </div>
         </div>

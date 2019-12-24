@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { historySelector, progressSelector } from '../../../../ducks/history';
-import { Dimmer, Grid, Loader } from 'semantic-ui-react';
-import { dateToUTC } from '../../../../utils/dateTimeFormater';
+import {useSelector} from 'react-redux';
+import {historySelector, progressSelector} from '../../../../ducks/history';
+import {Dimmer, Grid, Loader} from 'semantic-ui-react';
+import {dateToUTC} from '../../../../utils/dateTimeFormater';
 
 const History = () => {
     const history = useSelector(state => historySelector(state));

@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import '../../icons/icon/style.css';
 import PropTypes from 'prop-types';
 
 class Icon extends Component {
     render() {
-        const { color, size, name, className, onClick } = this.props,
-            style = { color };
+        const {color, size, name, className, onClick} = this.props,
+            style = {color};
 
         return (
             <i
@@ -27,7 +27,8 @@ Icon.propTypes = {
 
 Icon.defaultProps = {
     color: 'rgba(0,0,0,.6)',
-    onClick: () => {},
+    onClick: () => {
+    },
 };
 
 export default Icon;

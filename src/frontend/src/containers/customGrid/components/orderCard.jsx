@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Information from './orderTabs/information';
 import Position from './orderTabs/position';
 import Documents from './shared/documents';
@@ -7,7 +7,7 @@ import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
 
 import CardLayout from '../../../components/CardLayout';
-import { userPermissionsSelector } from '../../../ducks/profile';
+import {userPermissionsSelector} from '../../../ducks/profile';
 
 const OrderCard = ({
     form,
@@ -19,11 +19,11 @@ const OrderCard = ({
     uniquenessNumberCheck,
     settings,
     error,
-    title,
-    onClose,
-    actionsFooter,
-    actionsHeader,
-    loading,
+                       title,
+                       onClose,
+                       actionsFooter,
+                       actionsHeader,
+                       loading,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
 

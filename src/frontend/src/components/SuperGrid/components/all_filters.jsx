@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Grid, Icon } from 'semantic-ui-react';
-import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { representationFromGridSelector } from '../../../ducks/representations';
+import React, {useState, useEffect} from 'react';
+import {Button, Grid, Icon} from 'semantic-ui-react';
+import {useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import {representationFromGridSelector} from '../../../ducks/representations';
 
 const AllFilters = ({ gridName, filter }) => {
     const columns = useSelector(state => representationFromGridSelector(state, gridName));
@@ -14,7 +14,7 @@ const AllFilters = ({ gridName, filter }) => {
                 <h3>Filter columns</h3>
                 <Button size="mini">Clear filter</Button>
             </div>
-            <Grid style={{ paddingBottom: '12px' }}>
+            <Grid style={{paddingBottom: '12px'}}>
                 <Grid.Row columns={2}>
                     <Grid.Column>
                         <h4>Column</h4>
@@ -31,7 +31,7 @@ const AllFilters = ({ gridName, filter }) => {
                 ))}
             </Grid>
             <Button size="mini">
-                <Icon name="add" />
+                <Icon name="add"/>
                 Add filter
             </Button>
         </div>

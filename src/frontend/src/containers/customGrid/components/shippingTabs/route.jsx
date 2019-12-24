@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
-import { Form, Grid } from 'semantic-ui-react';
+import React, {useCallback} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useSelector} from 'react-redux';
+import {Form, Grid} from 'semantic-ui-react';
 import FormField from '../../../../components/BaseComponents';
 import {
     BIG_TEXT_TYPE,
@@ -10,23 +10,23 @@ import {
     NUMBER_TYPE,
     STATE_TYPE,
 } from '../../../../constants/columnTypes';
-import { settingsExtSelector } from '../../../../ducks/gridCard';
+import {settingsExtSelector} from '../../../../ducks/gridCard';
 
 const Route = ({
-    name,
-    form = {},
-    point = {},
-    onChange,
-    pointChange,
-    index,
-    settings: baseSettings,
-}) => {
-    const { t } = useTranslation();
+                   name,
+                   form = {},
+                   point = {},
+                   onChange,
+                   pointChange,
+                   index,
+                   settings: baseSettings,
+               }) => {
+    const {t} = useTranslation();
 
     const settings = useSelector(state => settingsExtSelector(state, form.status));
 
     const handleChange = useCallback(
-        (e, { name, value }) => {
+        (e, {name, value}) => {
             pointChange(
                 {
                     ...point,
@@ -39,7 +39,7 @@ const Route = ({
     );
 
     return (
-        <Form style={{ paddingLeft: '12px' }}>
+        <Form style={{paddingLeft: '12px'}}>
             <Grid>
                 <Grid.Row columns={2}>
                     <Grid.Column>

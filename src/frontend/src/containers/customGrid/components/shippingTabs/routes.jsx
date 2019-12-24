@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect } from 'react';
-import { Icon, Tab } from 'semantic-ui-react';
+import React, {useCallback, useEffect} from 'react';
+import {Icon, Tab} from 'semantic-ui-react';
 import Route from './route';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLookupRequest, valuesListSelector } from '../../../../ducks/lookup';
+import {useDispatch, useSelector} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
 
-const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
+const Routes = ({form, onChange, routeActiveIndex, tabChange, settings}) => {
     const dispatch = useDispatch();
-    const { routePoints: points = [] } = form;
+    const {routePoints: points = []} = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
     useEffect(() => {
@@ -45,7 +45,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
                 key: i,
                 content: (
                     <label>
-                        <Icon color={color} name="circle" />
+                        <Icon color={color} name="circle"/>
                         {point.warehouseName}
                     </label>
                 ),
@@ -71,7 +71,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
                 className="all-tabs"
                 panes={pointsTabs}
                 activeIndex={routeActiveIndex}
-                menu={{ vertical: true }}
+                menu={{vertical: true}}
                 menuPosition="left"
                 onTabChange={tabChange}
             />

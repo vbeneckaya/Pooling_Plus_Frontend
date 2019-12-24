@@ -15,8 +15,8 @@ const DateTime = ({
     className,
     text,
     placeholder,
-    isRequired,
-    error,
+                      isRequired,
+                      error,
 }) => {
     const { t } = useTranslation();
 
@@ -39,7 +39,7 @@ const DateTime = ({
             {!noLabel ? (
                 <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
-                }`}</label>
+                    }`}</label>
             ) : null}
             <DatePicker
                 placeholderText={placeholder}

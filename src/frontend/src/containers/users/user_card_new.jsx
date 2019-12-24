@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Confirm, Dimmer, Form, Loader, Grid, Button } from 'semantic-ui-react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Confirm, Dimmer, Form, Loader, Grid, Button} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import CardLayout from '../../components/CardLayout';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
+import {SELECT_TYPE, TEXT_TYPE} from '../../constants/columnTypes';
 import {
     clearUserCard,
     getUserCardRequest,
@@ -16,14 +16,14 @@ import {
 } from '../../ducks/users';
 
 const UserCard = props => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const dispatch = useDispatch();
-    const { match, history, location } = props;
-    const { params = {} } = match;
-    const { id } = params;
+    const {match, history, location} = props;
+    const {params = {}} = match;
+    const {id} = params;
 
     let [form, setForm] = useState({});
-    let [confirmation, setConfirmation] = useState({ open: false });
+    let [confirmation, setConfirmation] = useState({open: false});
     let [notChangeForm, setNotChangeForm] = useState(true);
 
     const loading = useSelector(state => progressSelector(state));
@@ -50,7 +50,7 @@ const UserCard = props => {
     );
 
     const title = useMemo(
-        () => (id ? t('edit_user', { name: user.userName }) : `${t('create_user_title')}`),
+        () => (id ? t('edit_user', {name: user.userName}) : `${t('create_user_title')}`),
         [id, user],
     );
 
@@ -76,7 +76,7 @@ const UserCard = props => {
     );
 
     const handleSave = () => {
-        let params = { ...form };
+        let params = {...form};
 
         if (id) {
             params = {
@@ -94,7 +94,7 @@ const UserCard = props => {
     };
 
     const handleChange = useCallback(
-        (event, { name, value }) => {
+        (event, {name, value}) => {
             if (notChangeForm) {
                 setNotChangeForm(false);
             }
@@ -106,19 +106,19 @@ const UserCard = props => {
         [notChangeForm],
     );
 
-    const handleRoleChange = useCallback((event, { name, value }) => {
-        handleChange(event, { name, value });
-        handleChange(event, { name: 'carrierId', value: null });
+    const handleRoleChange = useCallback((event, {name, value}) => {
+        handleChange(event, {name, value});
+        handleChange(event, {name: 'carrierId', value: null});
     }, []);
 
     const confirmClose = () => {
-        setConfirmation({ open: false });
+        setConfirmation({open: false});
     };
 
     const onClose = () => {
         history.push({
             pathname: location.state.pathname,
-            state: { ...location.state },
+            state: {...location.state},
         });
     };
 
@@ -203,8 +203,8 @@ const UserCard = props => {
                         label={t('isActive')}
                         name="isActive"
                         checked={form['isActive']}
-                        onChange={(e, { name, checked }) =>
-                            handleChange(e, { name, value: checked })
+                        onChange={(e, {name, checked}) =>
+                            handleChange(e, {name, value: checked})
                         }
                     />
                 </Form.Field>

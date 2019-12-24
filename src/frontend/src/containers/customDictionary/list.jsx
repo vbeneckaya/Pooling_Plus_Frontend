@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 
 import TableInfo from '../../components/TableInfo';
 import {
@@ -21,7 +21,7 @@ import {
 } from '../../ducks/dictionaryView';
 import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
-import { DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK } from '../../router/links';
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK} from '../../router/links';
 
 const newModal = (t, load, name) => (
     <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
@@ -37,9 +37,9 @@ class List extends Component {
     }
 
     handleImportFromExcel = (form, callbackSuccess) => {
-        const { importFromExcel, match } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
+        const {importFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
 
         importFromExcel({
             form,
@@ -49,20 +49,20 @@ class List extends Component {
     };
 
     handleExportToExcel = filter => {
-        const { exportFromExcel, match } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
+        const {exportFromExcel, match} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
         exportFromExcel({
             name,
             filter,
         });
     };
 
-    getCard = ({ row, loadList, name }) => {
+    getCard = ({row, loadList, name}) => {
         const { t, isCreateBtn } = this.props;
 
         return isCreateBtn ? (
-            <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id} />
+            <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id}/>
         ) : null;
     };
 
@@ -82,8 +82,8 @@ class List extends Component {
             clear,
             t,
         } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
+        const {params = {}} = match;
+        const {name = ''} = params;
 
         return (
             <TableInfo

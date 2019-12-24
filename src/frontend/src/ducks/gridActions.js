@@ -252,7 +252,7 @@ function* getAllIdsSaga({ payload }) {
 
 function* invokeMassUpdateSaga({ payload }) {
     try {
-        const { ids, callbackSuccess, name, field, value, callbackFunc } = payload;
+        const {ids, callbackSuccess, name, field, value, callbackFunc} = payload;
         const result = yield postman.post(`/${name}/invokeBulkUpdate/${field}`, {
             ids,
             value: value && typeof value === 'object' ? value.value : value,

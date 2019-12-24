@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import React, {useEffect} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
 import DocWithEditor from '../../../../components/Documents/DocWithEditor';
 import {
     clearDocuments,
@@ -8,14 +8,14 @@ import {
     getDocumentsRequest,
     progressSelector,
 } from '../../../../ducks/documents';
-import { Dimmer, Loader } from 'semantic-ui-react';
+import {Dimmer, Loader} from 'semantic-ui-react';
 
-const Documents = ({ gridName, cardId, isEditPermissions }) => {
-    const { t } = useTranslation();
+const Documents = ({gridName, cardId, isEditPermissions}) => {
+    const {t} = useTranslation();
     const dispatch = useDispatch();
 
     const getDocuments = () => {
-        dispatch(getDocumentsRequest({ gridName, cardId }));
+        dispatch(getDocumentsRequest({gridName, cardId}));
     };
 
     useEffect(() => {

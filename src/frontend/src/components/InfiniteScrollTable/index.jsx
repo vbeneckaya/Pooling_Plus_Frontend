@@ -1,24 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import { Table, Visibility } from 'semantic-ui-react';
 
 import './style.scss';
 
 const InfiniteScrollTable = ({
-    children,
-    header,
-    headerRow,
-    onBottomVisible,
-    unstackable,
-    celled,
-    selectable,
-    className,
-    context,
-    style,
-    structured,
-    fixed,
-    columns = [],
-}) => {
+                                 children,
+                                 header,
+                                 headerRow,
+                                 onBottomVisible,
+                                 unstackable,
+                                 celled,
+                                 selectable,
+                                 className,
+                                 context,
+                                 style,
+                                 structured,
+                                 fixed,
+                                 columns = [],
+                             }) => {
     let [width, setWidth] = useState(0);
     let [extWidth, setExtWidth] = useState();
 
@@ -37,7 +37,7 @@ const InfiniteScrollTable = ({
     );
 
     return (
-        <div style={{ position: 'relative', ...style }}>
+        <div style={{position: 'relative', ...style}}>
             <Table
                 celled={celled === undefined ? true : celled}
                 selectable={selectable === undefined ? true : celled}
@@ -45,9 +45,9 @@ const InfiniteScrollTable = ({
                 structured={structured}
                 className={className || ''}
                 fixed={fixed}
-                style={{ minWidth: width }}
+                style={{minWidth: width}}
             >
-                <Table.Header>{React.cloneElement(headerRow, { extWidth })}</Table.Header>
+                <Table.Header>{React.cloneElement(headerRow, {extWidth})}</Table.Header>
 
                 {children}
             </Table>

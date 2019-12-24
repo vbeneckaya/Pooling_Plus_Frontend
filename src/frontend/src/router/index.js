@@ -36,8 +36,8 @@ const MainRoute = withRouter(props => {
 
     useEffect(
         () => {
-            const { history, location } = props;
-            const { pathname } = location;
+            const {history, location} = props;
+            const {pathname} = location;
             if (pathname === '/grid' && homePage) {
                 history.push(homePage);
             }
@@ -47,19 +47,19 @@ const MainRoute = withRouter(props => {
 
     return (
         <Switch>
-            <PrivateRoute exact path="/" component={() => <Redirect to={homePage} />} />
-            <PrivateRoute exact path={GRID_NEW_LINK} component={CustomGridCard} />
-            <PrivateRoute exact path={GRID_CARD_LINK} component={props => CustomGridCard(props)} />
-            <PrivateRoute exact path={GRID_LIST_LINK} component={CustomGrid} />
-            <PrivateRoute exact path={DICTIONARY_NEW_LINK} component={CustomDictionaryCard} />
-            <PrivateRoute exact path={DICTIONARY_CARD_LINK} component={CustomDictionaryCard} />
-            <PrivateRoute exact path={DICTIONARY_LIST_LINK} component={CustomDictionaryList} />
-            <PrivateRoute exact path={NEW_ROLE_LINK} permission="editRoles" component={RoleCard} />
-            <PrivateRoute exact path={ROLE_LINK} permission="editRoles" component={RoleCard} />
-            <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={RolesList} />
-            <PrivateRoute exact path={NEW_USER_LINK} permission="editUsers" component={UserCard} />
-            <PrivateRoute exact path={USER_LINK} permission="editUsers" component={UserCard} />
-            <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={UsersList} />
+            <PrivateRoute exact path="/" component={() => <Redirect to={homePage}/>}/>
+            <PrivateRoute exact path={GRID_NEW_LINK} component={CustomGridCard}/>
+            <PrivateRoute exact path={GRID_CARD_LINK} component={props => CustomGridCard(props)}/>
+            <PrivateRoute exact path={GRID_LIST_LINK} component={CustomGrid}/>
+            <PrivateRoute exact path={DICTIONARY_NEW_LINK} component={CustomDictionaryCard}/>
+            <PrivateRoute exact path={DICTIONARY_CARD_LINK} component={CustomDictionaryCard}/>
+            <PrivateRoute exact path={DICTIONARY_LIST_LINK} component={CustomDictionaryList}/>
+            <PrivateRoute exact path={NEW_ROLE_LINK} permission="editRoles" component={RoleCard}/>
+            <PrivateRoute exact path={ROLE_LINK} permission="editRoles" component={RoleCard}/>
+            <PrivateRoute exact path={ROLES_LINK} permission="editRoles" component={RolesList}/>
+            <PrivateRoute exact path={NEW_USER_LINK} permission="editUsers" component={UserCard}/>
+            <PrivateRoute exact path={USER_LINK} permission="editUsers" component={UserCard}/>
+            <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={UsersList}/>
             <PrivateRoute
                 exact
                 path={FIELDS_SETTING_LINK}
@@ -67,7 +67,7 @@ const MainRoute = withRouter(props => {
                 component={FieldsSetting}
             />
             <Route exact path={LOGIN_LINK} component={Login} />
-            <PrivateRoute exact path="*" component={() => <Redirect to={homePage} />} />
+            <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
         </Switch>
     );
 });

@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Form, Grid, Segment } from 'semantic-ui-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLookupRequest, valuesListSelector } from '../../../../ducks/lookup';
+import React, {useEffect, useCallback, useRef} from 'react';
+import {useTranslation} from 'react-i18next';
+import {Form, Grid, Segment} from 'semantic-ui-react';
+import {useDispatch, useSelector} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
 import FormField from '../../../../components/BaseComponents';
 import {
     BIG_TEXT_TYPE,
@@ -12,31 +12,31 @@ import {
     SOLD_TO_TYPE,
     TEXT_TYPE,
 } from '../../../../constants/columnTypes';
-import { addError, clearError } from '../../../../ducks/gridCard';
+import {addError, clearError} from '../../../../ducks/gridCard';
 
 const Information = ({
-    form,
-    onChange,
-    isNotUniqueNumber,
-    uniquenessNumberCheck,
-    settings,
-    error,
-}) => {
-    const { t } = useTranslation();
+                         form,
+                         onChange,
+                         isNotUniqueNumber,
+                         uniquenessNumberCheck,
+                         settings,
+                         error,
+                     }) => {
+    const {t} = useTranslation();
 
-    const handleChangeSoldTo = useCallback((e, { name, value }) => {
+    const handleChangeSoldTo = useCallback((e, {name, value}) => {
         onChange(e, {
             name,
             value:
                 value && value.value
                     ? {
-                          value: value.value,
-                          name: value.value,
-                      }
+                        value: value.value,
+                        name: value.value,
+                    }
                     : null,
         });
-        onChange(e, { name: 'clientName', value: value ? value.warehouseName : null });
-        onChange(e, { name: 'deliveryAddress', value: value ? value.address : null });
+        onChange(e, {name: 'clientName', value: value ? value.warehouseName : null});
+        onChange(e, {name: 'deliveryAddress', value: value ? value.address : null});
     }, []);
 
     return (
@@ -305,7 +305,7 @@ const Information = ({
                         <Form.Field>
                             <label>{t('weigth')}</label>
                             <Segment
-                                style={{ height: 'calc(100% - 22px)' }}
+                                style={{height: 'calc(100% - 22px)'}}
                                 className="mini-column"
                             >
                                 <Grid>

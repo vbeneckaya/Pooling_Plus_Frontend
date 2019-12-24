@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Checkbox, Dimmer, Form, Input, Loader, Visibility } from 'semantic-ui-react';
+import React, {useState, useEffect, useRef} from 'react';
+import {Checkbox, Dimmer, Form, Input, Loader, Visibility} from 'semantic-ui-react';
 
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
-import { PAGE_SIZE } from '../../constants/settings';
+import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 
-const Facet = ({ t, source, name, onChange, value }) => {
+const Facet = ({t, source, name, onChange, value}) => {
     const dispatch = useDispatch();
 
     let [filter, setFilter] = useState(null);
@@ -42,7 +42,7 @@ const Facet = ({ t, source, name, onChange, value }) => {
         setItems(valuesList.slice(0, counter));
     };
 
-    const handleSetFilter = (e, { value }) => {
+    const handleSetFilter = (e, {value}) => {
         setFilter(value);
     };
 
@@ -64,7 +64,7 @@ const Facet = ({ t, source, name, onChange, value }) => {
         if (onChange !== undefined) onChange(null, { name: name, value: null });
     };
 
-    const toggle = (e, { value: newValue }) => {
+    const toggle = (e, {value: newValue}) => {
         let values = value ? value.split('|') : [];
 
         if (values.some(x => x === newValue)) {
@@ -111,24 +111,24 @@ const Facet = ({ t, source, name, onChange, value }) => {
                     <Dimmer active={loading} inverted>
                         <Loader size="small">Loading</Loader>
                     </Dimmer>
-                    <div style={{ position: 'relative' }}>
+                    <div style={{position: 'relative'}}>
                         {items &&
-                            items.map(x => {
-                                let label = <label>{x.name}</label>;
-                                return (
-                                    <Form.Field
-                                        key={x.value}
-                                        className={!x.isActive ? 'colorGrey' : ''}
-                                    >
-                                        <Checkbox
-                                            value={x.value}
-                                            checked={values.includes(x.value)}
-                                            onChange={toggle}
-                                            label={label}
-                                        />
-                                    </Form.Field>
-                                );
-                            })}
+                        items.map(x => {
+                            let label = <label>{x.name}</label>;
+                            return (
+                                <Form.Field
+                                    key={x.value}
+                                    className={!x.isActive ? 'colorGrey' : ''}
+                                >
+                                    <Checkbox
+                                        value={x.value}
+                                        checked={values.includes(x.value)}
+                                        onChange={toggle}
+                                        label={label}
+                                    />
+                                </Form.Field>
+                            );
+                        })}
                         <Visibility
                             continuous={true}
                             once={false}

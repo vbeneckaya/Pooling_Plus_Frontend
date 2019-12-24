@@ -18,7 +18,7 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { debounce } from 'throttle-debounce';
 
 const Select = ({
-    value = {},
+                    value = {},
     onChange,
     placeholder = '',
     isDisabled,
@@ -77,7 +77,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, { value: value ? value : null, name });
+        onChange(e, {value: value ? value : null, name});
         handleClose();
     };
 
@@ -159,7 +159,7 @@ const Select = ({
                                     selected={value && item.value === value.value}
                                     active={value && item.value === value.value}
                                     value={item.value}
-                                    onClick={e => handleChange(e, { value: item })}
+                                    onClick={e => handleChange(e, {value: item})}
                                 >
                                     {item.name}
                                 </Dropdown.Item>

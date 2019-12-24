@@ -14,10 +14,10 @@ import {
     roleCardSelector,
 } from '../../ducks/roles';
 import CardLayout from '../../components/CardLayout';
-import { Button, Dimmer, Form, Loader, Tab } from 'semantic-ui-react';
+import {Button, Dimmer, Form, Loader, Tab} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
-import { sortFunc } from '../../utils/sort';
-import { TEXT_TYPE } from '../../constants/columnTypes';
+import {sortFunc} from '../../utils/sort';
+import {TEXT_TYPE} from '../../constants/columnTypes';
 
 const RoleCard = props => {
     const { t } = useTranslation();
@@ -63,7 +63,7 @@ const RoleCard = props => {
     const handleClose = () => {
         history.push({
             pathname: location.state.pathname,
-            state: { ...location.state },
+            state: {...location.state},
         });
     };
 
@@ -97,14 +97,14 @@ const RoleCard = props => {
         handleChange(null, { name: 'permissions', value: Array.from(selectedPermissions) });
     };
 
-    const handleActions = (e, { value }) => {
-        const { actions } = form;
+    const handleActions = (e, {value}) => {
+        const {actions} = form;
 
         const selectedActions = new Set(actions);
 
         selectedActions[selectedActions.has(value) ? 'delete' : 'add'](value);
 
-        handleChange(null, { name: 'actions', value: Array.from(selectedActions) });
+        handleChange(null, {name: 'actions', value: Array.from(selectedActions)});
     };
 
     const mapData = () => {
@@ -117,7 +117,7 @@ const RoleCard = props => {
     };
 
     const handleSave = () => {
-        dispatch(createRoleRequest({ params: mapData(), callbackFunc: handleClose }));
+        dispatch(createRoleRequest({params: mapData(), callbackFunc: handleClose}));
     };
 
     const getActionsFooter = useCallback(

@@ -69,7 +69,7 @@ class Card extends Component {
     };
 
     confirmClose = () => {
-        const { loadList, clearCard } = this.props;
+        const {loadList, clearCard} = this.props;
 
         this.setState({
             ...initialState,
@@ -111,7 +111,7 @@ class Card extends Component {
     };
 
     handleSave = () => {
-        const { id, save, name, load } = this.props;
+        const {id, save, name, load} = this.props;
         const { form } = this.state;
 
         let params = {
@@ -136,7 +136,7 @@ class Card extends Component {
     };
 
     handleDelete = () => {
-        const { id, deleteEntry, name } = this.props;
+        const {id, deleteEntry, name} = this.props;
 
         deleteEntry({
             name,
@@ -146,7 +146,7 @@ class Card extends Component {
     };
 
     render() {
-        const { title, loading, children, progress, columns, t, error, canDelete } = this.props;
+        const {title, loading, children, progress, columns, t, error, canDelete} = this.props;
         const { modalOpen, form, confirmation } = this.state;
         //console.log('column', columns, form);
         return (

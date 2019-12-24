@@ -16,7 +16,7 @@ import {
 import useReactRouter from 'use-react-router';
 import { isAuthSelector, logoutRequest } from '../../ducks/login';
 import './style.scss';
-import { DICTIONARY_LIST_LINK, GRID_LIST_LINK } from '../../router/links';
+import {DICTIONARY_LIST_LINK, GRID_LIST_LINK} from '../../router/links';
 import Profile from '../../containers/users/profile';
 
 const Header = () => {
@@ -163,7 +163,7 @@ const Header = () => {
                             ) : null}
                         </div>
                     </Menu>
-                    <Profile open={openProfile} onOpen={onOpen} onClose={onClose} />
+                    <Profile open={openProfile} onOpen={onOpen} onClose={onClose}/>
                 </header>
             ) : null}
         </>

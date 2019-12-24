@@ -36,7 +36,7 @@ const getTypeFacet = {
     [DATE_TYPE]: <Date />,
     [DATE_TIME_TYPE]: <DateTime />,
     [LOCAL_DATE_TIME]: <DateTime />,
-    [TIME_TYPE]: <Text />,
+    [TIME_TYPE]: <Text/>,
     [SELECT_TYPE]: <Select />,
     [NUMBER_TYPE]: <Text />,
     [BOOLEAN_TYPE]: <Bool />,
@@ -44,7 +44,7 @@ const getTypeFacet = {
     [BIG_TEXT_TYPE]: <TextArea />,
     [CHECKBOX_TYPE]: <CheckBox />,
     [SOLD_TO_TYPE]: <SoldToField />,
-    [PASSWORD_TYPE]: <PasswordField />,
+    [PASSWORD_TYPE]: <PasswordField/>,
 };
 
 const FormField = props => {
@@ -121,7 +121,7 @@ const FormField = props => {
              return <Text {...params} />
      }*/
 
-    return React.cloneElement(getTypeFacet[props.type] || <Text />, { ...params });
+    return React.cloneElement(getTypeFacet[props.type] || <Text/>, {...params});
 };
 
 export default React.memo(FormField);

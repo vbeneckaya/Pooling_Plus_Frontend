@@ -10,7 +10,7 @@ import {
 import FormField from '../../BaseComponents';
 import { TEXT_TYPE } from '../../../constants/columnTypes';
 
-const MassChanges = ({ gridName, load }) => {
+const MassChanges = ({gridName, load}) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const updates = useSelector(state => updatesSelector(state)) || [];

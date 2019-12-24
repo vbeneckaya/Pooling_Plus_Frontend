@@ -1,9 +1,9 @@
 import { createSelector } from 'reselect';
-import { downloader, postman } from '../utils/postman';
+import {downloader, postman} from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { formatDate } from '../utils/dateTimeFormater';
-import { errorMapping } from '../utils/errorMapping';
+import {errorMapping} from '../utils/errorMapping';
 
 //*  TYPES  *//
 
@@ -338,7 +338,7 @@ function* importFromExcelSaga({ payload }) {
 
 function* exportToExcelSaga({ payload }) {
     try {
-        const { name, filter } = payload;
+        const {name, filter} = payload;
         /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
@@ -368,10 +368,10 @@ function* exportToExcelSaga({ payload }) {
     }
 }
 
-function* deleteDictionaryEntrySaga({ payload }) {
+function* deleteDictionaryEntrySaga({payload}) {
     try {
-        const { name, id, callbackSuccess } = payload;
-        const result = yield postman.delete(`/${name}/delete`, { params: { id } });
+        const {name, id, callbackSuccess} = payload;
+        const result = yield postman.delete(`/${name}/delete`, {params: {id}});
 
         yield put({
             type: DELETE_DICTIONARY_ENTRY_SUCCESS,

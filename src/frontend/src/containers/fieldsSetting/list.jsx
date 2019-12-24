@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
@@ -20,7 +20,7 @@ import { ORDERS_GRID } from '../../constants/grids';
 import Header from './components/header';
 import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
-import { sortFunc } from '../../utils/sort';
+import {sortFunc} from '../../utils/sort';
 
 const List = () => {
     const { t } = useTranslation();
@@ -97,7 +97,7 @@ const List = () => {
         );
     };
 
-    const handleChangeActiveItem = useCallback((e, { name }) => {
+    const handleChangeActiveItem = useCallback((e, {name}) => {
         setActiveItem(name);
     }, []);
 
@@ -139,7 +139,7 @@ const List = () => {
         [activeItem, role],
     );
 
-    const handleChangeRole = useCallback((e, { value }) => {
+    const handleChangeRole = useCallback((e, {value}) => {
         setRole(value);
     }, []);
 

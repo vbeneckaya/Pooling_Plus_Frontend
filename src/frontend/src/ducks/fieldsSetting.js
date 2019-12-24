@@ -164,9 +164,9 @@ function* editFieldsSettingSaga({ payload = {} }) {
     }
 }
 
-function* toggleHiddenStateSaga({ payload }) {
+function* toggleHiddenStateSaga({payload}) {
     try {
-        const { params, callbackSuccess, isExt } = payload;
+        const {params, callbackSuccess, isExt} = payload;
         const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, {
             ...params,
             forEntity: isExt

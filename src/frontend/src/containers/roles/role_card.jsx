@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { Button, Dimmer, Form, Input, Loader, Modal, Tab } from 'semantic-ui-react';
+import {Button, Dimmer, Form, Input, Loader, Modal, Tab} from 'semantic-ui-react';
 import {
     allActionsSelector,
     allPermissionsSelector,
@@ -15,9 +15,9 @@ import {
     progressSelector,
     roleCardSelector,
 } from '../../ducks/roles';
-import { sortFunc } from '../../utils/sort';
+import {sortFunc} from '../../utils/sort';
 import FormField from '../../components/BaseComponents';
-import { TEXT_TYPE } from '../../constants/columnTypes';
+import {TEXT_TYPE} from '../../constants/columnTypes';
 
 class RoleCard extends Component {
     constructor(props) {
@@ -48,7 +48,7 @@ class RoleCard extends Component {
     }
 
     handleOpen = () => {
-        const { getRole, id, getAllPermissions, getAllActions } = this.props;
+        const {getRole, id, getAllPermissions, getAllActions} = this.props;
 
         id && getRole(id);
         getAllPermissions && getAllPermissions();
@@ -105,14 +105,14 @@ class RoleCard extends Component {
         this.handleChange(null, { name: 'permissions', value: Array.from(selectedPermissions) });
     };
 
-    handleActions = (e, { value }) => {
-        const { actions } = this.state.form;
+    handleActions = (e, {value}) => {
+        const {actions} = this.state.form;
 
         const selectedActions = new Set(actions);
 
         selectedActions[selectedActions.has(value) ? 'delete' : 'add'](value);
 
-        this.handleChange(null, { name: 'actions', value: Array.from(selectedActions) });
+        this.handleChange(null, {name: 'actions', value: Array.from(selectedActions)});
     };
 
     mapData = () => {
@@ -133,10 +133,10 @@ class RoleCard extends Component {
     };
 
     render() {
-        const { title, children, loading, t, allPermissions, allActions, error } = this.props;
-        const { orderActions = [], shippingActions = [] } = allActions;
+        const {title, children, loading, t, allPermissions, allActions, error} = this.props;
+        const {orderActions = [], shippingActions = []} = allActions;
         const { modalOpen, form } = this.state;
-        const { name, permissions = [], actions = [] } = form;
+        const {name, permissions = [], actions = []} = form;
 
         return (
             <Modal
@@ -192,7 +192,7 @@ class RoleCard extends Component {
                                                                     !permissions.includes(1))) ||
                                                             ([10, 11, 12].includes(
                                                                 permission.code,
-                                                            ) &&
+                                                                ) &&
                                                                 !permissions.includes(7))
                                                         }
                                                         onChange={this.handlePermissions}

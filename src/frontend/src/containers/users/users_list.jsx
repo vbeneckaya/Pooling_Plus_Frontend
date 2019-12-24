@@ -48,13 +48,13 @@ export class UsersList extends Component {
             </UserCard>,
         ];
     };
-    getCard = ({ row, loadList, name }) => {
+    getCard = ({row, loadList, name}) => {
         const { t } = this.props;
 
         return (
             <UserCard
                 id={row.id}
-                title={t('edit_user', { name: row.userName })}
+                title={t('edit_user', {name: row.userName})}
                 loadList={loadList}
             />
         );

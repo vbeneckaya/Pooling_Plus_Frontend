@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import { Button, Popup } from 'semantic-ui-react';
 
-const FieldCell = ({ field, t, changeSettings, isExt, isDisabled, fieldName }) => {
+const FieldCell = ({field, t, changeSettings, isExt, isDisabled, fieldName}) => {
     let [open, setOpen] = useState(false);
 
     const toggle = () => setOpen(prevState => !prevState);

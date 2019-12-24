@@ -1,11 +1,11 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Form, Grid, Segment } from 'semantic-ui-react';
+import {useTranslation} from 'react-i18next';
+import {Form, Grid, Segment} from 'semantic-ui-react';
 import FormField from '../../../../components/BaseComponents';
-import { NUMBER_TYPE, SELECT_TYPE } from '../../../../constants/columnTypes';
+import {NUMBER_TYPE, SELECT_TYPE} from '../../../../constants/columnTypes';
 
-const Information = ({ form = {}, onChange, settings }) => {
-    const { t } = useTranslation();
+const Information = ({form = {}, onChange, settings}) => {
+    const {t} = useTranslation();
 
     return (
         <Form className="tabs-card">

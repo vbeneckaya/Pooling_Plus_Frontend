@@ -36,7 +36,7 @@ import TableInfo from '../../components/TableInfo';
 const CreateButton = ({ t, ...res }) => {
     return (
         <Card {...res}>
-            <Button icon="add" />
+            <Button icon="add"/>
         </Card>
     );
 };
@@ -51,7 +51,7 @@ class List extends Component {
     }
 
     componentWillUnmount() {
-        this.props.stopUpdate({ isClear: true });
+        this.props.stopUpdate({isClear: true});
     }
 
     mapActions = (item, t, invokeAction, name) => ({
@@ -61,7 +61,7 @@ class List extends Component {
             this.showConfirmation(
                 `${t('Are you sure to complete')} "${t(item.name)}" ${
                     rows.length > 1 ? `${t('for')} ` + rows.length : ''
-                }?`,
+                    }?`,
                 () => {
                     this.closeConfirmation();
                     invokeAction({
@@ -112,10 +112,10 @@ class List extends Component {
     };
 
     modalCard = () => {
-        const { stopUpdate, match = {} } = this.props;
-        const { params = {} } = match;
-        const { name = '' } = params;
-        return <Card stopUpdate={stopUpdate} name={name} />;
+        const {stopUpdate, match = {}} = this.props;
+        const {params = {}} = match;
+        const {name = ''} = params;
+        return <Card stopUpdate={stopUpdate} name={name}/>;
     };
 
     render() {
