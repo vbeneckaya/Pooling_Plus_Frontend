@@ -97,6 +97,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="clientId"
                             type={SELECT_TYPE}
+                            source="clients"
                             isRequired
                             error={error['clientId']}
                             value={form['clientId']}
@@ -117,22 +118,24 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                 <Grid.Row columns={2}>
                     <Grid.Column>
                         <FormField
-                            name="shippingAddress"
-                            type={BIG_TEXT_TYPE}
+                            name="shippingWarehouseId"
+                            type={SELECT_TYPE}
+                            source="shippingAddress"
                             isRequired
-                            value={form['shippingAddress']}
-                            error={error['shippingAddress']}
+                            value={form['shippingWarehouseId']}
+                            error={error['shippingWarehouseId']}
                             rows={2}
                             onChange={onChange}
                         />
                     </Grid.Column>
                     <Grid.Column>
                         <FormField
-                            name="deliveryAddress"
-                            type={BIG_TEXT_TYPE}
+                            name="deliveryWarehouseId"
+                            type={SELECT_TYPE}
                             isRequired
-                            value={form['deliveryAddress']}
-                            error={error['deliveryAddress']}
+                            source="deliveryAddress"
+                            value={form['deliveryWarehouseId']}
+                            error={error['deliveryWarehouseId']}
                             rows={2}
                             onChange={onChange}
                         />
