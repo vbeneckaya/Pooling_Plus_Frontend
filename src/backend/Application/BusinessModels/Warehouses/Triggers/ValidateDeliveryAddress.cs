@@ -1,42 +1,38 @@
-﻿using Application.BusinessModels.Shared.Handlers;
+﻿using Application.BusinessModels.Shared.Triggers;
 using Application.Services.Addresses;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.History;
+using Domain.Shared;
 using System;
 using System.Linq;
 
-namespace Application.BusinessModels.Warehouses.Handlers
+namespace Application.BusinessModels.Warehouses.Triggers
 {
-    public class AddressHandler : IFieldHandler<Warehouse, string>
+    public class ValidateDeliveryAddress : ITrigger<Warehouse>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
         private readonly ICleanAddressService _cleanAddressService;
-        private readonly bool _isManual;
 
-        public AddressHandler(ICommonDataService dataService, IHistoryService historyService, ICleanAddressService cleanAddressService, bool isManual)
+        public ValidateDeliveryAddress(ICommonDataService dataService, IHistoryService historyService, ICleanAddressService cleanAddressService)
         {
             _dataService = dataService;
             _historyService = historyService;
             _cleanAddressService = cleanAddressService;
-            _isManual = isManual;
         }
 
-        public void AfterChange(Warehouse entity, string oldValue, string newValue)
+        public void Execute(Warehouse entity)
         {
-            string rawAddress = _isManual ? newValue : $"{entity.City} {newValue}";
-            var cleanAddress = string.IsNullOrEmpty(newValue) ? null : _cleanAddressService.CleanAddress(rawAddress);
+            string rawAddress = $"{entity.City} {entity.Address}";
+            var cleanAddress = string.IsNullOrEmpty(rawAddress) ? null : _cleanAddressService.CleanAddress(rawAddress);
+
             entity.ValidAddress = cleanAddress?.ResultAddress;
             entity.PostalCode = cleanAddress?.PostalCode;
             entity.Region = cleanAddress?.Region;
             entity.Area = cleanAddress?.Area;
-            if (_isManual)
-            {
-                entity.City = cleanAddress?.City ?? cleanAddress?.Region;
-            }
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;
             entity.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;
@@ -44,17 +40,19 @@ namespace Application.BusinessModels.Warehouses.Handlers
             var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.SoldTo == entity.SoldToNumber
-                                                && x.DeliveryAddress != newValue
                                                 && validStatuses.Contains(x.Status)
                                                 && (x.ShippingId == null || x.OrderShippingStatus == ShippingState.ShippingCreated))
                                      .ToList();
 
             foreach (var order in orders)
             {
-                _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
-                                                 nameof(order.DeliveryAddress).ToLowerFirstLetter(),
-                                                 order.DeliveryAddress, newValue);
-                order.DeliveryAddress = newValue;
+                if (order.DeliveryAddress != entity.Address)
+                {
+                    _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
+                                                     nameof(order.DeliveryAddress).ToLowerFirstLetter(),
+                                                     order.DeliveryAddress, entity.Address);
+                    order.DeliveryAddress = entity.Address;
+                }
 
                 if (order.DeliveryRegion != entity.Region)
                 {
@@ -74,9 +72,14 @@ namespace Application.BusinessModels.Warehouses.Handlers
             }
         }
 
-        public string ValidateChange(Warehouse entity, string oldValue, string newValue)
+        public bool IsTriggered(EntityChanges<Warehouse> changes)
         {
-            return null;
+            var watchProperties = new[]
+            {
+                nameof(Warehouse.City),
+                nameof(Warehouse.Address)
+            };
+            return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }
     }
 }

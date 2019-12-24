@@ -6,6 +6,7 @@ using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
 using Application.BusinessModels.Tariffs.Triggers;
+using Application.BusinessModels.Warehouses.Triggers;
 using Application.Services;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
@@ -220,6 +221,8 @@ namespace Infrastructure.Installers
         private static void AddDictionariesBusinessModels(IServiceCollection services)
         {
             services.AddScoped<ITrigger<Tariff>, UpdateTariffDeliveryCost>();
+
+            services.AddScoped<ITrigger<Warehouse>, ValidateDeliveryAddress>();
         }
     }
 }

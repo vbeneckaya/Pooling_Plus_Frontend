@@ -176,25 +176,45 @@ namespace Domain.Extensions
             }
         }
 
-        public static bool TryParseDate(this string dateString, out DateTime result) =>
-            DateTime.TryParseExact(dateString,
-                "dd.MM.yyyy",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out result);
+        public static bool TryParseDate(this string dateString, out DateTime result)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                result = default;
+                return false;
+            }
+            return DateTime.TryParseExact(dateString,
+                                          "dd.MM.yyyy",
+                                          CultureInfo.InvariantCulture,
+                                          DateTimeStyles.None,
+                                          out result);
+        }
 
-        public static bool TryParseDateTime(this string dateString, out DateTime result) =>
-            DateTime.TryParseExact(dateString,
-                "dd.MM.yyyy HH:mm:ss",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None,
-                out result);
+        public static bool TryParseDateTime(this string dateString, out DateTime result)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                result = default;
+                return false;
+            }
+            return DateTime.TryParseExact(dateString,
+                                          "dd.MM.yyyy HH:mm:ss",
+                                          CultureInfo.InvariantCulture,
+                                          DateTimeStyles.None,
+                                          out result);
+        }
 
-        public static DateTime ParseDate(this string dateString) =>
-            DateTime.ParseExact(dateString,
-                "dd.MM.yyyy",
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None);
+        public static DateTime ParseDate(this string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                return default;
+            }
+            return DateTime.ParseExact(dateString,
+                                       "dd.MM.yyyy",
+                                       CultureInfo.InvariantCulture,
+                                       DateTimeStyles.None);
+        }
 
         public static bool TryParseDateAsUtc(this string dateString, out DateTime result)
         {
