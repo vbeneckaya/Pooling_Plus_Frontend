@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
 import { debounce } from 'throttle-debounce';
+import _ from 'lodash';
 
 import './style.scss';
 import Filter from './components/filter';
@@ -92,7 +93,7 @@ class SuperGrid extends Component {
             this.setSelected(newSelectedRow);
         }
 
-        if (prevProps.representationName !== this.props.representationName) {
+        if (!_.isEqual(prevProps.columns, this.props.columns)) {
             const { columns } = this.props;
             const width = this.container.offsetWidth - 50;
 
