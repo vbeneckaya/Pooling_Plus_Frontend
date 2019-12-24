@@ -16,5 +16,7 @@ namespace Domain.Services.Tonnages
 
         [FieldType(FieldType.Boolean), OrderNumber(3)]
         public bool? IsActive { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

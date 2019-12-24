@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Domain.Services.AppConfiguration;
 using Domain.Shared;
 
 namespace Domain.Services
@@ -21,5 +22,7 @@ namespace Domain.Services
         TDto Get(Guid id);
 
         ValidateResult Delete(Guid id);
+
+        UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id);
     }
 }

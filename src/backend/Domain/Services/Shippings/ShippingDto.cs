@@ -137,5 +137,7 @@ namespace Domain.Services.Shippings
 
         [FieldType(FieldType.Select, source: nameof(Companies))]
         public LookUpDto CompanyId { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

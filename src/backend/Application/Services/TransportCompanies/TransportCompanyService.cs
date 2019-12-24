@@ -7,6 +7,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.TransportCompanies;
@@ -21,8 +22,9 @@ namespace Application.Services.TransportCompanies
     public class TransportCompaniesService : DictionaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
     {
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                         IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override IEnumerable<LookUpDto> ForSelect()

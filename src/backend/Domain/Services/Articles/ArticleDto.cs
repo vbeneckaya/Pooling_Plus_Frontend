@@ -127,5 +127,7 @@ namespace Domain.Services.Articles
 
         [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(40)]
         public LookUpDto CompanyId { get; set; }
+        
+        public bool IsEditable { get; set; }
     }
 }

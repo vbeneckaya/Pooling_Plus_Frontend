@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.BodyTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
@@ -19,8 +20,9 @@ namespace Application.Services.BodyTypes
     public class BodyTypesService : DictionaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
         public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
@@ -37,12 +39,15 @@ namespace Application.Services.BodyTypes
 
         public override BodyTypeDto MapFromEntityToDto(BodyType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new BodyTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
         protected override DetailedValidationResult ValidateDto(BodyTypeDto dto)
@@ -102,6 +107,21 @@ namespace Application.Services.BodyTypes
             }
         }
 
+        public override IQueryable<BodyType> ApplyRestrictions(IQueryable<BodyType> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         protected override IQueryable<BodyType> ApplySort(IQueryable<BodyType> query, SearchFormDto form)
         {
             return query
@@ -113,6 +133,17 @@ namespace Application.Services.BodyTypes
         {
             return _dataService.GetDbSet<BodyType>()
                 .FirstOrDefault(i => i.Name == dto.Name);
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(BodyType.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

@@ -5,11 +5,13 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,8 +21,9 @@ namespace Application.Services.DocumentTypes
     public class DocumentTypesService : DictionaryServiceBase<DocumentType, DocumentTypeDto>, IDocumentTypesService
     {
         public DocumentTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                    IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                    IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(DocumentType entity, DocumentTypeDto dto)
@@ -90,12 +93,15 @@ namespace Application.Services.DocumentTypes
 
         public override DocumentTypeDto MapFromEntityToDto(DocumentType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new DocumentTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -104,6 +110,32 @@ namespace Application.Services.DocumentTypes
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+
+        public override IQueryable<DocumentType> ApplyRestrictions(IQueryable<DocumentType> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(DocumentType.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
 
         public override DocumentType FindByKey(DocumentTypeDto dto)
