@@ -21,8 +21,6 @@ namespace Application.BusinessModels.Orders.Handlers
                 var deliveryWarehouse = _dataService.GetById<Warehouse>(newValue.Value);
                 if (deliveryWarehouse != null)
                 {
-                    order.PickingFeatures = deliveryWarehouse.PickingFeatures;
-
                     if (deliveryWarehouse.PickingTypeId.HasValue)
                         order.PickingTypeId = deliveryWarehouse.PickingTypeId;
 

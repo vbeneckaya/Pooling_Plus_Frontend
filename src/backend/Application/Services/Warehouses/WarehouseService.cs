@@ -50,7 +50,6 @@ namespace Application.Services.Warehouses
                 .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService, !isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.LeadtimeDays, new LeadtimeDaysHandler(_dataService, _historyService))
-                .AddHandler(e => e.PickingFeatures, new PickingFeaturesHandler(_dataService, _historyService))
                 .AddHandler(e => e.AvisaleTime, new AvisaleTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryType, new DeliveryTypeHandler(_dataService, _historyService));
         }
@@ -72,6 +71,7 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
@@ -80,16 +80,12 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
                     .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()))
+                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)));
             });
             return result;
-        }
-
-        public WarehouseDto GetBySoldTo(string soldToNumber)
-        {
-            var entity = _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == soldToNumber).FirstOrDefault();
-            return MapFromEntityToDto(entity);
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -110,7 +106,11 @@ namespace Application.Services.Warehouses
 
         public override Warehouse FindByKey(WarehouseDto dto)
         {
-            return _dataService.GetDbSet<Warehouse>().Where(x => x.SoldToNumber == dto.SoldToNumber).FirstOrDefault();
+            var clientId = dto.ClientId?.Value.ToGuid();
+            var companyId = dto.CompanyId?.Value.ToGuid();
+
+            return _dataService.GetDbSet<Warehouse>()
+                .Where(x => x.Address == dto.Address && x.ClientId == clientId && x.CompanyId == companyId).FirstOrDefault();
         }
 
         protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
@@ -130,6 +130,13 @@ namespace Application.Services.Warehouses
                                            .Where(x => pickingTypeIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
+            var clinetIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
+             .Select(x => x.ClientId.Value.ToGuid())
+             .ToList();
+            var clients = _dataService.GetDbSet<Client>()
+                                           .Where(x => clinetIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.PickingTypeId?.Value)
@@ -142,6 +149,12 @@ namespace Application.Services.Warehouses
                     && companies.TryGetValue(dto.CompanyId.Value, out Company company))
                 {
                     dto.CompanyId.Name = company.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
+                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
+                {
+                    dto.ClientId.Name = client.Name;
                 }
 
                 yield return dto;
@@ -212,11 +225,9 @@ namespace Application.Services.Warehouses
 
             return query.Where(i =>
                    i.WarehouseName.ToLower().Contains(search)
-                || i.SoldToNumber.ToLower().Contains(search)
                 || i.Region.ToLower().Contains(search)
                 || i.City.ToLower().Contains(search)
                 || i.Address.ToLower().Contains(search)
-                || i.PickingFeatures.ToLower().Contains(search)
                 //|| i.PickingTypeId != null && pickingTypes.Any(t => t == i.PickingTypeId)
                 //|| i.DeliveryType != null && deliveryTypes.Contains(i.DeliveryType)
                 || isInt && i.LeadtimeDays == searchInt
@@ -229,12 +240,11 @@ namespace Application.Services.Warehouses
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            var hasDuplicates = !result.IsError && _dataService.GetDbSet<Warehouse>()
-                                            .Where(x => x.SoldToNumber == dto.SoldToNumber && x.Id.ToString() != dto.Id)
-                                            .Any();
+            var hasDuplicates = !result.IsError && FindByKey(dto) != null;
+
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.SoldToNumber), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Address), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
