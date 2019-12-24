@@ -89,12 +89,15 @@ namespace Application.Services.TransportCompanies
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new TransportCompanyDto
             {
                 Id = entity.Id.ToString(),
                 Title = entity.Title,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -124,6 +127,21 @@ namespace Application.Services.TransportCompanies
             return query
                 .OrderBy(i => i.Title)
                 .ThenBy(i => i.Id);
+        }
+
+        public override IQueryable<TransportCompany> ApplyRestrictions(IQueryable<TransportCompany> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
         }
 
         public override TransportCompany FindByKey(TransportCompanyDto dto)
