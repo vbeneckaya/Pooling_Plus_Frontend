@@ -196,7 +196,7 @@ tbody {
     }*/
 
     &-selected td {
-        background-color: rgba(24, 168, 204, 0.12);
+        background-color: #e3f5f9;
     }
 }
 
@@ -325,6 +325,7 @@ tbody {
 $orange: #fcd8c1;
 $olive: #ebf1c0;
 $teal: #b5eae7;
+$pink: #fbeff2;
 
 .color-info {
     &-orange {
@@ -347,6 +348,10 @@ $teal: #b5eae7;
     }
     &.teal td {
         background-color: $teal;
+    }
+
+    &.pink td {
+        background-color: $pink;
     }
 }
 
