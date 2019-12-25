@@ -80,7 +80,7 @@ const CellValue = ({
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {value ? t(valueText) : ''}
+                {value ? valueText : ''}
             </TextCropping>
         );
     }
