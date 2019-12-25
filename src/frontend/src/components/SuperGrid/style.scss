@@ -303,6 +303,16 @@ tbody {
     }
 }
 
+.grid-marker {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 7px!important;
+    top: 0;
+    background-color: #18A8CC;
+    z-index: 10;
+}
+
 .filter-popup > div {
     text-align: center;
     margin-bottom: 10px !important;
