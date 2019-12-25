@@ -36,6 +36,7 @@ const Select = ({
     isRequired,
     autoComplete,
     children,
+                    upward,
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -149,6 +150,7 @@ const Select = ({
                     onSearchChange={handleSearchChange}
                     onFocus={handleFocus}
                     open={open}
+                    upward={upward}
                     onChange={handleChange}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>

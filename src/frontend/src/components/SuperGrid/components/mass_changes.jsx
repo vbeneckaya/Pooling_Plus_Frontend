@@ -74,6 +74,7 @@ const MassChanges = ({ gridName, load }) => {
                             <FormField
                                 {...column}
                                 value={changValue}
+                                upward
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
                             <Button
