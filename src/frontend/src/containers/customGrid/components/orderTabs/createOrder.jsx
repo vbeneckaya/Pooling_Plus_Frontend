@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useMemo} from 'react';
 import {Form, Grid} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
@@ -6,6 +6,10 @@ import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../../cons
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
+
+    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
+        clientId: form['clientId'] ? form['clientId'].value : undefined
+    }), [form['clientId']]);
 
     return (
         <Form className="tabs-card">
@@ -82,7 +86,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="deliveryWarehouseId"
                             type={SELECT_TYPE}
                             isRequired
-                            /*extSearchParams={{clientId: form['clientId'] ? form['clientId'].value : undefined}}*/
+                            extSearchParams={extSearchParamsFromDeliveryWarehouse}
                             source="deliveryAddress"
                             value={form['deliveryWarehouseId']}
                             error={error['deliveryWarehouseId']}
