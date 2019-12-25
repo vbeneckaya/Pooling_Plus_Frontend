@@ -36,6 +36,7 @@ const Select = ({
     isRequired,
     autoComplete,
     children,
+                    extSearchParams
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -86,6 +87,7 @@ const Select = ({
             getLookupRequest({
                 name: source,
                 isForm: true,
+                extSearchParams
             }),
         );
         toggle(true);

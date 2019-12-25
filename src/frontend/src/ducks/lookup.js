@@ -166,10 +166,10 @@ export const listFromSelectSelector = createSelector(
 
 function* getLookupSaga({ payload }) {
     try {
-        const { name, isForm, isSearch, callbackSuccess, callbackFunc } = payload;
+        const {name, isForm, isSearch, callbackSuccess, callbackFunc, extSearchParams} = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
             `/${name}/${isSearch ? 'search' : 'forSelect'}`,
-            {},
+            extSearchParams ? {params: extSearchParams} : {},
         );
 
         if (isForm) {
