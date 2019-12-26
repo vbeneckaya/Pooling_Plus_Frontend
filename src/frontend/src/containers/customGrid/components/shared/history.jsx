@@ -12,9 +12,9 @@ const History = () => {
     return (
         <div className="tabs-card tabs-card_history">
             <Grid>
-                <Dimmer active={loading} inverted>
+              {/*  <Dimmer active={loading} inverted>
                     <Loader size="huge">Loading</Loader>
-                </Dimmer>
+                </Dimmer>*/}
                 {(history || []).map((historyItem, i) => (
                     <Grid.Row key={i}>
                         <Grid.Column width={5}>
