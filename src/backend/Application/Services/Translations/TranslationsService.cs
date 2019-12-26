@@ -4,6 +4,7 @@ using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -17,8 +18,9 @@ namespace Application.Services.Translations
     public class TranslationsService : DictionaryServiceBase<Translation, TranslationDto>, ITranslationsService
     {
         public TranslationsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                   IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public IEnumerable<TranslationDto> GetAll()

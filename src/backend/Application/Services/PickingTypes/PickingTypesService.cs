@@ -5,6 +5,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.PickingTypes;
 using Domain.Services.Translations;
@@ -19,8 +20,10 @@ namespace Application.Services.PickingTypes
     public class PickingTypesService : DictionaryServiceBase<PickingType, PickingTypeDto>, IPickingTypesService
     {
         public PickingTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                   IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService
+                  ) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(PickingType entity, PickingTypeDto dto)
@@ -55,12 +58,15 @@ namespace Application.Services.PickingTypes
 
         public override PickingTypeDto MapFromEntityToDto(PickingType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new PickingTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -117,10 +123,37 @@ namespace Application.Services.PickingTypes
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
+
+        public override IQueryable<PickingType> ApplyRestrictions(IQueryable<PickingType> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         public override PickingType FindByKey(PickingTypeDto dto)
         {
             return _dataService.GetDbSet<PickingType>()
                 .FirstOrDefault(i => i.Name == dto.Name);
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(PickingType.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

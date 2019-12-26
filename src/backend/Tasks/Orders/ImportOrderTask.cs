@@ -180,7 +180,6 @@ namespace Tasks.Orders
                 dto.ShippingCity = string.IsNullOrEmpty(shippingWarehouse?.City) ? dto.ShippingCity : new LookUpDto(shippingWarehouse.City);
                 dto.ShippingWarehouseId = shippingWarehouse?.Id == null ? dto.ShippingWarehouseId : new LookUpDto(shippingWarehouse.Id.ToString(), shippingWarehouse.WarehouseName);
 
-                dto.ClientName = null;
                 dto.DeliveryAddress = null;
                 dto.DeliveryCity = null;
                 dto.DeliveryRegion = null;

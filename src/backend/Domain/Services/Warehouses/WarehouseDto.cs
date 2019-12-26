@@ -29,7 +29,6 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Text), OrderNumber(5)]
         public string Address { get; set; }
-
         public string ValidAddress { get; set; }
 
         public string UnparsedAddressParts { get; set; }
@@ -59,5 +58,7 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Text), OrderNumber(12)]
         public string Gln { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

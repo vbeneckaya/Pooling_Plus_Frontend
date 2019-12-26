@@ -38,5 +38,7 @@ namespace Domain.Services.ShippingWarehouses
 
         [FieldType(FieldType.Boolean), OrderNumber(7)]
         public bool? IsActive { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

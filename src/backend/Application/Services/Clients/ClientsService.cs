@@ -7,6 +7,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.Clients;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
@@ -21,8 +22,9 @@ namespace Application.Services.Clients
     public class ClientsService : DictionaryServiceBase<Client, ClientDto>, IClientsService
     {
         public ClientsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
-                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                              IFieldSetterFactory fieldSetterFactory, IAppConfigurationService appConfigurationService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, appConfigurationService)
         {
         }
 
@@ -86,13 +88,16 @@ namespace Application.Services.Clients
 
         public override ClientDto MapFromEntityToDto(Client entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new ClientDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 PoolingId = entity.PoolingId,
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 

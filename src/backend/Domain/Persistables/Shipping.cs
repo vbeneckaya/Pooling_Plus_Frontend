@@ -229,7 +229,10 @@ namespace Domain.Persistables
         public bool ManualTarifficationType { get; set; }
 
 
-        /*end of fields*/
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
 
         public override string ToString()
         {

@@ -113,6 +113,13 @@ namespace Application.Services.Orders
             if (user.CarrierId.HasValue)
                 query = query.Where(x => x.CarrierId == user.CarrierId);
 
+            // Local user restrictions
+
+            if (user.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
             return query;
         }
 
@@ -230,7 +237,9 @@ namespace Application.Services.Orders
                     .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
                     .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)));
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
+                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()));
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
@@ -263,7 +272,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
-                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)));
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
@@ -369,6 +379,13 @@ namespace Application.Services.Orders
                 .Where(x => vehicleTypeIds.Contains(x.Id))
                 .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
 
             foreach (var dto in dtos)
             {
@@ -394,6 +411,13 @@ namespace Application.Services.Orders
                     && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
                     dto.ClientId.Name = client.Name;
+                }
+
+
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
                 }
 
                 yield return dto;
@@ -456,6 +480,12 @@ namespace Application.Services.Orders
             order.OrderChangeDate = DateTime.UtcNow;
             order.ShippingStatus = VehicleState.VehicleEmpty;
             order.DeliveryStatus = VehicleState.VehicleEmpty;
+
+            var user = this._userIdProvider.GetCurrentUser();
+            if (user != null)
+            {
+                order.CompanyId = user.CompanyId;
+            }
         }
 
         private void SaveItems(Order entity, OrderFormDto dto)
@@ -757,8 +787,7 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.OrderType, new EnumExcelColumn<OrderType>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
-                ;
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName));
         }
 
         private Guid? GetPickingTypeIdByName(string name)

@@ -11,6 +11,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.Translations;
@@ -29,10 +30,10 @@ namespace Application.Services.Warehouses
         private readonly IHistoryService _historyService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
-        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                 IValidationService validationService, IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, 
-                                 IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+        public WarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
+                                 IHistoryService historyService, IFieldDispatcherService fieldDispatcherService, 
+                                 IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -61,7 +62,9 @@ namespace Application.Services.Warehouses
 
         private MapperConfiguration ConfigureMapper()
         {
-            var lang = _userProvider.GetCurrentUser()?.Language;
+            var user = _userProvider.GetCurrentUser();
+
+            var lang = user?.Language;
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Warehouse, WarehouseDto>()
@@ -69,7 +72,8 @@ namespace Application.Services.Warehouses
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
                     .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
@@ -231,6 +235,21 @@ namespace Application.Services.Warehouses
                 );
         }
 
+        public override IQueryable<Warehouse> ApplyRestrictions(IQueryable<Warehouse> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         protected override DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
@@ -245,6 +264,17 @@ namespace Application.Services.Warehouses
             }
 
             return result;
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Warehouse.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

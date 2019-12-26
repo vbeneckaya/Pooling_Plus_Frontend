@@ -8,6 +8,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.History;
 using Domain.Services.ShippingWarehouses;
@@ -29,8 +30,9 @@ namespace Application.Services.ShippingWarehouses
 
 
         public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, 
+                                         IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -58,11 +60,14 @@ namespace Application.Services.ShippingWarehouses
 
         private MapperConfiguration ConfigureMapper()
         {
+            var user = _userProvider.GetCurrentUser();
+
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
 
                 cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
@@ -140,6 +145,21 @@ namespace Application.Services.ShippingWarehouses
                 .ThenBy(i => i.Id);
         }
 
+        public override IQueryable<ShippingWarehouse> ApplyRestrictions(IQueryable<ShippingWarehouse> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         protected override DetailedValidationResult ValidateDto(ShippingWarehouseDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
@@ -155,6 +175,17 @@ namespace Application.Services.ShippingWarehouses
             }
 
             return result;
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(ShippingWarehouse.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

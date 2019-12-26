@@ -12,14 +12,16 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Services.AppConfiguration;
 
 namespace Application.Services.BodyTypes
 {
     public class CompaniesService : DictionaryServiceBase<Company, CompanyDto>, ICompaniesService
     {
         public CompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Company entity, CompanyDto dto)
@@ -75,6 +77,21 @@ namespace Application.Services.BodyTypes
                     Value = entity.Id.ToString(),
                 };
             }
+        }
+
+        public override IQueryable<Company> ApplyRestrictions(IQueryable<Company> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.Id == user.CompanyId);
+            }
+
+            return query;
         }
 
         protected override IQueryable<Company> ApplySort(IQueryable<Company> query, SearchFormDto form)
