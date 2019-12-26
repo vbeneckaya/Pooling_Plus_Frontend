@@ -367,7 +367,7 @@ ru:
   piecesInALayer: "Штук в слое"
   piecesInShrink: "Штук в shrink"
   piecesOnAPallet: "Штук на паллете"
-  plan: "Фактическое"
+  plan: "Плановое"
   plannedArrivalTimeSlotBDFWarehouse: "Плановое прибытие/тайм-слот (склад БДФ)"
   plannedReturnDate: "Плановый срок возврата"
   planWeigth: "Плановый"

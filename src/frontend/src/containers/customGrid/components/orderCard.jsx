@@ -8,6 +8,8 @@ import CreateOrder from './orderTabs/createOrder';
 
 import CardLayout from '../../../components/CardLayout';
 import { userPermissionsSelector } from '../../../ducks/profile';
+import {ORDERS_GRID} from "../../../constants/grids";
+import {columnsGridSelector} from "../../../ducks/gridList";
 
 const OrderCard = ({
     form,
@@ -26,6 +28,9 @@ const OrderCard = ({
     loading,
 }) => {
     const userPermissions = useSelector(state => userPermissionsSelector(state));
+    const columns = useSelector(state => columnsGridSelector(state, ORDERS_GRID));
+
+    console.log('columns', columns);
 
     const getPanes = () => {
         let obj = [
@@ -34,6 +39,7 @@ const OrderCard = ({
                 render: () => (
                     <Information
                         form={form}
+                        columns={columns}
                         settings={settings}
                         error={error}
                         load={load}
@@ -43,7 +49,7 @@ const OrderCard = ({
                     />
                 ),
             },
-            {
+            /*{
                 menuItem: 'position',
                 render: () => (
                     <Position
@@ -55,7 +61,7 @@ const OrderCard = ({
                         settings={settings}
                     />
                 ),
-            },
+            },*/
         ];
         /*{
                 menuItem: 'returns',
