@@ -121,26 +121,26 @@ namespace Application.Services.AppConfiguration
             var userId = _userProvider.GetCurrentUserId();
             var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
 
-            _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
-            {
-                var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-                var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+            //_dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
+            //{
+            //    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+            //    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-                if (!canViewTariffs && !canEditTariffs) return null;
+            //    if (!canViewTariffs && !canEditTariffs) return null;
                  
-                var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+            //    var columns = ExtractColumnsFromDto<TariffDto>(roleId);
                 
-                return new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<TariffsService>(),
-                    CanCreateByForm = canEditTariffs,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = canEditTariffs,
-                    CanDelete = true,
-                    ShowOnHeader = true,
-                    Columns = columns
-                };
-            });
+            //    return new UserConfigurationDictionaryItem
+            //    {
+            //        Name = GetName<TariffsService>(),
+            //        CanCreateByForm = canEditTariffs,
+            //        CanExportToExcel = true,
+            //        CanImportFromExcel = canEditTariffs,
+            //        CanDelete = true,
+            //        ShowOnHeader = true,
+            //        Columns = columns
+            //    };
+            //});
 
             _dictionaryConfigurations.Add(typeof(WarehouseDto), (roleId) =>
             {
@@ -179,23 +179,23 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
-            _dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
-            {
-                var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
+            //_dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
+            //{
+            //    var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
 
-                if (!canEditArticles) return null;
+            //    if (!canEditArticles) return null;
 
-                var columns = ExtractColumnsFromDto<ArticleDto>(roleId);
-                return new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<ArticlesService>(),
-                    CanCreateByForm = canEditArticles,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = canEditArticles,
-                    ShowOnHeader = false,
-                    Columns = columns
-                };
-            });
+            //    var columns = ExtractColumnsFromDto<ArticleDto>(roleId);
+            //    return new UserConfigurationDictionaryItem
+            //    {
+            //        Name = GetName<ArticlesService>(),
+            //        CanCreateByForm = canEditArticles,
+            //        CanExportToExcel = true,
+            //        CanImportFromExcel = canEditArticles,
+            //        ShowOnHeader = false,
+            //        Columns = columns
+            //    };
+            //});
 
             _dictionaryConfigurations.Add(typeof(ProductTypeDto), (roleId) =>
             {
@@ -365,7 +365,15 @@ namespace Application.Services.AppConfiguration
 
         public UserConfigurationDictionaryItem GetDictionaryConfiguration<TDto>(Guid? roleId)
         {
-            return _dictionaryConfigurations[typeof(TDto)](roleId);
+            var dtoType = typeof(TDto);
+            if (_dictionaryConfigurations.ContainsKey(dtoType))
+            {
+                return _dictionaryConfigurations[dtoType](roleId);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
