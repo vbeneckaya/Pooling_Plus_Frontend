@@ -157,6 +157,7 @@ const Select = ({
                         {valuesList && valuesList.length ? (
                             valuesList.map(item => (
                                 <Dropdown.Item
+                                    style={item.isBulkUpdateOnly ? {color: '#9a0000'}: {}}
                                     key={item.value}
                                     selected={value && item.value === value.value}
                                     active={value && item.value === value.value}
