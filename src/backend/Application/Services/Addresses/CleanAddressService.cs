@@ -100,9 +100,11 @@ namespace Application.Services.Addresses
             {
                 city = $"{answer?.CityType} {answer?.City}";
             }
-            else if (!string.IsNullOrEmpty(answer?.Settlement))
+
+            string settlement = null;
+            if (!string.IsNullOrEmpty(answer?.Settlement))
             {
-                city = $"{answer?.SettlementType} {answer?.Settlement}";
+                settlement = $"{answer?.SettlementType} {answer?.Settlement}";
             }
 
             string street = null;
@@ -118,8 +120,10 @@ namespace Application.Services.Addresses
                 Region = region,
                 Area = area,
                 City = city,
+                Settlement = settlement,
                 Street = street,
                 House = answer?.House,
+                Block = answer?.Block,
                 UnparsedAddressParts = answer?.UnparsedParts
             };
             return address;

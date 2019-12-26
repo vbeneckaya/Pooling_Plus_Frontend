@@ -50,12 +50,7 @@ namespace Application.Services.ShippingWarehouses
         
         protected override IChangeTracker ConfigureChangeTacker()
         {
-            return _changeTrackerFactory.CreateChangeTracker()
-                .Add<ShippingWarehouse>(i => i.Code)
-                .Add<ShippingWarehouse>(i => i.WarehouseName)
-                .Add<ShippingWarehouse>(i => i.Address)
-                .Add<ShippingWarehouse>(i => i.Region)
-                .Add<ShippingWarehouse>(i => i.City);
+            return _changeTrackerFactory.CreateChangeTracker().TrackAll<ShippingWarehouse>();
         }
 
         private MapperConfiguration ConfigureMapper()
@@ -101,7 +96,7 @@ namespace Application.Services.ShippingWarehouses
 
         public ShippingWarehouse GetByCode(string code)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Code == code && x.IsActive);
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Gln == code && x.IsActive);
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -119,7 +114,7 @@ namespace Application.Services.ShippingWarehouses
 
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.Code == dto.Code).FirstOrDefault();
+            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.WarehouseName == dto.WarehouseName).FirstOrDefault();
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
@@ -167,11 +162,11 @@ namespace Application.Services.ShippingWarehouses
             DetailedValidationResult result = base.ValidateDto(dto);
 
             var hasDuplicates = !result.IsError && _dataService.GetDbSet<ShippingWarehouse>()
-                                            .Where(x => x.Code == dto.Code && x.Id.ToString() != dto.Id)
+                                            .Where(x => x.WarehouseName == dto.WarehouseName && x.Id.ToString() != dto.Id)
                                             .Any();
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Code), "ShippingWarehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.WarehouseName), "ShippingWarehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

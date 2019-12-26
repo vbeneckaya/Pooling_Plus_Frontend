@@ -171,7 +171,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<ShippingWarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
-                    CanImportFromExcel = canEditWarehouses,
+                    CanImportFromExcel = false,
                     ShowOnHeader = false,
                     Columns = columns
                 };
