@@ -21,7 +21,7 @@ import FormField from '../../components/BaseComponents';
 const initialState = {
     modalOpen: false,
     form: {},
-    confirmation: { open: false },
+    confirmation: {open: false},
     notChangeForm: true,
 };
 
@@ -74,8 +74,8 @@ class UserCard extends Component {
     };
 
     handleClose = () => {
-        const { notChangeForm } = this.state;
-        const { t } = this.props;
+        const {notChangeForm} = this.state;
+        const {t} = this.props;
 
         if (notChangeForm) {
             this.confirmClose();
@@ -86,7 +86,7 @@ class UserCard extends Component {
                     content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
-                            confirmation: { open: false },
+                            confirmation: {open: false},
                         });
                     },
                     onConfirm: this.confirmClose,
@@ -97,7 +97,7 @@ class UserCard extends Component {
 
     confirmClose = () => {
         const { loadList, clear } = this.props;
-        this.setState({ ...initialState });
+        this.setState({...initialState});
         clear();
         loadList(false, true);
     };
@@ -113,8 +113,8 @@ class UserCard extends Component {
     };
 
     handleRoleChange = (event, { name, value }) => {
-        this.handleChange(event, { name, value });
-        this.handleChange(event, { name: 'carrierId', value: null });
+        this.handleChange(event, {name, value});
+        this.handleChange(event, {name: 'carrierId', value: null});
     };
 
     mapProps = () => {
@@ -136,7 +136,7 @@ class UserCard extends Component {
     handleCreate = () => {
         const { createUser } = this.props;
 
-        createUser({ params: this.mapProps(), callbackFunc: this.confirmClose });
+        createUser({params: this.mapProps(), callbackFunc: this.confirmClose});
     };
 
     render() {

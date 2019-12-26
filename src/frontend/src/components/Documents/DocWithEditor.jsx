@@ -112,6 +112,7 @@ const DocWithEditor = ({
                         id: document.id,
                         callbackSuccess: () => {
                             getDocuments();
+                            load && load();
                             setConfirmation({ open: false });
                         },
                     }),

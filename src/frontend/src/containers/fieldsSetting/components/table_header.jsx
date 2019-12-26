@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label, Table } from 'semantic-ui-react';
+import {Label, Table} from 'semantic-ui-react';
 
 const TableHeader = ({ statusList, t }) => {
     return (

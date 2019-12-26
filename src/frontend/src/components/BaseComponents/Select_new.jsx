@@ -18,7 +18,7 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { debounce } from 'throttle-debounce';
 
 const Select = ({
-    value = {},
+                    value = {},
     onChange,
     placeholder = '',
     isDisabled,
@@ -36,7 +36,7 @@ const Select = ({
     isRequired,
     autoComplete,
     children,
-                    upward,
+                    extSearchParams
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -78,7 +78,7 @@ const Select = ({
     const handleChange = (e, { value }) => {
         setSearchQuery('');
         toggle(false);
-        onChange(e, { value: value ? value : null, name });
+        onChange(e, {value: value ? value : null, name});
         handleClose();
     };
 
@@ -87,6 +87,7 @@ const Select = ({
             getLookupRequest({
                 name: source,
                 isForm: true,
+                extSearchParams
             }),
         );
         toggle(true);
@@ -150,18 +151,18 @@ const Select = ({
                     onSearchChange={handleSearchChange}
                     onFocus={handleFocus}
                     open={open}
-                    upward={upward}
                     onChange={handleChange}
                 >
                     <div role="listbox" className={`menu transition`} ref={context}>
                         {valuesList && valuesList.length ? (
                             valuesList.map(item => (
                                 <Dropdown.Item
+                                    style={item.isBulkUpdateOnly ? {color: '#9a0000'}: {}}
                                     key={item.value}
                                     selected={value && item.value === value.value}
                                     active={value && item.value === value.value}
                                     value={item.value}
-                                    onClick={e => handleChange(e, { value: item })}
+                                    onClick={e => handleChange(e, {value: item})}
                                 >
                                     {item.name}
                                 </Dropdown.Item>

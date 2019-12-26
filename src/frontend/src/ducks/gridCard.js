@@ -4,8 +4,8 @@ import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
-import { SETTINGS_TYPE_HIDE } from '../constants/formTypes';
-import { errorMapping } from '../utils/errorMapping';
+import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
+import {errorMapping} from '../utils/errorMapping';
 
 //*  TYPES  *//
 
@@ -365,7 +365,7 @@ function* getCardSaga({ payload }) {
 
 function* isUniqueNumberSaga({ payload }) {
     try {
-        const { number, fieldName, errorText, callbackSuccess } = payload;
+        const {number, fieldName, errorText, callbackSuccess} = payload;
         const result = yield postman.post('/orders/findNumber', { number, isPartial: false });
 
         if (result.length && result[0].name) {

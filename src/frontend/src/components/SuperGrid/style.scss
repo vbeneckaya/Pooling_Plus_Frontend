@@ -287,10 +287,30 @@ tbody {
         button {
             margin-bottom: 8px;
         }
+
+        &_button {
+            background-color: transparent !important;
+            color: #4d4d4d !important;
+            font-weight: 500;
+            text-transform: uppercase !important;
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.06) !important;
+            }
+        }
     }
 
     .column {
     }
+}
+
+.grid-marker {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 7px!important;
+    top: 0;
+    background-color: #18A8CC;
+    z-index: 10;
 }
 
 .filter-popup > div {

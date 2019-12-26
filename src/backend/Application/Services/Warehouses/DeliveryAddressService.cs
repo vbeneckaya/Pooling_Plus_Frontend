@@ -23,7 +23,7 @@ namespace Application.Services.Warehouses
             Guid? clientIdValue = clientId.ToGuid();
             var entities = _dataService.GetDbSet<Warehouse>()
                                        .Where(x => !string.IsNullOrEmpty(x.Address)
-                                                && (clientIdValue == null || x.CompanyId == clientIdValue)
+                                                && (clientIdValue == null || x.ClientId == clientIdValue)
                                                 && (string.IsNullOrEmpty(deliveryCity) || x.City == deliveryCity))
                                        .OrderBy(x => x.Address)
                                        .ToList();

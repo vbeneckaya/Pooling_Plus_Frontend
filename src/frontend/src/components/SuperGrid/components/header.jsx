@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, Grid, Popup } from 'semantic-ui-react';
+import {Button, Grid, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ import {
 import Icon from '../../CustomIcon';
 
 const Header = ({
-    isCreateBtn,
+                    isCreateBtn,
     searchValue,
     searchOnChange,
     counter,
@@ -30,9 +30,9 @@ const Header = ({
     loadList,
     name,
     setSelected,
-    representationName,
+                    representationName,
     filter,
-    goToCard,
+                    goToCard,
 }) => {
     const { t } = useTranslation();
 
@@ -108,14 +108,14 @@ const Header = ({
                     />
                 </Grid.Column>
                 <Grid.Column width={1} verticalAlign="middle">
-                    <span className="records-counter">{t('totalCount', { count: counter })}</span>
+                    <span className="records-counter">{t('totalCount', {count: counter})}</span>
                 </Grid.Column>
                 <Grid.Column width={10} className="grid-right-elements">
                     {isCreateBtn && (
                         <Popup
                             content={t('add_record')}
                             position="bottom right"
-                            trigger={<Button icon="add" onClick={handleGoToCard} />}
+                            trigger={<Button icon="add" onClick={handleGoToCard}/>}
                         />
                     )}
                     {isImportBtn && (
@@ -156,7 +156,7 @@ const Header = ({
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
                             >
-                                <Icon name="clear-filter" />
+                                <Icon name="clear-filter"/>
                             </Button>
                         }
                     />
@@ -171,7 +171,7 @@ const Header = ({
             <input
                 type="file"
                 ref={fileUploader}
-                style={{ display: 'none' }}
+                style={{display: 'none'}}
                 onInput={onFilePicked}
             />
         </Grid>

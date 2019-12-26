@@ -97,9 +97,9 @@ export const listSelector = createSelector(
                       name: t(item.name),
                       isActive: item.isActive,
                   }))
-                  .filter(
-                      x =>
-                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                .filter(
+                    x =>
+                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   )
             : [],
 );
@@ -129,9 +129,9 @@ export const totalCounterSelector = createSelector(
                       value: item.value,
                       name: isTranslate ? t(item.name) : item.name,
                   }))
-                  .filter(
-                      x =>
-                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                .filter(
+                    x =>
+                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   ).length
             : 0,
 );
@@ -153,9 +153,9 @@ export const listFromSelectSelector = createSelector(
                       value: item.value,
                       name: isTranslate ? t(item.name) : item.name,
                   }))
-                  .filter(
-                      x =>
-                          filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
+                .filter(
+                    x =>
+                        filter ? (x.name ? x.name.toLowerCase().includes(filter) : false) : true,
                   )
                   .slice(0, counter)
             : [];
@@ -166,10 +166,10 @@ export const listFromSelectSelector = createSelector(
 
 function* getLookupSaga({ payload }) {
     try {
-        const { name, isForm, isSearch, callbackSuccess, callbackFunc } = payload;
+        const {name, isForm, isSearch, callbackSuccess, callbackFunc, extSearchParams} = payload;
         const result = yield postman[isSearch ? 'post' : 'get'](
             `/${name}/${isSearch ? 'search' : 'forSelect'}`,
-            {},
+            extSearchParams ? {params: extSearchParams} : {},
         );
 
         if (isForm) {

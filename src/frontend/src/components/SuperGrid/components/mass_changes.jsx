@@ -75,6 +75,7 @@ const MassChanges = ({ gridName, load }) => {
                                 {...column}
                                 value={changValue}
                                 upward
+                                isEmptyValue
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
                             <Button

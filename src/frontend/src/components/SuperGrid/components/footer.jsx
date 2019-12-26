@@ -76,16 +76,17 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName, selectedRows 
                         {groupActions
                             ? groupActions().require.map(action => (
                                   <Button
+                                      className="footer_actions_button"
                                       key={action.name}
-                                      color={action.color}
-                                      content={action.name}
                                       loading={action.loading}
                                       disabled={action.loading}
-                                      icon={action.icon}
                                       size="mini"
                                       compact
                                       onClick={() => action.action(action.ids, clearSelectedRows)}
-                                  />
+                                  >
+                                      <Icon name="circle" color={action.color}/>
+                                      {action.name}
+                                  </Button>
                               ))
                             : null}
                         {groupActions && groupActions().other.length ? (

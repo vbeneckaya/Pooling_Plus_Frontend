@@ -51,7 +51,7 @@ class Result extends Component {
                     rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
-                            className={`grid-row${row.highlightForConfirmed ? ' pink' : ''}${
+                            className={`grid-row${
                                 selectedRows.has(row.id) ? ' grid-row-selected' : ''
                             }`}
                             data-grid-id={row.id}
@@ -63,6 +63,7 @@ class Result extends Component {
                                     e.stopPropagation();
                                 }}
                             >
+                                <div className={`${row.highlightForConfirmed ? 'grid-marker' : ''}`} />
                                 <CustomCheckbox
                                     checked={!!selectedRows.has(row.id)}
                                     disabled={disabledCheck(row)}

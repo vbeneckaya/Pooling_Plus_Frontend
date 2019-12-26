@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { historySelector, progressSelector } from '../../../../ducks/history';
-import { Dimmer, Grid, Loader } from 'semantic-ui-react';
-import { dateToUTC } from '../../../../utils/dateTimeFormater';
+import {useSelector} from 'react-redux';
+import {historySelector, progressSelector} from '../../../../ducks/history';
+import {Dimmer, Grid, Loader} from 'semantic-ui-react';
+import {dateToUTC} from '../../../../utils/dateTimeFormater';
 
 const History = () => {
     const history = useSelector(state => historySelector(state));
@@ -12,9 +12,9 @@ const History = () => {
     return (
         <div className="tabs-card tabs-card_history">
             <Grid>
-                <Dimmer active={loading} inverted>
+              {/*  <Dimmer active={loading} inverted>
                     <Loader size="huge">Loading</Loader>
-                </Dimmer>
+                </Dimmer>*/}
                 {(history || []).map((historyItem, i) => (
                     <Grid.Row key={i}>
                         <Grid.Column width={5}>

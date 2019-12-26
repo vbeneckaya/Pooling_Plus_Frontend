@@ -30,9 +30,9 @@ const Documents = ({gridName, cardId, isEditPermissions, load}) => {
 
     return (
         <div className="flex-container tabs-card">
-            <Dimmer active={loading} inverted>
+          {/*  <Dimmer active={loading} inverted>
                 <Loader size="huge">Loading</Loader>
-            </Dimmer>
+            </Dimmer>*/}
             {documents.map((document, index) => (
                 <DocWithEditor
                     key={document.fileId}

@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Label } from 'semantic-ui-react';
-import { sortFunc } from '../../utils/sort';
+import {sortFunc} from '../../utils/sort';
 
 const DragAndDropFields = ({ type, fieldsConfig, fieldsList, search, onChange }) => {
     /* let showed = (fieldsConfig.order || [])
@@ -86,11 +86,11 @@ class DnDList extends React.Component {
         if (prevProps.left !== this.props.left || prevProps.right !== this.props.right) {
             this.state = {
                 items: sortFunc(
-                    this.props.left.map(x => ({ id: x.displayNameKey, content: x })),
+                    this.props.left.map(x => ({id: x.displayNameKey, content: x})),
                     this.props.t,
                     'id',
                 ),
-                selected: this.props.right.map(x => ({ id: x.displayNameKey, content: x })),
+                selected: this.props.right.map(x => ({id: x.displayNameKey, content: x})),
             };
         }
     }
