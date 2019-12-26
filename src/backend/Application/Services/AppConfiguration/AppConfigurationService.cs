@@ -1,5 +1,6 @@
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
+using Application.Services.Clients;
 using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
@@ -10,14 +11,17 @@ using Application.Services.Tonnages;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
 using Application.Services.Warehouses;
+using DAL.Services;
 using Domain.Enums;
+using Domain.Persistables;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
+using Domain.Services.Clients;
+using Domain.Services.Companies;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
-using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
@@ -31,8 +35,6 @@ using Domain.Services.Warehouses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Services.Clients;
-using Application.Services.Clients;
 
 namespace Application.Services.AppConfiguration
 {
@@ -41,19 +43,22 @@ namespace Application.Services.AppConfiguration
     {
         private readonly IIdentityService _identityService;
         private readonly IUserProvider _userProvider;
+        private readonly ICommonDataService _dataService;
         private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
         private readonly Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>> _dictionaryConfigurations = new Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>>();
 
         public AppConfigurationService(
-            IIdentityService identityService, 
-            IUserProvider userProvider, 
+            IIdentityService identityService,
+            IUserProvider userProvider,
+            ICommonDataService dataService,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService)
         {
             _identityService = identityService;
             _userProvider = userProvider;
+            _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldPropertiesService = fieldPropertiesService;
 
@@ -111,6 +116,9 @@ namespace Application.Services.AppConfiguration
 
         public void InitDictionariesConfiguration()
         {
+            var userId = _userProvider.GetCurrentUserId();
+            var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
+
             _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
             {
                 var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
@@ -318,11 +326,15 @@ namespace Application.Services.AppConfiguration
 
             _dictionaryConfigurations.Add(typeof(CompanyDto), (roleId) =>
             {
+                var canEditCompanies = _identityService.HasPermissions(RolePermissions.CompaniesEdit);
+
+                if (!canEditCompanies) return null;
+
                 var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<CompaniesService>(),
-                    CanCreateByForm = true,
+                    CanCreateByForm = canEditCompanies,
                     CanExportToExcel = true,
                     CanImportFromExcel = false,
                     ShowOnHeader = false,
