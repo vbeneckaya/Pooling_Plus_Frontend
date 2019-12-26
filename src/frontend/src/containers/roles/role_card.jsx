@@ -4,18 +4,20 @@ import { withTranslation } from 'react-i18next';
 import {Button, Dimmer, Form, Input, Loader, Modal, Tab} from 'semantic-ui-react';
 import {
     allActionsSelector,
-    allPermissionsSelector, clearRolesCard,
+    allPermissionsSelector,
+    clearRolesCard,
     clearRolesInfo,
-    createRoleRequest, errorSelector,
+    createRoleRequest,
+    errorSelector,
     getAllActionsRequest,
     getAllPermissionsRequest,
     getRoleCardRequest,
     progressSelector,
     roleCardSelector,
 } from '../../ducks/roles';
-import {sortFunc} from "../../utils/sort";
-import FormField from "../../components/BaseComponents";
-import {TEXT_TYPE} from "../../constants/columnTypes";
+import {sortFunc} from '../../utils/sort';
+import FormField from '../../components/BaseComponents';
+import {TEXT_TYPE} from '../../constants/columnTypes';
 
 class RoleCard extends Component {
     constructor(props) {
@@ -26,7 +28,7 @@ class RoleCard extends Component {
             form: {
                 name: '',
                 permissions: [],
-                actions: []
+                actions: [],
             },
         };
     }
@@ -178,14 +180,16 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(permission.name)}
                                                         value={permission.code}
-                                                        checked={permissions && permissions.includes(
-                                                            permission.code,
-                                                        )}
-                                                        disabled={permissions &&
-                                                            ([2, 4, 5, 6].includes(
-                                                                permission.code,
+                                                        checked={
+                                                            permissions &&
+                                                            permissions.includes(permission.code)
+                                                        }
+                                                        disabled={
+                                                            (permissions &&
+                                                                ([2, 4, 5, 6].includes(
+                                                                    permission.code,
                                                                 ) &&
-                                                                !permissions.includes(1)) ||
+                                                                    !permissions.includes(1))) ||
                                                             ([10, 11, 12].includes(
                                                                 permission.code,
                                                                 ) &&
@@ -207,7 +211,9 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(action)}
                                                         value={action}
-                                                        checked={actions && actions.includes(action)}
+                                                        checked={
+                                                            actions && actions.includes(action)
+                                                        }
                                                         onChange={this.handleActions}
                                                     />
                                                 </Form.Field>
@@ -224,7 +230,9 @@ class RoleCard extends Component {
                                                     <Form.Checkbox
                                                         label={t(action)}
                                                         value={action}
-                                                        checked={actions && actions.includes(action)}
+                                                        checked={
+                                                            actions && actions.includes(action)
+                                                        }
                                                         onChange={this.handleActions}
                                                     />
                                                 </Form.Field>
@@ -253,7 +261,7 @@ const mapStateToProps = state => {
         loading: progressSelector(state),
         allPermissions: allPermissionsSelector(state),
         allActions: allActionsSelector(state),
-        error: errorSelector(state)
+        error: errorSelector(state),
     };
 };
 

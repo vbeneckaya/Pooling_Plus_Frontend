@@ -12,14 +12,12 @@ namespace Domain.Persistables
         /// Db primary key
         /// </summary>    
         public Guid Id { get; set; }
+
         /// <summary>
         /// Наименование склада
         /// </summary>
         public string WarehouseName { get; set; }
-        /// <summary>
-        /// SoldTo number
-        /// </summary>
-        public string SoldToNumber { get; set; }
+
         /// <summary>
         /// Индекс
         /// </summary>
@@ -67,11 +65,11 @@ namespace Domain.Persistables
         /// <summary>
         /// Склад клиента
         /// </summary>
-        public bool CustomerWarehouse { get; set; }
+        //public bool CustomerWarehouse { get; set; }
         /// <summary>
         /// Особенности комплектации
         /// </summary>
-        public string PickingFeatures { get; set; }
+        //public string PickingFeatures { get; set; }
         /// <summary>
         /// Способ доставки
         /// </summary>
@@ -91,9 +89,19 @@ namespace Domain.Persistables
         /// </summary>
         public Guid? CompanyId { get; set; }
 
+        /// <summary>
+        /// Клиент
+        /// </summary>
+        public Guid? ClientId { get; set; }
+
+        /// <summary>
+        /// GLN
+        /// </summary>
+        public string Gln { get; set; }
+
         public override string ToString()
         {
-            return WarehouseName;
+            return Address;
         }
     }
 }

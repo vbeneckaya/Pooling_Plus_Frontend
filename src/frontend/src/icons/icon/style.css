@@ -9,7 +9,8 @@
     font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^='icon-'],
+[class*=' icon-'] {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'icomoon' !important;
     speak: none;
@@ -28,6 +29,10 @@
 
 .icon-1 {
     font-size: 1.5em !important;
+}
+
+.icon-2 {
+    font-size: 1.8em !important;
 }
 
 .icon-9 {
@@ -63,46 +68,46 @@
 }
 
 .icon-checkbox:before {
-    content: "\e900";
+    content: '\e900';
 }
 
 .icon-checkbox-empty:before {
-    content: "\e901";
+    content: '\e901';
 }
 
 .icon-clear-filter:before {
-    content: "\e902";
+    content: '\e902';
     color: #676768;
 }
 
 .icon-delete:before {
-    content: "\e903";
+    content: '\e903';
 }
 
 .icon-file-download:before {
-    content: "\e904";
+    content: '\e904';
 }
 
 .icon-file-upload:before {
-    content: "\e905";
+    content: '\e905';
 }
 
 .icon-filter:before {
-    content: "\e906";
+    content: '\e906';
 }
 
 .icon-filter-full:before {
-    content: "\e907";
+    content: '\e907';
 }
 
 .icon-multi-checkbox:before {
-    content: "\e908";
+    content: '\e908';
 }
 
 .icon-multi-checkbox-empty:before {
-    content: "\e909";
+    content: '\e909';
 }
 
 .icon-multi-checkbox-some-outline:before {
-    content: "\e90a";
+    content: '\e90a';
 }

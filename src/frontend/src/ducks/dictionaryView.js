@@ -346,7 +346,9 @@ function* exportToExcelSaga({ payload }) {
         link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();*/
-        const res = yield downloader.post(`/${name}/exportToExcel`, filter.filter, {responseType: 'blob'});
+        const res = yield downloader.post(`/${name}/exportToExcel`, filter.filter, {
+            responseType: 'blob',
+        });
         const { data } = res;
         let headerLine = res.headers['content-disposition'];
         let startFileNameIndex = headerLine.indexOf('filename=') + 10;
@@ -361,7 +363,7 @@ function* exportToExcelSaga({ payload }) {
         yield put({ type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS });
     } catch (e) {
         yield put({
-            type: DICTIONARY_EXPORT_TO_EXCEL_ERROR
+            type: DICTIONARY_EXPORT_TO_EXCEL_ERROR,
         });
     }
 }

@@ -14,9 +14,12 @@ const TableBody = ({
     t,
     toggleHidden,
 }) => {
-    const handleOnChange = useCallback((e, {value, fieldName, status}) => {
-        changeSettings(fieldName, value, status, isExt);
-    }, [isExt]);
+    const handleOnChange = useCallback(
+        (e, {value, fieldName, status}) => {
+            changeSettings(fieldName, value, status, isExt);
+        },
+        [isExt],
+    );
 
     return (
         <Table.Row key={column.fieldName}>

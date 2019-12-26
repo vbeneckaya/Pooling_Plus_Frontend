@@ -43,7 +43,7 @@ const OrderCard = ({
                     />
                 ),
             },
-            /*{
+            {
                 menuItem: 'position',
                 render: () => (
                     <Position
@@ -55,7 +55,7 @@ const OrderCard = ({
                         settings={settings}
                     />
                 ),
-            },*/
+            },
         ];
         /*{
                 menuItem: 'returns',
@@ -76,6 +76,7 @@ const OrderCard = ({
                     <Documents
                         gridName={name}
                         cardId={id}
+                        load={load}
                         isEditPermissions={userPermissions.includes(5)}
                     />
                 ),

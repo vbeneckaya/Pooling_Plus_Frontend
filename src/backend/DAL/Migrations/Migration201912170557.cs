@@ -9,6 +9,7 @@ namespace DAL.Migrations
         public override void Apply()
         {
             Database.RemoveColumn("Orders", "ClientName");
+            Database.RemoveColumn("Orders", "SoldTo");
             Database.AddColumn("Orders", new Column("ClientId", DbType.Guid, ColumnProperty.Null));
         }
     }

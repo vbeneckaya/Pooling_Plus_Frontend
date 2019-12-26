@@ -121,7 +121,9 @@ export const representationSelector = createSelector(
                 if (actualItem) {
                     actualRepresentation.push({
                         ...actualItem,
-                        width: item.width
+                        width: item.width,
+                        filter: item.filter,
+                        sort: item.sort,
                     });
                 }
             });
@@ -155,7 +157,9 @@ function* getRepresentationsSaga({ payload }) {
             type: GET_REPRESENTATIONS_SUCCESS,
             payload: result.value ? JSON.parse(result.value) : {},
         });
-        callBackFunc && callBackFunc();
+        const columns = yield select(state => representationFromGridSelector(state, key));
+
+        callBackFunc && callBackFunc(columns);
     } catch (e) {
         yield put({
             type: GET_REPRESENTATIONS_ERROR,
@@ -172,7 +176,7 @@ function* saveRepresentationSaga({ payload }) {
         const params = {
             ...list,
             [name]: value.map(item => ({
-                ...item
+                ...item,
             })),
         };
 
@@ -266,6 +270,11 @@ function* deleteRepresentationSaga({ payload }) {
 
 function* setRepresentationSaga({ payload }) {
     try {
+        yield put(
+            getRepresentationsRequest({
+                key: payload.gridName,
+            }),
+        );
         const { callbackSuccess } = payload;
         const state = yield select(state => state.representations.representation);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));

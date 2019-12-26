@@ -157,15 +157,31 @@ input::-webkit-inner-spin-button {
      }*/
 }
 
-.ui.input:hover, .react-datepicker-wrapper:hover {
+.ui.input:hover,
+.react-datepicker-wrapper:hover {
     input {
-        border-color: rgba(34, 36, 38, .35) !important;
+        border-color: rgba(34, 36, 38, 0.35) !important;
         box-shadow: none;
     }
 }
 
 .ui.form textarea:hover {
-    border-color: rgba(34, 36, 38, .35) !important;
+    border-color: rgba(34, 36, 38, 0.35) !important;
     box-shadow: none;
 }
 
+.custom-checkbox {
+    position: relative;
+    input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    &_disabled {
+        opacity: .4;
+    }
+}

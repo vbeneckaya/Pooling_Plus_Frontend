@@ -14,7 +14,7 @@ class Search extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.value !== this.state.value && this.props.value !== prevProps.value) {
-            this.setState({value: this.props.value})
+            this.setState({value: this.props.value});
         }
     }
 

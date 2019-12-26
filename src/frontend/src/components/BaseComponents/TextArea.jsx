@@ -2,7 +2,18 @@ import React from 'react';
 import { Form, TextArea } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
 
-const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, text, isRequired, error}) => {
+const BigText = ({
+                     value,
+                     name,
+                     onChange,
+                     isDisabled,
+                     noLabel,
+                     className,
+                     rows,
+                     text,
+                     isRequired,
+                     error,
+                 }) => {
     const { t } = useTranslation();
 
     const getClassNames = () => {
@@ -22,8 +33,9 @@ const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, t
     return (
         <Form.Field>
             {!noLabel ? (
-                <label
-                    className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${isRequired ? " *" : ""}`}</label>
+                <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
+                    isRequired ? ' *' : ''
+                    }`}</label>
             ) : null}
             <TextArea
                 className={getClassNames()}
@@ -34,7 +46,9 @@ const BigText = ({value, name, onChange, isDisabled, noLabel, className, rows, t
                 value={value || ''}
                 onChange={onChange}
             />
-            {error && typeof error === 'string' ? <span className="label-error">{error}</span> : null}
+            {error && typeof error === 'string' ? (
+                <span className="label-error">{error}</span>
+            ) : null}
         </Form.Field>
     );
 };

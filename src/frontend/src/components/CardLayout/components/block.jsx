@@ -24,7 +24,7 @@ const Block = ({item, loading}) => {
             <div className="card-content-block_header">
                 <div>{t(item.menuItem)}</div>
                 <div className="card-content-block_header_accordion" onClick={toggleOpen}>
-                    <Icon name={open ? "angle down" : "angle up"}/>
+                    <Icon name={open ? 'angle down' : 'angle up'}/>
                 </div>
             </div>
             <div className={`card-content-block_${open ? 'open' : 'close'}`}>{item.render()}</div>

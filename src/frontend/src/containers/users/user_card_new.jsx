@@ -11,7 +11,8 @@ import {
     progressSelector,
     userCardSelector,
     errorSelector,
-    createUserRequest, saveProgressSelector,
+    createUserRequest,
+    saveProgressSelector,
 } from '../../ducks/users';
 
 const UserCard = props => {
@@ -60,7 +61,12 @@ const UserCard = props => {
                     <Button color="grey" onClick={handleClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" disabled={notChangeForm} loading={progress} onClick={handleSave}>
+                    <Button
+                        color="blue"
+                        disabled={notChangeForm}
+                        loading={progress}
+                        onClick={handleSave}
+                    >
                         {t('SaveButton')}
                     </Button>
                 </>
@@ -102,7 +108,7 @@ const UserCard = props => {
 
     const handleRoleChange = useCallback((event, {name, value}) => {
         handleChange(event, {name, value});
-        handleChange(event, {name: 'carrierId', value: null})
+        handleChange(event, {name: 'carrierId', value: null});
     }, []);
 
     const confirmClose = () => {
@@ -112,7 +118,7 @@ const UserCard = props => {
     const onClose = () => {
         history.push({
             pathname: location.state.pathname,
-            state: {...location.state}
+            state: {...location.state},
         });
     };
 
@@ -124,13 +130,18 @@ const UserCard = props => {
                 open: true,
                 content: t('confirm_close_dictionary'),
                 onCancel: confirmClose,
-                onConfirm: onClose
+                onConfirm: onClose,
             });
         }
     };
 
     return (
-        <CardLayout title={title} actionsFooter={getActionsFooter} onClose={handleClose} loading={loading}>
+        <CardLayout
+            title={title}
+            actionsFooter={getActionsFooter}
+            onClose={handleClose}
+            loading={loading}
+        >
             <Form className="user-form">
                 <FormField
                     type={TEXT_TYPE}

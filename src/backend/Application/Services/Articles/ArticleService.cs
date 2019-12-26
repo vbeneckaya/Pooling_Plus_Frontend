@@ -114,6 +114,11 @@ namespace Application.Services.Articles
                 };
             }
         }
+        public override Article FindByKey(ArticleDto dto)
+        {
+            return _dataService.GetDbSet<Article>()
+                .FirstOrDefault(i => i.Nart == dto.Nart);
+        }
 
         protected override IQueryable<Article> ApplySort(IQueryable<Article> query, SearchFormDto form)
         {

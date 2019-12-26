@@ -10,7 +10,8 @@ import {
     getLookupRequest,
     listFromSelectSelector,
     listSelector,
-    progressSelector, totalCounterSelector,
+    progressSelector,
+    totalCounterSelector,
     valuesListSelector,
 } from '../../ducks/lookup';
 import { PAGE_SIZE } from '../../constants/settings';
@@ -35,6 +36,7 @@ const Select = ({
     isRequired,
     autoComplete,
     children,
+                    extSearchParams
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -55,17 +57,23 @@ const Select = ({
     );
     const progress = false;
 
-    useEffect(() => {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-            setFilter(searchQuery);
-        }, 300);
-    }, [searchQuery]);
+    useEffect(
+        () => {
+            clearTimeout(timer.current);
+            timer.current = setTimeout(() => {
+                setFilter(searchQuery);
+            }, 300);
+        },
+        [searchQuery],
+    );
 
-    useEffect(() => {
-        context.current.scrollTop = 0;
-        setCounter(PAGE_SIZE);
-    }, [filter]);
+    useEffect(
+        () => {
+            context.current.scrollTop = 0;
+            setCounter(PAGE_SIZE);
+        },
+        [filter],
+    );
 
     const handleChange = (e, { value }) => {
         setSearchQuery('');
@@ -79,6 +87,7 @@ const Select = ({
             getLookupRequest({
                 name: source,
                 isForm: true,
+                extSearchParams
             }),
         );
         toggle(true);
@@ -148,6 +157,7 @@ const Select = ({
                         {valuesList && valuesList.length ? (
                             valuesList.map(item => (
                                 <Dropdown.Item
+                                    style={item.isBulkUpdateOnly ? {color: '#9a0000'}: {}}
                                     key={item.value}
                                     selected={value && item.value === value.value}
                                     active={value && item.value === value.value}

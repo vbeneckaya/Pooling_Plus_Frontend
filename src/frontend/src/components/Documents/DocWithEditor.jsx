@@ -24,6 +24,7 @@ const DocWithEditor = ({
     cardId,
     getDocuments,
     isEditPermissions,
+                           load,
 }) => {
     let [modalOpen, setModalOpen] = useState(false);
     let [confirmation, setConfirmation] = useState({ open: false });
@@ -36,9 +37,12 @@ const DocWithEditor = ({
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
 
-    useEffect(() => {
-        setDocument(currentDocument ? Object.assign({}, currentDocument) : null);
-    }, [currentDocument])
+    useEffect(
+        () => {
+            setDocument(currentDocument ? Object.assign({}, currentDocument) : null);
+        },
+        [currentDocument],
+    );
 
     const handleOpen = () => {
         dispatch(getDocumentTypesRequest());
@@ -46,6 +50,7 @@ const DocWithEditor = ({
     };
 
     const handleClose = () => {
+        load && load();
         setDocument(null);
         getDocuments();
         setModalOpen(false);
@@ -107,6 +112,7 @@ const DocWithEditor = ({
                         id: document.id,
                         callbackSuccess: () => {
                             getDocuments();
+                            load && load();
                             setConfirmation({ open: false });
                         },
                     }),

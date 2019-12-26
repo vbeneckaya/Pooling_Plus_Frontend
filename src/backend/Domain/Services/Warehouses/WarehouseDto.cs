@@ -12,8 +12,7 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Text), OrderNumber(1), IsRequired]
         public string WarehouseName { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(2), IsRequired]
-        public string SoldToNumber { get; set; }
+        //public string SoldToNumber { get; set; }
 
         public string PostalCode { get; set; }
 
@@ -22,7 +21,6 @@ namespace Domain.Services.Warehouses
 
         public string Area { get; set; }
 
-        [FieldType(FieldType.Text), OrderNumber(4)]
         public string City { get; set; }
 
         public string Street { get; set; }
@@ -38,9 +36,6 @@ namespace Domain.Services.Warehouses
 
         [FieldType(FieldType.Select, source: nameof(PickingTypes)), OrderNumber(6)]
         public LookUpDto PickingTypeId { get; set; }
-
-        [FieldType(FieldType.Text), OrderNumber(7)]
-        public string PickingFeatures { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(8)]
         public int? LeadtimeDays { get; set; }
@@ -62,6 +57,10 @@ namespace Domain.Services.Warehouses
 
         public string AdditionalInfo { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(Clients)), OrderNumber(11)]
+        public LookUpDto ClientId { get; set; }
 
+        [FieldType(FieldType.Text), OrderNumber(12)]
+        public string Gln { get; set; }
     }
 }

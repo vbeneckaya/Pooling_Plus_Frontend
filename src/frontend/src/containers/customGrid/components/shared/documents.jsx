@@ -10,7 +10,7 @@ import {
 } from '../../../../ducks/documents';
 import {Dimmer, Loader} from 'semantic-ui-react';
 
-const Documents = ({gridName, cardId, isEditPermissions}) => {
+const Documents = ({gridName, cardId, isEditPermissions, load}) => {
     const {t} = useTranslation();
     const dispatch = useDispatch();
 
@@ -30,14 +30,15 @@ const Documents = ({gridName, cardId, isEditPermissions}) => {
 
     return (
         <div className="flex-container tabs-card">
-            <Dimmer active={loading} inverted>
+          {/*  <Dimmer active={loading} inverted>
                 <Loader size="huge">Loading</Loader>
-            </Dimmer>
+            </Dimmer>*/}
             {documents.map((document, index) => (
                 <DocWithEditor
                     key={document.fileId}
                     gridName={gridName}
                     cardId={cardId}
+                    load={load}
                     document={document}
                     isEditPermissions={isEditPermissions}
                     getDocuments={getDocuments}
@@ -48,6 +49,7 @@ const Documents = ({gridName, cardId, isEditPermissions}) => {
             <DocWithEditor
                 gridName={gridName}
                 cardId={cardId}
+                load={load}
                 isEditPermissions={isEditPermissions}
                 getDocuments={getDocuments}
                 titleText={t('Add document')}

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Form, Grid, Icon } from 'semantic-ui-react';
-import {invokeMassUpdateRequest, progressMassUpdateSelector, updatesSelector} from '../../../ducks/gridActions';
+import {
+    invokeMassUpdateRequest,
+    progressMassUpdateSelector,
+    updatesSelector,
+} from '../../../ducks/gridActions';
 import FormField from '../../BaseComponents';
 import { TEXT_TYPE } from '../../../constants/columnTypes';
 
-const MassChanges = ({gridName, load}) => {
+const MassChanges = ({ gridName, load }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const updates = useSelector(state => updatesSelector(state)) || [];
@@ -19,10 +23,12 @@ const MassChanges = ({gridName, load}) => {
 
     useEffect(
         () => {
+            console.log('fieldParams', fieldParams);
             setValue(null);
             setColumn({
                 name: field,
                 type: fieldParams ? fieldParams.type : TEXT_TYPE,
+                source: fieldParams ? fieldParams.source : '',
                 noLabel: true,
                 isDisabled: !field,
                 placeholder: t('new_value'),
@@ -68,6 +74,8 @@ const MassChanges = ({gridName, load}) => {
                             <FormField
                                 {...column}
                                 value={changValue}
+                                upward
+                                isEmptyValue
                                 onChange={(e, { name, value }) => setValue(value)}
                             />
                             <Button

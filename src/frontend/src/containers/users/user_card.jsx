@@ -22,7 +22,7 @@ const initialState = {
     modalOpen: false,
     form: {},
     confirmation: {open: false},
-    notChangeForm: true
+    notChangeForm: true,
 };
 
 class UserCard extends Component {
@@ -78,7 +78,7 @@ class UserCard extends Component {
         const {t} = this.props;
 
         if (notChangeForm) {
-            this.confirmClose()
+            this.confirmClose();
         } else {
             this.setState({
                 confirmation: {
@@ -86,12 +86,12 @@ class UserCard extends Component {
                     content: t('confirm_close_dictionary'),
                     onCancel: () => {
                         this.setState({
-                            confirmation: {open: false}
-                        })
+                            confirmation: {open: false},
+                        });
                     },
-                    onConfirm: this.confirmClose
-                }
-            })
+                    onConfirm: this.confirmClose,
+                },
+            });
         }
     };
 
@@ -114,7 +114,7 @@ class UserCard extends Component {
 
     handleRoleChange = (event, { name, value }) => {
         this.handleChange(event, {name, value});
-        this.handleChange(event, {name: 'carrierId', value: null})
+        this.handleChange(event, {name: 'carrierId', value: null});
     };
 
     mapProps = () => {

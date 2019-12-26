@@ -101,8 +101,8 @@ export const clearFieldsSettings = () => {
 export const toggleHidenStateRequest = payload => {
     return {
         type: TOGGLE_HIDDEN_STATE_REQUEST,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -144,7 +144,11 @@ function* editFieldsSettingSaga({ payload = {} }) {
         const { params, callbackSuccess, isExt } = payload;
         const result = yield postman.post(`/${TYPE_API}/save`, {
             ...params,
-            forEntity: isExt ? params.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints' : params.forEntity,
+            forEntity: isExt
+                ? params.forEntity === ORDERS_GRID
+                    ? 'orderItems'
+                    : 'routePoints'
+                : params.forEntity,
         });
 
         yield put({
@@ -165,19 +169,23 @@ function* toggleHiddenStateSaga({payload}) {
         const {params, callbackSuccess, isExt} = payload;
         const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, {
             ...params,
-            forEntity: isExt ? params.forEntity === ORDERS_GRID ? 'orderItems' : 'routePoints' : params.forEntity,
+            forEntity: isExt
+                ? params.forEntity === ORDERS_GRID
+                    ? 'orderItems'
+                    : 'routePoints'
+                : params.forEntity,
         });
 
         yield put({
-            type: TOGGLE_HIDDEN_STATE_SUCCESS
+            type: TOGGLE_HIDDEN_STATE_SUCCESS,
         });
 
         callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
             type: TOGGLE_HIDDEN_STATE_ERROR,
-            payload: e
-        })
+            payload: e,
+        });
     }
 }
 

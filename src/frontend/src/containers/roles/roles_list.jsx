@@ -14,7 +14,7 @@ import {
 } from '../../ducks/roles';
 import {Button, Icon} from 'semantic-ui-react';
 import RoleCard from './role_card';
-import {NEW_ROLE_LINK, ROLE_LINK} from "../../router/links";
+import {NEW_ROLE_LINK, ROLE_LINK} from '../../router/links';
 
 const newModal = (t, load) => (
     <RoleCard title={t('create_role_title')} id={null} loadList={load}>
@@ -48,7 +48,7 @@ export class RolesList extends Component {
     getCard = ({row, loadList, name}) => {
         const { t } = this.props;
 
-        return <RoleCard title={t('edit_role', { name: row.name })} loadList={loadList}/>
+        return <RoleCard title={t('edit_role', {name: row.name})} loadList={loadList}/>;
     };
 
     render() {
@@ -57,7 +57,7 @@ export class RolesList extends Component {
         return (
             <TableInfo
                 headerRow={rolesColumns}
-                name='roles'
+                name="roles"
                 loading={loading}
                 className="wider ui container container-margin-top-bottom"
                 list={list}

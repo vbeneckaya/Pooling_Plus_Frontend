@@ -63,7 +63,7 @@ namespace Domain.Persistables
 
         public override string ToString()
         {
-            return WarehouseName;
+            return Address;
         }
     }
 }

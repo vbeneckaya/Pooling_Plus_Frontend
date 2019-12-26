@@ -28,7 +28,8 @@ import { SETTINGS_TYPE_HIDE, SETTINGS_TYPE_SHOW } from '../../constants/formType
 import CheckBox from './Checkbox';
 import { clearError } from '../../ducks/gridCard';
 import SoldToField from './SoldToField';
-import PasswordField from "./Password";
+import PasswordField from './Password';
+import Number from "./Number";
 
 const getTypeFacet = {
     [TEXT_TYPE]: <Text />,
@@ -38,13 +39,13 @@ const getTypeFacet = {
     [LOCAL_DATE_TIME]: <DateTime />,
     [TIME_TYPE]: <Text/>,
     [SELECT_TYPE]: <Select />,
-    [NUMBER_TYPE]: <Text />,
+    [NUMBER_TYPE]: <Number/>,
     [BOOLEAN_TYPE]: <Bool />,
     [ENUM_TYPE]: <Select isTranslate />,
     [BIG_TEXT_TYPE]: <TextArea />,
     [CHECKBOX_TYPE]: <CheckBox />,
     [SOLD_TO_TYPE]: <SoldToField />,
-    [PASSWORD_TYPE]: <PasswordField/>
+    [PASSWORD_TYPE]: <PasswordField/>,
 };
 
 const FormField = props => {
@@ -53,21 +54,21 @@ const FormField = props => {
     let params = {
         ...props,
         type: props.typeValue,
-        key: props.name
+        key: props.name,
     };
 
     if (!props.text && props.displayNameKey) {
         params = {
             ...params,
-            text: props.displayNameKey
-        }
+            text: props.displayNameKey,
+        };
     }
 
     if (props.type === TIME_TYPE) {
         params = {
             ...params,
-            type: 'time'
-        }
+            type: 'time',
+        };
     }
 
     if ((props.settings && props.settings === SETTINGS_TYPE_SHOW) || props.isReadOnly) {
@@ -85,11 +86,14 @@ const FormField = props => {
         };
     }
 
-    useEffect(() => {
-        if (props.error) {
-            dispatch(clearError && clearError(props.name));
-        }
-    }, [props.value]);
+    useEffect(
+        () => {
+            if (props.error) {
+                dispatch(clearError && clearError(props.name));
+            }
+        },
+        [props.value],
+    );
 
     /* switch (props.type || (props.column && props.column.type)) {
          case TEXT_TYPE:
@@ -118,10 +122,7 @@ const FormField = props => {
              return <Text {...params} />
      }*/
 
-    return React.cloneElement(
-        getTypeFacet[props.type] || <Text/>,
-        {...params},
-    );
+    return React.cloneElement(getTypeFacet[props.type] || <Text/>, {...params});
 };
 
 export default React.memo(FormField);

@@ -21,8 +21,11 @@ const SelectValue = ({value, source, indexRow, indexColumn, showRawValue, width,
 
     const valueText = lookup && lookup.length && lookup.find(x => x.value === value);
 */
-    return <TextCropping width={width}
-                         indexColumn={indexColumn}>{value ? showRawValue ? value : valueText : ''}</TextCropping>;
+    return (
+        <TextCropping width={width} indexColumn={indexColumn}>
+            {value ? (showRawValue ? value : valueText) : ''}
+        </TextCropping>
+    );
 };
 
 export default SelectValue;

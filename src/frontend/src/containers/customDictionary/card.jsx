@@ -8,7 +8,8 @@ import {
     cardSelector,
     clearDictionaryCard,
     clearDictionaryInfo,
-    columnsSelector, deleteDictionaryEntryRequest,
+    columnsSelector,
+    deleteDictionaryEntryRequest,
     errorSelector,
     getCardRequest,
     saveDictionaryCardRequest,
@@ -130,7 +131,7 @@ class Card extends Component {
             callbackSuccess: () => {
                 load && load(form);
                 this.confirmClose();
-            }
+            },
         });
     };
 
@@ -140,8 +141,8 @@ class Card extends Component {
         deleteEntry({
             name,
             id,
-            callbackSuccess: this.confirmClose
-        })
+            callbackSuccess: this.confirmClose,
+        });
     };
 
     render() {
@@ -234,8 +235,8 @@ const mapDispatchToProps = dispatch => {
             dispatch(clearDictionaryCard());
         },
         deleteEntry: params => {
-            dispatch(deleteDictionaryEntryRequest(params))
-        }
+            dispatch(deleteDictionaryEntryRequest(params));
+        },
     };
 };
 

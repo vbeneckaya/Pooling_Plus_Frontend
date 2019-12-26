@@ -1,5 +1,5 @@
 import React from 'react';
-import {Label, Table} from "semantic-ui-react";
+import {Label, Table} from 'semantic-ui-react';
 
 const TableHeader = ({ statusList, t }) => {
     return (
@@ -21,7 +21,7 @@ const TableHeader = ({ statusList, t }) => {
                 ))}
             </Table.Row>
         </>
-    )
+    );
 };
 
 export default React.memo(TableHeader);

@@ -4,7 +4,7 @@ import {Checkbox, Dimmer, Form, Input, Loader, Visibility} from 'semantic-ui-rea
 import {useSelector, useDispatch} from 'react-redux';
 import { clearLookup, getLookupRequest, listSelector, progressSelector } from '../../ducks/lookup';
 import {PAGE_SIZE} from '../../constants/settings';
-import Search from "../Search";
+import Search from '../Search';
 
 const Facet = ({t, source, name, onChange, value}) => {
     const dispatch = useDispatch();
@@ -30,10 +30,13 @@ const Facet = ({t, source, name, onChange, value}) => {
         [valuesList, counter],
     );
 
-    useEffect(() => {
-        context.current.scrollTop = 0;
-        setCounter(PAGE_SIZE);
-    }, [filter]);
+    useEffect(
+        () => {
+            context.current.scrollTop = 0;
+            setCounter(PAGE_SIZE);
+        },
+        [filter],
+    );
 
     const changeItems = () => {
         setItems(valuesList.slice(0, counter));
@@ -73,7 +76,6 @@ const Facet = ({t, source, name, onChange, value}) => {
     };
 
     const scroll = () => {
-
         if (counter < valuesList.length) {
             setCounter(prevState => prevState + PAGE_SIZE);
         }
@@ -134,7 +136,7 @@ const Facet = ({t, source, name, onChange, value}) => {
                             onTopVisible={scroll}
                             style={{
                                 position: 'absolute',
-                                bottom: "20px",
+                                bottom: '20px',
                                 left: 0,
                                 right: 0,
                                 zIndex: -1,

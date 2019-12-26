@@ -13,5 +13,4 @@ export const DICTIONARY_CARD_LINK = '/dictionary/:name/:id';
 export const DICTIONARY_NEW_LINK = '/dictionary/:name/new';
 export const FIELDS_SETTING_LINK = '/fields_setting';
 
-
 export const customPage = [ROLES_LINK, USERS_LINK, FIELDS_SETTING_LINK];

@@ -144,23 +144,22 @@ const SoldToField = props => {
                 defaultForm={defaultForm}
                 load={handleLoad}
             >*/}
-            {
-                modalOpen
-                && <Card
+            {modalOpen && (
+                <Card
                     openModal={modalOpen}
                     isModal
                     match={{
                         params: {
                             name: 'warehouses',
-                            id: notSoldTo ? null : soldToItem.id
-                        }
+                            id: notSoldTo ? null : soldToItem.id,
+                        },
                     }}
                     load={handleLoad}
                     columns={notSoldTo ? columns : columnsEdit}
                     defaultForm={notSoldTo ? defaultForm : null}
                     onClose={handleCloseModal}
                 />
-            }
+            )}
         </Select>
     );
 };

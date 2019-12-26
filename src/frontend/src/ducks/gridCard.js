@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { roleIdSelector } from './profile';
 import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
 import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
-import {errorMapping} from "../utils/errorMapping";
+import {errorMapping} from '../utils/errorMapping';
 
 //*  TYPES  *//
 
@@ -123,15 +123,15 @@ export default (state = initial, { type, payload }) => {
                     ...state.error,
                     {
                         name: payload.fieldName,
-                        message: payload.errorText
-                    }
-                ]
+                        message: payload.errorText,
+                    },
+                ],
             };
         case CLEAR_GRID_CARD:
             return {
                 ...state,
                 error: [],
-                data: {}
+                data: {},
             };
         case CLEAR_ERROR:
             return {
@@ -141,7 +141,7 @@ export default (state = initial, { type, payload }) => {
         case ADD_ERROR:
             return {
                 ...state,
-                error: [...state.error, payload]
+                error: [...state.error, payload],
             };
         default:
             return state;
@@ -194,22 +194,22 @@ export const isUniqueNumberRequest = payload => {
 
 export const clearGridCard = () => {
     return {
-        type: CLEAR_GRID_CARD
-    }
+        type: CLEAR_GRID_CARD,
+    };
 };
 
 export const clearError = payload => {
     return {
         type: CLEAR_ERROR,
-        payload
-    }
+        payload,
+    };
 };
 
 export const addError = payload => {
     return {
         type: ADD_ERROR,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//
@@ -311,7 +311,7 @@ function* editCardSaga({ payload }) {
             toast.error(result.error);
             yield put({
                 type: EDIT_GRID_CARD_ERROR,
-                payload: result.errors
+                payload: result.errors,
             });
         } else {
             yield put({
@@ -323,7 +323,7 @@ function* editCardSaga({ payload }) {
         }
     } catch (error) {
         yield put({
-            type: EDIT_GRID_CARD_ERROR
+            type: EDIT_GRID_CARD_ERROR,
         });
     }
 }
@@ -374,14 +374,14 @@ function* isUniqueNumberSaga({ payload }) {
                 payload: {
                     fieldName,
                     errorText,
-                }
+                },
             });
         } else {
             callbackSuccess && callbackSuccess();
         }
     } catch (e) {
         yield put({
-            type: IS_UNIQUE_NUMBER_ERROR
+            type: IS_UNIQUE_NUMBER_ERROR,
         });
     }
 }

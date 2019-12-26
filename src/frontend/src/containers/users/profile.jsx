@@ -84,7 +84,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
                     form: passwordForm,
                     t,
                     callbackSuccess: () => {
-                        setPassword({})
+                        setPassword({});
                     },
                 }),
             );

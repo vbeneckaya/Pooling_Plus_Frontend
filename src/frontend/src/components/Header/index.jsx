@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import {
     dictionariesHeaderSelector,
-    dictionariesMenuSelector, getProfileSettingsRequest,
+    dictionariesMenuSelector,
+    getProfileSettingsRequest,
     gridsMenuSelector,
     otherMenuSelector,
     rolesAndUsersMenu,
@@ -150,7 +151,9 @@ const Header = () => {
                                 <Menu.Menu>
                                     <Dropdown text={`${userName} (${userRole})`} item>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item onClick={onOpen}>{t('profile_settings')}</Dropdown.Item>
+                                            <Dropdown.Item onClick={onOpen}>
+                                                {t('profile_settings')}
+                                            </Dropdown.Item>
                                             <Dropdown.Item onClick={logOut}>
                                                 {t('exit')}
                                             </Dropdown.Item>

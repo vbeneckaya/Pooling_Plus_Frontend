@@ -20,7 +20,6 @@ const Facet = ({name, text, value, onChange, sort, setSort}) => {
         />
     );
 
-
     return (
         <div className="facet-input">
             <Input

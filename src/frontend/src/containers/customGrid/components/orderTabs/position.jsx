@@ -40,7 +40,7 @@ const EditField = ({value, name, onChange, datalist, error = [], isDisabled}) =>
 const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
     const {t} = useTranslation();
     const dispatch = useDispatch();
-    let [items, setItems] = useState([...form.items || []]);
+    let [items, setItems] = useState([...(form.items || [])]);
     let [indexEdit, setIndexEdit] = useState(null);
     let [error, setError] = useState([]);
 
@@ -105,18 +105,21 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
             setError([]);
         } else {
             if (!nart) {
-                setError(prevState => ([...prevState, 'nart']));
+                setError(prevState => [...prevState, 'nart']);
             } else {
-                setError((prevState = []) => prevState && prevState.filter(item => item !== 'nart'));
+                setError(
+                    (prevState = []) => prevState && prevState.filter(item => item !== 'nart'),
+                );
             }
 
             if (!(quantity && parseInt(quantity) > 0 && !quantity.toString().includes('.'))) {
-                setError(prevState => ([...prevState, 'quantity']));
+                setError(prevState => [...prevState, 'quantity']);
             } else {
-                setError((prevState = []) => prevState && prevState.filter(item => item !== 'quantity'));
+                setError(
+                    (prevState = []) => prevState && prevState.filter(item => item !== 'quantity'),
+                );
             }
         }
-
     };
 
     const handleChangeField = (e, {name, value}) => {
@@ -216,7 +219,10 @@ const Position = ({form, onChange, gridName, load, settings: baseSettings}) => {
                                                 )}
                                             </>
                                         ))}
-                                        <Table.Cell textAlign="right" className="table-action-buttons">
+                                        <Table.Cell
+                                            textAlign="right"
+                                            className="table-action-buttons"
+                                        >
                                             {index === indexEdit ? (
                                                 <>
                                                     <Button

@@ -27,15 +27,17 @@ const Information = ({
     const handleChangeSoldTo = useCallback((e, {name, value}) => {
         onChange(e, {
             name,
-            value: value && value.value ? {
-                value: value.value,
-                name: value.value
-            } : null,
+            value:
+                value && value.value
+                    ? {
+                        value: value.value,
+                        name: value.value,
+                    }
+                    : null,
         });
         onChange(e, {name: 'clientName', value: value ? value.warehouseName : null});
         onChange(e, {name: 'deliveryAddress', value: value ? value.address : null});
     }, []);
-
 
     return (
         <Form className="tabs-card">

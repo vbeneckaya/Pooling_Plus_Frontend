@@ -1,7 +1,7 @@
 import {select, take, spawn, put} from 'redux-saga/effects';
 import {createSelector} from 'reselect';
-import {clearDictionaryInfo} from "./dictionaryView";
-import {autoUpdateStop} from "./gridList";
+import {clearDictionaryInfo} from './dictionaryView';
+import {autoUpdateStop} from './gridList';
 
 const routeSelector = state => state.router;
 

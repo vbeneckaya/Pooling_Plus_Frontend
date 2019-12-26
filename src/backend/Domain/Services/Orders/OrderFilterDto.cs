@@ -288,6 +288,11 @@
         public string ShippingWarehouseId { get; set; }
 
         /// <summary>
+        /// DeliveryWarehouseId
+        /// </summary>
+        public string DeliveryWarehouseId { get; set; }
+
+        /// <summary>
         /// Транспортная компания
         /// </summary>
         public string CarrierId { get; set; }

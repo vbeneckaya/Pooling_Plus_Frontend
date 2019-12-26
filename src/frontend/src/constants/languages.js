@@ -5,7 +5,7 @@ export default [
         flag: 'ru',
     },
     {
-        text: 'Английский',
+        text: 'English',
         value: 'en',
         flag: 'us',
     },

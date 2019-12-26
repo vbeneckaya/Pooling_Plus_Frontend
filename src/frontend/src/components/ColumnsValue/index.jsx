@@ -35,7 +35,7 @@ const CellValue = ({
                        cardLink,
                        gridName,
                        rowId,
-                       goToCard
+                       goToCard,
                    }) => {
     if (type === SELECT_TYPE) {
         return (
@@ -64,7 +64,6 @@ const CellValue = ({
     }
 
     if (type === LABELS_TYPE) {
-
         return (
             <>
                 {!value
@@ -81,7 +80,7 @@ const CellValue = ({
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {value ? t(valueText) : ''}
+                {value ? valueText : ''}
             </TextCropping>
         );
     }
