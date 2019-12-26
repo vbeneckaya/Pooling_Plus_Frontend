@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
-import { gridsMenuSelector } from '../../ducks/profile';
+import {gridsMenuSelector, userCompanySelector} from '../../ducks/profile';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
 import { columnsGridSelector } from '../../ducks/gridList';
 import './style.scss';
@@ -21,6 +21,7 @@ import Header from './components/header';
 import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
 import { sortFunc } from '../../utils/sort';
+import { getListByCompanyRequest, rolesByCompanySelector } from '../../ducks/roles';
 
 const List = () => {
     const { t } = useTranslation();
@@ -28,25 +29,38 @@ const List = () => {
     const containerRef = useRef(null);
 
     const gridsList = useSelector(state => gridsMenuSelector(state)) || [];
-    const rolesList = useSelector(state => valuesListSelector(state, 'roles')) || [];
+    const rolesList = useSelector(state => rolesByCompanySelector(state)) || [];
+    const companiesList = useSelector(state => valuesListSelector(state, 'companies')) || [];
     const settings = useSelector(state => fieldsSettingSelector(state)) || [];
     const loading = useSelector(state => progressSelector(state));
     const editProgress = useSelector(state => editProgressSelector(state)) || false;
+    const userCompany = useSelector(state => userCompanySelector(state));
 
     let [activeItem, setActiveItem] = useState(gridsList[0] || '');
     let [role, setRole] = useState(null);
-    let [company, setCompany] = useState('null');
+    let [company, setCompany] = useState(null);
 
     const statusList =
         useSelector(state =>
             valuesListSelector(state, `${activeItem.slice(0, activeItem.length - 1)}State`),
         ) || [];
 
+    useEffect(
+        () => {
+            dispatch(
+                getListByCompanyRequest({
+                    companyId: company === 'null' ? null : company,
+                }),
+            );
+        },
+        [company],
+    );
+
     useEffect(() => {
-        if (!(rolesList || []).length) {
+        if (!(companiesList || []).length) {
             dispatch(
                 getLookupRequest({
-                    name: 'roles',
+                    name: 'companies',
                     isForm: true,
                 }),
             );
@@ -63,9 +77,18 @@ const List = () => {
     useEffect(
         () => {
             dispatch(clearFieldsSettings());
-            activeItem && getSettings();
+            activeItem && role && getSettings();
         },
-        [role, activeItem],
+        [role, activeItem, company],
+    );
+
+    useEffect(
+        () => {
+            if (rolesList.length) {
+                setRole(rolesList[0].value);
+            }
+        },
+        [rolesList],
     );
 
     useEffect(
@@ -77,11 +100,25 @@ const List = () => {
         [rolesList],
     );
 
+    useEffect(
+        () => {
+            if (!company && companiesList.length) {
+                if (!userCompany) {
+                    setCompany(companiesList[0].value);
+                } else {
+                    setCompany(userCompany.value);
+                }
+            }
+        },
+        [companiesList],
+    );
+
     const getSettings = () => {
         dispatch(
             getFieldsSettingRequest({
                 forEntity: activeItem,
                 roleId: /*role === 'null' ? undefined :*/ role,
+                companyId: company === 'null' ? null : company,
             }),
         );
     };
@@ -143,6 +180,10 @@ const List = () => {
         setRole(value);
     }, []);
 
+    const handleChangeCompany = useCallback((e, {value}) => {
+        setCompany(value);
+    }, []);
+
     const { base: baseSettings = [], ext: extSettings = [] } = settings;
 
     return (
@@ -155,8 +196,12 @@ const List = () => {
                 activeItem={activeItem}
                 changeActiveItem={handleChangeActiveItem}
                 rolesList={rolesList}
+                companiesList={companiesList}
                 role={role}
+                company={company}
+                disabledCompany={!!userCompany}
                 changeRole={handleChangeRole}
+                changeCompany={handleChangeCompany}
                 t={t}
             />
             <div className={`scroll-table-container field-settings-table`} ref={containerRef}>

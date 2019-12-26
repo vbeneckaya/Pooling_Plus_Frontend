@@ -64,6 +64,8 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var user = _userProvider.GetCurrentUser();
+
             var entities = _dataService.GetDbSet<Role>()
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.Name)
@@ -78,6 +80,7 @@ namespace Application.Services.Roles
                 };
             }
         }
+
         public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
         {
             var currentUserId = _userProvider.GetCurrentUserId();
@@ -202,6 +205,21 @@ namespace Application.Services.Roles
             return _dataService.GetDbSet<Role>()
                 .Where(i => i.Name == dto.Name)
                 .FirstOrDefault();
+        }
+
+        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            return _dataService.GetDbSet<Role>()
+                .Where(i => i.CompanyId == companyId)
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
+                .Select(i => new LookUpDto
+                {
+                    Name = i.Name,
+                    Value = i.Id.ToString()
+                });
         }
 
         public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)

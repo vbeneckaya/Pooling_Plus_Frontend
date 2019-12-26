@@ -278,6 +278,7 @@ namespace Application.Services.Tariffs
             return new ExcelMapper<TariffDto>(_dataService, _userProvider, _fieldDispatcherService)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
         }
@@ -285,6 +286,12 @@ namespace Application.Services.Tariffs
         private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 

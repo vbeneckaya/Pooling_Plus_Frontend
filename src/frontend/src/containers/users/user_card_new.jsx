@@ -193,6 +193,14 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleChange}
                 />
+                <FormField
+                    name="companyId"
+                    value={form['companyId']}
+                    type={SELECT_TYPE}
+                    source="companies"
+                    error={error['companyId']}
+                    onChange={handleChange}
+                />
                 {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль

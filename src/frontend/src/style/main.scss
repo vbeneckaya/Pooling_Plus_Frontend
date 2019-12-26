@@ -405,6 +405,14 @@ input::-webkit-calendar-picker-indicator {
     justify-content: flex-end;
 }
 
+.field-settings-menu {
+    &_filter {
+        > div {
+            padding-left: 12px;
+        }
+    }
+}
+
 .ui .label {
     font-weight: 500 !important;
     color: #4d4d4d;

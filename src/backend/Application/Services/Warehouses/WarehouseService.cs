@@ -182,7 +182,13 @@ namespace Application.Services.Warehouses
             string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
                 .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
                 .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+        }
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
 
         private Guid? GetPickingTypeIdByName(string name)
