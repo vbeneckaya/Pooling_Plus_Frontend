@@ -39,7 +39,7 @@ namespace Application.BusinessModels.Warehouses.Triggers
 
             var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
-                                     .Where(x => x.SoldTo == entity.SoldToNumber
+                                     .Where(x => x.DeliveryWarehouseId == entity.Id
                                                 && validStatuses.Contains(x.Status)
                                                 && (x.ShippingId == null || x.OrderShippingStatus == ShippingState.ShippingCreated))
                                      .ToList();

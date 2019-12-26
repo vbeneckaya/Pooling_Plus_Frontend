@@ -2,6 +2,7 @@
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.BodyTypes;
@@ -15,7 +16,7 @@ using System.Linq;
 
 namespace Application.Services.BodyTypes
 {
-    public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
+    public class BodyTypesService : DictionaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
         public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                                 IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
@@ -28,6 +29,7 @@ namespace Application.Services.BodyTypes
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -39,6 +41,7 @@ namespace Application.Services.BodyTypes
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 IsActive = entity.IsActive
             };
         }
@@ -58,6 +61,28 @@ namespace Application.Services.BodyTypes
             }
 
             return result;
+        }
+
+        protected override IEnumerable<BodyTypeDto> FillLookupNames(IEnumerable<BodyTypeDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
+                yield return dto;
+            }
         }
 
         public override IEnumerable<LookUpDto> ForSelect()

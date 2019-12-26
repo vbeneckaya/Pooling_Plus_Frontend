@@ -385,7 +385,7 @@ namespace Application.Services.Shippings
                     {
                         point = new RoutePointDto
                         {
-                            WarehouseName = order.ClientName,
+                            WarehouseName = _dataService.GetById<Warehouse>(order.DeliveryWarehouseId.Value)?.WarehouseName,
                             Address = order.DeliveryAddress,
                             PlannedDate = order.DeliveryDate?.ToString("dd.MM.yyyy"),
                             ArrivalTime = order.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm"),

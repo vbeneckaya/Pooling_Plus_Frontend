@@ -56,9 +56,14 @@ namespace Domain.Persistables
         /// </summary>
         public bool IsActive { get; set; }
 
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
+
         public override string ToString()
         {
-            return WarehouseName;
+            return Address;
         }
     }
 }

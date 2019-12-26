@@ -17,6 +17,7 @@ using Domain.Services.BodyTypes;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
+using Domain.Services.Companies;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.Shippings;
@@ -30,6 +31,8 @@ using Domain.Services.Warehouses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Services.Clients;
+using Application.Services.Clients;
 
 namespace Application.Services.AppConfiguration
 {
@@ -133,7 +136,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<WarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
-                    CanImportFromExcel = canEditWarehouses,
+                    CanImportFromExcel = false,
                     ShowOnHeader = false,
                     Columns = columns
                 });
@@ -203,6 +206,22 @@ namespace Application.Services.AppConfiguration
                 });
             }
 
+            var canEditClients = _identityService.HasPermissions(RolePermissions.ClientsEdit);
+
+            if (canEditClients)
+            {
+                var columns = ExtractColumnsFromDto<ClientDto>(roleId);
+                dicts.Add(new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ClientsService>(),
+                    CanCreateByForm = canEditClients,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = false,
+                    ShowOnHeader = false,
+                    Columns = columns
+                });
+            }
+
             var canEditVehicleTypes = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit);
 
             if (canEditVehicleTypes)
@@ -228,6 +247,8 @@ namespace Application.Services.AppConfiguration
                     ShowOnHeader = false,
                     Columns = bodyTypeColumns
                 });
+
+
 
                 var tonnageColumns = ExtractColumnsFromDto<TonnageDto>(roleId);
                 dicts.Add(new UserConfigurationDictionaryItem
@@ -256,6 +277,17 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 });
             }
+
+            var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
+            dicts.Add(new UserConfigurationDictionaryItem
+            {
+                Name = GetName<CompaniesService>(),
+                CanCreateByForm = true,
+                CanExportToExcel = true,
+                CanImportFromExcel = false,
+                ShowOnHeader = false,
+                Columns = companyColumns
+            });
 
             return dicts;
         }
