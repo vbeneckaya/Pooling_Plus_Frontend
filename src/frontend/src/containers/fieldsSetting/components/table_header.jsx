@@ -1,5 +1,5 @@
 import React from 'react';
-import {Label, Table} from 'semantic-ui-react';
+import {Button, Icon, Label, Table} from 'semantic-ui-react';
 
 const TableHeader = ({ statusList, t }) => {
     return (
@@ -14,9 +14,11 @@ const TableHeader = ({ statusList, t }) => {
             <Table.Row className="ext-header-row">
                 {statusList.map(status => (
                     <Table.HeaderCell key={status.name} textAlign="center">
-                        <Label className="status-label-bottom" color={status.color}>
+                        {/*<Label className="status-label-bottom" color={status.color}>
                             {t(status.name)}
-                        </Label>
+                        </Label>*/}
+                        <Icon name="circle" color={status.color}/>
+                        {t(status.name)}
                     </Table.HeaderCell>
                 ))}
             </Table.Row>
