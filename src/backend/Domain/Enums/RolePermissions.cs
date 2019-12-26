@@ -100,31 +100,31 @@ namespace Domain.Enums
         /// <summary>
         /// Редактирование типов ТС
         /// </summary>
-        [OrderNumber(17)]
+        [OrderNumber(18)]
         VehicleTypesEdit = 19,
 
         /// <summary>
         /// Редактирование типов документов
         /// </summary>
-        [OrderNumber(18)]
+        [OrderNumber(19)]
         DocumentTypesEdit = 20,
 
         /// <summary>
         /// Редактирование ролей
         /// </summary>
-        [OrderNumber(19)]
+        [OrderNumber(20)]
         RolesEdit = 21,
 
         /// <summary>
         /// Редактирование пользователей
         /// </summary>
-        [OrderNumber(20)]
+        [OrderNumber(21)]
         UsersEdit = 22,
 
         /// <summary>
         /// Настройка полей
         /// </summary>
-        [OrderNumber(22)]
+        [OrderNumber(23)]
         FieldsSettings = 23,
 
         /// <summary>
@@ -142,7 +142,13 @@ namespace Domain.Enums
         /// <summary>
         /// Редактирование юридических лиц
         /// </summary>
-        [OrderNumber(21)]
+        [OrderNumber(22)]
         CompaniesEdit = 26,
+
+        /// <summary>
+        /// Редактирование типов продукта
+        /// </summary>
+        [OrderNumber(14)]
+        ProductTypesEdit = 27,
     }
 }

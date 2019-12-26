@@ -4,6 +4,7 @@ using Application.Services.Clients;
 using Application.Services.DocumentTypes;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
+using Application.Services.ProductTypes;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
@@ -24,6 +25,7 @@ using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
+using Domain.Services.ProductTypes;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
@@ -195,6 +197,24 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
+            _dictionaryConfigurations.Add(typeof(ProductTypeDto), (roleId) =>
+            {
+                var canEditProductTypes = _identityService.HasPermissions(RolePermissions.ProductTypesEdit);
+
+                if (!canEditProductTypes) return null;
+
+                var columns = ExtractColumnsFromDto<ProductTypeDto>(roleId);
+                return new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ProductTypesService>(),
+                    CanCreateByForm = canEditProductTypes,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = false,
+                    ShowOnHeader = false,
+                    Columns = columns
+                };
+            });
+
             _dictionaryConfigurations.Add(typeof(PickingTypeDto), (roleId) =>
             {
                 var canEditPickingTypes = _identityService.HasPermissions(RolePermissions.PickingTypesEdit);
@@ -231,7 +251,7 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
-            _dictionaryConfigurations.Add(typeof(TransportCompanyDto), (roleId) =>
+            _dictionaryConfigurations.Add(typeof(ClientDto), (roleId) =>
             {
                 var canEditClients = _identityService.HasPermissions(RolePermissions.ClientsEdit);
 
