@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown, Menu } from 'semantic-ui-react';
 import _ from 'lodash';
 
-const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t, changeCompany, companiesList, disabledCompany}) => {
+const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t, changeCompany, companiesList = [], disabledCompany}) => {
     const rolesListOptions = [
         /*{ key: 'any_role', value: 'null', text: t('any_role') },*/
         ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
