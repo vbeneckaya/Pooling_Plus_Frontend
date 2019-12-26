@@ -142,6 +142,10 @@ namespace Domain.Services.Tariffs
 
         [FieldType(FieldType.Number), OrderNumber(44)]
         public decimal? LtlRate33 { get; set; }
-        /*end of fields*/
+
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(45)]
+        public LookUpDto CompanyId { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

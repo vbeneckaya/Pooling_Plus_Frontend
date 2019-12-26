@@ -41,7 +41,7 @@ namespace Application.Services.Shippings
 
             Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
 
-            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientName }))
+            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientId }))
             {
                 var hasIncompleteOrders = group.Where(x => x.DeliveryType != DeliveryType.Delivery
                                                             || x.PalletsCount == null

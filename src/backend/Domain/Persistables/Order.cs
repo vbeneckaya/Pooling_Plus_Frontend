@@ -20,7 +20,7 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public OrderState Status { get; set; }
         /// <summary>
-        /// Номер накладной BDF
+        /// Номер накладной
         /// </summary>
         public string OrderNumber { get; set; }
         /// <summary>
@@ -40,13 +40,10 @@ namespace Domain.Persistables
         /// </summary>
         public string Payer { get; set; }
         /// <summary>
-        /// Название клиента
+        /// Клиент
         /// </summary>
-        public string ClientName { get; set; }
-        /// <summary>
-        /// Sold-to
-        /// </summary>
-        public string SoldTo { get; set; }
+        [ReferenceType(typeof(Client))]
+        public Guid? ClientId { get; set; }
         /// <summary>
         /// Терморежим мин. °C
         /// </summary>
@@ -137,10 +134,12 @@ namespace Domain.Persistables
         /// <summary>
         /// Адрес отгрузки
         /// </summary>
+        [IgnoreHistory]
         public string ShippingAddress { get; set; }
         /// <summary>
         /// Адрес доставки
         /// </summary>
+        [IgnoreHistory]
         public string DeliveryAddress { get; set; }
         /// <summary>
         /// Статус отгрузки
@@ -348,5 +347,10 @@ namespace Domain.Persistables
         /// </summary>
         [ReferenceType(typeof(VehicleType))]
         public Guid? VehicleTypeId { get; set; }
+
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
     }
 }

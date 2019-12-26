@@ -28,7 +28,8 @@ namespace Application.BusinessModels.Orders.Actions
                            IHistoryService historyService, 
                            IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
                            IShippingCalculationService shippingCalculationService,
-                           IChangeTrackerFactory changeTrackerFactory)
+                           IChangeTrackerFactory changeTrackerFactory
+                           )
             : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
@@ -47,7 +48,8 @@ namespace Application.BusinessModels.Orders.Actions
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
-                ShippingCreationDate = DateTime.UtcNow
+                ShippingCreationDate = DateTime.UtcNow,
+                CompanyId = user != null ? user.CompanyId : null
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);

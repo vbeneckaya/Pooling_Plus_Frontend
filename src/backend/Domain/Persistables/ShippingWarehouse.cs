@@ -12,9 +12,9 @@ namespace Domain.Persistables
         /// </summary>    
         public Guid Id { get; set; }
         /// <summary>
-        /// Код
+        /// GLN
         /// </summary>
-        public string Code { get; set; }
+        public string Gln { get; set; }
         /// <summary>
         /// Наименование склада
         /// </summary>
@@ -23,10 +23,6 @@ namespace Domain.Persistables
         /// Адрес
         /// </summary>
         public string Address { get; set; }
-        /// <summary>
-        /// Распознанный адрес
-        /// </summary>
-        public string ValidAddress { get; set; }
         /// <summary>
         /// Индекс
         /// </summary>
@@ -42,6 +38,10 @@ namespace Domain.Persistables
         /// <summary>
         /// Населенный пункт
         /// </summary>
+        public string Settlement { get; set; }
+        /// <summary>
+        /// Город
+        /// </summary>
         public string City { get; set; }
         /// <summary>
         /// Улица
@@ -52,13 +52,30 @@ namespace Domain.Persistables
         /// </summary>
         public string House { get; set; }
         /// <summary>
+        /// Корпус/строение
+        /// </summary>
+        public string Block { get; set; }
+        /// <summary>
+        /// Нераспознанная часть
+        /// </summary>
+        public string UnparsedParts { get; set; }
+        /// <summary>
+        /// ID региона
+        /// </summary>
+        public string RegionId { get; set; }
+        /// <summary>
         /// Активный
         /// </summary>
         public bool IsActive { get; set; }
 
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
+
         public override string ToString()
         {
-            return WarehouseName;
+            return Address;
         }
     }
 }

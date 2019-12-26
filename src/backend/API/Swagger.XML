@@ -9,7 +9,12 @@
             Получение конфигурации гридов и справочников
             </summary>
         </member>
-        <member name="M:API.Controllers.ClientNameController.ForSelect">
+        <member name="T:API.Controllers.DeliveryAddressController">
+            <summary>
+            Точки доставки
+            </summary>
+        </member>
+        <member name="M:API.Controllers.DeliveryAddressController.ForSelect(System.String,System.String)">
             <summary>
             Получение данных для выпадающего списка
             </summary>
@@ -137,6 +142,11 @@
         <member name="M:API.Controllers.RolesController.GetAllActions">
             <summary>
             Получение списка всех доступных действий
+            </summary>
+        </member>
+        <member name="M:API.Controllers.RolesController.ForSelectByCompany(System.Nullable{System.Guid})">
+            <summary>
+            Получение данных для выпадающего списка отфильтрованного по юр. лицу
             </summary>
         </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
@@ -314,6 +324,16 @@
         <member name="M:API.Controllers.StateController`1.ForSelect">
             <summary>
             Все доступные статусы
+            </summary>
+        </member>
+        <member name="T:API.Controllers.ShippingAddressController">
+            <summary>
+            Точки отгрузки
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingAddressController.ForSelect">
+            <summary>
+            Получение данных для выпадающего списка
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingsController.Search(Domain.Shared.NumberSearchFormDto)">

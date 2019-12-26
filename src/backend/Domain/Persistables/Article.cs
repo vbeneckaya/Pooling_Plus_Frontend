@@ -168,7 +168,11 @@ namespace Domain.Persistables
         /// Вес паллеты нетто, г
         /// </summary>
         public int? NetWeightPalletsG { get; set; }
-        /*end of fields*/
+
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
 
         public override string ToString()
         {

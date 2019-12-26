@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Domain.Extensions;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -98,6 +99,12 @@ namespace API.Controllers.Shared
         {
             var memoryStream = _service.ExportToExcel(form);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
+        }
+
+        [HttpPost("getFieldsConfigurations/{id}")]
+        public UserConfigurationDictionaryItem FetFieldsConfigurations(Guid id)
+        {
+            return _service.GetDictionaryConfiguration(id);
         }
 
         /// <summary>

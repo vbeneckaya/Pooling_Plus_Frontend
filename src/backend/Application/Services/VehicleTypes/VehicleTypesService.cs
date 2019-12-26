@@ -7,6 +7,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -18,11 +19,12 @@ using System.Linq;
 
 namespace Application.Services.VehicleTypes
 {
-    public class VehicleTypesService : DictonaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
+    public class VehicleTypesService : DictionaryServiceBase<VehicleType, VehicleTypeDto>, IVehicleTypesService
     {
         public VehicleTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+                                   IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                   IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
         }
 
@@ -34,6 +36,7 @@ namespace Application.Services.VehicleTypes
             entity.Name = dto.Name;
             entity.TonnageId = dto.TonnageId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.PalletsCount = dto.PalletsCount.ToInt();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
@@ -80,6 +83,14 @@ namespace Application.Services.VehicleTypes
                                         .Where(x => bodyTypeIds.Contains(x.Id))
                                         .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.TonnageId?.Value)
@@ -94,20 +105,30 @@ namespace Application.Services.VehicleTypes
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
 
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
                 yield return dto;
             }
         }
 
         public override VehicleTypeDto MapFromEntityToDto(VehicleType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new VehicleTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 TonnageId = entity.TonnageId == null ? null : new LookUpDto(entity.TonnageId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 PalletsCount = entity.PalletsCount?.ToString(),
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -144,12 +165,33 @@ namespace Application.Services.VehicleTypes
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
+        public override IQueryable<VehicleType> ApplyRestrictions(IQueryable<VehicleType> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
 
         protected override ExcelMapper<VehicleTypeDto> CreateExcelMapper()
         {
-            return new ExcelMapper<VehicleTypeDto>(_dataService, _userProvider, _fieldDispatcherService)
+            return base.CreateExcelMapper()
                 .MapColumn(w => w.TonnageId, new DictionaryReferenceExcelColumn(GetTonnageIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+        
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
         }
 
         private Guid? GetTonnageIdByName(string name)
@@ -162,6 +204,17 @@ namespace Application.Services.VehicleTypes
         {
             var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(VehicleType.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

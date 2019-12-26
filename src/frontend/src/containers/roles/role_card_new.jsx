@@ -17,7 +17,7 @@ import CardLayout from '../../components/CardLayout';
 import { Button, Dimmer, Form, Loader, Tab } from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import { sortFunc } from '../../utils/sort';
-import { TEXT_TYPE } from '../../constants/columnTypes';
+import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
 
 const RoleCard = props => {
     const { t } = useTranslation();
@@ -136,84 +136,89 @@ const RoleCard = props => {
         [form],
     );
 
-    const getContent = useCallback(
-        () => {
-            return [
-                {
-                    menuItem: 'general',
-                    render: () => (
-                        <Form className="role-form">
-                            <FormField
-                                name="name"
-                                value={form['name']}
-                                type={TEXT_TYPE}
-                                isRequired
-                                error={error['name']}
-                                onChange={handleChange}
-                            />
-                            <Form.Field>
-                                <label>{t('permissions')}</label>
+    const getContent = useCallback(() => {
+        return [
+            {
+                menuItem: 'general',
+                render: () => (
+                    <Form className="role-form">
+                        <FormField
+                            name="name"
+                            value={form['name']}
+                            type={TEXT_TYPE}
+                            isRequired
+                            error={error['name']}
+                            onChange={handleChange}
+                        />
+                        <FormField
+                            name="companyId"
+                            value={form['companyId']}
+                            type={SELECT_TYPE}
+                            source="companies"
+                            error={error['companyId']}
+                            onChange={handleChange}
+                        />
+                        <Form.Field>
+                            <label>{t('permissions')}</label>
+                        </Form.Field>
+                        {allPermissions.map(permission => (
+                            <Form.Field key={permission.code}>
+                                <Form.Checkbox
+                                    label={t(permission.name)}
+                                    value={permission.code}
+                                    checked={
+                                        permissions && permissions.includes(permission.code)
+                                    }
+                                    disabled={
+                                        (permissions &&
+                                            ([2, 4, 5, 6].includes(permission.code) &&
+                                                !permissions.includes(1))) ||
+                                        ([10, 11, 12].includes(permission.code) &&
+                                            !permissions.includes(7))
+                                    }
+                                    onChange={handlePermissions}
+                                />
                             </Form.Field>
-                            {allPermissions.map(permission => (
-                                <Form.Field key={permission.code}>
-                                    <Form.Checkbox
-                                        label={t(permission.name)}
-                                        value={permission.code}
-                                        checked={
-                                            permissions && permissions.includes(permission.code)
-                                        }
-                                        disabled={
-                                            (permissions &&
-                                                ([2, 4, 5, 6].includes(permission.code) &&
-                                                    !permissions.includes(1))) ||
-                                            ([10, 11, 12].includes(permission.code) &&
-                                                !permissions.includes(7))
-                                        }
-                                        onChange={handlePermissions}
-                                    />
-                                </Form.Field>
-                            ))}
-                        </Form>
-                    ),
-                },
-                {
-                    menuItem: 'order_actions',
-                    render: () => (
-                        <Form className="role-form">
-                            {sortFunc(orderActions, t).map(action => (
-                                <Form.Field key={action}>
-                                    <Form.Checkbox
-                                        label={t(action)}
-                                        value={action}
-                                        checked={actions && actions.includes(action)}
-                                        onChange={handleActions}
-                                    />
-                                </Form.Field>
-                            ))}
-                        </Form>
-                    ),
-                },
-                {
-                    menuItem: 'shipping_actions',
-                    render: () => (
-                        <Form className="role-form">
-                            {sortFunc(shippingActions, t).map(action => (
-                                <Form.Field key={action}>
-                                    <Form.Checkbox
-                                        label={t(action)}
-                                        value={action}
-                                        checked={actions && actions.includes(action)}
-                                        onChange={handleActions}
-                                    />
-                                </Form.Field>
-                            ))}
-                        </Form>
-                    ),
-                },
-            ];
-        },
-        [form, error],
-    );
+                        ))}
+                    </Form>
+                ),
+            },
+            {
+                menuItem: 'order_actions',
+                render: () => (
+                    <Form className="role-form">
+                        {sortFunc(orderActions, t).map(action => (
+                            <Form.Field key={action}>
+                                <Form.Checkbox
+                                    label={t(action)}
+                                    value={action}
+                                    checked={actions && actions.includes(action)}
+                                    onChange={handleActions}
+                                />
+                            </Form.Field>
+                        ))}
+                    </Form>
+                ),
+            },
+            {
+                menuItem: 'shipping_actions',
+                render: () => (
+                    <Form className="role-form">
+                        {sortFunc(shippingActions, t).map(action => (
+                            <Form.Field key={action}>
+                                <Form.Checkbox
+                                    label={t(action)}
+                                    value={action}
+                                    checked={actions && actions.includes(action)}
+                                    onChange={handleActions}
+                                />
+                            </Form.Field>
+                        ))}
+                    </Form>
+                ),
+            },
+        ];
+    }, [form, error]);
 
     const permissions = useMemo(() => form.permissions || [], [form]);
     const actions = useMemo(() => form.actions || [], [form]);

@@ -99,7 +99,7 @@ build-frontend-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
   only:
-   - develop
+   - beiersdorf/develop
    
 build-tasks-dev:
   stage: build
@@ -108,7 +108,7 @@ build-tasks-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
   only:
-   - develop   
+   - beiersdorf/develop   
 
 build-frontend-prod:
   stage: build
@@ -117,7 +117,7 @@ build-frontend-prod:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod
   only:
-   - master 
+   - beiersdorf/master 
   
 ### PROD  
 build-tasks-prod:
@@ -127,7 +127,7 @@ build-tasks-prod:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod
   only:
-   - master   
+   - beiersdorf/master   
    
 build-backend-dev:
   stage: build
@@ -136,7 +136,7 @@ build-backend-dev:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop
   only:
-   - develop    
+   - beiersdorf/develop    
    
 build-backend-prod:
   stage: build
@@ -145,7 +145,7 @@ build-backend-prod:
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod
   only:
-   - master   
+   - beiersdorf/master   
   
 deploy-frontend-dev:
   variables:
@@ -157,7 +157,7 @@ deploy-frontend-dev:
   script:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
   only:
-   - develop
+   - beiersdorf/develop
   when: manual    
  # environment:
  #   name: 
@@ -172,7 +172,7 @@ deploy-backend-dev:
   script:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back
   only:
-   - develop
+   - beiersdorf/develop
   when: manual    
  # environment:
  #   name: 
@@ -187,7 +187,7 @@ deploy-tasks-dev:
   script:
     - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks
   only:
-   - develop
+   - beiersdorf/develop
   when: manual   
   
 deploy-frontend-demo:
@@ -239,7 +239,7 @@ deploy-backend-prod:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
   only:
-   - master
+   - beiersdorf/master
   when: manual    
 
 deploy-frontend-prod:
@@ -252,7 +252,7 @@ deploy-frontend-prod:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
   only:
-   - master
+   - beiersdorf/master
   when: manual 
   
 deploy-tasks-prod:
@@ -265,7 +265,7 @@ deploy-tasks-prod:
   script:
     - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
   only:
-   - master
+   - beiersdorf/master
   when: manual  
   
 ### TEST1

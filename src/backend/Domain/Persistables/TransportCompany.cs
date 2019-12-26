@@ -19,14 +19,14 @@ namespace Domain.Persistables
         public string Title { get; set; }
 
         /// <summary>
-        /// Номер договора
+        /// Юр. лицо
         /// </summary>
-        public string ContractNumber { get; set; }
+        public Guid? CompanyId { get; set; }
 
         /// <summary>
-        /// Дата доверенности
+        /// Pooling ID
         /// </summary>
-        public string DateOfPowerOfAttorney { get; set; }
+        public string PoolingId { get; set; }
 
         /// <summary>
         /// Активен

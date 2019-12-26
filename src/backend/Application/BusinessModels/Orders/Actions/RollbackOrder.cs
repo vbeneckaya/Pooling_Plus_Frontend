@@ -33,7 +33,7 @@ namespace Application.BusinessModels.Orders.Actions
             var newState = new OrderState?();
             
             if (order.Status == OrderState.Canceled){
-                if (!string.IsNullOrEmpty(order.SoldTo) &&
+                if (order.DeliveryWarehouseId != null &&
                     !string.IsNullOrEmpty(order.Payer) &&
                     !string.IsNullOrEmpty(order.DeliveryAddress) &&
                     !string.IsNullOrEmpty(order.ShippingAddress) &&
@@ -42,7 +42,7 @@ namespace Application.BusinessModels.Orders.Actions
                     order.DeliveryType == DeliveryType.SelfDelivery)
                     newState = OrderState.Created;
                 else
-                    newState = OrderState.Draft;
+                    newState = OrderState.Created;
             
             }
 

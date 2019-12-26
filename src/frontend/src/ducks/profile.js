@@ -262,6 +262,8 @@ export const progressChangePasswordSelector = createSelector(
 
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
+export const userCompanySelector = createSelector(stateSelector, state => state.role ? state.role.companyId : null);
+
 //*  SAGA  *//
 
 function* getUserProfileSaga({ payload = {} }) {

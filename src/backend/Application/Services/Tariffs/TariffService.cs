@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Tariffs;
 using Domain.Services.Translations;
@@ -20,11 +21,12 @@ using System.Linq;
 
 namespace Application.Services.Tariffs
 {
-    public class TariffsService : DictonaryServiceBase<Tariff, TariffDto>, ITariffsService
+    public class TariffsService : DictionaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory)
+                              IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                              IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
         }
 
@@ -37,6 +39,7 @@ namespace Application.Services.Tariffs
             entity.DeliveryCity = dto.DeliveryCity?.Value;
             entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value);
             entity.VehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
@@ -171,6 +174,14 @@ namespace Application.Services.Tariffs
                                         .Where(x => bodyTypeIds.Contains(x.Id))
                                         .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
@@ -191,13 +202,21 @@ namespace Application.Services.Tariffs
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
 
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
                 yield return dto;
             }
         }
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
         {
-            var lang = _userProvider.GetCurrentUser()?.Language;
+            var user = _userProvider.GetCurrentUser();
+            var lang = user?.Language;
+
             return new TariffDto
             {
                 Id = entity.Id.ToString(),
@@ -206,6 +225,7 @@ namespace Application.Services.Tariffs
                 TarifficationType = entity.TarifficationType == null ? null : entity.TarifficationType.GetEnumLookup(lang),
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
                 VehicleTypeId = entity.VehicleTypeId == null ? null : new LookUpDto(entity.VehicleTypeId.ToString()),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
                 StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
                 EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
@@ -213,6 +233,7 @@ namespace Application.Services.Tariffs
                     entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
                 EffectiveDate = entity.EffectiveDate?.ToString("dd.MM.yyyy"),
                 ExpirationDate = entity.ExpirationDate?.ToString("dd.MM.yyyy"),
+                IsEditable = user.CompanyId == null || entity.CompanyId != null,
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
@@ -257,6 +278,7 @@ namespace Application.Services.Tariffs
             return new ExcelMapper<TariffDto>(_dataService, _userProvider, _fieldDispatcherService)
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
         }
@@ -264,6 +286,12 @@ namespace Application.Services.Tariffs
         private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
@@ -315,6 +343,21 @@ namespace Application.Services.Tariffs
                 );
         }
 
+        public override IQueryable<Tariff> ApplyRestrictions(IQueryable<Tariff> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
+        }
+
         public override Tariff FindByKey(TariffDto dto)
         {
             var effectiveDate = dto.EffectiveDate.ToDate();
@@ -342,6 +385,17 @@ namespace Application.Services.Tariffs
                         && i.TarifficationType == tarifficationType
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == shipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == deliveryCity);
+        }
+
+        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+            var configuration = base.GetDictionaryConfiguration(id);
+
+            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tariff.CompanyId).ToLower());
+            companyId.IsReadOnly = user.CompanyId != null;
+
+            return configuration;
         }
     }
 }

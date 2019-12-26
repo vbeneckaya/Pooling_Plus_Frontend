@@ -9,5 +9,7 @@ namespace Domain.Services.Injections
         public string FileName { get; set; }
         public string Status { get; set; }
         public DateTime ProcessTimeUtc { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

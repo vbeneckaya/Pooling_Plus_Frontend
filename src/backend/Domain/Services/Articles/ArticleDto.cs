@@ -1,5 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
+using Domain.Shared;
 
 namespace Domain.Services.Articles
 {
@@ -123,6 +124,10 @@ namespace Domain.Services.Articles
 
         [FieldType(FieldType.Number), OrderNumber(39)]
         public int? NetWeightPalletsG { get; set; }
-        /*end of fields*/
+
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(40)]
+        public LookUpDto CompanyId { get; set; }
+        
+        public bool IsEditable { get; set; }
     }
 }

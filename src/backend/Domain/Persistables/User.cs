@@ -19,6 +19,11 @@ namespace Domain.Persistables
         /// </summary>
         public Guid? CarrierId { get; set; }
 
+        /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? CompanyId { get; set; }
+
         public override string ToString()
         {
             return Name;

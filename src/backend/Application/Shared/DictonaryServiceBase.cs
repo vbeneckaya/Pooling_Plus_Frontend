@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -21,10 +22,11 @@ using System.Text;
 
 namespace Application.Shared
 {
-    public abstract class DictonaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
+    public abstract class DictionaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
         public abstract DetailedValidationResult MapFromDtoToEntity(TEntity entity, TListDto dto);
         public abstract TListDto MapFromEntityToDto(TEntity entity);
+
 
         protected readonly ICommonDataService _dataService;
 
@@ -38,8 +40,11 @@ namespace Application.Shared
 
         private readonly IFieldSetterFactory _fieldSetterFactory;
 
-        protected DictonaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory)
+        private readonly IAppConfigurationService _configurationService;
+
+        protected DictionaryServiceBase(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
+                                       IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                       IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
         {
             _dataService = dataService;
             _userProvider = userProvider;
@@ -47,6 +52,7 @@ namespace Application.Shared
             _validationService = validationService;
             _fieldDispatcherService = fieldDispatcherService;
             _fieldSetterFactory = fieldSetterFactory;
+            _configurationService = configurationService;
         }
 
         protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TListDto dto)
@@ -88,6 +94,11 @@ namespace Application.Shared
             return FindById(dto);
         }
 
+        public virtual IQueryable<TEntity> ApplyRestrictions(IQueryable<TEntity> query)
+        {
+            return query;
+        }
+
         public SearchResult<TListDto> Search(SearchFormDto form)
         {
             string entityName = typeof(TEntity).Name;
@@ -96,6 +107,8 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearch(dbSet, form);
+            query = ApplyRestrictions(query);
+
             Log.Information("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -411,6 +424,12 @@ namespace Application.Shared
             _dataService.SaveChanges();
 
             return new ValidateResult(null, id.ToString());
+        }
+
+        public virtual UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
+        {
+            var roleId = _userProvider.GetCurrentUser().RoleId;
+            return _configurationService.GetDictionaryConfiguration<TListDto>(roleId);
         }
     }
 }
