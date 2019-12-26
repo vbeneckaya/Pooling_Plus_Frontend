@@ -42,7 +42,7 @@ namespace Application.BusinessModels.Orders.Actions
                     order.DeliveryType == DeliveryType.SelfDelivery)
                     newState = OrderState.Created;
                 else
-                    newState = OrderState.Draft;
+                    newState = OrderState.Created;
             
             }
 
