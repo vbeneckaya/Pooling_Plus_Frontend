@@ -198,27 +198,27 @@ const Information = ({
                 <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
-                            <label>{t('Продукция в накладной')}</label>
+                            <label>{t('Products on the invoice')}</label>
                             <Segment>
                                 <Grid>
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <FormField
-                                                name="Количество штук в накладной"
-                                                value={form['Количество штук в накладной']}
-                                                error={error['Количество штук в накладной']}
+                                                name="articlesCount"
+                                                value={form['articlesCount']}
+                                                error={error['articlesCount']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['Количество штук в накладной']}
+                                                settings={settings['articlesCount']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="Стоимость товара в накладной"
-                                                value={form['Стоимость товара в накладной']}
-                                                error={error['Стоимость товара в накладной']}
+                                                name="orderAmountExcludingVAT"
+                                                value={form['orderAmountExcludingVAT']}
+                                                error={error['orderAmountExcludingVAT']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['Стоимость товара в накладной']}
+                                                settings={settings['orderAmountExcludingVAT']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
