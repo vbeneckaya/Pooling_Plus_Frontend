@@ -352,5 +352,30 @@ namespace Domain.Persistables
         /// Юр. лицо
         /// </summary>
         public Guid? CompanyId { get; set; }
+
+        /// <summary>
+        /// Количество штук в накладной
+        /// </summary>
+        public int? ItemsNumber { get; set; }
+
+        /// <summary>
+        /// Тип продукта
+        /// </summary>
+        public Guid? ProductTypeId { get; set; }
+
+        /// <summary>
+        /// GLN (Склад отгрузки)
+        /// </summary>
+        public string ShippingWarehouseGln { get; set; }
+
+        /// <summary>
+        /// GLN (Склад доставки)
+        /// </summary>
+        public string DeliveryWarehouseGln { get; set; }
+
+        /// <summary>
+        /// Регион отгрузки
+        /// </summary>
+        public string ShippingRegion { get; set; }
     }
 }

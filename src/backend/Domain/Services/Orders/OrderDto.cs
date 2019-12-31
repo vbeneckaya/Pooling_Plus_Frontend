@@ -219,6 +219,18 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(Companies))]
         public LookUpDto CompanyId { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(ProductTypes))]
+        public LookUpDto ProductTypeId { get; set; }
+
+        [FieldType(FieldType.Number)]
+        public int? ItemsNumber { get; set; }
+
+        public string ShippingWarehouseGln { get; set; }
+
+        public string DeliveryWarehouseGln { get; set; }
+
+        public string ShippingRegion { get; set; }
+
         public bool IsEditable { get; set; }
     }
 }
