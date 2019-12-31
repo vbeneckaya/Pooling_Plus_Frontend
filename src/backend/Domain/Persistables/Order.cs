@@ -377,5 +377,10 @@ namespace Domain.Persistables
         /// Регион отгрузки
         /// </summary>
         public string ShippingRegion { get; set; }
+
+        /// <summary>
+        /// ID РЦ
+        /// </summary>
+        public string DistributionCenterId { get; set; }
     }
 }
