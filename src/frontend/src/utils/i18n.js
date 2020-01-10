@@ -15,7 +15,7 @@ i18n.use(LanguageDetector)
     .init({
         // we init with resources
         fallbackLng: 'en',
-        lng: localStorage.getItem('i18nextLng') ? localStorage.getItem('i18nextLng') : language,
+        lng: localStorage.getItem('i18nextLng') ? localStorage.getItem('i18nextLng') : language.includes('en') ? 'en' : 'ru',
         debug: false,
 
         // have a common namespace used around the full app
