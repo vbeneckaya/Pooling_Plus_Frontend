@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY /src/backend/ .
 
-RUN dotnet  publish API/ -c Release -o app/build/
+RUN dotnet  publish API/ -c Release -o /app/build/
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
 
