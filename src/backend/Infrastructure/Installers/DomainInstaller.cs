@@ -166,6 +166,7 @@ namespace Infrastructure.Installers
 
             if (migrateDb)
             {
+                //appDbContext.DropDb();
                 appDbContext.Migrate(connectionString);
             }
 

@@ -62,13 +62,11 @@ const Login = () => {
             </Dimmer>
             {!isAuth ? (
                 <>
+                    <img src={'main-logo.png'} alt={'LOGO'}  className="main-logo" />
                     <div className="centered-div">
                         <Grid className="login-form-wrapper">
                             <Grid.Row>
                                 <Grid.Column className="login-form-description">
-                                    {/*<div>
-                                <img src={page.logo} alt={'LOGO'} />
-                            </div>*/}
                                     <div>
                                         <p className="login-form-description-company">
                                             {t(page.name)}
