@@ -119,7 +119,8 @@ deploy-all-dev:
   stage: deploy
   script:
     - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && docker-compose up -d --force-recreate
-  dependencies:
+  #dependencies:
+  needs:
     - all-dev
   
 deploy-all-dev-with-drop-db:
@@ -144,7 +145,8 @@ deploy-all-demo:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
-  dependencies:
+  #dependencies:
+  needs:
     - all-demo
 
 deploy-all-demo-with-drop-db:
@@ -194,7 +196,8 @@ deploy-all-test1:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
-  dependencies:
+  #dependencies:
+  needs:
     - all-test1
 
 #DEPLOY-TEST2
@@ -219,7 +222,8 @@ deploy-all-test2:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
-  dependencies:
+  #dependencies:
+  needs:
     - all-test2
   
 #DEPLOY-DEMOPLUS
@@ -244,6 +248,7 @@ deploy-all-demoplus:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
-  dependencies:
+  #dependencies:
+  needs:
     - all-demoplus
   
