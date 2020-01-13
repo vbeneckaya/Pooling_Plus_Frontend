@@ -16,126 +16,69 @@ before_script:
   - ssh-keyscan -t rsa bdf.tms.artlogics.ru >> ~/.ssh/known_hosts
 
 ### DEMOPLUS
-build-frontend-demoplus:
+all-demoplus:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus
-  when: manual
-
-build-tasks-demoplus:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus
-  when: manual
-
-build-backend-demoplus:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus
   when: manual
 
 ### TEST1
-build-frontend-test1:
+all-test1:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1 -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1
-  when: manual
-
-build-tasks-test1:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1 -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1
-  when: manual
-
-build-backend-test1:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1 -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1
   when: manual
 
 ### TEST2
-build-frontend-test2:
+all-test2:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2 -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2
-  when: manual
-
-build-tasks-test2:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2 -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2
-  when: manual
-
-build-backend-test2:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2 -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2
   when: manual
   
 ### DEMO
-build-frontend-demo:
+all-demo:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo
-
-
-build-tasks-demo:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo
-
-build-backend-demo:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
+  when: manual
 
 ### DEV  
-build-frontend-dev:
+all-dev:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
-
-build-tasks-dev:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
-
-build-frontend-dev:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
-  only:
-   - beiersdorf/master 
+  when: manual
   
 ### PROD  
 build-tasks-prod:
@@ -176,7 +119,8 @@ deploy-all-dev:
   stage: deploy
   script:
     - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && docker-compose up -d --force-recreate
-  when: manual
+  dependencies:
+    - all-dev
   
 deploy-all-dev-with-drop-db:
   variables:
@@ -200,7 +144,8 @@ deploy-all-demo:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
-  when: manual  
+  dependencies:
+    - all-demo
 
 deploy-all-demo-with-drop-db:
   variables:
@@ -249,7 +194,8 @@ deploy-all-test1:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
-  when: manual
+  dependencies:
+    - all-test1
 
 #DEPLOY-TEST2
 
@@ -273,7 +219,8 @@ deploy-all-test2:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
-  when: manual
+  dependencies:
+    - all-test2
   
 #DEPLOY-DEMOPLUS
 
@@ -297,5 +244,6 @@ deploy-all-demoplus:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
-  when: manual
+  dependencies:
+    - all-demoplus
   
