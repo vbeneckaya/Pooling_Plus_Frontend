@@ -97,8 +97,7 @@ build-frontend-demo:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo
-  only:
-   - demo
+
 
 build-tasks-demo:
   stage: build
@@ -106,8 +105,6 @@ build-tasks-demo:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo
-  only:
-   - demo
 
 build-backend-demo:
   stage: build
@@ -115,8 +112,6 @@ build-backend-demo:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
-  only:
-   - demo
 
 ### DEV  
 build-frontend-dev:
@@ -125,24 +120,20 @@ build-frontend-dev:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
-  only:
-   - beiersdorf/develop
-   
+
 build-tasks-dev:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
-  only:
-   - beiersdorf/develop   
 
-build-frontend-prod:
+build-frontend-dev:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
-    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
-    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
   only:
    - beiersdorf/master 
   
@@ -156,14 +147,14 @@ build-tasks-prod:
   only:
    - beiersdorf/master   
    
-build-backend-dev:
+build-backend-prod:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
-    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop -f ./docker/back/Dockerfile .
-    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod -f ./docker/back/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod
   only:
-   - beiersdorf/develop    
+   - beiersdorf/master    
    
 build-backend-prod:
   stage: build
@@ -185,8 +176,6 @@ deploy-all-dev:
   stage: deploy
   script:
     - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && docker-compose up -d --force-recreate
-  only:
-   - beiersdorf/develop
   when: manual
   
 deploy-all-dev-with-drop-db:
@@ -198,8 +187,6 @@ deploy-all-dev-with-drop-db:
   stage: deploy
   script:
     - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate
-  only:
-   - beiersdorf/develop
   when: manual
 
 
@@ -213,8 +200,6 @@ deploy-all-demo:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
-  only:
-   - demo
   when: manual  
 
 deploy-all-demo-with-drop-db:
@@ -226,8 +211,6 @@ deploy-all-demo-with-drop-db:
   stage: deploy
   script:
     - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate'
-  only:
-   - demo
   when: manual     
 
 #DEPLOY-PROD
