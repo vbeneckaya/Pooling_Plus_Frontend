@@ -8,116 +8,77 @@ before_script:
   - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
+  - ssh-keyscan -t rsa 10.10.5.3 >> ~/.ssh/known_hosts
+  - ssh-keyscan -t rsa 10.10.5.4 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa 10.10.5.10 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa 10.10.5.15 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa 10.10.5.14 >> ~/.ssh/known_hosts
   - ssh-keyscan -t rsa bdf.tms.artlogics.ru >> ~/.ssh/known_hosts
 
+### DEMOPLUS
+all-demoplus:
+  stage: build
+  script:
+    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus -f ./docker/tasks/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus -f ./docker/back/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus
+  when: manual
+
 ### TEST1
-build-frontend-test1:
+all-test1:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1 -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1
-  when: manual
-
-build-tasks-test1:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1 -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1
-  when: manual
-
-build-backend-test1:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1 -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1
   when: manual
 
 ### TEST2
-build-frontend-test2:
+all-test2:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2 -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2
-  when: manual
-
-build-tasks-test2:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2 -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2
-  when: manual
-
-build-backend-test2:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2 -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2
   when: manual
   
 ### DEMO
-build-frontend-demo:
+all-demo:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo
-  only:
-   - demo
-
-build-tasks-demo:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo
-  only:
-   - demo
-
-build-backend-demo:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo -f ./docker/back/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo
-  only:
-   - demo
+  when: manual
 
 ### DEV  
-build-frontend-dev:
+all-dev:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
-  only:
-   - beiersdorf/develop
-   
-build-tasks-dev:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
     - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop -f ./docker/tasks/Dockerfile .
     - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop
-  only:
-   - beiersdorf/develop   
-
-build-frontend-prod:
-  stage: build
-  script:
-    - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
-    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod -f ./docker/front/Dockerfile .
-    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod
-  only:
-   - beiersdorf/master 
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop -f ./docker/front/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop
+  when: manual
   
 ### PROD  
 build-tasks-prod:
@@ -129,14 +90,14 @@ build-tasks-prod:
   only:
    - beiersdorf/master   
    
-build-backend-dev:
+build-backend-prod:
   stage: build
   script:
     - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
-    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop -f ./docker/back/Dockerfile .
-    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop
+    - docker build -t fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod -f ./docker/back/Dockerfile .
+    - docker push fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod
   only:
-   - beiersdorf/develop    
+   - beiersdorf/master    
    
 build-backend-prod:
   stage: build
@@ -147,163 +108,71 @@ build-backend-prod:
   only:
    - beiersdorf/master   
   
-deploy-frontend-dev:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.10
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front
-  only:
-   - beiersdorf/develop
-  when: manual    
- # environment:
- #   name: 
- 
-deploy-backend-dev:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.10
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back
-  only:
-   - beiersdorf/develop
-  when: manual    
- # environment:
- #   name: 
- 
-deploy-tasks-dev:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.10
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks
-  only:
-   - beiersdorf/develop
-  when: manual   
-  
-deploy-frontend-demo:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.15
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
-  only:
-   - demo
-  when: manual    
- 
-deploy-backend-demo:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.15
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
-  only:
-   - demo
-  when: manual    
- 
-deploy-tasks-demo:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.15
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
-  only:
-   - demo
-  when: manual     
-  
-deploy-backend-prod:
-  variables:
-    SSH_USER:  root
-    SSH_HOST:  bdf.tms.artlogics.ru
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
-  only:
-   - beiersdorf/master
-  when: manual    
+#DEPLOY-DEV
 
-deploy-frontend-prod:
+deploy-all-dev:
   variables:
-    SSH_USER:  root
-    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.10
     SSH_OPT:   -o StrictHostKeyChecking=no
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
-  only:
-   - beiersdorf/master
-  when: manual 
+    - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && docker-compose up -d --force-recreate
+  when: manual
   
-deploy-tasks-prod:
-  variables:
-    SSH_USER:  root
-    SSH_HOST:  bdf.tms.artlogics.ru
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
-  only:
-   - beiersdorf/master
-  when: manual  
-  
-### TEST1
-deploy-frontend-test1:
+deploy-all-dev-with-drop-db:
   variables:
     SSH_USER:  server
-    SSH_HOST:  10.10.5.14
+    SSH_HOST:  10.10.5.10
     SSH_OPT:   -o StrictHostKeyChecking=no
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
-  when: manual    
- 
-deploy-backend-test1:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.14
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
-  when: manual    
- 
-deploy-tasks-test1:
-  variables:
-    SSH_USER:  server
-    SSH_HOST:  10.10.5.14
-    SSH_OPT:   -o StrictHostKeyChecking=no
-    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
-  stage: deploy
-  script:
-    - $SSH_LINE 'cd /opt/alternative-tms ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+    - docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:develop; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:develop; cd /opt/alternative-tms && docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate
   when: manual
 
-### TEST2
-deploy-frontend-test2:
+
+#DEPLOY-DEMO
+deploy-all-demo:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.15
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
+  when: manual
+
+deploy-all-demo-with-drop-db:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.15
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demo; cd /opt/alternative-tms ; docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate'
+  when: manual     
+
+#DEPLOY-PROD
+deploy-all-prod:
+  variables:
+    SSH_USER:  root
+    SSH_HOST:  bdf.tms.artlogics.ru
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:prod; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:prod; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:prod; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
+  only:
+   - beiersdorf/master
+  when: manual
+  
+#DEPLOY-TEST1
+
+deploy-all-test1-with-drop-db:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.14
@@ -311,10 +180,10 @@ deploy-frontend-test2:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms2 ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-front'
-  when: manual    
- 
-deploy-backend-test2:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1; cd /opt/alternative-tms ; docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate'
+  when: manual
+
+deploy-all-test1:
   variables:
     SSH_USER:  server
     SSH_HOST:  10.10.5.14
@@ -322,17 +191,54 @@ deploy-backend-test2:
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms2 ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-back'
-  when: manual    
- 
-deploy-tasks-test2:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test1; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test1; cd /opt/alternative-tms ; docker-compose down && docker-compose up -d --force-recreate'
+  when: manual
+
+#DEPLOY-TEST2
+
+deploy-all-test2-with-drop-db:
   variables:
     SSH_USER:  server
-    SSH_HOST:  10.10.5.14
+    SSH_HOST:  10.10.5.4
     SSH_OPT:   -o StrictHostKeyChecking=no
     SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
   stage: deploy
   script:
-    - $SSH_LINE 'cd /opt/alternative-tms2 ; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demo; docker-compose -f docker-compose.yml up -d --force-recreate alternative-tms-tasks'
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2; cd /opt/alternative-tms ;  docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate'
+  when: manual
+
+deploy-all-test2:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.4
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:test2; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:test2; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
+  when: manual
+  
+#DEPLOY-DEMOPLUS
+
+deploy-all-demoplus-with-drop-db:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.3
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus; cd /opt/alternative-tms ;  docker-compose down && sudo rm -Rf ./postgres_old && sudo mv ./postgres ./postgres_old && docker-compose up -d --force-recreate'
+  when: manual
+
+deploy-all-demoplus:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  10.10.5.3
+    SSH_OPT:   -o StrictHostKeyChecking=no
+    SSH_LINE: ssh $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  script:
+    - $SSH_LINE 'docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-tasks:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-back:demoplus; docker pull fmcpreg.azurecr.io/alternative-tms/alternative-tms-front:demoplus; cd /opt/alternative-tms ;  docker-compose down && docker-compose up -d --force-recreate'
   when: manual
   
