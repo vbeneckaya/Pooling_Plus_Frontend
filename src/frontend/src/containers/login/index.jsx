@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Button, Dimmer, Dropdown, Flag, Form, Grid, Input, Loader } from 'semantic-ui-react';
+import { Button, Dimmer, Dropdown, Flag, Form, Grid, Input, Loader, List } from 'semantic-ui-react';
 
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,9 +67,14 @@ const Login = () => {
                         <Grid className="login-form-wrapper">
                             <Grid.Row>
                                 <Grid.Column className="login-form-description">
-                                    <div>
-					<img src={'/poolingPlus.svg'} alt={'LOGO'} />
-                                        <p>{t(page.support_name)}</p>
+                                    <div className="login-form-description-wrapper">
+										<img src={'/poolingPlus.png'} alt={'LOGO'} />
+										<List bulleted>
+											<List.Item>{t("login_feature1")}</List.Item>
+											<List.Item>{t("login_feature2")}</List.Item>
+											<List.Item>{t("login_feature3")}</List.Item>
+										</List>										
+                                        <p><a href="mailto:support@artlogics.ru">support@artlogics.ru</a></p>
                                     </div>
                                 </Grid.Column>
                                 <Grid.Column className="login-form-input-wrapper">

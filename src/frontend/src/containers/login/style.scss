@@ -35,9 +35,10 @@
     }
 
     img {
-        position: absolute;
-        left: 0;
-        top: -16px;
+    	position: absolute;
+	left: 1rem;
+	top: 0;
+    	width: 200px;
     }
 }
 
@@ -65,4 +66,9 @@
     width: 318px; 
     left: 82px; 
     top: 33px
+}
+
+.login-form-description-wrapper {
+    width: 100%;
+	padding-top: 37px;
 }
