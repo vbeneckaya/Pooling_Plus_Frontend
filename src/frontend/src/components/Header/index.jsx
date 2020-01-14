@@ -59,7 +59,7 @@ const Header = () => {
         <>
             {isAuth ? (
                 <header>
-                    <Menu fixed="top" style={{ paddingLeft: '12px' }}>
+                    <Menu pointing secondary fixed="top" style={{ paddingLeft: '12px' }}>
                         {<Menu.Item className="header-inner-logo"><img src={'/logo-inner.jpg'} alt={'LOGO'} /></Menu.Item>}
                         {grids &&
                             grids.map(item => (
