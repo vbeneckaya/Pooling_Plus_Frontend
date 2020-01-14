@@ -93,7 +93,7 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = _identityService.HasPermissions(RolePermissions.OrdersCreate),
                     CanViewAdditionSummary = true,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     Columns = columns
                 });
             }
@@ -154,7 +154,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<WarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
                 };
@@ -173,7 +173,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<ShippingWarehousesService>(),
                     CanCreateByForm = canEditWarehouses,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
                 };
@@ -209,7 +209,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<ProductTypesService>(),
                     CanCreateByForm = canEditProductTypes,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
                 };
@@ -263,7 +263,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<ClientsService>(),
                     CanCreateByForm = canEditClients,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
                 };
@@ -356,7 +356,7 @@ namespace Application.Services.AppConfiguration
                     Name = GetName<CompaniesService>(),
                     CanCreateByForm = canEditCompanies,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = companyColumns
                 };

@@ -172,7 +172,7 @@ namespace Domain.Persistables
         [ReferenceType(typeof(PickingType))]
         public Guid? PickingTypeId { get; set; }
         /// <summary>
-        /// Тип комплектации выбран вручную
+        /// Тип комплектации выбран вручнуюt
         /// </summary>
         [IgnoreHistory]
         public bool ManualPickingTypeId { get; set; }

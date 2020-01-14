@@ -542,7 +542,7 @@ ru:
   warehouseName: "Наименование склада"
   warehouses: "Склады доставки"
   Warehouse.DuplicatedRecord: "Склад доставки с таким значением Sold To уже существует"
-  Warehouse.WarehouseName: "Клиент"
+  Warehouse.WarehouseName: "Наименование"
   waybill: "Транспортная накладная"
   waybillTorg12: "Товарная накладная(Торг-12)"
   weightKg: "Плановый вес, кг"
