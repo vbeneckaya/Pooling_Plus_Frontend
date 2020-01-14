@@ -68,7 +68,7 @@ const Login = () => {
                             <Grid.Row>
                                 <Grid.Column className="login-form-description">
                                     <div className="login-form-description-wrapper">
-										<img src={'/poolingPlus.png'} alt={'LOGO'} />
+										<img src={'/pooling-plus.png'} alt={'LOGO'} />
 										<List bulleted>
 											<List.Item>{t("login_feature1")}</List.Item>
 											<List.Item>{t("login_feature2")}</List.Item>
