@@ -68,7 +68,7 @@ const Login = () => {
                             <Grid.Row>
                                 <Grid.Column className="login-form-description">
                                     <div>
-					<img src={'/logo-inner.jpg'} alt={'LOGO'} />
+					<img src={'/poolingPlus.svg'} alt={'LOGO'} />
                                         <p>{t(page.support_name)}</p>
                                     </div>
                                 </Grid.Column>
