@@ -30,6 +30,7 @@ import UsersList from '../containers/users/users_list';
 import UserCard from '../containers/users/user_card_new';
 import FieldsSetting from '../containers/fieldsSetting/list';
 import { homePageSelector } from '../ducks/profile';
+import Report from "../containers/report";
 
 const MainRoute = withRouter(props => {
     const homePage = useSelector(state => homePageSelector(state));
@@ -66,6 +67,7 @@ const MainRoute = withRouter(props => {
                 permission="editFieldProperties"
                 component={FieldsSetting}
             />
+            <Route patch="/report" component={Report}/>
             <Route exact path={LOGIN_LINK} component={Login} />
             <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
         </Switch>
