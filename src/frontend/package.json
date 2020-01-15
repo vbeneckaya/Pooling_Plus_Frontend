@@ -13,6 +13,7 @@
         "lodash": "^4.17.15",
         "moment": "^2.24.0",
         "node-sass": "^4.13.0",
+        "powerbi-report-component": "^1.4.2",
         "prop-types": "^15.7.2",
         "react": "^16.12.0",
         "react-beautiful-dnd": "^11.0.5",
