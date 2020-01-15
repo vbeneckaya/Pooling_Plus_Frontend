@@ -37,7 +37,7 @@ namespace Application.BusinessModels.ShippingWarehouses.Handlers
             entity.Block = cleanAddress?.Block;
             entity.UnparsedParts = cleanAddress?.UnparsedAddressParts;
 
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Created, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.ShippingWarehouseId == entity.Id
                                                 && x.ShippingAddress != entity.Address

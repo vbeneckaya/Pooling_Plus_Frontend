@@ -779,6 +779,8 @@ namespace Application.Services.Orders
             return base.CreateExportExcelMapper()
                 .MapColumn(i => i.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName))
+                .MapColumn(i => i.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
+                .MapColumn(i => i.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
                 .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(i => i.Status, new StateExcelColumn<OrderState>(lang))
                 .MapColumn(i => i.OrderShippingStatus, new StateExcelColumn<ShippingState>(lang))
@@ -788,6 +790,16 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName));
+        }
+
+        protected override ExcelMapper<OrderFormDto> CreateExcelMapper()
+        {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
+            return base.CreateExcelMapper()
+                    .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName))
+                    .MapColumn(i => i.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
+                    .MapColumn(i => i.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
+                ;
         }
 
         private Guid? GetPickingTypeIdByName(string name)
@@ -802,9 +814,21 @@ namespace Application.Services.Orders
             return entry?.Id;
         }
 
+        private Guid? GetDeliveryWarehouseIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Warehouse>().Where(t => t.Address == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
         private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private Guid? GetClientIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Client>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 

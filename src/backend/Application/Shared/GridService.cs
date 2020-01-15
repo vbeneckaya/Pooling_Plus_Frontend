@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Shared
 {
@@ -729,38 +731,35 @@ namespace Application.Shared
             return result;
         }        
         
-        public ValidateResult ImportFromExcel(Stream fileStream)
+        public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             var excel = new ExcelPackage(fileStream);
-            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var workSheet = excel.Workbook.Worksheets[0];//.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
-            var records = excelMapper.LoadEntries(workSheet).ToList();
-            var dtos = records.Select(i => i.Data);
-
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
             Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (excelMapper.Errors.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
-            }
-
-            var importResult = Import(dtos);
+            var importResult = Import(dtos.Select(x=>x.Data));
             Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
-            if (importResult.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
-            }
+            var user = _userIdProvider.GetCurrentUser();
 
-            return new ValidateResult();
+            StringBuilder sb = new StringBuilder();
+            foreach (var validateResult in importResult.Where(x=>x.IsError))
+            {
+                sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
+            }
+            
+            return new ImportResultDto
+            {
+                Message = sb.ToString()
+            };
         }
         
         public Stream ExportToExcel(ExportExcelFormDto<TFilter> dto)

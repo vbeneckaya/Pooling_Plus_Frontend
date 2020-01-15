@@ -90,46 +90,6 @@ const Information = ({
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
-                                        <Grid.Column>
-                                            <FormField
-                                                name="pickingTypeId"
-                                                value={form['pickingTypeId']}
-                                                type={getColumn('pickingTypeId').type}
-                                                source={getColumn('pickingTypeId').source}
-                                                settings={settings['pickingTypeId']}
-                                                error={error['pickingTypeId']}
-                                                onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                        <Grid.Column>
-                                            <Form.Field>
-                                                <label>{t('temperature')}</label>
-                                                <div className="temperature-fields">
-                                                    <label>{t('from')}</label>
-                                                    <FormField
-                                                        noLabel
-                                                        name="temperatureMin"
-                                                        value={form['temperatureMin']}
-                                                        type={getColumn('temperatureMin').type}
-                                                        source={getColumn('temperatureMin').source}
-                                                        error={error['temperatureMin']}
-                                                        settings={settings['temperatureMin']}
-                                                        onChange={onChange}
-                                                    />
-                                                    <label>{t('to')}</label>
-                                                    <FormField
-                                                        noLabel
-                                                        name="temperatureMax"
-                                                        value={form['temperatureMax']}
-                                                        error={error['temperatureMax']}
-                                                        type={getColumn('temperatureMax').type}
-                                                        source={getColumn('temperatureMax').source}
-                                                        settings={settings['temperatureMax']}
-                                                        onChange={onChange}
-                                                    />
-                                                </div>
-                                            </Form.Field>
-                                        </Grid.Column>
                                     </Grid.Row>
                                 </Grid>
                             </Segment>

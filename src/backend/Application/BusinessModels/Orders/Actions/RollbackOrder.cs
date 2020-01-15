@@ -45,16 +45,12 @@ namespace Application.BusinessModels.Orders.Actions
                     newState = OrderState.Created;
             
             }
-
-            if (order.Status == OrderState.Confirmed)
-                newState = OrderState.Created;
+            
 
             if (order.Status == OrderState.Shipped)
             {
                 if (!order.DeliveryType.HasValue || order.DeliveryType == DeliveryType.Delivery)
                     newState = OrderState.InShipping;
-                else
-                    newState = OrderState.Confirmed;
             }
             
             
@@ -85,8 +81,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Confirmed ||
-                   order.Status == OrderState.Shipped ||
+            return order.Status == OrderState.Shipped ||
                    order.Status == OrderState.Delivered ||
                    order.Status == OrderState.Canceled ||
                    order.Status == OrderState.Archive;
