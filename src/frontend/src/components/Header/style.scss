@@ -76,7 +76,9 @@
 .header-inner-logo {
     padding: 0 !important;
     overflow: hidden;
-
+    height: 40px;
+    display: flex!important;
+    align-items: center!important;
     img {
         width: 153px !important;
     }

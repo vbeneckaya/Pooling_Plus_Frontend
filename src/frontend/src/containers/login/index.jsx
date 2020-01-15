@@ -62,7 +62,7 @@ const Login = () => {
             </Dimmer>
             {!isAuth ? (
                 <>
-                    <img src={'/main-logo.png'} alt={'LOGO'}  className="main-logo" />
+                    {/*<img src={'/main-logo.png'} alt={'LOGO'}  className="main-logo" />*/}
                     <div className="centered-div">
                         <Grid className="login-form-wrapper">
                             <Grid.Row>
@@ -73,7 +73,7 @@ const Login = () => {
 											<List.Item>{t("login_feature1")}</List.Item>
 											<List.Item>{t("login_feature2")}</List.Item>
 											<List.Item>{t("login_feature3")}</List.Item>
-										</List>										
+										</List>
                                         <p><a href="mailto:support@artlogics.ru">support@artlogics.ru</a></p>
                                     </div>
                                 </Grid.Column>
