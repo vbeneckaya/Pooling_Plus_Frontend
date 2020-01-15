@@ -22,7 +22,7 @@ namespace Application.BusinessModels.Articles.Handlers
 
         public void AfterChange(Article entity, string oldValue, string newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping,
+            var validStatuses = new[] { OrderState.Created, OrderState.InShipping,
                                         OrderState.Shipped, OrderState.Delivered };
             var itemsToUpdate = _dataService.GetDbSet<OrderItem>()
                                             .Include(x => x.Order)

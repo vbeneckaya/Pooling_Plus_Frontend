@@ -44,7 +44,7 @@ namespace Application.BusinessModels.Orders.Actions
         public bool IsAvailable(Order order)
         {
             return (order.Status == OrderState.InShipping && (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery)) ||
-                   (order.Status == OrderState.Confirmed && (order.DeliveryType.HasValue && order.DeliveryType.Value == DeliveryType.SelfDelivery));
+                   (order.Status == OrderState.Created && (order.DeliveryType.HasValue && order.DeliveryType.Value == DeliveryType.SelfDelivery));
         }
     }
 }

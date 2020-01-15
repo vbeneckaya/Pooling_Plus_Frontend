@@ -39,6 +39,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="orderDate"
                             type={DATE_TYPE}
+							isRequired
                             error={error["orderDate"]}
                             value={form['orderDate']}
                             onChange={onChange}

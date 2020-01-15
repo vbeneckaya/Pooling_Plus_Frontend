@@ -45,7 +45,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Created || order.Status == OrderState.Draft;
+            return order.Status == OrderState.Created;
         }
     }
 }
