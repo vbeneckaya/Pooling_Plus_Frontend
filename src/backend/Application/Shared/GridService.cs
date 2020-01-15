@@ -755,6 +755,11 @@ namespace Application.Shared
             {
                 sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
             }
+            if(!importResult.Any(x=>x.IsError))
+                return new ImportResultDto
+                {
+                    Message = $"{importResult.Count()} загружено"
+                };
             
             return new ImportResultDto
             {

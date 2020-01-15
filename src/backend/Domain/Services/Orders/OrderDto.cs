@@ -10,16 +10,16 @@ namespace Domain.Services.Orders
         public string Id { get; set; }
 
         [DisplayNameKey("Order.Status")]
-        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(3), IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(4), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly, IsRequired]
+        [FieldType(FieldType.Link), IsDefault, OrderNumber(2), IsReadOnly, IsRequired]
         public string OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
         public string ClientOrderNumber { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(2), IsRequired]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(3), IsRequired]
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
@@ -37,13 +37,13 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.Date), AllowBulkUpdate, IsDefault, OrderNumber(4)]
+        [FieldType(FieldType.Date), AllowBulkUpdate, IsDefault, OrderNumber(5)]
         public string ShippingDate { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(5), IsRequired, AllowBulkUpdate]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(6), IsRequired, AllowBulkUpdate]
         public string DeliveryDate { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -55,7 +55,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public decimal? ConfirmedBoxesCount { get; set; }
 
-        [FieldType(FieldType.Number), IsDefault, OrderNumber(10)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(11)]
         public int? PalletsCount { get; set; }
 
         public bool? ManualPalletsCount { get; set; }
@@ -66,7 +66,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? ActualPalletsCount { get; set; }
 
-        [FieldType(FieldType.Number), IsDefault, OrderNumber(11)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(12)]
         public decimal? WeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -146,7 +146,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string MajorAdoptionNumber { get; set; }
 
-        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(8), IsReadOnly]
+        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(1), IsReadOnly]
         public DateTime? OrderCreationDate { get; set; }
 
         [FieldType(FieldType.Boolean)]
@@ -163,20 +163,20 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(8), IsReadOnly]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(9), IsReadOnly]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(9), IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(10), IsReadOnly]
         public string OrderShippingStatus { get; set; }
 
         public bool? IsActive { get; set; }
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingAddress)), IsDefault, OrderNumber(6), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(ShippingAddress)), IsDefault, OrderNumber(7), IsRequired]
         public LookUpDto ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(DeliveryAddress)), IsDefault, OrderNumber(7), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(DeliveryAddress)), IsDefault, OrderNumber(8), IsRequired]
         public LookUpDto DeliveryWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsReadOnly]

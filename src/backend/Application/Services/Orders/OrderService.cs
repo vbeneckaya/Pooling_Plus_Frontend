@@ -810,7 +810,7 @@ namespace Application.Services.Orders
 
         private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.Address == name).FirstOrDefault();
             return entry?.Id;
         }
 
