@@ -75,6 +75,14 @@ i.blue.icon {
     color: #1b1c1d !important;
 }
 
+.Toastify__toast-container {
+    width: max-content!important;
+}
+
+.Toastify__toast-body {
+    white-space: pre;
+}
+
 .ui.fullscreen.modal,
 .ui.fullscreen.scrolling.modal {
     left: 2.5% !important;
