@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useEffect} from 'react';
 import {Form, Grid} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
@@ -10,6 +10,13 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined
     }), [form['clientId']]);
+
+    useEffect(() => {
+        onChange(null, {
+            name: 'deliveryWarehouseId',
+            value: null
+        })
+    }, [form['clientId']]);
 
     return (
         <Form className="tabs-card">
@@ -86,6 +93,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         <FormField
                             name="deliveryWarehouseId"
                             type={SELECT_TYPE}
+                            isDisabled={!form['clientId']}
                             isRequired
                             extSearchParams={extSearchParamsFromDeliveryWarehouse}
                             source="deliveryAddress"
