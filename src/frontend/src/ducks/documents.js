@@ -209,7 +209,7 @@ function* uploadFileSaga({ payload }) {
 
 function* getDocumentTypesSaga({ payload }) {
     try {
-        const result = yield postman.post(`/documentTypes/search`, {});
+        const result = yield postman.post(`/documentTypes/search`, {filter: {}});
 
         yield put({
             type: GET_DOCUMENT_TYPES_SUCCESS,
