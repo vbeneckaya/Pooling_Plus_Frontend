@@ -2,7 +2,7 @@ import React, {useMemo, useEffect} from 'react';
 import {Form, Grid} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE} from '../../../../constants/columnTypes';
+import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE, NUMBER_TYPE} from '../../../../constants/columnTypes';
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
@@ -104,6 +104,31 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         />
                     </Grid.Column>
                 </Grid.Row>
+
+                <Grid.Row columns={2}>
+                    <Grid.Column>
+                        <FormField
+                            name="palletsCount"
+                            type={NUMBER_TYPE}
+                            source="palletsCount"
+                            value={form['palletsCount']}
+                            error={error['palletsCount']}
+                            rows={2}
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <FormField
+                            name="weightKg"
+                            type={NUMBER_TYPE}
+                            source="weightKg"
+                            value={form['weightKg']}
+                            error={error['weightKg']}
+                            rows={2}
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                </Grid.Row>                
             </Grid>
         </Form>
     );
