@@ -253,7 +253,6 @@ const FieldsConfig = ({
                                 iconPosition="left"
                                 placeholder={t('search_field')}
                                 value={search}
-                                clearable
                                 onChange={(e, { value }) => setSearch(value)}
                             />
                         </Form>

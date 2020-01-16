@@ -1,5 +1,6 @@
 export const sortFunc = (item, t, key) => {
-    item.sort(function(a, b) {
+    let new_item = [...item];
+    new_item.sort(function(a, b) {
         const nameA = t(key ? a[key] : a).toLowerCase();
         const nameB = t(key ? b[key] : b).toLowerCase();
         if (nameA < nameB)
@@ -9,5 +10,5 @@ export const sortFunc = (item, t, key) => {
         return 0; // Никакой сортировки
     });
 
-    return item;
+    return new_item;
 };
