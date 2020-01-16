@@ -111,7 +111,7 @@ namespace Application.Services.Orders
             var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
 
             if (user.CarrierId.HasValue)
-                query = query.Where(x => x.CarrierId == user.CarrierId);
+                query = query.Where(x => x.CarrierId == user.CarrierId && x.OrderShippingStatus != null);
 
             // Local user restrictions
 
