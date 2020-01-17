@@ -139,5 +139,12 @@ namespace Domain.Services.Shippings
         public LookUpDto CompanyId { get; set; }
 
         public bool IsEditable { get; set; }
+
+        [FieldType(FieldType.Text)]
+        public string Driver { get; set; }
+
+        [FieldType(FieldType.Text)]
+        public string VehicleNumber { get; set; }
+
     }
 }

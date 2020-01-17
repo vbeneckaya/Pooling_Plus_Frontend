@@ -228,6 +228,18 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public bool ManualTarifficationType { get; set; }
 
+        /// <summary>
+        /// Водитель
+        /// </summary>
+        public string Driver { get; set; }
+        
+        /// <summary>
+        /// Номер ТС
+        /// </summary>
+        public string VehicleNumber { get; set; }
+
+
+
 
         /// <summary>
         /// Юр. лицо

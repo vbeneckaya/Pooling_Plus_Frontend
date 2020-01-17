@@ -4,7 +4,6 @@ using Domain.Services.Translations;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using YamlDotNet.Serialization;
@@ -26,8 +25,8 @@ namespace Infrastructure.Translations
             try
             {
                 var yamlReader = new DeserializerBuilder()
-                                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                                    .Build();
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
 
                 string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "translations.yml");
                 string fileData = File.ReadAllText(filePath);
