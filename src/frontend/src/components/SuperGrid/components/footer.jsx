@@ -75,18 +75,26 @@ const Footer = ({ groupActions, load, clearSelectedRows, gridName, selectedRows 
                     <div className="footer_actions">
                         {groupActions
                             ? groupActions().require.map(action => (
-                                  <Button
-                                      className="footer_actions_button"
-                                      key={action.name}
-                                      loading={action.loading}
-                                      disabled={action.loading}
-                                      size="mini"
-                                      compact
-                                      onClick={() => action.action(action.ids, clearSelectedRows)}
-                                  >
-                                      <Icon name="circle" color={action.color}/>
-                                      {action.name}
-                                  </Button>
+                                  <Popup
+                                      content={action.description}
+                                      disabled={!action.description}
+                                      trigger={
+                                          <Button
+                                              className="footer_actions_button"
+                                              key={action.name}
+                                              loading={action.loading}
+                                              disabled={action.loading}
+                                              size="mini"
+                                              compact
+                                              onClick={() =>
+                                                  action.action(action.ids, clearSelectedRows)
+                                              }
+                                          >
+                                              <Icon name="circle" color={action.color} />
+                                              {action.name}
+                                          </Button>
+                                      }
+                                  />
                               ))
                             : null}
                         {groupActions && groupActions().other.length ? (

@@ -58,6 +58,7 @@ class List extends Component {
     mapActions = (item, t, invokeAction, name) => ({
         ...item,
         name: `${t(item.name)}`,
+        description: item.description,
         action: (rows, clearSelectedRows) => {
             this.showConfirmation(
                 `${t('Are you sure to complete')} "${t(item.name)}" ${
