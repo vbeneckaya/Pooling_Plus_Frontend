@@ -2,7 +2,7 @@ import { all, put, takeEvery, take, spawn } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { push as historyPush } from 'connected-react-router';
-import { FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK } from '../router/links';
+import {FIELDS_SETTING_LINK, REPORTS_LINK, ROLES_LINK, USERS_LINK} from '../router/links';
 import { logoutRequest } from './login';
 import { clearDictionaryInfo } from './dictionaryView';
 import result from '../components/SuperGrid/components/result';
@@ -203,6 +203,13 @@ export const otherMenuSelector = createSelector(stateSelector, state => {
             name: 'fields_setting',
             link: FIELDS_SETTING_LINK,
         });
+    }
+
+    if (state.viewReport) {
+        menu.push({
+            name: 'report',
+            link: REPORTS_LINK
+        })
     }
 
     return menu;
