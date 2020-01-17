@@ -232,5 +232,11 @@ namespace Domain.Services.Orders
         public string ShippingRegion { get; set; }
 
         public bool IsEditable { get; set; }
+        
+        [FieldType(FieldType.Text)]
+        public string Driver { get; set; }
+        
+        [FieldType(FieldType.Text)]
+        public string VehicleNumber { get; set; }
     }
 }
