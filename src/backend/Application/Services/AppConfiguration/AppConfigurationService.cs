@@ -75,6 +75,7 @@ namespace Application.Services.AppConfiguration
                 EditUsers = _identityService.HasPermissions(RolePermissions.UsersEdit),
                 EditRoles = _identityService.HasPermissions(RolePermissions.RolesEdit),
                 EditFieldProperties = _identityService.HasPermissions(RolePermissions.FieldsSettings),
+                ViewReport = _identityService.HasPermissions(RolePermissions.Report),
                 Grids = GetGridsConfiguration(roleId), 
                 Dictionaries = GetDictionariesConfiguration(roleId)                
             };
@@ -121,26 +122,26 @@ namespace Application.Services.AppConfiguration
             var userId = _userProvider.GetCurrentUserId();
             var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
 
-            //_dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
-            //{
-            //    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-            //    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+            _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
+            {
+                var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+                var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-            //    if (!canViewTariffs && !canEditTariffs) return null;
+                if (!canViewTariffs && !canEditTariffs) return null;
                  
-            //    var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+                var columns = ExtractColumnsFromDto<TariffDto>(roleId);
                 
-            //    return new UserConfigurationDictionaryItem
-            //    {
-            //        Name = GetName<TariffsService>(),
-            //        CanCreateByForm = canEditTariffs,
-            //        CanExportToExcel = true,
-            //        CanImportFromExcel = canEditTariffs,
-            //        CanDelete = true,
-            //        ShowOnHeader = true,
-            //        Columns = columns
-            //    };
-            //});
+                return new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<TariffsService>(),
+                    CanCreateByForm = canEditTariffs,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditTariffs,
+                    CanDelete = true,
+                    ShowOnHeader = true,
+                    Columns = columns
+                };
+            });
 
             _dictionaryConfigurations.Add(typeof(WarehouseDto), (roleId) =>
             {

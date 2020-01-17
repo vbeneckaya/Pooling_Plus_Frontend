@@ -78,6 +78,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using Application.Services.Report;
+using Domain.Services.Report;
 
 namespace Infrastructure.Installers
 {
@@ -137,6 +139,9 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
+            
+                        
+            services.AddScoped<IReportService, ReportService>();
 
             services.AddScoped<IValidationService, ValidationService>();
             services.AddScoped<IFieldSetterFactory, FieldSetterFactory>();

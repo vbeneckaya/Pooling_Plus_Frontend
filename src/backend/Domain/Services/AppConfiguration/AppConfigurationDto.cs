@@ -9,5 +9,6 @@ namespace Domain.Services.AppConfiguration
         public bool EditUsers { get; set; }
         public bool EditRoles { get; set; }
         public bool EditFieldProperties { get; set; }
+        public bool ViewReport { get; set; }
     }
 }
