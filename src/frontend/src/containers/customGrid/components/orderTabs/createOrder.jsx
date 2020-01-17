@@ -1,8 +1,8 @@
 import React, {useMemo, useEffect} from 'react';
-import {Form, Grid} from 'semantic-ui-react';
+import {Form, Grid, Segment} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE, NUMBER_TYPE} from '../../../../constants/columnTypes';
+import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE, NUMBER_TYPE,} from '../../../../constants/columnTypes';
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
@@ -24,6 +24,17 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                 <Grid.Row columns={3}>
                     <Grid.Column>
                         <FormField
+                                name="clientId"
+                                type={SELECT_TYPE}
+                                source="clients"
+                                isRequired
+                                error={error['clientId']}
+                                value={form['clientId']}
+                                onChange={onChange}
+                            />
+                    </Grid.Column>
+                    <Grid.Column>
+                    <FormField
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
@@ -40,71 +51,9 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             error={error["clientOrderNumber"]}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <FormField
-                            name="orderDate"
-                            type={DATE_TYPE}
-							isRequired
-                            error={error["orderDate"]}
-                            value={form['orderDate']}
-                            onChange={onChange}
-                        />
+                        />                        
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={2}>
-                    <Grid.Column>
-                        <FormField
-                            name="clientId"
-                            type={SELECT_TYPE}
-                            source="clients"
-                            isRequired
-                            error={error['clientId']}
-                            value={form['clientId']}
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <FormField
-                            name="deliveryDate"
-                            type={DATE_TYPE}
-                            isRequired
-                            value={form['deliveryDate']}
-                            error={error['deliveryDate']}
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={2}>
-                    <Grid.Column>
-                        <FormField
-                            name="shippingWarehouseId"
-                            type={SELECT_TYPE}
-                            source="shippingAddress"
-                            isRequired
-                            value={form['shippingWarehouseId']}
-                            error={error['shippingWarehouseId']}
-                            rows={2}
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <FormField
-                            name="deliveryWarehouseId"
-                            type={SELECT_TYPE}
-                            isDisabled={!form['clientId']}
-                            isRequired
-                            extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                            source="deliveryAddress"
-                            value={form['deliveryWarehouseId']}
-                            error={error['deliveryWarehouseId']}
-                            rows={2}
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-
                 <Grid.Row columns={2}>
                     <Grid.Column>
                         <FormField
@@ -128,7 +77,68 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             onChange={onChange}
                         />
                     </Grid.Column>
-                </Grid.Row>                
+                </Grid.Row>                  
+                <Grid.Row>
+                    <Grid.Column>
+                        <Form.Field>
+                            <label>{t('route')}</label>
+                            <Segment>
+                                <Grid>
+                                    <Grid.Row columns={2}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="shippingWarehouseId"
+                                                type={SELECT_TYPE}
+                                                source="shippingAddress"
+                                                isRequired
+                                                value={form['shippingWarehouseId']}
+                                                error={error['shippingWarehouseId']}
+                                                rows={2}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="deliveryWarehouseId"
+                                                type={SELECT_TYPE}
+                                                isDisabled={!form['clientId']}
+                                                isRequired
+                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
+                                                source="deliveryAddress"
+                                                value={form['deliveryWarehouseId']}
+                                                error={error['deliveryWarehouseId']}
+                                                rows={2}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row columns={2}>
+                                        <Grid.Column>
+                                            <FormField
+                                                    name="shippingDate"
+                                                    type={DATE_TYPE}
+                                                    isRequired
+                                                    value={form['shippingDate']}
+                                                    error={error['shippingDate']}
+                                                    onChange={onChange}
+                                                />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="deliveryDate"
+                                                type={DATE_TYPE}
+                                                isRequired
+                                                value={form['deliveryDate']}
+                                                error={error['deliveryDate']}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+                        </Form.Field>
+                    </Grid.Column>
+                </Grid.Row>              
             </Grid>
         </Form>
     );

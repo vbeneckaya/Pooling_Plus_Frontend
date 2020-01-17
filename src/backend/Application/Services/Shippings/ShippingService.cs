@@ -90,7 +90,7 @@ namespace Application.Services.Shippings
             
             if (user.CarrierId.HasValue)
                 query = query
-                    .Where(x => x.CarrierId == user.CarrierId);
+                    .Where(x => x.CarrierId == user.CarrierId  && x.Status != null && x.Status != ShippingState.ShippingCreated);
 
             // Local user restrictions
 

@@ -129,6 +129,11 @@
             Задание нового пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.ReportController.GetConfig">
+            <summary>
+            Получение конфига отчёта 
+            </summary>
+        </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
             Получение данных для выпадающего списка в 

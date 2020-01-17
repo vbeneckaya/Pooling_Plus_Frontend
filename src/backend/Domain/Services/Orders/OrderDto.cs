@@ -28,7 +28,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(12), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(13), IsRequired]
         public LookUpDto ClientId { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -194,7 +194,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), AllowBulkUpdate]
         public LookUpDto CarrierId { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(14)]
         public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.BigText)]

@@ -12,7 +12,7 @@ import {
     GRID_NEW_LINK,
     LOGIN_LINK,
     NEW_ROLE_LINK,
-    NEW_USER_LINK,
+    NEW_USER_LINK, REPORTS_LINK,
     ROLE_LINK,
     ROLES_LINK,
     USER_LINK,
@@ -67,7 +67,7 @@ const MainRoute = withRouter(props => {
                 permission="editFieldProperties"
                 component={FieldsSetting}
             />
-            <Route exact path="/report" component={Report}/>
+            <Route exact path={REPORTS_LINK} component={Report}/>
             <Route exact path={LOGIN_LINK} component={Login} />
             <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
 

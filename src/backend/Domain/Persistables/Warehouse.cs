@@ -4,7 +4,7 @@ using System;
 namespace Domain.Persistables
 {
     /// <summary>
-    /// Склад
+    /// Склад доставки
     /// </summary>
     public class Warehouse : IPersistable
     {

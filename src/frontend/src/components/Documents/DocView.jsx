@@ -29,7 +29,8 @@ const DocView = ({ onClick, children, document }) => {
         const src = `/api/files/${document.fileId}`,
             name = document.name || '',
             extension = name.substr(name.lastIndexOf('.') + 1),
-            isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase());
+            isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase()),
+            isPdf = extension.toLowerCase().includes('pdf');
 
         let image = isImage ? (
             <div
@@ -37,11 +38,15 @@ const DocView = ({ onClick, children, document }) => {
                 style={{ background: `url(${src}) no-repeat center center` }}
                 onClick={handleOpen}
             />
-        ) : (
+        ) : isPdf ? (
             <div className="image-container">
                 <a target="_blanc" href={src}>
                     <Icon name="file outline" />
                 </a>
+            </div>
+        ) : (
+            <div className="image-container">
+                <Icon name="file outline" />
             </div>
         );
         let inner = (
@@ -65,9 +70,9 @@ const DocView = ({ onClick, children, document }) => {
 
         return (
             <div className="file-item">
+                {inner}
                 <Modal
                     className="top-layer"
-                    trigger={inner}
                     open={modalOpen}
                     onClose={handleClose}
                     closeOnEscape
