@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/report")]
-    //[HasPermission(RolePermissions.Report)]
+    [HasPermission(RolePermissions.Report)]
     public class ReportController : Controller
     {
         private readonly IReportService reportService;

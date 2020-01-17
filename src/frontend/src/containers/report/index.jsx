@@ -27,7 +27,7 @@ const Report = () => {
                     }}
                     permissions="All"
                     style={{
-                        height: 'calc(100vh - 32px)',
+                        height: 'calc(100vh - 40px)',
                         width: '100%',
                         border: '0',
                         background: '#eee'
