@@ -9,7 +9,8 @@ import { invokeMassUpdateRequest } from '../../../ducks/gridActions';
 import _ from 'lodash';
 import CellValue from '../../ColumnsValue';
 import { ORDERS_GRID } from '../../../constants/grids';
-import CustomCheckbox from "../../BaseComponents/CustomCheckbox";
+import CustomCheckbox from '../../BaseComponents/CustomCheckbox';
+import NotFoundMessage from "./notFoundMessage";
 
 class Result extends Component {
     handleCheck = row => {
@@ -43,11 +44,13 @@ class Result extends Component {
             t,
             checkForEditing,
             invokeMassUpdate,
+            isSetFilters,
+            isCreateBtn
         } = this.props;
 
         return (
             <Table.Body>
-                {rows &&
+                {rows && rows.length ? (
                     rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
@@ -63,7 +66,9 @@ class Result extends Component {
                                     e.stopPropagation();
                                 }}
                             >
-                                <div className={`${row.highlightForConfirmed ? 'grid-marker' : ''}`} />
+                                <div
+                                    className={`${row.highlightForConfirmed ? 'grid-marker' : ''}`}
+                                />
                                 <CustomCheckbox
                                     checked={!!selectedRows.has(row.id)}
                                     disabled={disabledCheck(row)}
@@ -140,7 +145,10 @@ class Result extends Component {
                                 </Table.HeaderCell>
                             ) : null}
                         </Table.Row>
-                    ))}
+                    ))
+                ) : (
+                   <NotFoundMessage gridName={name} isSetFilters={isSetFilters} isCreateBtn={isCreateBtn} goToCard={goToCard}/>
+                )}
                 <div className="table-bottom-loader">
                     <Loader active={progress && rows.length} />
                 </div>

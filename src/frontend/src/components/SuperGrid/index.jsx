@@ -440,6 +440,8 @@ class SuperGrid extends Component {
                             selectedRows={selectedRows}
                             setSelected={this.setSelected}
                             isShowActions={isShowActions}
+                            isSetFilters={columns.find(column => column.filter)}
+                            isCreateBtn={isCreateBtn}
                         />
                     </InfiniteScrollTable>
                     {selectedRows.size ? (
