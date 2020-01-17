@@ -140,10 +140,10 @@ namespace Domain.Services.Shippings
 
         public bool IsEditable { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(15)]
         public string Driver { get; set; }
 
-        [FieldType(FieldType.Text)]
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(16)]
         public string VehicleNumber { get; set; }
 
     }
