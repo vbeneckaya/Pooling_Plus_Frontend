@@ -32,6 +32,8 @@ const DOWNLOAD_DOCUMENT_REQUEST = 'DOWNLOAD_DOCUMENT_REQUEST';
 const DOWNLOAD_DOCUMENT_SUCCESS = 'DOWNLOAD_DOCUMENT_SUCCESS';
 const DOWNLOAD_DOCUMENT_ERROR = 'DOWNLOAD_DOCUMENT_ERROR';
 
+const GET_DOCUMENT_LINK_REQUEST = 'GET_DOCUMENT_LINK_REQUEST';
+
 const CLEAR_DOCUMENTS = 'CLEAR_DOCUMENTS';
 
 //*  INITIAL STATE  *//
@@ -159,6 +161,13 @@ export const clearDocuments = () => {
     };
 };
 
+export const getDocumentLinkRequest = payload => {
+    return {
+        type: GET_DOCUMENT_LINK_REQUEST,
+        payload,
+    };
+};
+
 //*  SELECTORS *//
 
 const stateSelector = state => state.documents;
@@ -209,7 +218,7 @@ function* uploadFileSaga({ payload }) {
 
 function* getDocumentTypesSaga({ payload }) {
     try {
-        const result = yield postman.post(`/documentTypes/search`, {filter: {}});
+        const result = yield postman.post(`/documentTypes/search`, { filter: {} });
 
         yield put({
             type: GET_DOCUMENT_TYPES_SUCCESS,
@@ -320,6 +329,20 @@ function* downloadDocumentSaga({ payload }) {
     }
 }
 
+function* getDocumentLinkSaga({ payload }) {
+    try {
+        const { id } = payload;
+        const res = yield postman.get(`/files/${id}/download`, { responseType: 'blob' });
+
+        const link = URL.createObjectURL(new Blob([res], {type: 'application/pdf'}));
+
+        window.open(link);
+
+    } catch (e) {
+       console.log('error', e);
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(UPLOAD_FILE_REQUEST, uploadFileSaga),
@@ -329,5 +352,6 @@ export function* saga() {
         takeEvery(EDIT_DOCUMENT_REQUEST, editDocumentSaga),
         takeEvery(DELETE_DOCUMENT_REQUEST, deleteDocumentSaga),
         takeEvery(DOWNLOAD_DOCUMENT_REQUEST, downloadDocumentSaga),
+        takeEvery(GET_DOCUMENT_LINK_REQUEST, getDocumentLinkSaga),
     ]);
 }

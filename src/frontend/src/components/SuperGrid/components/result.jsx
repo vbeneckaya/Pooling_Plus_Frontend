@@ -147,7 +147,7 @@ class Result extends Component {
                         </Table.Row>
                     ))
                 ) : (
-                   <NotFoundMessage gridName={name} isSetFilters={isSetFilters} isCreateBtn={isCreateBtn} goToCard={goToCard}/>
+                    !progress ? <NotFoundMessage gridName={name} isSetFilters={isSetFilters} isCreateBtn={isCreateBtn} goToCard={goToCard}/> : null
                 )}
                 <div className="table-bottom-loader">
                     <Loader active={progress && rows.length} />

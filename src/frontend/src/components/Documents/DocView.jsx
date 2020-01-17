@@ -2,9 +2,14 @@
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon, Image, Modal } from 'semantic-ui-react';
-import { documentTypesSelector, getDocumentTypesRequest } from '../../ducks/documents';
+import {
+    documentLinkSelector,
+    documentTypesSelector,
+    getDocumentLinkRequest,
+    getDocumentTypesRequest
+} from '../../ducks/documents';
 
-const DocView = ({ onClick, children, document }) => {
+const DocView = ({ onClick, children, document = {} }) => {
     let [modalOpen, setModalOpen] = useState(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -12,6 +17,13 @@ const DocView = ({ onClick, children, document }) => {
     useEffect(() => {
         dispatch(getDocumentTypesRequest());
     }, []);
+
+
+    const getDocumentLink = () => {
+        dispatch(getDocumentLinkRequest({
+            id: document.fileId
+        }));
+    };
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
 
@@ -40,9 +52,9 @@ const DocView = ({ onClick, children, document }) => {
             />
         ) : isPdf ? (
             <div className="image-container">
-                <a target="_blanc" href={src}>
+                <div onClick={getDocumentLink}>
                     <Icon name="file outline" />
-                </a>
+                </div>
             </div>
         ) : (
             <div className="image-container">
