@@ -150,5 +150,11 @@ namespace Domain.Enums
         /// </summary>
         [OrderNumber(14)]
         ProductTypesEdit = 27,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [OrderNumber(14)]
+        Report = 28,
     }
 }
