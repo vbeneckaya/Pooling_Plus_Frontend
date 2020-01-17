@@ -12,7 +12,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(12)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
         public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.Number)]

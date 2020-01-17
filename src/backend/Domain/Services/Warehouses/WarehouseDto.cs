@@ -21,6 +21,7 @@ namespace Domain.Services.Warehouses
 
         public string Area { get; set; }
 
+        [FieldType(FieldType.Text), OrderNumber(4), IsReadOnly]
         public string City { get; set; }
 
         public string Street { get; set; }

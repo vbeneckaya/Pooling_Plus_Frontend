@@ -19,7 +19,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string ClientOrderNumber { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(3), IsRequired]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(3)]
         public string OrderDate { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.OrderType)), IsReadOnly]
