@@ -152,9 +152,9 @@ namespace Domain.Enums
         ProductTypesEdit = 27,
 
         /// <summary>
-        /// 
+        /// Отчёты
         /// </summary>
-        [OrderNumber(14)]
+        [OrderNumber(25)]
         Report = 28,
     }
 }
