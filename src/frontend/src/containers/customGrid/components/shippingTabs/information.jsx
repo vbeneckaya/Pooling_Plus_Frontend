@@ -29,17 +29,6 @@ const Information = ({ form = {}, onChange, settings }) => {
                     </Grid.Column>
                     <Grid.Column>
                         <FormField
-                            name="deliveryType"
-                            value={form['deliveryType']}
-                            isTranslate
-                            type={SELECT_TYPE}
-                            settings={settings['deliveryType']}
-                            source="deliveryType"
-                            onChange={onChange}
-                        />
-                    </Grid.Column>
-                    <Grid.Column>
-                        <FormField
                             name="tarifficationType"
                             value={form['tarifficationType']}
                             isTranslate
