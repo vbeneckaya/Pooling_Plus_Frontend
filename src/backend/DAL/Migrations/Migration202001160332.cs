@@ -6,12 +6,12 @@ using ThinkingHome.Migrator.Framework.Extensions;
 namespace DAL.Migrations
 {
     [Migration(202001160332)]
-    public class AddDriverAngVehicleNumberInOrders : Migration
+    public class AddDriverAngVehicleNumberInShippings : Migration
     {
         public override void Apply()
         {
-            Database.AddColumn("Orders", new Column("Driver", DbType.String));
-            Database.AddColumn("Orders", new Column("VehicleNumber", DbType.String.WithSize(50)));
+            Database.AddColumn("Shippings", new Column("Driver", DbType.String));
+            Database.AddColumn("Shippings", new Column("VehicleNumber", DbType.String.WithSize(50)));
             
             AddTranslation("vehicleNumber", "Vehicle Number", "Номер ТС");
             AddTranslation("driver", "Driver", "Водитель");

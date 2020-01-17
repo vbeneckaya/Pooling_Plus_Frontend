@@ -252,9 +252,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.TarifficationType,
                         e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
                     .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()))
-                    .ForMember(t => t.Driver, e => e.MapFrom(s=>s.Driver))
-                    .ForMember(t => t.VehicleNumber, e => e.MapFrom(s=>s.VehicleNumber));
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()));
                     
 
                 cfg.CreateMap<Order, OrderDto>()
@@ -289,10 +287,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
                     .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
-                    .ForMember(t => t.Driver, e => e.MapFrom(s=>s.Driver))
-                    .ForMember(t => t.VehicleNumber, e => e.MapFrom(s=>s.VehicleNumber));
-                    ;
+                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())));
 
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));

@@ -382,15 +382,5 @@ namespace Domain.Persistables
         /// ID РЦ
         /// </summary>
         public string DistributionCenterId { get; set; } 
-        
-        /// <summary>
-        /// Водитель
-        /// </summary>
-        public string Driver { get; set; } 
-        
-        /// <summary>
-        /// Номер ТС(Транспортного Средства)
-        /// </summary>
-        public string VehicleNumber { get; set; }
     }
 }

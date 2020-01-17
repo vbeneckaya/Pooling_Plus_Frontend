@@ -473,6 +473,8 @@ namespace Application.Services.Shippings
                          .WhereAnd(searchForm.Filter.ReturnRate.ApplyNumericFilter<Shipping>(i => i.ReturnRate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingCreationDate.ApplyDateRangeFilter<Shipping>(i => i.ShippingCreationDate, ref parameters))
                          .WhereAnd(searchForm.Filter.ShippingNumber.ApplyStringFilter<Shipping>(i => i.ShippingNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.VehicleNumber.ApplyStringFilter<Shipping>(i => i.VehicleNumber, ref parameters))
+                         .WhereAnd(searchForm.Filter.Driver.ApplyStringFilter<Shipping>(i => i.Driver, ref parameters))
                          .WhereAnd(searchForm.Filter.Status.ApplyEnumFilter<Shipping, ShippingState>(i => i.Status, ref parameters))
                          .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Shipping, TarifficationType>(i => i.TarifficationType, ref parameters))
                          .WhereAnd(searchForm.Filter.TemperatureMax.ApplyNumericFilter<Shipping>(i => i.TemperatureMax, ref parameters))
@@ -542,8 +544,7 @@ namespace Application.Services.Shippings
             var transportCompanies = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
 
             var vehicleTypes = _dataService.GetDbSet<VehicleType>().Where(i => i.Name.ToLower().Contains(search));
-
-
+            
             return query.Where(i =>
                columns.Contains("shippingNumber") && !string.IsNullOrEmpty(i.ShippingNumber) && i.ShippingNumber.ToLower().Contains(search)
             || columns.Contains("deliveryInvoiceNumber") && !string.IsNullOrEmpty(i.DeliveryInvoiceNumber) && i.DeliveryInvoiceNumber.ToLower().Contains(search)
@@ -580,6 +581,8 @@ namespace Application.Services.Shippings
             || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v.Id == i.VehicleTypeId)
             || columns.Contains("carrierId") && transportCompanies.Any(t => t.Id == i.CarrierId)
             || columns.Contains("status") && statuses.Contains(i.Status)
+            || columns.Contains("driver") && i.Driver.Contains(search)
+            || columns.Contains("vehicleNumber") && i.VehicleNumber.Contains(search)
             );
         }
 
