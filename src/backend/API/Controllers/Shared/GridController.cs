@@ -5,6 +5,7 @@ using System.Linq;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services;
+using Domain.Services.Orders;
 using Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -249,6 +250,11 @@ namespace API.Controllers.Shared
         {
             try
             {
+//                if (typeof(TEntity).Name == "Order")
+//                {
+//                    var method = service.GetType().GetMethod("FindByNumber");
+//                    var res = method.Invoke(service, new[] { new NumberSearchFormDto(){Number = form.GetType().GetProperty("OrderNumber").GetValue(form).ToString()}});
+//                }
                 ValidateResult result = service.SaveOrCreate(form);
                 return Ok(result);
             }
