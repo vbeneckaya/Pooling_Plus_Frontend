@@ -233,44 +233,6 @@ namespace Application.Services.FieldProperties
             return new ValidateResult();
         }
 
-        private void SetHiddenState(FieldPropertyDto dto, bool isHidden)
-        {
-            var dbSet = _dataService.GetDbSet<FieldPropertyItemVisibility>();
-
-            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
-
-            var companyId = string.IsNullOrEmpty(dto.CompanyId)
-                ? (Guid?) null
-                : Guid.Parse(dto.CompanyId);
-
-            var roleId = string.IsNullOrEmpty(dto.RoleId)
-                ? (Guid?) null
-                : Guid.Parse(dto.RoleId);
-
-
-            var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
-                                                            && x.RoleId == roleId
-                                                            && x.FieldName == dto.FieldName);
-
-            if (visibilityItem == null && isHidden)
-            {
-                visibilityItem = new FieldPropertyItemVisibility
-                {
-                    Id = Guid.NewGuid(),
-                    ForEntity = forEntity,
-                    CompanyId = companyId,
-                    RoleId = roleId,
-                    FieldName = dto.FieldName,
-                    IsHidden = isHidden
-                };
-                dbSet.Add(visibilityItem);
-            }
-            else if (visibilityItem != null)
-                visibilityItem.IsHidden = isHidden;
-
-            _dataService.SaveChanges();
-        }
-
         public bool Import(FileStream stream, FieldPropertiesGetForParams props)
         {
             byte[] bytes = new byte[stream.Length];
@@ -421,5 +383,44 @@ namespace Application.Services.FieldProperties
 
             return result;
         }
+        
+        private void SetHiddenState(FieldPropertyDto dto, bool isHidden)
+        {
+            var dbSet = _dataService.GetDbSet<FieldPropertyItemVisibility>();
+
+            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
+
+            var companyId = string.IsNullOrEmpty(dto.CompanyId)
+                ? (Guid?) null
+                : Guid.Parse(dto.CompanyId);
+
+            var roleId = string.IsNullOrEmpty(dto.RoleId)
+                ? (Guid?) null
+                : Guid.Parse(dto.RoleId);
+
+
+            var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
+                                                            && x.RoleId == roleId
+                                                            && x.FieldName == dto.FieldName);
+
+            if (visibilityItem == null && isHidden)
+            {
+                visibilityItem = new FieldPropertyItemVisibility
+                {
+                    Id = Guid.NewGuid(),
+                    ForEntity = forEntity,
+                    CompanyId = companyId,
+                    RoleId = roleId,
+                    FieldName = dto.FieldName,
+                    IsHidden = isHidden
+                };
+                dbSet.Add(visibilityItem);
+            }
+            else if (visibilityItem != null)
+                visibilityItem.IsHidden = isHidden;
+
+            _dataService.SaveChanges();
+        }
+
     }
 }
