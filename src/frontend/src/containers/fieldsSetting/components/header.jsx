@@ -1,8 +1,14 @@
 import React, {useRef} from 'react';
 import {Button, Dropdown, Menu, Popup } from 'semantic-ui-react';
 import {useDispatch, useSelector} from "react-redux";
-import {List} from '../../../containers/fieldsSetting/list';
-import {exportFieldsSettingRequest, importFieldsSettingRequest, fieldsSettingSelector, exportProgressSelector, importProgressSelector} from "../../../ducks/fieldsSetting";
+import {
+    exportFieldsSettingRequest,
+    importFieldsSettingRequest,
+    fieldsSettingSelector,
+    exportProgressSelector,
+    importProgressSelector,
+    getFieldsSettingRequest
+} from "../../../ducks/fieldsSetting";
 
 const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t, changeCompany, companiesList = [], disabledCompany}) => {
     const rolesListOptions = [
@@ -52,7 +58,12 @@ const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, compa
                 entity: activeItem,
                 role: role,
                 form: data,
-                callbackSuccess: () => List.getSettings(),
+                callbackSuccess: ()=>{dispatch(
+                    getFieldsSettingRequest({
+                        forEntity: activeItem,
+                        roleId: /*role === 'null' ? undefined :*/ role,
+                    }),
+                );},
             }),
         );
     };

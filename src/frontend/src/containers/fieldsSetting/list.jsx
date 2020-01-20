@@ -62,7 +62,7 @@ export const List = () => {
     useEffect(
         () => {
             dispatch(clearFieldsSettings());
-            activeItem && getSettings();
+            activeItem && getFieldsSettings();
         },
         [role, activeItem],
     );
@@ -75,8 +75,8 @@ export const List = () => {
         },
         [rolesList],
     );
-
-    const getSettings = () => {
+    
+    const getFieldsSettings = () => {
         dispatch(
             getFieldsSettingRequest({
                 forEntity: activeItem,
@@ -113,7 +113,7 @@ export const List = () => {
                     },
                     isExt,
                     callbackSuccess: () => {
-                        getSettings();
+                        getFieldsSettings();
                     },
                 }),
             );
@@ -131,7 +131,7 @@ export const List = () => {
                         roleId: role === 'null' ? undefined : role,
                     },
                     isExt,
-                    callbackSuccess: getSettings,
+                    callbackSuccess: getFieldsSettings,
                 }),
             );
         },
