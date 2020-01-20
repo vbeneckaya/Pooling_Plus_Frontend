@@ -15,12 +15,6 @@ export const rolesColumns = [
         type: LABELS_TYPE,
     },
     {
-        name: 'companyId',
-        displayNameKey: 'companyId',
-        source: 'companies',
-        type: SELECT_TYPE,
-    },
-    {
         name: 'isActive',
         displayNameKey: 'isActive',
         type: ACTIVE_TYPE,

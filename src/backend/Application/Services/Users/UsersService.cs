@@ -199,17 +199,6 @@ namespace Application.Services.Users
             return query;
         }
 
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(User.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
-        }
-
         public override User FindByKey(UserDto dto)
         {
             return _dataService.GetDbSet<User>()

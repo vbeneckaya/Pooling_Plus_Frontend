@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Grid, Segment } from 'semantic-ui-react';
 import FormField from '../../../../components/BaseComponents';
-import { NUMBER_TYPE, SELECT_TYPE } from '../../../../constants/columnTypes';
+import { NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE } from '../../../../constants/columnTypes';
 
 const Information = ({ form = {}, onChange, settings }) => {
     const { t } = useTranslation();
@@ -166,6 +166,39 @@ const Information = ({ form = {}, onChange, settings }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>
+				<Grid.Row>
+                    <Grid.Column>
+                        <Form.Field>
+                            <label>{t('driverAndVehicleNumber')}</label>
+                            <Segment className="mini-column">
+                                <Grid>
+                                    <Grid.Row columns={2}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="driver"
+                                                text="driver"
+                                                value={form['driver']}
+                                                type={TEXT_TYPE}
+                                                settings={settings['driver']}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="vehicleNumber"
+                                                text="vehicleNumber"
+                                                value={form['vehicleNumber']}
+                                                type={TEXT_TYPE}
+                                                settings={settings['vehicleNumber']}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+                        </Form.Field>
+                    </Grid.Column>
+                </Grid.Row>				
                 {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>

@@ -181,13 +181,21 @@ namespace Application.Services.Warehouses
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
-                .MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
+                //.MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
-                .MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang));
+                .MapColumn(w => w.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
+                //.MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                ;
         }
         private Guid? GetCompanyIdByName(string name)
         {
             var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
+        private Guid? GetClientIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Client>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
@@ -270,17 +278,6 @@ namespace Application.Services.Warehouses
             }
 
             return result;
-        }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Warehouse.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
         }
     }
 }

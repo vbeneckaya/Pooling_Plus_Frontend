@@ -150,6 +150,10 @@ namespace Application.Services.AppConfiguration
                 if (!canEditWarehouses) return null;
                
                 var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
+
+                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
+                    columns = columns.Where(x => x.Name != "CompanyId");
+                
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<WarehousesService>(),
@@ -168,7 +172,9 @@ namespace Application.Services.AppConfiguration
 
                 if (!canEditShippingWarehouses) return null;
                 var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
-                
+                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
+                    columns = columns.Where(x => x.Name != "CompanyId");
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ShippingWarehousesService>(),
@@ -362,19 +368,6 @@ namespace Application.Services.AppConfiguration
                     Columns = companyColumns
                 };
             });
-        }
-
-        public UserConfigurationDictionaryItem GetDictionaryConfiguration<TDto>(Guid? roleId)
-        {
-            var dtoType = typeof(TDto);
-            if (_dictionaryConfigurations.ContainsKey(dtoType))
-            {
-                return _dictionaryConfigurations[dtoType](roleId);
-            }
-            else
-            {
-                return null;
-            }
         }
 
         /// <summary>
