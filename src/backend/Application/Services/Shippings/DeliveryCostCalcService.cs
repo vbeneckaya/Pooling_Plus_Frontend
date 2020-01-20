@@ -1,0 +1,142 @@
+﻿using DAL.Services;
+using Domain.Enums;
+using Domain.Extensions;
+using Domain.Persistables;
+using Domain.Services.History;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Application.Services.Shippings
+{
+    public class DeliveryCostCalcService : IDeliveryCostCalcService
+    {
+        private readonly ICommonDataService _commonDataService;
+        private readonly IHistoryService _historyService;
+
+        public DeliveryCostCalcService(ICommonDataService commonDataService, IHistoryService historyService)
+        {
+            _commonDataService = commonDataService;
+            _historyService = historyService;
+        }
+
+        public void UpdateDeliveryCost(Shipping shipping)
+        {
+            var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
+            if (shipping.Status == null
+                || !validState.Contains(shipping.Status.Value)
+                || shipping.CarrierId == null
+                || shipping.TarifficationType == null)
+            {
+                return;
+            }
+
+            var orders = _commonDataService.GetDbSet<Order>()
+                                           .Where(x => x.ShippingId == shipping.Id)
+                                           .ToList()
+                                           .Where(x => !string.IsNullOrEmpty(x.ShippingCity)
+                                                    && !string.IsNullOrEmpty(x.DeliveryCity))
+                                           .ToList();
+
+            Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
+
+            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientId }))
+            {
+                var hasIncompleteOrders = group.Where(x => x.DeliveryType != DeliveryType.Delivery
+                                                            || x.PalletsCount == null
+                                                            || x.PalletsCount <= 0
+                                                            || x.ShippingDate == null
+                                                            || x.DeliveryDate == null)
+                                               .Any();
+                if (hasIncompleteOrders)
+                {
+                    continue;
+                }
+
+                decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable());
+                foreach (var order in group)
+                {
+                    if (!order.ManualDeliveryCost && order.DeliveryCost != deliveryCost)
+                    {
+                        _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
+                                                         nameof(order.DeliveryCost).ToLowerFirstLetter(),
+                                                         order.DeliveryCost, deliveryCost);
+                        order.DeliveryCost = deliveryCost;
+                    }
+                }
+            }
+        }
+
+        private decimal? GetOrderGroupDeliveryCost(string shippingCity, string deliveryCity, Shipping shipping, IEnumerable<Order> orders)
+        {
+            DateTime shippingDate = orders.Min(x => x.ShippingDate.Value);
+
+            var tariff = _commonDataService.GetDbSet<Tariff>()
+                                           .Where(x => x.CarrierId == shipping.CarrierId
+                                                        && x.VehicleTypeId == shipping.VehicleTypeId
+                                                        && x.BodyTypeId == shipping.BodyTypeId
+                                                        && x.TarifficationType == shipping.TarifficationType
+                                                        && x.ShipmentCity == shippingCity
+                                                        && x.DeliveryCity == deliveryCity
+                                                        && x.EffectiveDate <= shippingDate
+                                                        && x.ExpirationDate >= shippingDate)
+                                           .FirstOrDefault();
+            if (tariff == null)
+            {
+                tariff = _commonDataService.GetDbSet<Tariff>()
+                                           .Where(x => x.CarrierId == shipping.CarrierId
+                                                        && x.VehicleTypeId == null
+                                                        && x.BodyTypeId == null
+                                                        && x.TarifficationType == shipping.TarifficationType
+                                                        && x.ShipmentCity == shippingCity
+                                                        && x.DeliveryCity == deliveryCity
+                                                        && x.EffectiveDate <= shippingDate
+                                                        && x.ExpirationDate >= shippingDate)
+                                           .FirstOrDefault();
+            }
+
+            if (tariff == null)
+            {
+                return null;
+            }
+
+            decimal cost;
+            if (shipping.TarifficationType == TarifficationType.Ftl && tariff.FtlRate != null)
+            {
+                cost = tariff.FtlRate.Value;
+            }
+            else
+            {
+                int totalPallets = orders.Sum(x => x.PalletsCount ?? 0);
+                cost = GetLtlRate(tariff, totalPallets) ?? 0M;
+            }
+
+            bool needWinterCoeff = tariff.StartWinterPeriod != null
+                                && tariff.EndWinterPeriod != null
+                                && shippingDate >= tariff.StartWinterPeriod
+                                && shippingDate <= tariff.EndWinterPeriod
+                                && tariff.WinterAllowance != null;
+            if (needWinterCoeff)
+            {
+                cost *= 1 + tariff.WinterAllowance.Value / 100;
+            }
+
+            return cost;
+        }
+
+        private decimal? GetLtlRate(Tariff tariff, int palletsCount)
+        {
+            if (palletsCount < 33)
+            {
+                string propertyName = nameof(tariff.LtlRate33).Replace("33", palletsCount.ToString());
+                var property = tariff.GetType().GetProperty(propertyName);
+                return (decimal?)property.GetValue(tariff);
+            }
+            else
+            {
+                return tariff.LtlRate33;
+            }
+        }
+    }
+}
