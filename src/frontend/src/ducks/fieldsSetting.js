@@ -1,7 +1,8 @@
-import { createSelector } from 'reselect';
-import { downloader, postman } from '../utils/postman';
-import { all, put, takeEvery } from 'redux-saga/effects';
-import { ORDERS_GRID } from '../constants/grids';
+import {createSelector} from 'reselect';
+import {downloader, postman} from '../utils/postman';
+import {all, put, takeEvery} from 'redux-saga/effects';
+import {ORDERS_GRID} from '../constants/grids';
+import {toast} from "react-toastify";
 
 const TYPE_API = 'fieldProperties';
 
@@ -35,13 +36,13 @@ const initial = {
     settings: {},
     progress: false,
     editProgress: false,
-    importProgress:false,
-    exportProgress:false
+    importProgress: false,
+    exportProgress: false
 };
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload = {} }) => {
+export default (state = initial, {type, payload = {}}) => {
     switch (type) {
         case GET_FIELDS_SETTINGS_REQUEST:
             return {
@@ -55,7 +56,7 @@ export default (state = initial, { type, payload = {} }) => {
                 progress: false,
             };
         case EDIT_FIELDS_SETTINGS_REQUEST:
-            const { params = {} } = payload;
+            const {params = {}} = payload;
 
             return {
                 ...state,
@@ -83,7 +84,7 @@ export default (state = initial, { type, payload = {} }) => {
             };
 
         case IMPORT_FIELDS_SETTINGS_REQUEST:
-           return {
+            return {
                 ...state,
                 importProgress: true
             };
@@ -167,7 +168,7 @@ export const importProgressSelector = createSelector(stateSelector, state => sta
 export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
-export function* getFieldsSettingSaga({ payload }) {
+export function* getFieldsSettingSaga({payload}) {
     try {
         const baseResult = yield postman.post(`${TYPE_API}/get`, payload);
         const extResult = yield postman.post(`${TYPE_API}/get`, {
@@ -190,9 +191,9 @@ export function* getFieldsSettingSaga({ payload }) {
     }
 }
 
-function* editFieldsSettingSaga({ payload = {} }) {
+function* editFieldsSettingSaga({payload = {}}) {
     try {
-        const { params, callbackSuccess, isExt } = payload;
+        const {params, callbackSuccess, isExt} = payload;
         const result = yield postman.post(`/${TYPE_API}/save`, {
             ...params,
             forEntity: isExt
@@ -217,7 +218,7 @@ function* editFieldsSettingSaga({ payload = {} }) {
 
 export function* exportFieldsSettingSaga({payload}) {
     try {
-        const res = yield downloader.post(`${TYPE_API}/export/${payload.forEntity}`, payload.fieldProperties, {
+        const res = yield downloader.post(`${TYPE_API}/export/${payload.forEntity}`, payload.fieldProperties.base, {
             responseType: 'blob',
         });
         const {data} = res;
@@ -242,13 +243,12 @@ export function* exportFieldsSettingSaga({payload}) {
 
 export function* importFieldsSettingSaga({payload}) {
     try {
-        const { entity, role, form, callbackSuccess } = payload;
-        debugger;
+        const {entity, role, form, callbackSuccess} = payload;
         const result = yield postman.post(`${TYPE_API}/import/${entity}/${role}`, form, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {'Content-Type': 'multipart/form-data'},
         });
-
-       yield put({
+        toast.info("ОК ");
+        yield put({
             type: IMPORT_FIELDS_SETTINGS_SUCCESS,
         });
         callbackSuccess();
@@ -259,9 +259,9 @@ export function* importFieldsSettingSaga({payload}) {
     }
 }
 
-function* toggleHiddenStateSaga({ payload }) {
+function* toggleHiddenStateSaga({payload}) {
     try {
-        const { params, callbackSuccess, isExt } = payload;
+        const {params, callbackSuccess, isExt} = payload;
         const result = yield postman.post(`/${TYPE_API}/toggleHiddenState`, {
             ...params,
             forEntity: isExt

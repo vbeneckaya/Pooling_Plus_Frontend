@@ -11,7 +11,7 @@ namespace Domain.Services.FieldProperties
         IEnumerable<FieldForFieldProperties> GetFor(string forEntity, Guid? companyId, Guid? roleId, Guid? userId);
         string GetAccessTypeForField(GetForFieldPropertyParams args);
         ValidateResult Save(FieldPropertyDto fieldPropertiesDto);
-        bool Import(FileStream stream, FieldPropertiesGetForParams props);
+        bool Import(Stream stream, FieldPropertiesGetForParams props);
         
         IEnumerable<string> GetAvailableFields(FieldPropertiesForEntityType forEntityType, Guid? companyId, Guid? roleId, Guid? userId);
         IEnumerable<string> GetReadOnlyFields(FieldPropertiesForEntityType forEntityType, string stateName, Guid? companyId, Guid? roleId, Guid? userId);

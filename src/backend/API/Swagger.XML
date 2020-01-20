@@ -46,12 +46,12 @@
         </member>
         <member name="M:API.Controllers.FieldPropertiesController.Export(System.String,System.Collections.Generic.IEnumerable{Domain.Services.FieldProperties.FieldForFieldProperties})">
             <summary>
-            Экспортировать 
+            Экспортировать в файл в формате JSON
             </summary>
         </member>
         <member name="M:API.Controllers.FieldPropertiesController.Import(System.String,System.String)">
             <summary>
-            Импорт 
+            Импорт из файла (JSON)
             </summary>
         </member>
         <member name="T:API.Controllers.FilesController">

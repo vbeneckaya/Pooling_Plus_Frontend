@@ -69,19 +69,17 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Экспортировать 
+        /// Экспортировать в файл в формате JSON
         /// </summary>
         [HttpPost("export/{entity}")]
         public IActionResult Export([FromRoute] string entity, [FromBody] IEnumerable<FieldForFieldProperties> data)
         {
-            var serialized = JsonConvert.SerializeObject(data);
-            Byte[] res = Encoding.UTF8.GetBytes(serialized);
-            return File(res, "text/plain",
+            return File(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)), "text/plain",
                 $"Export {entity} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
         }
 
         /// <summary>
-        /// Импорт 
+        /// Импорт из файла (JSON)
         /// </summary>
         [HttpPost("import/{entity}/{roleId}")]
         public IActionResult Import([FromRoute] string entity, [FromRoute] string roleId)
@@ -96,7 +94,7 @@ namespace API.Controllers
                     RoleId = roleId,
                     CompanyId = null
                 }))
-                return Ok();
+                    return Ok();
                 return BadRequest();
             }
         }
