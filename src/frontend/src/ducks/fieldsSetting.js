@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
+import { downloader, postman } from '../utils/postman';
 import { all, put, takeEvery } from 'redux-saga/effects';
 import { ORDERS_GRID } from '../constants/grids';
 
@@ -15,6 +15,14 @@ const EDIT_FIELDS_SETTINGS_REQUEST = 'EDIT_FIELDS_SETTINGS_REQUEST';
 const EDIT_FIELDS_SETTINGS_SUCCESS = 'EDIT_FIELDS_SETTINGS_SUCCESS';
 const EDIT_FIELDS_SETTINGS_ERROR = 'EDIT_FIELDS_SETTINGS_ERROR';
 
+const IMPORT_FIELDS_SETTINGS_REQUEST = 'IMPORT_FIELDS_SETTINGS_REQUEST';
+const IMPORT_FIELDS_SETTINGS_SUCCESS = 'IMPORT_FIELDS_SETTINGS_SUCCESS';
+const IMPORT_FIELDS_SETTINGS_ERROR = 'IMPORT_FIELDS_SETTINGS_ERROR';
+
+const EXPORT_FIELDS_SETTINGS_REQUEST = 'EXPORT_FIELDS_SETTINGS_REQUEST';
+const EXPORT_FIELDS_SETTINGS_SUCCESS = 'EXPORT_FIELDS_SETTINGS_SUCCESS';
+const EXPORT_FIELDS_SETTINGS_ERROR = 'EXPORT_FIELDS_SETTINGS_ERROR';
+
 const TOGGLE_HIDDEN_STATE_REQUEST = 'TOGGLE_HIDDEN_STATE_REQUEST';
 const TOGGLE_HIDDEN_STATE_SUCCESS = 'TOGGLE_HIDDEN_STATE_SUCCESS';
 const TOGGLE_HIDDEN_STATE_ERROR = 'TOGGLE_HIDDEN_STATE_ERROR';
@@ -27,6 +35,8 @@ const initial = {
     settings: {},
     progress: false,
     editProgress: false,
+    importProgress:false,
+    exportProgress:false
 };
 
 //*  REDUCER  *//
@@ -71,6 +81,30 @@ export default (state = initial, { type, payload = {} }) => {
                 ...state,
                 ...initial,
             };
+
+        case IMPORT_FIELDS_SETTINGS_REQUEST:
+           return {
+                ...state,
+                importProgress: true
+            };
+        case IMPORT_FIELDS_SETTINGS_SUCCESS:
+        case IMPORT_FIELDS_SETTINGS_ERROR:
+            return {
+                ...state,
+                importProgress: false,
+            };
+
+        case EXPORT_FIELDS_SETTINGS_REQUEST:
+            return {
+                ...state,
+                exportProgress: true
+            };
+        case EXPORT_FIELDS_SETTINGS_SUCCESS:
+        case EXPORT_FIELDS_SETTINGS_ERROR:
+            return {
+                ...state,
+                exportProgress: false,
+            };
         default:
             return state;
     }
@@ -88,6 +122,20 @@ export const getFieldsSettingRequest = payload => {
 export const editFieldsSettingRequest = payload => {
     return {
         type: EDIT_FIELDS_SETTINGS_REQUEST,
+        payload,
+    };
+};
+
+export const importFieldsSettingRequest = payload => {
+    return {
+        type: IMPORT_FIELDS_SETTINGS_REQUEST,
+        payload,
+    };
+};
+
+export const exportFieldsSettingRequest = payload => {
+    return {
+        type: EXPORT_FIELDS_SETTINGS_REQUEST,
         payload,
     };
 };
@@ -114,6 +162,9 @@ export const fieldsSettingSelector = createSelector(stateSelector, state => stat
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
+
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 export function* getFieldsSettingSaga({ payload }) {
@@ -164,6 +215,49 @@ function* editFieldsSettingSaga({ payload = {} }) {
     }
 }
 
+export function* exportFieldsSettingSaga({payload}) {
+    try {
+        const res = yield downloader.post(`${TYPE_API}/export/${payload.forEntity}`, payload.fieldProperties, {
+            responseType: 'blob',
+        });
+        const {data} = res;
+        let headerLine = res.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('filename=') + 10;
+        let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], {type: data.type}));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        yield put({type: EXPORT_FIELDS_SETTINGS_SUCCESS});
+    } catch (e) {
+        yield put({
+            type: EXPORT_FIELDS_SETTINGS_ERROR,
+            payload: e,
+        });
+    }
+}
+
+export function* importFieldsSettingSaga({payload}) {
+    try {
+        const { entity, role, form, callbackSuccess } = payload;
+        const result = yield postman.post(`${TYPE_API}/import/${entity}/${role}`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+       yield put({
+            type: IMPORT_FIELDS_SETTINGS_SUCCESS,
+        });
+        callbackSuccess();
+    } catch (e) {
+        yield put({
+            type: IMPORT_FIELDS_SETTINGS_ERROR,
+        });
+    }
+}
+
 function* toggleHiddenStateSaga({ payload }) {
     try {
         const { params, callbackSuccess, isExt } = payload;
@@ -194,5 +288,7 @@ export function* saga() {
         takeEvery(GET_FIELDS_SETTINGS_REQUEST, getFieldsSettingSaga),
         takeEvery(EDIT_FIELDS_SETTINGS_REQUEST, editFieldsSettingSaga),
         takeEvery(TOGGLE_HIDDEN_STATE_REQUEST, toggleHiddenStateSaga),
+        takeEvery(IMPORT_FIELDS_SETTINGS_REQUEST, importFieldsSettingSaga),
+        takeEvery(EXPORT_FIELDS_SETTINGS_REQUEST, exportFieldsSettingSaga),
     ]);
 }

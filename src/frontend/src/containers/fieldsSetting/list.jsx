@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
 import { gridsMenuSelector } from '../../ducks/profile';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
-import { columnsGridSelector } from '../../ducks/gridList';
 import './style.scss';
 import InfiniteScrollTable from '../../components/InfiniteScrollTable';
 import {
@@ -22,7 +21,7 @@ import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
 import {sortFunc} from '../../utils/sort';
 
-const List = () => {
+export const List = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const containerRef = useRef(null);
