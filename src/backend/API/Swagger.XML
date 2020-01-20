@@ -44,6 +44,16 @@
             Переключить "Скрыто" у поля
             </summary>
         </member>
+        <member name="M:API.Controllers.FieldPropertiesController.Export(System.String,System.Collections.Generic.IEnumerable{Domain.Services.FieldProperties.FieldForFieldProperties})">
+            <summary>
+            Экспортировать 
+            </summary>
+        </member>
+        <member name="M:API.Controllers.FieldPropertiesController.Import(System.String,System.String)">
+            <summary>
+            Импорт 
+            </summary>
+        </member>
         <member name="T:API.Controllers.FilesController">
             <summary>
             Файлы

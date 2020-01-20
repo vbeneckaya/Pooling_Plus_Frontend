@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Domain.Services.FieldProperties;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -26,11 +30,11 @@ namespace API.Controllers
         public IEnumerable<FieldForFieldProperties> GetFor([FromBody] FieldPropertiesGetForParams getForParams)
         {
             var companyId = string.IsNullOrEmpty(getForParams.CompanyId)
-                ? (Guid?)null
+                ? (Guid?) null
                 : Guid.Parse(getForParams.CompanyId);
-            
+
             var roleId = string.IsNullOrEmpty(getForParams.RoleId)
-                ? (Guid?)null
+                ? (Guid?) null
                 : Guid.Parse(getForParams.RoleId);
 
             return fieldPropertiesService.GetFor(getForParams.ForEntity, companyId, roleId, null);
@@ -43,7 +47,7 @@ namespace API.Controllers
         public IActionResult GetForField([FromBody] GetForFieldPropertyParams dto)
         {
             var accessType = fieldPropertiesService.GetAccessTypeForField(dto);
-            return Ok(new { accessType });
+            return Ok(new {accessType});
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace API.Controllers
         public ValidateResult Save([FromBody] FieldPropertyDto fieldPropertiesDto)
         {
             return fieldPropertiesService.Save(fieldPropertiesDto);
-        }        
+        }
 
         /// <summary>
         /// Переключить "Скрыто" у поля
@@ -62,6 +66,39 @@ namespace API.Controllers
         public ValidateResult ToggleHiddenState([FromBody] ToggleHiddenStateDto dto)
         {
             return fieldPropertiesService.ToggleHiddenState(dto);
+        }
+
+        /// <summary>
+        /// Экспортировать 
+        /// </summary>
+        [HttpPost("export/{entity}")]
+        public IActionResult Export([FromRoute] string entity, [FromBody] IEnumerable<FieldForFieldProperties> data)
+        {
+            var serialized = JsonConvert.SerializeObject(data);
+            Byte[] res = Encoding.UTF8.GetBytes(serialized);
+            return File(res, "text/plain",
+                $"Export {entity} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
+        }
+
+        /// <summary>
+        /// Импорт 
+        /// </summary>
+        [HttpPost("import/{entity}/{roleId}")]
+        public IActionResult Import([FromRoute] string entity, [FromRoute] string roleId)
+        {
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+            {
+                file.CopyTo(stream);
+                if (fieldPropertiesService.Import(stream, new FieldPropertiesGetForParams()
+                {
+                    ForEntity = entity,
+                    RoleId = roleId,
+                    CompanyId = null
+                }))
+                return Ok();
+                return BadRequest();
+            }
         }
     }
 }

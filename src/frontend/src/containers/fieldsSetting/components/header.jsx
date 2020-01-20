@@ -39,6 +39,7 @@ const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, compa
 
 
     const onFilePicked = e => {
+        debugger;
         const file = e.target.files[0];
 
         const data = new FormData();

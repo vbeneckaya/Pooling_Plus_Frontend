@@ -243,6 +243,7 @@ export function* exportFieldsSettingSaga({payload}) {
 export function* importFieldsSettingSaga({payload}) {
     try {
         const { entity, role, form, callbackSuccess } = payload;
+        debugger;
         const result = yield postman.post(`${TYPE_API}/import/${entity}/${role}`, form, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
