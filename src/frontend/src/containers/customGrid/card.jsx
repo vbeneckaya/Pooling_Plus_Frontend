@@ -152,11 +152,11 @@ const Card = props => {
 
     const handleSave = () => {
         saveOrEditForm();
-        // if (name === ORDERS_GRID && !form.id) {
-        //     handleUniquenessCheck(saveOrEditForm);
-        // } else {
-        //     saveOrEditForm();
-        // }
+        if (name === ORDERS_GRID && !form.id) {
+            handleUniquenessCheck(saveOrEditForm);
+        } else {
+            saveOrEditForm();
+        }
     };
 
     const closeConfirmation = () => {
