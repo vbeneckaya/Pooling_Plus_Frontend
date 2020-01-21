@@ -574,6 +574,7 @@ ru:
   soldTo_error: "SoldTo не найден. Выберите значение из списка"
   quantity: "Кол-во(шт)"
   driver: "Водитель"
+  driverAndVehicleNumber: "Водитель и номер ТС"
   vehicleNumber: "Номер ТС"
 
 en:
@@ -1137,4 +1138,5 @@ en:
   soldTo_error: "SoldTo not found. Select a value from the list"
   quantity: "Quantity"
   driver: "Driver"
+  driverAndVehicleNumber: "Driver and vehicle number"
   vehicleNumber: "Vehicle Number"

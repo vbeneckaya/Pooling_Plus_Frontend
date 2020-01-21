@@ -100,13 +100,7 @@ namespace API.Controllers.Shared
             var memoryStream = _service.ExportToExcel(form);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
-
-        [HttpPost("getFieldsConfigurations/{id}")]
-        public UserConfigurationDictionaryItem FetFieldsConfigurations(Guid id)
-        {
-            return _service.GetDictionaryConfiguration(id);
-        }
-
+        
         /// <summary>
         /// Сохранить или изменить
         /// </summary>

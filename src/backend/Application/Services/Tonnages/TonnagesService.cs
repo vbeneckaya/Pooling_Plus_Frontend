@@ -33,7 +33,6 @@ namespace Application.Services.Tonnages
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -47,7 +46,6 @@ namespace Application.Services.Tonnages
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 IsActive = entity.IsActive,
                 IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
@@ -69,40 +67,6 @@ namespace Application.Services.Tonnages
             }
 
             return result;
-        }
-
-        protected override IEnumerable<TonnageDto> FillLookupNames(IEnumerable<TonnageDto> dtos)
-        {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-             .Select(x => x.CompanyId.Value.ToGuid())
-             .ToList();
-
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
-
-            foreach (var dto in dtos)
-            {
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
-                {
-                    dto.CompanyId.Name = company.Name;
-                }
-
-                yield return dto;
-            }
-        }
-
-        protected override ExcelMapper<TonnageDto> CreateExcelMapper()
-        {
-            return base.CreateExcelMapper()
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
-        }
-
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -148,17 +112,6 @@ namespace Application.Services.Tonnages
         {
             return _dataService.GetDbSet<Tonnage>()
                 .FirstOrDefault(i => i.Name == dto.Name);
-        }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tonnage.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
         }
     }
 }

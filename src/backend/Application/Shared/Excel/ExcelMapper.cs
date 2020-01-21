@@ -129,6 +129,10 @@ namespace Application.Shared.Excel
             {
                 foreach (var column in _columns)
                 {
+                    if (column.Value == null || column.Value.Field == null)
+                    {
+                        throw new Exception($"{column.Key} not found");
+                    }
                     column.Value.ColumnIndex = column.Value.Field.OrderNumber;
                 }
             }
