@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Internal;
 
@@ -238,10 +239,10 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var validateResult = ValidateDto(entityFrom);
-//            if (validateResult.IsError)
-//            {
-//                return validateResult;
-//            }
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
 
             return SaveOrCreateInner(entityFrom);
         }
@@ -260,10 +261,10 @@ namespace Application.Shared
 
             var result = ValidateDto(entityFrom);
 
-//            if (result.IsError)
-//            {
-//                return result;
-//            }
+            if (result.IsError)
+            {
+                return result;
+            }
 
             var trackConfig = this.ConfigureChangeTacker();
 
@@ -275,6 +276,8 @@ namespace Application.Shared
                     ? Guid.Parse(entityFrom.Id)
                     : findByNumber;
                 entityFrom.Id = entityId.ToString();
+        
+                
                 var entityFromDb = dbSet.GetById(entityId.Value);
 
                 if (entityFromDb == null)
@@ -290,7 +293,7 @@ namespace Application.Shared
 
                 var updateChanges = this._dataService.GetChanges<TEntity>()
                     .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
-                
+
                 //updateChanges.FieldChanges.Add();
 
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
