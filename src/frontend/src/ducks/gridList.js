@@ -38,7 +38,7 @@ const initial = {
     data: [],
     totalCount: 0,
     stateColors: [],
-    progress: false,
+    progress: null,
     stateColorsProgress: false,
     importProgress: false,
     exportProgress: false,
