@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Domain.Services.FieldProperties;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -62,6 +66,37 @@ namespace API.Controllers
         public ValidateResult ToggleHiddenState([FromBody] ToggleHiddenStateDto dto)
         {
             return fieldPropertiesService.ToggleHiddenState(dto);
+        }
+
+        /// <summary>
+        /// Экспортировать в файл в формате JSON
+        /// </summary>
+        [HttpPost("export/{entity}")]
+        public IActionResult Export([FromRoute] string entity, [FromBody] IEnumerable<FieldForFieldProperties> data)
+        {
+            return File(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)), "text/plain",
+                $"Export {entity} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
+        }
+
+        /// <summary>
+        /// Импорт из файла (JSON)
+        /// </summary>
+        [HttpPost("import/{entity}/{roleId}")]
+        public IActionResult Import([FromRoute] string entity, [FromRoute] string roleId)
+        {
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+            {
+                file.CopyTo(stream);
+                if (fieldPropertiesService.Import(stream, new FieldPropertiesGetForParams()
+                {
+                    ForEntity = entity,
+                    RoleId = roleId,
+                    CompanyId = null
+                }))
+                    return Ok();
+                return BadRequest();
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Extensions;
@@ -11,6 +13,7 @@ using Domain.Services.Shippings;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Newtonsoft.Json;
 
 namespace Application.Services.FieldProperties
 {
@@ -20,8 +23,10 @@ namespace Application.Services.FieldProperties
         private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly IUserProvider _userProvider;
         private static readonly string ShowIdentifier = FieldPropertiesAccessType.Show.ToString().ToLowerFirstLetter();
+        private IFieldPropertiesService _fieldPropertiesServiceImplementation;
 
-        public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService, IUserProvider userProvider)
+        public FieldPropertiesService(ICommonDataService dataService, IFieldDispatcherService fieldDispatcherService,
+            IUserProvider userProvider)
         {
             _dataService = dataService;
             _fieldDispatcherService = fieldDispatcherService;
@@ -223,6 +228,56 @@ namespace Application.Services.FieldProperties
             return new ValidateResult();
         }
 
+        public bool Import(Stream stream, FieldPropertiesGetForParams props)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+            byte[] bytes = new byte[stream.Length];
+            int numBytesToRead = (int) stream.Length;
+            int numBytesRead = 0;
+            while (numBytesToRead > 0)
+            {
+                int n = stream.Read(bytes, numBytesRead, numBytesToRead);
+                if (n == 0)
+                    break;
+                numBytesRead += n;
+                numBytesToRead -= n;
+            }
+
+            var res = Encoding.UTF8.GetString(bytes);
+            try
+            {
+                var fieldProperties = JsonConvert.DeserializeObject<IEnumerable<FieldForFieldProperties>>(res);
+                foreach (var prop in fieldProperties)
+                {
+                    SetHiddenState(new FieldPropertyDto()
+                    {
+                        ForEntity = props.ForEntity,
+                        FieldName = prop.FieldName,
+                        RoleId = props.RoleId,
+                        CompanyId = props.CompanyId
+                    }, prop.isHidden);
+                    foreach (var accessType in prop.AccessTypes)
+                    {
+                        Save(new FieldPropertyDto
+                        {
+                            ForEntity = props.ForEntity,
+                            FieldName = prop.FieldName,
+                            RoleId = props.RoleId,
+                            CompanyId = props.CompanyId,
+                            AccessType = accessType.Value,
+                            State = accessType.Key
+                        });
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public ValidateResult Save(FieldPropertyDto dto)
         {
             var dbSet = _dataService.GetDbSet<FieldPropertyItem>();
@@ -322,6 +377,44 @@ namespace Application.Services.FieldProperties
                 fieldInfo.Name = fieldInfo.Name?.ToLowerFirstLetter();
 
             return result;
+        }
+        
+        private void SetHiddenState(FieldPropertyDto dto, bool isHidden)
+        {
+            var dbSet = _dataService.GetDbSet<FieldPropertyItemVisibility>();
+
+            var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
+
+            var companyId = string.IsNullOrEmpty(dto.CompanyId)
+                ? (Guid?) null
+                : Guid.Parse(dto.CompanyId);
+
+            var roleId = string.IsNullOrEmpty(dto.RoleId)
+                ? (Guid?) null
+                : Guid.Parse(dto.RoleId);
+
+
+            var visibilityItem = dbSet.SingleOrDefault(x => x.ForEntity == forEntity
+                                                            && x.RoleId == roleId
+                                                            && x.FieldName == dto.FieldName);
+
+            if (visibilityItem == null && isHidden)
+            {
+                visibilityItem = new FieldPropertyItemVisibility
+                {
+                    Id = Guid.NewGuid(),
+                    ForEntity = forEntity,
+                    CompanyId = companyId,
+                    RoleId = roleId,
+                    FieldName = dto.FieldName,
+                    IsHidden = isHidden
+                };
+                dbSet.Add(visibilityItem);
+            }
+            else if (visibilityItem != null)
+                visibilityItem.IsHidden = isHidden;
+
+            _dataService.SaveChanges();
         }
     }
 }
