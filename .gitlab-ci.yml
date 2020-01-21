@@ -5,7 +5,7 @@ stages:
   - build
   - deploy
 
-before_script
+before_script:
   - export
   - eval $(ssh-agent -s)
   - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
