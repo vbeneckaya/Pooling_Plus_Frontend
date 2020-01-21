@@ -238,27 +238,12 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var validateResult = ValidateDto(entityFrom);
-            if (validateResult.IsError)
-            {
-                return validateResult;
-            }
+//            if (validateResult.IsError)
+//            {
+//                return validateResult;
+//            }
 
             return SaveOrCreateInner(entityFrom);
-        }
-
-        private Guid? FindOrderByNumber(TFormDto entityFrom, string entityName)
-        {
-            if (entityName == "Order")
-            {
-                var t = typeof(TFormDto);
-                var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom).ToString();
-                var client = t.GetProperty("ClientId").GetValue(entityFrom);
-                var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
-                var dbSet = _dataService.GetDbSet<Order>();
-                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber && x.ClientId == clientId)?.Id;
-            }
-
-            return null;
         }
 
         private ValidateResult SaveOrCreateInner(TFormDto entityFrom)
@@ -275,10 +260,10 @@ namespace Application.Shared
 
             var result = ValidateDto(entityFrom);
 
-            if (result.IsError)
-            {
-                return result;
-            }
+//            if (result.IsError)
+//            {
+//                return result;
+//            }
 
             var trackConfig = this.ConfigureChangeTacker();
 
@@ -289,6 +274,7 @@ namespace Application.Shared
                 var entityId = !string.IsNullOrEmpty(entityFrom.Id)
                     ? Guid.Parse(entityFrom.Id)
                     : findByNumber;
+                entityFrom.Id = entityId.ToString();
                 var entityFromDb = dbSet.GetById(entityId.Value);
 
                 if (entityFromDb == null)
@@ -304,6 +290,8 @@ namespace Application.Shared
 
                 var updateChanges = this._dataService.GetChanges<TEntity>()
                     .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+                
+                //updateChanges.FieldChanges.Add();
 
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
@@ -988,6 +976,21 @@ namespace Application.Shared
             }
         }
 
+        private Guid? FindOrderByNumber(TFormDto entityFrom, string entityName)
+        {
+            if (entityName == "Order")
+            {
+                var t = typeof(TFormDto);
+                var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom).ToString();
+                var client = t.GetProperty("ClientId").GetValue(entityFrom);
+                var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
+                var dbSet = _dataService.GetDbSet<Order>();
+                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber && x.ClientId == clientId)?.Id;
+            }
+
+            return null;
+        }
+        
         private bool CanEdit(EntityStatusDto dto, FieldForFieldProperties fieldProperties)
         {
             string editValue = FieldPropertiesAccessType.Edit.ToString();
