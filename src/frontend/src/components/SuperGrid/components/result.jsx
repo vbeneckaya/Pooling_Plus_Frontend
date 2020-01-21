@@ -10,7 +10,7 @@ import _ from 'lodash';
 import CellValue from '../../ColumnsValue';
 import { ORDERS_GRID } from '../../../constants/grids';
 import CustomCheckbox from '../../BaseComponents/CustomCheckbox';
-import NotFoundMessage from "./notFoundMessage";
+import NotFoundMessage from './notFoundMessage';
 
 class Result extends Component {
     handleCheck = row => {
@@ -46,11 +46,12 @@ class Result extends Component {
             invokeMassUpdate,
             isSetFilters,
             isCreateBtn
+            isCreateBtn,
         } = this.props;
 
         return (
             <Table.Body>
-                {rows && rows.length ? (
+                {progress === null ? null : rows && rows.length ? (
                     rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
@@ -146,9 +147,14 @@ class Result extends Component {
                             ) : null}
                         </Table.Row>
                     ))
-                ) : (
-                    !progress ? <NotFoundMessage gridName={name} isSetFilters={isSetFilters} isCreateBtn={isCreateBtn} goToCard={goToCard}/> : null
-                )}
+                ) : !progress ? (
+                    <NotFoundMessage
+                        gridName={name}
+                        isSetFilters={isSetFilters}
+                        isCreateBtn={isCreateBtn}
+                        goToCard={goToCard}
+                    />
+                ) : null}
                 <div className="table-bottom-loader">
                     <Loader active={progress && rows.length} />
                 </div>

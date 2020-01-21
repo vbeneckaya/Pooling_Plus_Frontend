@@ -356,6 +356,17 @@ i.blue.icon {
     > div:not(:last-child) {
         margin-right: 12px;
     }
+
+    &_actions_button {
+        white-space: nowrap;
+        background-color: transparent !important;
+        color: #4d4d4d !important;
+        font-weight: 500;
+        text-transform: uppercase !important;
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.06) !important;
+        }
+    }
 }
 
 .history-who {
