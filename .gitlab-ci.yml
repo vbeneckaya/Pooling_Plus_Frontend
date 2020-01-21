@@ -6,7 +6,6 @@ stages:
   - deploy
 
 before_script:
-  - export
   - eval $(ssh-agent -s)
   - echo "$DEPLOY_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
   - docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true
