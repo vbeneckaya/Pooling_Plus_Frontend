@@ -228,6 +228,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTransportCompany>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)

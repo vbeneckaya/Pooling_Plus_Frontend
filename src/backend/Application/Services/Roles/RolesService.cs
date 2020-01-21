@@ -87,34 +87,8 @@ namespace Application.Services.Roles
             var user = _dataService.GetById<User>(currentUserId.Value);
 
             // Local user restrictions
-
-            if (user?.CompanyId != null)
-            {
-                query = query.Where(i => i.CompanyId == user.CompanyId);
-            }
-
+            
             return query;
-        }
-
-        protected override IEnumerable<RoleDto> FillLookupNames(IEnumerable<RoleDto> dtos)
-        {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                         .Select(x => x.CompanyId.Value.ToGuid())
-                         .ToList();
-
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
-
-            foreach (var dto in dtos)
-            {
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
-                {
-                    dto.CompanyId.Name = company.Name;
-                }
-                yield return dto;
-            }
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
@@ -126,7 +100,6 @@ namespace Application.Services.Roles
             entity.IsActive = dto.IsActive;
             entity.Actions = dto.Actions?.ToArray();
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
 
             return null;
         }
@@ -164,7 +137,6 @@ namespace Application.Services.Roles
                     Name = i.GetPermissionName()
                 }),
                 UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count(),
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
             };
         }
 
@@ -220,17 +192,6 @@ namespace Application.Services.Roles
                     Name = i.Name,
                     Value = i.Id.ToString()
                 });
-        }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Role.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
         }
     }
 }

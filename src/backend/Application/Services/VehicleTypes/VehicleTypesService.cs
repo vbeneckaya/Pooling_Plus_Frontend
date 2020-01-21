@@ -205,16 +205,5 @@ namespace Application.Services.VehicleTypes
             var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(VehicleType.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
-        }
     }
 }

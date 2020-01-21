@@ -30,11 +30,11 @@ namespace API.Controllers
         public IEnumerable<FieldForFieldProperties> GetFor([FromBody] FieldPropertiesGetForParams getForParams)
         {
             var companyId = string.IsNullOrEmpty(getForParams.CompanyId)
-                ? (Guid?) null
+                ? (Guid?)null
                 : Guid.Parse(getForParams.CompanyId);
-
+            
             var roleId = string.IsNullOrEmpty(getForParams.RoleId)
-                ? (Guid?) null
+                ? (Guid?)null
                 : Guid.Parse(getForParams.RoleId);
 
             return fieldPropertiesService.GetFor(getForParams.ForEntity, companyId, roleId, null);
@@ -47,7 +47,7 @@ namespace API.Controllers
         public IActionResult GetForField([FromBody] GetForFieldPropertyParams dto)
         {
             var accessType = fieldPropertiesService.GetAccessTypeForField(dto);
-            return Ok(new {accessType});
+            return Ok(new { accessType });
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace API.Controllers
         public ValidateResult Save([FromBody] FieldPropertyDto fieldPropertiesDto)
         {
             return fieldPropertiesService.Save(fieldPropertiesDto);
-        }
+        }        
 
         /// <summary>
         /// Переключить "Скрыто" у поля

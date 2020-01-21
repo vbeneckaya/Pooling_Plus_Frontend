@@ -20,6 +20,10 @@
             background: white !important;
         }
     }
+
+    &_actions {
+        display: flex;
+    }
 }
 
 .card-actions-panel {

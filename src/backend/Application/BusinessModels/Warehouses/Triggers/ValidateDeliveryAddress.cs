@@ -32,6 +32,7 @@ namespace Application.BusinessModels.Warehouses.Triggers
             entity.ValidAddress = cleanAddress?.ResultAddress;
             entity.PostalCode = cleanAddress?.PostalCode;
             entity.Region = cleanAddress?.Region;
+            entity.City = cleanAddress?.City;
             entity.Area = cleanAddress?.Area;
             entity.Street = cleanAddress?.Street;
             entity.House = cleanAddress?.House;

@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import {Button, Confirm, Dropdown} from 'semantic-ui-react';
+import { Button, Confirm, Dropdown, Icon, Popup } from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -21,18 +21,18 @@ import {
     invokeActionRequest,
     progressActionNameSelector,
 } from '../../ducks/gridActions';
-import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
+import { ORDERS_GRID, SHIPPINGS_GRID } from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
-import {GRID_CARD_LINK} from '../../router/links';
-import {clearHistory, getHistoryRequest} from '../../ducks/history';
+import { GRID_CARD_LINK } from '../../router/links';
+import { clearHistory, getHistoryRequest } from '../../ducks/history';
 
 const Card = props => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const {match, history, location} = props;
-    const {params = {}} = match;
-    const {name, id} = params;
+    const { match, history, location } = props;
+    const { params = {} } = match;
+    const { name, id } = params;
 
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
@@ -42,9 +42,9 @@ const Card = props => {
         () =>
             id
                 ? t(`edit_${name}`, {
-                    number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
-                    status: t(form.status),
-                })
+                      number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
+                      status: t(form.status),
+                  })
                 : t(`new_${name}`),
         [name, id, form],
     );
@@ -76,29 +76,31 @@ const Card = props => {
     );
 
     const loadCard = () => {
-        id && dispatch(
-            getCardRequest({
-                name,
-                id,
-                callbackSuccess: card => {
-                    setForm(card);
-                    setNotChangeForm(true);
-                },
-            }),
-        );
-        id && dispatch(
-            getActionsRequest({
-                name,
-                ids: [id],
-                isCard: true,
-            }),
-        );
+        id &&
+            dispatch(
+                getCardRequest({
+                    name,
+                    id,
+                    callbackSuccess: card => {
+                        setForm(card);
+                        setNotChangeForm(true);
+                    },
+                }),
+            );
+        id &&
+            dispatch(
+                getActionsRequest({
+                    name,
+                    ids: [id],
+                    isCard: true,
+                }),
+            );
         id && dispatch(getHistoryRequest(id));
     };
 
     const onClose = () => {
-        const {state} = location;
-        const {pathname, gridLocation} = state;
+        const { state } = location;
+        const { pathname, gridLocation } = state;
 
         history.replace({
             pathname: pathname,
@@ -127,7 +129,7 @@ const Card = props => {
         }
     };
 
-    const onChangeForm = useCallback((e, {name, value}) => {
+    const onChangeForm = useCallback((e, { name, value }) => {
         setForm(prevState => ({
             ...prevState,
             [name]: value,
@@ -179,16 +181,24 @@ const Card = props => {
             () => {
                 closeConfirmation();
                 dispatch(
-                    invokeActionRequest({
-                        ids: [id],
+                    editCardRequest({
                         name,
-                        actionName,
+                        params: form,
                         callbackSuccess: () => {
-                            if (actionName.toLowerCase().includes('delete')) {
-                                onClose();
-                            } else {
-                                loadCard();
-                            }
+                            dispatch(
+                                invokeActionRequest({
+                                    ids: [id],
+                                    name,
+                                    actionName,
+                                    callbackSuccess: () => {
+                                        if (actionName.toLowerCase().includes('delete')) {
+                                            onClose();
+                                        } else {
+                                            loadCard();
+                                        }
+                                    },
+                                }),
+                            );
                         },
                     }),
                 );
@@ -236,7 +246,7 @@ const Card = props => {
     );
 
     const goToCard = (gridName, cardId) => {
-        const {state} = location;
+        const { state } = location;
         console.log('to', state);
         history.replace({
             pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
@@ -251,13 +261,13 @@ const Card = props => {
     const getActionsHeader = useCallback(
         () => {
             return (
-                <div
-                    className="grid-card-header"
-                    onClick={() => goToCard(SHIPPINGS_GRID, form.shippingId)}
-                >
+                <div className="grid-card-header">
                     {name === ORDERS_GRID && form.shippingId ? (
-                        <div className="link-cell">
-                            {t('open_shipping', {number: form.shippingNumber})}
+                        <div
+                            className="link-cell"
+                            onClick={() => goToCard(SHIPPINGS_GRID, form.shippingId)}
+                        >
+                            {t('open_shipping', { number: form.shippingNumber })}
                         </div>
                     ) : null}
                     {name === SHIPPINGS_GRID && form.orders && form.orders.length ? (
@@ -281,7 +291,7 @@ const Card = props => {
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : null}
-                    <Dropdown
+                    {/* <Dropdown
                         icon="ellipsis horizontal"
                         floating
                         button
@@ -304,7 +314,28 @@ const Card = props => {
                                 />
                             ))}
                         </Dropdown.Menu>
-                    </Dropdown>
+                    </Dropdown>*/}
+                    {actions &&
+                        actions.filter(item => item.allowedFromForm).map(action => (
+                            <Popup
+                                content={action.description}
+                                disabled={!action.description}
+                                trigger={
+                                    <Button
+                                        className="grid-card-header_actions_button"
+                                        key={action.name}
+                                        loading={action.loading}
+                                        disabled={action.loading}
+                                        size="mini"
+                                        compact
+                                        onClick={() => invokeAction(action.name)}
+                                    >
+                                        <Icon name="circle" color={action.color} />
+                                        {t(action.name)}
+                                    </Button>
+                                }
+                            />
+                        ))}
                 </div>
             );
         },

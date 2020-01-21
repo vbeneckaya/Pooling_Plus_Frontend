@@ -425,11 +425,5 @@ namespace Application.Shared
 
             return new ValidateResult(null, id.ToString());
         }
-
-        public virtual UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var roleId = _userProvider.GetCurrentUser().RoleId;
-            return _configurationService.GetDictionaryConfiguration<TListDto>(roleId);
-        }
     }
 }

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
 import { gridsMenuSelector } from '../../ducks/profile';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
+import { columnsGridSelector } from '../../ducks/gridList';
 import './style.scss';
 import InfiniteScrollTable from '../../components/InfiniteScrollTable';
 import {
@@ -21,7 +22,7 @@ import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
 import {sortFunc} from '../../utils/sort';
 
-export const List = () => {
+const List = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const containerRef = useRef(null);
@@ -62,7 +63,7 @@ export const List = () => {
     useEffect(
         () => {
             dispatch(clearFieldsSettings());
-            activeItem && getFieldsSettings();
+            activeItem && getSettings();
         },
         [role, activeItem],
     );
@@ -75,8 +76,8 @@ export const List = () => {
         },
         [rolesList],
     );
-    
-    const getFieldsSettings = () => {
+
+    const getSettings = () => {
         dispatch(
             getFieldsSettingRequest({
                 forEntity: activeItem,
@@ -113,7 +114,7 @@ export const List = () => {
                     },
                     isExt,
                     callbackSuccess: () => {
-                        getFieldsSettings();
+                        getSettings();
                     },
                 }),
             );
@@ -131,7 +132,7 @@ export const List = () => {
                         roleId: role === 'null' ? undefined : role,
                     },
                     isExt,
-                    callbackSuccess: getFieldsSettings,
+                    callbackSuccess: getSettings,
                 }),
             );
         },

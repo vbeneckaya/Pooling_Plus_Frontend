@@ -11,13 +11,13 @@ using Domain.Services.History;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {
-    public class OnChangeVehicleTypeId : ITrigger<Shipping>
+    public class OnChangeTransportCompany : ITrigger<Shipping>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
         private readonly IDeliveryCostCalcService _calcService;        
 
-        public OnChangeVehicleTypeId(ICommonDataService dataService, IHistoryService historyService, IDeliveryCostCalcService calcService)
+        public OnChangeTransportCompany(ICommonDataService dataService, IHistoryService historyService, IDeliveryCostCalcService calcService)
         {
             _dataService = dataService;
             _historyService = historyService;
@@ -62,7 +62,7 @@ namespace Application.BusinessModels.Shippings.Triggers
         {
             var watchProperties = new[]
             {
-                nameof(Shipping.VehicleTypeId),
+                nameof(Shipping.CarrierId),
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }

@@ -1,4 +1,5 @@
-﻿using Application.BusinessModels.Shared.Triggers;
+﻿using System;
+using Application.BusinessModels.Shared.Triggers;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
@@ -25,8 +26,10 @@ namespace Application.BusinessModels.Shippings.Triggers
 
         public void Execute(Shipping entity)
         {
+
+            entity.TotalDeliveryCost = new Random().Next(1000,15000);
             
-            var orders = _dataService.GetDbSet<Order>()
+            /*var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);
 
             foreach (var orderInShipping in orders)
@@ -45,7 +48,7 @@ namespace Application.BusinessModels.Shippings.Triggers
                 _calcService.UpdateDeliveryCost(entity);
             
             
-            entity.ManualTarifficationType = true;
+            entity.ManualTarifficationType = true;*/
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)
