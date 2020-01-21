@@ -29,10 +29,17 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
+            if (shipping.CompanyId == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = "shippingDontSetRequestSentDontSetTk".Translate(user.Language, shipping.ShippingNumber)
+                };
             shipping.Status = ShippingState.ShippingRequestSent;
 
             foreach (var order in _dataService.GetDbSet<Order>().Where(o => o.ShippingId == shipping.Id))
             {
+                //if(order.)
                 order.OrderShippingStatus = shipping.Status;
             }
 
@@ -52,7 +59,8 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(ShippingState? shippingStatus)
         {
-            return shippingStatus == ShippingState.ShippingCreated || shippingStatus == ShippingState.ShippingRejectedByTc;
+            return shippingStatus == ShippingState.ShippingCreated ||
+                   shippingStatus == ShippingState.ShippingRejectedByTc;
         }
     }
 }
