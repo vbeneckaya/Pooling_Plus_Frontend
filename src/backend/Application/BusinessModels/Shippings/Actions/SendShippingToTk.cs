@@ -39,7 +39,6 @@ namespace Application.BusinessModels.Shippings.Actions
 
             foreach (var order in _dataService.GetDbSet<Order>().Where(o => o.ShippingId == shipping.Id))
             {
-                //if(order.)
                 order.OrderShippingStatus = shipping.Status;
             }
 
