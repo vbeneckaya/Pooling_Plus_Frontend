@@ -40,6 +40,13 @@ namespace Application.BusinessModels.Orders.Actions
                 };
             }
 
+            if (order.CompanyId == null)
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = "shippingDontSetRequestSentDontSetTk".Translate(user.Language, order.ShippingNumber)
+                };
+            
             var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
 
             return _shippingAction.Run(user, shipping);

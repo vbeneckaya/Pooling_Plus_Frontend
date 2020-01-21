@@ -29,7 +29,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)
         {
-            if (shipping.CompanyId == null)
+            if (shipping?.CompanyId == null)
                 return new AppActionResult
                 {
                     IsError = true,
