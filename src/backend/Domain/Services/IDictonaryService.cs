@@ -22,7 +22,5 @@ namespace Domain.Services
         TDto Get(Guid id);
 
         ValidateResult Delete(Guid id);
-
-        UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id);
     }
 }

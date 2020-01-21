@@ -157,16 +157,5 @@ namespace Application.Services.PickingTypes
             return _dataService.GetDbSet<PickingType>()
                 .FirstOrDefault(i => i.Name == dto.Name);
         }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(PickingType.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
-        }
     }
 }

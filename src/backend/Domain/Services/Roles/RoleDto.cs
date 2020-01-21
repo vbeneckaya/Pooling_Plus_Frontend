@@ -20,10 +20,7 @@ namespace Domain.Services.Roles
         public IEnumerable<string> Actions { get; set; }
 
         public int UsersCount { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(Companies))]
-        public LookUpDto CompanyId { get; set; }
-
+        
         public bool IsEditable { get; set; }
     }
 }

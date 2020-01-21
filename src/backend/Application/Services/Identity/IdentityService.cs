@@ -98,7 +98,6 @@ namespace Application.Services.Identity
                         Name = i.GetPermissionName()
                     }),
                     UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
-                    CompanyId = role.CompanyId == null ? null : new LookUpDto(role.CompanyId.ToString()),
                 } : null
             };
         }

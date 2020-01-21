@@ -144,13 +144,7 @@ namespace Application.Services.Tariffs
             return !(expirationDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue) && effectiveDate <= tariff.EffectiveDate.GetValueOrDefault(DateTime.MaxValue)
                 || effectiveDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue) && expirationDate >= tariff.ExpirationDate.GetValueOrDefault(DateTime.MinValue));
         }
-
-        // From ValidationService
-        private bool IsDateValid(string dateString)
-        {
-            return string.IsNullOrEmpty(dateString) || dateString.ToDate().HasValue;
-        }
-
+        
         protected override IEnumerable<TariffDto> FillLookupNames(IEnumerable<TariffDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
@@ -279,8 +273,7 @@ namespace Application.Services.Tariffs
                 .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName));
         }
 
         private Guid? GetCarrierIdByName(string name)
@@ -385,17 +378,6 @@ namespace Application.Services.Tariffs
                         && i.TarifficationType == tarifficationType
                         && !string.IsNullOrEmpty(i.ShipmentCity) && i.ShipmentCity == shipmentCity
                         && !string.IsNullOrEmpty(i.DeliveryCity) && i.DeliveryCity == deliveryCity);
-        }
-
-        public override UserConfigurationDictionaryItem GetDictionaryConfiguration(Guid id)
-        {
-            var user = _userProvider.GetCurrentUser();
-            var configuration = base.GetDictionaryConfiguration(id);
-
-            var companyId = configuration.Columns.First(i => i.Name.ToLower() == nameof(Tariff.CompanyId).ToLower());
-            companyId.IsReadOnly = user.CompanyId != null;
-
-            return configuration;
         }
     }
 }
