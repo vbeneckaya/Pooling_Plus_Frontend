@@ -67,7 +67,7 @@ const MainRoute = withRouter(props => {
                 permission="editFieldProperties"
                 component={FieldsSetting}
             />
-            <Route exact path={REPORTS_LINK} component={Report}/>
+            <PrivateRoute exact path={REPORTS_LINK} component={Report}/>
             <Route exact path={LOGIN_LINK} component={Login} />
             <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
 
