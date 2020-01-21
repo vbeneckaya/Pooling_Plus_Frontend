@@ -240,10 +240,10 @@ namespace Application.Shared
         public ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var validateResult = ValidateDto(entityFrom);
-            //    if (validateResult.IsError)
-            //   {
-            //         return validateResult;
-            //    }
+            if (validateResult.IsError)
+            {
+                return validateResult;
+            }
 
             return SaveOrCreateInner(entityFrom);
         }
@@ -277,115 +277,108 @@ namespace Application.Shared
 
             var result = ValidateDto(entityFrom);
 
-//            if (result.IsError)
-//            {
-//                return result;
-//            }
+            if (result.IsError)
+            {
+                return result;
+            }
 
             var trackConfig = this.ConfigureChangeTacker();
 
             var findByNumber = FindOrderByNumber(entityFrom, entityName);
-            bool isNew = false;
-            TEntity entity;
 
             if (!string.IsNullOrEmpty(entityFrom.Id) || findByNumber != null)
             {
-                entity = dbSet.GetById(!string.IsNullOrEmpty(entityFrom.Id)
+                var entityId = !string.IsNullOrEmpty(entityFrom.Id)
                     ? Guid.Parse(entityFrom.Id)
-                    : findByNumber.Value);
+                    : findByNumber;
+                var entityFromDb = dbSet.GetById(entityId.Value);
 
-                if (entity == null)
-                    throw new Exception($"Order not found (Id = {entityFrom.Id})");
+                if (entityFromDb == null)
+                    throw new Exception($"Order not found (Id = {entityId})");
 
                 Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName,
                     sw.ElapsedMilliseconds);
                 sw.Restart();
 
-//                MapFromFormDtoToEntity(entity, entityFrom);
-//
-//                // Change handlers
-//
-//                var updateChanges = this._dataService.GetChanges<TEntity>()
-//                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
-//
-//                var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
-//
-//                if (setter != null)
-//                {
-//                    setter.Appy(updateChanges);
-//                }
-//
-//                var logChanges = this._dataService.GetChanges<TEntity>()
-//                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
-//                if (trackConfig != null)
-//                {
-//                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
-//                }
-//
-//                Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName,
-//                    sw.ElapsedMilliseconds);
-//                sw.Restart();
-//
-//                //dbSet.Update(entityFromDb);
-//
-//                _triggersService.Execute();
-//                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName,
-//                    sw.ElapsedMilliseconds);
-//                sw.Restart();
-//
-//
-//                _dataService.SaveChanges();
-//                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
-//                    sw.ElapsedMilliseconds);
-//
-//                return new ValidateResult
-//                {
-//                    Id = entityFromDb.Id.ToString()
-//                };
+                MapFromFormDtoToEntity(entityFromDb, entityFrom);
+
+                // Change handlers
+
+                var updateChanges = this._dataService.GetChanges<TEntity>()
+                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+
+                var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
+
+                setter?.Appy(updateChanges);
+
+                var logChanges = this._dataService.GetChanges<TEntity>()
+                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+
+                trackConfig?.LogTrackedChanges<TEntity>(logChanges);
+
+                Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                //dbSet.Update(entityFromDb);
+
+                _triggersService.Execute();
+                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+                sw.Restart();
+
+
+                _dataService.SaveChanges();
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+
+                return new ValidateResult
+                {
+                    Id = entityFromDb.Id.ToString()
+                };
             }
             else
             {
-                entity = new TEntity
+                var entity = new TEntity
                 {
                     Id = Guid.NewGuid()
                 };
-                isNew = true;
+
+                // Mapping
+                MapFromFormDtoToEntity(entity, entityFrom);
+
+                dbSet.Add(entity);
+
+                var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
+
+                // Change handlers
+
+                var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
+
+                updateSetter?.Appy(changes);
+
+                var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
+
+                trackConfig?.LogTrackedChanges<TEntity>(logChanges);
+
+                Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                _triggersService.Execute();
+                Log.Information("{entityName}.SaveOrCreate (Execute triggers): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+                sw.Restart();
+
+                _dataService.SaveChanges();
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
+
+                return new ValidateResult
+                {
+                    Id = entity.Id.ToString()
+                };
             }
-
-            // Mapping
-            MapFromFormDtoToEntity(entity, entityFrom);
-
-            if (isNew) dbSet.Add(entity);
-
-            var changes = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
-
-            // Change handlers
-
-            var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
-
-            updateSetter?.Appy(changes);
-
-            var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
-
-            trackConfig?.LogTrackedChanges<TEntity>(logChanges);
-
-            Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName,
-                sw.ElapsedMilliseconds);
-            sw.Restart();
-
-            _triggersService.Execute();
-            Log.Information("{entityName}.SaveOrCreate (Execute triggers): {ElapsedMilliseconds}ms", entityName,
-                sw.ElapsedMilliseconds);
-            sw.Restart();
-
-            _dataService.SaveChanges();
-            Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
-                sw.ElapsedMilliseconds);
-
-            return new ValidateResult
-            {
-                Id = entity.Id.ToString()
-            };
         }
 
         public IEnumerable<ActionDto> GetActions(IEnumerable<Guid> ids)
