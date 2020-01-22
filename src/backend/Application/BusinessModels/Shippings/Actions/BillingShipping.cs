@@ -16,12 +16,14 @@ namespace Application.BusinessModels.Shippings.Actions
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public BillingShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
+            Description = "Изменить статус перевозки на \"Счёт выставлен\"";
         }
 
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)

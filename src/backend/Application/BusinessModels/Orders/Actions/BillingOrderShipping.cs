@@ -18,12 +18,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly BillingShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public BillingOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new BillingShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Изменить статус перевозки на \"Счёт выставлен\"";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

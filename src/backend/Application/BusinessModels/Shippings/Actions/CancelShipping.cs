@@ -20,12 +20,14 @@ namespace Application.BusinessModels.Shippings.Actions
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public CancelShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
+            Description = "Отменить перевозку и убрать её из накладных";
         }
 
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)

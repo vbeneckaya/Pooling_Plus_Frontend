@@ -33,9 +33,11 @@ namespace Application.BusinessModels.Orders.Actions
             _shippingCalculationService = shippingCalculationService;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Blue;
+            Description = "Убрать накладную из перевозки. Если в перевозке накладных больше нет, то перевозка будет помечена как \"Отменена\"";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
