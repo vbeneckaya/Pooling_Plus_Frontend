@@ -19,12 +19,14 @@ namespace Application.BusinessModels.Shippings.Actions
         private readonly IHistoryService _historyService;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public SendShippingToTk(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Blue;
+            Description = "Сотрудники ТК будут видеть это перевозку и связанные с ней накладные";
         }
 
         public AppActionResult Run(CurrentUserDto user, Shipping shipping)

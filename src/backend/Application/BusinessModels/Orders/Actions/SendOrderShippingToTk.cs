@@ -21,12 +21,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly SendShippingToTk _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public SendOrderShippingToTk(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new SendShippingToTk(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Отправить перевозку связанную с накладной в выбранную ТК";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

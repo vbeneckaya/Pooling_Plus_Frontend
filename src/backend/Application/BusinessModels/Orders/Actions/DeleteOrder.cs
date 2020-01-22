@@ -19,9 +19,11 @@ namespace Application.BusinessModels.Orders.Actions
         {
             _dataService = dataService;
             Color = AppColor.Red;
+            Description = "Удалить перевозку";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
