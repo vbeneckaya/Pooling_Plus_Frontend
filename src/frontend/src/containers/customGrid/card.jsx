@@ -237,7 +237,7 @@ const Card = props => {
                         loading={editLoading}
                         onClick={handleSave}
                     >
-                        {t('SaveButton')}
+                        {id ? t('SaveButton') : t('create_btn')}
                     </Button>
                 </>
             );
