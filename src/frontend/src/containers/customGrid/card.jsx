@@ -208,7 +208,7 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        dispatch(
+        (!id || form.orderNumber !== card.orderNumber) && dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
                 fieldName: 'orderNumber',
