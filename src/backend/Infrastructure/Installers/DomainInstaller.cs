@@ -77,6 +77,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using Application.Services.Report;
+using Domain.Services.Providers;
 using Domain.Services.Report;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Warehouses;
@@ -132,6 +133,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
             services.AddScoped<IClientsService, ClientsService>();
+            services.AddScoped<IProvidersService, ProvidersService>();
             services.AddScoped<ICompaniesService, CompaniesService>();
 
             services.AddScoped<IWarehouseService, WarehouseService>();

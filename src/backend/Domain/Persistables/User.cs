@@ -23,6 +23,11 @@ namespace Domain.Persistables
         /// Юр. лицо
         /// </summary>
         public Guid? CompanyId { get; set; }
+        
+        /// <summary>
+        /// Поставщик
+        /// </summary>
+        public Guid? ProviderId { get; set; }
 
         public override string ToString()
         {

@@ -205,7 +205,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Юр. лицо
         /// </summary>
-        public Guid? CompanyId { get; set; }
+        public Guid? ProviderId { get; set; }
 
 
         /*end of fields*/
