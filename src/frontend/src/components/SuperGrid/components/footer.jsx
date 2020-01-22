@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 
 import { ORDERS_GRID } from '../../../constants/grids';
-import {Button, Dropdown, Grid, Icon, Popup} from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Icon, Popup } from 'semantic-ui-react';
 import MassChanges from './mass_changes';
 
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { infoSelector } from '../../../ducks/gridActions';
 
-const InfoView = ({info, t, handleClose, gridName, selectedRowsLen}) => {
+const InfoView = ({ info, t, handleClose, gridName, selectedRowsLen }) => {
     return (
         <div className="footer-info">
             {/*<div className="footer-info-close" onClick={handleClose}>
@@ -43,7 +43,7 @@ const InfoView = ({info, t, handleClose, gridName, selectedRowsLen}) => {
     );
 };
 
-const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows}) => {
+const Footer = ({ groupActions, load, clearSelectedRows, gridName, selectedRows }) => {
     const { t } = useTranslation();
     let [isOpen, setIsOpen] = useState(false);
 
@@ -75,18 +75,27 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                     <div className="footer_actions">
                         {groupActions
                             ? groupActions().require.map(action => (
-                                <Button
-                                    key={action.name}
-                                    color={action.color}
-                                    content={action.name}
-                                    loading={action.loading}
-                                    disabled={action.loading}
-                                    icon={action.icon}
-                                    size="mini"
-                                    compact
-                                    onClick={() => action.action(action.ids, clearSelectedRows)}
-                                />
-                            ))
+                                  <Popup
+                                      content={action.description}
+                                      disabled={!action.description}
+                                      trigger={
+                                          <Button
+                                              className="footer_actions_button"
+                                              key={action.name}
+                                              loading={action.loading}
+                                              disabled={action.loading}
+                                              size="mini"
+                                              compact
+                                              onClick={() =>
+                                                  action.action(action.ids, clearSelectedRows)
+                                              }
+                                          >
+                                              <Icon name="circle" color={action.color} />
+                                              {action.name}
+                                          </Button>
+                                      }
+                                  />
+                              ))
                             : null}
                         {groupActions && groupActions().other.length ? (
                             <Dropdown
@@ -118,7 +127,7 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                                                         }
                                                     />
                                                 ))}
-                                                <Dropdown.Divider/>
+                                                <Dropdown.Divider />
                                                 {groupActions().shipping.map(action => (
                                                     <Dropdown.Item
                                                         key={action.name}
@@ -160,7 +169,7 @@ const Footer = ({groupActions, load, clearSelectedRows, gridName, selectedRows})
                     </div>
                 </Grid.Column>
                 <Grid.Column width={8} floated="right">
-                    <MassChanges gridName={gridName} load={() => load(false, true)}/>
+                    <MassChanges gridName={gridName} load={() => load(false, true)} />
                 </Grid.Column>
             </Grid.Row>
         </Grid>

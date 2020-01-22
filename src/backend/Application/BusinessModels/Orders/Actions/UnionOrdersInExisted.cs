@@ -36,14 +36,17 @@ namespace Application.BusinessModels.Orders.Actions
             _changeTrackerFactory = changeTrackerFactory;
             _calcService = calcService;
             Color = AppColor.Orange;
+            Description = "Добавить накладную в существующую перевозку";
         }
         
         public AppColor Color { get; set; }
+        public string Description { get; set; }
+
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
 
-            orders = orders.Where(x => x.Status == OrderState.Confirmed).ToList();
+            orders = orders.Where(x => x.Status == OrderState.Created).ToList();
 
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
             var shipping = shippingDbSet.GetById(shippingId.Value);
@@ -110,7 +113,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             return target.Count() > 1 && 
                    target.Count(x => x.Status == OrderState.InShipping) == 1 &&
-                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Confirmed && (!x.DeliveryType.HasValue || x.DeliveryType.Value == DeliveryType.Delivery));
+                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created && (!x.DeliveryType.HasValue || x.DeliveryType.Value == DeliveryType.Delivery));
         }
     }
 }

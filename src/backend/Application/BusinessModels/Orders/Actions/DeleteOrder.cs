@@ -19,9 +19,11 @@ namespace Application.BusinessModels.Orders.Actions
         {
             _dataService = dataService;
             Color = AppColor.Red;
+            Description = "Удалить перевозку";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
@@ -45,7 +47,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Created || order.Status == OrderState.Draft;
+            return order.Status == OrderState.Created;
         }
     }
 }

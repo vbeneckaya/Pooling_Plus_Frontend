@@ -1,8 +1,18 @@
 import React, {useRef, useEffect, useState} from 'react';
-import CellValue from "../../ColumnsValue";
-import TextCropping from "../../ColumnsValue/TextCropping";
+import CellValue from '../../ColumnsValue';
+import TextCropping from '../../ColumnsValue/TextCropping';
 
-const BodyCellComponent = ({column, children, value, valueText, indexColumn, indexRow, toggleIsActive, t, id}) => {
+const BodyCellComponent = ({
+                               column,
+                               children,
+                               value,
+                               valueText,
+                               indexColumn,
+                               indexRow,
+                               toggleIsActive,
+                               t,
+                               id,
+                           }) => {
     const cellRef = useRef(null);
     let [position, setPosition] = useState(null);
     let [width, setWidth] = useState(null);

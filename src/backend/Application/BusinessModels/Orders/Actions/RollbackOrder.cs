@@ -25,15 +25,18 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Grey;
+            Description = "Вернуть накладную в предыдущий статус. Статус перевозки не изменится";
         }
         
         public AppColor Color { get; set; }
+        public string Description { get; set; }
+
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
             var newState = new OrderState?();
             
             if (order.Status == OrderState.Canceled){
-                if (!string.IsNullOrEmpty(order.SoldTo) &&
+                if (order.DeliveryWarehouseId != null &&
                     !string.IsNullOrEmpty(order.Payer) &&
                     !string.IsNullOrEmpty(order.DeliveryAddress) &&
                     !string.IsNullOrEmpty(order.ShippingAddress) &&
@@ -42,19 +45,15 @@ namespace Application.BusinessModels.Orders.Actions
                     order.DeliveryType == DeliveryType.SelfDelivery)
                     newState = OrderState.Created;
                 else
-                    newState = OrderState.Draft;
+                    newState = OrderState.Created;
             
             }
-
-            if (order.Status == OrderState.Confirmed)
-                newState = OrderState.Created;
+            
 
             if (order.Status == OrderState.Shipped)
             {
                 if (!order.DeliveryType.HasValue || order.DeliveryType == DeliveryType.Delivery)
                     newState = OrderState.InShipping;
-                else
-                    newState = OrderState.Confirmed;
             }
             
             
@@ -85,8 +84,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Confirmed ||
-                   order.Status == OrderState.Shipped ||
+            return order.Status == OrderState.Shipped ||
                    order.Status == OrderState.Delivered ||
                    order.Status == OrderState.Canceled ||
                    order.Status == OrderState.Archive;

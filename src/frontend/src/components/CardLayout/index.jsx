@@ -22,7 +22,10 @@ const CardLayout = ({
 
     const handleItemClick = (e, {item}) => {
         setActiveItem(item);
-        Scroll && Scroll.scroller && Scroll.scroller.scrollTo && Scroll.scroller.scrollTo(item, {
+        Scroll &&
+        Scroll.scroller &&
+        Scroll.scroller.scrollTo &&
+        Scroll.scroller.scrollTo(item, {
             duration: 1500,
             delay: 100,
             offset: -120,
@@ -35,8 +38,6 @@ const CardLayout = ({
         },
         [content],
     );
-
-    console.log('content', contentRef && contentRef.current && contentRef.current.offsetWidth);
 
     return (
         <div>
@@ -84,7 +85,8 @@ const CardLayout = ({
             <div className="card-actions-panel">
                 <div
                     style={{
-                        width: contentRef && contentRef.current && (contentRef.current.offsetWidth - 64),
+                        width:
+                            contentRef && contentRef.current && contentRef.current.offsetWidth - 64,
                     }}
                 >
                     {actionsFooter()}

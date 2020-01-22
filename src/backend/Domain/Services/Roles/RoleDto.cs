@@ -1,5 +1,7 @@
+using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.Permissions;
+using Domain.Shared;
 using System.Collections.Generic;
 
 namespace Domain.Services.Roles
@@ -8,7 +10,7 @@ namespace Domain.Services.Roles
     {
         public string Id { get; set; }
 
-        [FieldType(Enums.FieldType.Text), IsRequired]
+        [FieldType(FieldType.Text), IsRequired]
         public string Name { get; set; }
 
         public bool IsActive { get; set; }
@@ -18,5 +20,7 @@ namespace Domain.Services.Roles
         public IEnumerable<string> Actions { get; set; }
 
         public int UsersCount { get; set; }
+        
+        public bool IsEditable { get; set; }
     }
 }

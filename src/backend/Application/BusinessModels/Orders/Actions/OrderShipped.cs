@@ -24,9 +24,11 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Orange;
+            Description = "Пометить наклданую как отгруженную";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
@@ -44,7 +46,7 @@ namespace Application.BusinessModels.Orders.Actions
         public bool IsAvailable(Order order)
         {
             return (order.Status == OrderState.InShipping && (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery)) ||
-                   (order.Status == OrderState.Confirmed && (order.DeliveryType.HasValue && order.DeliveryType.Value == DeliveryType.SelfDelivery));
+                   (order.Status == OrderState.Created && (order.DeliveryType.HasValue && order.DeliveryType.Value == DeliveryType.SelfDelivery));
         }
     }
 }

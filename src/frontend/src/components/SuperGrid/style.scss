@@ -171,16 +171,22 @@ tbody {
     //background-color: #fbfdff;
 }
 
-.grid-row {
-    .link-cell {
-        color: #18a8cc !important;;
+.link-cell {
+    color: #18a8cc !important;
 
-        width: 100%;
+    width: 100%;
 
-        &:hover {
-            text-decoration-line: underline;
-        }
+    &:hover {
+        text-decoration-line: underline;
+        cursor: pointer;
     }
+}
+
+.dropdown-blue {
+    color: #18a8cc !important;
+}
+
+.grid-row {
     /*.address-cell {
         max-width: 100px;
 
@@ -189,8 +195,8 @@ tbody {
         }
     }*/
 
-    &-selected td{
-        background-color: rgba(24, 168, 204, .12);
+    &-selected td {
+        background-color: #e3f5f9;
     }
 }
 
@@ -209,7 +215,7 @@ tbody {
 }
 
 .grid-row:hover td {
-    background-color: rgba(0, 0, 0, .06);
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 .grid-row td,
@@ -281,11 +287,30 @@ tbody {
         button {
             margin-bottom: 8px;
         }
+
+        &_button {
+            background-color: transparent !important;
+            color: #4d4d4d !important;
+            font-weight: 500;
+            text-transform: uppercase !important;
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.06) !important;
+            }
+        }
     }
 
     .column {
-
     }
+}
+
+.grid-marker {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 7px!important;
+    top: 0;
+    background-color: #18A8CC;
+    z-index: 10;
 }
 
 .filter-popup > div {
@@ -295,7 +320,7 @@ tbody {
 
 .from-popup {
     filter: none !important;
-    min-width: 250px!important;
+    min-width: 250px !important;
     max-width: 100% !important;
     position: absolute !important;
 
@@ -320,6 +345,7 @@ tbody {
 $orange: #fcd8c1;
 $olive: #ebf1c0;
 $teal: #b5eae7;
+$pink: #fbeff2;
 
 .color-info {
     &-orange {
@@ -342,6 +368,10 @@ $teal: #b5eae7;
     }
     &.teal td {
         background-color: $teal;
+    }
+
+    &.pink td {
+        background-color: $pink;
     }
 }
 
@@ -511,10 +541,10 @@ $teal: #b5eae7;
     position: relative;
     width: 100% !important;
     &:hover .cell-grid-copy-btn {
-        -webkit-transition: opacity .8s ease-in-out;
-        -moz-transition: opacity .8s ease-in-out;
-        -o-transition: opacity .8s ease-in-out;
-        transition: opacity .8s ease-in-out;
+        -webkit-transition: opacity 0.8s ease-in-out;
+        -moz-transition: opacity 0.8s ease-in-out;
+        -o-transition: opacity 0.8s ease-in-out;
+        transition: opacity 0.8s ease-in-out;
         opacity: 1;
     }
     &-value {
@@ -559,4 +589,22 @@ $teal: #b5eae7;
     justify-content: space-between;
     align-items: end;
     margin-bottom: 12px;
+}
+
+.not-found-message {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 12px;
+
+    >div {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        button {
+            margin-top: 8px!important;
+        }
+    }
 }

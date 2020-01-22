@@ -23,13 +23,10 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
         public LookUpDto VehicleTypeId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(BodyTypes)), OrderNumber(4)]
         public LookUpDto BodyTypeId { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(6)]
         public string StartWinterPeriod { get; set; }
 
-        [FieldType(FieldType.Date), OrderNumber(7)]
         public string EndWinterPeriod { get; set; }
 
         [FieldType(FieldType.Date), OrderNumber(8), IsRequired]
@@ -38,7 +35,6 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Date), OrderNumber(9), IsRequired]
         public string ExpirationDate { get; set; }
 
-        [FieldType(FieldType.Number), OrderNumber(10)]
         public string WinterAllowance { get; set; }
 
         [FieldType(FieldType.Number), OrderNumber(11)]
@@ -142,6 +138,10 @@ namespace Domain.Services.Tariffs
 
         [FieldType(FieldType.Number), OrderNumber(44)]
         public decimal? LtlRate33 { get; set; }
-        /*end of fields*/
+
+        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(45)]
+        public LookUpDto CompanyId { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

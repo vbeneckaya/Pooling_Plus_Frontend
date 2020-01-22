@@ -8,6 +8,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Permissions;
 using Domain.Services.Roles;
@@ -20,11 +21,12 @@ using System.Linq;
 
 namespace Application.Services.Roles
 {
-    public class RolesService : DictonaryServiceBase<Role, RoleDto>, IRolesService
+    public class RolesService : DictionaryServiceBase<Role, RoleDto>, IRolesService
     {
         public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -62,6 +64,8 @@ namespace Application.Services.Roles
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
+            var user = _userProvider.GetCurrentUser();
+
             var entities = _dataService.GetDbSet<Role>()
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.Name)
@@ -75,6 +79,16 @@ namespace Application.Services.Roles
                     Value = entity.Id.ToString()
                 };
             }
+        }
+
+        public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+            
+            return query;
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
@@ -122,7 +136,7 @@ namespace Application.Services.Roles
                     Code = i,
                     Name = i.GetPermissionName()
                 }),
-                UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count()
+                UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == entity.Id).Count(),
             };
         }
 
@@ -163,6 +177,21 @@ namespace Application.Services.Roles
             return _dataService.GetDbSet<Role>()
                 .Where(i => i.Name == dto.Name)
                 .FirstOrDefault();
+        }
+
+        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            return _dataService.GetDbSet<Role>()
+                .Where(i => i.CompanyId == companyId)
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Name)
+                .Select(i => new LookUpDto
+                {
+                    Name = i.Name,
+                    Value = i.Id.ToString()
+                });
         }
     }
 }

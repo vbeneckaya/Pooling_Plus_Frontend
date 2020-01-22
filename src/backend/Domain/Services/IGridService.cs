@@ -23,7 +23,7 @@ namespace Domain.Services
         IEnumerable<BulkUpdateDto> GetBulkUpdates(IEnumerable<Guid> ids);
 
         IEnumerable<ValidateResult> Import(IEnumerable<TFormDto> entityFrom);
-        ValidateResult ImportFromExcel(Stream fileStream);
+        ImportResultDto ImportFromExcel(Stream fileStream);
         Stream ExportToExcel(ExportExcelFormDto<TFilter> dto);
     }
 }

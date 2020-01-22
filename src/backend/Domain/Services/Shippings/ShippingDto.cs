@@ -12,7 +12,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
         public string ShippingNumber { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(4)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
         public LookUpDto DeliveryType { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -21,19 +21,19 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Number)]
         public int? TemperatureMax { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), IsDefault, OrderNumber(5)]
+        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), IsDefault, OrderNumber(14)]
         public LookUpDto TarifficationType { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
         public LookUpDto CarrierId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
+        [FieldType(FieldType.Select, source: nameof(VehicleTypes)), IsDefault, OrderNumber(7)]
         public LookUpDto VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(BodyTypes))]
         public LookUpDto BodyTypeId { get; set; }
 
-        [FieldType(FieldType.Number)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(3)]
         public int? PalletsCount { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -42,7 +42,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Number)]
         public int? ConfirmedPalletsCount { get; set; }
 
-        [FieldType(FieldType.Number)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(4)]
         public decimal? WeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -62,7 +62,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Text)]
         public string DeviationReasonsComments { get; set; }
 
-        [FieldType(FieldType.Number)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(13)]
         public decimal? TotalDeliveryCost { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -132,9 +132,19 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByCarrier { get; set; }
 
-        [FieldType(FieldType.LocalDateTime), IsDefault, OrderNumber(6), IsReadOnly]
+        [FieldType(FieldType.LocalDateTime), IsReadOnly]
         public DateTime? ShippingCreationDate { get; set; }
-        
-        /*end of fields*/
+
+        [FieldType(FieldType.Select, source: nameof(Companies))]
+        public LookUpDto CompanyId { get; set; }
+
+        public bool IsEditable { get; set; }
+
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(15)]
+        public string Driver { get; set; }
+
+        [FieldType(FieldType.Text), IsDefault, OrderNumber(16)]
+        public string VehicleNumber { get; set; }
+
     }
 }

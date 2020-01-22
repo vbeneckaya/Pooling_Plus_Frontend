@@ -22,9 +22,9 @@ namespace Application.BusinessModels.Warehouses.Handlers
 
         public void AfterChange(Warehouse entity, DeliveryType? oldValue, DeliveryType? newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Created, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
-                                     .Where(x => x.SoldTo == entity.SoldToNumber
+                                     .Where(x => x.DeliveryWarehouseId == entity.Id
                                                 && x.DeliveryType != newValue
                                                 && validStatuses.Contains(x.Status)
                                                 && (x.ShippingId == null || x.OrderShippingStatus == ShippingState.ShippingCreated))

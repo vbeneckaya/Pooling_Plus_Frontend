@@ -15,18 +15,17 @@ const Text = ({
     type,
     datalist: valuesList = [],
     placeholder,
-                  isRequired,
-                  autoComplete,
+    isRequired,
+    autoComplete,
 }) => {
     const { t } = useTranslation();
-    console.log('text');
 
     return (
         <Form.Field>
             {!noLabel ? (
                 <label className={isDisabled ? 'label-disabled' : null}>{`${t(text || name)}${
                     isRequired ? ' *' : ''
-                    }`}</label>
+                }`}</label>
             ) : null}
             <Input
                 placeholder={placeholder}

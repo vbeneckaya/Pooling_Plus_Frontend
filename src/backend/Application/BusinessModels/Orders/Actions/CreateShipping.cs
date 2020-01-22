@@ -34,9 +34,11 @@ namespace Application.BusinessModels.Orders.Actions
             _shippingCalculationService = shippingCalculationService;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Blue;
+            Description = "Создать одну перевозку для одной накладной";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
@@ -46,7 +48,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Confirmed && (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery);
+            return order.Status == OrderState.Created && (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery);
         }
     }
 }

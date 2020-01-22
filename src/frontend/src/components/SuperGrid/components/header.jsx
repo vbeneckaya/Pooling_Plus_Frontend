@@ -18,21 +18,21 @@ import {
     representationsSelector,
     setRepresentationRequest,
 } from '../../../ducks/representations';
-import AllFilters from './all_filters';
-import Icon from "../../CustomIcon";
+import Icon from '../../CustomIcon';
 
 const Header = ({
-    createButton,
+                    isCreateBtn,
     searchValue,
     searchOnChange,
     counter,
     clearFilter,
-    updatingFilter,
     disabledClearFilter,
     loadList,
     name,
     setSelected,
+                    representationName,
     filter,
+                    goToCard,
 }) => {
     const { t } = useTranslation();
 
@@ -77,13 +77,6 @@ const Header = ({
         dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
     };
 
-    useEffect(
-        () => {
-            getRepresentations(updatingFilter);
-        },
-        [name],
-    );
-
     const changeRepresentation = (key, isEdit) => {
         dispatch(
             setRepresentationRequest({
@@ -91,91 +84,24 @@ const Header = ({
                 value: key,
                 callbackSuccess: () => {
                     setSelected(new Set());
-                    !isEdit ? clearFilter() : updatingFilter();
                 },
             }),
         );
     };
 
+    const handleGoToCard = () => {
+        goToCard(false, null, name);
+    };
+
+    console.log('filter', filter);
+
     return (
         <Grid className="grid-header-panel">
             <Grid.Row>
-                {/* <Grid.Column width={10}>
-                    {createButton}
-                    <Search searchValue={searchValue} className="search-input" onChange={searchOnChange}/>
-                    <span className="records-counter">{t('totalCount', { count: counter })}</span>
-                </Grid.Column>
-                <Grid.Column width={6} className="grid-right-elements">
-                    <input
-                        type="file"
-                        ref={fileUploader}
-                        style={{ display: 'none' }}
-                        onInput={onFilePicked}
-                    />
-                    <FieldsConfig
-                        gridName={name}
-                        getRepresentations={getRepresentations}
-                        changeRepresentation={changeRepresentation}
-                        representations={representations}
-                    />
-                    <Popup
-                        content={t('reset_filters')}
-                        position="bottom right"
-                        trigger={
-                            <Button
-                                icon="clear-filter"
-                                className={`clear-filter-btn`}
-                                onClick={clearFilter}
-                                disabled={disabledClearFilter}
-                            />
-                        }
-                    />
-                    {
-                        <Popup
-                            content={<AllFilters gridName={name} filter={filter}/>}
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon
-                                >
-                                    <Icon color="primary" name={"sliders horizontal"}/>
-                                </Button>
-                            }
-                            on="click"
-                        />
-                    }
-                    {isImportBtn && (
-                        <Popup
-                            content={t('importFromExcel')}
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon="upload"
-                                    loading={importLoader}
-                                    onClick={importExcel}
-                                />
-                            }
-                        />
-                    )}
-                    {isExportBtn && (
-                        <Popup
-                            content={
-                                t('exportToExcel') // todo
-                            }
-                            position="bottom right"
-                            trigger={
-                                <Button
-                                    icon="download"
-                                    loading={exportLoader}
-                                    onClick={exportExcel}
-                                />
-                            }
-                        />
-                    )}
-                </Grid.Column>*/}
                 <Grid.Column width={5}>
                     <FieldsConfig
                         gridName={name}
+                        representationName={representationName}
                         getRepresentations={getRepresentations}
                         changeRepresentation={changeRepresentation}
                         representations={representations}
@@ -185,7 +111,13 @@ const Header = ({
                     <span className="records-counter">{t('totalCount', {count: counter})}</span>
                 </Grid.Column>
                 <Grid.Column width={10} className="grid-right-elements">
-                    {createButton}
+                    {isCreateBtn && (
+                        <Popup
+                            content={t('add_record')}
+                            position="bottom right"
+                            trigger={<Button icon="add" onClick={handleGoToCard}/>}
+                        />
+                    )}
                     {isImportBtn && (
                         <Popup
                             content={t('importFromExcel')}
@@ -231,6 +163,7 @@ const Header = ({
                     <Search
                         searchValue={searchValue}
                         className="search-input"
+                        value={filter.filter.filter.search}
                         onChange={searchOnChange}
                     />
                 </Grid.Column>

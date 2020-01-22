@@ -1,8 +1,8 @@
-import React, {useMemo, useCallback, useState, useEffect} from 'react';
-import {useTranslation} from 'react-i18next';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import CardLayout from '../../components/CardLayout';
-import {Button, Confirm, Dimmer, Icon, Loader, Popup} from 'semantic-ui-react';
+import { Button, Confirm, Dimmer, Icon, Loader, Modal, Popup } from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {
     canDeleteSelector,
@@ -12,19 +12,49 @@ import {
     columnsSelector,
     deleteDictionaryEntryRequest,
     errorSelector,
-    getCardRequest, progressSelector,
+    getCardRequest,
+    progressSelector,
     saveDictionaryCardRequest,
 } from '../../ducks/dictionaryView';
 
-const CardNew = props => {
-    const {t} = useTranslation();
-    const dispatch = useDispatch();
-    const {match, defaultForm, columns: propsColumns, history, location} = props;
-    const {params = {}} = match;
-    const {name, id} = params;
+const Content = ({ columns, error, form, handleChange }) => {
+    return (
+        <div className="ui form dictionary-edit">
+            {columns.map(column => {
+                return (
+                    <FormField
+                        {...column}
+                        noScrollColumn={column}
+                        key={column.name}
+                        error={error[column.name]}
+                        value={form[column.name]}
+                        onChange={handleChange}
+                    />
+                );
+            })}
+        </div>
+    );
+};
 
-    let [form, setForm] = useState({...defaultForm});
-    let [confirmation, setConfirmation] = useState({open: false});
+const CardNew = props => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const {
+        match = {},
+        defaultForm,
+        columns: propsColumns,
+        history,
+        location,
+        load,
+        isModal,
+        openModal,
+        onClose: onCloseModal,
+    } = props;
+    const { params = {} } = match;
+    const { name, id } = params;
+
+    let [form, setForm] = useState({ ...defaultForm });
+    let [confirmation, setConfirmation] = useState({ open: false });
     let [notChangeForm, setNotChangeForm] = useState(true);
 
     const columns = useSelector(
@@ -37,7 +67,8 @@ const CardNew = props => {
     const error = useSelector(state => errorSelector(state));
 
     useEffect(() => {
-        id && dispatch(getCardRequest({id, name}));
+        console.log('454545');
+        id && dispatch(getCardRequest({ id, name }));
 
         return () => {
             dispatch(clearDictionaryCard());
@@ -64,6 +95,10 @@ const CardNew = props => {
         [defaultForm],
     );
 
+    const onOpenModal = () => {
+        console.log('ooopen');
+    };
+
     const title = useMemo(
         () => (id ? `${t(name)}: ${t('edit_record')}` : `${t(name)}: ${t('new_record')}`),
         [name, id],
@@ -76,7 +111,12 @@ const CardNew = props => {
                     <Button color="grey" onClick={handleClose}>
                         {t('CancelButton')}
                     </Button>
-                    <Button color="blue" disabled={notChangeForm} loading={progress} onClick={handleSave}>
+                    <Button
+                        color="blue"
+                        disabled={notChangeForm}
+                        loading={progress}
+                        onClick={handleSave}
+                    >
                         {t('SaveButton')}
                     </Button>
                 </>
@@ -101,7 +141,10 @@ const CardNew = props => {
             saveDictionaryCardRequest({
                 params,
                 name,
-                callbackSuccess: onClose,
+                callbackSuccess: () => {
+                    load && load(form);
+                    onClose();
+                },
             }),
         );
     };
@@ -127,7 +170,7 @@ const CardNew = props => {
                         position="bottom right"
                         trigger={
                             <Button icon onClick={handleDelete}>
-                                <Icon name="trash alternate outline"/>
+                                <Icon name="trash alternate outline" />
                             </Button>
                         }
                     />
@@ -137,7 +180,7 @@ const CardNew = props => {
     }, []);
 
     const handleChange = useCallback(
-        (event, {name, value}) => {
+        (event, { name, value }) => {
             if (notChangeForm) {
                 setNotChangeForm(false);
             }
@@ -150,14 +193,16 @@ const CardNew = props => {
     );
 
     const confirmClose = () => {
-        setConfirmation({open: false});
+        setConfirmation({ open: false });
     };
 
     const onClose = () => {
-        history.push({
-            pathname: location.state.pathname,
-            state: {...location.state}
-        });
+        isModal
+            ? onCloseModal()
+            : history.push({
+                  pathname: location.state.pathname,
+                  state: { ...location.state },
+              });
     };
 
     const handleClose = () => {
@@ -174,27 +219,46 @@ const CardNew = props => {
     };
 
     return (
-        <CardLayout
-            title={title}
-            actionsFooter={getActionsFooter}
-            actionsHeader={getActionsHeader}
-            onClose={handleClose}
-            loading={loading}
-        >
-            <div className="ui form dictionary-edit">
-                {columns.map(column => {
-                    return (
-                        <FormField
-                            {...column}
-                            noScrollColumn={column}
-                            key={column.name}
-                            error={error[column.name]}
-                            value={form[column.name]}
-                            onChange={handleChange}
+        <>
+            {isModal ? (
+                <Modal
+                    dimmer="blurring"
+                    open={openModal}
+                    closeOnDimmerClick={false}
+                    onOpen={onOpenModal}
+                    onClose={onCloseModal}
+                    closeIcon
+                >
+                    <Modal.Header>{title}</Modal.Header>
+                    <Modal.Description>
+                        {/*<Loader size="huge" active={loading}>
+                            Loading
+                        </Loader>*/}
+                        <Content
+                            columns={columns}
+                            error={error}
+                            form={form}
+                            handleChange={handleChange}
                         />
-                    );
-                })}
-            </div>
+                    </Modal.Description>
+                    <Modal.Actions>{getActionsFooter()}</Modal.Actions>
+                </Modal>
+            ) : (
+                <CardLayout
+                    title={title}
+                    actionsFooter={getActionsFooter}
+                    actionsHeader={getActionsHeader}
+                    onClose={handleClose}
+                    loading={loading}
+                >
+                    <Content
+                        columns={columns}
+                        error={error}
+                        form={form}
+                        handleChange={handleChange}
+                    />
+                </CardLayout>
+            )}
             <Confirm
                 dimmer="blurring"
                 open={confirmation.open}
@@ -204,14 +268,7 @@ const CardNew = props => {
                 onConfirm={confirmation.onConfirm}
                 content={confirmation.content}
             />
-            {/*<ConfirmDialog
-                open={confirmation.open}
-                content={confirmation.content}
-                onYesClick={confirmation.onYes}
-                onNoClick={confirmation.onNo}
-                onCancelClick={confirmation.onCancel}
-            />*/}
-        </CardLayout>
+        </>
     );
 };
 

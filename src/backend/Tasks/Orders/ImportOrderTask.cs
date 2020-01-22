@@ -142,39 +142,10 @@ namespace Tasks.Orders
                 doc.Load(reader);
             }
 
-            List<WarehouseDto> updWarehouses = new List<WarehouseDto>();
             var docRoots = doc.SelectNodes("//IDOC");
-            
-            foreach (XmlNode docRoot in docRoots)
-            {
-                string soldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
-                string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
-                string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
-                string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
-                
-                if (!string.IsNullOrEmpty(deliveryAddress2))
-                {
-                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
-                }
-                
-                var deliveryWarehouse = warehousesService.GetBySoldTo(soldTo);
-                if (deliveryWarehouse != null)
-                {
-                    deliveryWarehouse.City = deliveryCity ?? deliveryWarehouse.City;
-                    deliveryWarehouse.Address = deliveryAddress ?? deliveryWarehouse.Address;
-                    deliveryWarehouse.AdditionalInfo = "INJECTION";
-                }
-                
-                if (!updWarehouses.Any(x => x.SoldToNumber == soldTo))
-                    updWarehouses.Add(deliveryWarehouse);
-            }
-
-            if (updWarehouses.Any()) 
-                warehousesService.Import(updWarehouses);
 
             int totalCount = docRoots.Count;
             int processedCount = 0;
-
             
             var orders = new List<OrderFormDto>();
             
@@ -198,7 +169,6 @@ namespace Tasks.Orders
 
                 dto.OrderNumber = orderNumber;
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
-                dto.SoldTo = string.IsNullOrEmpty(soldTo) ? dto.SoldTo : new LookUpDto(soldTo);
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
                 dto.BoxesCount = docRoot.ParseDecimal("E1EDK01/Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
                 dto.DeliveryDate = docRoot.ParseDateTime("E1EDK03[IDDAT='002']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.DeliveryDate;
@@ -210,25 +180,12 @@ namespace Tasks.Orders
                 dto.ShippingCity = string.IsNullOrEmpty(shippingWarehouse?.City) ? dto.ShippingCity : new LookUpDto(shippingWarehouse.City);
                 dto.ShippingWarehouseId = shippingWarehouse?.Id == null ? dto.ShippingWarehouseId : new LookUpDto(shippingWarehouse.Id.ToString(), shippingWarehouse.WarehouseName);
 
-                string deliveryCity = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/ORT01")?.InnerText;
-                string deliveryAddress = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRAS")?.InnerText;
-                string deliveryAddress2 = docRoot.SelectSingleNode("E1EDKA1[PARVW='WE']/STRS2")?.InnerText;
-                if (!string.IsNullOrEmpty(deliveryAddress2))
-                {
-                    deliveryAddress = (string.IsNullOrEmpty(deliveryAddress) ? string.Empty : deliveryAddress + " ") + deliveryAddress2;
-                }
-                
-                var deliveryWarehouse = warehousesService.GetBySoldTo(dto.SoldTo?.Value);
-                if (deliveryWarehouse == null)
-                {
-                    dto.ClientName = null;
-                    dto.DeliveryAddress = deliveryAddress;
-                    dto.DeliveryCity = string.IsNullOrEmpty(deliveryCity) ? null : new LookUpDto(deliveryCity);
-                    dto.DeliveryRegion = null;
-                    dto.PickingTypeId = null;
-                    dto.TransitDays = null;
-                    dto.DeliveryType = null;
-                }
+                dto.DeliveryAddress = null;
+                dto.DeliveryCity = null;
+                dto.DeliveryRegion = null;
+                dto.PickingTypeId = null;
+                dto.TransitDays = null;
+                dto.DeliveryType = null;
 
                 if (isNew)
                 {
@@ -342,10 +299,6 @@ namespace Tasks.Orders
             if (string.IsNullOrEmpty(dto.Payer))
             {
                 yield return "Плательщик";
-            }
-            if (string.IsNullOrEmpty(dto.SoldTo?.Value))
-            {
-                yield return "Номер заказа клиента";
             }
         }
     }

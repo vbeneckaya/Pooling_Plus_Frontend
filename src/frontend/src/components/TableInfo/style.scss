@@ -67,8 +67,8 @@ thead th {
     margin: 0 !important;
 
     tr {
-        td{
-            background: white!important;
+        td {
+            background: white !important;
         }
 
         &:last-child {
@@ -80,10 +80,10 @@ thead th {
         cursor: pointer;
         /* background-color: rgba(0,0,0,.05)!important*/
     }
-   tr:hover {
-       td{
-           background: rgba(0, 0, 0, .001) !important;
-       }
+    tr:hover {
+        td {
+            background: rgba(0, 0, 0, 0.001) !important;
+        }
     }
 
     &:after {

@@ -6,6 +6,7 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
@@ -17,11 +18,12 @@ using System.Linq;
 
 namespace Application.Services.Users
 {
-    public class UsersService : DictonaryServiceBase<User, UserDto>, IUsersService
+    public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -74,6 +76,14 @@ namespace Application.Services.Users
                                     .Where(x => roleIds.Contains(x.Id))
                                     .ToDictionary(x => x.Id.ToString());
 
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.CarrierId?.Value)
@@ -86,6 +96,12 @@ namespace Application.Services.Users
                     && roles.TryGetValue(dto.RoleId.Value, out Role role))
                 {
                     dto.RoleId.Name = role.Name;
+                }
+
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
                 }
 
                 yield return dto;
@@ -104,7 +120,8 @@ namespace Application.Services.Users
                 RoleId = new LookUpDto(entity.RoleId.ToString()),
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
-                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString())
+                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
             };
         }
 
@@ -121,6 +138,7 @@ namespace Application.Services.Users
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
 
@@ -165,6 +183,20 @@ namespace Application.Services.Users
             return query
                 .OrderBy(i => i.Email)
                 .ThenBy(i => i.Id);
+        }
+        public override IQueryable<User> ApplyRestrictions(IQueryable<User> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId);
+            }
+
+            return query;
         }
 
         public override User FindByKey(UserDto dto)

@@ -27,7 +27,6 @@
 }
 
 .ui.secondary.menu .item > img:not(.ui) {
-    width: 8em !important;
     margin-right: 2em;
 }
 
@@ -71,5 +70,16 @@
             &:hover {
             }
         }
+    }
+}
+
+.header-inner-logo {
+    padding: 0 !important;
+    overflow: hidden;
+    height: 40px;
+    display: flex!important;
+    align-items: center!important;
+    img {
+        width: 153px !important;
     }
 }

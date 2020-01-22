@@ -22,9 +22,9 @@ namespace Application.BusinessModels.Warehouses.Handlers
 
         public void AfterChange(Warehouse entity, Guid? oldValue, Guid? newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed, OrderState.InShipping };
+            var validStatuses = new[] { OrderState.Created, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
-                                     .Where(x => x.SoldTo == entity.SoldToNumber
+                                     .Where(x => x.DeliveryWarehouseId == entity.Id
                                                 && !x.ManualPickingTypeId
                                                 && x.PickingTypeId != newValue
                                                 && x.Source != null && x.Source.Length > 0

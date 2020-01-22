@@ -6,11 +6,13 @@ using Application.BusinessModels.Shared.Triggers;
 using Application.BusinessModels.Shippings.Actions;
 using Application.BusinessModels.Shippings.Triggers;
 using Application.BusinessModels.Tariffs.Triggers;
+using Application.BusinessModels.Warehouses.Triggers;
 using Application.Services;
 using Application.Services.Addresses;
 using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
+using Application.Services.Clients;
 using Application.Services.Documents;
 using Application.Services.DocumentTypes;
 using Application.Services.FieldProperties;
@@ -20,6 +22,7 @@ using Application.Services.Identity;
 using Application.Services.Injections;
 using Application.Services.Orders;
 using Application.Services.PickingTypes;
+using Application.Services.ProductTypes;
 using Application.Services.Profile;
 using Application.Services.Roles;
 using Application.Services.Shippings;
@@ -44,6 +47,8 @@ using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
+using Domain.Services.Clients;
+using Domain.Services.Companies;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
@@ -53,6 +58,7 @@ using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
+using Domain.Services.ProductTypes;
 using Domain.Services.Profile;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
@@ -72,6 +78,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using Application.Services.Report;
+using Domain.Services.Report;
 
 namespace Infrastructure.Installers
 {
@@ -106,9 +114,9 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
+            services.AddScoped<IShippingAddressService, ShippingAddressService>();
+            services.AddScoped<IDeliveryAddressService, DeliveryAddressService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
-            services.AddScoped<ISoldToService, SoldToService>();
-            services.AddScoped<IClientNameService, ClientNameService>();
             services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();
             services.AddScoped<IArticlesService, ArticlesService>();
             services.AddScoped<ITransportCompaniesService, TransportCompaniesService>();
@@ -120,14 +128,20 @@ namespace Infrastructure.Installers
             services.AddSingleton<IFieldDispatcherService, FieldDispatcherService>();
             services.AddScoped<IBodyTypesService, BodyTypesService>();
             services.AddScoped<ITonnagesService, TonnagesService>();
+            services.AddScoped<IProductTypesService, ProductTypesService>();
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
+            services.AddScoped<IClientsService, ClientsService>();
+            services.AddScoped<ICompaniesService, CompaniesService>();
 
             services.AddScoped<IWarehouseCityService, WarehouseCityService>();
             services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
+            
+                        
+            services.AddScoped<IReportService, ReportService>();
 
             services.AddScoped<IValidationService, ValidationService>();
             services.AddScoped<IFieldSetterFactory, FieldSetterFactory>();
@@ -157,6 +171,7 @@ namespace Infrastructure.Installers
 
             if (migrateDb)
             {
+                //appDbContext.DropDb();
                 appDbContext.Migrate(connectionString);
             }
 
@@ -167,7 +182,6 @@ namespace Infrastructure.Installers
         private static void AddOrderBusinessModels(IServiceCollection services)
         {
             services.AddScoped<IAppAction<Order>, CreateShipping>();
-            services.AddScoped<IAppAction<Order>, ConfirmOrder>();
             services.AddScoped<IAppAction<Order>, CancelOrder>();
             services.AddScoped<IAppAction<Order>, RemoveFromShipping>();
             services.AddScoped<IAppAction<Order>, SendToArchive>();
@@ -192,7 +206,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();
             services.AddScoped<IAppAction<Order>, RollbackOrderShipping>();
 
-            services.AddScoped<ITrigger<Order>, MakeOrderCreated>();
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
             services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
@@ -215,11 +228,14 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
+            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTransportCompany>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)
         {
             services.AddScoped<ITrigger<Tariff>, UpdateTariffDeliveryCost>();
+
+            services.AddScoped<ITrigger<Warehouse>, ValidateDeliveryAddress>();
         }
     }
 }

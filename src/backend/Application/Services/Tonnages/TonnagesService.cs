@@ -1,9 +1,13 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Tonnages;
 using Domain.Services.Translations;
@@ -15,11 +19,12 @@ using System.Linq;
 
 namespace Application.Services.Tonnages
 {
-    public class TonnagesService : DictonaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
+    public class TonnagesService : DictionaryServiceBase<Tonnage, TonnageDto>, ITonnagesService
     {
         public TonnagesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                               IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(Tonnage entity, TonnageDto dto)
@@ -35,11 +40,14 @@ namespace Application.Services.Tonnages
 
         public override TonnageDto MapFromEntityToDto(Tonnage entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new TonnageDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                IsActive = entity.IsActive
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -83,6 +91,21 @@ namespace Application.Services.Tonnages
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+
+        public override IQueryable<Tonnage> ApplyRestrictions(IQueryable<Tonnage> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
         }
 
         public override Tonnage FindByKey(TonnageDto dto)

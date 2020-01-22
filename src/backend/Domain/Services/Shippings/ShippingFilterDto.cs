@@ -88,5 +88,9 @@ namespace Domain.Services.Shippings
         public string CostsConfirmedByShipper { get; set; }
 
         public string CostsConfirmedByCarrier { get; set; }
+        
+        public string Driver { get; set; }
+        
+        public string VehicleNumber { get; set; }
     }
 }

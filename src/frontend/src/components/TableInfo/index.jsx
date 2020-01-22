@@ -7,8 +7,8 @@ import {debounce} from 'throttle-debounce';
 import {PAGE_SIZE} from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
-import HeaderCellComponent from "./components/header-cell";
-import BodyCellComponent from "./components/body-cell";
+import HeaderCellComponent from './components/header-cell';
+import BodyCellComponent from './components/body-cell';
 
 const ModalComponent = ({ element, props, children }) => {
     if (!element) {
@@ -28,16 +28,18 @@ class TableInfo extends Component {
         const { state } = location;
 
         if (state) {
-            this.setState({
-                filter: state.search
-            }, () => {
-                history.replace(location.pathname, null);
-                this.load();
-            })
+            this.setState(
+                {
+                    filter: state.search,
+                },
+                () => {
+                    history.replace(location.pathname, null);
+                    this.load();
+                },
+            );
         } else {
             this.load();
         }
-
     }
 
     mapData = (isConcat, isReload) => {
@@ -79,7 +81,6 @@ class TableInfo extends Component {
         this.setState({filter: value, page: 1}, this.load);
     };
 
-
     headerRowComponent = () => (
         <Table.Row>
             {this.props.headerRow &&
@@ -118,15 +119,15 @@ class TableInfo extends Component {
         const {history, cardLink, name} = this.props;
 
         if (!cardLink) {
-            e.stopPropagation()
+            e.stopPropagation();
         } else {
             history.push({
                 pathname: cardLink.replace(':name', name).replace(':id', id),
                 state: {
                     ...this.mapData().filter,
-                    pathname: history.location.pathname
-                }
-            })
+                    pathname: history.location.pathname,
+                },
+            });
         }
     };
 
@@ -153,7 +154,7 @@ class TableInfo extends Component {
             exportLoader,
             exportToExcel,
             totalCount,
-            history
+            history,
         } = this.props;
 
         const { filter } = this.state;
@@ -163,82 +164,80 @@ class TableInfo extends Component {
                 <Loader active={loading && !list.length} size="huge" className="table-loader">
                     Loading
                 </Loader>
-                    <Grid className="table-header-menu">
-                        <Grid.Row>
-                            <Grid.Column width={5} verticalAlign="middle">
-                                <span className="table-header-menu_title">
-                                    {t(name)}
-                                </span>
-                                <span className="records-counter">{t('totalCount', {count: totalCount})}</span>
-                            </Grid.Column>
-                            <Grid.Column width={11} textAlign="right">
-                                {/*{newModal ? newModal(t, this.load, name) : null}*/}
-                                {
-                                    newLink
-                                        ? <Popup
-                                            content={t('add_record')}
-                                            position="bottom right"
-                                            trigger={
-                                                <Button
-                                                    icon="add"
-                                                    onClick={() => {
-                                                        history.push({
-                                                            pathname: newLink.replace(':name', name),
-                                                            state: {
-                                                                ...this.mapData().filter,
-                                                                pathname: history.location.pathname
-                                                            }
-                                                        })
-                                                    }}
-                                                />
-                                            }
+                <Grid className="table-header-menu">
+                    <Grid.Row>
+                        <Grid.Column width={5} verticalAlign="middle">
+                            <span className="table-header-menu_title">{t(name)}</span>
+                            <span className="records-counter">
+                                {t('totalCount', {count: totalCount})}
+                            </span>
+                        </Grid.Column>
+                        <Grid.Column width={11} textAlign="right">
+                            {/*{newModal ? newModal(t, this.load, name) : null}*/}
+                            {newLink ? (
+                                <Popup
+                                    content={t('add_record')}
+                                    position="bottom right"
+                                    trigger={
+                                        <Button
+                                            icon="add"
+                                            onClick={() => {
+                                                history.push({
+                                                    pathname: newLink.replace(':name', name),
+                                                    state: {
+                                                        ...this.mapData().filter,
+                                                        pathname: history.location.pathname,
+                                                    },
+                                                });
+                                            }}
                                         />
-                                        : null
-                                }
-                                {isImportBtn ? (
-                                    <Popup
-                                        content={t('importFromExcel')}
-                                        position="bottom right"
-                                        trigger={
-                                            <Button
-                                                icon="upload"
-                                                loading={importLoader}
-                                                onClick={this.importFromExcel}
-                                            />
-                                        }
-                                    />
-                                ) : null}
-                                {isExportBtn ? (
-                                    <Popup
-                                        content={
-                                            t('exportToExcel') // todo
-                                        }
-                                        position="bottom right"
-                                        trigger={
-                                            <Button
-                                                icon="download"
-                                                loading={exportLoader}
-                                                onClick={this.exportToExcel}
-                                            />
-                                        }
-                                    />
-                                ) : null}
-                                <Search
-                                    value={filter}
-                                    className="search-input"
-                                    onChange={this.changeFullTextFilter}
+                                    }
                                 />
-                            </Grid.Column>
-                        </Grid.Row>
-                        <input
-                            type="file"
-                            ref={instance => {
-                                this.fileUploader = instance;
-                            }}
-                            style={{ display: 'none' }}
-                            onChange={this.onFilePicked}
-                        />
-                    </Grid>
+                            ) : null}
+                            {isImportBtn ? (
+                                <Popup
+                                    content={t('importFromExcel')}
+                                    position="bottom right"
+                                    trigger={
+                                        <Button
+                                            icon="upload"
+                                            loading={importLoader}
+                                            onClick={this.importFromExcel}
+                                        />
+                                    }
+                                />
+                            ) : null}
+                            {isExportBtn ? (
+                                <Popup
+                                    content={
+                                        t('exportToExcel') // todo
+                                    }
+                                    position="bottom right"
+                                    trigger={
+                                        <Button
+                                            icon="download"
+                                            loading={exportLoader}
+                                            onClick={this.exportToExcel}
+                                        />
+                                    }
+                                />
+                            ) : null}
+                            <Search
+                                value={filter}
+                                className="search-input"
+                                onChange={this.changeFullTextFilter}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <input
+                        type="file"
+                        ref={instance => {
+                            this.fileUploader = instance;
+                        }}
+                        style={{display: 'none'}}
+                        onChange={this.onFilePicked}
+                    />
+                </Grid>
                 <div
                     className={`scroll-table-container`}
                     ref={instance => {
@@ -261,7 +260,10 @@ class TableInfo extends Component {
                                           props={{ row, loadList: this.load, name }}
                                           key={`modal_${row.id}`}
                                       >
-                                          <Table.Row key={row.id} onClick={(e) => this.handleRowClick(e, row.id)}>
+                                          <Table.Row
+                                              key={row.id}
+                                              onClick={e => this.handleRowClick(e, row.id)}
+                                          >
                                               {headerRow.map((column, index) => (
                                                   <BodyCellComponent
                                                       key={`cell_${row.id}_${column.name}`}

@@ -21,12 +21,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly RollbackShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public RollbackOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new RollbackShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Переместить перевозку, связанную с накладной, в предыдущий статус";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

@@ -28,16 +28,20 @@ namespace Application.BusinessModels.Orders.Actions
                            IHistoryService historyService, 
                            IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
                            IShippingCalculationService shippingCalculationService,
-                           IChangeTrackerFactory changeTrackerFactory)
+                           IChangeTrackerFactory changeTrackerFactory
+                           )
             : base(dataService, shippingCalculationService)
         {
             _historyService = historyService;
             _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Orange;
+            Description = "Объеденить накладные в одну перевозку";
         }
         
         public AppColor Color { get; set; }
+        public string Description { get; set; }
+
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
@@ -47,7 +51,8 @@ namespace Application.BusinessModels.Orders.Actions
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
-                ShippingCreationDate = DateTime.UtcNow
+                ShippingCreationDate = DateTime.UtcNow,
+                CompanyId = user != null ? user.CompanyId : null
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
@@ -74,7 +79,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(order => order.Status == OrderState.Confirmed && 
+            return target.All(order => order.Status == OrderState.Created && 
                                        (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery));
         }
     }

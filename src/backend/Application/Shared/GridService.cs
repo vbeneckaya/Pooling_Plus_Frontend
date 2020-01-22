@@ -21,6 +21,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Shared
 {
@@ -29,6 +31,8 @@ namespace Application.Shared
         where TDto : IDto, new() 
         where TFormDto : TDto, new()
     {
+        Dictionary<string, Func<TEntity, bool>> _rules = new Dictionary<string, Func<TEntity, bool>>();
+
         public abstract void MapFromDtoToEntity(TEntity entity, TDto dto);
         public abstract void MapFromFormDtoToEntity(TEntity entity, TFormDto dto);
         public abstract TDto MapFromEntityToDto(TEntity entity);
@@ -45,6 +49,8 @@ namespace Application.Shared
         public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
         protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
+
+        protected virtual void ConfigureFieldAccessRules(Dictionary<string, Func<TEntity, bool>> rules) { }
 
         protected readonly IUserProvider _userIdProvider;
         protected readonly ICommonDataService _dataService;
@@ -73,6 +79,8 @@ namespace Application.Shared
             _triggersService = triggersService;
             _validationService = validationService;
             _fieldSetterFactory = fieldSetterFactory;
+
+            ConfigureFieldAccessRules(_rules);
         }
 
         protected virtual IFieldSetter<TEntity> ConfigureHandlers(IFieldSetter<TEntity> setter, TFormDto dto)
@@ -416,6 +424,7 @@ namespace Application.Shared
             {
                 Color = action.Color.ToString().ToLowerFirstLetter(),
                 Name = actionName,
+                Description = action.Description,
                 Group = group,
                 AllowedFromGrid = access != ActionAccess.FormOnly,
                 AllowedFromForm = access != ActionAccess.GridOnly,
@@ -614,20 +623,24 @@ namespace Application.Shared
         public AppActionResult InvokeBulkUpdate(string fieldName, IEnumerable<Guid> ids, string value)
         {
             string entityName = typeof(TEntity).Name;
+            string propertyName = fieldName?.ToUpperFirstLetter();
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
 
-            var propertyType = typeof(TFormDto).GetProperty(fieldName?.ToUpperFirstLetter());
+            var propertyType = typeof(TFormDto).GetProperty(propertyName);
             if (propertyType == null)
-                throw new ArgumentException("Unknown field", nameof(fieldName));
+                throw new ArgumentException("Unknown field", nameof(propertyName));
 
             var dbSet = _dataService.GetDbSet<TEntity>();
 
-            var entities = dbSet.Where(x => ids.Contains(x.Id));
-            var dtos = entities.Select(MapFromEntityToFormDto).ToArray();
+            var entities = dbSet.Where(x => ids.Contains(x.Id)).ToList();
+            var validEntities = entities.Where(i => !_rules.ContainsKey(propertyName) || _rules[propertyName](i));
+
+            var dtos = validEntities.Select(MapFromEntityToFormDto).ToArray();
             Log.Information("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
@@ -719,38 +732,40 @@ namespace Application.Shared
             return result;
         }        
         
-        public ValidateResult ImportFromExcel(Stream fileStream)
+        public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             var excel = new ExcelPackage(fileStream);
-            var workSheet = excel.Workbook.Worksheets.ElementAt(0);
+            var workSheet = excel.Workbook.Worksheets[0];//.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
-            var records = excelMapper.LoadEntries(workSheet).ToList();
-            var dtos = records.Select(i => i.Data);
-
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
             Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
-            if (excelMapper.Errors.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", excelMapper.Errors.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
-            }
-
-            var importResult = Import(dtos);
+            var importResult = Import(dtos.Select(x=>x.Data));
             Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
-            if (importResult.Any(e => e.IsError))
-            {
-                string errors = string.Join(". ", importResult.Where(x => x.IsError).Select(x => x.Error));
-                return new ValidateResult(errors);
-            }
+            var user = _userIdProvider.GetCurrentUser();
 
-            return new ValidateResult();
+            StringBuilder sb = new StringBuilder();
+            foreach (var validateResult in importResult.Where(x=>x.IsError))
+            {
+                sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
+            }
+            if(!importResult.Any(x=>x.IsError))
+                return new ImportResultDto
+                {
+                    Message = $"{importResult.Count()} загружено"
+                };
+            
+            return new ImportResultDto
+            {
+                Message = sb.ToString()
+            };
         }
         
         public Stream ExportToExcel(ExportExcelFormDto<TFilter> dto)

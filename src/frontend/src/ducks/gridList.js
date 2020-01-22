@@ -38,7 +38,7 @@ const initial = {
     data: [],
     totalCount: 0,
     stateColors: [],
-    progress: false,
+    progress: null,
     stateColorsProgress: false,
     importProgress: false,
     exportProgress: false,
@@ -167,38 +167,20 @@ const getKey = (state, key = 'progress') => key;
 const stateProfile = state => state.profile;
 const gridName = (state, name) => name;
 
-export const columnsGridSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.columns : [];
-    },
-);
-export const progressSelector = createSelector(
-    stateSelector,
-    state => state.progress,
-);
-export const totalCountSelector = createSelector(
-    stateSelector,
-    state => state.totalCount,
-);
-export const listSelector = createSelector(
-    stateSelector,
-    state => state.data,
-);
+export const columnsGridSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.columns : [];
+});
+export const progressSelector = createSelector(stateSelector, state => state.progress);
+export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
+export const listSelector = createSelector(stateSelector, state => state.data);
 
-export const stateColorsSelector = createSelector(
-    stateSelector,
-    state => state.stateColors,
-);
+export const stateColorsSelector = createSelector(stateSelector, state => state.stateColors);
 
-export const canCreateByFormSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canCreateByForm : false;
-    },
-);
+export const canCreateByFormSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canCreateByForm : false;
+});
 
 export const canImportFromExcelSelector = createSelector(
     [stateProfile, gridName],
@@ -208,23 +190,14 @@ export const canImportFromExcelSelector = createSelector(
     },
 );
 
-export const canExportToExcelSelector = createSelector(
-    [stateProfile, gridName],
-    (state, name) => {
-        const grid = state.grids && state.grids.find(item => item.name === name);
-        return grid ? grid.canExportToExcel : false;
-    },
-);
+export const canExportToExcelSelector = createSelector([stateProfile, gridName], (state, name) => {
+    const grid = state.grids && state.grids.find(item => item.name === name);
+    return grid ? grid.canExportToExcel : false;
+});
 
-export const importProgressSelector = createSelector(
-    stateSelector,
-    state => state.importProgress,
-);
+export const importProgressSelector = createSelector(stateSelector, state => state.importProgress);
 
-export const exportProgressSelector = createSelector(
-    stateSelector,
-    state => state.exportProgress,
-);
+export const exportProgressSelector = createSelector(stateSelector, state => state.exportProgress);
 
 //*  SAGA  *//
 
@@ -320,6 +293,8 @@ function* importFromExcelSaga({ payload }) {
         if (result.isError) {
             toast.error(result.error);
         } else {
+            result.message && toast.info(result.message);
+
             yield put({
                 type: GRID_IMPORT_FROM_EXCEL_SUCCESS,
             });

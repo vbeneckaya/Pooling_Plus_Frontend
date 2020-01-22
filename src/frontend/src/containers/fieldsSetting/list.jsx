@@ -13,13 +13,14 @@ import {
     editProgressSelector,
     fieldsSettingSelector,
     getFieldsSettingRequest,
-    progressSelector, toggleHidenStateRequest,
+    progressSelector,
+    toggleHidenStateRequest,
 } from '../../ducks/fieldsSetting';
 import { ORDERS_GRID } from '../../constants/grids';
 import Header from './components/header';
 import TableBody from './components/table_body';
 import TableHeader from './components/table_header';
-import {sortFunc} from "../../utils/sort";
+import {sortFunc} from '../../utils/sort';
 
 const List = () => {
     const { t } = useTranslation();
@@ -52,20 +53,29 @@ const List = () => {
         }
     }, []);
 
-    useEffect(() => {
-        activeItem && getStatus();
-    }, [activeItem]);
+    useEffect(
+        () => {
+            activeItem && getStatus();
+        },
+        [activeItem],
+    );
 
-    useEffect(() => {
-        dispatch(clearFieldsSettings());
-        activeItem && getSettings();
-    }, [role, activeItem]);
+    useEffect(
+        () => {
+            dispatch(clearFieldsSettings());
+            activeItem && getSettings();
+        },
+        [role, activeItem],
+    );
 
-    useEffect(() => {
-        if (!role && rolesList.length) {
-            setRole(rolesList[0].value)
-        }
-    }, [rolesList])
+    useEffect(
+        () => {
+            if (!role && rolesList.length) {
+                setRole(rolesList[0].value);
+            }
+        },
+        [rolesList],
+    );
 
     const getSettings = () => {
         dispatch(
@@ -91,37 +101,43 @@ const List = () => {
         setActiveItem(name);
     }, []);
 
-    const handleChangSettings = useCallback((fieldName, accessType, state = null, isExt) => {
-        dispatch(
-            editFieldsSettingRequest({
-                params: {
-                    forEntity: activeItem,
-                    roleId: role === 'null' ? undefined : role,
-                    fieldName,
-                    accessType,
-                    state,
-                },
-                isExt,
-                callbackSuccess: () => {
-                    getSettings();
-                },
-            }),
-        );
-    }, [activeItem, role]);
+    const handleChangSettings = useCallback(
+        (fieldName, accessType, state = null, isExt) => {
+            dispatch(
+                editFieldsSettingRequest({
+                    params: {
+                        forEntity: activeItem,
+                        roleId: role === 'null' ? undefined : role,
+                        fieldName,
+                        accessType,
+                        state,
+                    },
+                    isExt,
+                    callbackSuccess: () => {
+                        getSettings();
+                    },
+                }),
+            );
+        },
+        [activeItem, role],
+    );
 
-    const handleToggleHidden = useCallback((fieldName, isExt) => {
-        dispatch(
-            toggleHidenStateRequest({
-                params: {
-                    forEntity: activeItem,
-                    fieldName,
-                    roleId: role === 'null' ? undefined : role,
-                },
-                isExt,
-                callbackSuccess: getSettings
-            })
-        )
-    }, [activeItem, role]);
+    const handleToggleHidden = useCallback(
+        (fieldName, isExt) => {
+            dispatch(
+                toggleHidenStateRequest({
+                    params: {
+                        forEntity: activeItem,
+                        fieldName,
+                        roleId: role === 'null' ? undefined : role,
+                    },
+                    isExt,
+                    callbackSuccess: getSettings,
+                }),
+            );
+        },
+        [activeItem, role],
+    );
 
     const handleChangeRole = useCallback((e, {value}) => {
         setRole(value);

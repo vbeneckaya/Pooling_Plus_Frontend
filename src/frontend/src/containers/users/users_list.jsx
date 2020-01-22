@@ -13,8 +13,13 @@ import {
 import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
-import RoleCard from "../roles/role_card";
-import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK, NEW_USER_LINK, USER_LINK} from "../../router/links";
+import RoleCard from '../roles/role_card';
+import {
+    DICTIONARY_CARD_LINK,
+    DICTIONARY_NEW_LINK,
+    NEW_USER_LINK,
+    USER_LINK,
+} from '../../router/links';
 
 const newModal = (t, load) => (
     <UserCard title={t('create_user_title')} id={null} loadList={load}>
@@ -46,7 +51,13 @@ export class UsersList extends Component {
     getCard = ({row, loadList, name}) => {
         const { t } = this.props;
 
-        return <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={loadList} />
+        return (
+            <UserCard
+                id={row.id}
+                title={t('edit_user', {name: row.userName})}
+                loadList={loadList}
+            />
+        );
     };
 
     render() {

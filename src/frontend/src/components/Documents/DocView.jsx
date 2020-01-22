@@ -2,9 +2,14 @@
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon, Image, Modal } from 'semantic-ui-react';
-import { documentTypesSelector, getDocumentTypesRequest } from '../../ducks/documents';
+import {
+    documentLinkSelector,
+    documentTypesSelector,
+    getDocumentLinkRequest,
+    getDocumentTypesRequest
+} from '../../ducks/documents';
 
-const DocView = ({ onClick, children, document }) => {
+const DocView = ({ onClick, children, document = {} }) => {
     let [modalOpen, setModalOpen] = useState(false);
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -12,6 +17,13 @@ const DocView = ({ onClick, children, document }) => {
     useEffect(() => {
         dispatch(getDocumentTypesRequest());
     }, []);
+
+
+    const getDocumentLink = () => {
+        dispatch(getDocumentLinkRequest({
+            id: document.fileId
+        }));
+    };
 
     const documentTypes = useSelector(state => documentTypesSelector(state));
 
@@ -29,7 +41,8 @@ const DocView = ({ onClick, children, document }) => {
         const src = `/api/files/${document.fileId}`,
             name = document.name || '',
             extension = name.substr(name.lastIndexOf('.') + 1),
-            isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase());
+            isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(extension.toLowerCase()),
+            isPdf = extension.toLowerCase().includes('pdf');
 
         let image = isImage ? (
             <div
@@ -37,11 +50,15 @@ const DocView = ({ onClick, children, document }) => {
                 style={{ background: `url(${src}) no-repeat center center` }}
                 onClick={handleOpen}
             />
+        ) : isPdf ? (
+            <div className="image-container">
+                <div onClick={getDocumentLink}>
+                    <Icon name="file outline" />
+                </div>
+            </div>
         ) : (
             <div className="image-container">
-                <a target="_blanc" href={src}>
-                    <Icon name="file outline" />
-                </a>
+                <Icon name="file outline" />
             </div>
         );
         let inner = (
@@ -65,9 +82,9 @@ const DocView = ({ onClick, children, document }) => {
 
         return (
             <div className="file-item">
+                {inner}
                 <Modal
                     className="top-layer"
-                    trigger={inner}
                     open={modalOpen}
                     onClose={handleClose}
                     closeOnEscape

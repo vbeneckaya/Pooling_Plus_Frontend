@@ -6,9 +6,9 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
+                    value: '',
+                },
+            ],
         },
         {
             column: 'orderState',
@@ -16,9 +16,9 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
+                    value: '',
+                },
+            ],
         },
         {
             column: 'shippingNumber',
@@ -26,9 +26,9 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
+                    value: '',
+                },
+            ],
         },
         {
             column: 'clientName',
@@ -36,9 +36,9 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
+                    value: '',
+                },
+            ],
         },
         {
             column: 'payer',
@@ -46,9 +46,9 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
+                    value: '',
+                },
+            ],
         },
         {
             column: 'payer',
@@ -56,10 +56,10 @@ export default {
             availability: [
                 {
                     status: '',
-                    value: ''
-                }
-            ]
-        }
+                    value: '',
+                },
+            ],
+        },
     ],
-    shippings: []
-}
+    shippings: [],
+};

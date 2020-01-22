@@ -6,11 +6,17 @@ import './style.scss';
 const ConfirmDialog = ({ content, open, onNoClick, onYesClick, onCancelClick }) => {
     const { t } = useTranslation();
 
-    const handleYesClick = () => {onYesClick()};
+    const handleYesClick = () => {
+        onYesClick();
+    };
 
-    const handleNoClick = () => {onNoClick()};
+    const handleNoClick = () => {
+        onNoClick();
+    };
 
-    const handleCancelClick = () => {onCancelClick()};
+    const handleCancelClick = () => {
+        onCancelClick();
+    };
 
     return (
         <Modal open={open} size="small" dimmer="blurring">

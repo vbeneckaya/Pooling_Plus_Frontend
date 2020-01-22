@@ -1,8 +1,8 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
+import React, { useRef, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const HeaderCellComponent = ({row}) => {
-    const {t} = useTranslation();
+const HeaderCellComponent = ({ row }) => {
+    const { t } = useTranslation();
     const cellRef = useRef(null);
     let [position, setPosition] = useState(null);
     let [width, setWidth] = useState(null);
@@ -19,10 +19,10 @@ const HeaderCellComponent = ({row}) => {
             style={
                 row.isFixedPosition
                     ? {
-                        left: position,
-                        maxWidth: '150px',
-                        minWidth: '150px',
-                    }
+                          left: position,
+                          maxWidth: '150px',
+                          minWidth: '150px',
+                      }
                     : null
             }
         >

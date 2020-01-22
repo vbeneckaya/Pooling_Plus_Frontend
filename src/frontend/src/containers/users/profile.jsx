@@ -16,7 +16,7 @@ import {
 } from '../../ducks/profile';
 import PasswordField from '../../components/BaseComponents/Password';
 
-const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
+const Profile = ({ children, open: modalOpen, onOpen, onClose }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     // let [modalOpen, setModalOpen] = useState(false);
@@ -27,7 +27,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
 
     useEffect(
         () => {
-            setForm({...profile});
+            setForm({ ...profile });
         },
         [profile],
     );
@@ -84,7 +84,7 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
                     form: passwordForm,
                     t,
                     callbackSuccess: () => {
-                        setPassword({})
+                        setPassword({});
                     },
                 }),
             );
@@ -95,8 +95,6 @@ const Profile = ({children, open: modalOpen, onOpen, onClose}) => {
         setPassword({});
         onClose();
     };
-
-    console.log('form', passwordForm);
 
     return (
         <Modal

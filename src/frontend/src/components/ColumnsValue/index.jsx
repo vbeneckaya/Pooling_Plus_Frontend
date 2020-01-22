@@ -5,7 +5,8 @@ import {
     BOOLEAN_TYPE,
     ENUM_TYPE,
     LABELS_TYPE,
-    LINK_TYPE, LOCAL_DATE_TIME,
+    LINK_TYPE,
+    LOCAL_DATE_TIME,
     NUMBER_TYPE,
     SELECT_TYPE,
     STATE_TYPE,
@@ -15,26 +16,27 @@ import { Checkbox, Label } from 'semantic-ui-react';
 import StateValue from './StateValue';
 import SelectValue from './SelectValue';
 import TextCropping from './TextCropping';
-import {dateToUTC} from "../../utils/dateTimeFormater";
+import {dateToUTC} from '../../utils/dateTimeFormater';
 
-const CellValue = (
-    {
-        type,
-        value = '',
-        valueText,
-        id,
-        toggleIsActive,
-        source,
-        indexRow,
-        indexColumn,
-        modalCard,
-        showRawValue,
-        width,
-        t,
-        isDisabled
-    }
-) => {
-
+const CellValue = ({
+                       type,
+                       value = '',
+                       valueText,
+                       id,
+                       toggleIsActive,
+                       source,
+                       indexRow,
+                       indexColumn,
+                       modalCard,
+                       showRawValue,
+                       width,
+                       t,
+                       isDisabled,
+                       cardLink,
+                       gridName,
+                       rowId,
+                       goToCard,
+                   }) => {
     if (type === SELECT_TYPE) {
         return (
             <SelectValue
@@ -62,7 +64,6 @@ const CellValue = (
     }
 
     if (type === LABELS_TYPE) {
-        console.log(value);
         return (
             <>
                 {!value
@@ -79,16 +80,24 @@ const CellValue = (
     if (type === ENUM_TYPE) {
         return (
             <TextCropping width={width} indexColumn={indexColumn}>
-                {value ? t(valueText) : ''}
+                {value ? valueText : ''}
             </TextCropping>
         );
     }
 
     if (type === ACTIVE_TYPE) {
-        return <Checkbox toggle itemID={id} checked={value} disabled={isDisabled} onChange={(e, data) => {
-            e.stopPropagation();
-            toggleIsActive(e, data);
-        }}/>;
+        return (
+            <Checkbox
+                toggle
+                itemID={id}
+                checked={value}
+                disabled={isDisabled}
+                onChange={(e, data) => {
+                    e.stopPropagation();
+                    toggleIsActive(e, data);
+                }}
+            />
+        );
     }
 
     if (type === BOOLEAN_TYPE) {
@@ -102,7 +111,7 @@ const CellValue = (
     }
 
     if (type === LINK_TYPE) {
-        return modalCard ? React.cloneElement(
+        /* return modalCard ? React.cloneElement(
             modalCard(),
             null,
             <div className="link-cell">
@@ -110,7 +119,25 @@ const CellValue = (
                     {value}
                 </TextCropping>
             </div>,
-        ) : value;
+        ) : value;*/
+
+        const handleGoToCard = () => {
+            goToCard(true, rowId, gridName);
+        };
+
+        return (
+            <>
+                {goToCard ? (
+                    <div className="link-cell" onClick={handleGoToCard}>
+                        <TextCropping width={width} indexColumn={indexColumn}>
+                            {value}
+                        </TextCropping>
+                    </div>
+                ) : (
+                    value
+                )}
+            </>
+        );
     }
 
     if (type === LOCAL_DATE_TIME) {

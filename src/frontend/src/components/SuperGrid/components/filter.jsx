@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {Checkbox, Table} from 'semantic-ui-react';
 import {Resizable} from 'react-resizable';
 import FacetField from '../../FilterComponents';
+import CustomCheckbox from "../../BaseComponents/CustomCheckbox";
 
 const Filter = props => {
     const {
@@ -12,40 +13,28 @@ const Filter = props => {
         setSelectedAll,
         columns,
         resizeColumn,
-        extWidth
+        extWidth,
     } = props;
-    let [customColumns, setColumns] = useState(columns);
-    let timer = useRef(null);
-
-    useEffect(
-        () => {
-            setColumns(columns);
-
-            return () => {
-                timer.current = null;
-            };
-        },
-        [columns],
-    );
 
     const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
     }, []);
 
-    console.log('extWidth', extWidth);
+    console.log('columns', columns);
 
     return (
         <Table.Row className="sticky-header">
             <Table.HeaderCell className="small-column">
-                <Checkbox
+                <CustomCheckbox
                     indeterminate={indeterminate}
                     checked={all}
+                    multi
                     disabled={checkAllDisabled}
                     onChange={setSelectedAll}
                 />
             </Table.HeaderCell>
-            {customColumns &&
-            customColumns.map((x, i) => (
+            {columns &&
+            columns.map((x, i) => (
                 <Resizable
                     key={`resizable_${x.name}`}
                     width={x.width}
@@ -56,19 +45,18 @@ const Filter = props => {
                     <Table.HeaderCell
                         key={'th' + x.name}
                         style={{width: `${x.width}px`}}
-                        className={`column-facet column-${x.name && x.name
-                            .toLowerCase()
-                            .replace(' ', '-')}-facet`}
+                        className={`column-facet column-${x.name &&
+                        x.name.toLowerCase().replace(' ', '-')}-facet`}
                     >
                         <FacetField
                             key={'facet' + x.name}
                             index={i}
                             name={x.name}
                             displayNameKey={x.displayNameKey}
-                            sort={props.sort}
+                            sort={x.sort}
                             setSort={props.setSort}
                             type={x.type}
-                            value={props.filters[x.name]}
+                            value={x.filter}
                             setFilter={props.setFilter}
                             source={x.source}
                             width={x.width}

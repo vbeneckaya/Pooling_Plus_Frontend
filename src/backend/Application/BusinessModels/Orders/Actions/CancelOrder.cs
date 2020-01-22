@@ -25,9 +25,11 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
+            Description = "Отменить накладную, как случайно созданную";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
@@ -44,7 +46,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Created || order.Status == OrderState.Draft;
+            return order.Status == OrderState.Created;
         }
     }
 }

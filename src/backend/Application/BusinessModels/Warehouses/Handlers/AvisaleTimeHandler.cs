@@ -22,9 +22,10 @@ namespace Application.BusinessModels.Warehouses.Handlers
 
         public void AfterChange(Warehouse entity, TimeSpan? oldValue, TimeSpan? newValue)
         {
-            var validStatuses = new[] { OrderState.Draft, OrderState.Created, OrderState.Confirmed };
+            var validStatuses = new[] { OrderState.Created};
             var orders = _dataService.GetDbSet<Order>()
                                      .Where(x => x.DeliveryWarehouseId == entity.Id && validStatuses.Contains(x.Status) && !x.ManualClientAvisationTime)
+                                     .Where(x => !x.ManualClientAvisationTime)
                                      .ToList();
 
             foreach (var order in orders)

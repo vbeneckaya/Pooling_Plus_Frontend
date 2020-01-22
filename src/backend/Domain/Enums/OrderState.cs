@@ -8,63 +8,51 @@ namespace Domain.Enums
     public enum OrderState
     {
         /// <summary>
-        /// Не подтверждён
+        /// Создан
         /// </summary>
-        [StateColor(AppColor.Grey), OrderNumber(0)]
-        Draft = 0,
-
+        [StateColor(AppColor.Blue), OrderNumber(1)]
+        Created = 1,
+        
         /// <summary>
         /// Отменён
         /// </summary>
-        [StateColor(AppColor.Brown), OrderNumber(1)]
-        Canceled = 1,
-
-        /// <summary>
-        /// Создан
-        /// </summary>
-        [StateColor(AppColor.Blue), OrderNumber(2)]
-        Created = 2,
-
+        [StateColor(AppColor.Brown), OrderNumber(2)]
+        Canceled = 2,
+        
         /// <summary>
         /// В перевозке
         /// </summary>
-        [StateColor(AppColor.Purple), OrderNumber(4)]
+        [StateColor(AppColor.Purple), OrderNumber(3)]
         InShipping = 3,
 
         /// <summary>
         /// Отгружен
         /// </summary>
-        [StateColor(AppColor.Orange), OrderNumber(5)]
+        [StateColor(AppColor.Orange), OrderNumber(4)]
         Shipped = 4,
 
         /// <summary>
         /// Доставлен
         /// </summary>
-        [StateColor(AppColor.Green), OrderNumber(6)]
+        [StateColor(AppColor.Green), OrderNumber(5)]
         Delivered = 5,
 
         /// <summary>
         /// В архиве
         /// </summary>
-        [StateColor(AppColor.Teal), OrderNumber(7)]
+        [StateColor(AppColor.Teal), OrderNumber(6)]
         Archive = 6,
 
         /// <summary>
         /// Полный возврат
         /// </summary>
-        [StateColor(AppColor.Olive), OrderNumber(8)]
+        [StateColor(AppColor.Olive), OrderNumber(7)]
         FullReturn = 7,
 
         /// <summary>
         /// Потерян
         /// </summary>
-        [StateColor(AppColor.Red), OrderNumber(9)]
+        [StateColor(AppColor.Red), OrderNumber(8)]
         Lost = 8,
-
-        /// <summary>
-        /// Подтверждён
-        /// </summary>
-        [StateColor(AppColor.Green), OrderNumber(3)]
-        Confirmed = 9,
     }
 }

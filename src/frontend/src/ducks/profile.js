@@ -2,13 +2,13 @@ import { all, put, takeEvery, take, spawn } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 import { postman } from '../utils/postman';
 import { push as historyPush } from 'connected-react-router';
-import { FIELDS_SETTING_LINK, ROLES_LINK, USERS_LINK } from '../router/links';
+import {FIELDS_SETTING_LINK, REPORTS_LINK, ROLES_LINK, USERS_LINK} from '../router/links';
 import { logoutRequest } from './login';
 import { clearDictionaryInfo } from './dictionaryView';
 import result from '../components/SuperGrid/components/result';
 import { toast } from 'react-toastify';
-import {errorMapping} from '../utils/errorMapping';
-import {autoUpdateStop} from './gridList';
+import { errorMapping } from '../utils/errorMapping';
+import { autoUpdateStop } from './gridList';
 
 //*  TYPES  *//
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
@@ -205,6 +205,13 @@ export const otherMenuSelector = createSelector(stateSelector, state => {
         });
     }
 
+    if (state.viewReport) {
+        menu.push({
+            name: 'report',
+            link: REPORTS_LINK
+        })
+    }
+
     return menu;
 });
 
@@ -262,11 +269,13 @@ export const progressChangePasswordSelector = createSelector(
 
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
+export const userCompanySelector = createSelector(stateSelector, state => state.role ? state.role.companyId : null);
+
 //*  SAGA  *//
 
 function* getUserProfileSaga({ payload = {} }) {
     try {
-        const {url, isNotCofigUpdate} = payload;
+        const { url, isNotCofigUpdate } = payload;
         const userInfo = yield postman.get('/identity/userInfo');
         const config = isNotCofigUpdate ? {} : yield postman.get('/appConfiguration');
 
@@ -321,7 +330,7 @@ function* editProfileSettingsSaga({ payload }) {
 
             yield put({
                 type: GET_USER_PROFILE_SUCCESS,
-                payload: {userName: form.userName},
+                payload: { userName: form.userName },
             });
 
             callbackSuccess && callbackSuccess();
@@ -335,7 +344,7 @@ function* editProfileSettingsSaga({ payload }) {
 
 function* changePasswordSaga({ payload }) {
     try {
-        const {form, callbackSuccess, t} = payload;
+        const { form, callbackSuccess, t } = payload;
         const result = yield postman.post('/profile/setNewPassword', form);
 
         if (result.isError) {

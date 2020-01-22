@@ -1,9 +1,13 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
+using Application.Shared.Excel;
+using Application.Shared.Excel.Columns;
 using DAL.Services;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.BodyTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Translations;
@@ -15,11 +19,12 @@ using System.Linq;
 
 namespace Application.Services.BodyTypes
 {
-    public class BodyTypesService : DictonaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
+    public class BodyTypesService : DictionaryServiceBase<BodyType, BodyTypeDto>, IBodyTypesService
     {
         public BodyTypesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, IFieldSetterFactory fieldSetterFactory) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory) 
+                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
+                                IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
         { }
 
         public override DetailedValidationResult MapFromDtoToEntity(BodyType entity, BodyTypeDto dto)
@@ -28,6 +33,7 @@ namespace Application.Services.BodyTypes
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
+            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -35,11 +41,15 @@ namespace Application.Services.BodyTypes
 
         public override BodyTypeDto MapFromEntityToDto(BodyType entity)
         {
+            var user = _userProvider.GetCurrentUser();
+
             return new BodyTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                IsActive = entity.IsActive
+                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
+                IsActive = entity.IsActive,
+                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
         protected override DetailedValidationResult ValidateDto(BodyTypeDto dto)
@@ -60,6 +70,40 @@ namespace Application.Services.BodyTypes
             return result;
         }
 
+        protected override IEnumerable<BodyTypeDto> FillLookupNames(IEnumerable<BodyTypeDto> dtos)
+        {
+            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
+                         .Select(x => x.CompanyId.Value.ToGuid())
+                         .ToList();
+
+            var companies = _dataService.GetDbSet<Company>()
+                                           .Where(x => companyIds.Contains(x.Id))
+                                           .ToDictionary(x => x.Id.ToString());
+
+            foreach (var dto in dtos)
+            {
+                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
+                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                {
+                    dto.CompanyId.Name = company.Name;
+                }
+
+                yield return dto;
+            }
+        }
+
+        protected override ExcelMapper<BodyTypeDto> CreateExcelMapper()
+        {
+            return base.CreateExcelMapper()
+                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+        }
+
+        private Guid? GetCompanyIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            return entry?.Id;
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<BodyType>()
@@ -75,6 +119,21 @@ namespace Application.Services.BodyTypes
                     Value = entity.Id.ToString(),
                 };
             }
+        }
+
+        public override IQueryable<BodyType> ApplyRestrictions(IQueryable<BodyType> query)
+        {
+            var currentUserId = _userProvider.GetCurrentUserId();
+            var user = _dataService.GetById<User>(currentUserId.Value);
+
+            // Local user restrictions
+
+            if (user?.CompanyId != null)
+            {
+                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+            }
+
+            return query;
         }
 
         protected override IQueryable<BodyType> ApplySort(IQueryable<BodyType> query, SearchFormDto form)

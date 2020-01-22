@@ -8,7 +8,7 @@ import {
     homePageSelector,
     isCustomPageSelector,
 } from '../ducks/profile';
-import {customPage} from './links';
+import { customPage } from './links';
 
 function PrivateRoute({ component: Component, ...rest }) {
     const isAuth = useSelector(state => isAuthSelector(state));
@@ -18,8 +18,8 @@ function PrivateRoute({ component: Component, ...rest }) {
     const dictionaryMenu = useSelector(state => dictionariesSelector(state)) || [];
     const isCustomPage = useSelector(state => isCustomPageSelector(state)) || {};
 
-    const {computedMatch, location, permission = ''} = rest;
-    const {path, params} = computedMatch;
+    const { computedMatch, location, permission = '' } = rest;
+    const { path, params } = computedMatch;
 
     if (
         (path.includes('grid') && !gridsMenu.includes(params.name)) ||
@@ -30,7 +30,7 @@ function PrivateRoute({ component: Component, ...rest }) {
             <Redirect
                 to={{
                     pathname: homePage,
-                    state: {from: location},
+                    state: { from: location },
                 }}
             />
         );

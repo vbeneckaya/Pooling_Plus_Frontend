@@ -3,7 +3,7 @@ import { postman } from '../utils/postman';
 import { createSelector } from 'reselect';
 import users from '../mocks/users';
 import {toast} from 'react-toastify';
-import {errorMapping} from "../utils/errorMapping";
+import {errorMapping} from '../utils/errorMapping';
 
 const TYPE_API = 'users';
 
@@ -37,7 +37,7 @@ const initial = {
     totalCount: 0,
     error: [],
     progress: false,
-    loadingProgress: false
+    loadingProgress: false,
 };
 
 //*  REDUCER  *//
@@ -156,8 +156,8 @@ export const toggleUserActiveRequest = payload => {
 export const clearError = payload => {
     return {
         type: CLEAR_ERROR,
-        payload
-    }
+        payload,
+    };
 };
 
 //*  SELECTORS *//

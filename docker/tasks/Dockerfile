@@ -11,4 +11,12 @@ COPY /src/backend/ .
 
 RUN dotnet publish Tasks/ -c Release -o /app/build/
 
-ENTRYPOINT cd /app/build && dotnet Tasks.dll
+FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+
+WORKDIR /app
+
+RUN chmod -R 777 /app
+
+COPY --from=build /app/build .
+
+ENTRYPOINT dotnet Tasks.dll

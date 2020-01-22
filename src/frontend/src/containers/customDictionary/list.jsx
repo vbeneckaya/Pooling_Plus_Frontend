@@ -21,7 +21,7 @@ import {
 } from '../../ducks/dictionaryView';
 import { Button, Icon } from 'semantic-ui-react';
 import Card from './card';
-import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK} from "../../router/links";
+import {DICTIONARY_CARD_LINK, DICTIONARY_NEW_LINK} from '../../router/links';
 
 const newModal = (t, load, name) => (
     <Card title={`${t(name)}: ${t('new_record')}`} id={null} loadList={load} name={name}>
@@ -30,7 +30,6 @@ const newModal = (t, load, name) => (
 );
 
 class List extends Component {
-
     state = {};
 
     componentWillUnmount() {
@@ -49,20 +48,22 @@ class List extends Component {
         });
     };
 
-    handleExportToExcel = (filter) => {
+    handleExportToExcel = filter => {
         const {exportFromExcel, match} = this.props;
         const {params = {}} = match;
         const {name = ''} = params;
         exportFromExcel({
             name,
-            filter
+            filter,
         });
     };
 
     getCard = ({row, loadList, name}) => {
         const { t, isCreateBtn } = this.props;
 
-        return isCreateBtn ? <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id}/> : null
+        return isCreateBtn ? (
+            <Card title={`${t(name)}: ${t('edit_record')}`} loadList={loadList} id={row.id}/>
+        ) : null;
     };
 
     render() {
@@ -89,7 +90,11 @@ class List extends Component {
                 key={name}
                 headerRow={columns}
                 name={name}
-                className={columns.length >= 10 ? 'container' : "wider ui container container-margin-top-bottom"}
+                className={
+                    columns.length >= 10
+                        ? 'container'
+                        : 'wider ui container container-margin-top-bottom'
+                }
                 loadList={loadList}
                 loading={progress}
                 totalCount={totalCount}

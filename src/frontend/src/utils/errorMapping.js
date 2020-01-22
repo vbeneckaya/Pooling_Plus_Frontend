@@ -1,12 +1,12 @@
-export const errorMapping = (array) => {
+export const errorMapping = array => {
     let error = {};
     if (array && array.length) {
         array.forEach(item => {
             error = {
                 ...error,
-                [item.name]: item.message
-            }
-        })
+                [item.name]: item.message,
+            };
+        });
     }
     return error;
 };

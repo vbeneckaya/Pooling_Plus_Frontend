@@ -30,6 +30,11 @@ i.blue.icon {
     position: relative;
 }
 
+.report-container {
+    padding: 40px 0 0 0;
+    position: relative;
+}
+
 .Toastify__toast {
     position: relative;
     min-height: 1em;
@@ -73,6 +78,14 @@ i.blue.icon {
 
 .Toastify__close-button {
     color: #1b1c1d !important;
+}
+
+.Toastify__toast-container {
+    width: max-content!important;
+}
+
+.Toastify__toast-body {
+    white-space: pre;
 }
 
 .ui.fullscreen.modal,
@@ -138,6 +151,10 @@ i.blue.icon {
     }
 }
 
+.padding-14 {
+    padding: 14px !important;
+}
+
 .card-columns {
     padding: 8px 0;
     display: flex !important;
@@ -190,7 +207,7 @@ i.blue.icon {
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: flex-start;
-    padding: 24px 15px 0 15px;
+    padding: 24px 32px;
     width: 100% !important;
 
     .field:not(.wide) {
@@ -231,9 +248,7 @@ i.blue.icon {
 }
 
 .tabs-card {
-    height: 67vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 24px 32px;
 
     .ui.grid > .row:not(:last-child) {
         padding-bottom: 0 !important;
@@ -258,6 +273,15 @@ i.blue.icon {
 
     .ui.checkbox {
         padding: 4px 0;
+    }
+
+    &_history {
+        max-height: 500px;
+        overflow: auto;
+
+        .ui.grid > .row:nth-child(2n) {
+            background: #f9f9f9;
+        }
     }
 }
 
@@ -325,6 +349,26 @@ i.blue.icon {
     justify-content: space-between;
 }
 
+.grid-card-header {
+    display: flex;
+    align-items: center;
+
+    > div:not(:last-child) {
+        margin-right: 12px;
+    }
+
+    &_actions_button {
+        white-space: nowrap;
+        background-color: transparent !important;
+        color: #4d4d4d !important;
+        font-weight: 500;
+        text-transform: uppercase !important;
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.06) !important;
+        }
+    }
+}
+
 .history-who {
     font-size: 12px;
     font-weight: 500;
@@ -362,7 +406,8 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.disabled.input, .ui.input:not(.disabled) input[disabled] {
+.ui.disabled.input,
+.ui.input:not(.disabled) input[disabled] {
     opacity: 1 !important;
 }
 
@@ -382,6 +427,14 @@ input::-webkit-calendar-picker-indicator {
     width: 100%;
     display: flex;
     justify-content: flex-end;
+}
+
+.field-settings-menu {
+    &_filter {
+        > div {
+            padding-left: 12px;
+        }
+    }
 }
 
 .ui .label {
@@ -523,4 +576,13 @@ i.teal.icon {
 .ui.teal.button,
 .ui.teal.label {
     background-color: #3c948e !important;
+}
+
+i.pink.icon {
+    color: #f3a0a6 !important;
+}
+
+.ui.pink.button,
+.ui.pink.label {
+    background-color: #f3a0a6 !important;
 }
