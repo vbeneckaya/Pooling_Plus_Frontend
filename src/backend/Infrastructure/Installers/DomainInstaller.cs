@@ -62,7 +62,6 @@ using Domain.Services.ProductTypes;
 using Domain.Services.Profile;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
-using Domain.Services.ShippingWarehouseCity;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
@@ -72,7 +71,6 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.Users;
 using Domain.Services.UserSettings;
 using Domain.Services.VehicleTypes;
-using Domain.Services.WarehouseCity;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -80,6 +78,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using Application.Services.Report;
 using Domain.Services.Report;
+using Domain.Services.ShippingWarehouses;
+using Domain.Services.Warehouses;
 
 namespace Infrastructure.Installers
 {
@@ -134,8 +134,8 @@ namespace Infrastructure.Installers
             services.AddScoped<IClientsService, ClientsService>();
             services.AddScoped<ICompaniesService, CompaniesService>();
 
-            services.AddScoped<IWarehouseCityService, WarehouseCityService>();
-            services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+            services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddScoped<IShippingWarehouseService, ShippingWarehouseService>();
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();

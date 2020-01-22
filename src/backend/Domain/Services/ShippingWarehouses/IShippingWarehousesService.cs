@@ -1,9 +1,7 @@
-﻿using Domain.Persistables;
-
-namespace Domain.Services.ShippingWarehouses
+﻿namespace Domain.Services.ShippingWarehouses
 {
-    public interface IShippingWarehousesService : IDictonaryService<ShippingWarehouse, ShippingWarehouseDto>
+    public interface IShippingWarehousesService : IDictonaryService<Persistables.ShippingWarehouse, ShippingWarehouseDto>
     {
-        ShippingWarehouse GetByCode(string code);
+        Persistables.ShippingWarehouse GetByCode(string code);
     }
 }

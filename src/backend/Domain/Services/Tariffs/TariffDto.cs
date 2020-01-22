@@ -8,11 +8,11 @@ namespace Domain.Services.Tariffs
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), OrderNumber(1), IsFixedPosition, IsRequired]
-        public LookUpDto ShipmentCity { get; set; }
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), OrderNumber(1), IsFixedPosition, IsRequired]
+        public LookUpDto ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), OrderNumber(2), IsFixedPosition, IsRequired]
-        public LookUpDto DeliveryCity { get; set; }
+        [FieldType(FieldType.Select, source: nameof(Warehouses)), OrderNumber(2), IsFixedPosition, IsRequired]
+        public LookUpDto DeliveryWarehouseId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
         public LookUpDto TarifficationType { get; set; }
