@@ -1,8 +1,7 @@
-using Domain.Persistables;
 
 namespace Domain.Services.Warehouses
 {
-    public interface IWarehousesService : IDictonaryService<Warehouse, WarehouseDto>
+    public interface IWarehousesService : IDictonaryService<Persistables.Warehouse, WarehouseDto>
     {
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Domain.Shared;
 using System.Collections.Generic;
 
-namespace Domain.Services.WarehouseCity
+namespace Domain.Services.Warehouses
 {
-    public interface IWarehouseCityService
+    public interface IWarehouseService
     {
         IEnumerable<LookUpDto> ForSelect();
     }

@@ -13,13 +13,13 @@ namespace Domain.Persistables
         /// </summary>    
         public Guid Id { get; set; }
         /// <summary>
-        /// Город отгрузки
+        /// Склад отгрузки
         /// </summary>
-        public string ShipmentCity { get; set; }
+        public Guid ShippingWarehouseId { get; set; }
         /// <summary>
-        /// Город доставки
+        /// Склад доставки
         /// </summary>
-        public string DeliveryCity { get; set; }
+        public Guid DeliveryWarehouseId { get; set; }
         /// <summary>
         /// Способ тарификации
         /// </summary>
@@ -205,7 +205,7 @@ namespace Domain.Persistables
         /// <summary>
         /// Юр. лицо
         /// </summary>
-        public Guid? CompanyId { get; set; }
+        public Guid? ProviderId { get; set; }
 
 
         /*end of fields*/

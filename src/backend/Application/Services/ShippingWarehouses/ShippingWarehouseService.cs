@@ -1,17 +1,17 @@
 ﻿using DAL.Services;
 using Domain.Persistables;
-using Domain.Services.ShippingWarehouseCity;
+using Domain.Services.ShippingWarehouses;
 using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services.ShippingWarehouses
 {
-    public class ShippingWarehouseCityService: IShippingWarehouseCityService
+    public class ShippingWarehouseService: IShippingWarehouseService
     {
         private readonly ICommonDataService _dataService;
 
-        public ShippingWarehouseCityService(ICommonDataService dataService)
+        public ShippingWarehouseService(ICommonDataService dataService)
         {
             _dataService = dataService;
         }

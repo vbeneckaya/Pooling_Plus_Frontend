@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/warehouses")]
+    [Route("api/warehouse")]
     public class WarehousesController : DictionaryController<IWarehousesService, Warehouse, WarehouseDto> 
     {
         public WarehousesController(IWarehousesService warehousesService) : base(warehousesService)

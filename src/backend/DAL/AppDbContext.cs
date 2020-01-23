@@ -52,6 +52,7 @@ namespace DAL
         public DbSet<BodyType> BodyTypes { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Provider> Providers { get; set; }
 
         public DbSet<FieldPropertyItem> FieldPropertyItems { get; set; }
         public DbSet<FieldPropertyItemVisibility> FieldPropertyVisibilityItems { get; set; }
