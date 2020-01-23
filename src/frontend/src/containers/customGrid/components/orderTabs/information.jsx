@@ -67,7 +67,7 @@ const Information = ({
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                            <FormField
+                                          {/*  <FormField
                                                 name="orderDate"
                                                 value={form['orderDate']}
                                                 type={getColumn('orderDate').type}
@@ -75,11 +75,7 @@ const Information = ({
                                                 settings={settings['orderDate']}
                                                 error={error['orderDate']}
                                                 onChange={onChange}
-                                            />
-                                        </Grid.Column>
-                                    </Grid.Row>
-                                    <Grid.Row columns={3}>
-                                        <Grid.Column>
+                                            />*/}
                                             <FormField
                                                 name="clientId"
                                                 type={getColumn('clientId').type}
@@ -91,6 +87,19 @@ const Information = ({
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
+                                    {/*<Grid.Row columns={3}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="clientId"
+                                                type={getColumn('clientId').type}
+                                                source={getColumn('clientId').source}
+                                                settings={settings['clientId']}
+                                                value={form['clientId']}
+                                                error={error['clientId']}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>*/}
                                 </Grid>
                             </Segment>
                         </Form.Field>
