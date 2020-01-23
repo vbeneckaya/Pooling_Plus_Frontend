@@ -1,10 +1,10 @@
-﻿using Application.BusinessModels.Shared.Handlers;
+﻿using System;
+using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.ShippingWarehouses.Handlers;
 using Application.Services.Addresses;
 using Application.Services.Triggers;
 using Application.Shared;
 using Application.Shared.Excel;
-using Application.Shared.Excel.Columns;
 using AutoMapper;
 using DAL.Services;
 using Domain.Extensions;
@@ -17,9 +17,9 @@ using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Application.Shared.Excel.Columns;
 
 namespace Application.Services.ShippingWarehouses
 {
@@ -63,33 +63,34 @@ namespace Application.Services.ShippingWarehouses
             {
                 cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
-                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.ClientId == null || s.ClientId != null));
 
                 cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()));
+                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
+                    ;
             });
             return result;
         }
 
         protected override IEnumerable<ShippingWarehouseDto> FillLookupNames(IEnumerable<ShippingWarehouseDto> dtos)
         {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                                     .Select(x => x.CompanyId.Value.ToGuid())
+            var clientsIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
+                                     .Select(x => x.ClientId.Value.ToGuid())
                                      .ToList();
 
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
+            var clients = _dataService.GetDbSet<Client>()
+                                           .Where(x => clientsIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
             foreach (var dto in dtos)
             {
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
+                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
-                    dto.CompanyId.Name = company.Name;
+                    dto.ClientId.Name = client.Name;
                 }
 
                 yield return dto;
@@ -138,12 +139,12 @@ namespace Application.Services.ShippingWarehouses
         protected override ExcelMapper<ShippingWarehouseDto> CreateExcelMapper()
         {
             return new ExcelMapper<ShippingWarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+                .MapColumn(w => w.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName));
         }
 
-        private Guid? GetCompanyIdByName(string name)
+        private Guid? GetClientIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<Client>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
@@ -161,11 +162,11 @@ namespace Application.Services.ShippingWarehouses
 
             // Local user restrictions
 
-            if (user?.CompanyId != null)
+            if (user?.ClientId != null)
             {
-                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+                query = query.Where(i => i.ClientId == user.ClientId);
             }
-
+            
             return query;
         }
 

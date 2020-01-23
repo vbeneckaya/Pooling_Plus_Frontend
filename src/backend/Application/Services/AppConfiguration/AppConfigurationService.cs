@@ -1,4 +1,6 @@
-using Application.Services.Articles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Application.Services.BodyTypes;
 using Application.Services.Clients;
 using Application.Services.DocumentTypes;
@@ -16,10 +18,8 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.AppConfiguration;
-using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
 using Domain.Services.Clients;
-using Domain.Services.Companies;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
@@ -34,9 +34,6 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Services.Warehouses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Services.AppConfiguration
 {
@@ -350,24 +347,6 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 };
             });
-
-            _dictionaryConfigurations.Add(typeof(CompanyDto), (roleId) =>
-            {
-                var canEditCompanies = _identityService.HasPermissions(RolePermissions.CompaniesEdit);
-
-                if (!canEditCompanies) return null;
-
-                var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
-                return new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<CompaniesService>(),
-                    CanCreateByForm = canEditCompanies,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = true,
-                    ShowOnHeader = false,
-                    Columns = companyColumns
-                };
-            });
         }
 
         /// <summary>
@@ -405,7 +384,7 @@ namespace Application.Services.AppConfiguration
             var forEntity = GetFieldPropertyForEntity<TDto>();
             if (forEntity.HasValue)
             {
-                var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
+                var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, roleId, null);
                 fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
             }
 

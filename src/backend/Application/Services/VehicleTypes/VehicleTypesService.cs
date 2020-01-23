@@ -36,7 +36,6 @@ namespace Application.Services.VehicleTypes
             entity.Name = dto.Name;
             entity.TonnageId = dto.TonnageId?.Value?.ToGuid();
             entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.PalletsCount = dto.PalletsCount.ToInt();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
@@ -83,14 +82,6 @@ namespace Application.Services.VehicleTypes
                                         .Where(x => bodyTypeIds.Contains(x.Id))
                                         .ToDictionary(x => x.Id.ToString());
 
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                         .Select(x => x.CompanyId.Value.ToGuid())
-                         .ToList();
-
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
-
             foreach (var dto in dtos)
             {
                 if (!string.IsNullOrEmpty(dto.TonnageId?.Value)
@@ -103,12 +94,6 @@ namespace Application.Services.VehicleTypes
                     && bodyTypes.TryGetValue(dto.BodyTypeId.Value, out BodyType bodyType))
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
-                }
-
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
-                {
-                    dto.CompanyId.Name = company.Name;
                 }
 
                 yield return dto;
@@ -125,10 +110,8 @@ namespace Application.Services.VehicleTypes
                 Name = entity.Name,
                 TonnageId = entity.TonnageId == null ? null : new LookUpDto(entity.TonnageId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 PalletsCount = entity.PalletsCount?.ToString(),
                 IsActive = entity.IsActive,
-                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -165,35 +148,14 @@ namespace Application.Services.VehicleTypes
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
-        public override IQueryable<VehicleType> ApplyRestrictions(IQueryable<VehicleType> query)
-        {
-            var currentUserId = _userProvider.GetCurrentUserId();
-            var user = _dataService.GetById<User>(currentUserId.Value);
-
-            // Local user restrictions
-
-            if (user?.CompanyId != null)
-            {
-                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
-            }
-
-            return query;
-        }
 
         protected override ExcelMapper<VehicleTypeDto> CreateExcelMapper()
         {
             return base.CreateExcelMapper()
                 .MapColumn(w => w.TonnageId, new DictionaryReferenceExcelColumn(GetTonnageIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName));
         }
         
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
-
         private Guid? GetTonnageIdByName(string name)
         {
             var entry = _dataService.GetDbSet<Tonnage>().Where(t => t.Name == name).FirstOrDefault();

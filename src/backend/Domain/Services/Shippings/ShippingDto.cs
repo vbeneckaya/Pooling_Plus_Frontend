@@ -135,9 +135,6 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.LocalDateTime), IsReadOnly]
         public DateTime? ShippingCreationDate { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Companies))]
-        public LookUpDto CompanyId { get; set; }
-
         public bool IsEditable { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(15)]

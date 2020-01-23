@@ -59,7 +59,6 @@ namespace Application.Services.TransportCompanies
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -71,12 +70,12 @@ namespace Application.Services.TransportCompanies
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-            var companyId = dto.CompanyId?.Value?.ToGuid();
+//            var companyId = dto.CompanyId?.Value?.ToGuid();
 
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
                                             .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower())
                                             .Where(x => x.Id.ToString() != dto.Id)
-                                            .Where(x =>  x.CompanyId == null || x.CompanyId == companyId)
+//                                            .Where(x =>  x.CompanyId == null || x.CompanyId == companyId)
                                             .Any();
 
             if (hasDuplicates)
@@ -89,37 +88,12 @@ namespace Application.Services.TransportCompanies
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return new TransportCompanyDto
             {
                 Id = entity.Id.ToString(),
                 Title = entity.Title,
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
                 IsActive = entity.IsActive,
-                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
-        }
-
-        protected override IEnumerable<TransportCompanyDto> FillLookupNames(IEnumerable<TransportCompanyDto> dtos)
-        {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-             .Select(x => x.CompanyId.Value.ToGuid())
-             .ToList();
-
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
-            foreach (var dto in dtos)
-            {
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
-                {
-                    dto.CompanyId.Name = company.Name;
-                }
-
-                yield return dto;
-            }
         }
 
         protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
@@ -129,37 +103,17 @@ namespace Application.Services.TransportCompanies
                 .ThenBy(i => i.Id);
         }
 
-        public override IQueryable<TransportCompany> ApplyRestrictions(IQueryable<TransportCompany> query)
-        {
-            var currentUserId = _userProvider.GetCurrentUserId();
-            var user = _dataService.GetById<User>(currentUserId.Value);
-
-            // Local user restrictions
-
-            if (user?.CompanyId != null)
-            {
-                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
-            }
-
-            return query;
-        }
-
         public override TransportCompany FindByKey(TransportCompanyDto dto)
         {
             return _dataService.GetDbSet<TransportCompany>()
                 .FirstOrDefault(i => i.Title == dto.Title);
         }
 
-        protected override ExcelMapper<TransportCompanyDto> CreateExcelMapper()
-        {
-            return base.CreateExcelMapper()
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
-        }
+//        protected override ExcelMapper<TransportCompanyDto> CreateExcelMapper()
+//        {
+//            return base.CreateExcelMapper()
+//                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
+//        }
 
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
     }
 }

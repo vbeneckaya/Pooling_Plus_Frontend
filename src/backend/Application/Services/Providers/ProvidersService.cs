@@ -1,19 +1,18 @@
-﻿using Application.BusinessModels.Shared.Handlers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
-using Domain.Services.Companies;
+using Domain.Services.Providers;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Domain.Services.AppConfiguration;
-using Domain.Services.Providers;
 
 namespace Application.Services.BodyTypes
 {
@@ -85,21 +84,6 @@ namespace Application.Services.BodyTypes
                     Value = entity.Id.ToString(),
                 };
             }
-        }
-
-        public override IQueryable<Provider> ApplyRestrictions(IQueryable<Provider> query)
-        {
-            var currentUserId = _userProvider.GetCurrentUserId();
-            var user = _dataService.GetById<User>(currentUserId.Value);
-
-            // Local user restrictions
-
-            if (user?.CompanyId != null)
-            {
-                query = query.Where(i => i.Id == user.CompanyId);
-            }
-
-            return query;
         }
 
         protected override IQueryable<Provider> ApplySort(IQueryable<Provider> query, SearchFormDto form)

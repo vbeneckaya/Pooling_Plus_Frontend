@@ -318,12 +318,6 @@ namespace Application.Services.Tariffs
             return entry?.Id;
         }
 
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
-        
         private Guid? GetProviderIdByName(string name)
         {
             var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);

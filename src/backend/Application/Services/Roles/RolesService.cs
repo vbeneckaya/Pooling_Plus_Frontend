@@ -179,19 +179,49 @@ namespace Application.Services.Roles
                 .FirstOrDefault();
         }
 
-        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
-        {
-            var user = _userProvider.GetCurrentUser();
-
-            return _dataService.GetDbSet<Role>()
-                .Where(i => i.CompanyId == companyId)
-                .Where(x => x.IsActive)
-                .OrderBy(x => x.Name)
-                .Select(i => new LookUpDto
-                {
-                    Name = i.Name,
-                    Value = i.Id.ToString()
-                });
-        }
+//        public IEnumerable<LookUpDto> ForSelectByClient(Guid? clientId)
+//        {
+//            var user = _userProvider.GetCurrentUser();
+//
+//            return _dataService.GetDbSet<Role>()
+//                .Where(i => i.ClientId == clientId)
+//                .Where(x => x.IsActive)
+//                .OrderBy(x => x.Name)
+//                .Select(i => new LookUpDto
+//                {
+//                    Name = i.Name,
+//                    Value = i.Id.ToString()
+//                });
+//        }
+//        
+//        public IEnumerable<LookUpDto> ForSelectByProvider(Guid? providerId)
+//        {
+//            var user = _userProvider.GetCurrentUser();
+//
+//            return _dataService.GetDbSet<Role>()
+//                .Where(i => i.ProviderId == providerId)
+//                .Where(x => x.IsActive)
+//                .OrderBy(x => x.Name)
+//                .Select(i => new LookUpDto
+//                {
+//                    Name = i.Name,
+//                    Value = i.Id.ToString()
+//                });
+//        }
+//        
+//        public IEnumerable<LookUpDto> ForSelectByTransportCompany(Guid? carrierId)
+//        {
+//            var user = _userProvider.GetCurrentUser();
+//
+//            return _dataService.GetDbSet<Role>()
+//                .Where(i => i.CarrierId == carrierId)
+//                .Where(x => x.IsActive)
+//                .OrderBy(x => x.Name)
+//                .Select(i => new LookUpDto
+//                {
+//                    Name = i.Name,
+//                    Value = i.Id.ToString()
+//                });
+//        }
     }
 }

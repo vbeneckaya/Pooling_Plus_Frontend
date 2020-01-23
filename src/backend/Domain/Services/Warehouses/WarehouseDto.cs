@@ -44,8 +44,8 @@ namespace Domain.Services.Warehouses
         
         public string AvisaleTime { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(11)]
-        public LookUpDto CompanyId { get; set; }
+        [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(11)]
+        public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(13)]
         public bool? IsActive { get; set; }

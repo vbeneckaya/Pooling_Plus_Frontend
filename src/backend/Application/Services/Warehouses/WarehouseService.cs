@@ -69,17 +69,16 @@ namespace Application.Services.Warehouses
                 cfg.CreateMap<Warehouse, WarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s, t) => s.CompanyId == null ? null : new LookUpDto(s.CompanyId.ToString())))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
-                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
-                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.CompanyId == null || s.CompanyId != null));
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)));
 
                 cfg.CreateMap<WarehouseDto, Warehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
                     .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
-                    .ForMember(t => t.CompanyId, e => e.Condition((s) => s.CompanyId != null))
-                    .ForMember(t => t.CompanyId, e => e.MapFrom((s) => s.CompanyId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.Condition((s) => s.ProviderId != null))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId.Value.ToGuid()))
                     .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
@@ -107,20 +106,20 @@ namespace Application.Services.Warehouses
         public override Warehouse FindByKey(WarehouseDto dto)
         {
             var clientId = dto.ClientId?.Value.ToGuid();
-            var companyId = dto.CompanyId?.Value.ToGuid();
+            var providerId = dto.ProviderId?.Value.ToGuid();
 
             return _dataService.GetDbSet<Warehouse>()
-                .Where(x => x.Address == dto.Address && x.ClientId == clientId && x.CompanyId == companyId).FirstOrDefault();
+                .FirstOrDefault(x => x.Address == dto.Address && x.ClientId == clientId && x.ProviderId == providerId);
         }
 
         protected override IEnumerable<WarehouseDto> FillLookupNames(IEnumerable<WarehouseDto> dtos)
         {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                                     .Select(x => x.CompanyId.Value.ToGuid())
+            var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
+                                     .Select(x => x.ProviderId.Value.ToGuid())
                                      .ToList();
             
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
+            var providers = _dataService.GetDbSet<Provider>()
+                                           .Where(x => providerIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
             var pickingTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.PickingTypeId?.Value))
@@ -145,10 +144,10 @@ namespace Application.Services.Warehouses
                     dto.PickingTypeId.Name = pickingType.Name;
                 }
 
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
+                    && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
                 {
-                    dto.CompanyId.Name = company.Name;
+                    dto.ProviderId.Name = provider.Name;
                 }
 
                 if (!string.IsNullOrEmpty(dto.ClientId?.Value)
@@ -181,14 +180,14 @@ namespace Application.Services.Warehouses
             string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
                 //.MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(w => w.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
                 //.MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 ;
         }
-        private Guid? GetCompanyIdByName(string name)
+        private Guid? GetProviderIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<Provider>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
@@ -255,9 +254,14 @@ namespace Application.Services.Warehouses
 
             // Local user restrictions
 
-            if (user?.CompanyId != null)
+            if (user?.ProviderId != null)
             {
-                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
+                query = query.Where(i => i.ProviderId == user.ProviderId || i.ProviderId == null);
+            }
+            
+            if (user?.ClientId != null)
+            {
+                query = query.Where(i => i.ClientId == user.ClientId || i.ClientId == null);
             }
 
             return query;

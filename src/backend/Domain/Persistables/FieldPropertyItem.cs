@@ -21,7 +21,7 @@ namespace Domain.Persistables
         {
             int result = 0;
             if (item.RoleId != null) result += 2;
-            if (item.CompanyId != null) result += 1;
+//            if (item.CompanyId != null) result += 1;
             return result;
         }
     }

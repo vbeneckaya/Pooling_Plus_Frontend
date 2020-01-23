@@ -1,3 +1,4 @@
+using System.Linq;
 using Application.BusinessModels.Orders.Actions;
 using Application.BusinessModels.Orders.Triggers;
 using Application.BusinessModels.Shared.Actions;
@@ -24,6 +25,7 @@ using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.ProductTypes;
 using Application.Services.Profile;
+using Application.Services.Report;
 using Application.Services.Roles;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
@@ -48,7 +50,6 @@ using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
 using Domain.Services.Clients;
-using Domain.Services.Companies;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
@@ -60,6 +61,8 @@ using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.ProductTypes;
 using Domain.Services.Profile;
+using Domain.Services.Providers;
+using Domain.Services.Report;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
@@ -75,12 +78,8 @@ using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using Application.Services.Report;
-using Domain.Services.Providers;
-using Domain.Services.Report;
-using Domain.Services.ShippingWarehouses;
-using Domain.Services.Warehouses;
+using OnChangeTarifficationType = Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType;
+using OnChangeVehicleTypeId = Application.BusinessModels.Orders.Triggers.OnChangeVehicleTypeId;
 
 namespace Infrastructure.Installers
 {
@@ -134,7 +133,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
             services.AddScoped<IClientsService, ClientsService>();
             services.AddScoped<IProvidersService, ProvidersService>();
-            services.AddScoped<ICompaniesService, CompaniesService>();
 
             services.AddScoped<IWarehouseService, WarehouseService>();
             services.AddScoped<IShippingWarehouseService, ShippingWarehouseService>();
@@ -210,8 +208,8 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
-            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeTarifficationType>();
-            services.AddScoped<ITrigger<Order>, Application.BusinessModels.Orders.Triggers.OnChangeVehicleTypeId>();
+            services.AddScoped<ITrigger<Order>, OnChangeTarifficationType>();
+            services.AddScoped<ITrigger<Order>, OnChangeVehicleTypeId>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
@@ -230,7 +228,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
-            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTransportCompany>();
+            services.AddScoped<ITrigger<Shipping>, OnChangeTransportCompany>();
         }
 
         private static void AddDictionariesBusinessModels(IServiceCollection services)

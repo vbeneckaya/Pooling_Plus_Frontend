@@ -84,14 +84,5 @@ namespace API.Controllers
                 return StatusCode(500);
             }
         }
-
-        /// <summary>
-        /// Получение данных для выпадающего списка отфильтрованного по юр. лицу
-        /// </summary>
-        [HttpGet("forSelectByCompany/{companyId?}")]
-        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
-        {
-            return _service.ForSelectByCompany(companyId);
-        }
     }
 }

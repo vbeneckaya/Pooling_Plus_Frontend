@@ -77,13 +77,11 @@ namespace Domain.Services.Orders
 
         public decimal? InvoiceAmountExcludingVAT { get; set; }
 
-//        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
         public LookUpDto ShippingCity { get; set; }
 
         [FieldType(FieldType.Text), IsReadOnly]
         public string DeliveryRegion { get; set; }
 
-//        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
         public LookUpDto DeliveryCity { get; set; }
 
         public string ShippingAddress { get; set; }
@@ -215,9 +213,6 @@ namespace Domain.Services.Orders
         
         [FieldType(FieldType.Select, source: nameof(VehicleTypes))]
         public LookUpDto VehicleTypeId { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(Companies))]
-        public LookUpDto CompanyId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(ProductTypes))]
         public LookUpDto ProductTypeId { get; set; }

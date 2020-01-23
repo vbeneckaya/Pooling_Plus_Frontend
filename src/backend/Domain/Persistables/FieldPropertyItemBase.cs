@@ -9,8 +9,6 @@ namespace Domain.Persistables
         
         public FieldPropertiesForEntityType ForEntity { get; set; }
 
-        public Guid? CompanyId { get; set; }
-
         public Guid? RoleId { get; set; }
 
         public string FieldName { get; set; }
@@ -28,7 +26,7 @@ namespace Domain.Persistables
         {
             int result = 0;
             if (item.RoleId != null) result += 2;
-            if (item.CompanyId != null) result += 1;
+//            if (item.CompanyId != null) result += 1;
             return result;
         }
     }

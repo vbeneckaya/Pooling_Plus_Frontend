@@ -1,5 +1,3 @@
-using System;
-
 namespace Domain.Persistables
 {
     public class FieldPropertyItemVisibility : FieldPropertyItemBase, IPersistable

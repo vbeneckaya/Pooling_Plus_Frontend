@@ -29,15 +29,11 @@ namespace API.Controllers
         [HttpPost("get")]
         public IEnumerable<FieldForFieldProperties> GetFor([FromBody] FieldPropertiesGetForParams getForParams)
         {
-            var companyId = string.IsNullOrEmpty(getForParams.CompanyId)
-                ? (Guid?)null
-                : Guid.Parse(getForParams.CompanyId);
-            
             var roleId = string.IsNullOrEmpty(getForParams.RoleId)
                 ? (Guid?)null
                 : Guid.Parse(getForParams.RoleId);
 
-            return fieldPropertiesService.GetFor(getForParams.ForEntity, companyId, roleId, null);
+            return fieldPropertiesService.GetFor(getForParams.ForEntity, roleId, null);
         }
 
         /// <summary>
@@ -91,8 +87,7 @@ namespace API.Controllers
                 if (fieldPropertiesService.Import(stream, new FieldPropertiesGetForParams()
                 {
                     ForEntity = entity,
-                    RoleId = roleId,
-                    CompanyId = null
+                    RoleId = roleId
                 }))
                     return Ok();
                 return BadRequest();

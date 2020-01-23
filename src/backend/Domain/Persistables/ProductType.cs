@@ -1,5 +1,4 @@
-﻿using Domain.Extensions;
-using System;
+﻿using System;
 
 namespace Domain.Persistables
 {
@@ -10,9 +9,6 @@ namespace Domain.Persistables
         public string Name { get; set; }
 
         public string PoolingId { get; set; }
-
-        [ReferenceType(typeof(Company))]
-        public Guid? CompanyId { get; set; }
 
         public bool IsActive { get; set; }
     }

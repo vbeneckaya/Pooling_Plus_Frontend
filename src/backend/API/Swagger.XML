@@ -159,11 +159,6 @@
             Получение списка всех доступных действий
             </summary>
         </member>
-        <member name="M:API.Controllers.RolesController.ForSelectByCompany(System.Nullable{System.Guid})">
-            <summary>
-            Получение данных для выпадающего списка отфильтрованного по юр. лицу
-            </summary>
-        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь

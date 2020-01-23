@@ -76,12 +76,12 @@ namespace Application.Services.Users
                                     .Where(x => roleIds.Contains(x.Id))
                                     .ToDictionary(x => x.Id.ToString());
 
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                         .Select(x => x.CompanyId.Value.ToGuid())
+            var clientIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
+                         .Select(x => x.ClientId.Value.ToGuid())
                          .ToList();
 
-            var companies = _dataService.GetDbSet<Company>()
-                                           .Where(x => companyIds.Contains(x.Id))
+            var clients = _dataService.GetDbSet<Client>()
+                                           .Where(x => clientIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
             
             var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
@@ -106,10 +106,10 @@ namespace Application.Services.Users
                     dto.RoleId.Name = role.Name;
                 }
 
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
+                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
+                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
-                    dto.CompanyId.Name = company.Name;
+                    dto.ClientId.Name = client.Name;
                 }
                 
                 if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
@@ -135,7 +135,7 @@ namespace Application.Services.Users
                 FieldsConfig = entity.FieldsConfig,
                 IsActive = entity.IsActive,
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
+                ClientId = entity.ClientId == null ? null : new LookUpDto(entity.ClientId.ToString()),
                 ProviderId = entity.ProviderId == null ? null : new LookUpDto(entity.ProviderId.ToString()),
             };
         }
@@ -153,7 +153,7 @@ namespace Application.Services.Users
             entity.FieldsConfig = dto.FieldsConfig;
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
+            entity.ClientId = dto.ClientId?.Value?.ToGuid();
             entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
@@ -207,9 +207,9 @@ namespace Application.Services.Users
 
             // Local user restrictions
 
-            if (user?.CompanyId != null)
+            if (user?.ClientId != null)
             {
-                query = query.Where(i => i.CompanyId == user.CompanyId);
+                query = query.Where(i => i.ClientId == user.ClientId);
             }
             
             if (user?.ProviderId != null)

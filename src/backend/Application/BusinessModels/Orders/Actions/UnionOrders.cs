@@ -51,8 +51,7 @@ namespace Application.BusinessModels.Orders.Actions
                 Status = ShippingState.ShippingCreated,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
-                ShippingCreationDate = DateTime.UtcNow,
-                CompanyId = user != null ? user.CompanyId : null
+                ShippingCreationDate = DateTime.UtcNow
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
