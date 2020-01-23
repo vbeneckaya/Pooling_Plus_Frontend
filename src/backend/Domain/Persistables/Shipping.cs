@@ -212,6 +212,15 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public ShippingState? Status { get; set; }
         /// <summary>
+        /// Pooling статус
+        /// </summary>
+        [IgnoreHistory]
+        public ShippingPoolingState? PoolingState { get; set; }
+        /// <summary>
+        /// Pooling информация
+        /// </summary>
+        public string PoolingInfo { get; set; }
+        /// <summary>
         /// Расходы подтверждена грузоотправителем
         /// </summary>
         public bool CostsConfirmedByShipper { get; set; }
