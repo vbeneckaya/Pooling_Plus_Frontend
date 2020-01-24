@@ -242,7 +242,6 @@ function* getRolesListSaga({ payload }) {
 function* getRoleCardSaga({ payload }) {
     try {
         const result = yield postman.get(`/${TYPE_API}/getById/${payload}`);
-
         yield put({
             type: GET_ROLE_CARD_SUCCESS,
             payload: result,

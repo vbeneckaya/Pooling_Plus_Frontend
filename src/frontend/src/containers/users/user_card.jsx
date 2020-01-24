@@ -37,6 +37,8 @@ class UserCard extends Component {
                 roleId: null,
                 email: null,
                 carrierId: null,
+                providerId: null,
+                clientId: null,
                 isActive: true,
             },
         };
@@ -52,6 +54,8 @@ class UserCard extends Component {
                     userName: user.userName,
                     roleId: user.roleId,
                     carrierId: user.carrierId,
+                    providerId: user.providerId,
+                    clientId: user.clientId,
                     email: user.email,
                     password: user.password,
                     isActive: user.isActive,
@@ -115,6 +119,8 @@ class UserCard extends Component {
     handleRoleChange = (event, { name, value }) => {
         this.handleChange(event, {name, value});
         this.handleChange(event, {name: 'carrierId', value: null});
+        this.handleChange(event, {name: 'providerId', value: null});
+        this.handleChange(event, {name: 'clientId', value: null});
     };
 
     mapProps = () => {
@@ -141,7 +147,7 @@ class UserCard extends Component {
 
     render() {
         const { modalOpen, form, confirmation } = this.state;
-        const { login, userName, roleId, email, isActive, password, carrierId } = form;
+        const { login, userName, roleId, email, isActive, password, carrierId ,providerId, clientId  } = form;
         const { children, title, loading, t, error, user } = this.props;
 
         return (
@@ -212,6 +218,29 @@ class UserCard extends Component {
                                         type={SELECT_TYPE}
                                         onChange={this.handleChange}
                                     />
+                                    <FormField
+                                        fluid
+                                        search
+                                        selection
+                                        name="providerId"
+                                        value={providerId}
+                                        source="providers"
+                                        error={error['providerId']}
+                                        type={SELECT_TYPE}
+                                        onChange={this.handleChange}
+                                    />
+                                    <FormField
+                                        fluid
+                                        search
+                                        selection
+                                        name="clientId"
+                                        value={clientId}
+                                        source="clients"
+                                        error={error['clientId']}
+                                        type={SELECT_TYPE}
+                                        onChange={this.handleChange}
+                                    />
+                                    
                                     {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль

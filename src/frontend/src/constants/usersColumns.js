@@ -21,6 +21,18 @@ export const usersColumns = [
         source: 'transportCompanies',
     },
     {
+        name: 'providerId',
+        displayNameKey: 'providerId',
+        type: SELECT_TYPE,
+        source: 'Providers',
+    },
+    {
+        name: 'clientId',
+        displayNameKey: 'clientId',
+        type: SELECT_TYPE,
+        source: 'Clients',
+    },
+    {
         name: 'isActive',
         displayNameKey: 'isActive',
         type: ACTIVE_TYPE,

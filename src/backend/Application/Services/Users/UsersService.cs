@@ -216,6 +216,11 @@ namespace Application.Services.Users
             {
                 query = query.Where(i => i.ProviderId == user.ProviderId);
             }
+            
+            if (user?.CarrierId != null)
+            {
+                query = query.Where(i => i.CarrierId == user.CarrierId);
+            }
 
             return query;
         }

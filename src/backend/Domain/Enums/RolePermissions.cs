@@ -42,8 +42,8 @@ namespace Domain.Enums
         /// </summary>
         [OrderNumber(5)]
         ShippingsView = 7,
-
-        /// <summary>
+        
+       /// <summary>
         /// Просмотр и прикрепление документов к перевозке
         /// </summary>
         [OrderNumber(6)]
@@ -156,5 +156,23 @@ namespace Domain.Enums
         /// </summary>
         [OrderNumber(25)]
         Report = 28,
+        
+        /// <summary>
+        /// Наличие доступа к данным Клиентов
+        /// </summary>
+        [OrderNumber(1)]
+        ClientsGreedPermissions = 8,
+        
+        /// <summary>
+        /// Наличие доступа к данным Поставщиков
+        /// </summary>
+        [OrderNumber(2)]
+        ProvidersGreedPermissions = 9,
+        
+        /// <summary>
+        /// Наличие доступа к данным Транспортных компаний
+        /// </summary>
+        [OrderNumber(3)]
+        TransportCompaniesGreedPermissions = 10,
     }
 }
