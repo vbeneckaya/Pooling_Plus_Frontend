@@ -459,7 +459,6 @@ ru:
   shippingSetRejected: "Заявка на перевозку {0} отклонена транспортной компанией"
   shippingSetRequestSent: "Заявка на перевозку {0} направлена в транспортную компанию"
   shippingDontSetRequestSentDontSetTk: " Не указана транспортная компания. Заявка на перевозку {0} не направлена в транспортную компанию."
-  shippingNotFound: "Не указана транспортная компания"
   shippingState: "Статус перевозки"
   shippingStatus: "Статус отгрузки"
   shippingWarehouses: "Склады отгрузки"
