@@ -46,9 +46,13 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
 
+            var poolingInfo = "Эту перевозку можно отправить в Pooling";
+            
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
+                PoolingState = ShippingPoolingState.PoolingAvailable,
+                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ShippingCreationDate = DateTime.UtcNow

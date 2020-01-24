@@ -227,6 +227,7 @@ namespace Application.Services.Shippings
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.PoolingStatus, e => e.MapFrom((s, t) => s.PoolingState?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
@@ -577,6 +578,7 @@ namespace Application.Services.Shippings
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
                 .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }

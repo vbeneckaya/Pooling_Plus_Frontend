@@ -199,6 +199,29 @@ const Information = ({ form = {}, onChange, settings }) => {
                         </Form.Field>
                     </Grid.Column>
                 </Grid.Row>				
+				<Grid.Row>
+                    <Grid.Column>
+                        <Form.Field>
+                            <label>{t('Pooling.Info')}</label>
+                            <Segment className="mini-column">
+                                <Grid>
+                                    <Grid.Row columns={1}>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="Pooling.Info"
+                                                text="Pooling.Info"
+                                                value={form['poolingInfo']}
+                                                type={TEXT_TYPE}
+                                                settings={settings['poolingInfo']}
+                                                onChange={onChange}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                </Grid>
+                            </Segment>
+                        </Form.Field>
+                    </Grid.Column>
+                </Grid.Row>				
                 {/* <Grid.Row>
                     <Grid.Column>
                         <Form.Field>

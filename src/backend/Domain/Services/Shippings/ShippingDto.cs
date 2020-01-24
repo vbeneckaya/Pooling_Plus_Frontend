@@ -33,7 +33,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Select, source: nameof(BodyTypes))]
         public LookUpDto BodyTypeId { get; set; }
 
-        [FieldType(FieldType.Number), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(4)]
         public int? PalletsCount { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -42,7 +42,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Number)]
         public int? ConfirmedPalletsCount { get; set; }
 
-        [FieldType(FieldType.Number), IsDefault, OrderNumber(4)]
+        [FieldType(FieldType.Number), IsDefault, OrderNumber(5)]
         public decimal? WeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -125,6 +125,14 @@ namespace Domain.Services.Shippings
         [DisplayNameKey("Shipping.Status")]
         [FieldType(FieldType.State, source: nameof(ShippingState)), IsDefault, OrderNumber(2), IsReadOnly]
         public string Status { get; set; }
+
+        [DisplayNameKey("Pooling.State")]
+        [FieldType(FieldType.State, source: nameof(ShippingPoolingState)), IsDefault, OrderNumber(3), IsReadOnly]
+        public string PoolingStatus { get; set; }
+
+        [DisplayNameKey("Pooling.Info")]
+        [FieldType(FieldType.BigText), IsReadOnly]
+        public string PoolingInfo { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByShipper { get; set; }
