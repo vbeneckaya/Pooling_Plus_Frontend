@@ -225,8 +225,7 @@ namespace Application.Shared
 
         private ValidateResult SaveOrCreateInner(TFormDto entityFrom)
         {
-            var entityType = typeof(TEntity);
-            string entityName = entityType.Name;
+            string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
