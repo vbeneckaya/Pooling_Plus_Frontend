@@ -83,6 +83,14 @@ namespace Application.Services.Users
             var companies = _dataService.GetDbSet<Company>()
                                            .Where(x => companyIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
+            
+            var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
+                .Select(x => x.ProviderId.Value.ToGuid())
+                .ToList();
+
+            var providers = _dataService.GetDbSet<Provider>()
+                .Where(x => providerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
             foreach (var dto in dtos)
             {
@@ -103,6 +111,12 @@ namespace Application.Services.Users
                 {
                     dto.CompanyId.Name = company.Name;
                 }
+                
+                if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
+                    && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
+                {
+                    dto.ProviderId.Name = provider.Name;
+                }
 
                 yield return dto;
             }
@@ -122,6 +136,7 @@ namespace Application.Services.Users
                 IsActive = entity.IsActive,
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
                 CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
+                ProviderId = entity.ProviderId == null ? null : new LookUpDto(entity.ProviderId.ToString()),
             };
         }
 
@@ -139,6 +154,7 @@ namespace Application.Services.Users
             entity.IsActive = dto.IsActive;
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
             entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
+            entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
 
             var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
 
@@ -194,6 +210,11 @@ namespace Application.Services.Users
             if (user?.CompanyId != null)
             {
                 query = query.Where(i => i.CompanyId == user.CompanyId);
+            }
+            
+            if (user?.ProviderId != null)
+            {
+                query = query.Where(i => i.ProviderId == user.ProviderId);
             }
 
             return query;
