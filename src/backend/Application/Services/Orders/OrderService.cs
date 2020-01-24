@@ -185,6 +185,10 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
+                    .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
+                    .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
+                    .ForMember(t => t.ClientAvisationTime, e => e.Condition(s=>s.ClientAvisationTime != null))
                     .ForMember(t => t.Status, e => e.Ignore())
                     .ForMember(t => t.DeliveryRegion, e => e.Ignore())
                     .ForMember(t => t.ManualClientAvisationTime, e => e.Ignore())

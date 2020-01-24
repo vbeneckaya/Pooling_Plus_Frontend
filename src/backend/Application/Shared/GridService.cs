@@ -225,7 +225,8 @@ namespace Application.Shared
 
         private ValidateResult SaveOrCreateInner(TFormDto entityFrom)
         {
-            string entityName = typeof(TEntity).Name;
+            var entityType = typeof(TEntity);
+            string entityName = entityType.Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -243,35 +244,45 @@ namespace Application.Shared
 
             var trackConfig = this.ConfigureChangeTacker();
 
-            if (!string.IsNullOrEmpty(entityFrom.Id))
+            var findByNumber = FindOrderByNumber(entityFrom, entityName);
+
+            if (!string.IsNullOrEmpty(entityFrom.Id) || findByNumber != null)
             {
-                var entityFromDb = dbSet.GetById(Guid.Parse(entityFrom.Id));
+                var entityId = !string.IsNullOrEmpty(entityFrom.Id)
+                    ? Guid.Parse(entityFrom.Id)
+                    : findByNumber;
+                entityFrom.Id = entityId.ToString();
+        
+                
+                var entityFromDb = dbSet.GetById(entityId.Value);
 
                 if (entityFromDb == null)
-                    throw new Exception($"Order not found (Id = {entityFrom.Id})");
+                    throw new Exception($"Order not found (Id = {entityId})");
 
-                Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 MapFromFormDtoToEntity(entityFromDb, entityFrom);
 
                 // Change handlers
 
-                var updateChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+                var updateChanges = this._dataService.GetChanges<TEntity>()
+                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+
+                //updateChanges.FieldChanges.Add();
 
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
-                if (setter != null)
-                {
-                    setter.Appy(updateChanges);
-                }
+                setter?.Appy(updateChanges);
 
-                var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
-                if (trackConfig != null)
-                {
-                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
-                }
-                Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                var logChanges = this._dataService.GetChanges<TEntity>()
+                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+
+                trackConfig?.LogTrackedChanges<TEntity>(logChanges);
+
+                Log.Information("{entityName}.SaveOrCreate (Update fields): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 //dbSet.Update(entityFromDb);
@@ -308,26 +319,24 @@ namespace Application.Shared
 
                 var updateSetter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
-                if (updateSetter != null)
-                {
-                    updateSetter.Appy(changes);
-                }
+                updateSetter?.Appy(changes);
 
                 var logChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entity.Id);
 
-                if (trackConfig != null)
-                {
-                    trackConfig.LogTrackedChanges<TEntity>(logChanges);
-                }
-                Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                trackConfig?.LogTrackedChanges<TEntity>(logChanges);
+
+                Log.Information("{entityName}.SaveOrCreate (Fill fields): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 _triggersService.Execute();
-                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Execute triggers): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 _dataService.SaveChanges();
-                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
 
                 return new ValidateResult
                 {
@@ -898,6 +907,21 @@ namespace Application.Shared
             }
         }
 
+        private Guid? FindOrderByNumber(TFormDto entityFrom, string entityName)
+        {
+            if (entityName == "Order")
+            {
+                var t = typeof(TFormDto);
+                var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom).ToString();
+                var client = t.GetProperty("ClientId").GetValue(entityFrom);
+                var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
+                var dbSet = _dataService.GetDbSet<Order>();
+                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber && x.ClientId == clientId)?.Id;
+            }
+
+            return null;
+        }
+        
         private bool CanEdit(EntityStatusDto dto, FieldForFieldProperties fieldProperties)
         {
             string editValue = FieldPropertiesAccessType.Edit.ToString();
