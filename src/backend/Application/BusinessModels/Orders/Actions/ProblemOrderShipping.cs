@@ -18,12 +18,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly ProblemShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public ProblemOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new ProblemShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Подтвердить перевозку";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

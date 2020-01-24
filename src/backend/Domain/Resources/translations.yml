@@ -576,7 +576,13 @@ ru:
   driver: "Водитель"
   driverAndVehicleNumber: "Водитель и номер ТС"
   vehicleNumber: "Номер ТС"
-
+  Pooling.State: "Pooling"
+  Pooling.Info: "Информация от Pooling"
+  poolingAvailable: "Доступен"
+  poolingBooked: "Забронировано"
+  poolingProblem: "Проблема"
+  sendToPooling: "Отправить в пулинг"
+  shippingSetPooling: "Перевозка {0} отправлена в Pooling"
 en:
   accounts: "Accounts"
   actualDeliveryCost: "Actual cost, excl. VAT"

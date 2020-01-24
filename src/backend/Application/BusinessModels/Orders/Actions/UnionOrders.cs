@@ -36,16 +36,23 @@ namespace Application.BusinessModels.Orders.Actions
             _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Orange;
+            Description = "Объеденить накладные в одну перевозку";
         }
         
         public AppColor Color { get; set; }
+        public string Description { get; set; }
+
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
 
+            var poolingInfo = "Эту перевозку можно отправить в Pooling";
+            
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
+                PoolingState = ShippingPoolingState.PoolingAvailable,
+                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ShippingCreationDate = DateTime.UtcNow,

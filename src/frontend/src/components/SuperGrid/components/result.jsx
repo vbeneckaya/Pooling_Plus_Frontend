@@ -45,7 +45,6 @@ class Result extends Component {
             checkForEditing,
             invokeMassUpdate,
             isSetFilters,
-            isCreateBtn
             isCreateBtn,
         } = this.props;
 
