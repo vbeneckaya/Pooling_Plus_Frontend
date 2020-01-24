@@ -26,6 +26,7 @@ using Domain.Services.Identity;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.ProductTypes;
+using Domain.Services.Providers;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
@@ -266,6 +267,24 @@ namespace Application.Services.AppConfiguration
                 {
                     Name = GetName<ClientsService>(),
                     CanCreateByForm = canEditClients,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = columns
+                };
+            });
+            
+            _dictionaryConfigurations.Add(typeof(ProviderDto), (roleId) =>
+            {
+                var canEditProviders = _identityService.HasPermissions(RolePermissions.ProvidersEdit);
+
+                if (!canEditProviders) return null;
+
+                var columns = ExtractColumnsFromDto<ProvidersService>(roleId);
+                return new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ProvidersService>(),
+                    CanCreateByForm = canEditProviders,
                     CanExportToExcel = true,
                     CanImportFromExcel = true,
                     ShowOnHeader = false,

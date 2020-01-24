@@ -140,10 +140,10 @@ namespace Domain.Enums
         ClientsEdit = 25,
 
         /// <summary>
-        /// Редактирование юридических лиц
+        /// Редактирование поставщиков
         /// </summary>
         [OrderNumber(22)]
-        CompaniesEdit = 26,
+        ProvidersEdit = 26,
 
         /// <summary>
         /// Редактирование типов продукта
