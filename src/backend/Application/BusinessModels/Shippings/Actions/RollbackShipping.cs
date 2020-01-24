@@ -19,12 +19,14 @@ namespace Application.BusinessModels.Shippings.Actions
         private readonly IHistoryService _historyService;
 
         private readonly ICommonDataService _dataService;
+        public string Description { get; set; }
 
         public RollbackShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Grey;
+            Description = "Переместить перевозку в предыдущий статус";
         }
         
         public AppColor Color { get; set; }

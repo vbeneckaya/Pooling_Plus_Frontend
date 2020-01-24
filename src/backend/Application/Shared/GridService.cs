@@ -433,6 +433,7 @@ namespace Application.Shared
             {
                 Color = action.Color.ToString().ToLowerFirstLetter(),
                 Name = actionName,
+                Description = action.Description,
                 Group = group,
                 AllowedFromGrid = access != ActionAccess.FormOnly,
                 AllowedFromForm = access != ActionAccess.GridOnly,

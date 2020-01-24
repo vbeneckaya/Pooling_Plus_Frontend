@@ -18,12 +18,15 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly ConfirmShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public ConfirmOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new ConfirmShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Подтвердить перевозки связанные с накладными";
+            
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

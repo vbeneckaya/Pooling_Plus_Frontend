@@ -21,12 +21,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly RejectRequestShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public RejectRequestOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new RejectRequestShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Отменить заявку на перевозку";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

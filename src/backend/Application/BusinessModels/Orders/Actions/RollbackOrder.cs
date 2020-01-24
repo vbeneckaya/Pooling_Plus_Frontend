@@ -25,9 +25,12 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Grey;
+            Description = "Вернуть накладную в предыдущий статус. Статус перевозки не изменится";
         }
         
         public AppColor Color { get; set; }
+        public string Description { get; set; }
+
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
             var newState = new OrderState?();

@@ -34,9 +34,11 @@ namespace Application.BusinessModels.Orders.Actions
             _shippingCalculationService = shippingCalculationService;
             _changeTrackerFactory = changeTrackerFactory;
             Color = AppColor.Blue;
+            Description = "Создать одну перевозку для одной накладной";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {

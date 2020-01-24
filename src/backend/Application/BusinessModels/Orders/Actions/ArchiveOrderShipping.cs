@@ -18,12 +18,14 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly ArchiveShipping _shippingAction;
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public ArchiveOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _shippingAction = new ArchiveShipping(dataService, historyService);
             Color = _shippingAction.Color;
+            Description = "Переместить накладную в Архив";
         }
 
         public AppActionResult Run(CurrentUserDto user, Order order)

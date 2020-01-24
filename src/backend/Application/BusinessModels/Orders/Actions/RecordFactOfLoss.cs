@@ -24,9 +24,11 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
+            Description = "Пометить накладную как потерян, после отгрузки";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {

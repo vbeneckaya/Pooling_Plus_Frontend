@@ -25,9 +25,11 @@ namespace Application.BusinessModels.Orders.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Green;
+            Description = "Пометить накладную как доставленную";
         }
 
         public AppColor Color { get; set; }
+        public string Description { get; set; }
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
