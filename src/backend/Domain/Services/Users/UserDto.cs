@@ -25,7 +25,7 @@ namespace Domain.Services.Users
         public bool IsActive { get; set; }
 
         public string FieldsConfig { get; set; }
-
+        
         [FieldType(FieldType.Select, source: nameof(TransportCompanies))]
         public LookUpDto CarrierId { get; set; }
 

@@ -161,18 +161,18 @@ namespace Domain.Enums
         /// Наличие доступа к данным Клиентов
         /// </summary>
         [OrderNumber(1)]
-        ClientsGreedPermissions = 8,
+        ClientsGreedPermissions = 29,
         
         /// <summary>
         /// Наличие доступа к данным Поставщиков
         /// </summary>
         [OrderNumber(2)]
-        ProvidersGreedPermissions = 9,
+        ProvidersGreedPermissions = 30,
         
         /// <summary>
         /// Наличие доступа к данным Транспортных компаний
         /// </summary>
         [OrderNumber(3)]
-        TransportCompaniesGreedPermissions = 10,
+        TransportCompaniesGreedPermissions = 31,
     }
 }

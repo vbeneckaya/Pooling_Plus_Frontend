@@ -1,4 +1,3 @@
-using Application.BusinessModels.Shared.Actions;
 using Application.BusinessModels.Shared.Handlers;
 using Application.BusinessModels.Shippings.Handlers;
 using Application.Extensions;
@@ -89,16 +88,8 @@ namespace Application.Services.Shippings
             var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
             
             if (user.CarrierId.HasValue)
-                query = query
-                    .Where(x => x.CarrierId == user.CarrierId  && x.Status != null && x.Status != ShippingState.ShippingCreated);
-
-            // Local user restrictions
-
-            if (user.CarrierId != null)
-            {
-                query = query.Where(i => i.CarrierId == user.CarrierId || i.CarrierId == null);
-            }
-
+                query = query.Where(x => x.CarrierId == user.CarrierId  && x.Status != null && x.Status != ShippingState.ShippingCreated);
+            
             return query;
         }
 

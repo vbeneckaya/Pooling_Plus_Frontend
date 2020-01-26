@@ -159,6 +159,11 @@
             Получение списка всех доступных действий
             </summary>
         </member>
+        <member name="M:API.Controllers.RolesController.GetCompanyTypeByRole(System.Guid)">
+            <summary>
+            Получение списка всех доступных видов компаний для роли
+            </summary>
+        </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
             <summary>
             Словарь

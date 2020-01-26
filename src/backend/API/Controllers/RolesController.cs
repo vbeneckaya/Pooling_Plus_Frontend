@@ -85,5 +85,28 @@ namespace API.Controllers
                 return StatusCode(500);
             }
         }
+        
+        /// <summary>
+        /// Получение списка всех доступных видов компаний для роли
+        /// </summary>
+        [HttpGet("getCompanyTypeByRole/{id}")]
+        public IActionResult GetCompanyTypeByRole([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = _service.GetCompanyTypeByRole(id);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to get company type by role id");
+                return StatusCode(500);
+            }
+        }
     }
 }

@@ -21,6 +21,10 @@ const CREATE_ROLE_REQUEST = 'CREATE_ROLE_REQUEST';
 const CREATE_ROLE_SUCCESS = 'CREATE_ROLE_SUCCESS';
 const CREATE_ROLE_ERROR = 'CREATE_ROLE_ERROR';
 
+const GET_COMPANY_TYPE_BY_ROLE_REQUEST = 'GET_COMPANY_TYPE_BY_ROLE_REQUEST';
+const GET_COMPANY_TYPE_BY_ROLE_SUCCESS = 'GET_COMPANY_TYPE_BY_ROLE_SUCCESS';
+const GET_COMPANY_TYPE_BY_ROLE_ERROR = 'GET_COMPANY_TYPE_BY_ROLE_ERROR';
+
 const TOGGLE_ROLE_ACTIVE_REQUEST = 'TOGGLE_ROLE_ACTIVE_REQUEST';
 const TOGGLE_ROLE_ACTIVE_SUCCESS = 'TOGGLE_ROLE_ACTIVE_SUCCESS';
 const TOGGLE_ROLE_ACTIVE_ERROR = 'TOGGLE_ROLE_ACTIVE_ERROR';
@@ -48,6 +52,7 @@ const initial = {
     actions: {},
     totalCount: 0,
     progress: false,
+    companyType:[]
 };
 
 //*  REDUCER  *//
@@ -56,6 +61,7 @@ export default (state = initial, { type, payload }) => {
     switch (type) {
         case GET_ROLES_LIST_REQUEST:
         case GET_ROLE_CARD_REQUEST:
+        case GET_COMPANY_TYPE_BY_ROLE_REQUEST:
         case CREATE_ROLE_REQUEST:
             return {
                 ...state,
@@ -124,6 +130,17 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 actions: {},
             };
+            
+        case GET_COMPANY_TYPE_BY_ROLE_SUCCESS:
+            return{
+                ...state,
+                companyType: payload
+            };
+        case GET_COMPANY_TYPE_BY_ROLE_ERROR:
+            return{
+                ...state,
+                companyType: []
+            };
         default:
             return state;
     }
@@ -134,6 +151,13 @@ export default (state = initial, { type, payload }) => {
 export const getRolesRequest = payload => {
     return {
         type: GET_ROLES_LIST_REQUEST,
+        payload,
+    };
+};
+
+export const getCompanyTypeByRoleRequest = payload => {
+    return {
+        type: GET_COMPANY_TYPE_BY_ROLE_REQUEST,
         payload,
     };
 };
@@ -213,6 +237,7 @@ export const progressSelector = createSelector(stateSelector, state => state.pro
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const roleCardSelector = createSelector(stateSelector, state => state.card);
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
+export const companyTypeSelector = createSelector(stateSelector, state => state.companyType);
 
 export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 export const allActionsSelector = createSelector(stateSelector, state => state.actions);
@@ -234,6 +259,21 @@ function* getRolesListSaga({ payload }) {
     } catch (error) {
         yield put({
             type: GET_ROLES_LIST_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* getCompanyTypeByRoleSaga({ payload }) {
+    try {
+        const result = yield postman.get(`/${TYPE_API}/getCompanyTypeByRole/${payload}`);
+        yield put({
+            type: GET_COMPANY_TYPE_BY_ROLE_SUCCESS,
+            payload: result,
+        });
+    } catch (error) {
+        yield put({
+            type: GET_COMPANY_TYPE_BY_ROLE_ERROR,
             payload: error,
         });
     }
@@ -332,6 +372,7 @@ export function* saga() {
     yield all([
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
         takeEvery(GET_ROLE_CARD_REQUEST, getRoleCardSaga),
+        takeEvery(GET_COMPANY_TYPE_BY_ROLE_REQUEST, getCompanyTypeByRoleSaga),
         takeEvery(CREATE_ROLE_REQUEST, createRoleSaga),
         takeEvery(TOGGLE_ROLE_ACTIVE_REQUEST, toggleRoleActiveSaga),
         takeEvery(GET_ALL_PERMISSIONS_REQUEST, getAllPermissionsSaga),

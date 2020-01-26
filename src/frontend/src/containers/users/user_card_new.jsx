@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Confirm, Dimmer, Form, Loader, Grid, Button} from 'semantic-ui-react';
+import {Confirm, Form, Button} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import CardLayout from '../../components/CardLayout';
-import {useTranslation, withTranslation} from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {SELECT_TYPE, TEXT_TYPE} from '../../constants/columnTypes';
 import {
@@ -14,8 +14,9 @@ import {
     createUserRequest,
     saveProgressSelector,
 } from '../../ducks/users';
-import {allActionsSelector, allPermissionsSelector, getRoleCardRequest} from "../../ducks/roles";
-import {roleCardSelector} from "../../ducks/roles";
+import {getCompanyTypeByRoleRequest, getRoleCardRequest} from "../../ducks/roles";
+import {companyTypeSelector} from "../../ducks/roles";
+import {Table} from "semantic-ui-react/dist/commonjs/collections/Table/Table";
 
 const UserCard = props => {
     const {t} = useTranslation();
@@ -25,6 +26,7 @@ const UserCard = props => {
     const {id} = params;
 
     let [form, setForm] = useState({});
+    let [companies, setFormCompanies] = useState({});
     let [confirmation, setConfirmation] = useState({open: false});
     let [notChangeForm, setNotChangeForm] = useState(true);
 
@@ -32,7 +34,7 @@ const UserCard = props => {
     const progress = useSelector(state => saveProgressSelector(state));
     const user = useSelector(state => userCardSelector(state));
     const error = useSelector(state => errorSelector(state)) || {};
-    const roleCard =  useSelector(state => roleCardSelector(state)) || [];
+    const companyType = useSelector(state => companyTypeSelector(state)) || [];
 
     useEffect(() => {
         id && dispatch(getUserCardRequest(id));
@@ -42,14 +44,23 @@ const UserCard = props => {
         };
     }, []);
 
-    useEffect(
-        () => {
+    useEffect(() => {
             setForm(form => ({
                 ...form,
                 ...user,
             }));
         },
         [user],
+    );
+
+    useEffect(
+        () => {
+            setFormCompanies(companies => ({
+                ...companies,
+                ...companyType,
+            }));
+        },
+        [companyType],
     );
 
     const title = useMemo(
@@ -109,23 +120,13 @@ const UserCard = props => {
         [notChangeForm],
     );
 
-    const mapStateToProps = state => {
-        return {
-            role: roleCardSelector(state),
-            loading: progressSelector(state),
-            allPermissions: allPermissionsSelector(state),
-            allActions: allActionsSelector(state),
-            error: errorSelector(state),
-        };
-    };
-
     const handleRoleChange = useCallback((event, {name, value}) => {
         dispatch(getRoleCardRequest(value.value));
+        dispatch(getCompanyTypeByRoleRequest(value.value));
         handleChange(event, {name, value});
         handleChange(event, {name: 'carrierId', value: null});
         handleChange(event, {name: 'providerId', value: null});
         handleChange(event, {name: 'clientId', value: null});
-        console.log( roleCard);
     }, []);
 
     const confirmClose = () => {
@@ -152,24 +153,6 @@ const UserCard = props => {
         }
     };
 
-    let link = 'carrierId';
-    let source = 'TransportCompanies';
-    if (!!form['carrierId']) {
-        link = 'carrierId';
-        source = 'TransportCompanies'
-    }
-    ;
-    if (!!form['providerId']) {
-        link = 'providerId';
-        source = 'Providers'
-    }
-    ;
-    if (!!form['clientId']) {
-        link = 'clientId';
-        source = 'Clients'
-    }
-    ;
-    console.log( roleCard);
     return (
         <CardLayout
             title={title}
@@ -217,17 +200,21 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleRoleChange}
                 />
-                <FormField
-                    fluid
-                    search
-                    selection
-                    name={link}
-                    value={form[{link}]}
-                    source={source}
-                    error={error[{link}]}
-                    type={SELECT_TYPE}
-                    onChange={handleChange}
-                />
+                {console.log(Object.values(companies))}
+                {companies &&
+                Object.values(companies).map((row, i) => (
+                    <FormField
+                        fluid
+                        search
+                        selection
+                        name={companies[i].field}
+                        value={form[companies[i].field]}
+                        source={companies[i].source}
+                        error={error[companies[i].field]}
+                        type={SELECT_TYPE}
+                        onChange={handleChange}
+                    />))
+                }
                 {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль

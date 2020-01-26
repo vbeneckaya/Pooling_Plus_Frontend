@@ -112,6 +112,12 @@ namespace Application.Services.Orders
 
             if (user.CarrierId.HasValue)
                 query = query.Where(x => x.CarrierId == user.CarrierId && x.OrderShippingStatus != null);
+            
+            if (user.ClientId.HasValue)
+                query = query.Where(x => x.ClientId == user.ClientId && x.OrderShippingStatus != null);
+            
+            if (user.ProviderId.HasValue)
+                query = new List<Order>().AsQueryable();
 
             return query;
         }

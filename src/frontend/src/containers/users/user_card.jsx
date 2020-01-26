@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Button, Confirm, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
@@ -11,8 +11,9 @@ import {
     userCardSelector,
 } from '../../ducks/users';
 import {
+    getRoleCardRequest,
     getRolesRequest,
-    progressSelector as rolesProgressSelector,
+    progressSelector as rolesProgressSelector, roleCardSelector,
     rolesFromUserSelector,
 } from '../../ducks/roles';
 import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
@@ -43,7 +44,9 @@ class UserCard extends Component {
             },
         };
     }
-
+    
+    
+    
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.user !== this.props.user) {
             const { user = {} } = this.props;
@@ -74,6 +77,7 @@ class UserCard extends Component {
                 take: 20,
             },
         });
+        
         this.setState({ modalOpen: true });
     };
 
@@ -207,6 +211,8 @@ class UserCard extends Component {
                                         type={SELECT_TYPE}
                                         onChange={this.handleRoleChange}
                                     />
+                                                            
+
                                     <FormField
                                         fluid
                                         search

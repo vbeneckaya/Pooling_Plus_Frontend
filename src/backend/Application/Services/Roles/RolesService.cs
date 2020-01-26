@@ -23,11 +23,14 @@ namespace Application.Services.Roles
 {
     public class RolesService : DictionaryServiceBase<Role, RoleDto>, IRolesService
     {
-        public RolesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
-                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
-        { }
+        public RolesService(ICommonDataService dataService, IUserProvider userProvider,
+            ITriggersService triggersService,
+            IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
+                fieldSetterFactory, configurationService)
+        {
+        }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
@@ -87,7 +90,7 @@ namespace Application.Services.Roles
             var user = _dataService.GetById<User>(currentUserId.Value);
 
             // Local user restrictions
-            
+
             return query;
         }
 
@@ -95,7 +98,7 @@ namespace Application.Services.Roles
         {
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
-            
+
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
             entity.Actions = dto.Actions?.ToArray();
@@ -111,16 +114,59 @@ namespace Application.Services.Roles
             DetailedValidationResult result = base.ValidateDto(dto);
 
             var hasDuplicates = !result.IsError && this._dataService.GetDbSet<Role>()
-                .Where(i => i.Id != dto.Id.ToGuid())
-                .Where(i => i.Name == dto.Name)
-                .Any();
+                                    .Where(i => i.Id != dto.Id.ToGuid())
+                                    .Where(i => i.Name == dto.Name)
+                                    .Any();
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Name), "Role.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Name), "Role.DuplicatedRecord".Translate(lang),
+                    ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
+        }
+
+        public IEnumerable<CompaniesByRole> GetCompanyTypeByRole(Guid id)
+        {
+            var user = _userProvider.GetCurrentUser();
+
+            var permissions = _dataService.GetDbSet<Role>()
+                .Where(_ => _.Id == id)
+                .Select(_ => _.Permissions)
+                .FirstOrDefault();
+
+            if (permissions == null)
+                return null;
+
+            var res = new List<CompaniesByRole>();
+
+            if (permissions.Contains((int) RolePermissions.ProvidersGreedPermissions))
+            {
+                res.Add(new CompaniesByRole()
+                {
+                    Field = "providerId",
+                    Source = "Providers"
+                });
+            }
+            if (permissions.Contains((int) RolePermissions.ClientsGreedPermissions))
+            {
+                res.Add(new CompaniesByRole()
+                {
+                    Field = "clientId",
+                    Source = "Clients"
+                });
+            }
+            if (permissions.Contains((int) RolePermissions.TransportCompaniesGreedPermissions))
+            {
+                res.Add(new CompaniesByRole()
+                {
+                    Field = "carrierId",
+                    Source = "TransportCompanies"
+                });
+            }
+
+            return res;
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
@@ -166,9 +212,9 @@ namespace Application.Services.Roles
             var actionSingleType = typeof(IAction<TEntity>);
             var actionGroupType = typeof(IAction<IEnumerable<TEntity>>);
             var actions = AppDomain.CurrentDomain
-                                   .GetAssemblies()
-                                   .SelectMany(s => s.GetTypes())
-                                   .Where(p => actionSingleType.IsAssignableFrom(p) || actionGroupType.IsAssignableFrom(p));
+                .GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => actionSingleType.IsAssignableFrom(p) || actionGroupType.IsAssignableFrom(p));
             return actions.Select(x => x.Name.ToLowerFirstLetter());
         }
 
