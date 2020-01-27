@@ -3,6 +3,7 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domain.Services.FieldProperties
 {
@@ -12,6 +13,7 @@ namespace Domain.Services.FieldProperties
         string GetAccessTypeForField(GetForFieldPropertyParams args);
         ValidateResult Save(FieldPropertyDto fieldPropertiesDto);
         bool Import(Stream stream, FieldPropertiesGetForParams props);
+        Byte[] Export(IEnumerable<FieldForFieldProperties> data);
         
         IEnumerable<string> GetAvailableFields(FieldPropertiesForEntityType forEntityType, Guid? roleId, Guid? userId);
         IEnumerable<string> GetReadOnlyFields(FieldPropertiesForEntityType forEntityType, string stateName, Guid? roleId, Guid? userId);

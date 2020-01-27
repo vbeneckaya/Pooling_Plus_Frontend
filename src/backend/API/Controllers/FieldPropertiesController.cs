@@ -67,11 +67,11 @@ namespace API.Controllers
         /// <summary>
         /// Экспортировать в файл в формате JSON
         /// </summary>
-        [HttpPost("export/{entity}")]
-        public IActionResult Export([FromRoute] string entity, [FromBody] IEnumerable<FieldForFieldProperties> data)
+        [HttpPost("export/{entity}/{roleId}")]
+        public IActionResult Export([FromRoute] string entity, [FromRoute] string roleId, [FromBody] IEnumerable<FieldForFieldProperties> data)
         {
-            return File(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)), "text/plain",
-                $"Export {entity} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
+            return File(fieldPropertiesService.Export(data), "text/plain",
+                $"Export {entity} for {roleId} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
         }
 
         /// <summary>

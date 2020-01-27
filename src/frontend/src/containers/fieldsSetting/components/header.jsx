@@ -10,15 +10,10 @@ import {
     getFieldsSettingRequest
 } from "../../../ducks/fieldsSetting";
 
-const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t, changeCompany, companiesList = [], disabledCompany}) => {
+const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, company, changeRole, t}) => {
     const rolesListOptions = [
         /*{ key: 'any_role', value: 'null', text: t('any_role') },*/
         ...rolesList.map(x => ({ key: x.name, value: x.value, text: x.name })),
-    ];
-
-    const companyListOptions = [
-        {key: 'all', value: 'null', text: t('All')},
-        ...companiesList.map(x => ({key: x.name, value: x.value, text: x.name}))
     ];
 
     const dispatch = useDispatch();
@@ -34,6 +29,7 @@ const Header = ({gridsList, activeItem, changeActiveItem, rolesList, role, compa
     const exportSettings = () => {
         dispatch(exportFieldsSettingRequest({
                 forEntity: activeItem,
+                forRoleId: rolesListOptions.find(_=>_.value == role).text,
                 fieldProperties: fieldProperties,
             }),
         );

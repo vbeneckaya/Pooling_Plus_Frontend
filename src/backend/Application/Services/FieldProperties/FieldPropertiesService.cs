@@ -13,6 +13,7 @@ using Domain.Services.Shippings;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Application.Services.FieldProperties
@@ -123,6 +124,11 @@ namespace Application.Services.FieldProperties
 
             var accessType = fieldMatrixItem?.AccessType ?? FieldPropertiesAccessType.Show;
             return accessType.ToString().ToLowerFirstLetter();
+        }
+
+        public Byte[] Export(IEnumerable<FieldForFieldProperties> data)
+        {
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
         }
 
         public IEnumerable<string> GetAvailableFields(
