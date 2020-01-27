@@ -204,7 +204,7 @@ class UserCard extends Component {
                                         selection
                                         text="role"
                                         name="roleId"
-                                        value={roleId}
+                                        value={form['roleId']}
                                         source="roles"
                                         isRequired
                                         error={error['roleId']}

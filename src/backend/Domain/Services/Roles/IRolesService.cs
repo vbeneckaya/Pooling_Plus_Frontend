@@ -14,7 +14,7 @@ namespace Domain.Services.Roles
 
         RoleActionsDto GetAllActions();
         
-        IEnumerable<CompaniesByRole> GetCompanyTypeByRole(Guid id);
+        CompaniesByRole GetCompanyTypeByRole(Guid id);
 
         RoleDto MapFromEntityToDto(Role entity);
 

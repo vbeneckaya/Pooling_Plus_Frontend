@@ -272,14 +272,18 @@ class TableInfo extends Component {
                                                           row[column.name] &&
                                                           typeof row[column.name] === 'object' &&
                                                           !Array.isArray(row[column.name])
-                                                              ? row[column.name].value
+                                                              ? 
+                                                              !!row[column.name].name ? row[column.name].name :
+                                                              row[column.name].value
                                                               : row[column.name]
                                                       }
                                                       valueText={
                                                           row[column.name] &&
                                                           typeof row[column.name] === 'object' &&
                                                           !Array.isArray(row[column.name])
-                                                              ? row[column.name].name
+                                                              ?
+                                                              !!row[column.name].name ? row[column.name].name :
+                                                              row[column.name].name
                                                               : null
                                                       }
                                                       id={row.id}

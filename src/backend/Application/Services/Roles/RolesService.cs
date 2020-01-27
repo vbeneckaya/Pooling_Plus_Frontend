@@ -84,15 +84,15 @@ namespace Application.Services.Roles
             }
         }
 
-        public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
-        {
-            var currentUserId = _userProvider.GetCurrentUserId();
-            var user = _dataService.GetById<User>(currentUserId.Value);
-
-            // Local user restrictions
-
-            return query;
-        }
+//        public override IQueryable<Role> ApplyRestrictions(IQueryable<Role> query)
+//        {
+//            var currentUserId = _userProvider.GetCurrentUserId();
+//            var user = _dataService.GetById<User>(currentUserId.Value);
+//
+//            // Local user restrictions
+//
+//            return query;
+//        }
 
         public override DetailedValidationResult MapFromDtoToEntity(Role entity, RoleDto dto)
         {
@@ -102,6 +102,7 @@ namespace Application.Services.Roles
             entity.Name = dto.Name;
             entity.IsActive = dto.IsActive;
             entity.Actions = dto.Actions?.ToArray();
+            entity.RoleType = dto.RoleType.Code;
             entity.Permissions = dto?.Permissions?.Select(i => i.Code)?.Cast<int>()?.ToArray();
 
             return null;
@@ -127,56 +128,52 @@ namespace Application.Services.Roles
             return result;
         }
 
-        public IEnumerable<CompaniesByRole> GetCompanyTypeByRole(Guid id)
+        public CompaniesByRole GetCompanyTypeByRole(Guid id)
         {
-            var user = _userProvider.GetCurrentUser();
-
-            var permissions = _dataService.GetDbSet<Role>()
+            var roleType = _dataService.GetDbSet<Role>()
                 .Where(_ => _.Id == id)
-                .Select(_ => _.Permissions)
+                .Select(_ => _.RoleType)
                 .FirstOrDefault();
 
-            if (permissions == null)
-                return null;
-
-            var res = new List<CompaniesByRole>();
-
-            if (permissions.Contains((int) RolePermissions.ProvidersGreedPermissions))
+            switch (roleType)
             {
-                res.Add(new CompaniesByRole()
-                {
-                    Field = "providerId",
-                    Source = "Providers"
-                });
+                case Domain.Enums.RoleTypes.Client:
+                    return new CompaniesByRole()
+                    {
+                        Field = "clientId",
+                        Source = "Clients"
+                    };
+                case Domain.Enums.RoleTypes.TransportCompany:
+                    return new CompaniesByRole()
+                    {
+                        Field = "carrierId",
+                        Source = "TransportCompanies"
+                    };
+                case Domain.Enums.RoleTypes.Provider:
+                    return new CompaniesByRole()
+                    {
+                        Field = "providerId",
+                        Source = "Providers"
+                    };
+                default:
+                    return new CompaniesByRole();
             }
-            if (permissions.Contains((int) RolePermissions.ClientsGreedPermissions))
-            {
-                res.Add(new CompaniesByRole()
-                {
-                    Field = "clientId",
-                    Source = "Clients"
-                });
-            }
-            if (permissions.Contains((int) RolePermissions.TransportCompaniesGreedPermissions))
-            {
-                res.Add(new CompaniesByRole()
-                {
-                    Field = "carrierId",
-                    Source = "TransportCompanies"
-                });
-            }
-
-            return res;
         }
 
         public override RoleDto MapFromEntityToDto(Role entity)
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
             return new RoleDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
                 Actions = entity.Actions,
+                RoleType = new RoleTypeInfo
+                {
+                    Code = entity.RoleType,
+                    Name = entity.RoleType.ToString().ToLowerFirstLetter().Translate(lang)
+                },
                 Permissions = entity?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
                 {
                     Code = i,

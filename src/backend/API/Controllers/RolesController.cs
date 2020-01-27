@@ -86,6 +86,7 @@ namespace API.Controllers
             }
         }
         
+        
         /// <summary>
         /// Получение списка всех доступных видов компаний для роли
         /// </summary>

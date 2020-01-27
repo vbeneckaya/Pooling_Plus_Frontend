@@ -14,6 +14,7 @@ using Application.Services.AppConfiguration;
 using Application.Services.Articles;
 using Application.Services.BodyTypes;
 using Application.Services.Clients;
+using Application.Services.DeliveryTypes;
 using Application.Services.Documents;
 using Application.Services.DocumentTypes;
 using Application.Services.FieldProperties;
@@ -27,6 +28,7 @@ using Application.Services.ProductTypes;
 using Application.Services.Profile;
 using Application.Services.Report;
 using Application.Services.Roles;
+using Application.Services.RoleTypes;
 using Application.Services.Shippings;
 using Application.Services.ShippingWarehouses;
 using Application.Services.Tariffs;
@@ -50,6 +52,7 @@ using Domain.Services.AppConfiguration;
 using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
 using Domain.Services.Clients;
+using Domain.Services.DeliveryTypes;
 using Domain.Services.Documents;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
@@ -58,6 +61,7 @@ using Domain.Services.History;
 using Domain.Services.Identity;
 using Domain.Services.Injections;
 using Domain.Services.Orders;
+using Domain.Services.OrderTypes;
 using Domain.Services.PickingTypes;
 using Domain.Services.ProductTypes;
 using Domain.Services.Profile;
@@ -66,6 +70,7 @@ using Domain.Services.Report;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
+using Domain.Services.TarifficationTypes;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
 using Domain.Services.Tonnages;
@@ -139,6 +144,11 @@ namespace Infrastructure.Installers
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
+            
+            services.AddScoped<IRoleTypesService, RoleTypesService>();
+            services.AddScoped<IOrderTypesService, OrderTypesService>();
+            services.AddScoped<IDeliveryTypesService, DeliveryTypesService>();
+            services.AddScoped<ITarifficationTypesService, TarifficationTypesService>();
             
                         
             services.AddScoped<IReportService, ReportService>();

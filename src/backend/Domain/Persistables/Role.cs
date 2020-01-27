@@ -1,17 +1,14 @@
 using System;
+using Domain.Enums;
 
 namespace Domain.Persistables
 {
     public class Role : IPersistableWithName
     {
         public Guid Id { get; set; }
-        
-//        public Guid? ClientId { get; set; }
-//        
-//        public Guid? ProviderId { get; set; }
-//        
-//        public Guid? CarrierId { get; set; }
-        
+
+        public RoleTypes RoleType { get; set; }
+
         public string Name { get; set; }
         
         public bool IsActive { get; set; }

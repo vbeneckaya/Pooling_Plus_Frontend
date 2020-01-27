@@ -1,11 +1,12 @@
-import { all, put, takeEvery } from 'redux-saga/effects';
-import { postman } from '../utils/postman';
-import { createSelector } from 'reselect';
+import {all, put, takeEvery} from 'redux-saga/effects';
+import {postman} from '../utils/postman';
+import {createSelector} from 'reselect';
 import roles from '../mocks/roles';
 import {toast} from 'react-toastify';
 import {errorMapping} from '../utils/errorMapping';
 
 const TYPE_API = 'roles';
+const TYPE_API_ROLE_TYPES = 'roleTypes';
 
 //*  TYPES  *//
 
@@ -24,6 +25,10 @@ const CREATE_ROLE_ERROR = 'CREATE_ROLE_ERROR';
 const GET_COMPANY_TYPE_BY_ROLE_REQUEST = 'GET_COMPANY_TYPE_BY_ROLE_REQUEST';
 const GET_COMPANY_TYPE_BY_ROLE_SUCCESS = 'GET_COMPANY_TYPE_BY_ROLE_SUCCESS';
 const GET_COMPANY_TYPE_BY_ROLE_ERROR = 'GET_COMPANY_TYPE_BY_ROLE_ERROR';
+
+const GET_ALL_ROLE_TYPES_REQUEST = 'GET_ALL_ROLE_TYPES_REQUEST';
+const GET_ALL_ROLE_TYPES_SUCCESS = 'GET_ALL_ROLE_TYPES_SUCCESS';
+const GET_ALL_ROLE_TYPES_ERROR = 'GET_ALL_ROLE_TYPES_ERROR';
 
 const TOGGLE_ROLE_ACTIVE_REQUEST = 'TOGGLE_ROLE_ACTIVE_REQUEST';
 const TOGGLE_ROLE_ACTIVE_SUCCESS = 'TOGGLE_ROLE_ACTIVE_SUCCESS';
@@ -52,14 +57,16 @@ const initial = {
     actions: {},
     totalCount: 0,
     progress: false,
-    companyType:[]
+    companyType: {},
+    roleTypes: []
 };
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload }) => {
+export default (state = initial, {type, payload}) => {
     switch (type) {
         case GET_ROLES_LIST_REQUEST:
+        case GET_ALL_ROLE_TYPES_REQUEST:
         case GET_ROLE_CARD_REQUEST:
         case GET_COMPANY_TYPE_BY_ROLE_REQUEST:
         case CREATE_ROLE_REQUEST:
@@ -80,6 +87,13 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 progress: false,
                 card: payload,
+            };
+
+        case GET_ALL_ROLE_TYPES_SUCCESS:
+            return {
+                ...state,
+                progress: false,
+                roleTypes: payload,
             };
         case GET_ROLES_LIST_ERROR:
         case GET_ROLE_CARD_ERROR:
@@ -130,16 +144,26 @@ export default (state = initial, { type, payload }) => {
                 ...state,
                 actions: {},
             };
-            
+
         case GET_COMPANY_TYPE_BY_ROLE_SUCCESS:
-            return{
+            return {
                 ...state,
                 companyType: payload
             };
         case GET_COMPANY_TYPE_BY_ROLE_ERROR:
-            return{
+            return {
                 ...state,
-                companyType: []
+                companyType: {}
+            };
+        case GET_ALL_ROLE_TYPES_SUCCESS:
+            return {
+                ...state,
+                roleTypes: payload
+            };
+        case GET_ALL_ROLE_TYPES_ERROR:
+            return {
+                ...state,
+                roleTypes: []
             };
         default:
             return state;
@@ -165,6 +189,13 @@ export const getCompanyTypeByRoleRequest = payload => {
 export const getRoleCardRequest = payload => {
     return {
         type: GET_ROLE_CARD_REQUEST,
+        payload,
+    };
+};
+
+export const getAllRoleTypesRequest = payload => {
+    return {
+        type: GET_ALL_ROLE_TYPES_REQUEST,
         payload,
     };
 };
@@ -241,12 +272,13 @@ export const companyTypeSelector = createSelector(stateSelector, state => state.
 
 export const allPermissionsSelector = createSelector(stateSelector, state => state.permissions);
 export const allActionsSelector = createSelector(stateSelector, state => state.actions);
+export const allRoleTypesSelector = createSelector(stateSelector, state => state.roleTypes);
 
 //*  SAGA  *//
 
-function* getRolesListSaga({ payload }) {
+function* getRolesListSaga({payload}) {
     try {
-        const { filter = {}, isConcat } = payload;
+        const {filter = {}, isConcat} = payload;
         const result = yield postman.post(`/${TYPE_API}/search`, filter);
 
         yield put({
@@ -264,7 +296,25 @@ function* getRolesListSaga({ payload }) {
     }
 }
 
-function* getCompanyTypeByRoleSaga({ payload }) {
+function* getAllRoleTypesSaga({payload}) {
+    try {
+        const result = yield postman.get(`/${TYPE_API_ROLE_TYPES}/allRoleTypes`);
+
+        yield put({
+            type: GET_ALL_ROLE_TYPES_SUCCESS,
+            payload: {
+                ...result,
+            },
+        });
+    } catch (error) {
+        yield put({
+            type: GET_ROLES_LIST_ERROR,
+            payload: error,
+        });
+    }
+}
+
+function* getCompanyTypeByRoleSaga({payload}) {
     try {
         const result = yield postman.get(`/${TYPE_API}/getCompanyTypeByRole/${payload}`);
         yield put({
@@ -279,7 +329,7 @@ function* getCompanyTypeByRoleSaga({ payload }) {
     }
 }
 
-function* getRoleCardSaga({ payload }) {
+function* getRoleCardSaga({payload}) {
     try {
         const result = yield postman.get(`/${TYPE_API}/getById/${payload}`);
         yield put({
@@ -294,9 +344,9 @@ function* getRoleCardSaga({ payload }) {
     }
 }
 
-function* createRoleSaga({ payload }) {
+function* createRoleSaga({payload}) {
     try {
-        const { params, callbackFunc } = payload;
+        const {params, callbackFunc} = payload;
 
         const result = yield postman.post(`/${TYPE_API}/saveOrCreate`, params);
 
@@ -319,9 +369,9 @@ function* createRoleSaga({ payload }) {
     }
 }
 
-function* toggleRoleActiveSaga({ payload }) {
+function* toggleRoleActiveSaga({payload}) {
     try {
-        const { id, active, callbackSuccess } = payload;
+        const {id, active, callbackSuccess} = payload;
         const result = yield postman.post(`/${TYPE_API}/setActive/${id}/${active}`);
 
         yield put({
@@ -336,7 +386,7 @@ function* toggleRoleActiveSaga({ payload }) {
     }
 }
 
-function* getAllPermissionsSaga({ payload }) {
+function* getAllPermissionsSaga({payload}) {
     try {
         const result = yield postman.get(`/${TYPE_API}/allPermissions`);
 
@@ -370,6 +420,7 @@ function* getAllActionsSaga({payload}) {
 
 export function* saga() {
     yield all([
+        takeEvery(GET_ALL_ROLE_TYPES_REQUEST, getAllRoleTypesSaga),
         takeEvery(GET_ROLES_LIST_REQUEST, getRolesListSaga),
         takeEvery(GET_ROLE_CARD_REQUEST, getRoleCardSaga),
         takeEvery(GET_COMPANY_TYPE_BY_ROLE_REQUEST, getCompanyTypeByRoleSaga),

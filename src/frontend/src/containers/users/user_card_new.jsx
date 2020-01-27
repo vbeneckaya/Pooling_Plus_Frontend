@@ -34,7 +34,7 @@ const UserCard = props => {
     const progress = useSelector(state => saveProgressSelector(state));
     const user = useSelector(state => userCardSelector(state));
     const error = useSelector(state => errorSelector(state)) || {};
-    const companyType = useSelector(state => companyTypeSelector(state)) || [];
+    const companyType = useSelector(state => companyTypeSelector(state)) || {};
 
     useEffect(() => {
         id && dispatch(getUserCardRequest(id));
@@ -200,7 +200,6 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleRoleChange}
                 />
-                {console.log(Object.values(companies))}
                 {companies &&
                 Object.values(companies).map((row, i) => (
                     <FormField
