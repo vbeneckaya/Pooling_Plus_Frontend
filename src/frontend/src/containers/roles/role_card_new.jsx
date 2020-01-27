@@ -115,13 +115,17 @@ const RoleCard = props => {
             ...form,
             permissions: form.permissions.map(item => ({
                 code: item,
+            
             })),
-            roleType: {code: form.roleType.value, name: form.roleType.name},
+            roleType: {code: !!form.roleType.value ? form.roleType.value : form.roleType.code, name: form.roleType.name},
         };
     };
 
     const handleSave = () => {
-        dispatch(createRoleRequest({params: mapData(), callbackFunc: handleClose}));
+        console.log(form);
+        let dat = mapData();
+        console.log(dat);
+        dispatch(createRoleRequest({params: dat, callbackFunc: handleClose}));
     };
 
     const getActionsFooter = useCallback(
@@ -154,11 +158,12 @@ const RoleCard = props => {
                                 isRequired
                                 error={error['name']}
                                 onChange={handleChange}
-                            />
+                            />555
                             <FormField
                                 fluid
                                 search
                                 selection
+                                isRequired
                                 text='roleType'
                                 name="roleType"
                                 value={form['roleType']}
@@ -231,6 +236,7 @@ const RoleCard = props => {
     );
 
     const permissions = useMemo(() => form.permissions || [], [form]);
+    const roleType = useMemo(() => form.roleType || {}, [form]);
     const actions = useMemo(() => form.actions || [], [form]);
     const orderActions = useMemo(() => allActions.orderActions || [], [allActions]);
     const shippingActions = useMemo(() => allActions.shippingActions || [], [allActions]);
