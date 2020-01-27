@@ -35,26 +35,25 @@ namespace Application.Services.Shippings
             var orders = _commonDataService.GetDbSet<Order>()
                                            .Where(x => x.ShippingId == shipping.Id)
                                            .ToList()
-                                           .Where(x => !string.IsNullOrEmpty(x.ShippingCity)
-                                                    && !string.IsNullOrEmpty(x.DeliveryCity))
+                                           .Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId.ToString())
+                                                    && !string.IsNullOrEmpty(x.DeliveryWarehouseId.ToString()))
                                            .ToList();
 
             Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
 
-            foreach (var group in orders.GroupBy(x => new { x.ShippingCity, x.DeliveryCity, x.ClientId }))
+            foreach (var group in orders.GroupBy(x => new { x.ShippingWarehouseId, x.DeliveryWarehouseId, x.ClientId }))
             {
-                var hasIncompleteOrders = group.Where(x => x.DeliveryType != DeliveryType.Delivery
-                                                            || x.PalletsCount == null
-                                                            || x.PalletsCount <= 0
-                                                            || x.ShippingDate == null
-                                                            || x.DeliveryDate == null)
-                                               .Any();
+                var hasIncompleteOrders = group.Any(x => x.DeliveryType != DeliveryType.Delivery
+                                                         || x.PalletsCount == null
+                                                         || x.PalletsCount <= 0
+                                                         || x.ShippingDate == null
+                                                         || x.DeliveryDate == null);
                 if (hasIncompleteOrders)
                 {
                     continue;
                 }
 
-                decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingCity, group.Key.DeliveryCity, shipping, group.AsEnumerable());
+                decimal? deliveryCost = GetOrderGroupDeliveryCost(group.Key.ShippingWarehouseId, group.Key.DeliveryWarehouseId, shipping, group.AsEnumerable());
                 foreach (var order in group)
                 {
                     if (!order.ManualDeliveryCost && order.DeliveryCost != deliveryCost)
@@ -68,32 +67,31 @@ namespace Application.Services.Shippings
             }
         }
 
-        private decimal? GetOrderGroupDeliveryCost(string shippingCity, string deliveryCity, Shipping shipping, IEnumerable<Order> orders)
+        private decimal? GetOrderGroupDeliveryCost(Guid? shippingWarehouseId, Guid? deliveryWarehouseId, Shipping shipping, IEnumerable<Order> orders)
         {
             DateTime shippingDate = orders.Min(x => x.ShippingDate.Value);
 
             var tariff = _commonDataService.GetDbSet<Tariff>()
-                                           .Where(x => x.CarrierId == shipping.CarrierId
-                                                        && x.VehicleTypeId == shipping.VehicleTypeId
-                                                        && x.BodyTypeId == shipping.BodyTypeId
-                                                        && x.TarifficationType == shipping.TarifficationType
-                                                        && x.ShipmentCity == shippingCity
-                                                        && x.DeliveryCity == deliveryCity
-                                                        && x.EffectiveDate <= shippingDate
-                                                        && x.ExpirationDate >= shippingDate)
-                                           .FirstOrDefault();
+                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                                     && x.VehicleTypeId == shipping.VehicleTypeId
+                                     && x.BodyTypeId == shipping.BodyTypeId
+                                     && x.TarifficationType == shipping.TarifficationType
+                                     && x.ShippingWarehouseId == shippingWarehouseId
+                                     && x.DeliveryWarehouseId == deliveryWarehouseId
+                                     && x.EffectiveDate <= shippingDate
+                                     && x.ExpirationDate >= shippingDate);
             if (tariff == null)
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
-                                           .Where(x => x.CarrierId == shipping.CarrierId
-                                                        && x.VehicleTypeId == null
-                                                        && x.BodyTypeId == null
-                                                        && x.TarifficationType == shipping.TarifficationType
-                                                        && x.ShipmentCity == shippingCity
-                                                        && x.DeliveryCity == deliveryCity
-                                                        && x.EffectiveDate <= shippingDate
-                                                        && x.ExpirationDate >= shippingDate)
-                                           .FirstOrDefault();
+                        .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                                             && x.VehicleTypeId == null
+                                             && x.BodyTypeId == null
+                                             && x.TarifficationType == shipping.TarifficationType
+                                             && x.ShippingWarehouseId == shippingWarehouseId
+                                             && x.DeliveryWarehouseId == deliveryWarehouseId
+                                             && x.EffectiveDate <= shippingDate
+                                             && x.ExpirationDate >= shippingDate)
+                    ;
             }
 
             if (tariff == null)

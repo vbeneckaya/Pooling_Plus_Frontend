@@ -1,8 +1,7 @@
-﻿using Domain.Services.WarehouseCity;
-using Domain.Services.Warehouses;
-using Domain.Shared;
+﻿using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Domain.Services.Warehouses;
 
 namespace API.Controllers
 {
@@ -18,11 +17,11 @@ namespace API.Controllers
             return _service.ForSelect();
         }
 
-        public WarehouseCityController(IWarehouseCityService service)
+        public WarehouseCityController(IWarehouseService service)
         {
             _service = service;
         }
 
-        private readonly IWarehouseCityService _service;
+        private readonly IWarehouseService _service;
     }
 }

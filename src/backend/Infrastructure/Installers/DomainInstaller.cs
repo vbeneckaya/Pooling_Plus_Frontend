@@ -62,7 +62,6 @@ using Domain.Services.ProductTypes;
 using Domain.Services.Profile;
 using Domain.Services.Roles;
 using Domain.Services.Shippings;
-using Domain.Services.ShippingWarehouseCity;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
 using Domain.Services.TaskProperties;
@@ -72,14 +71,16 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.Users;
 using Domain.Services.UserSettings;
 using Domain.Services.VehicleTypes;
-using Domain.Services.WarehouseCity;
 using Domain.Services.Warehouses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using Application.Services.Report;
+using Domain.Services.Providers;
 using Domain.Services.Report;
+using Domain.Services.ShippingWarehouses;
+using Domain.Services.Warehouses;
 
 namespace Infrastructure.Installers
 {
@@ -132,10 +133,11 @@ namespace Infrastructure.Installers
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IOrderShippingStatusService, OrderShippingStatusService>();
             services.AddScoped<IClientsService, ClientsService>();
+            services.AddScoped<IProvidersService, ProvidersService>();
             services.AddScoped<ICompaniesService, CompaniesService>();
 
-            services.AddScoped<IWarehouseCityService, WarehouseCityService>();
-            services.AddScoped<IShippingWarehouseCityService, ShippingWarehouseCityService>();
+            services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddScoped<IShippingWarehouseService, ShippingWarehouseService>();
 
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
@@ -205,6 +207,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, BillingOrderShipping>();
             services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();
             services.AddScoped<IAppAction<Order>, RollbackOrderShipping>();
+            
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
@@ -224,6 +227,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, BillingShipping>();
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
             services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
+            services.AddScoped<IAppAction<Shipping>, SendToPooling>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();

@@ -77,13 +77,13 @@ namespace Domain.Services.Orders
 
         public decimal? InvoiceAmountExcludingVAT { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
+//        [FieldType(FieldType.Select, source: nameof(ShippingWarehouseCity), showRawValue: true), IsReadOnly]
         public LookUpDto ShippingCity { get; set; }
 
         [FieldType(FieldType.Text), IsReadOnly]
         public string DeliveryRegion { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
+//        [FieldType(FieldType.Select, source: nameof(WarehouseCity), showRawValue: true), IsReadOnly]
         public LookUpDto DeliveryCity { get; set; }
 
         public string ShippingAddress { get; set; }
@@ -173,10 +173,10 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingAddress)), IsDefault, OrderNumber(7), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), IsDefault, OrderNumber(7), IsRequired]
         public LookUpDto ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(DeliveryAddress)), IsDefault, OrderNumber(8), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(Warehouses)), IsDefault, OrderNumber(8), IsRequired]
         public LookUpDto DeliveryWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsReadOnly]
