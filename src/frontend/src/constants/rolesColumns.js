@@ -10,6 +10,10 @@ export const rolesColumns = [
         displayNameKey: 'usersCount',
     },
     {
+        name: 'roleType',
+        displayNameKey: 'roleType',
+    },
+    {
         name: 'permissions',
         displayNameKey: 'permissions',
         type: LABELS_TYPE,

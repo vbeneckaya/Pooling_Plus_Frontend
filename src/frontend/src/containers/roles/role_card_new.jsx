@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     allActionsSelector,
     allPermissionsSelector,
-    clearRolesCard,
+    clearRolesCard, 
     createRoleRequest,
     errorSelector,
     getAllActionsRequest,
@@ -17,7 +17,7 @@ import CardLayout from '../../components/CardLayout';
 import {Button, Dimmer, Form, Loader, Tab} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import {sortFunc} from '../../utils/sort';
-import {TEXT_TYPE} from '../../constants/columnTypes';
+import {SELECT_TYPE, TEXT_TYPE} from '../../constants/columnTypes';
 
 const RoleCard = props => {
     const { t } = useTranslation();
@@ -43,6 +43,7 @@ const RoleCard = props => {
             dispatch(clearRolesCard());
         };
     }, []);
+
 
     useEffect(
         () => {
@@ -73,6 +74,8 @@ const RoleCard = props => {
             [name]: value,
         }));
     }, []);
+    
+    
 
     const handlePermissions = (e, { value }) => {
         const { permissions } = form;
@@ -112,12 +115,17 @@ const RoleCard = props => {
             ...form,
             permissions: form.permissions.map(item => ({
                 code: item,
+            
             })),
+            roleType: {code: !!form.roleType.value ? form.roleType.value : form.roleType.code, name: form.roleType.name},
         };
     };
 
     const handleSave = () => {
-        dispatch(createRoleRequest({params: mapData(), callbackFunc: handleClose}));
+        console.log(form);
+        let dat = mapData();
+        console.log(dat);
+        dispatch(createRoleRequest({params: dat, callbackFunc: handleClose}));
     };
 
     const getActionsFooter = useCallback(
@@ -149,6 +157,18 @@ const RoleCard = props => {
                                 type={TEXT_TYPE}
                                 isRequired
                                 error={error['name']}
+                                onChange={handleChange}
+                            />
+                            <FormField
+                                fluid
+                                search
+                                selection
+                                isRequired
+                                text='roleType'
+                                name="roleType"
+                                value={form['roleType']}
+                                source={'roleTypes'}
+                                type={SELECT_TYPE}
                                 onChange={handleChange}
                             />
                             <Form.Field>
@@ -216,6 +236,7 @@ const RoleCard = props => {
     );
 
     const permissions = useMemo(() => form.permissions || [], [form]);
+    const roleType = useMemo(() => form.roleType || {}, [form]);
     const actions = useMemo(() => form.actions || [], [form]);
     const orderActions = useMemo(() => allActions.orderActions || [], [allActions]);
     const shippingActions = useMemo(() => allActions.shippingActions || [], [allActions]);

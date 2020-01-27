@@ -125,8 +125,8 @@ namespace Domain.Services.Articles
         [FieldType(FieldType.Number), OrderNumber(39)]
         public int? NetWeightPalletsG { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(40)]
-        public LookUpDto CompanyId { get; set; }
+//        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(40)]
+//        public LookUpDto CompanyId { get; set; }
         
         public bool IsEditable { get; set; }
     }

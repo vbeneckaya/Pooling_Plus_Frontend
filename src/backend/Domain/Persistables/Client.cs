@@ -10,8 +10,6 @@ namespace Domain.Persistables
 
         public string PoolingId { get; set; }
 
-        public Guid? CompanyId { get; set; }
-
         public bool IsActive { get; set; }
 
         public override string ToString()

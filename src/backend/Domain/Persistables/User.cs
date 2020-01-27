@@ -20,9 +20,9 @@ namespace Domain.Persistables
         public Guid? CarrierId { get; set; }
 
         /// <summary>
-        /// Юр. лицо
+        /// Клиент
         /// </summary>
-        public Guid? CompanyId { get; set; }
+        public Guid? ClientId { get; set; }
         
         /// <summary>
         /// Поставщик

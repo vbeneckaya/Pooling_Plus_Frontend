@@ -39,8 +39,8 @@ namespace Domain.Services.ShippingWarehouses
 
         public string RegionId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(6)]
-        public LookUpDto CompanyId { get; set; }
+        [FieldType(FieldType.Select, source: nameof(Clients)), OrderNumber(6)]
+        public LookUpDto ClientId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(7)]
         public bool? IsActive { get; set; }

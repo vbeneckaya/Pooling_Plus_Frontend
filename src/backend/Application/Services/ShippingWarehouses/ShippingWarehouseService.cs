@@ -15,7 +15,7 @@ namespace Application.Services.ShippingWarehouses
         {
             _dataService = dataService;
         }
-
+        
         public IEnumerable<LookUpDto> ForSelect()
         {
             return _dataService.GetDbSet<ShippingWarehouse>()

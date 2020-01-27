@@ -39,6 +39,7 @@ namespace API.Controllers
             }
         }
 
+       
         /// <summary>
         /// Получение списка всех доступных разрешений
         /// </summary>
@@ -84,14 +85,29 @@ namespace API.Controllers
                 return StatusCode(500);
             }
         }
-
+        
+        
         /// <summary>
-        /// Получение данных для выпадающего списка отфильтрованного по юр. лицу
+        /// Получение списка всех доступных видов компаний для роли
         /// </summary>
-        [HttpGet("forSelectByCompany/{companyId?}")]
-        public IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId)
+        [HttpGet("getCompanyTypeByRole/{id}")]
+        public IActionResult GetCompanyTypeByRole([FromRoute] Guid id)
         {
-            return _service.ForSelectByCompany(companyId);
+            try
+            {
+                var result = _service.GetCompanyTypeByRole(id);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Failed to get company type by role id");
+                return StatusCode(500);
+            }
         }
     }
 }

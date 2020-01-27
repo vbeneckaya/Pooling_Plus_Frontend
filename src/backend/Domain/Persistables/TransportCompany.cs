@@ -19,11 +19,6 @@ namespace Domain.Persistables
         public string Title { get; set; }
 
         /// <summary>
-        /// Юр. лицо
-        /// </summary>
-        public Guid? CompanyId { get; set; }
-
-        /// <summary>
         /// Pooling ID
         /// </summary>
         public string PoolingId { get; set; }

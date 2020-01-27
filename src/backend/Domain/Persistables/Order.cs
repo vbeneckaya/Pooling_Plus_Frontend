@@ -349,11 +349,6 @@ namespace Domain.Persistables
         public Guid? VehicleTypeId { get; set; }
 
         /// <summary>
-        /// Юр. лицо
-        /// </summary>
-        public Guid? CompanyId { get; set; }
-
-        /// <summary>
         /// Количество штук в накладной
         /// </summary>
         public int? ItemsNumber { get; set; }

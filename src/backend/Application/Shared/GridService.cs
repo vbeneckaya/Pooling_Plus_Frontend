@@ -589,7 +589,7 @@ namespace Application.Shared
             string forEntity = typeof(TEntity) == typeof(Order) 
                 ? FieldPropertiesForEntityType.Orders.ToString() 
                 : FieldPropertiesForEntityType.Shippings.ToString();
-            var fieldsProperties = _fieldPropertiesService.GetFor(forEntity, null, role?.Id, null);
+            var fieldsProperties = _fieldPropertiesService.GetFor(forEntity, role?.Id, null);
             Log.Information("{entityName}.GetBulkUpdates (Load field settings): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
             sw.Restart();
 
