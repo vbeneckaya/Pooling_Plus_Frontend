@@ -35,7 +35,6 @@ const List = () => {
 
     let [activeItem, setActiveItem] = useState(gridsList[0] || '');
     let [role, setRole] = useState(null);
-    let [company, setCompany] = useState('null');
 
     const statusList =
         useSelector(state =>

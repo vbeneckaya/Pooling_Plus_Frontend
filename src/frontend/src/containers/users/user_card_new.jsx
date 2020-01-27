@@ -26,7 +26,7 @@ const UserCard = props => {
     const {id} = params;
 
     let [form, setForm] = useState({});
-    let [companies, setFormCompanies] = useState({});
+    let [company, setFormCompany] = useState({});
     let [confirmation, setConfirmation] = useState({open: false});
     let [notChangeForm, setNotChangeForm] = useState(true);
 
@@ -38,7 +38,6 @@ const UserCard = props => {
 
     useEffect(() => {
         id && dispatch(getUserCardRequest(id));
-
         return () => {
             dispatch(clearUserCard());
         };
@@ -49,18 +48,21 @@ const UserCard = props => {
                 ...form,
                 ...user,
             }));
+            console.log("user", user);
+            user.roleId && dispatch(getCompanyTypeByRoleRequest(user.roleId.value));
         },
         [user],
     );
 
     useEffect(
         () => {
-            setFormCompanies(companies => ({
-                ...companies,
+            setFormCompany(company => ({
+                ...company,
                 ...companyType,
             }));
         },
         [companyType],
+        
     );
 
     const title = useMemo(
@@ -200,20 +202,18 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleRoleChange}
                 />
-                {companies &&
-                Object.values(companies).map((row, i) => (
-                    <FormField
-                        fluid
-                        search
-                        selection
-                        name={companies[i].field}
-                        value={form[companies[i].field]}
-                        source={companies[i].source}
-                        error={error[companies[i].field]}
-                        type={SELECT_TYPE}
-                        onChange={handleChange}
-                    />))
-                }
+                {company.field &&
+                <FormField
+                    fluid
+                    search
+                    selection
+                    name={company.field}
+                    value={form[company.field]}
+                    source={company.source}
+                    error={error[company.field]}
+                    type={SELECT_TYPE}
+                    onChange={handleChange}
+                />}
                 {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль
