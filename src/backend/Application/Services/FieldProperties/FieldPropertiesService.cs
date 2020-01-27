@@ -13,6 +13,7 @@ using Domain.Services.Shippings;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Application.Services.FieldProperties
@@ -33,7 +34,7 @@ namespace Application.Services.FieldProperties
             _userProvider = userProvider;
         }
 
-        public IEnumerable<FieldForFieldProperties> GetFor(string forEntity, Guid? companyId, Guid? roleId, Guid? userId)
+        public IEnumerable<FieldForFieldProperties> GetFor(string forEntity, Guid? roleId, Guid? userId)
         {
             var result = new List<FieldForFieldProperties>();
 
@@ -50,14 +51,12 @@ namespace Application.Services.FieldProperties
 
             var fieldMatrixItems = _dataService.GetDbSet<FieldPropertyItem>()
                                                .Where(x => x.ForEntity == forEntityType
-                                                        && (x.RoleId == roleId || x.RoleId == null)
-                                                        && (x.CompanyId == companyId || x.CompanyId == null))
+                                                        && (x.RoleId == roleId || x.RoleId == null))
                                                .ToList();
 
             var fieldVisibilities = _dataService.GetDbSet<FieldPropertyItemVisibility>()
                                                .Where(x => x.ForEntity == forEntityType
-                                                        && (x.RoleId == roleId || x.RoleId == null)
-                                                        && (x.CompanyId == companyId || x.CompanyId == null))
+                                                        && (x.RoleId == roleId || x.RoleId == null))
                                                .ToList();
 
             var fieldNames = GetFieldNames(forEntityType);
@@ -127,14 +126,18 @@ namespace Application.Services.FieldProperties
             return accessType.ToString().ToLowerFirstLetter();
         }
 
+        public Byte[] Export(IEnumerable<FieldForFieldProperties> data)
+        {
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+        }
+
         public IEnumerable<string> GetAvailableFields(
             FieldPropertiesForEntityType forEntityType, 
-            Guid? companyId, 
             Guid? roleId, 
             Guid? userId)
         {
             var hiddenAccessType = FieldPropertiesAccessType.Hidden.ToString().ToLowerFirstLetter();
-            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId)
+            var fieldProperties = GetFor(forEntityType.ToString(), roleId, userId)
                 .Where(x=> !x.isHidden);
             foreach (var prop in fieldProperties)
             {
@@ -149,12 +152,11 @@ namespace Application.Services.FieldProperties
         public IEnumerable<string> GetReadOnlyFields(
             FieldPropertiesForEntityType forEntityType, 
             string stateName, 
-            Guid? companyId, 
             Guid? roleId, 
             Guid? userId)
         {
             var editAccessType = FieldPropertiesAccessType.Edit.ToString().ToLowerFirstLetter();
-            var fieldProperties = GetFor(forEntityType.ToString(), companyId, roleId, userId);
+            var fieldProperties = GetFor(forEntityType.ToString(), roleId, userId);
             foreach (var prop in fieldProperties)
             {
                 bool isReadOnly = true;
@@ -173,7 +175,6 @@ namespace Application.Services.FieldProperties
             FieldPropertiesForEntityType forEntityType,
             int state, 
             string fieldName,
-            Guid? companyId, 
             Guid? roleId, 
             Guid? userId)
         {
@@ -181,8 +182,7 @@ namespace Application.Services.FieldProperties
                                               .Where(x => x.ForEntity == forEntityType
                                                         && x.FieldName == fieldName
                                                         && x.State == state
-                                                        && (x.RoleId == roleId || x.RoleId == null)
-                                                        && (x.CompanyId == companyId || x.CompanyId == null))
+                                                        && (x.RoleId == roleId || x.RoleId == null))
                                               .OrderBy(x => x)
                                               .FirstOrDefault();
             return fieldMatrixItem?.AccessType ?? FieldPropertiesAccessType.Show;
@@ -193,10 +193,6 @@ namespace Application.Services.FieldProperties
             var dbSet = _dataService.GetDbSet<FieldPropertyItemVisibility>();
 
             var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
-
-            var companyId = string.IsNullOrEmpty(dto.CompanyId)
-                ? (Guid?)null
-                : Guid.Parse(dto.CompanyId);
 
             var roleId = string.IsNullOrEmpty(dto.RoleId)
                 ? (Guid?)null
@@ -213,7 +209,6 @@ namespace Application.Services.FieldProperties
                 {
                     Id = Guid.NewGuid(),
                     ForEntity = forEntity,
-                    CompanyId = companyId,
                     RoleId = roleId,
                     FieldName = dto.FieldName,
                     IsHidden = true
@@ -253,8 +248,7 @@ namespace Application.Services.FieldProperties
                     {
                         ForEntity = props.ForEntity,
                         FieldName = prop.FieldName,
-                        RoleId = props.RoleId,
-                        CompanyId = props.CompanyId
+                        RoleId = props.RoleId
                     }, prop.isHidden);
                     foreach (var accessType in prop.AccessTypes)
                     {
@@ -263,7 +257,6 @@ namespace Application.Services.FieldProperties
                             ForEntity = props.ForEntity,
                             FieldName = prop.FieldName,
                             RoleId = props.RoleId,
-                            CompanyId = props.CompanyId,
                             AccessType = accessType.Value,
                             State = accessType.Key
                         });
@@ -284,17 +277,12 @@ namespace Application.Services.FieldProperties
 
             var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
 
-            var companyId = string.IsNullOrEmpty(dto.CompanyId)
-                ? (Guid?)null
-                : Guid.Parse(dto.CompanyId);
-
             var roleId = string.IsNullOrEmpty(dto.RoleId)
                 ? (Guid?)null
                 : Guid.Parse(dto.RoleId);
 
             var entities = dbSet.Where(x => x.ForEntity == forEntity
                                         && x.RoleId == roleId
-                                        && x.CompanyId == companyId
                                         && x.FieldName == dto.FieldName)
                                 .ToList();
 
@@ -303,7 +291,7 @@ namespace Application.Services.FieldProperties
             foreach (var state in states)
             {
                 var stateId = (int)state;
-                var entity = entities.Where(x => x.State == stateId).FirstOrDefault();
+                var entity = entities.FirstOrDefault(x => x.State == stateId);
 
                 if (entity == null)
                 {
@@ -311,7 +299,6 @@ namespace Application.Services.FieldProperties
                     {
                         Id = Guid.NewGuid(),
                         ForEntity = forEntity,
-                        CompanyId = companyId,
                         RoleId = roleId,
                         FieldName = dto.FieldName,
                         State = stateId
@@ -385,10 +372,6 @@ namespace Application.Services.FieldProperties
 
             var forEntity = Enum.Parse<FieldPropertiesForEntityType>(dto.ForEntity, true);
 
-            var companyId = string.IsNullOrEmpty(dto.CompanyId)
-                ? (Guid?) null
-                : Guid.Parse(dto.CompanyId);
-
             var roleId = string.IsNullOrEmpty(dto.RoleId)
                 ? (Guid?) null
                 : Guid.Parse(dto.RoleId);
@@ -404,7 +387,6 @@ namespace Application.Services.FieldProperties
                 {
                     Id = Guid.NewGuid(),
                     ForEntity = forEntity,
-                    CompanyId = companyId,
                     RoleId = roleId,
                     FieldName = dto.FieldName,
                     IsHidden = isHidden

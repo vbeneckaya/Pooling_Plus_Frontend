@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Confirm, Dimmer, Form, Loader, Grid, Button} from 'semantic-ui-react';
+import {Confirm, Form, Button} from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import CardLayout from '../../components/CardLayout';
 import {useTranslation} from 'react-i18next';
@@ -14,6 +14,9 @@ import {
     createUserRequest,
     saveProgressSelector,
 } from '../../ducks/users';
+import {getCompanyTypeByRoleRequest, getRoleCardRequest} from "../../ducks/roles";
+import {companyTypeSelector} from "../../ducks/roles";
+import {Table} from "semantic-ui-react/dist/commonjs/collections/Table/Table";
 
 const UserCard = props => {
     const {t} = useTranslation();
@@ -23,6 +26,7 @@ const UserCard = props => {
     const {id} = params;
 
     let [form, setForm] = useState({});
+    let [company, setFormCompany] = useState({});
     let [confirmation, setConfirmation] = useState({open: false});
     let [notChangeForm, setNotChangeForm] = useState(true);
 
@@ -30,23 +34,35 @@ const UserCard = props => {
     const progress = useSelector(state => saveProgressSelector(state));
     const user = useSelector(state => userCardSelector(state));
     const error = useSelector(state => errorSelector(state)) || {};
+    const companyType = useSelector(state => companyTypeSelector(state)) || {};
 
     useEffect(() => {
         id && dispatch(getUserCardRequest(id));
-
         return () => {
             dispatch(clearUserCard());
         };
     }, []);
 
-    useEffect(
-        () => {
+    useEffect(() => {
             setForm(form => ({
                 ...form,
                 ...user,
             }));
+            console.log("user", user);
+            user.roleId && dispatch(getCompanyTypeByRoleRequest(user.roleId.value));
         },
         [user],
+    );
+
+    useEffect(
+        () => {
+            setFormCompany(company => ({
+                ...company,
+                ...companyType,
+            }));
+        },
+        [companyType],
+        
     );
 
     const title = useMemo(
@@ -107,8 +123,12 @@ const UserCard = props => {
     );
 
     const handleRoleChange = useCallback((event, {name, value}) => {
+        dispatch(getRoleCardRequest(value.value));
+        dispatch(getCompanyTypeByRoleRequest(value.value));
         handleChange(event, {name, value});
         handleChange(event, {name: 'carrierId', value: null});
+        handleChange(event, {name: 'providerId', value: null});
+        handleChange(event, {name: 'clientId', value: null});
     }, []);
 
     const confirmClose = () => {
@@ -182,17 +202,18 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleRoleChange}
                 />
+                {company.field &&
                 <FormField
                     fluid
                     search
                     selection
-                    name="carrierId"
-                    value={form['carrierId']}
-                    source="transportCompanies"
-                    error={error['carrierId']}
+                    name={company.field}
+                    value={form[company.field]}
+                    source={company.source}
+                    error={error[company.field]}
                     type={SELECT_TYPE}
                     onChange={handleChange}
-                />
+                />}
                 {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль

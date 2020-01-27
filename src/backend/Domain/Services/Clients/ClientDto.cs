@@ -13,9 +13,6 @@ namespace Domain.Services.Clients
 
         public string PoolingId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Companies)), OrderNumber(2)]
-        public LookUpDto CompanyId { get; set; }
-
         [FieldType(FieldType.Boolean), OrderNumber(3)]
         public bool? IsActive { get; set; }
 

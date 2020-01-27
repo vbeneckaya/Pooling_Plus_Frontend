@@ -191,8 +191,9 @@ namespace Application.Services.Tariffs
             
             var shippingWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
                 .Select(x => x.ShippingWarehouseId.Value.ToGuid())
+                .Distinct()
                 .ToList();
-            
+
             var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
                 .Where(x => shippingWarehouseIds.Contains(x.Id))
                 .ToDictionary(x => x.Id.ToString());
@@ -261,7 +262,7 @@ namespace Application.Services.Tariffs
                     entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
                 EffectiveDate = entity.EffectiveDate?.ToString("dd.MM.yyyy"),
                 ExpirationDate = entity.ExpirationDate?.ToString("dd.MM.yyyy"),
-//                IsEditable = user.CompanyId == null || entity.CompanyId != null,
+                IsEditable = user.ProviderId == null || entity.ProviderId != null,
                 FtlRate = entity.FtlRate,
                 LtlRate1 = entity.LtlRate1,
                 LtlRate2 = entity.LtlRate2,
@@ -318,12 +319,6 @@ namespace Application.Services.Tariffs
             return entry?.Id;
         }
 
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
-        
         private Guid? GetProviderIdByName(string name)
         {
             var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);

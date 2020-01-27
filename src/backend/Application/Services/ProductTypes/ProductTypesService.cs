@@ -33,7 +33,6 @@ namespace Application.Services.ProductTypes
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
-            entity.CompanyId = dto.CompanyId?.Value?.ToGuid();
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -59,37 +58,12 @@ namespace Application.Services.ProductTypes
 
         public override ProductTypeDto MapFromEntityToDto(ProductType entity)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return new ProductTypeDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
-                IsActive = entity.IsActive,
-                CompanyId = entity.CompanyId == null ? null : new LookUpDto(entity.CompanyId.ToString()),
-                IsEditable = user.CompanyId == null || entity.CompanyId != null
+                IsActive = entity.IsActive
             };
-        }
-
-        protected override IEnumerable<ProductTypeDto> FillLookupNames(IEnumerable<ProductTypeDto> dtos)
-        {
-            var companyIds = dtos.Where(x => !string.IsNullOrEmpty(x.CompanyId?.Value))
-                                 .Select(x => x.CompanyId.Value.ToGuid())
-                                 .ToList();
-
-            var companies = _dataService.GetDbSet<Company>()
-                                        .Where(x => companyIds.Contains(x.Id))
-                                        .ToDictionary(x => x.Id.ToString());
-
-            foreach (var dto in dtos)
-            {
-                if (!string.IsNullOrEmpty(dto.CompanyId?.Value)
-                    && companies.TryGetValue(dto.CompanyId.Value, out Company company))
-                {
-                    dto.CompanyId.Name = company.Name;
-                }
-                yield return dto;
-            }
         }
 
         public override IEnumerable<LookUpDto> ForSelect()
@@ -115,22 +89,10 @@ namespace Application.Services.ProductTypes
                 .ThenBy(i => i.Id);
         }
 
-        protected override ExcelMapper<ProductTypeDto> CreateExcelMapper()
-        {
-            return new ExcelMapper<ProductTypeDto>(_dataService, _userProvider, _fieldDispatcherService)
-                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
-        }
-
         public override ProductType FindByKey(ProductTypeDto dto)
         {
             return _dataService.GetDbSet<ProductType>()
                 .FirstOrDefault(i => i.Name == dto.Name);
-        }
-
-        private Guid? GetCompanyIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<Company>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
         }
     }
 }

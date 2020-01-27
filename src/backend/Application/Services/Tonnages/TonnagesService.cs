@@ -1,10 +1,7 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
-using Application.Shared.Excel;
-using Application.Shared.Excel.Columns;
 using DAL.Services;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.AppConfiguration;
@@ -40,14 +37,11 @@ namespace Application.Services.Tonnages
 
         public override TonnageDto MapFromEntityToDto(Tonnage entity)
         {
-            var user = _userProvider.GetCurrentUser();
-
             return new TonnageDto
             {
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 IsActive = entity.IsActive,
-                IsEditable = user.CompanyId == null || entity.CompanyId != null
             };
         }
 
@@ -58,8 +52,7 @@ namespace Application.Services.Tonnages
             DetailedValidationResult result = base.ValidateDto(dto);
 
             var hasDuplicates = !result.IsError && _dataService.GetDbSet<Tonnage>()
-                                            .Where(x => x.Name == dto.Name && x.Id.ToString() != dto.Id)
-                                            .Any();
+                                            .Any(x => x.Name == dto.Name && x.Id.ToString() != dto.Id);
 
             if (hasDuplicates)
             {
@@ -92,22 +85,7 @@ namespace Application.Services.Tonnages
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
         }
-
-        public override IQueryable<Tonnage> ApplyRestrictions(IQueryable<Tonnage> query)
-        {
-            var currentUserId = _userProvider.GetCurrentUserId();
-            var user = _dataService.GetById<User>(currentUserId.Value);
-
-            // Local user restrictions
-
-            if (user?.CompanyId != null)
-            {
-                query = query.Where(i => i.CompanyId == user.CompanyId || i.CompanyId == null);
-            }
-
-            return query;
-        }
-
+       
         public override Tonnage FindByKey(TonnageDto dto)
         {
             return _dataService.GetDbSet<Tonnage>()

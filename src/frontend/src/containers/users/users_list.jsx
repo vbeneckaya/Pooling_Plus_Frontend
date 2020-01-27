@@ -13,7 +13,6 @@ import {
 import { withTranslation } from 'react-i18next';
 import UserCard from './user_card';
 import { Button, Icon } from 'semantic-ui-react';
-import RoleCard from '../roles/role_card';
 import {
     DICTIONARY_CARD_LINK,
     DICTIONARY_NEW_LINK,
@@ -21,11 +20,11 @@ import {
     USER_LINK,
 } from '../../router/links';
 
-const newModal = (t, load) => (
-    <UserCard title={t('create_user_title')} id={null} loadList={load}>
-        <Button icon="add" />
-    </UserCard>
-);
+// const newModal = (t, load, role) => (
+//     <UserCard title={t('create_user_title')} id={null} loadList={load} role={role}>
+//         <Button icon="add" />
+//     </UserCard>
+// );
 
 export class UsersList extends Component {
     handleToggleIsActive = (event, { itemID, checked }, load) => {
@@ -39,15 +38,16 @@ export class UsersList extends Component {
         });
     };
 
-    getActions = (row, load, t) => {
+    getActions = (row, load, t , user) => {
         return [
-            <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={load}>
+            <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={load} role={user.role}>
                 <Button size="mini" className="grid-action-btn">
                     <Icon name="edit" /> {t('edit_btn')}
                 </Button>
             </UserCard>,
         ];
     };
+    
     getCard = ({row, loadList, name}) => {
         const { t } = this.props;
 
@@ -61,7 +61,7 @@ export class UsersList extends Component {
     };
 
     render() {
-        const { list, loadList, totalCount, loading, t } = this.props;
+        const { list, loadList, totalCount, loading, t} = this.props;
 
         return (
             <TableInfo

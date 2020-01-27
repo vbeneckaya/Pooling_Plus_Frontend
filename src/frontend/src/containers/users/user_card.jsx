@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { Button, Confirm, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
 import {
@@ -11,8 +11,9 @@ import {
     userCardSelector,
 } from '../../ducks/users';
 import {
+    getRoleCardRequest,
     getRolesRequest,
-    progressSelector as rolesProgressSelector,
+    progressSelector as rolesProgressSelector, roleCardSelector,
     rolesFromUserSelector,
 } from '../../ducks/roles';
 import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
@@ -37,11 +38,15 @@ class UserCard extends Component {
                 roleId: null,
                 email: null,
                 carrierId: null,
+                providerId: null,
+                clientId: null,
                 isActive: true,
             },
         };
     }
-
+    
+    
+    
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.user !== this.props.user) {
             const { user = {} } = this.props;
@@ -52,6 +57,8 @@ class UserCard extends Component {
                     userName: user.userName,
                     roleId: user.roleId,
                     carrierId: user.carrierId,
+                    providerId: user.providerId,
+                    clientId: user.clientId,
                     email: user.email,
                     password: user.password,
                     isActive: user.isActive,
@@ -70,6 +77,7 @@ class UserCard extends Component {
                 take: 20,
             },
         });
+        
         this.setState({ modalOpen: true });
     };
 
@@ -115,6 +123,8 @@ class UserCard extends Component {
     handleRoleChange = (event, { name, value }) => {
         this.handleChange(event, {name, value});
         this.handleChange(event, {name: 'carrierId', value: null});
+        this.handleChange(event, {name: 'providerId', value: null});
+        this.handleChange(event, {name: 'clientId', value: null});
     };
 
     mapProps = () => {
@@ -141,7 +151,7 @@ class UserCard extends Component {
 
     render() {
         const { modalOpen, form, confirmation } = this.state;
-        const { login, userName, roleId, email, isActive, password, carrierId } = form;
+        const { login, userName, roleId, email, isActive, password, carrierId ,providerId, clientId  } = form;
         const { children, title, loading, t, error, user } = this.props;
 
         return (
@@ -194,13 +204,15 @@ class UserCard extends Component {
                                         selection
                                         text="role"
                                         name="roleId"
-                                        value={roleId}
+                                        value={form['roleId']}
                                         source="roles"
                                         isRequired
                                         error={error['roleId']}
                                         type={SELECT_TYPE}
                                         onChange={this.handleRoleChange}
                                     />
+                                                            
+
                                     <FormField
                                         fluid
                                         search
@@ -212,6 +224,29 @@ class UserCard extends Component {
                                         type={SELECT_TYPE}
                                         onChange={this.handleChange}
                                     />
+                                    <FormField
+                                        fluid
+                                        search
+                                        selection
+                                        name="providerId"
+                                        value={providerId}
+                                        source="providers"
+                                        error={error['providerId']}
+                                        type={SELECT_TYPE}
+                                        onChange={this.handleChange}
+                                    />
+                                    <FormField
+                                        fluid
+                                        search
+                                        selection
+                                        name="clientId"
+                                        value={clientId}
+                                        source="clients"
+                                        error={error['clientId']}
+                                        type={SELECT_TYPE}
+                                        onChange={this.handleChange}
+                                    />
+                                    
                                     {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль

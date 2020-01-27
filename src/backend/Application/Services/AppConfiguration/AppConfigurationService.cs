@@ -1,4 +1,6 @@
-using Application.Services.Articles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Application.Services.BodyTypes;
 using Application.Services.Clients;
 using Application.Services.DocumentTypes;
@@ -16,16 +18,15 @@ using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.AppConfiguration;
-using Domain.Services.Articles;
 using Domain.Services.BodyTypes;
 using Domain.Services.Clients;
-using Domain.Services.Companies;
 using Domain.Services.DocumentTypes;
 using Domain.Services.FieldProperties;
 using Domain.Services.Identity;
 using Domain.Services.Orders;
 using Domain.Services.PickingTypes;
 using Domain.Services.ProductTypes;
+using Domain.Services.Providers;
 using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Tariffs;
@@ -34,9 +35,6 @@ using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
 using Domain.Services.VehicleTypes;
 using Domain.Services.Warehouses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Application.Services.AppConfiguration
 {
@@ -275,6 +273,24 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 };
             });
+            
+            _dictionaryConfigurations.Add(typeof(ProviderDto), (roleId) =>
+            {
+                var canEditProviders = _identityService.HasPermissions(RolePermissions.ProvidersEdit);
+
+                if (!canEditProviders) return null;
+
+                var columns = ExtractColumnsFromDto<ProvidersService>(roleId);
+                return new UserConfigurationDictionaryItem
+                {
+                    Name = GetName<ProvidersService>(),
+                    CanCreateByForm = canEditProviders,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = columns
+                };
+            });
 
             _dictionaryConfigurations.Add(typeof(VehicleTypeDto), (roleId) =>
             {
@@ -350,24 +366,6 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 };
             });
-
-            _dictionaryConfigurations.Add(typeof(CompanyDto), (roleId) =>
-            {
-                var canEditCompanies = _identityService.HasPermissions(RolePermissions.CompaniesEdit);
-
-                if (!canEditCompanies) return null;
-
-                var companyColumns = ExtractColumnsFromDto<CompanyDto>(roleId);
-                return new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<CompaniesService>(),
-                    CanCreateByForm = canEditCompanies,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = true,
-                    ShowOnHeader = false,
-                    Columns = companyColumns
-                };
-            });
         }
 
         /// <summary>
@@ -405,7 +403,7 @@ namespace Application.Services.AppConfiguration
             var forEntity = GetFieldPropertyForEntity<TDto>();
             if (forEntity.HasValue)
             {
-                var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, null, roleId, null);
+                var availableFieldNames = _fieldPropertiesService.GetAvailableFields(forEntity.Value, roleId, null);
                 fields = fields.Where(x => availableFieldNames.Any(y => string.Compare(x.Name, y, true) == 0));
             }
 

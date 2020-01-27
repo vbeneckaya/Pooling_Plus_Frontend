@@ -218,7 +218,7 @@ function* editFieldsSettingSaga({payload = {}}) {
 
 export function* exportFieldsSettingSaga({payload}) {
     try {
-        const res = yield downloader.post(`${TYPE_API}/export/${payload.forEntity}`, payload.fieldProperties.base, {
+        const res = yield downloader.post(`${TYPE_API}/export/${payload.forEntity}/${payload.forRoleId}`, payload.fieldProperties.base, {
             responseType: 'blob',
         });
         const {data} = res;

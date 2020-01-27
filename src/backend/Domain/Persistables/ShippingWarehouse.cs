@@ -64,14 +64,13 @@ namespace Domain.Persistables
         /// </summary>
         public string RegionId { get; set; }
         /// <summary>
+        /// ID клиента
+        /// </summary>
+        public Guid ClientId { get; set; }
+        /// <summary>
         /// Активный
         /// </summary>
         public bool IsActive { get; set; }
-
-        /// <summary>
-        /// Юр. лицо
-        /// </summary>
-        public Guid? CompanyId { get; set; }
 
         public override string ToString()
         {

@@ -29,15 +29,11 @@ namespace API.Controllers
         [HttpPost("get")]
         public IEnumerable<FieldForFieldProperties> GetFor([FromBody] FieldPropertiesGetForParams getForParams)
         {
-            var companyId = string.IsNullOrEmpty(getForParams.CompanyId)
-                ? (Guid?)null
-                : Guid.Parse(getForParams.CompanyId);
-            
             var roleId = string.IsNullOrEmpty(getForParams.RoleId)
                 ? (Guid?)null
                 : Guid.Parse(getForParams.RoleId);
 
-            return fieldPropertiesService.GetFor(getForParams.ForEntity, companyId, roleId, null);
+            return fieldPropertiesService.GetFor(getForParams.ForEntity, roleId, null);
         }
 
         /// <summary>
@@ -71,11 +67,11 @@ namespace API.Controllers
         /// <summary>
         /// Экспортировать в файл в формате JSON
         /// </summary>
-        [HttpPost("export/{entity}")]
-        public IActionResult Export([FromRoute] string entity, [FromBody] IEnumerable<FieldForFieldProperties> data)
+        [HttpPost("export/{entity}/{roleId}")]
+        public IActionResult Export([FromRoute] string entity, [FromRoute] string roleId, [FromBody] IEnumerable<FieldForFieldProperties> data)
         {
-            return File(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)), "text/plain",
-                $"Export {entity} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
+            return File(fieldPropertiesService.Export(data), "text/plain",
+                $"Export {entity} for {roleId} FieldProperties {DateTime.Now.ToString("dd.MM.yy HH.mm")}.txt");
         }
 
         /// <summary>
@@ -91,8 +87,7 @@ namespace API.Controllers
                 if (fieldPropertiesService.Import(stream, new FieldPropertiesGetForParams()
                 {
                     ForEntity = entity,
-                    RoleId = roleId,
-                    CompanyId = null
+                    RoleId = roleId
                 }))
                     return Ok();
                 return BadRequest();

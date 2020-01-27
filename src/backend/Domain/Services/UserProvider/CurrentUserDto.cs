@@ -12,6 +12,10 @@ namespace Domain.Services.UserProvider
 
         public string Language { get; set; }
 
-        public Guid? CompanyId { get; set; }
+        public Guid? CarrierId { get; set; }
+        
+        public Guid? ClientId { get; set; }
+        
+        public Guid? ProviderId { get; set; }
     }
 }

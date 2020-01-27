@@ -13,9 +13,11 @@ namespace Domain.Services.Roles
         IEnumerable<PermissionInfo> GetAllPermissions();
 
         RoleActionsDto GetAllActions();
+        
+        CompaniesByRole GetCompanyTypeByRole(Guid id);
 
         RoleDto MapFromEntityToDto(Role entity);
 
-        IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId);
+//        IEnumerable<LookUpDto> ForSelectByCompany(Guid? companyId);
     }
 }

@@ -1,7 +1,6 @@
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.Permissions;
-using Domain.Shared;
 using System.Collections.Generic;
 
 namespace Domain.Services.Roles
@@ -14,6 +13,8 @@ namespace Domain.Services.Roles
         public string Name { get; set; }
 
         public bool IsActive { get; set; }
+        
+        public RoleTypeInfo RoleType { get; set; }
 
         public IEnumerable<PermissionInfo> Permissions { get; set; }
 
