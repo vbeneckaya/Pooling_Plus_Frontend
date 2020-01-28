@@ -327,15 +327,17 @@ class SuperGrid extends Component {
         this.timer = setTimeout(() => {
             const { editRepresentation, representationName, name, getRepresentations } = this.props;
 
-            editRepresentation({
-                key: name,
-                name: representationName,
-                oldName: representationName,
-                value: columns,
-                callbackSuccess: () => {
-                    //getRepresentations({key: name});
-                },
-            });
+            if (representationName) {
+                editRepresentation({
+                    key: name,
+                    name: representationName,
+                    oldName: representationName,
+                    value: columns,
+                    callbackSuccess: () => {
+                        //getRepresentations({key: name});
+                    },
+                });
+            }
         }, 2000);
     };
 

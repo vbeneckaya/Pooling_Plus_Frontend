@@ -12,7 +12,7 @@ import {
     importProgressSelector,
 } from '../../../ducks/gridList';
 
-import FieldsConfig from '../../Representations/index';
+import FieldsConfig from './representations';
 import {
     getRepresentationsRequest,
     representationsSelector,

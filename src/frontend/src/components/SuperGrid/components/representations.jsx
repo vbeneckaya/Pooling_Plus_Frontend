@@ -1,27 +1,26 @@
-import React, {useState, useEffect} from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button, Confirm, Dropdown, Form, Input, Message, Modal, Popup} from 'semantic-ui-react';
-import Text from '../BaseComponents/Text';
-import DragAndDropFields from './DragAndDropFields';
-import { columnsGridSelector } from '../../ducks/gridList';
+import Text from '../../BaseComponents/Text';
+import {columnsGridSelector} from '../../../ducks/gridList';
 import {
     deleteRepresentationRequest,
     editRepresentationRequest,
     getRepresentationsRequest,
-    representationNameSelector,
     representationSelector,
     representationsSelector,
     saveRepresentationRequest,
-} from '../../ducks/representations';
+} from '../../../ducks/representations';
+import DragAndDrop from "../../DragAndDrop";
 
 const FieldsConfig = ({
-                          gridName,
-                          getRepresentations,
-                          changeRepresentation,
-                          representations,
-                          representationName,
-                      }) => {
+    gridName,
+    getRepresentations,
+    changeRepresentation,
+    representations,
+    representationName,
+}) => {
     const representationFields =
         useSelector(state => representationSelector(state, gridName)) || [];
 
@@ -222,7 +221,7 @@ const FieldsConfig = ({
                     content={t('customize_representation')}
                     position="bottom right"
                     trigger={
-                        <Button icon="cogs" disabled={!representationName} onClick={editOpen}/>
+                        <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
                     }
                 />
             </div>
@@ -256,13 +255,19 @@ const FieldsConfig = ({
                                 onChange={(e, { value }) => setSearch(value)}
                             />
                         </Form>
-                        <DragAndDropFields
-                            type={gridName}
-                            fieldsConfig={selectedFields}
-                            fieldsList={fieldsList}
-                            search={search}
-                            onChange={onChange}
-                        />
+                        <div className="flex-container-justify">
+                            {(fieldsList && fieldsList.length > 0) || (selectedFields && selectedFields.length) ? (
+                                <DragAndDrop
+                                    key={'dnd' + gridName}
+                                    type={gridName}
+                                    left={fieldsList}
+                                    right={selectedFields}
+                                    search={search}
+                                    t={t}
+                                    onChange={onChange}
+                                />
+                            ) : null}
+                        </div>
                         {isEmpty ? (
                             <Message negative>{t('Добавьте поля в представление')}</Message>
                         ) : null}
