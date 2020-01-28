@@ -156,7 +156,7 @@ const Header = ({
                                 onClick={clearFilter}
                                 disabled={disabledClearFilter}
                             >
-                                <Icon name="clear-filter"/>
+                                <Icon name="clear-filter" color={disabledClearFilter ? undefined : "#18a8cc"}/>
                             </Button>
                         }
                     />
