@@ -19,6 +19,7 @@ namespace Application.Services.FieldProperties
         {
             Type dtoType = typeof(TDto);
             IEnumerable<FieldInfo> result;
+            var res = !_fieldsCache.TryGetValue(dtoType, out result);
             if (!_fieldsCache.TryGetValue(dtoType, out result))
             {
                 result = GetDtoFieldsInner<TDto>();

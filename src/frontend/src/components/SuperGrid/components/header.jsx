@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import {Button, Grid, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
 import { useTranslation } from 'react-i18next';

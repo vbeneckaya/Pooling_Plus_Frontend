@@ -9,6 +9,20 @@ namespace Domain.Persistables
         public string Name { get; set; }
 
         public string PoolingId { get; set; }
+        
+        public string Inn { get; set; }
+        
+        public string Cpp { get; set; }
+        
+        public string LegalAddress { get; set; }
+        
+        public string ActualAddress { get; set; }
+        
+        public string ContactPerson { get; set; }
+        
+        public string ContactPhone { get; set; }
+        
+        public string Email { get; set; }
 
         public bool IsActive { get; set; }
 

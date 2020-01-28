@@ -19,13 +19,17 @@ using System.Linq;
 
 namespace Application.Services.TransportCompanies
 {
-    public class TransportCompaniesService : DictionaryServiceBase<TransportCompany, TransportCompanyDto>, ITransportCompaniesService
+    public class TransportCompaniesService : DictionaryServiceBase<TransportCompany, TransportCompanyDto>,
+        ITransportCompaniesService
     {
-        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                         IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
-                                         IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
-        { }
+        public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider,
+            ITriggersService triggersService,
+            IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
+                fieldSetterFactory, configurationService)
+        {
+        }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
@@ -59,6 +63,13 @@ namespace Application.Services.TransportCompanies
             if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
             entity.Title = dto.Title;
+            entity.Inn = dto.Inn;
+            entity.Cpp = dto.Cpp;
+            entity.LegalAddress = dto.LegalAddress;
+            entity.ActualAddress = dto.ActualAddress;
+            entity.ContactPerson = dto.ContactPerson;
+            entity.ContactPhone = dto.ContactPhone;
+            entity.Email = dto.Email;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -70,17 +81,14 @@ namespace Application.Services.TransportCompanies
 
             DetailedValidationResult result = base.ValidateDto(dto);
 
-//            var companyId = dto.CompanyId?.Value?.ToGuid();
-
             var hasDuplicates = _dataService.GetDbSet<TransportCompany>()
-                                            .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower())
-                                            .Where(x => x.Id.ToString() != dto.Id)
-//                                            .Where(x =>  x.CompanyId == null || x.CompanyId == companyId)
-                                            .Any();
+                .Where(x => !string.IsNullOrEmpty(dto.Title) && x.Title.ToLower() == dto.Title.ToLower())
+                .Any(x => x.Id.ToString() != dto.Id);
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Title), "TransportCompany.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Title), "TransportCompany.DuplicatedRecord".Translate(lang),
+                    ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
@@ -92,11 +100,19 @@ namespace Application.Services.TransportCompanies
             {
                 Id = entity.Id.ToString(),
                 Title = entity.Title,
-                IsActive = entity.IsActive,
+                Inn = entity.Inn,
+                Cpp = entity.Cpp,
+                LegalAddress = entity.LegalAddress,
+                ActualAddress = entity.ActualAddress,
+                ContactPerson = entity.ContactPerson,
+                ContactPhone = entity.ContactPhone,
+                Email = entity.Email,
+                IsActive = entity.IsActive
             };
         }
 
-        protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query, SearchFormDto form)
+        protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query,
+            SearchFormDto form)
         {
             return query
                 .OrderBy(i => i.Title)
@@ -114,6 +130,5 @@ namespace Application.Services.TransportCompanies
 //            return base.CreateExcelMapper()
 //                .MapColumn(w => w.CompanyId, new DictionaryReferenceExcelColumn(GetCompanyIdByName));
 //        }
-
     }
 }

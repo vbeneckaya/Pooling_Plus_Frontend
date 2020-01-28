@@ -34,6 +34,13 @@ namespace Application.Services.Clients
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
+            entity.Inn = dto.Inn;
+            entity.Cpp = dto.Cpp;
+            entity.LegalAddress = dto.LegalAddress;
+            entity.ActualAddress = dto.ActualAddress;
+            entity.ContactPerson = dto.ContactPerson;
+            entity.ContactPhone = dto.ContactPhone;
+            entity.Email = dto.Email;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -70,6 +77,13 @@ namespace Application.Services.Clients
                 Id = entity.Id.ToString(),
                 Name = entity.Name,
                 PoolingId = entity.PoolingId,
+                Inn = entity.Inn,
+                Cpp = entity.Cpp,
+                LegalAddress = entity.LegalAddress,
+                ActualAddress = entity.ActualAddress,
+                ContactPerson = entity.ContactPerson,
+                ContactPhone = entity.ContactPhone,
+                Email = entity.Email,
                 IsActive = entity.IsActive
             };
         }

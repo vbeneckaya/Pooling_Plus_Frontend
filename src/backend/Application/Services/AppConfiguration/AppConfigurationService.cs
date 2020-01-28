@@ -14,6 +14,7 @@ using Application.Services.Tonnages;
 using Application.Services.TransportCompanies;
 using Application.Services.VehicleTypes;
 using Application.Services.Warehouses;
+using Application.Services.Providers;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -68,7 +69,7 @@ namespace Application.Services.AppConfiguration
         public AppConfigurationDto GetConfiguration()
         {
             var roleId = _userProvider.GetCurrentUser()?.RoleId;
-            return new AppConfigurationDto
+            var res = new AppConfigurationDto
             {
                 EditUsers = _identityService.HasPermissions(RolePermissions.UsersEdit),
                 EditRoles = _identityService.HasPermissions(RolePermissions.RolesEdit),
@@ -77,6 +78,7 @@ namespace Application.Services.AppConfiguration
                 Grids = GetGridsConfiguration(roleId), 
                 Dictionaries = GetDictionariesConfiguration(roleId)                
             };
+            return res;
         }
 
         public IEnumerable<UserConfigurationGridItem> GetGridsConfiguration(Guid? roleId)
@@ -149,8 +151,8 @@ namespace Application.Services.AppConfiguration
                
                 var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
 
-                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
-                    columns = columns.Where(x => x.Name != "CompanyId");
+//                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
+//                    columns = columns.Where(x => x.Name != "CompanyId");
                 
                 return new UserConfigurationDictionaryItem
                 {
@@ -170,8 +172,8 @@ namespace Application.Services.AppConfiguration
 
                 if (!canEditShippingWarehouses) return null;
                 var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
-                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
-                    columns = columns.Where(x => x.Name != "CompanyId");
+//                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
+//                    columns = columns.Where(x => x.Name != "CompanyId");
 
                 return new UserConfigurationDictionaryItem
                 {
@@ -280,7 +282,7 @@ namespace Application.Services.AppConfiguration
 
                 if (!canEditProviders) return null;
 
-                var columns = ExtractColumnsFromDto<ProvidersService>(roleId);
+                var columns = ExtractColumnsFromDto<ProviderDto>(roleId);
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ProvidersService>(),
@@ -289,7 +291,7 @@ namespace Application.Services.AppConfiguration
                     CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
-                };
+                };;
             });
 
             _dictionaryConfigurations.Add(typeof(VehicleTypeDto), (roleId) =>

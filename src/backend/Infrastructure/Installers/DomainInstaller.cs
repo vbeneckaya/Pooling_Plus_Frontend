@@ -26,6 +26,7 @@ using Application.Services.Orders;
 using Application.Services.PickingTypes;
 using Application.Services.ProductTypes;
 using Application.Services.Profile;
+using Application.Services.Providers;
 using Application.Services.Report;
 using Application.Services.Roles;
 using Application.Services.RoleTypes;
