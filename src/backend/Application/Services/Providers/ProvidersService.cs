@@ -14,7 +14,7 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
 
-namespace Application.Services.BodyTypes
+namespace Application.Services.Providers
 {
     public class ProvidersService : DictionaryServiceBase<Provider, ProviderDto>, IProvidersService
     {
@@ -30,6 +30,13 @@ namespace Application.Services.BodyTypes
                 entity.Id = Guid.Parse(dto.Id);
 
             entity.Name = dto.Name;
+            entity.Inn = dto.Inn;
+            entity.Cpp = dto.Cpp;
+            entity.LegalAddress = dto.LegalAddress;
+            entity.ActualAddress = dto.ActualAddress;
+            entity.ContactPerson = dto.ContactPerson;
+            entity.ContactPhone = dto.ContactPhone;
+            entity.Email = dto.Email;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;

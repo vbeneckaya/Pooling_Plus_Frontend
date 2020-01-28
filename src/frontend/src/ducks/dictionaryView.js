@@ -2,7 +2,6 @@ import { createSelector } from 'reselect';
 import { downloader, postman } from '../utils/postman';
 import { all, delay, put, takeEvery } from 'redux-saga/effects';
 import { toast } from 'react-toastify';
-import { formatDate } from '../utils/dateTimeFormater';
 import { errorMapping } from '../utils/errorMapping';
 
 //*  TYPES  *//

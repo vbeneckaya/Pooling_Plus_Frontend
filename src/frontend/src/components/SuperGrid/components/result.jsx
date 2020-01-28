@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
-import { Button, Checkbox, Loader, Table } from 'semantic-ui-react';
+import { Button, Loader, Table } from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import { connect } from 'react-redux';
 import { checkForEditingRequest } from '../../../ducks/gridColumnEdit';
 import { invokeMassUpdateRequest } from '../../../ducks/gridActions';
-import _ from 'lodash';
-import CellValue from '../../ColumnsValue';
 import { ORDERS_GRID } from '../../../constants/grids';
 import CustomCheckbox from '../../BaseComponents/CustomCheckbox';
 import NotFoundMessage from './notFoundMessage';
