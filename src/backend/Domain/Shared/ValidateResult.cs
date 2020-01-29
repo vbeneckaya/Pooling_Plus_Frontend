@@ -19,6 +19,13 @@ namespace Domain.Shared
         }
     }
     
+    public class LookUpAddressDto : LookUpDto
+    {
+        public const string EmptyValue = "###EMPTY###";
+
+        public string Address { get; set; }
+    }
+    
     public class ValidateResult
     {
         public ValidateResult() 

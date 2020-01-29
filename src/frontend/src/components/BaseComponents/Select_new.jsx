@@ -25,6 +25,7 @@ const Select = ({
     label,
     name,
     text,
+    subTitle,
     multiple,
     loading,
     clearable,
@@ -188,6 +189,7 @@ const Select = ({
                 {children && children}
             </div>
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
+            {subTitle && typeof subTitle === 'string' ? ( <span className="label-disabled">&nbsp;{subTitle}</span> ) : null}
         </Form.Field>
     );
 };

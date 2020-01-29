@@ -278,12 +278,12 @@ namespace Application.Services.Orders
                         e => e.MapFrom((s, t) =>
                             s.ShippingWarehouseId == null
                                 ? null
-                                : new LookUpDto(s.ShippingWarehouseId.ToString(), s.ShippingAddress)))
+                                : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.DeliveryWarehouseId,
                         e => e.MapFrom((s, t) =>
                             s.DeliveryWarehouseId == null
                                 ? null
-                                : new LookUpDto(s.DeliveryWarehouseId.ToString(), s.DeliveryAddress)))
+                                : new LookUpDto(s.DeliveryWarehouseId.ToString())))
                     .ForMember(t => t.ClientId,
                         e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.ShippingCity,
@@ -432,6 +432,20 @@ namespace Application.Services.Orders
             var vehicleTypes = _dataService.GetDbSet<VehicleType>()
                 .Where(x => vehicleTypeIds.Contains(x.Id))
                 .ToDictionary(x => x.Id.ToString());
+            
+            var shippindWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
+                .Select(x => x.ShippingWarehouseId.Value.ToGuid())
+                .ToList();
+            var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
+                .Where(x => shippindWarehouseIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+            
+            var deliveryWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.DeliveryWarehouseId?.Value))
+                .Select(x => x.DeliveryWarehouseId.Value.ToGuid())
+                .ToList();
+            var deliveryWarehouses = _dataService.GetDbSet<Warehouse>()
+                .Where(x => deliveryWarehouseIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
            foreach (var dto in dtos)
             {
@@ -467,6 +481,18 @@ namespace Application.Services.Orders
                 if (!string.IsNullOrEmpty(dto.OrderNumber?.Value))
                 {
                     dto.OrderNumber.Name = dto.Id;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value)
+                    && shippingWarehouses.TryGetValue(dto.ShippingWarehouseId.Value, out ShippingWarehouse shippingWarehouse))
+                {
+                    dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.DeliveryWarehouseId?.Value)
+                    && deliveryWarehouses.TryGetValue(dto.DeliveryWarehouseId.Value, out Warehouse deliveryWarehouse))
+                {
+                    dto.DeliveryWarehouseId.Name = deliveryWarehouse.WarehouseName;
                 }
 
                 yield return dto;
