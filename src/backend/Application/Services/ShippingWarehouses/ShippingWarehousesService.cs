@@ -109,8 +109,9 @@ namespace Application.Services.ShippingWarehouses
             {
                 yield return new LookUpDto
                 {
+                    Value = entity.Id.ToString(),
                     Name = entity.WarehouseName,
-                    Value = entity.Id.ToString()
+                    Address = entity.Address
                 };
             }
         }

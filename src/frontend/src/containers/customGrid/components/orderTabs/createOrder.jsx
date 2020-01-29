@@ -94,9 +94,8 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                                             <FormField
                                                 name="shippingWarehouseId"
                                                 type={SELECT_TYPE}
-                                                source="shippingAddress"
+                                                source="shippingWarehouses"
                                                 isRequired
-                                                subTitle={form['shippingAddress']}
                                                 value={form['shippingWarehouseId']}
                                                 error={error['shippingWarehouseId']}
                                                 rows={2}
@@ -109,14 +108,13 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                                                 type={SELECT_TYPE}
                                                 isDisabled={!form['clientId']}
                                                 isRequired
-                                                subTitle={form['deliveryAddress']}
                                                 extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source="deliveryAddress"
+                                                source="warehouses/byClientId"
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}
                                                 onChange={onChange}
-                                            />555555555555555
+                                            />
                                         </Grid.Column>
                                     </Grid.Row>
                                     <Grid.Row columns={2}>

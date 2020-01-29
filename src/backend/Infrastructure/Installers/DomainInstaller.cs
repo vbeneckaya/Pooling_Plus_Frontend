@@ -140,9 +140,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IClientsService, ClientsService>();
             services.AddScoped<IProvidersService, ProvidersService>();
 
-            services.AddScoped<IWarehouseService, WarehouseService>();
-            services.AddScoped<IShippingWarehouseService, ShippingWarehouseService>();
-
             services.AddScoped<ICleanAddressService, CleanAddressService>();
             services.AddScoped<IProfileService, ProfileService>();
             
