@@ -14,7 +14,7 @@ import {
     createUserRequest,
     saveProgressSelector,
 } from '../../ducks/users';
-import {getCompanyTypeByRoleRequest, getRoleCardRequest} from "../../ducks/roles";
+import {getCompanyTypeByRoleRequest, getRoleCardRequest, clearCompanyType} from "../../ducks/roles";
 import {companyTypeSelector} from "../../ducks/roles";
 import {Table} from "semantic-ui-react/dist/commonjs/collections/Table/Table";
 
@@ -40,6 +40,7 @@ const UserCard = props => {
         id && dispatch(getUserCardRequest(id));
         return () => {
             dispatch(clearUserCard());
+            dispatch(clearCompanyType());
         };
     }, []);
 
@@ -48,7 +49,6 @@ const UserCard = props => {
                 ...form,
                 ...user,
             }));
-            console.log("user", user);
             user.roleId && dispatch(getCompanyTypeByRoleRequest(user.roleId.value));
         },
         [user],
@@ -202,7 +202,7 @@ const UserCard = props => {
                     type={SELECT_TYPE}
                     onChange={handleRoleChange}
                 />
-                {company.field &&
+                {company && company.field &&
                 <FormField
                     fluid
                     search
