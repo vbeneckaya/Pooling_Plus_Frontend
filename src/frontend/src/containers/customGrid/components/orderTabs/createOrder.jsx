@@ -2,13 +2,18 @@ import React, {useMemo, useEffect} from 'react';
 import {Form, Grid, Segment} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
-import {BIG_TEXT_TYPE, DATE_TYPE, SELECT_TYPE, TEXT_TYPE, NUMBER_TYPE,} from '../../../../constants/columnTypes';
+import {
+    DATE_TYPE,
+    SELECT_TYPE,
+    TEXT_TYPE,
+    NUMBER_TYPE,
+} from '../../../../constants/columnTypes';
 
 const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
 
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
-        clientId: form['clientId'] ? form['clientId'].value : undefined
+        clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     useEffect(() => {

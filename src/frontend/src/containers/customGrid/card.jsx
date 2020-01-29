@@ -42,7 +42,9 @@ const Card = props => {
         () =>
             id
                 ? t(`edit_${name}`, {
-                      number: name === ORDERS_GRID ? form.orderNumber : form.shippingNumber,
+                      number: name === ORDERS_GRID ? 
+                          (!!form.orderNumber ? form.orderNumber.value : '')  : 
+                          (!!form.shippingNumber ? form.shippingNumber.value : ''),
                       status: t(form.status),
                   })
                 : t(`new_${name}`),
@@ -208,7 +210,7 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        (!id || form.orderNumber !== card.orderNumber) && dispatch(
+        (!id || form.orderNumber.value !== card.orderNumber.value) && dispatch(
             isUniqueNumberRequest({
                 number: form.orderNumber,
                 fieldName: 'orderNumber',
@@ -267,7 +269,7 @@ const Card = props => {
                             className="link-cell"
                             onClick={() => goToCard(SHIPPINGS_GRID, form.shippingId)}
                         >
-                            {t('open_shipping', { number: form.shippingNumber })}
+                            {t('open_shipping', { number: form.shippingNumber.value })}
                         </div>
                     ) : null}
                     {name === SHIPPINGS_GRID && form.orders && form.orders.length ? (

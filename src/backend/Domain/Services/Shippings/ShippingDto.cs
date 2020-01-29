@@ -2,6 +2,7 @@ using Domain.Enums;
 using Domain.Extensions;
 using Domain.Shared;
 using System;
+using Domain.Persistables;
 
 namespace Domain.Services.Shippings
 {
@@ -9,8 +10,8 @@ namespace Domain.Services.Shippings
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(1), IsReadOnly]
-        public string ShippingNumber { get; set; }
+        [FieldType(FieldType.Link, nameof(Shippings)), IsDefault, OrderNumber(1), IsReadOnly]
+        public LookUpDto ShippingNumber { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType))]
         public LookUpDto DeliveryType { get; set; }

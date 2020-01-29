@@ -4,7 +4,6 @@ import { Button, Form, Icon, Loader, Modal, Table } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
 import FormField from '../../BaseComponents';
 import { LINK_TYPE } from '../../../constants/columnTypes';
-import { ORDERS_GRID } from '../../../constants/grids';
 import _ from 'lodash';
 
 const ModalComponent = ({ element, props, children }) => {
@@ -18,6 +17,7 @@ const BodyCell = ({
     value,
     valueText,
     column,
+    row,
     loadList,
     indexRow,
     indexColumn,
@@ -131,12 +131,14 @@ const BodyCell = ({
                     >
                         <CellValue
                             {...column}
+                            row = {row}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
                             value={value}
                             valueText={valueText}
                             width={column.width}
                             gridName={gridName}
+                            refGridName={column}
                             rowId={rowId}
                             t={t}
                             goToCard={goToCard}

@@ -905,11 +905,11 @@ namespace Application.Shared
             if (entityName == "Order")
             {
                 var t = typeof(TFormDto);
-                var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom).ToString();
+                var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom) as LookUpDto;
                 var client = t.GetProperty("ClientId").GetValue(entityFrom);
                 var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
                 var dbSet = _dataService.GetDbSet<Order>();
-                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber && x.ClientId == clientId)?.Id;
+                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber.Value && x.ClientId == clientId)?.Id;
             }
 
             return null;

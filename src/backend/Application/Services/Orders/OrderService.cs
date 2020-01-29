@@ -124,7 +124,7 @@ namespace Application.Services.Orders
 
         public override string GetNumber(OrderFormDto dto)
         {
-            return dto?.OrderNumber;
+            return dto?.OrderNumber.Name;
         }
 
         public OrderFormDto GetFormByNumber(string orderNumber)
@@ -184,6 +184,7 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
                     .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
                     .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
                     .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
@@ -258,6 +259,10 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.OrderNumber,
+                        e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber,s.Id.ToString())))
+                    .ForMember(t => t.ShippingNumber,
+                        e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber,s.ShippingId.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderType,
                         e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
@@ -454,6 +459,16 @@ namespace Application.Services.Orders
                     && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
                     dto.ClientId.Name = client.Name;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.ShippingNumber?.Value))
+                {
+                    dto.ShippingNumber.Name = dto.ShippingId;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.OrderNumber?.Value))
+                {
+                    dto.OrderNumber.Name = dto.Id;
                 }
 
                 yield return dto;

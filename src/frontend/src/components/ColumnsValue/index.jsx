@@ -11,8 +11,8 @@ import {
     SELECT_TYPE,
     STATE_TYPE,
 } from '../../constants/columnTypes';
-import { numbersFormat } from '../../utils/numbersFormat';
-import { Checkbox, Label } from 'semantic-ui-react';
+import {numbersFormat} from '../../utils/numbersFormat';
+import {Checkbox, Label} from 'semantic-ui-react';
 import StateValue from './StateValue';
 import SelectValue from './SelectValue';
 import TextCropping from './TextCropping';
@@ -20,6 +20,7 @@ import {dateToUTC} from '../../utils/dateTimeFormater';
 
 const CellValue = ({
                        type,
+                       row,
                        value = '',
                        valueText,
                        id,
@@ -122,7 +123,7 @@ const CellValue = ({
         ) : value;*/
 
         const handleGoToCard = () => {
-            goToCard(true, rowId, gridName);
+            goToCard(true, valueText, source);
         };
 
         return (
@@ -136,6 +137,7 @@ const CellValue = ({
                 ) : (
                     value
                 )}
+
             </>
         );
     }

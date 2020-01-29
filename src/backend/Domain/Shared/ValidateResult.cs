@@ -18,7 +18,7 @@ namespace Domain.Shared
             Name = name;
         }
     }
-
+    
     public class ValidateResult
     {
         public ValidateResult() 

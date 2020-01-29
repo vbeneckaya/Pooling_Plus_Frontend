@@ -45,7 +45,7 @@ const Information = ({
                                                 name="orderNumber"
                                                 type={getColumn('orderNumber').type}
                                                 source={getColumn('orderNumber').source}
-                                                value={form['orderNumber']}
+                                                value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                                                 error={
                                                     (isNotUniqueNumber &&
                                                         t('number_already_exists')) ||
