@@ -219,16 +219,16 @@ const UserCard = props => {
                                                 Оставьте поле пустым, если не хотите менять пароль
                                             </Label>
                                         ) : null}*/}
-                <Form.Field>
-                    <Form.Checkbox
-                        label={t('isActive')}
-                        name="isActive"
-                        checked={form['isActive']}
-                        onChange={(e, {name, checked}) =>
-                            handleChange(e, {name, value: checked})
-                        }
-                    />
-                </Form.Field>
+                {/*<Form.Field>*/}
+                    {/*<Form.Checkbox*/}
+                        {/*label={t('isActive')}*/}
+                        {/*name="isActive"*/}
+                        {/*checked={form['isActive']}*/}
+                        {/*onChange={(e, {name, checked}) =>*/}
+                            {/*handleChange(e, {name, value: checked})*/}
+                        {/*}*/}
+                    {/*/>*/}
+                {/*</Form.Field>*/}
             </Form>
             <Confirm
                 dimmer="blurring"
