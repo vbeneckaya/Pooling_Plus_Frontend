@@ -43,8 +43,8 @@ const Card = props => {
             id
                 ? t(`edit_${name}`, {
                       number: name === ORDERS_GRID ? 
-                          (!!form.orderNumber ? form.orderNumber.value : '')  : 
-                          (!!form.shippingNumber ? form.shippingNumber.value : ''),
+                          form.orderNumber   : 
+                          (!!form.shippingNumber ? form.shippingNumber.value : form.shippingNumber),
                       status: t(form.status),
                   })
                 : t(`new_${name}`),
@@ -84,6 +84,9 @@ const Card = props => {
                     name,
                     id,
                     callbackSuccess: card => {
+                        if (!!card.orderNumber){
+                            card.orderNumber = card.orderNumber.value;
+                        }
                         setForm(card);
                         setNotChangeForm(true);
                     },
