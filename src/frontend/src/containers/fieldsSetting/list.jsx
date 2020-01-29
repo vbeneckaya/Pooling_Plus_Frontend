@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Loader, Table } from 'semantic-ui-react';
 import { gridsMenuSelector } from '../../ducks/profile';
 import { getLookupRequest, valuesListSelector } from '../../ducks/lookup';
-import { columnsGridSelector } from '../../ducks/gridList';
 import './style.scss';
 import InfiniteScrollTable from '../../components/InfiniteScrollTable';
 import {
