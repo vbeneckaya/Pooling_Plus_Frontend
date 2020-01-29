@@ -17,7 +17,6 @@ const BodyCell = ({
     value,
     valueText,
     column,
-    row,
     loadList,
     indexRow,
     indexColumn,
@@ -131,7 +130,6 @@ const BodyCell = ({
                     >
                         <CellValue
                             {...column}
-                            row = {row}
                             indexRow={indexRow}
                             indexColumn={indexColumn}
                             value={value}

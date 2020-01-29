@@ -20,7 +20,6 @@ import {dateToUTC} from '../../utils/dateTimeFormater';
 
 const CellValue = ({
                        type,
-                       row,
                        value = '',
                        valueText,
                        id,
