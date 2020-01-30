@@ -10,7 +10,8 @@ const Text = ({
     isDisabled,
     noLabel,
     className,
-    text,
+    text, 
+    subTitle,
     error,
     type,
     datalist: valuesList = [],
@@ -42,6 +43,9 @@ const Text = ({
             />
             {error && typeof error === 'string' ? (
                 <span className="label-error">{error}</span>
+            ) : null}
+            {subTitle && typeof subTitle === 'string' ? (
+                <span className="label-disabled">{subTitle}</span>
             ) : null}
             {valuesList && valuesList.length ? (
                 <datalist id={name}>

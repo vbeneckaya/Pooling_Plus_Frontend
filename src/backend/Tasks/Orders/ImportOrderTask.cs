@@ -167,7 +167,7 @@ namespace Tasks.Orders
 
                 string soldTo = docRoot.SelectSingleNode("E1EDKA1[PARVW='AG']/PARTN")?.InnerText?.TrimStart('0');
 
-                dto.OrderNumber = orderNumber;
+                dto.OrderNumber = new LookUpDto(orderNumber);
                 dto.OrderDate = docRoot.ParseDateTime("E1EDK02[QUALF='001']/DATUM")?.ToString("dd.MM.yyyy") ?? dto.OrderDate;
                 dto.WeightKg = docRoot.ParseDecimal("E1EDK01/BRGEW").ApplyDecimalUowCoeff(weightUomCoeff) ?? dto.WeightKg;
                 dto.BoxesCount = docRoot.ParseDecimal("E1EDK01/Y0126SD_ORDERS05_TMS_01/YYCAR_H") ?? dto.BoxesCount;
@@ -284,7 +284,7 @@ namespace Tasks.Orders
 
         private IEnumerable<string> ValidateRequiredFields(OrderDto dto)
         {
-            if (string.IsNullOrEmpty(dto.OrderNumber))
+            if (string.IsNullOrEmpty(dto.OrderNumber.Value))
             {
                 yield return "Номер накладной BDF";
             }

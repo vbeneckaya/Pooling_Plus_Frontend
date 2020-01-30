@@ -31,8 +31,6 @@ import {
     GRID_CARD_LINK,
     GRID_NEW_LINK,
 } from '../../router/links';
-import TableInfo from '../../components/TableInfo';
-import CustomCheckbox from "../../components/BaseComponents/CustomCheckbox";
 
 const CreateButton = ({ t, ...res }) => {
     return (

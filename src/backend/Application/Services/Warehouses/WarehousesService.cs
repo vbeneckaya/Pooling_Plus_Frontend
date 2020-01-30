@@ -87,18 +87,19 @@ namespace Application.Services.Warehouses
             return result;
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public IEnumerable<LookUpDto> ForSelect(Guid clientId)
         {
             var entities = _dataService.GetDbSet<Warehouse>()
-                                       .Where(x => x.IsActive)
+                                       .Where(x => x.IsActive && x.ClientId == clientId)
                                        .OrderBy(x => x.WarehouseName)
                                        .ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
                 {
+                    Value = entity.Id.ToString(),
                     Name = entity.WarehouseName,
-                    Value = entity.Id.ToString()
+                    Address = entity.Address
                 };
             }
         }

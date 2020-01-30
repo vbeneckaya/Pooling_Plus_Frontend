@@ -6,6 +6,8 @@ namespace Domain.Shared
 
         public string Value { get; set; }
         public string Name { get; set; }
+        public string Address { get; set; }
+
         public bool IsFilterOnly { get; set; }
 
         public LookUpDto() { }
@@ -18,7 +20,7 @@ namespace Domain.Shared
             Name = name;
         }
     }
-
+    
     public class ValidateResult
     {
         public ValidateResult() 

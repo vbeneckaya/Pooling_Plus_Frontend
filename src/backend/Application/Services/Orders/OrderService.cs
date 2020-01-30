@@ -124,7 +124,7 @@ namespace Application.Services.Orders
 
         public override string GetNumber(OrderFormDto dto)
         {
-            return dto?.OrderNumber;
+            return dto?.OrderNumber.Name;
         }
 
         public OrderFormDto GetFormByNumber(string orderNumber)
@@ -184,6 +184,7 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
                     .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
                     .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
                     .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
@@ -258,6 +259,8 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber,s.Id.ToString())))
+                    .ForMember(t => t.ShippingNumber, e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber,s.ShippingId.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderType,
                         e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
@@ -275,12 +278,12 @@ namespace Application.Services.Orders
                         e => e.MapFrom((s, t) =>
                             s.ShippingWarehouseId == null
                                 ? null
-                                : new LookUpDto(s.ShippingWarehouseId.ToString(), s.ShippingAddress)))
+                                : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.DeliveryWarehouseId,
                         e => e.MapFrom((s, t) =>
                             s.DeliveryWarehouseId == null
                                 ? null
-                                : new LookUpDto(s.DeliveryWarehouseId.ToString(), s.DeliveryAddress)))
+                                : new LookUpDto(s.DeliveryWarehouseId.ToString())))
                     .ForMember(t => t.ClientId,
                         e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
                     .ForMember(t => t.ShippingCity,
@@ -429,6 +432,20 @@ namespace Application.Services.Orders
             var vehicleTypes = _dataService.GetDbSet<VehicleType>()
                 .Where(x => vehicleTypeIds.Contains(x.Id))
                 .ToDictionary(x => x.Id.ToString());
+            
+            var shippindWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.ShippingWarehouseId?.Value))
+                .Select(x => x.ShippingWarehouseId.Value.ToGuid())
+                .ToList();
+            var shippingWarehouses = _dataService.GetDbSet<ShippingWarehouse>()
+                .Where(x => shippindWarehouseIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+            
+            var deliveryWarehouseIds = dtos.Where(x => !string.IsNullOrEmpty(x.DeliveryWarehouseId?.Value))
+                .Select(x => x.DeliveryWarehouseId.Value.ToGuid())
+                .ToList();
+            var deliveryWarehouses = _dataService.GetDbSet<Warehouse>()
+                .Where(x => deliveryWarehouseIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
            foreach (var dto in dtos)
             {
@@ -454,6 +471,28 @@ namespace Application.Services.Orders
                     && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
                     dto.ClientId.Name = client.Name;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.ShippingNumber?.Value))
+                {
+                    dto.ShippingNumber.Name = dto.ShippingId;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.OrderNumber?.Value))
+                {
+                    dto.OrderNumber.Name = dto.Id;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.ShippingWarehouseId?.Value)
+                    && shippingWarehouses.TryGetValue(dto.ShippingWarehouseId.Value, out ShippingWarehouse shippingWarehouse))
+                {
+                    dto.ShippingWarehouseId.Name = shippingWarehouse.WarehouseName;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.DeliveryWarehouseId?.Value)
+                    && deliveryWarehouses.TryGetValue(dto.DeliveryWarehouseId.Value, out Warehouse deliveryWarehouse))
+                {
+                    dto.DeliveryWarehouseId.Name = deliveryWarehouse.WarehouseName;
                 }
 
                 yield return dto;

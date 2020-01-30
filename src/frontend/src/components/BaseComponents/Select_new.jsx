@@ -25,6 +25,7 @@ const Select = ({
     label,
     name,
     text,
+    subTitle,
     multiple,
     loading,
     clearable,
@@ -35,8 +36,8 @@ const Select = ({
     noLabel,
     isRequired,
     autoComplete,
-    children,
-                    extSearchParams
+    children, 
+    extSearchParams
 }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -79,6 +80,7 @@ const Select = ({
         setSearchQuery('');
         toggle(false);
         onChange(e, {value: value ? value : null, name});
+        
         handleClose();
     };
 
@@ -188,6 +190,8 @@ const Select = ({
                 {children && children}
             </div>
             {error && typeof error === 'string' && <span className="label-error">{error}</span>}
+            {value && value.address && typeof value.address === 'string' ? ( <span className="label-disabled">&nbsp;{value.address}</span> ) : null}
+            {subTitle &&  typeof subTitle === 'string' ? ( <span className="label-disabled">&nbsp;{subTitle}</span> ) : null}
         </Form.Field>
     );
 };

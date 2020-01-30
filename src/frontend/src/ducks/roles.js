@@ -24,6 +24,7 @@ const CREATE_ROLE_ERROR = 'CREATE_ROLE_ERROR';
 const GET_COMPANY_TYPE_BY_ROLE_REQUEST = 'GET_COMPANY_TYPE_BY_ROLE_REQUEST';
 const GET_COMPANY_TYPE_BY_ROLE_SUCCESS = 'GET_COMPANY_TYPE_BY_ROLE_SUCCESS';
 const GET_COMPANY_TYPE_BY_ROLE_ERROR = 'GET_COMPANY_TYPE_BY_ROLE_ERROR';
+const CLEAR_COMPANY_TYPE = 'CLEAR_COMPANY_TYPE';
 
 const TOGGLE_ROLE_ACTIVE_REQUEST = 'TOGGLE_ROLE_ACTIVE_REQUEST';
 const TOGGLE_ROLE_ACTIVE_SUCCESS = 'TOGGLE_ROLE_ACTIVE_SUCCESS';
@@ -142,6 +143,11 @@ export default (state = initial, {type, payload}) => {
                 ...state,
                 companyType: {}
             };
+            case CLEAR_COMPANY_TYPE:
+            return {
+                ...state,
+                companyType: {}
+            };
      
         default:
             return state;
@@ -161,6 +167,12 @@ export const getCompanyTypeByRoleRequest = payload => {
     return {
         type: GET_COMPANY_TYPE_BY_ROLE_REQUEST,
         payload,
+    };
+};
+
+export const clearCompanyType = () => {
+    return {
+        type: CLEAR_COMPANY_TYPE,
     };
 };
 

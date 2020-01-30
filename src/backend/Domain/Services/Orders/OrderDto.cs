@@ -13,8 +13,8 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(4), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link), IsDefault, OrderNumber(2), IsReadOnly, IsRequired]
-        public string OrderNumber { get; set; }
+        [FieldType(FieldType.Link, source: nameof(Orders)), IsDefault, OrderNumber(2), IsReadOnly, IsRequired]
+        public LookUpDto OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
         public string ClientOrderNumber { get; set; }
@@ -161,8 +161,8 @@ namespace Domain.Services.Orders
 
         public string ShippingId { get; set; }
 
-        [FieldType(FieldType.Text), IsDefault, OrderNumber(9), IsReadOnly]
-        public string ShippingNumber { get; set; }
+        [FieldType(FieldType.Link, nameof(Shippings)) , IsDefault, OrderNumber(9), IsReadOnly]
+        public LookUpDto ShippingNumber { get; set; }
 
         [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(10), IsReadOnly]
         public string OrderShippingStatus { get; set; }

@@ -101,7 +101,7 @@ namespace Application.Services.Shippings
 
         public override string GetNumber(ShippingFormDto dto)
         {
-            return dto?.ShippingNumber;
+            return dto?.ShippingNumber.Value;
         }
 
         public override IEnumerable<EntityStatusDto> LoadStatusData(IEnumerable<Guid> ids)
@@ -156,6 +156,11 @@ namespace Application.Services.Shippings
                 {
                     dto.BodyTypeId.Name = bodyType.Name;
                 }
+                
+                if (!string.IsNullOrEmpty(dto.ShippingNumber?.Value))
+                {
+                    dto.ShippingNumber.Name = dto.Id;
+                }
 
                 yield return dto;
             }
@@ -194,6 +199,7 @@ namespace Application.Services.Shippings
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
                     .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t=>t.ShippingNumber, e => e.MapFrom(s=>s.ShippingNumber.Value))
                     .ForMember(t => t.Status, e => e.Ignore())
                     .ForMember(t => t.ManualActualPalletsCount, e => e.Ignore())
                     .ForMember(t => t.ManualActualWeightKg, e => e.Ignore())
@@ -223,6 +229,7 @@ namespace Application.Services.Shippings
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.ShippingNumber, e => e.MapFrom((s,t)=> new LookUpDto(s.ShippingNumber, s.Id.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.PoolingStatus, e => e.MapFrom((s, t) => s.PoolingState?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))

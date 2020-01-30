@@ -13,6 +13,7 @@ import {
     TEXT_TYPE,
 } from '../../../../constants/columnTypes';
 import { addError, clearError } from '../../../../ducks/gridCard';
+import TextArea from "../../../../components/BaseComponents/Text";
 
 const Information = ({
     form,
@@ -45,7 +46,7 @@ const Information = ({
                                                 name="orderNumber"
                                                 type={getColumn('orderNumber').type}
                                                 source={getColumn('orderNumber').source}
-                                                value={form['orderNumber']}
+                                                value={!!form['orderNumber'] ? (!!form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']) : ''}
                                                 error={
                                                     (isNotUniqueNumber &&
                                                         t('number_already_exists')) ||
@@ -119,6 +120,7 @@ const Information = ({
                                                 type={getColumn('shippingWarehouseId').type}
                                                 source={getColumn('shippingWarehouseId').source}
                                                 error={error['shippingWarehouseId']}
+                                                subTitle={form['shippingAddress']}
                                                 settings={settings['shippingWarehouseId']}
                                                 onChange={onChange}
                                             />
@@ -128,6 +130,7 @@ const Information = ({
                                                 name="deliveryWarehouseId"
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
+                                                subTitle={form['deliveryAddress']}
                                                 type={getColumn('deliveryWarehouseId').type}
                                                 source={getColumn('deliveryWarehouseId').source}
                                                 settings={settings['deliveryWarehouseId']}

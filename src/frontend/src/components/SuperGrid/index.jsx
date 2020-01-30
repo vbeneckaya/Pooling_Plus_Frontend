@@ -283,8 +283,6 @@ class SuperGrid extends Component {
         const {editRepresentation, representationName, name} = this.props;
         const {columns} = this.state;
 
-        console.log('columns', columns);
-
         editRepresentation({
             key: name,
             name: representationName,
@@ -342,7 +340,7 @@ class SuperGrid extends Component {
     };
 
     handleGoToCard = (isEdit, id, name) => {
-        const { history, cardLink, newLink } = this.props;
+        const { history, cardLink, newLink} = this.props;
 
         history.push({
             pathname: isEdit

@@ -21,6 +21,7 @@ const Content = ({ columns, error, form, handleChange }) => {
     return (
         <div className="ui form dictionary-edit">
             {columns.map(column => {
+                if (column.name != 'isActive')
                 return (
                     <FormField
                         {...column}
