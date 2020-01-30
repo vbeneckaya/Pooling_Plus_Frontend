@@ -20,8 +20,6 @@ using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared.Excel.Columns;
-using DAL.Queries;
-using Domain.Enums;
 
 namespace Application.Services.ShippingWarehouses
 {

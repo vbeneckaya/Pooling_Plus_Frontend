@@ -211,20 +211,15 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
-                    .ForMember(t => t.ShippingStatus,
-                        e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
+                    .ForMember(t => t.ShippingStatus,e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
-                    .ForMember(t => t.DeliveryStatus,
-                        e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
+                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
                     .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
-                    .ForMember(t => t.DeliveryType,
-                        e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
-                    .ForMember(t => t.DeliveryType,
-                        e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s) => ParseDateTime(s.OrderDate)))
-                    .ForMember(t => t.OrderType,
-                        e => e.Condition((s) => s.OrderType != null && !string.IsNullOrEmpty(s.OrderType.Value)))
+                    .ForMember(t => t.OrderType, e => e.Condition((s) => s.OrderType != null && !string.IsNullOrEmpty(s.OrderType.Value)))
                     .ForMember(t => t.OrderType, e => e.MapFrom((s) => MapFromStateDto<OrderType>(s.OrderType.Value)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s) => ParseDateTime(s.ShippingDate)))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s) => ParseDateTime(s.DeliveryDate)))
@@ -235,100 +230,55 @@ namespace Application.Services.Orders
                     .ForMember(t => t.PickingTypeId, e => e.Condition((s) => s.PickingTypeId != null))
                     .ForMember(t => t.PickingTypeId, e => e.MapFrom((s) => s.PickingTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
-                    .ForMember(t => t.LoadingDepartureTime,
-                        e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
-                    .ForMember(t => t.UnloadingArrivalTime,
-                        e => e.MapFrom((s) => ParseDateTime(s.UnloadingArrivalTime)))
-                    .ForMember(t => t.UnloadingDepartureTime,
-                        e => e.MapFrom((s) => ParseDateTime(s.UnloadingDepartureTime)))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingDepartureTime)))
+                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.UnloadingArrivalTime)))
+                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s) => ParseDateTime(s.UnloadingDepartureTime)))
                     .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.DocumentsReturnDate)))
-                    .ForMember(t => t.ActualDocumentsReturnDate,
-                        e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualDocumentsReturnDate)))
                     .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s) => ParseDateTime(s.PlannedReturnDate)))
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s) => ParseDateTime(s.ActualReturnDate)))
-                    .ForMember(t => t.DocumentReturnStatus,
-                        e => e.MapFrom((s) => s.DocumentReturnStatus.GetValueOrDefault()))
+                    .ForMember(t => t.DocumentReturnStatus, e => e.MapFrom((s) => s.DocumentReturnStatus.GetValueOrDefault()))
                     .ForMember(t => t.VehicleTypeId, e => e.Condition((s) => s.VehicleTypeId != null))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId.Value.ToGuid()))
-                    .ForMember(t => t.TarifficationType,
-                        e => e.Condition((s) =>
-                            s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
-                    .ForMember(t => t.TarifficationType,
-                        e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)));
-
+                    .ForMember(t => t.TarifficationType, e => e.Condition((s) => s.TarifficationType != null && !string.IsNullOrEmpty(s.TarifficationType.Value)))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
+                    ;
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
                     .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber,s.Id.ToString())))
                     .ForMember(t => t.ShippingNumber, e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber,s.ShippingId.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
-                    .ForMember(t => t.OrderType,
-                        e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
+                    .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s, t) => s.OrderDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ShippingStatus,
-                        e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerFirstLetter()))
-                    .ForMember(t => t.DeliveryStatus,
-                        e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
-                    .ForMember(t => t.OrderShippingStatus,
-                        e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
-                    .ForMember(t => t.PickingTypeId,
-                        e => e.MapFrom((s, t) =>
-                            s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
-                    .ForMember(t => t.ShippingWarehouseId,
-                        e => e.MapFrom((s, t) =>
-                            s.ShippingWarehouseId == null
-                                ? null
-                                : new LookUpDto(s.ShippingWarehouseId.ToString())))
-                    .ForMember(t => t.DeliveryWarehouseId,
-                        e => e.MapFrom((s, t) =>
-                            s.DeliveryWarehouseId == null
-                                ? null
-                                : new LookUpDto(s.DeliveryWarehouseId.ToString())))
-                    .ForMember(t => t.ClientId,
-                        e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
-                    .ForMember(t => t.ShippingCity,
-                        e => e.MapFrom((s, t) =>
-                            string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
-                    .ForMember(t => t.DeliveryCity,
-                        e => e.MapFrom((s, t) =>
-                            string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
+                    .ForMember(t => t.ShippingStatus, e => e.MapFrom((s, t) => s.ShippingStatus.ToString().ToLowerFirstLetter()))
+                    .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s, t) => s.DeliveryStatus.ToString().ToLowerFirstLetter()))
+                    .ForMember(t => t.OrderShippingStatus, e => e.MapFrom((s, t) => s.OrderShippingStatus?.ToString()?.ToLowerFirstLetter()))
+                    .ForMember(t => t.PickingTypeId, e => e.MapFrom((s, t) => s.PickingTypeId == null ? null : new LookUpDto(s.PickingTypeId.ToString())))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s, t) => s.DeliveryWarehouseId == null ? null : new LookUpDto(s.DeliveryWarehouseId.ToString())))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
+                    .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
+                    .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.DeliveryDate, e => e.MapFrom((s, t) => s.DeliveryDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.LoadingArrivalTime,
-                        e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.LoadingDepartureTime,
-                        e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.UnloadingArrivalDate,
-                        e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.UnloadingArrivalTime,
-                        e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.ToString("HH:mm")))
-                    .ForMember(t => t.UnloadingDepartureDate,
-                        e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
-                    .ForMember(t => t.UnloadingDepartureTime,
-                        e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.ToString("HH:mm")))
-                    .ForMember(t => t.DocumentsReturnDate,
-                        e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualDocumentsReturnDate,
-                        e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.PlannedReturnDate,
-                        e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ActualReturnDate,
-                        e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
-                    .ForMember(t => t.ShippingAvisationTime,
-                        e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.ClientAvisationTime,
-                        e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.CarrierId,
-                        e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
-                    .ForMember(t => t.DeliveryType,
-                        e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
-                    .ForMember(t => t.VehicleTypeId,
-                        e => e.MapFrom((s, t) =>
-                            s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
-                    .ForMember(t => t.TarifficationType,
-                        e => e.MapFrom((s, t) =>
-                            s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)));
-
+                    .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s, t) => s.LoadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.LoadingDepartureTime, e => e.MapFrom((s, t) => s.LoadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.UnloadingArrivalDate, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.UnloadingArrivalTime, e => e.MapFrom((s, t) => s.UnloadingArrivalTime?.ToString("HH:mm")))
+                    .ForMember(t => t.UnloadingDepartureDate, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.ToString("dd.MM.yyyy HH:mm")))
+                    .ForMember(t => t.UnloadingDepartureTime, e => e.MapFrom((s, t) => s.UnloadingDepartureTime?.ToString("HH:mm")))
+                    .ForMember(t => t.DocumentsReturnDate, e => e.MapFrom((s, t) => s.DocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ActualDocumentsReturnDate, e => e.MapFrom((s, t) => s.ActualDocumentsReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.PlannedReturnDate, e => e.MapFrom((s, t) => s.PlannedReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
+                    .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
+                    .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
+                    ;
                 cfg.CreateMap<OrderItem, OrderItemDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()));
             });
