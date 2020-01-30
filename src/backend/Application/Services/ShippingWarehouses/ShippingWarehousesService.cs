@@ -20,6 +20,8 @@ using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared.Excel.Columns;
+using DAL.Queries;
+using Domain.Enums;
 
 namespace Application.Services.ShippingWarehouses
 {
@@ -96,6 +98,14 @@ namespace Application.Services.ShippingWarehouses
                 yield return dto;
             }
         }
+        
+        public override  DetailedValidationResult SaveOrCreate(ShippingWarehouseDto entityFrom)
+        {
+            var user = _userProvider.GetCurrentUser();
+            if (user.ProviderId.HasValue && entityFrom.ProviderId == null)
+                entityFrom.ProviderId = new LookUpDto(user.ProviderId.ToString());
+            return SaveOrCreateInner(entityFrom, false);
+        }
 
         public ShippingWarehouse GetByCode(string code)
         {
@@ -115,7 +125,7 @@ namespace Application.Services.ShippingWarehouses
                 };
             }
         }
-
+        
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
             return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.WarehouseName == dto.WarehouseName).FirstOrDefault();

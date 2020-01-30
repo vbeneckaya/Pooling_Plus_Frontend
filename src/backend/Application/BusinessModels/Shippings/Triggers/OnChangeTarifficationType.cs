@@ -8,6 +8,7 @@ using Application.Services.Shippings;
 using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.History;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {

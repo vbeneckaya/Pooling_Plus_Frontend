@@ -7,6 +7,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Services.Shippings;
 
 namespace Application.Services.Shippings
 {

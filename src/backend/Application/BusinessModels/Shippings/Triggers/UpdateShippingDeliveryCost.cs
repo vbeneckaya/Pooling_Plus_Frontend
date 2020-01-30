@@ -3,6 +3,7 @@ using Application.Services.Shippings;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {

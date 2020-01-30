@@ -6,6 +6,7 @@ using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.Shippings;
 using Domain.Services.UserProvider;
 
 namespace Application.BusinessModels.Orders.Actions

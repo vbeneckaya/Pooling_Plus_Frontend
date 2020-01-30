@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Domain.Enums;
 using Domain.Persistables;
 
-namespace Application.Services.Shippings
+namespace Domain.Services.Shippings
 {
     public interface IShippingTarifficationTypeDeterminer
     {
