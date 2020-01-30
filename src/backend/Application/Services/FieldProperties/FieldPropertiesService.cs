@@ -13,7 +13,6 @@ using Domain.Services.Shippings;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Application.Services.FieldProperties
