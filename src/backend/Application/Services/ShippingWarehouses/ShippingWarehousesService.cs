@@ -102,8 +102,11 @@ namespace Application.Services.ShippingWarehouses
         public override  DetailedValidationResult SaveOrCreate(ShippingWarehouseDto entityFrom)
         {
             var user = _userProvider.GetCurrentUser();
+            
             if (user.ProviderId.HasValue && entityFrom.ProviderId == null)
+                
                 entityFrom.ProviderId = new LookUpDto(user.ProviderId.ToString());
+            
             return SaveOrCreateInner(entityFrom, false);
         }
 
