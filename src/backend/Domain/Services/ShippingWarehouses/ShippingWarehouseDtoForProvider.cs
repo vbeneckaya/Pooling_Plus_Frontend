@@ -4,7 +4,7 @@ using Domain.Shared;
 
 namespace Domain.Services.ShippingWarehouses
 {
-    public class ShippingWarehouseDto : IDto
+    public class ShippingWarehouseDtoForProvider : IDto
     {
         public string Id { get; set; }
 
@@ -39,7 +39,6 @@ namespace Domain.Services.ShippingWarehouses
 
         public string RegionId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(6)]
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(7)]
