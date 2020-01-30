@@ -6,6 +6,7 @@ using System.Linq;
 using Application.Services.Shippings;
 using Domain.Extensions;
 using Domain.Services.History;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Triggers
 {

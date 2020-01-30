@@ -7,6 +7,7 @@ using Application.Services.Shippings;
 using DAL.Queries;
 using Domain.Extensions;
 using Domain.Services.History;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Triggers
 {

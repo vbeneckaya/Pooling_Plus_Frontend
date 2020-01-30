@@ -9,6 +9,7 @@ using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Linq;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Actions
 {

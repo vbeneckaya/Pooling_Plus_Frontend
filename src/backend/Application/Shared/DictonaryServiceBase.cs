@@ -282,7 +282,7 @@ namespace Application.Shared
             return new MemoryStream(excel.GetAsByteArray());
         }
 
-        public DetailedValidationResult SaveOrCreate(TListDto entityFrom)
+        public virtual DetailedValidationResult SaveOrCreate(TListDto entityFrom)
         {
             return SaveOrCreateInner(entityFrom, false);
         }

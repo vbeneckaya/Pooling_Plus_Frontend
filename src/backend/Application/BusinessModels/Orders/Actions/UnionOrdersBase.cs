@@ -4,6 +4,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
 using System.Collections.Generic;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Actions
 {

@@ -6,6 +6,7 @@ using Domain.Persistables;
 using Domain.Services.History;
 using Domain.Shared;
 using System.Linq;
+using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Triggers
 {

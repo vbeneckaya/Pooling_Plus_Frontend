@@ -1,6 +1,6 @@
 ﻿using Domain.Persistables;
 
-namespace Application.Services.Shippings
+namespace Domain.Services.Shippings
 {
     public interface IDeliveryCostCalcService
     {

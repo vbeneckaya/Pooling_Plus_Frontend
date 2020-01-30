@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
 using Domain.Persistables;
+using Domain.Services.Shippings;
 
 namespace Application.Services.Shippings
 {
