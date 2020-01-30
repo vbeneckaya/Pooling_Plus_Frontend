@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Application.Services.BodyTypes;
 using Application.Services.Clients;
 using Application.Services.DocumentTypes;
@@ -39,8 +40,7 @@ using Domain.Services.Warehouses;
 
 namespace Application.Services.AppConfiguration
 {
-
-    public class AppConfigurationService : AppConfigurationServiceBase ,IAppConfigurationService
+    public class AppConfigurationService : AppConfigurationServiceBase, IAppConfigurationService
     {
         private readonly IIdentityService _identityService;
         private readonly IUserProvider _userProvider;
@@ -48,7 +48,8 @@ namespace Application.Services.AppConfiguration
         private readonly IFieldDispatcherService _fieldDispatcherService;
         private readonly IFieldPropertiesService _fieldPropertiesService;
 
-        private readonly Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>> _dictionaryConfigurations = new Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>>();
+        private readonly Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>> _dictionaryConfigurations =
+            new Dictionary<Type, Func<Guid?, UserConfigurationDictionaryItem>>();
 
         public AppConfigurationService(
             IIdentityService identityService,
@@ -65,7 +66,7 @@ namespace Application.Services.AppConfiguration
 
             InitDictionariesConfiguration();
         }
-        
+
         public AppConfigurationDto GetConfiguration()
         {
             var roleId = _userProvider.GetCurrentUser()?.RoleId;
@@ -75,8 +76,8 @@ namespace Application.Services.AppConfiguration
                 EditRoles = _identityService.HasPermissions(RolePermissions.RolesEdit),
                 EditFieldProperties = _identityService.HasPermissions(RolePermissions.FieldsSettings),
                 ViewReport = _identityService.HasPermissions(RolePermissions.Report),
-                Grids = GetGridsConfiguration(roleId), 
-                Dictionaries = GetDictionariesConfiguration(roleId)                
+                Grids = GetGridsConfiguration(roleId),
+                Dictionaries = GetDictionariesConfiguration(roleId)
             };
             return res;
         }
@@ -128,9 +129,9 @@ namespace Application.Services.AppConfiguration
                 var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
                 if (!canViewTariffs && !canEditTariffs) return null;
-                 
+
                 var columns = ExtractColumnsFromDto<TariffDto>(roleId);
-                
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TariffsService>(),
@@ -148,12 +149,12 @@ namespace Application.Services.AppConfiguration
                 var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
 
                 if (!canEditWarehouses) return null;
-               
+
                 var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
 
 //                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
 //                    columns = columns.Where(x => x.Name != "CompanyId");
-                
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<WarehousesService>(),
@@ -165,26 +166,47 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
+            if (user == null || user != null && !user.ProviderId.HasValue)
             _dictionaryConfigurations.Add(typeof(ShippingWarehouseDto), (roleId) =>
-            {
-                var canEditShippingWarehouses = _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
-                var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
-
-                if (!canEditShippingWarehouses) return null;
-                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
-//                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
-//                    columns = columns.Where(x => x.Name != "CompanyId");
-
-                return new UserConfigurationDictionaryItem
                 {
-                    Name = GetName<ShippingWarehousesService>(),
-                    CanCreateByForm = canEditWarehouses,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = true,
-                    ShowOnHeader = false,
-                    Columns = columns
-                };
-            });
+                    var canEditShippingWarehouses =
+                        _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
+                    var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
+
+                    if (!canEditShippingWarehouses) return null;
+                    var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+
+                    return new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<ShippingWarehousesService>(),
+                        CanCreateByForm = canEditWarehouses,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true,
+                        ShowOnHeader = false,
+                        Columns = columns
+                    };
+                });
+
+            else
+                _dictionaryConfigurations.Add(typeof(ShippingWarehouseDtoForProvider), (roleId) =>
+                {
+                    var canEditShippingWarehouses =
+                        _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
+                    var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
+
+                    if (!canEditShippingWarehouses) return null;
+                    var columns = ExtractColumnsFromDto<ShippingWarehouseDtoForProvider>(roleId);
+
+                    return new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<ShippingWarehousesService>(),
+                        CanCreateByForm = canEditWarehouses,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = true,
+                        ShowOnHeader = false,
+                        Columns = columns
+                    };
+                });
 
             //_dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
             //{
@@ -275,7 +297,7 @@ namespace Application.Services.AppConfiguration
                     Columns = columns
                 };
             });
-            
+
             _dictionaryConfigurations.Add(typeof(ProviderDto), (roleId) =>
             {
                 var canEditProviders = _identityService.HasPermissions(RolePermissions.ProvidersEdit);
@@ -291,7 +313,8 @@ namespace Application.Services.AppConfiguration
                     CanImportFromExcel = true,
                     ShowOnHeader = false,
                     Columns = columns
-                };;
+                };
+                ;
             });
 
             _dictionaryConfigurations.Add(typeof(VehicleTypeDto), (roleId) =>
@@ -299,7 +322,7 @@ namespace Application.Services.AppConfiguration
                 var canEditVehicleTypes = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit);
 
                 if (!canEditVehicleTypes) return null;
-                
+
                 var columns = ExtractColumnsFromDto<VehicleTypeDto>(roleId);
                 return new UserConfigurationDictionaryItem
                 {
@@ -356,7 +379,7 @@ namespace Application.Services.AppConfiguration
                 var canEditVehicleTypes = _identityService.HasPermissions(RolePermissions.VehicleTypesEdit);
 
                 if (!canEditDocumentTypes) return null;
-                
+
                 var columns = ExtractColumnsFromDto<DocumentTypeDto>(roleId);
                 return new UserConfigurationDictionaryItem
                 {

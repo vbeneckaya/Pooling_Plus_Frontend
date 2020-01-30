@@ -406,5 +406,10 @@
             Получение данных для выпадающего списка
             </summary>
         </member>
+        <member name="M:API.Controllers.WarehousesController.ForSelect(System.Guid)">
+            <summary>
+            Получение данных для выпадающего списка
+            </summary>
+        </member>
     </members>
 </doc>

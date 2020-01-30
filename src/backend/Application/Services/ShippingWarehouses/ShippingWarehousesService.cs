@@ -63,13 +63,13 @@ namespace Application.Services.ShippingWarehouses
             {
                 cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
-                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.ClientId == null || s.ClientId != null));
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
+                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.ProviderId == null || s.ProviderId != null));
 
                 cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
-                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
-                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.Condition((s) => s.ProviderId != null))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId.Value.ToGuid()))
                     ;
             });
             return result;
@@ -77,20 +77,20 @@ namespace Application.Services.ShippingWarehouses
 
         protected override IEnumerable<ShippingWarehouseDto> FillLookupNames(IEnumerable<ShippingWarehouseDto> dtos)
         {
-            var clientsIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
-                                     .Select(x => x.ClientId.Value.ToGuid())
+            var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
+                                     .Select(x => x.ProviderId.Value.ToGuid())
                                      .ToList();
 
-            var clients = _dataService.GetDbSet<Client>()
-                                           .Where(x => clientsIds.Contains(x.Id))
+            var providers = _dataService.GetDbSet<Provider>()
+                                           .Where(x => providerIds.Contains(x.Id))
                                            .ToDictionary(x => x.Id.ToString());
 
             foreach (var dto in dtos)
             {
-                if (!string.IsNullOrEmpty(dto.ClientId?.Value)
-                    && clients.TryGetValue(dto.ClientId.Value, out Client client))
+                if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
+                    && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
                 {
-                    dto.ClientId.Name = client.Name;
+                    dto.ProviderId.Name = provider.Name;
                 }
 
                 yield return dto;
@@ -140,12 +140,12 @@ namespace Application.Services.ShippingWarehouses
         protected override ExcelMapper<ShippingWarehouseDto> CreateExcelMapper()
         {
             return new ExcelMapper<ShippingWarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
-                .MapColumn(w => w.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName));
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName));
         }
 
-        private Guid? GetClientIdByName(string name)
+        private Guid? GetProviderIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Client>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
@@ -163,9 +163,9 @@ namespace Application.Services.ShippingWarehouses
 
             // Local user restrictions
 
-            if (user?.ClientId != null)
+            if (user?.ProviderId != null)
             {
-                query = query.Where(i => i.ClientId == user.ClientId);
+                query = query.Where(i => i.ProviderId == user.ProviderId);
             }
             
             return query;

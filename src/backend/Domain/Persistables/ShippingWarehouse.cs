@@ -66,7 +66,7 @@ namespace Domain.Persistables
         /// <summary>
         /// ID клиента
         /// </summary>
-        public Guid ClientId { get; set; }
+        public Guid ProviderId { get; set; }
         /// <summary>
         /// Активный
         /// </summary>
