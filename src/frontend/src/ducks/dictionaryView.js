@@ -217,6 +217,11 @@ export const columnsSelector = createSelector([stateProfile, dictionaryName], (s
     const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
     return dictionary ? dictionary.columns : [];
 });
+
+export const descriptionSelector = createSelector([stateProfile, dictionaryName], (state, name) => {
+    const dictionary = state.dictionaries && state.dictionaries.find(item => item.name === name);
+    return dictionary ? dictionary.description : '';
+});
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 export const cardProgressSelector = createSelector(stateSelector, state => state.cardProgress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);

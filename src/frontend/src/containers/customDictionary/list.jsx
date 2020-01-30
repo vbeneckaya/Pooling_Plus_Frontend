@@ -9,7 +9,7 @@ import {
     canExportToExcelSelector,
     canImportFromExcelSelector,
     clearDictionaryInfo,
-    columnsSelector,
+    columnsSelector, descriptionSelector,
     exportProgressSelector,
     exportToExcelRequest,
     getListRequest,
@@ -81,6 +81,7 @@ class List extends Component {
             exportLoader,
             clear,
             t,
+            description
         } = this.props;
         const {params = {}} = match;
         const {name = ''} = params;
@@ -101,6 +102,7 @@ class List extends Component {
                 title={name}
                 list={list}
                 clear={clear}
+                description={description}
                 isImportBtn={isImportBtn}
                 isExportBtn={isExportBtn}
                 importFromExcel={this.handleImportFromExcel}
@@ -129,6 +131,7 @@ const mapStateToProps = (state, ownProps) => {
         isExportBtn: canExportToExcelSelector(state, name),
         importLoader: importProgressSelector(state),
         exportLoader: exportProgressSelector(state),
+        description: descriptionSelector(state, name)
     };
 };
 

@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {withTranslation} from 'react-i18next';
-import {withRouter} from 'react-router-dom';
-import {Button, Grid, Loader, Popup, Table} from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { withTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
+import { Button, Grid, Icon, Loader, Popup, Table } from 'semantic-ui-react';
 import InfiniteScrollTable from '../InfiniteScrollTable';
-import {debounce} from 'throttle-debounce';
-import {PAGE_SIZE} from '../../constants/settings';
+import { debounce } from 'throttle-debounce';
+import { PAGE_SIZE } from '../../constants/settings';
 import Search from '../Search';
 import './style.scss';
 import HeaderCellComponent from './components/header-cell';
@@ -78,14 +78,14 @@ class TableInfo extends Component {
     };
 
     changeFullTextFilter = (e, { value }) => {
-        this.setState({filter: value, page: 1}, this.load);
+        this.setState({ filter: value, page: 1 }, this.load);
     };
 
     headerRowComponent = () => (
         <Table.Row>
             {this.props.headerRow &&
-            this.props.headerRow.map((row, index) => (
-                <HeaderCellComponent key={row.name} row={row}/>
+                this.props.headerRow.map((row, index) => (
+                    <HeaderCellComponent key={row.name} row={row} />
                 ))}
             {this.props.isShowActions ? <Table.HeaderCell /> : null}
         </Table.Row>
@@ -111,12 +111,12 @@ class TableInfo extends Component {
         e.target.value = null;
     };
 
-    handleToggleIsActive = (event, {itemID, checked}) => {
-        this.props.toggleIsActive(event, {itemID, checked}, this.load);
+    handleToggleIsActive = (event, { itemID, checked }) => {
+        this.props.toggleIsActive(event, { itemID, checked }, this.load);
     };
 
     handleRowClick = (e, id) => {
-        const {history, cardLink, name} = this.props;
+        const { history, cardLink, name } = this.props;
 
         if (!cardLink) {
             e.stopPropagation();
@@ -155,6 +155,7 @@ class TableInfo extends Component {
             exportToExcel,
             totalCount,
             history,
+            description,
         } = this.props;
 
         const { filter } = this.state;
@@ -167,9 +168,20 @@ class TableInfo extends Component {
                 <Grid className="table-header-menu">
                     <Grid.Row>
                         <Grid.Column width={5} verticalAlign="middle">
-                            <span className="table-header-menu_title">{t(name)}</span>
+                            <span className="table-header-menu_title">
+                                {t(name)}
+                                {description && (
+                                    <span>
+                                        <Popup
+                                            content={description}
+                                            position="bottom center"
+                                            trigger={<Icon name="question circle" />}
+                                        />
+                                    </span>
+                                )}
+                            </span>
                             <span className="records-counter">
-                                {t('totalCount', {count: totalCount})}
+                                {t('totalCount', { count: totalCount })}
                             </span>
                         </Grid.Column>
                         <Grid.Column width={11} textAlign="right">
@@ -234,7 +246,7 @@ class TableInfo extends Component {
                         ref={instance => {
                             this.fileUploader = instance;
                         }}
-                        style={{display: 'none'}}
+                        style={{ display: 'none' }}
                         onChange={this.onFilePicked}
                     />
                 </Grid>
@@ -272,18 +284,18 @@ class TableInfo extends Component {
                                                           row[column.name] &&
                                                           typeof row[column.name] === 'object' &&
                                                           !Array.isArray(row[column.name])
-                                                              ? 
-                                                              !!row[column.name].name ? row[column.name].name :
-                                                              row[column.name].value
+                                                              ? !!row[column.name].name
+                                                                  ? row[column.name].name
+                                                                  : row[column.name].value
                                                               : row[column.name]
                                                       }
                                                       valueText={
                                                           row[column.name] &&
                                                           typeof row[column.name] === 'object' &&
                                                           !Array.isArray(row[column.name])
-                                                              ?
-                                                              !!row[column.name].name ? row[column.name].name :
-                                                              row[column.name].name
+                                                              ? !!row[column.name].name
+                                                                  ? row[column.name].name
+                                                                  : row[column.name].name
                                                               : null
                                                       }
                                                       id={row.id}
