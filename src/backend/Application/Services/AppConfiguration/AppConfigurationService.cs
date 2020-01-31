@@ -69,7 +69,8 @@ namespace Application.Services.AppConfiguration
 
         public AppConfigurationDto GetConfiguration()
         {
-            var roleId = _userProvider.GetCurrentUser()?.RoleId;
+            var currentUser = _userProvider.GetCurrentUser();
+            var roleId = currentUser?.RoleId;
             var res = new AppConfigurationDto
             {
                 EditUsers = _identityService.HasPermissions(RolePermissions.UsersEdit),
@@ -122,8 +123,6 @@ namespace Application.Services.AppConfiguration
         {
             var userId = _userProvider.GetCurrentUserId();
             var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
-
-            
 
             _dictionaryConfigurations.Add(typeof(WarehouseDto), (roleId) =>
             {

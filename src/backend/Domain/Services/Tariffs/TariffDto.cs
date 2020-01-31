@@ -8,6 +8,7 @@ namespace Domain.Services.Tariffs
     {
         public string Id { get; set; }
 
+        [IgnoreOnRoleType(RoleTypes.Provider)]
         [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(0), IsFixedPosition, IsRequired]
         public LookUpDto ProviderId { get; set; }
 

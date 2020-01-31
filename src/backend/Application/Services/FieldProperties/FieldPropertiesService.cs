@@ -315,6 +315,7 @@ namespace Application.Services.FieldProperties
 
         private List<FieldInfo> GetFieldNames(FieldPropertiesForEntityType entityType)
         {
+            var currentUser = _userProvider.GetCurrentUser();
             switch(entityType)
             {
                 case FieldPropertiesForEntityType.Orders:

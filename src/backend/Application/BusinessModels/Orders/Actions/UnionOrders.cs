@@ -56,6 +56,7 @@ namespace Application.BusinessModels.Orders.Actions
                 PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
+                ProviderId = user.ProviderId,
                 ShippingCreationDate = DateTime.UtcNow
             };
 

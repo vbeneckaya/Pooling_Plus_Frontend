@@ -24,6 +24,21 @@ namespace Domain.Persistables
         /// </summary>
         public string OrderNumber { get; set; }
         /// <summary>
+        /// Клиент
+        /// </summary>
+        [ReferenceType(typeof(Client))]
+        public Guid? ClientId { get; set; }
+        /// <summary>
+        /// Транспортная компания
+        /// </summary>
+        [ReferenceType(typeof(TransportCompany))]
+        public Guid? CarrierId { get; set; }
+        /// <summary>
+        /// Поставщик
+        /// </summary>
+        [ReferenceType(typeof(Provider))]
+        public Guid? ProviderId { get; set; }
+        /// <summary>
         /// Номер заказ клиента
         /// </summary>
         public string ClientOrderNumber { get; set; }
@@ -39,11 +54,6 @@ namespace Domain.Persistables
         /// Плательщик
         /// </summary>
         public string Payer { get; set; }
-        /// <summary>
-        /// Клиент
-        /// </summary>
-        [ReferenceType(typeof(Client))]
-        public Guid? ClientId { get; set; }
         /// <summary>
         /// Терморежим мин. °C
         /// </summary>
@@ -304,12 +314,6 @@ namespace Domain.Persistables
         /// Особенности комплектации
         /// </summary>
         public string PickingFeatures { get; set; }
-
-        /// <summary>
-        /// Транспортная компания
-        /// </summary>
-        [ReferenceType(typeof(TransportCompany))]
-        public Guid? CarrierId { get; set; }
 
         /// <summary>
         /// Способ доставки

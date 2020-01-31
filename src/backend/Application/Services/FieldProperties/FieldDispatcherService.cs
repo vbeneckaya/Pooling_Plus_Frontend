@@ -34,7 +34,7 @@ namespace Application.Services.FieldProperties
             foreach (var prop in props)
             {
                 var fieldTypeAttr = (FieldTypeAttribute)Attribute.GetCustomAttribute(prop, typeof(FieldTypeAttribute));
-
+                
                 bool isDefault = Attribute.IsDefined(prop, typeof(IsDefaultAttribute));
                 bool isBulkUpdateAllowed = Attribute.IsDefined(prop, typeof(AllowBulkUpdateAttribute));
                 bool isFixedPosition = Attribute.IsDefined(prop, typeof(IsFixedPositionAttribute));

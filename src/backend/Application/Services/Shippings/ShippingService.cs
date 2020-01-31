@@ -94,7 +94,7 @@ namespace Application.Services.Shippings
                 query = new List<Shipping>().AsQueryable();
             
             if (user.ProviderId.HasValue)
-                query = new List<Shipping>().AsQueryable();
+                query = query.Where(x => x.ProviderId == user.ProviderId);
             
             return query;
         }
@@ -122,7 +122,15 @@ namespace Application.Services.Shippings
             var carriers = _dataService.GetDbSet<TransportCompany>()
                                        .Where(x => carrierIds.Contains(x.Id))
                                        .ToDictionary(x => x.Id.ToString());
-
+            
+            var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
+                .Select(x => x.ProviderId.Value.ToGuid())
+                .ToList();
+            
+            var providers = _dataService.GetDbSet<Provider>()
+                .Where(x => providerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+            
             var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
                                      .Select(x => x.VehicleTypeId.Value.ToGuid())
                                      .ToList();
@@ -143,6 +151,12 @@ namespace Application.Services.Shippings
                     && carriers.TryGetValue(dto.CarrierId.Value, out TransportCompany carrier))
                 {
                     dto.CarrierId.Name = carrier.Title;
+                }
+                
+                if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
+                    && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
+                {
+                    dto.ProviderId.Name = provider.Name;
                 }
 
                 if (!string.IsNullOrEmpty(dto.VehicleTypeId?.Value)
@@ -199,7 +213,7 @@ namespace Application.Services.Shippings
             {
                 cfg.CreateMap<ShippingDto, Shipping>()
                     .ForMember(t => t.Id, e => e.Ignore())
-                    .ForMember(t=>t.ShippingNumber, e => e.MapFrom(s=>s.ShippingNumber.Value))
+                    .ForMember(t => t.ShippingNumber, e => e.MapFrom(s=>s.ShippingNumber.Value))
                     .ForMember(t => t.Status, e => e.Ignore())
                     .ForMember(t => t.ManualActualPalletsCount, e => e.Ignore())
                     .ForMember(t => t.ManualActualWeightKg, e => e.Ignore())
@@ -211,6 +225,7 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => s.DeliveryType == null || string.IsNullOrEmpty(s.DeliveryType.Value) ? (DeliveryType?)null : MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
                     .ForMember(t => t.TarifficationType, e => e.MapFrom((s) => s.TarifficationType == null || string.IsNullOrEmpty(s.TarifficationType.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(s.TarifficationType.Value)))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId == null ? null : s.ProviderId.Value.ToGuid()))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId == null ? null : s.VehicleTypeId.Value.ToGuid()))
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId == null ? null : s.BodyTypeId.Value.ToGuid()))
                     .ForMember(t => t.LoadingArrivalTime, e => e.MapFrom((s) => ParseDateTime(s.LoadingArrivalTime)))
@@ -234,6 +249,7 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.PoolingStatus, e => e.MapFrom((s, t) => s.PoolingState?.ToString()?.ToLowerFirstLetter()))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
                     .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
@@ -263,6 +279,7 @@ namespace Application.Services.Shippings
             {
                 var user = _userIdProvider.GetCurrentUser();
                 entity.CarrierId = user.CarrierId;
+                entity.ProviderId = user.ProviderId;
             }
 
             _mapper.Map(dto, entity);
@@ -441,6 +458,7 @@ namespace Application.Services.Shippings
                          .WhereAnd(searchForm.Filter.BlankArrival.ApplyBooleanFilter<Shipping>(i => i.BlankArrival, ref parameters))
                          .WhereAnd(searchForm.Filter.BlankArrivalRate.ApplyNumericFilter<Shipping>(i => i.BlankArrivalRate, ref parameters))
                          .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Shipping, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.ProviderId.ApplyOptionsFilter<Shipping, Guid?>(i => i.ProviderId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.ConfirmedPalletsCount.ApplyNumericFilter<Shipping>(i => i.ConfirmedPalletsCount, ref parameters))
                          .WhereAnd(searchForm.Filter.CostsConfirmedByCarrier.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByCarrier, ref parameters))
                          .WhereAnd(searchForm.Filter.CostsConfirmedByShipper.ApplyBooleanFilter<Shipping>(i => i.CostsConfirmedByShipper, ref parameters))
@@ -530,6 +548,8 @@ namespace Application.Services.Shippings
 
 
             var transportCompanies = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
+            
+            var providers = _dataService.GetDbSet<Provider>().Where(i => i.Name.ToLower().Contains(search));
 
             var vehicleTypes = _dataService.GetDbSet<VehicleType>().Where(i => i.Name.ToLower().Contains(search));
             
@@ -568,6 +588,7 @@ namespace Application.Services.Shippings
             || columns.Contains("deliveryType") && deliveryTypes.Contains(i.DeliveryType)
             || columns.Contains("vehicleTypeId") && vehicleTypes.Any(v => v.Id == i.VehicleTypeId)
             || columns.Contains("carrierId") && transportCompanies.Any(t => t.Id == i.CarrierId)
+            || columns.Contains("providerId") && providers.Any(t => t.Id == i.ProviderId)
             || columns.Contains("status") && statuses.Contains(i.Status)
             || columns.Contains("driver") && i.Driver.Contains(search)
             || columns.Contains("vehicleNumber") && i.VehicleNumber.Contains(search)
@@ -579,6 +600,7 @@ namespace Application.Services.Shippings
             string lang = _userIdProvider.GetCurrentUser()?.Language;
             return base.CreateExportExcelMapper()
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
                 .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
                 .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
@@ -589,19 +611,25 @@ namespace Application.Services.Shippings
 
         private Guid? GetCarrierIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
+            return entry?.Id;
+        }
+        
+        private Guid? GetProviderIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetVehicleTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetBodyTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<BodyType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
     }
