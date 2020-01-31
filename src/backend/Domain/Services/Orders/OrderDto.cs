@@ -30,6 +30,12 @@ namespace Domain.Services.Orders
 
         [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(13), IsRequired]
         public LookUpDto ClientId { get; set; }
+        
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), AllowBulkUpdate]
+        public LookUpDto CarrierId { get; set; }
+        
+        [FieldType(FieldType.Select, source: nameof(Providers)), AllowBulkUpdate]
+        public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Number)]
         public int? TemperatureMin { get; set; }
@@ -188,9 +194,6 @@ namespace Domain.Services.Orders
 
         [FieldType(FieldType.Text), IsReadOnly]
         public string PickingFeatures { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), AllowBulkUpdate]
-        public LookUpDto CarrierId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.DeliveryType)), IsDefault, OrderNumber(14)]
         public LookUpDto DeliveryType { get; set; }

@@ -10,6 +10,8 @@ namespace Domain.Services.Shippings
         public string ShippingNumber { get; set; }
 
         public string CarrierId { get; set; }
+        
+        public string ProviderId { get; set; }
 
         public string DeliveryType { get; set; }
 

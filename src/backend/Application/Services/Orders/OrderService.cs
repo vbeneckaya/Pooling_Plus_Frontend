@@ -54,7 +54,7 @@ namespace Application.Services.Orders
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
         {
-            var orders = this._dataService.GetDbSet<Order>().Where(o => ids.Contains(o.Id)).ToList();
+            var orders = _dataService.GetDbSet<Order>().Where(o => ids.Contains(o.Id)).ToList();
             var result = new OrderSummaryDto
             {
                 Count = orders.Count,
@@ -64,7 +64,7 @@ namespace Application.Services.Orders
             };
             return result;
         }
-
+        
         protected override IChangeTracker ConfigureChangeTacker()
         {
             return _changeTrackerFactory.CreateChangeTracker()
@@ -117,7 +117,7 @@ namespace Application.Services.Orders
                 query = query.Where(x => x.ClientId.Equals(user.ClientId));
             
             if (user.ProviderId.HasValue)
-                query = new List<Order>().AsQueryable();
+                query = query.Where(x => x.ProviderId.Equals(user.ProviderId));
 
             return query;
         }
@@ -159,7 +159,8 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.BoxesCount, new BoxesCountHandler())
                 .AddHandler(e => e.ConfirmedBoxesCount, new ConfirmedBoxesCountHandler())
                 .AddHandler(e => e.PalletsCount, new PalletsCountHandler(_dataService, _historyService, !isInjection))
-                .AddHandler(e => e.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService))
+                .AddHandler(e => e.ConfirmedPalletsCount,
+                    new ConfirmedPalletsCountHandler(_dataService, _historyService))
                 .AddHandler(e => e.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService))
                 .AddHandler(e => e.WeightKg, new WeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService))
@@ -169,7 +170,8 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.LoadingArrivalTime, new LoadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.LoadingDepartureTime, new LoadingDepartureTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.UnloadingArrivalTime, new UnloadingArrivalTimeHandler(_dataService, _historyService))
-                .AddHandler(e => e.UnloadingDepartureTime, new UnloadingDepartureTimeHandler(_dataService, _historyService))
+                .AddHandler(e => e.UnloadingDepartureTime,
+                    new UnloadingDepartureTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.TrucksDowntime, new TrucksDowntimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryCost, new DeliveryCostHandler(!isInjection));
         }
@@ -185,6 +187,12 @@ namespace Application.Services.Orders
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.Ignore())
                     .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
+                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
+                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.Condition((s) => s.ProviderId != null))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId.Value.ToGuid()))
                     .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
                     .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
                     .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
@@ -208,14 +216,10 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.DeliveryWarehouseId, e => e.Condition((s) => s.DeliveryWarehouseId != null))
                     .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId.Value.ToGuid()))
-                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
-                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus,e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.DeliveryStatus)))
-                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
                     .ForMember(t => t.DeliveryType, e => e.Condition((s) => s.DeliveryType != null && !string.IsNullOrEmpty(s.DeliveryType.Value)))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s) => MapFromStateDto<DeliveryType>(s.DeliveryType.Value)))
                     .ForMember(t => t.OrderDate, e => e.MapFrom((s) => ParseDateTime(s.OrderDate)))
@@ -258,6 +262,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
                     .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s, t) => s.DeliveryWarehouseId == null ? null : new LookUpDto(s.DeliveryWarehouseId.ToString())))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s, t) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.ShippingCity) ? null : new LookUpDto(s.ShippingCity)))
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom((s, t) => string.IsNullOrEmpty(s.DeliveryCity) ? null : new LookUpDto(s.DeliveryCity)))
                     .ForMember(t => t.ShippingDate, e => e.MapFrom((s, t) => s.ShippingDate?.ToString("dd.MM.yyyy")))
@@ -274,7 +280,6 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ActualReturnDate, e => e.MapFrom((s, t) => s.ActualReturnDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ShippingAvisationTime, e => e.MapFrom((s, t) => s.ShippingAvisationTime?.ToString(@"hh\:mm")))
                     .ForMember(t => t.ClientAvisationTime, e => e.MapFrom((s, t) => s.ClientAvisationTime?.ToString(@"hh\:mm")))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
                     .ForMember(t => t.DeliveryType, e => e.MapFrom((s, t) => s.DeliveryType == null ? null : s.DeliveryType.GetEnumLookup(lang)))
                     .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
                     .ForMember(t => t.TarifficationType, e => e.MapFrom((s, t) => s.TarifficationType == null ? null : s.TarifficationType.GetEnumLookup(lang)))
@@ -374,6 +379,13 @@ namespace Application.Services.Orders
             var clients = _dataService.GetDbSet<Client>()
                                       .Where(x => clientIds.Contains(x.Id))
                                       .ToDictionary(x => x.Id.ToString());
+            
+            var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
+                .Select(x => x.ProviderId.Value.ToGuid())
+                .ToList();
+            var providers = _dataService.GetDbSet<Provider>()
+                .Where(x => providerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
             var vehicleTypeIds = dtos.Where(x => !string.IsNullOrEmpty(x.VehicleTypeId?.Value))
                 .Select(x => x.VehicleTypeId.Value.ToGuid())
@@ -421,6 +433,12 @@ namespace Application.Services.Orders
                     && clients.TryGetValue(dto.ClientId.Value, out Client client))
                 {
                     dto.ClientId.Name = client.Name;
+                }
+                
+                 if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
+                    && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
+                {
+                    dto.ProviderId.Name = provider.Name;
                 }
                 
                 if (!string.IsNullOrEmpty(dto.ShippingNumber?.Value))
@@ -506,10 +524,18 @@ namespace Application.Services.Orders
             order.ShippingStatus = VehicleState.VehicleEmpty;
             order.DeliveryStatus = VehicleState.VehicleEmpty;
 
-            var user = this._userIdProvider.GetCurrentUser();
-            if (user != null)
+            var user = _userIdProvider.GetCurrentUser();
+            if (user?.CarrierId != null)
             {
                 order.CarrierId = user.CarrierId;
+            }
+            if (user?.ProviderId != null)
+            {
+                order.ProviderId = user.ProviderId;
+            }
+            if (user?.ClientId != null)
+            {
+                order.ClientId = user.ClientId;
             }
         }
 
@@ -602,6 +628,8 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.ShippingAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ShippingAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientAvisationTime.ApplyTimeRangeFilter<Order>(i => i.ClientAvisationTime, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientId.ApplyOptionsFilter<Order, Guid?>(i => i.ClientId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
+                         .WhereAnd(searchForm.Filter.ProviderId.ApplyOptionsFilter<Order, Guid?>(i => i.ProviderId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.ConfirmedBoxesCount.ApplyNumericFilter<Order>(i => i.ConfirmedBoxesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryAddress.ApplyStringFilter<Order>(i => i.DeliveryAddress, ref parameters))
                          .WhereAnd(searchForm.Filter.DeliveryCity.ApplyStringFilter<Order>(i => i.DeliveryCity, ref parameters))
@@ -649,7 +677,6 @@ namespace Application.Services.Orders
                          .WhereAnd(searchForm.Filter.WeightKg.ApplyNumericFilter<Order>(i => i.WeightKg, ref parameters))
                          .WhereAnd(searchForm.Filter.WaybillTorg12.ApplyBooleanFilter<Order>(i => i.WaybillTorg12, ref parameters))
                          .WhereAnd(searchForm.Filter.PickingFeatures.ApplyStringFilter<Order>(i => i.PickingFeatures, ref parameters))
-                         .WhereAnd(searchForm.Filter.CarrierId.ApplyOptionsFilter<Order, Guid?>(i => i.CarrierId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.VehicleTypeId.ApplyOptionsFilter<Order, Guid?>(i => i.VehicleTypeId, ref parameters, i => new Guid(i)))
                          .WhereAnd(searchForm.Filter.DeliveryType.ApplyEnumFilter<Order, DeliveryType>(i => i.DeliveryType, ref parameters))
                          .WhereAnd(searchForm.Filter.TarifficationType.ApplyEnumFilter<Order, TarifficationType>(i => i.TarifficationType, ref parameters))
@@ -696,6 +723,8 @@ namespace Application.Services.Orders
             var carriers = _dataService.GetDbSet<TransportCompany>().Where(i => i.Title.ToLower().Contains(search));
 
             var clients = _dataService.GetDbSet<Client>().Where(i => i.Name.ToLower().Contains(search));
+            
+            var providers = _dataService.GetDbSet<Provider>().Where(i => i.Name.ToLower().Contains(search));
 
             var orderTypeNames = Enum.GetNames(typeof(OrderType)).Select(i => i.ToLower());
 
@@ -789,6 +818,7 @@ namespace Application.Services.Orders
                 || columns.Contains("pickingTypeId") && pickingTypes.Any(p => p.Id == i.PickingTypeId)
                 || columns.Contains("carrierId") && carriers.Any(p => p.Id == i.CarrierId)
                 || columns.Contains("clientId") && clients.Any(p => p.Id == i.ClientId)
+                || columns.Contains("providerId") && providers.Any(p => p.Id == i.ProviderId)
                 || columns.Contains("orderType") && orderTypes.Contains(i.OrderType)
                 || columns.Contains("orderShippingStatus") && orderShippingStates.Contains(i.OrderShippingStatus)
                 || columns.Contains("deliveryStatus") && vehicleStates.Contains(i.DeliveryStatus)
@@ -807,6 +837,7 @@ namespace Application.Services.Orders
                 .MapColumn(i => i.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
                 .MapColumn(i => i.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
                 .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(i => i.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(i => i.Status, new StateExcelColumn<OrderState>(lang))
                 .MapColumn(i => i.OrderShippingStatus, new StateExcelColumn<ShippingState>(lang))
                 .MapColumn(i => i.ShippingStatus, new StateExcelColumn<VehicleState>(lang))
@@ -824,6 +855,8 @@ namespace Application.Services.Orders
                     .MapColumn(i => i.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName))
                     .MapColumn(i => i.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
                     .MapColumn(i => i.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
+                    .MapColumn(i => i.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
+                    .MapColumn(i => i.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 ;
         }
 
@@ -848,6 +881,12 @@ namespace Application.Services.Orders
         private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            return entry?.Id;
+        }
+        
+        private Guid? GetProviderIdByName(string name)
+        {
+            var entry = _dataService.GetDbSet<Provider>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
         }
 
