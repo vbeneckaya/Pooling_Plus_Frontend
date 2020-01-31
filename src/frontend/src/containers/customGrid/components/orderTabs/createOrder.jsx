@@ -59,7 +59,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                         />                        
                     </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={2}>
+                <Grid.Row columns={3}>
                     <Grid.Column>
                         <FormField
                             name="palletsCount"
@@ -67,6 +67,16 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             source="palletsCount"
                             value={form['palletsCount']}
                             error={error['palletsCount']}
+                            rows={2}
+                            onChange={onChange}
+                        />
+                    </Grid.Column>
+                    <Grid.Column>
+                        <FormField
+                            name="orderAmountExcludingVAT"
+                            type={NUMBER_TYPE}
+                            value={form['orderAmountExcludingVAT']}
+                            error={error['orderAmountExcludingVAT']}
                             rows={2}
                             onChange={onChange}
                         />
