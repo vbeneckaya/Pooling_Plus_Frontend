@@ -6,7 +6,7 @@ namespace Application.Services.RoleTypes
 {
     public class TarifficationTypesService : EnumServiceBase<Domain.Enums.TarifficationType>, ITarifficationTypesService
     {
-        protected TarifficationTypesService(IUserProvider userIdProvider) : base(userIdProvider)
+        public TarifficationTypesService(IUserProvider userIdProvider) : base(userIdProvider)
         {
         }
     }

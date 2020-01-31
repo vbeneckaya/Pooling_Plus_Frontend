@@ -6,7 +6,7 @@ namespace Application.Services.DeliveryTypes
 {
     public class DeliveryTypesService : EnumServiceBase<Domain.Enums.DeliveryType>, IDeliveryTypesService
     {
-        protected DeliveryTypesService(IUserProvider userIdProvider) : base(userIdProvider)
+        public DeliveryTypesService(IUserProvider userIdProvider) : base(userIdProvider)
         {
         }
     }

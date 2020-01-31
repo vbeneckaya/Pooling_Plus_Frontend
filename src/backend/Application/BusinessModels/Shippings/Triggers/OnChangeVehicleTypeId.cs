@@ -27,8 +27,8 @@ namespace Application.BusinessModels.Shippings.Triggers
 
         public void Execute(Shipping entity)
         {
-            entity.TotalDeliveryCost = new Random().Next(1000,15000);
-            /*
+//            entity.TotalDeliveryCost = new Random().Next(1000,15000);
+            
             var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);
 
@@ -56,7 +56,7 @@ namespace Application.BusinessModels.Shippings.Triggers
                 if(!entity.ManualTarifficationType)
                     _calcService.UpdateDeliveryCost(entity);
 
-            }*/
+            }
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)

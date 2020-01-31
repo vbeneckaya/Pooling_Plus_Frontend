@@ -26,9 +26,6 @@ namespace Application.Services.Shippings
         {
             var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
            
-            shipping.CarrierId = Guid.Parse("4337e37d-250e-4fea-910d-5afec8563466");
-            shipping.TarifficationType = TarifficationType.Ltl;
-            
             if (shipping.Status == null
                 || !validState.Contains(shipping.Status.Value)
                 || shipping.CarrierId == null
