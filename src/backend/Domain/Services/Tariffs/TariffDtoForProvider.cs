@@ -4,11 +4,10 @@ using Domain.Shared;
 
 namespace Domain.Services.Tariffs
 {
-    public class TariffDto : IDto
+    public class TariffDtoForProvider : IDto
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(0), IsFixedPosition, IsRequired]
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(1), IsFixedPosition, IsRequired]
