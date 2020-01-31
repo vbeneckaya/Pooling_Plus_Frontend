@@ -1,10 +1,8 @@
-﻿using System;
-using Application.BusinessModels.Shared.Triggers;
+﻿using Application.BusinessModels.Shared.Triggers;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
-using Application.Services.Shippings;
 using DAL.Queries;
 using Domain.Extensions;
 using Domain.Services.History;
@@ -27,8 +25,6 @@ namespace Application.BusinessModels.Shippings.Triggers
 
         public void Execute(Shipping entity)
         {
-//            entity.TotalDeliveryCost = new Random().Next(1000,15000);
-            
             var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);
 

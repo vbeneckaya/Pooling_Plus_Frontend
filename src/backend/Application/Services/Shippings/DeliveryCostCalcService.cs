@@ -69,7 +69,7 @@ namespace Application.Services.Shippings
                     }
                 }
 
-                totalDeliveryCost += deliveryCost;
+                totalDeliveryCost += deliveryCost ?? 0;
                 
                 shipping.TotalDeliveryCost = totalDeliveryCost;
             }
@@ -114,19 +114,9 @@ namespace Application.Services.Shippings
             }
             else
             {
-                int totalPallets = orders.Sum(x => x.PalletsCount ?? 0);
+                int totalPallets = orders.Sum(x => x.ConfirmedPalletsCount ?? x.ActualPalletsCount ?? x.PalletsCount ?? 0);
                 cost = GetLtlRate(tariff, totalPallets) ?? 0M;
             }
-
-//            bool needWinterCoeff = tariff.StartWinterPeriod != null
-//                                && tariff.EndWinterPeriod != null
-//                                && shippingDate >= tariff.StartWinterPeriod
-//                                && shippingDate <= tariff.EndWinterPeriod
-//                                && tariff.WinterAllowance != null;
-//            if (needWinterCoeff)
-//            {
-//                cost *= 1 + tariff.WinterAllowance.Value / 100;
-//            }
 
             return cost;
         }
