@@ -42,7 +42,6 @@ namespace Domain.Services.ShippingWarehouses
 
         public string RegionId { get; set; }
 
-
         [FieldType(FieldType.Boolean), OrderNumber(7)]
         public bool? IsActive { get; set; }
 
