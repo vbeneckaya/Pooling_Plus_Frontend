@@ -123,26 +123,7 @@ namespace Application.Services.AppConfiguration
             var userId = _userProvider.GetCurrentUserId();
             var user = userId == null ? null : _dataService.GetById<User>(userId.Value);
 
-            _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
-            {
-                var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-                var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
-
-                if (!canViewTariffs && !canEditTariffs) return null;
-
-                var columns = ExtractColumnsFromDto<TariffDto>(roleId);
-
-                return new UserConfigurationDictionaryItem
-                {
-                    Name = GetName<TariffsService>(),
-                    CanCreateByForm = canEditTariffs,
-                    CanExportToExcel = true,
-                    CanImportFromExcel = canEditTariffs,
-                    CanDelete = true,
-                    ShowOnHeader = true,
-                    Columns = columns
-                };
-            });
+            
 
             _dictionaryConfigurations.Add(typeof(WarehouseDto), (roleId) =>
             {
@@ -167,7 +148,29 @@ namespace Application.Services.AppConfiguration
             });
 
             if (user == null || user != null && !user.ProviderId.HasValue)
-            _dictionaryConfigurations.Add(typeof(ShippingWarehouseDto), (roleId) =>
+            {
+                _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
+                {
+                    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+                    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+
+                    if (!canViewTariffs && !canEditTariffs) return null;
+
+                    var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+
+                    return new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<TariffsService>(),
+                        CanCreateByForm = canEditTariffs,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = canEditTariffs,
+                        CanDelete = true,
+                        ShowOnHeader = true,
+                        Columns = columns
+                    };
+                });
+                
+                _dictionaryConfigurations.Add(typeof(ShippingWarehouseDto), (roleId) =>
                 {
                     var canEditShippingWarehouses =
                         _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
@@ -186,8 +189,30 @@ namespace Application.Services.AppConfiguration
                         Columns = columns
                     };
                 });
-
+            }
             else
+            {
+                _dictionaryConfigurations.Add(typeof(TariffDtoForProvider), (roleId) =>
+                {
+                    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+                    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+
+                    if (!canViewTariffs && !canEditTariffs) return null;
+
+                    var columns = ExtractColumnsFromDto<TariffDtoForProvider>(roleId);
+
+                    return new UserConfigurationDictionaryItem
+                    {
+                        Name = GetName<TariffsService>(),
+                        CanCreateByForm = canEditTariffs,
+                        CanExportToExcel = true,
+                        CanImportFromExcel = canEditTariffs,
+                        CanDelete = true,
+                        ShowOnHeader = true,
+                        Columns = columns
+                    };
+                });
+                
                 _dictionaryConfigurations.Add(typeof(ShippingWarehouseDtoForProvider), (roleId) =>
                 {
                     var canEditShippingWarehouses =
@@ -207,7 +232,7 @@ namespace Application.Services.AppConfiguration
                         Columns = columns
                     };
                 });
-
+            }
             //_dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
             //{
             //    var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);
