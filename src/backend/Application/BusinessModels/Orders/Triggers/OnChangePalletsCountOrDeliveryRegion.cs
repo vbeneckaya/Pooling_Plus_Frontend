@@ -65,6 +65,8 @@ namespace Application.BusinessModels.Orders.Triggers
                                 shipping.TarifficationType, tarifficationType, "onChangePalletsCountOrDeliveryRegionInIncludedOrder");
                     
                             shipping.TarifficationType = tarifficationType;
+                            
+                            
 
                             if(!shipping.ManualTarifficationType)
                                 _calcService.UpdateDeliveryCost(shipping);
@@ -93,6 +95,8 @@ namespace Application.BusinessModels.Orders.Triggers
             {
                 nameof(Order.DeliveryRegion),
                 nameof(Order.PalletsCount),
+                nameof(Order.ActualPalletsCount),
+                nameof(Order.ConfirmedPalletsCount),
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }

@@ -1,10 +1,8 @@
-﻿using System;
-using Application.BusinessModels.Shared.Triggers;
+﻿using Application.BusinessModels.Shared.Triggers;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
-using Application.Services.Shippings;
 using DAL.Queries;
 using Domain.Extensions;
 using Domain.Services.History;
@@ -27,36 +25,33 @@ namespace Application.BusinessModels.Shippings.Triggers
 
         public void Execute(Shipping entity)
         {
-            entity.TotalDeliveryCost = new Random().Next(1000,15000);
-            /*
             var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);
 
-            var vehicleTypes = _dataService.GetDbSet<VehicleType>();
+            var transportCompanies = _dataService.GetDbSet<TransportCompany>();
             
             foreach (var orderInShipping in orders)
             {
-                if (orderInShipping.VehicleTypeId != entity.VehicleTypeId)
+                if (orderInShipping.CarrierId != entity.CarrierId)
                 {
-                    VehicleType oldVehicleType = null;
-                    VehicleType newVehicleType = null;
+                    TransportCompany oldCarrier = null;
+                    TransportCompany newCarrier = null;
 
-                    if (orderInShipping.VehicleTypeId.HasValue)
-                        oldVehicleType = vehicleTypes.GetById(orderInShipping.VehicleTypeId.Value);
+                    if (orderInShipping.CarrierId.HasValue)
+                        oldCarrier = transportCompanies.GetById(orderInShipping.VehicleTypeId.Value);
 
                     if (entity.VehicleTypeId.HasValue)
-                        newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
+                        newCarrier = transportCompanies.GetById(entity.VehicleTypeId.Value);
 
-                    orderInShipping.VehicleTypeId = entity.VehicleTypeId;
+                    orderInShipping.CarrierId = entity.CarrierId;
 
                     _historyService.Save(orderInShipping.Id, "fieldChangedBy",
                         nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
-                        oldVehicleType, newVehicleType, "onChangeInShipping");
+                        oldCarrier, newCarrier, "onChangeInShipping");
                 }
                 if(!entity.ManualTarifficationType)
                     _calcService.UpdateDeliveryCost(entity);
-
-            }*/
+            }
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)

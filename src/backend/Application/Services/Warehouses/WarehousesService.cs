@@ -103,6 +103,23 @@ namespace Application.Services.Warehouses
                 };
             }
         }
+        
+        public override IEnumerable<LookUpDto> ForSelect()
+        {
+            var entities = _dataService.GetDbSet<Warehouse>()
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.WarehouseName)
+                .ToList();
+            foreach (var entity in entities)
+            {
+                yield return new LookUpDto
+                {
+                    Value = entity.Id.ToString(),
+                    Name = entity.WarehouseName,
+                    Address = entity.Address
+                };
+            }
+        }
 
         public override Warehouse FindByKey(WarehouseDto dto)
         {
