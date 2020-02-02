@@ -11,7 +11,7 @@ import {
     importFromExcelRequest,
     importProgressSelector,
 } from '../../../ducks/gridList';
-
+import { canEditFieldPropertiesSelector } from '../../../ducks/profile';
 import FieldsConfig from './representations';
 import {
     getRepresentationsRequest,
@@ -47,6 +47,7 @@ const Header = ({
     const exportLoader = useSelector(state => exportProgressSelector(state));
 
     const representations = useSelector(state => representationsSelector(state, name));
+    const isEditDefaultRepresentation = useSelector(state => canEditFieldPropertiesSelector(state))
 
     const exportExcel = () => {
         dispatch(exportToExcelRequest({ name, filter: filter.filter }));
@@ -73,8 +74,8 @@ const Header = ({
         );
     };
 
-    const getRepresentations = callBackFunc => {
-        dispatch(getRepresentationsRequest({ key: name, callBackFunc }));
+    const getRepresentations =() => {
+        dispatch(getRepresentationsRequest({ key: name }));
     };
 
     const changeRepresentation = (key, isEdit) => {
@@ -105,6 +106,7 @@ const Header = ({
                         getRepresentations={getRepresentations}
                         changeRepresentation={changeRepresentation}
                         representations={representations}
+                        isEditDefaultRepresentation={isEditDefaultRepresentation}
                     />
                 </Grid.Column>
                 <Grid.Column width={1} verticalAlign="middle">

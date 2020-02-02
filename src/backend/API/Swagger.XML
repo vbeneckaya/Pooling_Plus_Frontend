@@ -111,17 +111,17 @@
         </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
             <summary>
-            Все доступные статусы с цветами
+            ��� ��������� ������� � �������
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.ForSelect">
             <summary>
-            Все доступные статусы
+            ��� ��������� �������
             </summary>
         </member>
         <member name="M:API.Controllers.ProfileController.Info">
@@ -146,22 +146,22 @@
         </member>
         <member name="M:API.Controllers.RolesController.SetActive(System.Guid,System.Boolean)">
             <summary>
-            Получение данных для выпадающего списка в 
+            ��������� ������ ��� ����������� ������ � 
             </summary>
         </member>
         <member name="M:API.Controllers.RolesController.GetAllPermissions">
             <summary>
-            Получение списка всех доступных разрешений
+            ��������� ������ ���� ��������� ����������
             </summary>
         </member>
         <member name="M:API.Controllers.RolesController.GetAllActions">
             <summary>
-            Получение списка всех доступных действий
+            ��������� ������ ���� ��������� ��������
             </summary>
         </member>
         <member name="M:API.Controllers.RolesController.GetCompanyTypeByRole(System.Guid)">
             <summary>
-            Получение списка всех доступных видов компаний для роли
+            ��������� ������ ���� ��������� ����� �������� ��� ����
             </summary>
         </member>
         <member name="T:API.Controllers.Shared.DictionaryController`3">
@@ -353,7 +353,7 @@
         </member>
         <member name="M:API.Controllers.ShippingsController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
@@ -378,7 +378,7 @@
         </member>
         <member name="M:API.Controllers.UsersController.SetActive(System.Guid,System.Boolean)">
             <summary>
-            Получение данных для выпадающего списка в 
+            ��������� ������ ��� ����������� ������ � 
             </summary>
         </member>
         <member name="T:API.Controllers.UserSettingsController">
@@ -393,9 +393,24 @@
             <param name="key">Ключ для настроек</param>
             <returns></returns>
         </member>
+        <member name="M:API.Controllers.UserSettingsController.GetDefaultValue(System.String)">
+            <summary>
+            Получение значения настройки  по умолчанию
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.UserSettingsController.SetValue(System.String,API.Models.UserSettingValueDto)">
             <summary>
             Сохранение пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <param name="value">Новое значение</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.SetDefaultValue(System.String,API.Models.UserSettingValueDto)">
+            <summary>
+            Сохранение настройки по умолчанию
             </summary>
             <param name="key">Ключ для настроек</param>
             <param name="value">Новое значение</param>
