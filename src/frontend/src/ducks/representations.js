@@ -10,7 +10,6 @@ const GET_REPRESENTATIONS_ERROR = 'GET_REPRESENTATIONS_ERROR';
 
 const GET_DEFAULT_REPRESENTATION_REQUEST = 'GET_DEFAULT_REPRESENTATION_REQUEST';
 const GET_DEFAULT_REPRESENTATION_SUCCESS = 'GET_DEFAULT_REPRESENTATION_SUCCESS';
-const GET_DEFAULT_REPRESENTATION_ERROR = 'GET_DEFAULT_REPRESENTATION_ERROR';
 
 const SAVE_REPRESENTATION_REQUEST = 'SAVE_REPRESENTATION_REQUEST';
 const SAVE_REPRESENTATION_SUCCESS = 'SAVE_REPRESENTATION_SUCCESS';
@@ -213,28 +212,6 @@ function* getRepresentationsSaga({ payload }) {
     }
 }
 
-function* getDefaultRepresentationSaga({ payload }) {
-/*    try {
-        const { key, callBackFunc } = payload;
-        const result = yield postman.get(`/userSettings/default/${key}`);
-
-        yield put({
-            type: GET_DEFAULT_REPRESENTATION_SUCCESS,
-            payload: result.value ? JSON.parse(result.value) : {},
-        });
-       // const columns = yield select(state => representationFromGridSelector(state, key));
-        const state = yield select(state => state.representations.defaultRepresentation);
-        localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
-
-        callBackFunc && callBackFunc(state);
-    } catch (e) {
-        yield put({
-            type: GET_REPRESENTATIONS_ERROR,
-            payload: e,
-        });
-    }*/
-}
-
 function* saveRepresentationSaga({ payload }) {
     try {
         const { callbackSuccess, key, name, isDefault, value } = payload;
@@ -377,6 +354,5 @@ export function* saga() {
         takeEvery(DELETE_REPRESENTATION_REQUEST, deleteRepresentationSaga),
         takeEvery(SET_REPRESENTATION, setRepresentationSaga),
         takeEvery(GET_REPRESENTATIONS_REQUEST, getRepresentationsSaga),
-    //    takeEvery(GET_DEFAULT_REPRESENTATION_REQUEST, getDefaultRepresentationSaga),
     ]);
 }
