@@ -251,6 +251,11 @@ namespace Domain.Persistables
         /// Номер ТС
         /// </summary>
         public string VehicleNumber { get; set; }
+        
+        /// <summary>
+        /// Маршрут
+        /// </summary>
+        public string Route { get; set; }
 
         public override string ToString()
         {

@@ -153,7 +153,10 @@ namespace Domain.Services.Shippings
         public string Driver { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(16)]
-        public string VehicleNumber { get; set; }
+        public string VehicleNumber { get; set; }        
+        
+        [FieldType(FieldType.Text)]
+        public string Route { get; set; }
 
     }
 }
