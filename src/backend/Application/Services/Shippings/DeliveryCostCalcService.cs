@@ -47,8 +47,7 @@ namespace Application.Services.Shippings
             
             foreach (var group in orders.GroupBy(x => new { x.ShippingWarehouseId, x.DeliveryWarehouseId, x.ClientId }))
             {
-                var hasIncompleteOrders = group.Any(x => x.DeliveryType != DeliveryType.Delivery
-                                                         || x.PalletsCount == null
+                var hasIncompleteOrders = group.Any(x => x.PalletsCount == null
                                                          || x.PalletsCount <= 0
                                                          || x.ShippingDate == null
                                                          || x.DeliveryDate == null);
