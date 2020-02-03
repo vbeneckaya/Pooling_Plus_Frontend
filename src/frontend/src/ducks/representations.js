@@ -198,7 +198,7 @@ function* getRepresentationsSaga({ payload }) {
         
         
        // const columns = yield select(state => representationFromGridSelector(state, key));
-        const state = yield select(state => state.representations.representation);
+        const state = yield select(state => state.representations.defaultRepresentation[null]);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
 
         callBackFunc && callBackFunc(state);
