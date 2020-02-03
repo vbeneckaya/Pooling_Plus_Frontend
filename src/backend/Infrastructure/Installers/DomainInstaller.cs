@@ -121,6 +121,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITariffsService, TariffsService>();
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IShippingAddressService, ShippingAddressService>();
+            services.AddScoped<IShippingGetRouteService, ShippingGetRouteService>();
             services.AddScoped<IDeliveryAddressService, DeliveryAddressService>();
             services.AddScoped<IWarehousesService, WarehousesService>();
             services.AddScoped<IShippingWarehousesForOrderCreation, ShippingWarehousesForOrderCreation>();
@@ -219,6 +220,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
             services.AddScoped<ITrigger<Order>, OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Order>, OnChangeVehicleTypeId>();
+            services.AddScoped<ITrigger<Order>, UpdateOrderWarehouses>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)
