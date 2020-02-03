@@ -43,6 +43,31 @@ namespace API.Controllers
                 return StatusCode(500);
             }
         }
+        
+        /// <summary>
+        /// Получение значения настройки  по умолчанию
+        /// </summary>
+        /// <param name="key">Ключ для настроек</param>
+        /// <returns></returns>
+        [HttpGet("default/{key}")]
+        public IActionResult GetDefaultValue(string key)
+        {
+            try
+            {
+                var result = _settingsService.GetDefaultValue(key);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to get user settings");
+                return StatusCode(500);
+            }
+        }
 
         /// <summary>
         /// Сохранение пользовательской настройки
@@ -56,6 +81,32 @@ namespace API.Controllers
             try
             {
                 var result = _settingsService.SetValue(key, value?.Value);
+
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to save user settings");
+                return StatusCode(500);
+            }
+        }
+        
+        /// <summary>
+        /// Сохранение настройки по умолчанию
+        /// </summary>
+        /// <param name="key">Ключ для настроек</param>
+        /// <param name="value">Новое значение</param>
+        /// <returns></returns>
+        [HttpPost("default/{key}")]
+        public IActionResult SetDefaultValue(string key, [FromBody]UserSettingValueDto value)
+        {
+            try
+            {
+                var result = _settingsService.SetDefaultValue(key, value?.Value);
 
                 return Ok(result);
             }

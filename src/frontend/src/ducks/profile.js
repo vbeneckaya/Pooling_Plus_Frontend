@@ -217,6 +217,7 @@ export const otherMenuSelector = createSelector(stateSelector, state => {
 
 export const userNameSelector = createSelector(stateSelector, state => state.userName);
 export const roleSelector = createSelector(stateSelector, state => state.userRole);
+export const canEditFieldPropertiesSelector = createSelector(stateSelector, state => state.editFieldProperties);
 export const roleIdSelector = createSelector(stateSelector, state => state.role && state.role.id);
 
 export const rolesAndUsersMenu = createSelector(stateSelector, state => {

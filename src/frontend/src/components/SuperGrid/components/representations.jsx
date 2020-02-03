@@ -8,6 +8,7 @@ import {
     deleteRepresentationRequest,
     editRepresentationRequest,
     getRepresentationsRequest,
+    getDefaultRepresentationRequest,
     representationSelector,
     representationsSelector,
     saveRepresentationRequest,
@@ -19,13 +20,15 @@ const FieldsConfig = ({
     getRepresentations,
     changeRepresentation,
     representations,
-    representationName,
+    representationName, 
+    isEditDefaultRepresentation
 }) => {
     const representationFields =
         useSelector(state => representationSelector(state, gridName)) || [];
 
     let [modalOpen, setModalOpen] = useState(false);
     let [isNew, setIsNew] = useState(true);
+    let [isDefault, setIsDefault] = useState(true);
     let [selectedFields, setSelectedFields] = useState([]);
     let [name, setName] = useState('');
     let [error, setError] = useState(false);
@@ -49,19 +52,36 @@ const FieldsConfig = ({
         [representationFields],
     );
 
+    useEffect(
+        () => {
+            setSelectedFields(representationFields);
+        },
+        [representationFields],
+    );
+
     const newOpen = () => {
         setIsNew(true);
+        setIsDefault(false);
         setName('');
         setSelectedFields([]);
         onOpen();
     };
 
     const editOpen = () => {
-        dispatch(
-            getRepresentationsRequest({
-                key: gridName,
-            }),
-        );
+        if (isDefault){
+            dispatch(
+                getDefaultRepresentationRequest({
+                    key: gridName,
+                }),
+            );
+        }
+        else{
+            dispatch(
+                getRepresentationsRequest({
+                    key: gridName,
+                }),
+            );   
+        }
         setIsNew(false);
         setName(representationName);
         setSelectedFields(representationFields);
@@ -91,64 +111,98 @@ const FieldsConfig = ({
     };
 
     const handleSave = () => {
-        if (!name) {
-            setError('required_field');
-        } else if (isNotUniqueName()) {
-            setError('representation_already_exists');
-        } else if (!selectedFields.length) {
-            setError(null);
-            setEmpty(true);
-        } else {
-            dispatch(
-                saveRepresentationRequest({
-                    key: gridName,
-                    name,
-                    value: selectedFields,
-                    callbackSuccess: () => {
-                        onClose(() => {
-                            changeRepresentation(name);
-                            /* dispatch(
-                                setRepresentationRequest({
-                                    gridName,
-                                    value: name,
-                                }),
-                            );*/
-                        });
-                    },
-                }),
-            );
+        if(isDefault){
+            if (!selectedFields.length){
+                setError(null);
+                setEmpty(true);
+            } else 
+                dispatch(
+                    saveRepresentationRequest({
+                        key: gridName,
+                        name,
+                        isDefault:true,
+                        value: selectedFields,
+                        callbackSuccess: () => {
+                            onClose(() => {
+                                changeRepresentation(name);
+                            });
+                        },
+                    }),
+                );
+        }
+        else{
+            if (!name) {
+                setError('required_field');
+            } else if (isNotUniqueName()) {
+                setError('representation_already_exists');
+            } else if (!selectedFields.length) {
+                setError(null);
+                setEmpty(true);
+            } else 
+                dispatch(
+                    saveRepresentationRequest({
+                        key: gridName,
+                        name,
+                        isDefault:false,
+                        value: selectedFields,
+                        callbackSuccess: () => {
+                            onClose(() => {
+                                changeRepresentation(name);
+                            });
+                        },
+                    }),
+                );
         }
     };
 
     const handleEdit = () => {
-        if (!name) {
-            setError('required_field');
-        } else if (isNotUniqueName() && name !== representationName) {
-            setError('representation_already_exists');
-        } else if (!selectedFields.length) {
-            setError(null);
-            setEmpty(true);
-        } else {
-            dispatch(
-                editRepresentationRequest({
-                    key: gridName,
-                    name,
-                    oldName: representationName,
-                    value: selectedFields,
-                    callbackSuccess: () => {
-                        onClose(() => {
-                            changeRepresentation(name, true);
-                            /* dispatch(
-                                setRepresentationRequest({
-                                    gridName,
-                                    value: name,
-                                }),
-                            );*/
-                        });
-                    },
-                }),
-            );
+        if (isDefault){
+            if (!selectedFields.length){
+                setError(null);
+                setEmpty(true);
+            } else
+                dispatch(
+                    editRepresentationRequest({
+                        key: gridName,
+                        name,
+                        isDefault: true,
+                        oldName: representationName,
+                        value: selectedFields,
+
+                        callbackSuccess: () => {
+                            onClose(() => {
+                                changeRepresentation(null, true);
+                            });
+                        },
+                    }),
+                );
         }
+        else{
+            if (!name) {
+                setError('required_field');
+            } else if (isNotUniqueName() && name !== representationName) {
+                setError('representation_already_exists');
+            } else if (!selectedFields.length) {
+                setError(null);
+                setEmpty(true);
+            } else
+                dispatch(
+                    editRepresentationRequest({
+                        key: gridName,
+                        name,
+                        isDefault: false,
+                        oldName: representationName,
+                        value: selectedFields,
+
+                        callbackSuccess: () => {
+                            onClose(() => {
+                                changeRepresentation(name, true);
+                            });
+                        },
+                    }),
+                );
+        }
+           
     };
 
     const handleDelete = () => {
@@ -160,12 +214,6 @@ const FieldsConfig = ({
                     callbackSuccess: () => {
                         onClose(() => {
                             changeRepresentation(null);
-                            /*dispatch(
-                                setRepresentationRequest({
-                                    gridName,
-                                    value: null,
-                                }),
-                            );*/
                         });
                     },
                 }),
@@ -198,7 +246,7 @@ const FieldsConfig = ({
                         <Dropdown.Menu>
                             <Dropdown.Item
                                 text={t('default_representation')}
-                                onClick={() => changeRepresentation(null, true)}
+                                onClick={() => {changeRepresentation(null, true); setIsDefault(true)}}
                             />
                             {representations && Object.keys(representations).length ? (
                                 <>
@@ -207,7 +255,7 @@ const FieldsConfig = ({
                                         .map(key => (
                                             <Dropdown.Item
                                                 text={key}
-                                                onClick={() => changeRepresentation(key, true)}
+                                                onClick={() => {changeRepresentation(key, true); setIsDefault(false);}}
                                             />
                                         ))}
                                 </>
@@ -221,7 +269,7 @@ const FieldsConfig = ({
                     content={t('customize_representation')}
                     position="bottom right"
                     trigger={
-                        <Button icon="cogs" disabled={!representationName} onClick={editOpen} />
+                        <Button icon="cogs" disabled={!representationName && !isEditDefaultRepresentation} onClick={editOpen} />
                     }
                 />
             </div>
@@ -241,10 +289,12 @@ const FieldsConfig = ({
                 <Modal.Content scrolling>
                     <Modal.Description>
                         <Form style={{ marginBottom: '16px' }}>
+                            
                             <Text
                                 name="name"
                                 value={name}
                                 error={error && t(error)}
+                                isDisabled = {isDefault}
                                 onChange={(e, { value }) => setName(value)}
                             />
                             <Input

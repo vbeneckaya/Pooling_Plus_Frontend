@@ -486,6 +486,7 @@ SuperGrid.defaultProps = {
     getLookupList: () => {},
     getAllIds: () => {},
     disabledCheck: () => {},
-};
+}
+;
 
 export default withTranslation()(withRouter(SuperGrid));
