@@ -47,7 +47,7 @@ namespace Application.Services.Shippings
             
             foreach (var group in orders.GroupBy(x => new { x.ShippingWarehouseId, x.DeliveryWarehouseId, x.ClientId }))
             {
-                var hasIncompleteOrders = group.Any(x => x.PalletsCount == null
+                var hasIncompleteOrders = group.Any(x =>  x.PalletsCount == null
                                                          || x.PalletsCount <= 0
                                                          || x.ShippingDate == null
                                                          || x.DeliveryDate == null);
@@ -79,7 +79,8 @@ namespace Application.Services.Shippings
             DateTime shippingDate = orders.Min(x => x.ShippingDate.Value);
 
             var tariff = _commonDataService.GetDbSet<Tariff>()
-                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId 
+                                     && x.ProviderId == shipping.ProviderId 
                                      && x.VehicleTypeId == shipping.VehicleTypeId
 //                                     && x.BodyTypeId == shipping.BodyTypeId
                                      && x.TarifficationType == shipping.TarifficationType
@@ -91,6 +92,7 @@ namespace Application.Services.Shippings
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
                         .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                                             && x.ProviderId == shipping.ProviderId 
                                              && x.VehicleTypeId == null
 //                                             && x.BodyTypeId == null
                                              && x.TarifficationType == shipping.TarifficationType
