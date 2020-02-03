@@ -80,7 +80,8 @@ namespace Application.Services.Shippings
             DateTime shippingDate = orders.Min(x => x.ShippingDate.Value);
 
             var tariff = _commonDataService.GetDbSet<Tariff>()
-                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId 
+                                     && x.ProviderId == shipping.ProviderId 
                                      && x.VehicleTypeId == shipping.VehicleTypeId
 //                                     && x.BodyTypeId == shipping.BodyTypeId
                                      && x.TarifficationType == shipping.TarifficationType
@@ -92,6 +93,7 @@ namespace Application.Services.Shippings
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
                         .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                                             && x.ProviderId == shipping.ProviderId 
                                              && x.VehicleTypeId == null
 //                                             && x.BodyTypeId == null
                                              && x.TarifficationType == shipping.TarifficationType
