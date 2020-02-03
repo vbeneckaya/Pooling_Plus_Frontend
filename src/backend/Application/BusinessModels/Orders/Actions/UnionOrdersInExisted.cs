@@ -1,5 +1,4 @@
 using Application.BusinessModels.Shared.Actions;
-using Application.Services.Shippings;
 using DAL.Queries;
 using DAL.Services;
 using Domain.Enums;
@@ -11,7 +10,6 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Extensions;
 using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Actions
@@ -25,13 +23,15 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly IHistoryService _historyService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
         private readonly IDeliveryCostCalcService _calcService;
+        private readonly IShippingGetRouteService _shippingGetRouteService;
 
         public UnionOrdersInExisted(ICommonDataService dataService, 
                                     IHistoryService historyService, 
                                     IShippingCalculationService shippingCalculationService,
+                                    IShippingGetRouteService shippingGetRouteService,
                                     IChangeTrackerFactory changeTrackerFactory, 
                                     IDeliveryCostCalcService calcService)
-            : base(dataService, shippingCalculationService)
+            : base(dataService, shippingCalculationService, shippingGetRouteService)
         {
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;

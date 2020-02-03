@@ -23,16 +23,20 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly ICommonDataService _dataService;
         private readonly IShippingCalculationService _shippingCalculationService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+        private readonly IShippingGetRouteService _shippingGetRouteService;
 
         public RemoveFromShipping(ICommonDataService dataService, 
                                   IHistoryService historyService, 
                                   IShippingCalculationService shippingCalculationService,
-                                  IChangeTrackerFactory changeTrackerFactory)
+                                  IChangeTrackerFactory changeTrackerFactory,
+                                  IShippingGetRouteService shippingGetRouteService
+            )
         {
             _dataService = dataService;
             _historyService = historyService;
             _shippingCalculationService = shippingCalculationService;
             _changeTrackerFactory = changeTrackerFactory;
+            _shippingGetRouteService = shippingGetRouteService;
             Color = AppColor.Blue;
             Description = "Убрать накладную из перевозки. Если в перевозке накладных больше нет, то перевозка будет помечена как \"Отменена\"";
         }
@@ -65,6 +69,9 @@ namespace Application.BusinessModels.Orders.Actions
                 _historyService.Save(shipping.Id, "orderRemovedFromShipping", order.OrderNumber, shipping.ShippingNumber);
 
                 _shippingCalculationService.RecalculateShipping(shipping, orders);
+                
+                _shippingGetRouteService.UpdateRoute(shipping,orders);
+                
 
                 var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
                 var changeTracker = _changeTrackerFactory.CreateChangeTracker().TrackAll<Shipping>();

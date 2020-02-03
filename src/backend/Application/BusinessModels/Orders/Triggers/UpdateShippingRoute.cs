@@ -10,12 +10,12 @@ using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Triggers
 {
-    public class UpdateOrderWarehouses : ITrigger<Order>
+    public class UpdateShippingRoute : ITrigger<Order>
     {
         private readonly ICommonDataService _dataService;
         private readonly IShippingGetRouteService _getRouteService;
 
-        public UpdateOrderWarehouses(ICommonDataService dataService, IShippingGetRouteService getRouteService)
+        public UpdateShippingRoute(ICommonDataService dataService, IShippingGetRouteService getRouteService)
         {
             _dataService = dataService;
             _getRouteService = getRouteService;
@@ -36,7 +36,9 @@ namespace Application.BusinessModels.Orders.Triggers
             var watchProperties = new[]
             {
                 nameof(Order.DeliveryWarehouseId),
-                nameof(Order.ShippingWarehouseId)
+                nameof(Order.ShippingWarehouseId),
+                nameof(Order.ShippingDate),
+                nameof(Order.DeliveryDate)
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }

@@ -24,18 +24,21 @@ namespace Application.BusinessModels.Orders.Actions
         private readonly IHistoryService _historyService;
         private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+        private readonly IShippingGetRouteService _shippingGetRouteService;
 
         public UnionOrders(ICommonDataService dataService, 
                            IHistoryService historyService, 
                            IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
                            IShippingCalculationService shippingCalculationService,
-                           IChangeTrackerFactory changeTrackerFactory
+                           IChangeTrackerFactory changeTrackerFactory,
+                           IShippingGetRouteService shippingGetRouteService
                            )
-            : base(dataService, shippingCalculationService)
+            : base(dataService, shippingCalculationService, shippingGetRouteService)
         {
             _historyService = historyService;
             _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
+            _shippingGetRouteService = shippingGetRouteService;
             Color = AppColor.Orange;
             Description = "Объеденить накладные в одну перевозку";
         }
@@ -68,7 +71,7 @@ namespace Application.BusinessModels.Orders.Actions
             shippingDbSet.Add(shipping);
             
             UnionOrderInShipping(orders, orders, shipping, _historyService);
-
+            
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
             var changeTracker = _changeTrackerFactory.CreateChangeTracker()
                                                      .TrackAll<Shipping>()

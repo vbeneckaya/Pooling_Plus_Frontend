@@ -220,7 +220,7 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
             services.AddScoped<ITrigger<Order>, OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Order>, OnChangeVehicleTypeId>();
-            services.AddScoped<ITrigger<Order>, UpdateOrderWarehouses>();
+            services.AddScoped<ITrigger<Order>, UpdateShippingRoute>();
         }
 
         private static void AddShippingBusinessModels(IServiceCollection services)

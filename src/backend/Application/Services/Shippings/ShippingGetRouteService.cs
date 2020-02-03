@@ -20,7 +20,7 @@ namespace Application.Services.Shippings
         public void UpdateRoute(Shipping shipping, IEnumerable<Order> orders)
         {
             shipping.Route = GetRoute(orders);
-            _dataService.SaveChanges();
+      //      _dataService.SaveChanges();
         }
 
         private string GetRoute(IEnumerable<Order> orders)
