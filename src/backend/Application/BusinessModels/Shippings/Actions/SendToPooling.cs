@@ -1,3 +1,4 @@
+using System;
 using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
 using Domain.Enums;
@@ -7,6 +8,10 @@ using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Linq;
+using Integrations;
+using Integrations.Dtos;
+using Integrations.Pooling;
+using Integrations.Pooling.Dtos;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -26,8 +31,30 @@ namespace Application.BusinessModels.Shippings.Actions
             Description = "Забронировать слот на пулинге";
         }
 
-        public AppActionResult Run(CurrentUserDto user, Shipping shipping)
+        public AppActionResult Run(CurrentUserDto userDto, Shipping shipping)
         {
+            var user = _dataService.GetById<User>(userDto.Id.Value);
+
+            try
+            {
+                using (var pooling = new PoolingIntegration(user, _dataService))
+                {
+                    if (pooling.IsAvaliable(shipping))
+                    {
+                        var reservationNumber = pooling.CreateReservation(shipping);
+                        shipping.PoolingInfo = $"Номер брони на Pooling: {reservationNumber}";
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = e.Message
+                };
+            }
+            
             shipping.Status = ShippingState.ShippingConfirmed;
             shipping.PoolingState = ShippingPoolingState.PoolingBooked;
 
@@ -41,7 +68,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetPooling".Translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetPooling".Translate(userDto.Language, shipping.ShippingNumber)
             };
         }
 

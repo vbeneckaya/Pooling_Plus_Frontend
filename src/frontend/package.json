@@ -35,7 +35,8 @@
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^0.88.2",
         "throttle-debounce": "^2.1.0",
-        "use-react-router": "^1.0.7"
+        "use-react-router": "^1.0.7",
+        "chalk": "2.4.1"
     },
     "scripts": {
         "start": "set PORT=3008 && react-scripts start",
