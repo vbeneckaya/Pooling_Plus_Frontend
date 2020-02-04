@@ -46,3 +46,30 @@ demoplus:
   script:
     - $SSH_LINE "docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true"
     - $SSH_LINE "docker pull $REGISTRY_HOST/alternative-tms-back:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-tasks:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-front:$CI_PIPELINE_ID; cd /opt/alternative-tms ; docker-compose down ; tag_of_image=$CI_PIPELINE_ID docker-compose -f docker-compose-template.yml up -d"
+
+
+#DEPLOY-PROD-PLUS
+
+prod-plus-with-drop-db:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  92.53.64.186
+    SSH_LINE: ssh -p22220 $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  needs: ["build"]
+  script:
+    - $SSH_LINE "docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true"
+    - $SSH_LINE "docker pull $REGISTRY_HOST/alternative-tms-back:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-tasks:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-front:$CI_PIPELINE_ID; cd /opt/alternative-tms ; docker-compose down ; sudo rm -Rf ./postgres_old ; sudo mv ./postgres ./postgres_old ; tag_of_image=$CI_PIPELINE_ID docker-compose -f docker-compose-template.yml up -d"
+  when: manual
+
+prod-plus:
+  variables:
+    SSH_USER:  server
+    SSH_HOST:  92.53.64.186
+    SSH_LINE: ssh -p22220 $SSH_OPT $SSH_USER@$SSH_HOST
+  stage: deploy
+  needs: ["build"]
+  script:
+    - $SSH_LINE "docker login -u $LOGIN_REGISTRY -p $PASS_REGISTRY $REGISTRY_HOST || true"
+    - $SSH_LINE "docker pull $REGISTRY_HOST/alternative-tms-back:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-tasks:$CI_PIPELINE_ID; docker pull $REGISTRY_HOST/alternative-tms-front:$CI_PIPELINE_ID; cd /opt/alternative-tms ; docker-compose down ; tag_of_image=$CI_PIPELINE_ID docker-compose -f docker-compose-template.yml up -d"
+  when: manual
