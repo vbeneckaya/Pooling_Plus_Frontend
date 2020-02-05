@@ -22,13 +22,11 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
-        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
         private readonly IShippingGetRouteService _shippingGetRouteService;
 
         public UnionOrders(ICommonDataService dataService, 
-                           IHistoryService historyService, 
-                           IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
+                           IHistoryService historyService,
                            IShippingCalculationService shippingCalculationService,
                            IChangeTrackerFactory changeTrackerFactory,
                            IShippingGetRouteService shippingGetRouteService
@@ -36,7 +34,6 @@ namespace Application.BusinessModels.Orders.Actions
             : base(dataService, shippingCalculationService, shippingGetRouteService)
         {
             _historyService = historyService;
-            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
             _shippingGetRouteService = shippingGetRouteService;
             Color = AppColor.Orange;
@@ -66,7 +63,6 @@ namespace Application.BusinessModels.Orders.Actions
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
             shipping.DeliveryType = DeliveryType.Delivery;
-            shipping.TarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
 
             shippingDbSet.Add(shipping);
             

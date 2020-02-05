@@ -19,21 +19,18 @@ namespace Application.BusinessModels.Orders.Actions
     {
         private readonly IHistoryService _historyService;
         private readonly ICommonDataService _dataService;
-        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
         private readonly IShippingCalculationService _shippingCalculationService;
         private readonly IShippingGetRouteService _shippingGetRouteService;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
         public CreateShipping(ICommonDataService dataService, 
                               IHistoryService historyService,
-                              IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer,
                               IShippingCalculationService shippingCalculationService,
                               IShippingGetRouteService shippingGetRouteService,
                               IChangeTrackerFactory changeTrackerFactory)
         {
             _dataService = dataService;
             _historyService = historyService;
-            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _shippingCalculationService = shippingCalculationService;
             _shippingGetRouteService = shippingGetRouteService;
             _changeTrackerFactory = changeTrackerFactory;
@@ -46,7 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(CurrentUserDto user, Order order)
         {
-            var unionOrders = new UnionOrders(_dataService, _historyService, _shippingTarifficationTypeDeterminer, _shippingCalculationService, _changeTrackerFactory, _shippingGetRouteService);
+            var unionOrders = new UnionOrders(_dataService, _historyService, _shippingCalculationService, _changeTrackerFactory, _shippingGetRouteService);
             return unionOrders.Run(user, new[] { order });
         }
 
