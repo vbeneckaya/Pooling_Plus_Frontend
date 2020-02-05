@@ -357,7 +357,7 @@ namespace Application.Services.Orders
             }
         }
 
-        protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
+         protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
