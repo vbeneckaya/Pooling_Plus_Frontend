@@ -118,6 +118,7 @@ namespace API
             {
                 string version = GetMajorVersion();
                 c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
+                c.RoutePrefix = "swagger";
             });
 
             lifetime.ApplicationStopped.Register(OnAppStopped);
