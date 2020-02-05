@@ -200,25 +200,28 @@ const ShippingCard = (props) => {
 
         useEffect(
             () => {
-                // if (notChangeOrderForm) {
-                //     Object.keys(orderForm).forEach(key => {
-                //         if (orderForm[key] !== orderCard[key]) {
-                //             setNotChangeOrderForm(false);
-                //         }
-                //     });
-                // }
-               // setNotChangeOrderForm(true);
+                if (notChangeOrderForm) {
+                    Object.keys(orderForm).forEach(key => {
+                        if (orderForm[key] !== orderCard[key]) {
+                            setNotChangeOrderForm(false);
+                        }
+                    });
+                }
+               setNotChangeOrderForm(true);
             },
             [orderForm],
         );
 
         const handleCreateOrder = () => {
+            debugger;
             setIndexRow(null);
-            orderForm['id'] = null;
+            let defaultOrderForm={};
+            defaultOrderForm['id'] = undefined;
             orderColumns.forEach(column => {
-                orderForm[column.name] = null
+                defaultOrderForm[column.name] = undefined
             });
-            setOrderCard(orderForm);
+            setOrderCard(defaultOrderForm);
+            setOrderForm(defaultOrderForm);
             setNotChangeOrderForm(true);
             setShowModal(true);
         };
@@ -298,6 +301,7 @@ const ShippingCard = (props) => {
         };
 
         const openOrderModal = (index) => {
+            debugger;
             setIndexRow(index);
             setOrderCard(form.orders[index]);
             setOrderForm(form.orders[index]);
@@ -321,7 +325,7 @@ const ShippingCard = (props) => {
             }));
         },[]);
 
-        const getActionsFooter = useCallback(
+        const getOrderActionsFooter = useCallback(
             () => {
                 return (
                     <>
@@ -338,7 +342,7 @@ const ShippingCard = (props) => {
                     </>
                 );
             },
-            [form, notChangeOrderForm],
+            [orderForm, notChangeOrderForm],
         );
 
         const handleSave = () => {
@@ -367,13 +371,19 @@ const ShippingCard = (props) => {
 
 
         const invokeAction = actionName => {
+            
             if (actionName == 'insert') {
+
+                form.orders = !!form.orders ? form.orders : [];
                 let orders = form.orders;
+                
                 if (indexRow == null) {
-                    orders.push(orderForm);
-                } else {
+                    orders.push(orderForm) ;
+                } else 
+                    
                     orders[indexRow] = orderForm;
-                }
+                debugger;
+                     
                 onChangeForm(null, {name: 'orders', value: orders});
             }
             onCloseModal();
@@ -410,7 +420,7 @@ const ShippingCard = (props) => {
                                 uniquenessNumberCheck={handleUniquenessCheck}
                             />
                         </Modal.Description>
-                        <Modal.Actions>{getActionsFooter()}</Modal.Actions>
+                        <Modal.Actions>{getOrderActionsFooter()}</Modal.Actions>
                     </Modal>
                 <Confirm
                     dimmer="blurring"
