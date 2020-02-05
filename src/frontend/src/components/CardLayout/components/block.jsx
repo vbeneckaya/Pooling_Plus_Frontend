@@ -12,8 +12,8 @@ const Block = ({item, loading}) => {
 
     const toggleOpen = () => {
         setOpen(open => !open);
-        console.log('item');
-        console.log(item);
+     //   console.log('item');
+     //   console.log(item);
     };
 
     return (

@@ -68,7 +68,7 @@ const CardNew = props => {
     const error = useSelector(state => errorSelector(state));
 
     useEffect(() => {
-        console.log('454545');
+      //  console.log('454545');
         id && dispatch(getCardRequest({ id, name }));
 
         return () => {
@@ -97,7 +97,7 @@ const CardNew = props => {
     );
 
     const onOpenModal = () => {
-        console.log('ooopen');
+     //   console.log('ooopen');
     };
 
     const title = useMemo(

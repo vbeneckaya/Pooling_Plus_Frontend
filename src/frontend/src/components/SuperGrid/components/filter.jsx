@@ -20,7 +20,7 @@ const Filter = props => {
         resizeColumn(size, index);
     }, []);
 
-    console.log('columns', columns);
+    //console.log('columns', columns);
 
     return (
         <Table.Row className="sticky-header">

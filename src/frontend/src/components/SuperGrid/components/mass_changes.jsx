@@ -23,7 +23,7 @@ const MassChanges = ({ gridName, load }) => {
 
     useEffect(
         () => {
-            console.log('fieldParams', fieldParams);
+          //  console.log('fieldParams', fieldParams);
             setValue(null);
             setColumn({
                 name: field,

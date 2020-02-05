@@ -9,22 +9,19 @@ import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector} from '../../../ducks/profile';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
-// import {GRID_SHIPPING_NEW_LINK} from '../../../router/links';
 import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
 import FormField from "../../../components/BaseComponents";
-// import _ from "lodash";
-// import {saveDictionaryCardRequest} from "../../../ducks/dictionaryView";
 import {ordersMiniColumns} from "../../../constants/ordersMiniColumns";
-// import {Grid} from "semantic-ui-react/dist/commonjs/collections/Grid/Grid";
 import {DATE_TYPE, NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE} from "../../../constants/columnTypes";
 import {editCardRequest, isUniqueNumberRequest} from "../../../ducks/gridCard";
-import {ORDERS_GRID} from "../../../constants/grids";
-import {invokeActionRequest} from "../../../ducks/gridActions";
 
 const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
+    
+    console.log('form from modal', form);
+    console.log('error from modal', error);
 
     return (
         <Form className="tabs-card">
@@ -189,6 +186,8 @@ const ShippingCard = (props) => {
 
         let [orderForm, setOrderForm] = useState([]);
         let [orderCard, setOrderCard] = useState([]);
+        let [indexRow, setIndexRow] = useState();
+
         let [notChangeOrderForm, setNotChangeOrderForm] = useState(true);
         let [confirmation, setConfirmation] = useState({open: false});
 
@@ -201,24 +200,26 @@ const ShippingCard = (props) => {
 
         useEffect(
             () => {
-                if (notChangeOrderForm) {
-                    Object.keys(orderForm).forEach(key => {
-                        if (orderForm[key] !== orderCard[key]) {
-                            setNotChangeOrderForm(false);
-                        }
-                    });
-                }
+                // if (notChangeOrderForm) {
+                //     Object.keys(orderForm).forEach(key => {
+                //         if (orderForm[key] !== orderCard[key]) {
+                //             setNotChangeOrderForm(false);
+                //         }
+                //     });
+                // }
+               // setNotChangeOrderForm(true);
             },
             [orderForm],
         );
 
         const handleCreateOrder = () => {
-            orderColumns.forEach(column => {
-                orderCard[column.name] = null
-            });
+            setIndexRow(null);
+            orderForm['id'] = null;
             orderColumns.forEach(column => {
                 orderForm[column.name] = null
             });
+            setOrderCard(orderForm);
+            setNotChangeOrderForm(true);
             setShowModal(true);
         };
 
@@ -254,6 +255,18 @@ const ShippingCard = (props) => {
                     ),
                 },
 
+
+                {
+                    menuItem: t('orders'),
+                    isCreateBtn: userPermissions.includes(2),
+                    createAction: handleCreateOrder,
+                    render: () => <Orders
+                        form={form}
+                        onChange={onChangeForm}
+                        openOrderModal={openOrderModal}
+                        settings={settings}/>
+                },
+
                 {
                     menuItem: t('accounts'),
                     render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}/>,
@@ -280,25 +293,14 @@ const ShippingCard = (props) => {
                     render: () => <History cardId={id} status={form.status}/>,
                 });
             }
-            obj.push(
-                {
-                    menuItem: t('orders'),
-                    isCreateBtn: userPermissions.includes(2),
-                    createAction: handleCreateOrder,
-                    render: () => <Orders
-                        form={form}
-                        onChange={onChangeForm}
-                        openOrderModal={openOrderModal}
-                        settings={settings}/>
-                });
 
             return obj;
         };
 
-        const openOrderModal = (rowId) => {
-            setOrderCard(form.orders[rowId]);
-            setOrderForm(form.orders[rowId]);
-
+        const openOrderModal = (index) => {
+            setIndexRow(index);
+            setOrderCard(form.orders[index]);
+            setOrderForm(form.orders[index]);
             setNotChangeOrderForm(true);
             setShowModal(true);
         }
@@ -308,13 +310,16 @@ const ShippingCard = (props) => {
             closeConfirmation();
         };
 
+        const onOpenModal = () => {
+        };
 
         const onChangeOrderForm = useCallback((e, {name, value}) => {
+            console.log('effectOrder');
             setOrderForm(prevState => ({
                 ...prevState,
                 [name]: value,
             }));
-        }, []);
+        },[]);
 
         const getActionsFooter = useCallback(
             () => {
@@ -325,7 +330,7 @@ const ShippingCard = (props) => {
                         </Button>
                         <Button
                             color="blue"
-                            disabled={notChangeOrderForm}
+                           // disabled={notChangeOrderForm}
                             onClick={handleSave}
                         >
                             {t('SaveButton')}
@@ -337,6 +342,7 @@ const ShippingCard = (props) => {
         );
 
         const handleSave = () => {
+
             invokeAction('insert');
         };
 
@@ -362,10 +368,15 @@ const ShippingCard = (props) => {
 
         const invokeAction = actionName => {
             if (actionName == 'insert') {
-                onChangeForm(null, {name: 'orders', value: form.orders.concat(orderForm)});
-                onCloseModal();
+                let orders = form.orders;
+                if (indexRow == null) {
+                    orders.push(orderForm);
+                } else {
+                    orders[indexRow] = orderForm;
+                }
+                onChangeForm(null, {name: 'orders', value: orders});
             }
-            ;
+            onCloseModal();
         };
 
         return (
@@ -378,14 +389,11 @@ const ShippingCard = (props) => {
                     onClose={onClose}
                     loading={loading}
                 />
-                {!!showModal && (
                     <Modal
                         dimmer="blurring"
-                        open={() => {
-                        }}
+                        open={showModal}
                         closeOnDimmerClick={false}
-                        onOpen={() => {
-                        }}
+                        onOpen={onOpenModal}
                         onClose={onCloseModal}
                         closeIcon
                     >
@@ -403,7 +411,7 @@ const ShippingCard = (props) => {
                             />
                         </Modal.Description>
                         <Modal.Actions>{getActionsFooter()}</Modal.Actions>
-                    </Modal>)}
+                    </Modal>
                 <Confirm
                     dimmer="blurring"
                     open={confirmation.open}

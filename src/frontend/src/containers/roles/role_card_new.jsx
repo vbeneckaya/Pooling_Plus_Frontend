@@ -122,9 +122,9 @@ const RoleCard = props => {
     };
 
     const handleSave = () => {
-        console.log(form);
+      //  console.log(form);
         let dat = mapData();
-        console.log(dat);
+      //  console.log(dat);
         dispatch(createRoleRequest({params: dat, callbackFunc: handleClose}));
     };
 
