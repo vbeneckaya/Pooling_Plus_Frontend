@@ -100,8 +100,8 @@ namespace Application.BusinessModels.Orders.Actions
                     orderForAddInShipping.TarifficationType = shipping.TarifficationType;
                 }
             }
-            if(!shipping.ManualTarifficationType)
-                _calcService.UpdateDeliveryCost(shipping);
+            
+            _calcService.UpdateDeliveryCost(shipping);
 
             return new AppActionResult
             {

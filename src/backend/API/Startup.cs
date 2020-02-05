@@ -78,8 +78,8 @@ namespace API
                 c.SwaggerDoc($"v{version}", new Info
                 {
                     Version = $"v{version}",
-                    Title = "Artlogic TMS API",
-                    Description = "API for Artlogic TMS"
+                    Title = "Pooling Plus API",
+                    Description = "API for Pooling Plus"
                 });
 
                 c.IncludeXmlComments(GetXmlCommentsPath());
@@ -117,7 +117,7 @@ namespace API
             app.UseSwaggerUI(c =>
             {
                 string version = GetMajorVersion();
-                c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Artlogic TMS API v{version}");
+                c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
             });
 
             lifetime.ApplicationStopped.Register(OnAppStopped);
