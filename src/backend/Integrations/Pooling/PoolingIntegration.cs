@@ -21,7 +21,7 @@ namespace Integrations.Pooling
                 user.PoolingPassword, 
                 dataService)
         {
-            var identityData = Post("identity/login", new PoolingIdentityLoginParams(user.PoolingLogin, user.PoolingPassword));
+            var identityData = Put("identity/login", new PoolingIdentityLoginParams(user.PoolingLogin, user.PoolingPassword));
             
             _accessToken = identityData
                 .Get("accessToken");

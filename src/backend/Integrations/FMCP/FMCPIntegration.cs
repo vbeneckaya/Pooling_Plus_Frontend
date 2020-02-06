@@ -13,12 +13,13 @@ namespace Integrations.FMCP
             user.PoolingPassword, 
             dataService)
         {
-            _accessToken = Post<dynamic>("user/login", new {email = user.FmCPLogin, user.FmCPPassword}).data.token;
+            _accessToken = Post("user/login", new {email = user.FmCPLogin, user.FmCPPassword})
+                .Get("$.data.token");
         }
 
         public string CreateWaybill(Shipping shipping)
         {
-            return Get<dynamic>("waybill/create").data.id;
+            return Post("waybill/create").Get("$.id");
         }
 
         public IEnumerable<string> Waybills(Shipping shipping)
