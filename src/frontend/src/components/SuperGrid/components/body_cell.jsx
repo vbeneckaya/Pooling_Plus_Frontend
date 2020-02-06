@@ -164,7 +164,7 @@ const BodyCell = ({
             <Modal open={open} size="tiny" closeOnDimmerClick={false}>
                 <Modal.Header>
                     {t(`edit_${gridName}`, {
-                        number: rowNumber,
+                        number: rowNumber.value,
                         status: t(status),
                     })}
                 </Modal.Header>
