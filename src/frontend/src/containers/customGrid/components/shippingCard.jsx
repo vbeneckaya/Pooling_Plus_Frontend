@@ -201,7 +201,12 @@ const ShippingCard = (props) => {
         const canOnionOrders = !!userActions.find(_ => _ == 'unionOrders');
         const canOnionOrdersInExisted = !!userActions.find(_ => _ == 'unionOrdersInExisted');
         const canEditOrders = !!userActions.find(_ => _ == 'unionOrdersInExisted');
-        
+
+        console.log(canOnionOrders);
+        console.log(canOnionOrdersInExisted);
+        console.log(canEditOrders);
+        console.log(form);
+
         let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
         let [orderForm, setOrderForm] = useState([]);
@@ -213,6 +218,7 @@ const ShippingCard = (props) => {
         let [confirmation, setConfirmation] = useState({open: false});
 
         let [showModal, setShowModal] = useState(false);
+        let [showSelectModal, setShowSelectModal] = useState(false);
 
         const handleTabChange = useCallback((e, {activeIndex}) => {
             setRouteActiveIndex(activeIndex);
@@ -245,6 +251,10 @@ const ShippingCard = (props) => {
             setShowModal(true);
         };
 
+        const handleSelectOrder = () => {
+            setShowSelectModal(true);
+        };
+
         const handleUniquenessCheck = callbackFunc => {
             (!id || orderForm.orderNumber !== orderCard.orderNumber) && dispatch(
                 isUniqueNumberRequest({
@@ -265,6 +275,20 @@ const ShippingCard = (props) => {
                     ),
                 },
                 {
+                    menuItem: t('orders'),
+                    isCreateBtn: (!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders) && userPermissions.includes(2),
+                    isSelectBtn: !!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders,
+                    createAction: handleCreateOrder,
+                    selectAction: handleSelectOrder,
+                    render: () => <Orders
+                        form={form}
+                        columns={orderColumns}
+                        isDeleteBtn={!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders}
+                        removeFromShipping={handleDelete}
+                        openOrderModal={openOrderModal}
+                    />
+                },
+                {
                     menuItem: t('route'),
                     render: () => (
                         <Routes
@@ -275,20 +299,6 @@ const ShippingCard = (props) => {
                             onChange={onChangeForm}
                         />
                     ),
-                },
-                {
-                    menuItem: t('orders'),
-                    isCreateBtn: userPermissions.includes(2),
-                    createAction: handleCreateOrder,
-                    render: () => <Orders
-                        form={form}
-                        columns={orderColumns}
-                        isEditBtn={!!form.id ? canOnionOrdersInExisted : canOnionOrders}
-                        isDeleteBtn={!!form.id ? canOnionOrdersInExisted : canOnionOrders}
-                        removeFromShipping={handleDelete}
-                        //onChange={onChangeForm}
-                        openOrderModal={openOrderModal}
-                        />
                 },
 
                 {
@@ -334,11 +344,19 @@ const ShippingCard = (props) => {
             closeConfirmation();
         };
 
+        const onCloseSelectModal = () => {
+            setShowSelectModal(false);
+            closeConfirmation();
+        };
+
+
         const onOpenModal = () => {
         };
 
+        const onOpenSelectModal = () => {
+        };
+
         const onChangeOrderForm = useCallback((e, {name, value}) => {
-            console.log('effectOrder');
             setOrderForm(prevState => ({
                 ...prevState,
                 [name]: value,
@@ -365,7 +383,31 @@ const ShippingCard = (props) => {
             [orderForm, notChangeOrderForm],
         );
 
+        const getSElectOrderActionsFooter = useCallback(
+            () => {
+                return (
+                    <>
+                        <Button color="grey" onClick={handleSelectModalClose}>
+                            {t('CancelButton')}
+                        </Button>
+                        <Button
+                            color="blue"
+                            //disabled={notChangeOrderForm}
+                            onClick={handleSelectModalSave}
+                        >
+                            {t('SaveButton')}
+                        </Button>
+                    </>
+                );
+            },
+            [],
+        );
+
         const handleSave = () => {
+            invokeAction('insert');
+        };
+
+        const handleSelectModalSave = () => {
             invokeAction('insert');
         };
 
@@ -386,6 +428,19 @@ const ShippingCard = (props) => {
             }
         };
 
+        const handleSelectModalClose = () => {
+            if (notChangeOrderForm) {
+                onCloseSelectModal();
+            } else {
+                setConfirmation({
+                    open: true,
+                    content: t('confirm_close_dictionary'),
+                    onCancel: closeConfirmation(),
+                    onConfirm: onCloseModal,
+                });
+            }
+        };
+
         const closeConfirmation = () => {
             setConfirmation({
                 open: false,
@@ -393,7 +448,7 @@ const ShippingCard = (props) => {
         };
 
 
-        const invokeAction = (actionName,index) => {
+        const invokeAction = (actionName, index) => {
             if (actionName == 'insert') {
 
                 form.orders = !!form.orders ? form.orders : [];
@@ -449,6 +504,31 @@ const ShippingCard = (props) => {
                     </Modal.Description>
                     <Modal.Actions>{getOrderActionsFooter()}</Modal.Actions>
                 </Modal>
+
+                <Modal
+                    dimmer="blurring"
+                    open={showSelectModal}
+                    closeOnDimmerClick={false}
+                    onOpen={onOpenSelectModal}
+                    onClose={onCloseSelectModal}
+                    closeIcon
+                >
+                    <Modal.Header>{t('select_order')}</Modal.Header>
+                    <Modal.Description>
+                        {/*<Loader size="huge" active={loading}>
+                            Loading
+                        </Loader>*/}
+                        {/*<Content*/}
+                        {/*error={error}*/}
+                        {/*t={t}*/}
+                        {/*form={orderForm}*/}
+                        {/*onChange={onChangeOrderForm}*/}
+                        {/*uniquenessNumberCheck={handleUniquenessCheck}*/}
+                        {/*/>*/}
+                    </Modal.Description>
+                    <Modal.Actions>{getSElectOrderActionsFooter()}</Modal.Actions>
+                </Modal>
+
                 <Confirm
                     dimmer="blurring"
                     open={confirmation.open}

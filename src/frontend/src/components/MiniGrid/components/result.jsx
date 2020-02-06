@@ -4,6 +4,7 @@ import { Button, Loader, Table } from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import { connect } from 'react-redux';
 import NotFoundMessage from './notFoundMessage';
+import {ORDERS_GRID} from "../../../constants/grids";
 
 class Result extends Component {
     // constructor(props){
@@ -23,7 +24,6 @@ class Result extends Component {
         //    goToCard,
           //  actions,
         //    isShowActions,
-            isShowEditButton,
             removeFromShipping,
             isShowDeleteButton,
             name,
@@ -80,7 +80,7 @@ class Result extends Component {
                                 />
                             ))}
                             <Table.Cell/>
-                            {isShowEditButton || isShowDeleteButton  ? (
+                            {isShowDeleteButton  ? (
                                 <Table.HeaderCell
                                     className="actions-column"
                                     // onClick={e => {
@@ -111,7 +111,7 @@ class Result extends Component {
                     ))
                 ) : !progress ? (
                     <NotFoundMessage
-                        gridName={name}
+                        gridName={ORDERS_GRID}
                        // goToCard={goToCard}
                     />
                 ) : null}

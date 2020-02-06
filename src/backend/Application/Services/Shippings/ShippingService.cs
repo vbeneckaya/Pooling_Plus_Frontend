@@ -356,6 +356,8 @@ namespace Application.Services.Shippings
         {
             bool isNew = string.IsNullOrEmpty(dto.Id);
 
+            _mapper.Map(dto, entity);
+            
             IEnumerable<string> readOnlyFields = null;
             if (!isNew)
             {
@@ -369,14 +371,28 @@ namespace Application.Services.Shippings
             }
             else
             {
-                var user = _userIdProvider.GetCurrentUser();
-                entity.CarrierId = user.CarrierId;
-                entity.ProviderId = user.ProviderId;
+                InitializeNewShipping(entity);
             }
-
-            _mapper.Map(dto, entity);
         }
 
+        private void InitializeNewShipping(Shipping shipping)
+        {
+            shipping.Status = ShippingState.ShippingCreated;
+            shipping.ShippingCreationDate = DateTime.UtcNow;
+            shipping.ShippingNumber = ShippingNumberProvider.GetNextShippingNumber();
+            shipping.DeliveryType = DeliveryType.Delivery;
+
+            var user = _userIdProvider.GetCurrentUser();
+            if (user?.CarrierId != null)
+            {
+                shipping.CarrierId = user.CarrierId;
+            }
+            if (user?.ProviderId != null)
+            {
+                shipping.ProviderId = user.ProviderId;
+            }
+        }
+        
         public override void MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
             MapFromDtoToEntity(entity, dto);
@@ -784,7 +800,7 @@ namespace Application.Services.Shippings
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
 
-        private Guid? GetCarrierIdByName(string name)
+       private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
