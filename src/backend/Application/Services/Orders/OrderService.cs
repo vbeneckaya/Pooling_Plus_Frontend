@@ -124,7 +124,7 @@ namespace Application.Services.Orders
 
         public override string GetNumber(OrderFormDto dto)
         {
-            return dto?.OrderNumber.Name;
+            return dto?.OrderNumber.Value;
         }
 
         public OrderFormDto GetFormByNumber(string orderNumber)
