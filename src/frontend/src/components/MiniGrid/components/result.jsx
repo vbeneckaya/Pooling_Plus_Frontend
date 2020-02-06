@@ -90,7 +90,7 @@ class Result extends Component {
                                     //onClick={removeFromShipping(indexRow)}
                                 >
                                    
-                                        <Button
+                                        <Button icon="remove"
                                             key={row.id + 'delete_from_shipping'}
                                             // actionname={'delete_from_shipping'}
                                             // actionbuttonname={'delete_from_shipping'}
@@ -103,9 +103,7 @@ class Result extends Component {
                                             // // }
                                             onClick={()=>handleDeleteClick(indexRow)}
                                             size="mini"
-                                        >
-                                            {'remove'}
-                                        </Button>
+                                        />
                                  
                                 </Table.HeaderCell>
                             ) : null}
