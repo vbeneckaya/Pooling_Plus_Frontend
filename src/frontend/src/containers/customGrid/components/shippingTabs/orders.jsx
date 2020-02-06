@@ -1,13 +1,13 @@
 import React from 'react';
 import {GRID_CARD_LINK, GRID_NEW_LINK} from "../../../../router/links";
-import {ordersMiniColumns} from "../../../../constants/ordersMiniColumns";
 import MiniOrdersGrid from "../../../../components/MiniGrid";
+import {useSelector} from "react-redux";
+import {settingsFormExtSelector} from "../../../../ducks/gridCard";
 
 const Orders = (props) => {
     
-    const {form , isCreateBtn, openOrderModal} = props;
+    const {form , columns, isDeleteButton, isEditButton, openOrderModal} = props;
     const {name = ''} = 'orders';
-    const columns = ordersMiniColumns; 
 
     return (
             <MiniOrdersGrid
@@ -17,7 +17,8 @@ const Orders = (props) => {
                 name={name}
                 // getActions={getActions}
                 // modalCard={this.modalCard}
-                isCreateBtn={isCreateBtn}
+                isEditBtn={isEditButton}
+                isDeleteBtn={isDeleteButton}
                 openOrderModal={openOrderModal}
                 //confirmation={confirmation}
                 //closeConfirmation={this.closeConfirmation}

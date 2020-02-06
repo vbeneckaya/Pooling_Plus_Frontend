@@ -259,6 +259,10 @@ export const userPermissionsSelector = createSelector(stateSelector, state => {
     return state.role ? state.role.permissions.map(item => item.code) : [];
 });
 
+export const userActionsSelector = createSelector(stateSelector, state => {
+    return state.role ? state.role.actions : [];
+});
+
 export const profileSettingsSelector = createSelector(stateSelector, state => state.data);
 
 export const progressEditSelector = createSelector(stateSelector, state => state.progressEdit);

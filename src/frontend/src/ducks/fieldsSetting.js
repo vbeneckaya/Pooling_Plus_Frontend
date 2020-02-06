@@ -3,6 +3,7 @@ import {downloader, postman} from '../utils/postman';
 import {all, put, takeEvery} from 'redux-saga/effects';
 import {ORDERS_GRID} from '../constants/grids';
 import {toast} from "react-toastify";
+import {SETTINGS_TYPE_HIDE} from "../constants/formTypes";
 
 const TYPE_API = 'fieldProperties';
 
@@ -11,6 +12,9 @@ const TYPE_API = 'fieldProperties';
 const GET_FIELDS_SETTINGS_REQUEST = 'GET_FIELDS_SETTINGS_REQUEST';
 const GET_FIELDS_SETTINGS_SUCCESS = 'GET_FIELDS_SETTINGS_SUCCESS';
 const GET_FIELDS_SETTINGS_ERROR = 'GET_FIELDS_SETTINGS_ERROR';
+
+const GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_REQUEST = 'GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_REQUEST';
+const GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_SUCCESS = 'GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_SUCCESS';
 
 const EDIT_FIELDS_SETTINGS_REQUEST = 'EDIT_FIELDS_SETTINGS_REQUEST';
 const EDIT_FIELDS_SETTINGS_SUCCESS = 'EDIT_FIELDS_SETTINGS_SUCCESS';
@@ -34,6 +38,7 @@ const CLEAR_FIELDS_SETTINGS = 'CLEAR_FIELDS_SETTINGS';
 
 const initial = {
     settings: {},
+    extSettings: {},
     progress: false,
     editProgress: false,
     importProgress: false,
@@ -45,6 +50,7 @@ const initial = {
 export default (state = initial, {type, payload = {}}) => {
     switch (type) {
         case GET_FIELDS_SETTINGS_REQUEST:
+        case GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_REQUEST:
             return {
                 ...state,
                 progress: true,
@@ -53,6 +59,12 @@ export default (state = initial, {type, payload = {}}) => {
             return {
                 ...state,
                 settings: payload,
+                progress: false,
+            };
+        case GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_SUCCESS:
+            return {
+                ...state,
+                extSettings: payload,
                 progress: false,
             };
         case EDIT_FIELDS_SETTINGS_REQUEST:
@@ -75,6 +87,7 @@ export default (state = initial, {type, payload = {}}) => {
             return {
                 ...state,
                 settings: {},
+                extSettings: {},
                 progress: false,
             };
         case CLEAR_FIELDS_SETTINGS:
@@ -160,6 +173,8 @@ const stateSelector = state => state.fieldsSetting;
 
 export const fieldsSettingSelector = createSelector(stateSelector, state => state.settings);
 
+export const fieldsExtSettingSelector = createSelector(stateSelector, state => state.extSettings);
+
 export const progressSelector = createSelector(stateSelector, state => state.progress);
 
 export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
@@ -190,6 +205,30 @@ export function* getFieldsSettingSaga({payload}) {
         });
     }
 }
+
+export function* getShippingOrderFieldsSettingSaga({payload}) {
+    try {
+        const baseResult = yield postman.post(`${TYPE_API}/get`, payload);
+        const extResult = yield postman.post(`${TYPE_API}/get`, {
+            ...payload,
+            forEntity: 'orderItems'
+        });
+
+        yield put({
+            type: GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_SUCCESS,
+            payload: {
+                base: baseResult,
+                ext: extResult,
+            },
+        });
+    } catch (e) {
+        yield put({
+            type: GET_FIELDS_SETTINGS_ERROR,
+            payload: e,
+        });
+    }
+}
+
 
 function* editFieldsSettingSaga({payload = {}}) {
     try {
@@ -287,6 +326,7 @@ function* toggleHiddenStateSaga({payload}) {
 export function* saga() {
     yield all([
         takeEvery(GET_FIELDS_SETTINGS_REQUEST, getFieldsSettingSaga),
+        takeEvery(GET_ORDER_IN_SHIPPING_FIELDS_SETTINGS_REQUEST, getShippingOrderFieldsSettingSaga),
         takeEvery(EDIT_FIELDS_SETTINGS_REQUEST, editFieldsSettingSaga),
         takeEvery(TOGGLE_HIDDEN_STATE_REQUEST, toggleHiddenStateSaga),
         takeEvery(IMPORT_FIELDS_SETTINGS_REQUEST, importFieldsSettingSaga),

@@ -1,11 +1,17 @@
-import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
-import { all, call, fork, put, select, takeEvery } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-import { roleIdSelector } from './profile';
-import { fieldsSettingSelector, getFieldsSettingSaga } from './fieldsSetting';
+import {createSelector} from 'reselect';
+import {postman} from '../utils/postman';
+import {all, call, fork, put, select, takeEvery} from 'redux-saga/effects';
+import {toast} from 'react-toastify';
+import {roleIdSelector} from './profile';
+import {
+    fieldsSettingSelector,
+    fieldsExtSettingSelector,
+    getFieldsSettingSaga,
+    getShippingOrderFieldsSettingSaga
+} from './fieldsSetting';
 import {SETTINGS_TYPE_HIDE} from '../constants/formTypes';
 import {errorMapping} from '../utils/errorMapping';
+import {ORDERS_GRID, SHIPPINGS_GRID} from "../constants/grids";
 
 //*  TYPES  *//
 
@@ -50,7 +56,7 @@ const initial = {
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload }) => {
+export default (state = initial, {type, payload}) => {
     switch (type) {
         case GET_GRID_CARD_REQUEST:
         case CREATE_DRAFT_REQUEST:
@@ -69,7 +75,7 @@ export default (state = initial, { type, payload }) => {
             return {
                 ...state,
                 progress: false,
-                data: { id: payload.id },
+                data: {id: payload.id},
             };
         case GET_CARD_CONFIG_SUCCESS:
             return {
@@ -229,7 +235,23 @@ export const settingsFormSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
         let settings = {};
-        const { base = [] } = state;
+        const {base = []} = state;
+        base.forEach(item => {
+            settings = {
+                ...settings,
+                [item.fieldName]: item.isHidden ? SETTINGS_TYPE_HIDE : item.accessTypes[status],
+            };
+        });
+
+        return settings;
+    },
+);
+
+export const settingsFormExtSelector = createSelector(
+    [fieldsExtSettingSelector, (state, status) => status],
+    (state, status) => {
+        let settings = {};
+        const {base = []} = state;
         base.forEach(item => {
             settings = {
                 ...settings,
@@ -245,7 +267,7 @@ export const settingsExtSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
         let settings = {};
-        const { ext = [] } = state;
+        const {ext = []} = state;
         ext.forEach(item => {
             settings = {
                 ...settings,
@@ -260,19 +282,19 @@ export const errorSelector = createSelector(stateSelector, state => errorMapping
 
 //*  SAGA  *//
 
-function* openGridCardSaga({ payload }) {
+function* openGridCardSaga({payload}) {
     try {
-        const { name, id: idRow, callbackSuccess } = payload;
+        const {name, id: idRow, callbackSuccess} = payload;
 
         if (!idRow) {
-            yield call(createDraftSaga, { payload: { name } });
+            yield call(createDraftSaga, {payload: {name}});
         }
 
         const id = yield select(idSelector);
 
         // yield call(getCardConfigSaga, { payload: { name, id } });
 
-        yield call(getCardSaga, { payload: { name, id } });
+        yield call(getCardSaga, {payload: {name, id}});
 
         const card = yield select(cardSelector);
 
@@ -285,9 +307,9 @@ function* openGridCardSaga({ payload }) {
     }
 }
 
-function* createDraftSaga({ payload }) {
+function* createDraftSaga({payload}) {
     try {
-        const { name } = payload;
+        const {name} = payload;
         const result = yield postman.post(`/${name}/saveOrCreate`, {});
 
         yield put({
@@ -302,10 +324,10 @@ function* createDraftSaga({ payload }) {
     }
 }
 
-function* editCardSaga({ payload }) {
+function* editCardSaga({payload}) {
     try {
-        const { name, params, callbackSuccess } = payload;
-        if(!!params.orderNumber){
+        const {name, params, callbackSuccess} = payload;
+        if (!!params.orderNumber) {
             params.orderNumber = {value: params.orderNumber, name: null};
         }
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
@@ -331,9 +353,9 @@ function* editCardSaga({ payload }) {
     }
 }
 
-function* getCardConfigSaga({ payload }) {
+function* getCardConfigSaga({payload}) {
     try {
-        const { name, id } = payload;
+        const {name, id} = payload;
         const result = yield postman.get(`/getFormFor/${name}/${id}`);
 
         yield put({
@@ -348,9 +370,9 @@ function* getCardConfigSaga({ payload }) {
     }
 }
 
-function* getCardSaga({ payload }) {
+function* getCardSaga({payload}) {
     try {
-        const { name, id, callbackSuccess } = payload;
+        const {name, id, callbackSuccess} = payload;
         const roleId = yield select(state => roleIdSelector(state));
         yield fork(getFieldsSettingSaga, {
             payload: {
@@ -358,18 +380,26 @@ function* getCardSaga({ payload }) {
                 roleId,
             },
         });
+
+        if (name === SHIPPINGS_GRID)
+            yield fork(getShippingOrderFieldsSettingSaga, {
+                payload: {
+                    forEntity: ORDERS_GRID,
+                    roleId,
+                },
+            });
         const result = yield postman.get(`${name}/getById/${id}`);
-        yield put({ type: GET_GRID_CARD_SUCCESS, payload: result });
+        yield put({type: GET_GRID_CARD_SUCCESS, payload: result});
         callbackSuccess && callbackSuccess(result);
     } catch (error) {
-        yield put({ type: GET_GRID_CARD_ERROR });
+        yield put({type: GET_GRID_CARD_ERROR});
     }
 }
 
-function* isUniqueNumberSaga({ payload }) {
+function* isUniqueNumberSaga({payload}) {
     try {
         const {number, fieldName, errorText, callbackSuccess} = payload;
-        const result = yield postman.post('/orders/findNumber', { number, isPartial: false });
+        const result = yield postman.post('/orders/findNumber', {number, isPartial: false});
 
         if (result.length && result[0].name) {
             yield put({

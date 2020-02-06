@@ -13,6 +13,7 @@ import {
     isUniqueNumberRequest,
     progressSelector,
     settingsFormSelector,
+    settingsFormExtSelector,
 } from '../../ducks/gridCard';
 import {
     actionsCardSelector,
