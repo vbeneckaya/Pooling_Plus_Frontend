@@ -116,7 +116,7 @@ namespace Application.Services.Shippings
             else
             {
                 int totalPallets = orders.Sum(x => x.ConfirmedPalletsCount ?? x.ActualPalletsCount ?? x.PalletsCount ?? 0);
-                cost = GetLtlRate(tariff, totalPallets) ?? 0M;
+                cost = GetLtlRate(tariff, totalPallets)*totalPallets ?? 0M;
             }
 
             return cost;
