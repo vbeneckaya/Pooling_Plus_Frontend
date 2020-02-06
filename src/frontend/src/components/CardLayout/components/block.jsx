@@ -6,14 +6,12 @@ import {useTranslation} from 'react-i18next';
 const Block = ({item, loading}) => {
     const {t} = useTranslation();
     
-    const {isCreateBtn , createAction} = item;
+    const {isCreateBtn , isSelectBtn, createAction, selectAction} = item;
 
     let [open, setOpen] = useState(true);
 
     const toggleOpen = () => {
         setOpen(open => !open);
-     //   console.log('item');
-     //   console.log(item);
     };
 
     return (
@@ -28,6 +26,12 @@ const Block = ({item, loading}) => {
             <div className="card-content-block_header">
                 <div>{t(item.menuItem)}</div>
                 <div className="card-content-block_header_accordion">
+                        {isSelectBtn && (
+                        <Popup
+                            content={t('select_record')}
+                            position="bottom right"
+                            trigger={<Button icon="select" onClick={selectAction}/>}
+                        />)}
                     {isCreateBtn && (
                         <Popup
                             content={t('add_record')}

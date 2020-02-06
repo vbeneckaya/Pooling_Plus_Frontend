@@ -153,7 +153,7 @@ class MiniOrdersGrid extends Component {
                             openOrderModal={openOrderModal}
                             //goToCard={this.handleGoToCard}
                             //    actions={actions}
-                            isShowEditButton={isEditBtn}
+                          //  isShowEditButton={isEditBtn}
                             isShowDeleteButton={isDeleteBtn}
                             removeFromShipping={removeFromShipping}
                         />
