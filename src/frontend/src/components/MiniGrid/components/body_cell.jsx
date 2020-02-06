@@ -144,6 +144,7 @@ const BodyCell = ({
                             rowId={rowId}
                             t={t}
                             goToCard={goToCard}
+                            openOrderModal={openOrderModal}
                         />
                     </div>
                     <div>

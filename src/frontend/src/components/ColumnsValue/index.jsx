@@ -36,6 +36,7 @@ const CellValue = ({
                        gridName,
                        rowId,
                        goToCard,
+                       openOrderModal
                    }) => {
     if (type === SELECT_TYPE) {
         return (
@@ -133,9 +134,14 @@ const CellValue = ({
                             {value}
                         </TextCropping>
                     </div>
-                ) : (
-                    value
-                )}
+                ) :  (openOrderModal ? (
+                            <div className="link-cell">
+                                <TextCropping width={width} indexColumn={indexColumn}>
+                                    {value}
+                                </TextCropping>
+                            </div>
+                        ): value) 
+                }
 
             </>
         );
