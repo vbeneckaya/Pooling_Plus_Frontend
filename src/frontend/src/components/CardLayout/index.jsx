@@ -69,7 +69,10 @@ const CardLayout = ({
                         </Menu>
                         <div className="card-content-block_menu">
                             {content().map(item => (
-                                <Block item={item} loading={loading}/>
+                                <Block 
+                                    item={item} 
+                                    loading={loading}
+                                />
                             ))}
                         </div>
                     </div>

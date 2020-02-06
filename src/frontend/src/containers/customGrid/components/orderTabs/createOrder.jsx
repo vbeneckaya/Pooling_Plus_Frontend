@@ -43,7 +43,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            value={form['orderNumber']}
+                            value={form['orderNumber'] ? form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']: form['orderNumber']}
                             error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
                             onBlur={uniquenessNumberCheck}
                             onChange={onChange}

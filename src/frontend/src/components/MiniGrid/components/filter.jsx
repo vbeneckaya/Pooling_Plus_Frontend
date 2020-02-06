@@ -14,24 +14,27 @@ const Filter = props => {
         columns,
         resizeColumn,
         extWidth,
+        showCheckBoxField = true,
+        showIcons = true
     } = props;
 
     const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
     }, []);
-
-    //console.log('columns', columns);
-
+    
     return (
         <Table.Row className="sticky-header">
+
             <Table.HeaderCell className="small-column">
-                <CustomCheckbox
-                    indeterminate={indeterminate}
-                    checked={all}
-                    multi
-                    disabled={checkAllDisabled}
-                    onChange={setSelectedAll}
-                />
+                {!!showCheckBoxField ?
+                    <CustomCheckbox
+                        indeterminate={indeterminate}
+                        checked={all}
+                        multi
+                        disabled={checkAllDisabled}
+                        onChange={setSelectedAll}
+                    />
+                    : '№'}
             </Table.HeaderCell>
             {columns &&
             columns.map((x, i) => (
@@ -48,6 +51,7 @@ const Filter = props => {
                         className={`column-facet column-${x.name &&
                         x.name.toLowerCase().replace(' ', '-')}-facet`}
                     >
+
                         <FacetField
                             key={'facet' + x.name}
                             index={i}
@@ -61,6 +65,7 @@ const Filter = props => {
                             source={x.source}
                             width={x.width}
                             handleResize={handleResize}
+                            showIcons={showIcons}
                         />
                     </Table.HeaderCell>
                 </Resizable>

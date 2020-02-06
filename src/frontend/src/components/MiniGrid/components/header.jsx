@@ -94,7 +94,7 @@ const Header = ({
         goToCard(false, null, name);
     };
 
-   // console.log('filter', filter);
+    console.log('filter', filter);
 
     return (
         <Grid className="grid-header-panel">

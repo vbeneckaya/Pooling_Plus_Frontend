@@ -13,6 +13,7 @@ import {
     isUniqueNumberRequest,
     progressSelector,
     settingsFormSelector,
+    settingsFormExtSelector,
 } from '../../ducks/gridCard';
 import {
     actionsCardSelector,
@@ -252,7 +253,6 @@ const Card = props => {
 
     const goToCard = (gridName, cardId) => {
         const { state } = location;
-        console.log('to', state);
         history.replace({
             pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
             state: {
@@ -275,27 +275,28 @@ const Card = props => {
                             {t('open_shipping', { number: form.shippingNumber.value })}
                         </div>
                     ) : null}
-                    {name === SHIPPINGS_GRID && form.orders && form.orders.length ? (
-                        <Dropdown
-                            text={t('orders')}
-                            pointing="top right"
-                            className="dropdown-blue"
-                            scrolling
-                        >
-                            <Dropdown.Menu>
-                                {form.orders.map(order => (
-                                    <Dropdown.Item
-                                        className="link-cell"
-                                        key={order.id}
-                                        text={order.orderNumber}
-                                        onClick={() => {
-                                            goToCard(ORDERS_GRID, order.id);
-                                        }}
-                                    />
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    ) : null}
+                    {/*{name === SHIPPINGS_GRID && form.orders && form.orders.length ? (*/}
+                        {/*<Dropdown*/}
+                            {/*text={t('orders')}*/}
+                            {/*pointing="top right"*/}
+                            {/*className="dropdown-blue"*/}
+                            {/*scrolling*/}
+                        {/*>*/}
+                            {/*<Dropdown.Menu>*/}
+                                {/*{form.orders.map(order => (*/}
+                                    {/*<Dropdown.Item*/}
+                                        {/*className="link-cell"*/}
+                                        {/*key={order.id}*/}
+                                        {/*text={order.orderNumber}*/}
+                                        {/*onClick={() => {*/}
+                                            {/*goToCard(ORDERS_GRID, order.id);*/}
+                                        {/*}}*/}
+                                    {/*/>*/}
+                                {/*))}*/}
+                            {/*</Dropdown.Menu>*/}
+                        {/*</Dropdown>*/}
+                    {/*) : null}*/}
+                    
                     {/* <Dropdown
                         icon="ellipsis horizontal"
                         floating

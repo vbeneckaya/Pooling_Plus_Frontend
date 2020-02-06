@@ -107,7 +107,7 @@ namespace Application.Services.AppConfiguration
                 grids.Add(new UserConfigurationGridItem
                 {
                     Name = GetName<ShippingsService>(),
-                    CanCreateByForm = false,
+                    CanCreateByForm = _identityService.HasPermissions(RolePermissions.ShippingsCreate),
                     CanViewAdditionSummary = true,
                     CanExportToExcel = true,
                     CanImportFromExcel = false,

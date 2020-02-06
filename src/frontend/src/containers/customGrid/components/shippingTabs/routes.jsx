@@ -35,7 +35,7 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
 
     const pointsTabs = [];
 
-    console.log('form', form);
+  //  console.log('form from routes.jsx', form);
 
     points.forEach((point, i) => {
         const state = stateColors.find(x => x.name === point.vehicleStatus);
