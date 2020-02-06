@@ -6,7 +6,7 @@ import {settingsFormExtSelector} from "../../../../ducks/gridCard";
 
 const Orders = (props) => {
     
-    const {form , columns, isDeleteButton, isEditButton, openOrderModal} = props;
+    const {form , columns, isDeleteBtn, removeFromShipping, isEditBtn, openOrderModal} = props;
     const {name = ''} = 'orders';
 
     return (
@@ -17,8 +17,9 @@ const Orders = (props) => {
                 name={name}
                 // getActions={getActions}
                 // modalCard={this.modalCard}
-                isEditBtn={isEditButton}
-                isDeleteBtn={isDeleteButton}
+                isEditBtn={isEditBtn}
+                removeFromShipping={removeFromShipping}
+                isDeleteBtn={isEditBtn}
                 openOrderModal={openOrderModal}
                 //confirmation={confirmation}
                 //closeConfirmation={this.closeConfirmation}

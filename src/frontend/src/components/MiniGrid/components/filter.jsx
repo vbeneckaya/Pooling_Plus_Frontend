@@ -21,7 +21,7 @@ const Filter = props => {
     const handleResize = useCallback((e, {size, index}) => {
         resizeColumn(size, index);
     }, []);
-
+    
     return (
         <Table.Row className="sticky-header">
 

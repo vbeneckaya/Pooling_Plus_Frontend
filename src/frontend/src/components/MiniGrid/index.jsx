@@ -109,6 +109,7 @@ class MiniOrdersGrid extends Component {
             openOrderModal,
             isEditBtn,
             isDeleteBtn,
+            removeFromShipping,
             //    actions,
             //    isShowActions,
             confirmation = {},
@@ -136,7 +137,7 @@ class MiniOrdersGrid extends Component {
                                 columns={this.state && this.state.columns}
                                 showCheckBoxField={false}
                                 showIcons={false}
-                             //   isShowActions={isShowActions || false}
+                                isShowActions={isDeleteBtn || isDeleteBtn}
                                 gridName={name}
                                 resizeColumn={this.resizeColumn}
                             />
@@ -152,7 +153,9 @@ class MiniOrdersGrid extends Component {
                             openOrderModal={openOrderModal}
                             //goToCard={this.handleGoToCard}
                             //    actions={actions}
-                            isShowActions={isEditBtn}
+                            isShowEditButton={isEditBtn}
+                            isShowDeleteButton={isDeleteBtn}
+                            removeFromShipping={removeFromShipping}
                         />
                     </InfiniteScrollTable>
                 </div>

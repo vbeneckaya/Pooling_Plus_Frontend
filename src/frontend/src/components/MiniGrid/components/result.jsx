@@ -3,13 +3,19 @@ import { withTranslation } from 'react-i18next';
 import { Button, Loader, Table } from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import { connect } from 'react-redux';
-import { checkForEditingRequest } from '../../../ducks/gridColumnEdit';
-import { invokeMassUpdateRequest } from '../../../ducks/gridActions';
-import { ORDERS_GRID } from '../../../constants/grids';
-import CustomCheckbox from '../../BaseComponents/CustomCheckbox';
 import NotFoundMessage from './notFoundMessage';
 
 class Result extends Component {
+    // constructor(props){
+    //     super(props);
+    //     this.removeFromShipping= this.props.removeFromShipping;
+    //     this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    // }
+
+    // handleDeleteClick(indexRow) {
+    //     !!this.removeFromShipping && this.removeFromShipping(indexRow);
+    // }
+    
     render() {
         const {
             columns = [],
@@ -17,14 +23,21 @@ class Result extends Component {
         //    goToCard,
           //  actions,
         //    isShowActions,
+            isShowEditButton,
+            removeFromShipping,
+            isShowDeleteButton,
             name,
             progress,
             openOrderModal,
             t,
         //    checkForEditing,
         } = this.props;
+        
+        const  handleDeleteClick = (indexRow) => {
+            !!removeFromShipping && removeFromShipping(indexRow);
+        }
 
-        return (
+         return (
             <Table.Body>
                 {progress === null ? null : rows && rows.length ? (
                     rows.map((row, indexRow) => (
@@ -67,40 +80,35 @@ class Result extends Component {
                                 />
                             ))}
                             <Table.Cell/>
-                            {/*{isShowActions ? (*/}
-                                {/*<Table.HeaderCell*/}
-                                    {/*className="actions-column"*/}
-                                    {/*onClick={e => {*/}
-                                        {/*e.stopPropagation();*/}
-                                    {/*}}*/}
-                                {/*>*/}
-                                    {/*{actions &&*/}
-                                    {/*actions(row).map(action => (*/}
-                                        {/*<Button*/}
-                                            {/*key={row.id + action.name}*/}
-                                            {/*actionname={action.name}*/}
-                                            {/*actionbuttonname={action.buttonName}*/}
-                                            {/*rowid={row.id}*/}
-                                            {/*disabled={action.disabled}*/}
-                                            {/*className="grid-action-btn"*/}
-                                            {/*loading={*/}
-                                                {/*action.loadingId &&*/}
-                                                {/*action.loadingId.includes(row.id)*/}
-                                            {/*}*/}
-                                            {/*onClick={e =>*/}
-                                                {/*action.action(e, {*/}
-                                                    {/*action,*/}
-                                                    {/*row,*/}
-                                                    {/*loadList,*/}
-                                                {/*})*/}
-                                            {/*}*/}
-                                            {/*size="mini"*/}
-                                        {/*>*/}
-                                            {/*{action.buttonName}*/}
-                                        {/*</Button>*/}
-                                    {/*))}*/}
-                                {/*</Table.HeaderCell>*/}
-                            {/*) : null}*/}
+                            {isShowEditButton || isShowDeleteButton  ? (
+                                <Table.HeaderCell
+                                    className="actions-column"
+                                    // onClick={e => {
+                                    //     e.stopPropagation();
+                                    // }}
+                                    //onClick={handleDeleteClick(indexRow)}
+                                    //onClick={removeFromShipping(indexRow)}
+                                >
+                                   
+                                        <Button
+                                            key={row.id + 'delete_from_shipping'}
+                                            // actionname={'delete_from_shipping'}
+                                            // actionbuttonname={'delete_from_shipping'}
+                                            rowid={row.id}
+                                            // //disabled={action.disabled}
+                                            // className="grid-action-btn"
+                                            // // loading={
+                                            // //     action.loadingId &&
+                                            // //     action.loadingId.includes(row.id)
+                                            // // }
+                                            onClick={()=>handleDeleteClick(indexRow)}
+                                            size="mini"
+                                        >
+                                            {'remove'}
+                                        </Button>
+                                 
+                                </Table.HeaderCell>
+                            ) : null}
                         </Table.Row>
                     ))
                 ) : !progress ? (

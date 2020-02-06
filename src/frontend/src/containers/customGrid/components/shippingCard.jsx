@@ -18,11 +18,6 @@ import {
     isUniqueNumberRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
-import {fieldsSettingSelector} from "../../../ducks/fieldsSetting";
-import {columnsGridSelector} from "../../../ducks/gridList";
-import {ORDERS_GRID} from "../../../constants/grids";
-import {SETTINGS_TYPE_HIDE} from "../../../constants/formTypes";
-import {getFieldsSettingRequest} from '../../../ducks/fieldsSetting';
 
 const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
@@ -203,10 +198,10 @@ const ShippingCard = (props) => {
         const userPermissions = useSelector(state => userPermissionsSelector(state));
         const userActions = useSelector(state => userActionsSelector(state));
 
-        const canOnionOrders = userActions.find(_ => _ == 'unionOrders');
-        const canOnionOrdersInExisted = userActions.find(_ => _ == 'unionOrdersInExisted');
-        const canEditOrders = userActions.find(_ => _ == 'unionOrdersInExisted');
-
+        const canOnionOrders = !!userActions.find(_ => _ == 'unionOrders');
+        const canOnionOrdersInExisted = !!userActions.find(_ => _ == 'unionOrdersInExisted');
+        const canEditOrders = !!userActions.find(_ => _ == 'unionOrdersInExisted');
+        
         let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
         let [orderForm, setOrderForm] = useState([]);
@@ -281,8 +276,6 @@ const ShippingCard = (props) => {
                         />
                     ),
                 },
-
-
                 {
                     menuItem: t('orders'),
                     isCreateBtn: userPermissions.includes(2),
@@ -292,7 +285,8 @@ const ShippingCard = (props) => {
                         columns={orderColumns}
                         isEditBtn={!!form.id ? canOnionOrdersInExisted : canOnionOrders}
                         isDeleteBtn={!!form.id ? canOnionOrdersInExisted : canOnionOrders}
-                        onChange={onChangeForm}
+                        removeFromShipping={handleDelete}
+                        //onChange={onChangeForm}
                         openOrderModal={openOrderModal}
                         />
                 },
@@ -333,7 +327,6 @@ const ShippingCard = (props) => {
             setOrderForm(form.orders[index]);
             setNotChangeOrderForm(true);
             setShowModal(true);
-            console.log(settings);
         }
 
         const onCloseModal = () => {
@@ -376,8 +369,8 @@ const ShippingCard = (props) => {
             invokeAction('insert');
         };
 
-        const handleDelete = () => {
-            invokeAction('delete');
+        const handleDelete = (index) => {
+            invokeAction('delete', index);
         };
 
         const handleClose = () => {
@@ -400,8 +393,7 @@ const ShippingCard = (props) => {
         };
 
 
-        const invokeAction = actionName => {
-
+        const invokeAction = (actionName,index) => {
             if (actionName == 'insert') {
 
                 form.orders = !!form.orders ? form.orders : [];
@@ -411,16 +403,15 @@ const ShippingCard = (props) => {
                     orders.push(orderForm);
                 else
                     orders[indexRow] = orderForm;
-
                 onChangeForm(null, {name: 'orders', value: orders});
             }
 
             if (actionName == 'delete') {
-
                 let orders = form.orders;
-                orders = orders.slice(indexRow, indexRow + 1);
+                orders.splice(index, 1);
 
                 onChangeForm(null, {name: 'orders', value: orders});
+                console.log(form);
             }
             onCloseModal();
         };

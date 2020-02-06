@@ -30,8 +30,6 @@ const OrderCard = ({
     const userPermissions = useSelector(state => userPermissionsSelector(state));
     const columns = useSelector(state => columnsGridSelector(state, ORDERS_GRID));
 
-    console.log('columns', columns);
-
     const getPanes = () => {
         let obj = [
             {

@@ -104,6 +104,7 @@ const BodyCell = ({
         column.type !== LINK_TYPE ? handleClick(rowId, column.name, status) : e.stopPropagation();
         column.type == LINK_TYPE && !!openOrderModal ? openOrderModal(indexRow) : e.stopPropagation();
     };
+    
 
     const getModalCard = useCallback(() => {
         return (
