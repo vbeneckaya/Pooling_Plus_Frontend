@@ -13,14 +13,13 @@ import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
 import FormField from "../../../components/BaseComponents";
 import {ordersMiniColumns} from "../../../constants/ordersMiniColumns";
 import {DATE_TYPE, NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE} from "../../../constants/columnTypes";
-import List from '../../../containers/customSelectGrid/list';
-//import List from '../../../containers/customGrid/list';
+import SelectList from '../../../containers/customSelectGrid/list';
+import List from '../../../containers/customGrid/list';
 import {
     editCardRequest,
     isUniqueNumberRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
-import {ORDERS_GRID} from "../../../constants/grids";
 
 const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
@@ -193,15 +192,6 @@ const ShippingCard = (props) => {
             history,
         } = props;
 
-        let propsForSelect =  {
-            history: history,
-            location: props.location,
-            match: props.match,
-            name: props.name,
-        }
-        
-
-
         const {t} = useTranslation();
         const dispatch = useDispatch();
 
@@ -264,8 +254,6 @@ const ShippingCard = (props) => {
         };
 
         const handleSelectOrder = () => {
-            propsForSelect.name = ORDERS_GRID;
-            propsForSelect.match.params.name = ORDERS_GRID;
             setShowSelectModal(true);
         };
 
@@ -422,7 +410,7 @@ const ShippingCard = (props) => {
         };
 
         const handleSelectModalSave = () => {
-            //invokeAction('insert');
+            invokeAction('insert');
         };
 
         const handleDelete = (index) => {
@@ -529,9 +517,7 @@ const ShippingCard = (props) => {
                 >
                     <Modal.Header>{t('select_order')}</Modal.Header>
                     <Modal.Description>
-                        <List
-                            props={propsForSelect}
-                        >
+                        <List>
                         </List>
                     </Modal.Description>
                     <Modal.Actions>{getSElectOrderActionsFooter()}</Modal.Actions>

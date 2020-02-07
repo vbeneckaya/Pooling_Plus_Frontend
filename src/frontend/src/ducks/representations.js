@@ -179,7 +179,6 @@ export const representationFromGridSelector = createSelector(
 
 function* getRepresentationsSaga({ payload }) {
     try {
-        
         const { key, callBackFunc } = payload;
         const resultForDefault = yield postman.get(`/userSettings/default/${key}`);
 

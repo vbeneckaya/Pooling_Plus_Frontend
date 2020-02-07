@@ -30,7 +30,7 @@ const Block = ({item, loading}) => {
                         <Popup
                             content={t('select_record')}
                             position="bottom right"
-                            trigger={<Button icon="select" onClick={selectAction}/>}
+                            trigger={<Button icon="search" onClick={selectAction}/>}
                         />)}
                     {isCreateBtn && (
                         <Popup
