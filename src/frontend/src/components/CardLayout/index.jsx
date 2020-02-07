@@ -85,16 +85,16 @@ const CardLayout = ({
                     </div>
                 )}
             </div>
-            <div className="card-actions-panel">
-                <div
-                    style={{
-                        width:
-                            contentRef && contentRef.current && contentRef.current.offsetWidth - 64,
-                    }}
-                >
-                    {actionsFooter()}
-                </div>
-            </div>
+            {/*<div className="card-actions-panel">*/}
+                {/*<div*/}
+                    {/*style={{*/}
+                        {/*width:*/}
+                            {/*contentRef && contentRef.current && contentRef.current.offsetWidth - 64,*/}
+                    {/*}}*/}
+                {/*>*/}
+                    {/*{actionsFooter()}*/}
+                {/*</div>*/}
+            {/*</div>*/}
             <style>
                 {
                     '\

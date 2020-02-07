@@ -18,6 +18,7 @@ import TextArea from "../../../../components/BaseComponents/Text";
 const Information = ({
     form,
     onChange,
+    onBlur,
     isNotUniqueNumber,
     uniquenessNumberCheck,
     settings,
@@ -44,9 +45,11 @@ const Information = ({
                                         <Grid.Column>
                                             <FormField
                                                 name="orderNumber"
-                                                type={getColumn('orderNumber').type}
+                                                //type={getColumn('orderNumber').type}
+                                                type={TEXT_TYPE}
                                                 source={getColumn('orderNumber').source}
-                                                value={!!form['orderNumber'] ? (!!form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']) : ''}
+                                                value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
+                                                // value={!!form['orderNumber'] ? (!!form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']) : ''}
                                                 error={
                                                     (isNotUniqueNumber &&
                                                         t('number_already_exists')) ||
@@ -64,6 +67,7 @@ const Information = ({
                                                 settings={settings['clientOrderNumber']}
                                                 value={form['clientOrderNumber']}
                                                 error={error['clientOrderNumber']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -159,6 +163,7 @@ const Information = ({
                                                 source={getColumn('deliveryDate').source}
                                                 settings={settings['deliveryDate']}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -181,7 +186,9 @@ const Information = ({
                                                 error={error['articlesCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['articlesCount']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -191,7 +198,9 @@ const Information = ({
                                                 error={error['orderAmountExcludingVAT']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['orderAmountExcludingVAT']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -224,6 +233,7 @@ const Information = ({
                                                                     settings={
                                                                         settings['boxesCount']
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -245,6 +255,7 @@ const Information = ({
                                                                             'confirmedBoxesCount'
                                                                         ]
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -269,6 +280,7 @@ const Information = ({
                                                                     settings={
                                                                         settings['palletsCount']
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -294,6 +306,7 @@ const Information = ({
                                                                             'confirmedPalletsCount'
                                                                         ]
                                                                     }
+                                                                    onBlur={onBlur}                                                                    
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -316,6 +329,7 @@ const Information = ({
                                                                     error={error['weightKg']}
                                                                     type={NUMBER_TYPE}
                                                                     settings={settings['weightKg']}
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -332,6 +346,7 @@ const Information = ({
                                                                         settings['factWeigth']
                                                                     }
                                                                     onChange={onChange}
+                                                                    onBlur={onBlur}
                                                                 />
                                                             </Grid.Column>
                                                         </Grid.Row>
