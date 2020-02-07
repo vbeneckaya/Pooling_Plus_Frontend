@@ -213,10 +213,11 @@ const Card = props => {
     };
 
     const invokeAction = actionName => {
-        showConfirmation(
-            `${t('Are you sure to complete')} "${t(actionName)}"?`,
-            () => {
-                closeConfirmation();
+        debugger;
+        // showConfirmation(
+        //     `${t('Are you sure to complete')} "${t(actionName)}"?`,
+        //     () => {
+        //         closeConfirmation();
                 dispatch(
                     editCardRequest({
                         name,
@@ -239,9 +240,9 @@ const Card = props => {
                         },
                     }),
                 );
-            },
-            closeConfirmation,
-        );
+            // },
+        //     closeConfirmation,
+        // );
     };
 
     const handleUniquenessCheck = callbackFunc => {
@@ -260,7 +261,7 @@ const Card = props => {
     const loading = useSelector(state => progressSelector(state));
     const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
-   // const progressActionName = useSelector(state => progressActionNameSelector(state));
+    const progressActionName = useSelector(state => progressActionNameSelector(state));
   //  const disableSave = progressActionName || notChangeForm;
 
     // const getActionsFooter = useCallback(
