@@ -9,6 +9,7 @@ import {
     progressSelector,
     totalCountSelector,
 } from '../../ducks/gridList';
+import {cardSelector} from '../../ducks/gridCard';
 import { withRouter } from 'react-router-dom';
 import Card from './card';
 import { Button } from 'semantic-ui-react';
@@ -31,6 +32,7 @@ import {
     GRID_CARD_LINK,
     GRID_NEW_LINK,
 } from '../../router/links';
+import {editCardRequest} from "../../ducks/gridCard";
 
 const CreateButton = ({ t, ...res }) => {
     return (
@@ -132,6 +134,8 @@ class List extends Component {
             getActions,
             getAllIds,
             editRepresentation,
+            editCard,
+            card,
             representationName,
             getRepresentations,
         } = this.props;
@@ -149,6 +153,8 @@ class List extends Component {
                     editRepresentation={editRepresentation}
                     representationName={representationName}
                     getRepresentations={getRepresentations}
+                    editCard={editCard}
+                    card={card}
                     autoUpdateStart={autoUpdate}
                     autoUpdateStop={stopUpdate}
                     totalCount={totalCount}
@@ -194,6 +200,9 @@ const mapDispatchToProps = dispatch => {
         getRepresentations: params => {
             dispatch(getRepresentationsRequest(params));
         },
+        editCard: params => {
+            dispatch(editCardRequest(params));
+        },
     };
 };
 
@@ -210,6 +219,7 @@ const mapStateToProps = (state, ownProps) => {
         isCreateBtn: canCreateByFormSelector(state, name),
         actions: actionsSelector(state),
         representationName: representationNameSelector(state, name),
+        card: cardSelector(state,name)
     };
 };
 

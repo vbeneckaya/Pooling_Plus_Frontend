@@ -28,6 +28,7 @@ import ShippingCard from './components/shippingCard';
 import {GRID_CARD_LINK} from '../../router/links';
 import {clearHistory, getHistoryRequest} from '../../ducks/history';
 import {columnsGridSelector} from "../../ducks/gridList";
+import {BIG_TEXT_TYPE, NUMBER_TYPE, TEXT_TYPE} from "../../constants/columnTypes";
 
 const Card = props => {
     const {t} = useTranslation();
@@ -39,7 +40,6 @@ const Card = props => {
     let [form, setForm] = useState({});
     let [notChangeForm, setNotChangeForm] = useState(true);
     let [confirmation, setConfirmation] = useState({open: false});
-
 
 
     const card = useSelector(state => cardSelector(state));
@@ -74,9 +74,25 @@ const Card = props => {
                 let hasDifferences = false;
                 Object.keys(form).forEach(key => {
                     if (form[key] !== card[key]) {
-                        let columnType = columns.filter(_=>_.name == key)[0].type;
-                        if (columnType != 'Text' && columnType !='Number' && key != 'orderNumber' && key != 'shippingNumber') {
+                        if (key == 'routePints') {
+                            // for (let i = 0; i < form[key].length; i++) {
+                            //     Object.keys(form[key][i]).forEach(innerKey => {
+                            //         if (form[key][i][innerKey] !== card[key][i][innerKey]) {
+                            //             {
+                            //                 if (innerKey != 'address' && innerKey != 'trucksDowntime' && innerKey != 'deviationReasonsComments') {
+                            //                     hasDifferences = true;
+                            //                 }
+                            //             }
+                            //         }
+                            //     })
+                            // }
+                        }
+                        else {
+                            let column = columns.filter(_ => _.name == key)[0];
+                            let columnType = column && column.type;
+                            if (!!columnType && columnType != TEXT_TYPE && columnType != BIG_TEXT_TYPE && columnType != NUMBER_TYPE && key != 'orderNumber' && key != 'shippingNumber') {
                                 hasDifferences = true;
+                            }
                         }
                     }
 
@@ -179,11 +195,14 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    if (form.id) {
-                        loadCard();
-                    } else {
-                        handleClose();
-                    }
+                    
+                    //loadCard();
+                     if (form.id) {
+                         loadCard();
+                     } else {
+                         
+                         //handleClose();
+                     }
                 },
             }),
         );
@@ -218,43 +237,43 @@ const Card = props => {
         //     `${t('Are you sure to complete')} "${t(actionName)}"?`,
         //     () => {
         //         closeConfirmation();
-                dispatch(
-                    editCardRequest({
-                        name,
-                        params: form,
-                        callbackSuccess: () => {
-                            dispatch(
-                                invokeActionRequest({
-                                    ids: [id],
-                                    name,
-                                    actionName,
-                                    callbackSuccess: () => {
-                                        if (actionName.toLowerCase().includes('delete')) {
-                                            onClose();
-                                        } else {
-                                            loadCard();
-                                        }
-                                    },
-                                }),
-                            );
-                        },
-                    }),
-                );
-            // },
+        dispatch(
+            editCardRequest({
+                name,
+                params: form,
+                callbackSuccess: () => {
+                    dispatch(
+                        invokeActionRequest({
+                            ids: [id],
+                            name,
+                            actionName,
+                            callbackSuccess: () => {
+                                if (actionName.toLowerCase().includes('delete')) {
+                                    onClose();
+                                } else {
+                                    loadCard();
+                                }
+                            },
+                        }),
+                    );
+                },
+            }),
+        );
+        // },
         //     closeConfirmation,
         // );
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        if ((form.orderNumber) && (!id || form.orderNumber.value !== card.orderNumber.value)) 
+        if ((form.orderNumber) && (!id || form.orderNumber.value !== card.orderNumber.value))
             dispatch(
-            isUniqueNumberRequest({
-                number: !!form.orderNumber ? form.orderNumber.value : null,
-                fieldName: 'orderNumber',
-                errorText: t('number_already_exists'),
-                callbackSuccess: callbackFunc,
-            }),
-        );
+                isUniqueNumberRequest({
+                    number: !!form.orderNumber ? form.orderNumber.value : null,
+                    fieldName: 'orderNumber',
+                    errorText: t('number_already_exists'),
+                    callbackSuccess: callbackFunc,
+                }),
+            );
         else callbackFunc();
     };
 
@@ -262,7 +281,7 @@ const Card = props => {
     const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-  //  const disableSave = progressActionName || notChangeForm;
+    //  const disableSave = progressActionName || notChangeForm;
 
     // const getActionsFooter = useCallback(
     //     () => {
@@ -399,7 +418,7 @@ const Card = props => {
                     onClose={handleClose}
                     onChangeForm={onChangeForm}
                     onBlurForm={onBlurForm}
-                  //  actionsFooter={getActionsFooter}
+                    //  actionsFooter={getActionsFooter}
                     actionsHeader={getActionsHeader}
                 />
             ) : (
@@ -414,19 +433,20 @@ const Card = props => {
                     settings={settings}
                     error={error}
                     onClose={handleClose}
+                    onBlurForm={onBlurForm}
                     onChangeForm={onChangeForm}
-                  //  actionsFooter={getActionsFooter}
+                    //  actionsFooter={getActionsFooter}
                     actionsHeader={getActionsHeader}
                 />
             )}
             {/*<Confirm*/}
-                {/*dimmer="blurring"*/}
-                {/*open={confirmation.open}*/}
-                {/*onCancel={confirmation.onCancel || closeConfirmation}*/}
-                {/*cancelButton={t('cancelConfirm')}*/}
-                {/*confirmButton={t('Yes')}*/}
-                {/*onConfirm={confirmation.onConfirm}*/}
-                {/*content={confirmation.content}*/}
+            {/*dimmer="blurring"*/}
+            {/*open={confirmation.open}*/}
+            {/*onCancel={confirmation.onCancel || closeConfirmation}*/}
+            {/*cancelButton={t('cancelConfirm')}*/}
+            {/*confirmButton={t('Yes')}*/}
+            {/*onConfirm={confirmation.onConfirm}*/}
+            {/*content={confirmation.content}*/}
             {/*/>*/}
         </React.Fragment>
     );

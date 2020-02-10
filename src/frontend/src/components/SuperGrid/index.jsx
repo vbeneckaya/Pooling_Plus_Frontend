@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
@@ -15,6 +15,12 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
 import { withRouter } from 'react-router-dom';
+import {clearActions, getActionsRequest, invokeMassUpdateRequest} from "../../ducks/gridActions";
+import {clearHistory, getHistoryRequest} from "../../ducks/history";
+import {cardSelector, editCardRequest, getCardRequest} from "../../ducks/gridCard";
+import {useDispatch, useSelector} from "react-redux";
+import {checkForEditingRequest} from "../../ducks/gridColumnEdit";
+import connect from "react-redux/es/connect/connect";
 
 const initState = () => ({
     page: 1,
@@ -31,6 +37,8 @@ class SuperGrid extends Component {
             ...initState(),
         };
     }
+
+
 
     pageLoading = () => {
         const {getRepresentations, name} = this.props;
@@ -339,12 +347,29 @@ class SuperGrid extends Component {
     };
 
     handleGoToCard = (isEdit, id, name) => {
-        const { history, cardLink, newLink} = this.props;
-
-        history.push({
-            pathname: isEdit
-                ? cardLink.replace(':name', name).replace(':id', id)
-                : newLink.replace(':name', name),
+        const { history, cardLink, newLink, editCard, autoUpdateStop} = this.props;
+        autoUpdateStop();
+        if (!isEdit){
+            editCard({
+                    name,
+                    params: {},
+                   callbackSuccess: () => {
+                       id = this.props.card.id; 
+                       debugger;
+                        history.push({
+                            pathname: cardLink.replace(':name', name).replace(':id', this.props.card.id),
+                            state: {
+                                ...this.mapData().filter,
+                                pathname: history.location.pathname,
+                            },
+                        });
+                   },
+                });
+        }
+        else
+            history.push({
+            pathname: cardLink.replace(':name', name).replace(':id', id),
+            //: newLink.replace(':name', name),
             state: {
                 ...this.mapData().filter,
                 pathname: history.location.pathname,

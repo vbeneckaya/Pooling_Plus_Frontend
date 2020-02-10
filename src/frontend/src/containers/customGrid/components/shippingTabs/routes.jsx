@@ -3,8 +3,9 @@ import { Icon, Tab } from 'semantic-ui-react';
 import Route from './route';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLookupRequest, valuesListSelector } from '../../../../ducks/lookup';
+import FormField from "../../../../components/BaseComponents";
 
-const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
+const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings }) => {
     const dispatch = useDispatch();
     const { routePoints: points = [] } = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
@@ -58,7 +59,8 @@ const Routes = ({ form, onChange, routeActiveIndex, tabChange, settings }) => {
                         point={point}
                         settings={settings}
                         pointChange={handleChange}
-                        onChange={onChange}
+                       // onChange={onChange}
+                        onBlur={onBlur}
                     />
                 );
             },

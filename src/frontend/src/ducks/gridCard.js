@@ -111,10 +111,12 @@ export default (state = initial, {type, payload}) => {
                 editProgress: true,
             };
         case EDIT_GRID_CARD_SUCCESS:
+            
             return {
                 ...state,
                 error: [],
                 editProgress: false,
+                data: {...state.data, id: payload.id},
             };
         case EDIT_GRID_CARD_ERROR:
             return {
@@ -342,6 +344,8 @@ function* editCardSaga({payload}) {
             });
 
             callbackSuccess && callbackSuccess();
+            
+            return result.id;
         }
     } catch (error) {
         yield put({

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Form, Grid, Segment } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
-import { BIG_TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE } from '../../../../constants/columnTypes';
+import { BIG_TEXT_TYPE, TEXT_TYPE, CHECKBOX_TYPE, NUMBER_TYPE } from '../../../../constants/columnTypes';
 import FormField from '../../../../components/BaseComponents';
 
-const Accounts = ({ form = {}, onChange, settings }) => {
+const Accounts = ({ form = {}, onChange, onBlur, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -18,6 +18,7 @@ const Accounts = ({ form = {}, onChange, settings }) => {
                             type={NUMBER_TYPE}
                             settings={settings['deliveryCostWithoutVAT']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                         <FormField
                             name="additionalCostsWithoutVAT"
@@ -25,6 +26,7 @@ const Accounts = ({ form = {}, onChange, settings }) => {
                             type={NUMBER_TYPE}
                             settings={settings['additionalCostsWithoutVAT']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                         <FormField
                             name="returnCostWithoutVAT"
@@ -32,6 +34,7 @@ const Accounts = ({ form = {}, onChange, settings }) => {
                             type={NUMBER_TYPE}
                             settings={settings['returnCostWithoutVAT']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                         {/* <Text
                             name="invoiceNumber"
@@ -48,10 +51,11 @@ const Accounts = ({ form = {}, onChange, settings }) => {
                         <FormField
                             name="additionalCostsComments"
                             rows={10}
-                            type={BIG_TEXT_TYPE}
+                            type={TEXT_TYPE}
                             settings={settings['additionalCostsComments']}
                             value={form['additionalCostsComments']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>

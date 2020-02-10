@@ -16,13 +16,21 @@ import {DATE_TYPE, NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE} from "../../../constants
 import List from '../../../containers/customSelectGrid/list';
 //import List from '../../../containers/customGrid/list';
 import {
-    editCardRequest,
+    // editCardRequest,
     isUniqueNumberRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
 import {ORDERS_GRID} from "../../../constants/grids";
 
-const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
+const Content = ({
+                     t,
+                     error,
+                     form,
+                     onChange,
+                     onBlur,
+                     uniquenessNumberCheck,
+                     isNotUniqueNumber
+                 }) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
@@ -180,6 +188,7 @@ const ShippingCard = (props) => {
         const {
             form,
             onChangeForm,
+            onBlurForm,
             name,
             id,
             onClose,
@@ -193,13 +202,12 @@ const ShippingCard = (props) => {
             history,
         } = props;
 
-        let propsForSelect =  {
+        let propsForSelect = {
             history: history,
             location: props.location,
             match: props.match,
             name: props.name,
         }
-        
 
 
         const {t} = useTranslation();
@@ -285,7 +293,7 @@ const ShippingCard = (props) => {
                 {
                     menuItem: t('information'),
                     render: () => (
-                        <Information form={form} onChange={onChangeForm} settings={settings}/>
+                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings}/>
                     ),
                 },
                 {
@@ -311,13 +319,14 @@ const ShippingCard = (props) => {
                             settings={settings}
                             tabChange={handleTabChange}
                             onChange={onChangeForm}
+                            onBlur={onBlurForm}
                         />
                     ),
                 },
 
                 {
                     menuItem: t('accounts'),
-                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}/>,
+                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}  onBlur={onBlurForm}/>,
                 },
             ];
 
