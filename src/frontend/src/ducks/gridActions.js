@@ -209,6 +209,7 @@ function* getActionsSaga({ payload }) {
 
 function* invokeActionSaga({ payload }) {
     try {
+        debugger;
         const { ids, callbackSuccess, name, actionName } = payload;
         const result = yield postman.post(`/${name}/invokeAction/${actionName}`, ids);
         yield put({

@@ -7,6 +7,8 @@ import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
+import {actionsCardSelector, invokeActionRequest} from '../../../ducks/gridActions';
+import {cardSelector, editCardRequest, getCardRequest} from '../../../ducks/gridCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
@@ -221,11 +223,7 @@ const ShippingCard = (props) => {
         const canOnionOrders = !!userActions.find(_ => _ == 'unionOrders');
         const canOnionOrdersInExisted = !!userActions.find(_ => _ == 'unionOrdersInExisted');
         const canEditOrders = !!userActions.find(_ => _ == 'unionOrdersInExisted');
-
-        console.log(canOnionOrders);
-        console.log(canOnionOrdersInExisted);
-        console.log(canEditOrders);
-        console.log(form);
+        const orderActions = useSelector(state => actionsCardSelector(state))
 
         let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
@@ -326,7 +324,7 @@ const ShippingCard = (props) => {
 
                 {
                     menuItem: t('accounts'),
-                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}  onBlur={onBlurForm}/>,
+                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm} onBlur={onBlurForm}/>,
                 },
             ];
 
@@ -471,17 +469,38 @@ const ShippingCard = (props) => {
         };
 
 
+        const loadInnerCard = () => {
+            
+        }
+
         const invokeAction = (actionName, index) => {
             if (actionName == 'insert') {
 
-                form.orders = !!form.orders ? form.orders : [];
-                let orders = form.orders;
-
-                if (indexRow == null)
-                    orders.push(orderForm);
-                else
-                    orders[indexRow] = orderForm;
-                onChangeForm(null, {name: 'orders', value: orders});
+                dispatch(editCardRequest({
+                    name: ORDERS_GRID,
+                    params: {...orderForm, orderNumber: {value: orderForm.orderNumber.value}},
+                    callbackSuccess: () => {
+                        load();
+                        dispatch(getCardRequest(form.id));
+                        let orderAction = 'unionOrdersInExisted';
+                        dispatch(invokeActionRequest({
+                            name: ORDERS_GRID,
+                            actionName: orderAction,
+                            ids: [orderForm],
+                            callbackSuccess: () => {
+                            }
+                        }));
+                        //
+                        // form.orders = !!form.orders ? form.orders : [];
+                        // let orders = form.orders;
+                        //
+                        // if (indexRow == null)
+                        //     orders.push(orderForm);
+                        // else
+                        //     orders[indexRow] = orderForm;
+                        // onChangeForm(null, {name: 'orders', value: orders});
+                    }
+                }));
             }
 
             if (actionName == 'delete') {
@@ -498,7 +517,7 @@ const ShippingCard = (props) => {
             <>
                 <CardLayout
                     title={title}
-                    actionsFooter={actionsFooter}
+                    // actionsFooter={actionsFooter}
                     actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}

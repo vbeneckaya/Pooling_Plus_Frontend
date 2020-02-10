@@ -1,8 +1,8 @@
 import React, {Component, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 
-import { debounce } from 'throttle-debounce';
+import {debounce} from 'throttle-debounce';
 import _ from 'lodash';
 
 import './style.scss';
@@ -11,16 +11,17 @@ import HeaderSearchGrid from './components/header';
 import InfiniteScrollTable from '../InfiniteScrollTable';
 
 import Result from './components/result';
-import { PAGE_SIZE } from '../../constants/settings';
-import { Confirm, Loader } from 'semantic-ui-react';
+import {PAGE_SIZE} from '../../constants/settings';
+import {Confirm, Loader} from 'semantic-ui-react';
 import Footer from './components/footer';
-import { withRouter } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import {clearActions, getActionsRequest, invokeMassUpdateRequest} from "../../ducks/gridActions";
 import {clearHistory, getHistoryRequest} from "../../ducks/history";
 import {cardSelector, editCardRequest, getCardRequest} from "../../ducks/gridCard";
 import {useDispatch, useSelector} from "react-redux";
 import {checkForEditingRequest} from "../../ducks/gridColumnEdit";
 import connect from "react-redux/es/connect/connect";
+import {SHIPPINGS_GRID} from "../../constants/grids";
 
 const initState = () => ({
     page: 1,
@@ -37,7 +38,6 @@ class SuperGrid extends Component {
             ...initState(),
         };
     }
-
 
 
     pageLoading = () => {
@@ -64,7 +64,7 @@ class SuperGrid extends Component {
     componentDidMount() {
         this.timer = null;
         const {location, history, getRepresentations, name} = this.props;
-        const { state } = location;
+        const {state} = location;
 
         if (state) {
             this.setState(
@@ -82,7 +82,7 @@ class SuperGrid extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { selectedRows } = this.state;
+        const {selectedRows} = this.state;
         const newSelectedRow = new Set(selectedRows);
 
         if (
@@ -102,7 +102,7 @@ class SuperGrid extends Component {
         }
 
         if (!_.isEqual(prevProps.columns, this.props.columns)) {
-            const { columns } = this.props;
+            const {columns} = this.props;
             const width = this.container.offsetWidth - 65;
 
             this.setState(
@@ -120,7 +120,7 @@ class SuperGrid extends Component {
 
     mapData = (isConcat, isReload) => {
         const {columns, page, fullText} = this.state;
-        const { extParams, defaultFilter, name } = this.props;
+        const {extParams, defaultFilter, name} = this.props;
 
         let filters = {};
         let sort = {};
@@ -159,19 +159,19 @@ class SuperGrid extends Component {
     };
 
     loadList = (isConcat, isReload) => {
-        const { autoUpdateStop, autoUpdateStart } = this.props;
-        const { selectedRows } = this.state;
+        const {autoUpdateStop, autoUpdateStart} = this.props;
+        const {selectedRows} = this.state;
 
         autoUpdateStop();
         autoUpdateStart(this.mapData(isConcat, isReload));
 
         if (selectedRows.size) {
-            this.props.getActions({ name: this.props.name, ids: Array.from(selectedRows) });
+            this.props.getActions({name: this.props.name, ids: Array.from(selectedRows)});
         }
     };
 
     nextPage = () => {
-        const { totalCount, rows = [] } = this.props;
+        const {totalCount, rows = []} = this.props;
 
         if (rows.length < totalCount) {
             this.setState(
@@ -183,7 +183,7 @@ class SuperGrid extends Component {
         }
     };
 
-    setFilter = (e, { name, value }) => {
+    setFilter = (e, {name, value}) => {
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
             let index = nextColumns.findIndex(item => item.name === name);
@@ -229,7 +229,7 @@ class SuperGrid extends Component {
                 selectedRows: item,
             },
             () => {
-                this.props.getActions({ name: this.props.name, ids: Array.from(item) });
+                this.props.getActions({name: this.props.name, ids: Array.from(item)});
             },
         );
     };
@@ -257,8 +257,8 @@ class SuperGrid extends Component {
         }
     };
 
-    changeFullTextFilter = (e, { value }) => {
-        this.setState({ fullText: value, page: 1 }, this.setFilterApiAndLoadList);
+    changeFullTextFilter = (e, {value}) => {
+        this.setState({fullText: value, page: 1}, this.setFilterApiAndLoadList);
     };
 
     clearFilters = () => {
@@ -310,7 +310,7 @@ class SuperGrid extends Component {
     };
 
     resizeColumn = (size, index) => {
-        const { columns } = this.state;
+        const {columns} = this.state;
         clearTimeout(this.timer);
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
@@ -329,7 +329,7 @@ class SuperGrid extends Component {
             sum = sum + item.width + columns.length + 50;
         });
         this.timer = setTimeout(() => {
-            const { editRepresentation, representationName, name, getRepresentations } = this.props;
+            const {editRepresentation, representationName, name, getRepresentations} = this.props;
 
             if (representationName) {
                 editRepresentation({
@@ -343,19 +343,19 @@ class SuperGrid extends Component {
                 });
             }
         }, 2000);
-        
+
     };
 
     handleGoToCard = (isEdit, id, name) => {
-        const { history, cardLink, newLink, editCard, autoUpdateStop} = this.props;
-        autoUpdateStop();
-        if (!isEdit){
-            editCard({
+        const {history, cardLink, newLink, editCard, autoUpdateStop} = this.props;
+        if (name == SHIPPINGS_GRID) {
+            autoUpdateStop();
+            if (!isEdit) {
+                editCard({
                     name,
                     params: {},
-                   callbackSuccess: () => {
-                       id = this.props.card.id; 
-                       debugger;
+                    callbackSuccess: () => {
+                        id = this.props.card.id;
                         history.push({
                             pathname: cardLink.replace(':name', name).replace(':id', this.props.card.id),
                             state: {
@@ -363,18 +363,28 @@ class SuperGrid extends Component {
                                 pathname: history.location.pathname,
                             },
                         });
-                   },
+                    },
+                });
+            }
+            else
+                history.push({
+                    pathname: cardLink.replace(':name', name).replace(':id', id),
+                    state: {
+                        ...this.mapData().filter,
+                        pathname: history.location.pathname,
+                    },
                 });
         }
-        else
+        else {
             history.push({
-            pathname: cardLink.replace(':name', name).replace(':id', id),
-            //: newLink.replace(':name', name),
-            state: {
-                ...this.mapData().filter,
-                pathname: history.location.pathname,
-            },
-        });
+                pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
+                state: {
+                    ...this.mapData().filter,
+                    pathname: history.location.pathname,
+                },
+            });
+
+        }
     };
 
     render() {
@@ -387,7 +397,8 @@ class SuperGrid extends Component {
             actions,
             isShowActions,
             confirmation = {},
-            closeConfirmation = () => {},
+            closeConfirmation = () => {
+            },
             groupActions,
             isCreateBtn,
             extGrid,
@@ -422,7 +433,9 @@ class SuperGrid extends Component {
                 />
                 <div
                     className={`scroll-grid-container${extGrid ? ' grid_small' : ''}`}
-                    ref={instance => {this.container = instance;}}
+                    ref={instance => {
+                        this.container = instance;
+                    }}
                 >
                     <InfiniteScrollTable
                         className="grid-table"
@@ -499,15 +512,23 @@ SuperGrid.propTypes = {
     autoUpdateStop: PropTypes.func,
 };
 SuperGrid.defaultProps = {
-    loadList: () => {},
-    autoUpdateStart: () => {},
-    autoUpdateStop: () => {},
+    loadList: () => {
+    },
+    autoUpdateStart: () => {
+    },
+    autoUpdateStop: () => {
+    },
     confirmation: {},
-    closeConfirmation: () => {},
-    clearStore: () => {},
-    getLookupList: () => {},
-    getAllIds: () => {},
-    disabledCheck: () => {},
+    closeConfirmation: () => {
+    },
+    clearStore: () => {
+    },
+    getLookupList: () => {
+    },
+    getAllIds: () => {
+    },
+    disabledCheck: () => {
+    },
 }
 ;
 
