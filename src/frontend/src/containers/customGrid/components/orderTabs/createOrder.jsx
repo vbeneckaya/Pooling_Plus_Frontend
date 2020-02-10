@@ -16,13 +16,6 @@ const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniqueness
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
-    // useEffect(() => {
-    //     onChange(null, {
-    //         name: 'deliveryWarehouseId',
-    //         value: null
-    //     })
-    // }, [form['clientId']]);
-
     return (
         <Form className="tabs-card">
             <Grid>

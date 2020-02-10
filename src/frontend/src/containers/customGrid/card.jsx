@@ -131,15 +131,16 @@ const Card = props => {
 
     const onClose = () => {
         const {state} = location;
-        const {pathname, gridLocation} = state;
-
-        history.replace({
-            pathname: pathname,
-            state: {
-                ...state,
-                pathname: gridLocation,
-            },
-        });
+        if (!!state) {
+            const {pathname, gridLocation} = state;
+            history.replace({
+                pathname: pathname,
+                state: {
+                    ...state,
+                    pathname: gridLocation,
+                },
+            });
+        }
     };
 
     const handleClose = isConfirm => {
@@ -161,6 +162,7 @@ const Card = props => {
     };
 
     const onChangeForm = useCallback((e, {name, value}) => {
+        debugger;
         switch (name) {
             case 'clientId':
                 setForm(prevState => ({
@@ -195,14 +197,14 @@ const Card = props => {
                 name,
                 params: form,
                 callbackSuccess: () => {
-                    
+
                     //loadCard();
-                     if (form.id) {
-                         loadCard();
-                     } else {
-                         
-                         //handleClose();
-                     }
+                    if (form.id) {
+                        loadCard();
+                    } else {
+
+                        //handleClose();
+                    }
                 },
             }),
         );
@@ -232,7 +234,6 @@ const Card = props => {
     };
 
     const invokeAction = actionName => {
-        debugger;
         // showConfirmation(
         //     `${t('Are you sure to complete')} "${t(actionName)}"?`,
         //     () => {

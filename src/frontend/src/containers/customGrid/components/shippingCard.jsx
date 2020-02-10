@@ -8,7 +8,8 @@ import Accounts from './shippingTabs/accounts';
 import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
 import {actionsCardSelector, invokeActionRequest} from '../../../ducks/gridActions';
-import {cardSelector, editCardRequest, getCardRequest} from '../../../ducks/gridCard';
+import {cardSelector, editCardRequest, errorSelector, getCardRequest} from '../../../ducks/gridCard';
+import {editInnerCardRequest, errorInnerSelector} from '../../../ducks/gridInnerCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
@@ -19,9 +20,9 @@ import List from '../../../containers/customSelectGrid/list';
 //import List from '../../../containers/customGrid/list';
 import {
     // editCardRequest,
-    isUniqueNumberRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
+import {isUniqueNumberInnerRequest} from "../../../ducks/gridInnerCard";
 import {ORDERS_GRID} from "../../../constants/grids";
 
 const Content = ({
@@ -30,15 +31,13 @@ const Content = ({
                      form,
                      onChange,
                      onBlur,
-                     uniquenessNumberCheck,
-                     isNotUniqueNumber
+                     uniquenessNumberInnerCheck,
                  }) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
-    console.log(settings);
 
     return (
         <Form className="tabs-card">
@@ -61,10 +60,10 @@ const Content = ({
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            value={form['orderNumber'] ? form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber'] : form['orderNumber']}
+                            value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                             settings={settings['orderNumber']}
-                            error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
-                            onBlur={uniquenessNumberCheck}
+                            error={error['orderNumber']}
+                            onBlur={uniquenessNumberInnerCheck}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -208,7 +207,7 @@ const ShippingCard = (props) => {
             history: history,
             location: props.location,
             match: props.match,
-            name: props.name,
+            name: ORDERS_GRID,
         }
 
 
@@ -219,16 +218,18 @@ const ShippingCard = (props) => {
 
         const userPermissions = useSelector(state => userPermissionsSelector(state));
         const userActions = useSelector(state => userActionsSelector(state));
+        const errorInner = useSelector(state => errorInnerSelector(state));
 
         const canOnionOrders = !!userActions.find(_ => _ == 'unionOrders');
         const canOnionOrdersInExisted = !!userActions.find(_ => _ == 'unionOrdersInExisted');
         const canEditOrders = !!userActions.find(_ => _ == 'unionOrdersInExisted');
-        const orderActions = useSelector(state => actionsCardSelector(state))
+        // const orderActions = useSelector(state => actionsCardSelector(state))
 
         let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
         let [orderForm, setOrderForm] = useState([]);
         let [orderCard, setOrderCard] = useState([]);
+        let [selectedOrders, setSelectedOrders] = useState([]);
         let [indexRow, setIndexRow] = useState();
 
 
@@ -259,10 +260,10 @@ const ShippingCard = (props) => {
         const handleCreateOrder = () => {
             setIndexRow(null);
             let defaultOrderForm = {};
-            defaultOrderForm['id'] = undefined;
             orderColumns.forEach(column => {
                 defaultOrderForm[column.name] = undefined
             });
+            defaultOrderForm['id'] = undefined;
             setOrderCard(defaultOrderForm);
             setOrderForm(defaultOrderForm);
             setNotChangeOrderForm(true);
@@ -275,15 +276,16 @@ const ShippingCard = (props) => {
             setShowSelectModal(true);
         };
 
-        const handleUniquenessCheck = callbackFunc => {
+        const handleUniquenessInnerCheck = callbackFunc => {
             (!id || orderForm.orderNumber !== orderCard.orderNumber) && dispatch(
-                isUniqueNumberRequest({
-                    number: orderForm.orderNumber,
+                isUniqueNumberInnerRequest({
+                    number: orderForm.orderNumber && orderForm.orderNumber.value,
                     fieldName: 'orderNumber',
                     errorText: t('number_already_exists'),
                     callbackSuccess: callbackFunc,
                 }),
             );
+
         };
 
         const getPanes = () => {
@@ -378,10 +380,20 @@ const ShippingCard = (props) => {
         };
 
         const onChangeOrderForm = useCallback((e, {name, value}) => {
-            setOrderForm(prevState => ({
-                ...prevState,
-                [name]: value,
-            }));
+            switch (name) {
+                case 'orderNumber':
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: {value: value, name: null}
+                    }));
+                    break;
+                default:
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: value,
+                    }));
+            }
+
         }, []);
 
         const getOrderActionsFooter = useCallback(
@@ -396,7 +408,7 @@ const ShippingCard = (props) => {
                             disabled={notChangeOrderForm}
                             onClick={handleSave}
                         >
-                            {t('SaveButton')}
+                            {t('AddButton')}
                         </Button>
                     </>
                 );
@@ -416,7 +428,7 @@ const ShippingCard = (props) => {
                             //disabled={notChangeOrderForm}
                             onClick={handleSelectModalSave}
                         >
-                            {t('SaveButton')}
+                            {t('AddButton')}
                         </Button>
                     </>
                 );
@@ -425,15 +437,25 @@ const ShippingCard = (props) => {
         );
 
         const handleSave = () => {
-            invokeAction('insert');
+            if (orderForm.orderNumber != orderCard.orderNumber)
+                handleUniquenessInnerCheck(() => {
+                    invokeAction('insertNewOrder')
+                });
+            else
+                invokeAction('insertNewOrder');
+        };
+
+        const handleSelect = (ids) => {
+           // idss = Array.from(ids);
+            setSelectedOrders(Array.from(ids));
         };
 
         const handleSelectModalSave = () => {
-            //invokeAction('insert');
-        };
+            invokeAction('insertExistedOrder');
+        }
 
-        const handleDelete = (index) => {
-            invokeAction('delete', index);
+        const handleDelete = (id) => {
+            invokeAction('delete', id);
         };
 
         const handleClose = () => {
@@ -470,45 +492,57 @@ const ShippingCard = (props) => {
 
 
         const loadInnerCard = () => {
-            
+
         }
 
-        const invokeAction = (actionName, index) => {
-            if (actionName == 'insert') {
-
-                dispatch(editCardRequest({
+        const invokeAction = (actionName, orderId) => {
+            if (actionName == 'insertNewOrder') {
+                dispatch(editInnerCardRequest({
                     name: ORDERS_GRID,
-                    params: {...orderForm, orderNumber: {value: orderForm.orderNumber.value}},
-                    callbackSuccess: () => {
-                        load();
-                        dispatch(getCardRequest(form.id));
+                    params: {
+                        ...orderForm,
+                        orderNumber: {value: orderForm.orderNumber && orderForm.orderNumber.value},
+                        shippingId: id
+                    },
+                    callbackSuccess: (result) => {
                         let orderAction = 'unionOrdersInExisted';
                         dispatch(invokeActionRequest({
                             name: ORDERS_GRID,
                             actionName: orderAction,
-                            ids: [orderForm],
+                            ids: [result.id],
                             callbackSuccess: () => {
+                                load();
                             }
                         }));
-                        //
-                        // form.orders = !!form.orders ? form.orders : [];
-                        // let orders = form.orders;
-                        //
-                        // if (indexRow == null)
-                        //     orders.push(orderForm);
-                        // else
-                        //     orders[indexRow] = orderForm;
-                        // onChangeForm(null, {name: 'orders', value: orders});
                     }
                 }));
             }
 
-            if (actionName == 'delete') {
-                let orders = form.orders;
-                orders.splice(index, 1);
+            if (actionName == 'insertExistedOrder') {
+                debugger;
+                let orderAction = 'unionOrdersInExisted';
+                dispatch(invokeActionRequest({
+                    name: ORDERS_GRID,
+                    actionName: orderAction,
+                    ids: selectedOrders,
+                    callbackSuccess: () => {
+                        debugger;
+                        load();
+                    }
+                }));
 
-                onChangeForm(null, {name: 'orders', value: orders});
-                console.log(form);
+            }
+
+            if (actionName == 'delete') {
+                let orderAction = 'removeFromShipping';
+                dispatch(invokeActionRequest({
+                    name: ORDERS_GRID,
+                    actionName: orderAction,
+                    ids: [orderId],
+                    callbackSuccess: () => {
+                        load();
+                    }
+                }));
             }
             onCloseModal();
         };
@@ -537,11 +571,11 @@ const ShippingCard = (props) => {
                             Loading
                         </Loader>*/}
                         <Content
-                            error={error}
+                            error={errorInner}
                             t={t}
                             form={orderForm}
                             onChange={onChangeOrderForm}
-                            uniquenessNumberCheck={handleUniquenessCheck}
+                            uniquenessNumberInnerCheck={handleUniquenessInnerCheck}
                         />
                     </Modal.Description>
                     <Modal.Actions>{getOrderActionsFooter()}</Modal.Actions>
@@ -553,12 +587,14 @@ const ShippingCard = (props) => {
                     closeOnDimmerClick={false}
                     onOpen={onOpenSelectModal}
                     onClose={onCloseSelectModal}
+                    size='fullscreen'
                     closeIcon
                 >
                     <Modal.Header>{t('select_order')}</Modal.Header>
                     <Modal.Description>
                         <List
                             props={propsForSelect}
+                            selectCallback={handleSelect}
                         >
                         </List>
                     </Modal.Description>

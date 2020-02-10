@@ -98,57 +98,57 @@ class Result extends Component {
                                         column={column}
                                         indexRow={indexRow}
                                         indexColumn={indexColumn}
-                                        loadList={loadList}
+                                       // loadList={loadList}
                                         gridName={name}
-                                        goToCard={goToCard}
+                                       // goToCard={goToCard}
                                         t={t}
-                                        checkForEditing={checkForEditing}
-                                        invokeMassUpdate={invokeMassUpdate}
+                                      //  checkForEditing={checkForEditing}
+                                      //  invokeMassUpdate={invokeMassUpdate}
                                     />
                                 ))}
                             <Table.Cell />
-                            {isShowActions ? (
-                                <Table.HeaderCell
-                                    className="actions-column"
-                                    onClick={e => {
-                                        e.stopPropagation();
-                                    }}
-                                >
-                                    {actions &&
-                                        actions(row).map(action => (
-                                            <Button
-                                                key={row.id + action.name}
-                                                actionname={action.name}
-                                                actionbuttonname={action.buttonName}
-                                                rowid={row.id}
-                                                disabled={action.disabled}
-                                                className="grid-action-btn"
-                                                loading={
-                                                    action.loadingId &&
-                                                    action.loadingId.includes(row.id)
-                                                }
-                                                onClick={e =>
-                                                    action.action(e, {
-                                                        action,
-                                                        row,
-                                                        loadList,
-                                                    })
-                                                }
-                                                size="mini"
-                                            >
-                                                {action.buttonName}
-                                            </Button>
-                                        ))}
-                                </Table.HeaderCell>
-                            ) : null}
+                            {/*{isShowActions ? (*/}
+                                {/*<Table.HeaderCell*/}
+                                    {/*className="actions-column"*/}
+                                    {/*onClick={e => {*/}
+                                        {/*e.stopPropagation();*/}
+                                    {/*}}*/}
+                                {/*>*/}
+                                    {/*{actions &&*/}
+                                        {/*actions(row).map(action => (*/}
+                                            {/*<Button*/}
+                                                {/*key={row.id + action.name}*/}
+                                                {/*actionname={action.name}*/}
+                                                {/*actionbuttonname={action.buttonName}*/}
+                                                {/*rowid={row.id}*/}
+                                                {/*disabled={action.disabled}*/}
+                                                {/*className="grid-action-btn"*/}
+                                                {/*loading={*/}
+                                                    {/*action.loadingId &&*/}
+                                                    {/*action.loadingId.includes(row.id)*/}
+                                                {/*}*/}
+                                                {/*onClick={e =>*/}
+                                                    {/*action.action(e, {*/}
+                                                        {/*action,*/}
+                                                        {/*row,*/}
+                                                        {/*loadList,*/}
+                                                    {/*})*/}
+                                                {/*}*/}
+                                                {/*size="mini"*/}
+                                            {/*>*/}
+                                                {/*{action.buttonName}*/}
+                                            {/*</Button>*/}
+                                        {/*))}*/}
+                                {/*</Table.HeaderCell>*/}
+                            {/*) : null}*/}
                         </Table.Row>
                     ))
                 ) : !progress ? (
                     <NotFoundMessage
                         gridName={name}
                         isSetFilters={isSetFilters}
-                        isCreateBtn={isCreateBtn}
-                        goToCard={goToCard}
+                        //isCreateBtn={isCreateBtn}
+                        //goToCard={goToCard}
                     />
                 ) : null}
                 <div className="table-bottom-loader">
