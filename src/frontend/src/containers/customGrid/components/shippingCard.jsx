@@ -29,6 +29,7 @@ import {
 } from "../../../ducks/gridCard";
 import {isUniqueNumberInnerRequest} from "../../../ducks/gridInnerCard";
 import {ORDERS_GRID} from "../../../constants/grids";
+import {autoUpdateStop} from "../../../ducks/gridList";
 
 const Content = ({
                      t,
@@ -304,7 +305,7 @@ const ShippingCard = (props) => {
                 {
                     menuItem: t('orders'),
                     isCreateBtn: (!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders) && userPermissions.includes(2),
-                    isSelectBtn: !!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders,
+                    isSelectBtn: false, //!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders,
                     createAction: handleCreateOrder,
                     selectAction: handleSelectOrder,
                     render: () => <Orders
@@ -378,7 +379,6 @@ const ShippingCard = (props) => {
 
         const onCloseSelectModal = () => {
             setShowSelectModal(false);
-            closeConfirmation();
         };
 
 
@@ -492,16 +492,17 @@ const ShippingCard = (props) => {
         };
 
         const handleSelectModalClose = () => {
-            if (notChangeOrderForm) {
-                onCloseSelectModal();
-            } else {
-                setConfirmation({
-                    open: true,
-                    content: t('confirm_close_dictionary'),
-                    onCancel: closeConfirmation(),
-                    onConfirm: onCloseModal,
-                });
-            }
+            onCloseSelectModal();
+            // if (notChangeOrderForm) {
+            //     onCloseSelectModal();
+            // } else {
+            //     setConfirmation({
+            //         open: true,
+            //         content: t('confirm_close_dictionary'),
+            //         onCancel: closeConfirmation(),
+            //         onConfirm: onCloseModal,
+            //     });
+            // }
         };
 
         const closeConfirmation = () => {

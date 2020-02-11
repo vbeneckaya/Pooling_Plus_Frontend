@@ -15,6 +15,7 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
 import { withRouter } from 'react-router-dom';
+import {autoUpdateStop} from "../../ducks/gridList";
 
 const initState = () => ({
     page: 1,
