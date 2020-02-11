@@ -45,6 +45,11 @@ namespace Domain.Persistables
         [ReferenceType(typeof(TransportCompany))]
         public Guid? CarrierId { get; set; }
         /// <summary>
+        /// Поставщик
+        /// </summary>
+        [ReferenceType(typeof(Provider))]
+        public Guid? ProviderId { get; set; }
+        /// <summary>
         /// Тип ТС
         /// </summary>
         [ReferenceType(typeof(VehicleType))]
@@ -259,6 +264,11 @@ namespace Domain.Persistables
         /// Номер ТС
         /// </summary>
         public string VehicleNumber { get; set; }
+        
+        /// <summary>
+        /// Маршрут
+        /// </summary>
+        public string Route { get; set; }
 
         /// <summary>
         /// Id заявки на портале

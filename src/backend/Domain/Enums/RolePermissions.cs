@@ -43,22 +43,28 @@ namespace Domain.Enums
         [OrderNumber(5)]
         ShippingsView = 7,
         
+        /// <summary>
+        /// Создание перевозок
+        /// </summary>
+        [OrderNumber(6)]
+        ShippingsCreate = 8,
+        
        /// <summary>
         /// Просмотр и прикрепление документов к перевозке
         /// </summary>
-        [OrderNumber(6)]
+        [OrderNumber(7)]
         ShippingsViewAndAttachDocument = 10,
 
         /// <summary>
         /// Редактирование и удаление документов из перевозки
         /// </summary>
-        [OrderNumber(7)]
+        [OrderNumber(8)]
         ShippingsEditAndDeleteDocument = 11,
 
         /// <summary>
         /// Просмотр истории перевозок
         /// </summary>
-        [OrderNumber(8)]
+        [OrderNumber(9)]
         ShippingsViewHistory = 12,
 
         /// <summary>

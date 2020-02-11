@@ -20,8 +20,6 @@ using Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
 using Application.Shared.Excel.Columns;
-using DAL.Queries;
-using Domain.Enums;
 
 namespace Application.Services.ShippingWarehouses
 {
@@ -102,8 +100,11 @@ namespace Application.Services.ShippingWarehouses
         public override  DetailedValidationResult SaveOrCreate(ShippingWarehouseDto entityFrom)
         {
             var user = _userProvider.GetCurrentUser();
+            
             if (user.ProviderId.HasValue && entityFrom.ProviderId == null)
+                
                 entityFrom.ProviderId = new LookUpDto(user.ProviderId.ToString());
+            
             return SaveOrCreateInner(entityFrom, false);
         }
 

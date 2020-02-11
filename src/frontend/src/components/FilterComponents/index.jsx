@@ -25,22 +25,22 @@ import StateFacet from './State';
 import Bool from './Bool';
 
 const getTypeFacet = {
-    [TEXT_TYPE]: <TextFacet />,
-    [BIG_TEXT_TYPE]: <TextFacet />,
-    [NUMBER_TYPE]: <NumberFacet />,
-    [SELECT_TYPE]: <SelectFacet />,
-    [DATE_TIME_TYPE]: <DateFacet />,
-    [DATE_TYPE]: <DateFacet />,
+    [TEXT_TYPE]: <TextFacet/>,
+    [BIG_TEXT_TYPE]: <TextFacet/>,
+    [NUMBER_TYPE]: <NumberFacet/>,
+    [SELECT_TYPE]: <SelectFacet/>,
+    [DATE_TIME_TYPE]: <DateFacet/>,
+    [DATE_TYPE]: <DateFacet/>,
     [LOCAL_DATE_TIME]: <DateFacet/>,
     [TIME_TYPE]: <TimeFacet/>,
-    [STATE_TYPE]: <StateFacet />,
-    [BOOLEAN_TYPE]: <Bool />,
-    [ENUM_TYPE]: <SelectFacet />,
-    [LINK_TYPE]: <TextFacet />,
+    [STATE_TYPE]: <StateFacet/>,
+    [BOOLEAN_TYPE]: <Bool/>,
+    [ENUM_TYPE]: <SelectFacet/>,
+    [LINK_TYPE]: <TextFacet/>,
 };
 
 const Control = props => {
-    const { type } = props;
+    const {type} = props;
 
     return React.cloneElement(getTypeFacet[type], props);
 };
@@ -57,8 +57,9 @@ const FacetField = ({
                         handleResize,
                         width,
                         displayNameKey,
+                        showIcons = true,
                     }) => {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     /*let sort = null;
 
     if (sortObj && sortObj.name === name) {
@@ -97,45 +98,46 @@ const FacetField = ({
          [thRef.current],
      );*/
 
-    console.log('facet', value);
+//    console.log('facet', value);
 
     return (
         <div className="facet" ref={thRef}>
-            <div className="facet-field" onClick={handleSort} ref={contextRef}>
+            <div className="facet-field" onClick={showIcons ? handleSort : null} ref={contextRef}>
                 {t(displayNameKey)}
             </div>
-            <div className="facet-actions">
-                <div className={value ? 'facet-actions__filter_active' : 'facet-actions__filter'}>
-                    <Popup
-                        trigger={
-                            <Button>
-                                <Icon name="filter" />
-                            </Button>
-                        }
-                        context={contextRef}
-                        content={
-                            <Control
-                                type={type}
-                                name={name}
-                                value={value}
-                                source={source}
-                                onChange={setFilter}
-                                t={t}
-                            />
-                        }
-                        pinned
-                        basic
-                        position={'bottom center'}
-                        className="from-popup"
-                        on="click"
-                    />
-                </div>
+            {!!showIcons ?
+                <div className="facet-actions">
+                    <div className={value ? 'facet-actions__filter_active' : 'facet-actions__filter'}>
+                        <Popup
+                            trigger={
+                                <Button>
+                                    <Icon name="filter"/>
+                                </Button>
+                            }
+                            context={contextRef}
+                            content={
+                                <Control
+                                    type={type}
+                                    name={name}
+                                    value={value}
+                                    source={source}
+                                    onChange={setFilter}
+                                    t={t}
+                                />
+                            }
+                            pinned
+                            basic
+                            position={'bottom center'}
+                            className="from-popup"
+                            on="click"
+                        />
+                    </div>
 
-                <div className="facet-actions__sort">
-                    {sort === false ? <Icon name="sort amount up"/> : null}
-                    {sort === true ? <Icon name="sort amount down"/> : null}
-                </div>
-            </div>
+                    <div className="facet-actions__sort">
+                        {sort === false ? <Icon name="sort amount up"/> : null}
+                        {sort === true ? <Icon name="sort amount down"/> : null}
+                    </div>
+                </div> : null}
         </div>
     );
 };

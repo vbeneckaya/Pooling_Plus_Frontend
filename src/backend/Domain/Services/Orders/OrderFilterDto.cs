@@ -296,6 +296,11 @@
         /// Транспортная компания
         /// </summary>
         public string CarrierId { get; set; }
+        
+        /// <summary>
+        /// Поставщик
+        /// </summary>
+       public string ProviderId { get; set; }
 
         /// <summary>
         /// Способ доставки

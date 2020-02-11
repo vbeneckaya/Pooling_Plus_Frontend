@@ -13,6 +13,10 @@ namespace Domain.Persistables
         /// </summary>    
         public Guid Id { get; set; }
         /// <summary>
+        /// Юр. лицо
+        /// </summary>
+        public Guid? ProviderId { get; set; }
+        /// <summary>
         /// Склад отгрузки
         /// </summary>
         public Guid ShippingWarehouseId { get; set; }
@@ -202,10 +206,6 @@ namespace Domain.Persistables
         /// </summary>
         public decimal? LtlRate33 { get; set; }
 
-        /// <summary>
-        /// Юр. лицо
-        /// </summary>
-        public Guid? ProviderId { get; set; }
 
 
         /*end of fields*/

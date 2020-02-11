@@ -76,8 +76,7 @@ namespace Application.BusinessModels.Orders.Triggers
 
                     shipping.VehicleTypeId = entity.VehicleTypeId;
                     
-                    if(!shipping.ManualTarifficationType)
-                        _calcService.UpdateDeliveryCost(shipping);
+                    _calcService.UpdateDeliveryCost(shipping);
                 }
             }
         }

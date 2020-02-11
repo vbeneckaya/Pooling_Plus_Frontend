@@ -393,9 +393,24 @@
             <param name="key">Ключ для настроек</param>
             <returns></returns>
         </member>
+        <member name="M:API.Controllers.UserSettingsController.GetDefaultValue(System.String)">
+            <summary>
+            Получение значения настройки  по умолчанию
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <returns></returns>
+        </member>
         <member name="M:API.Controllers.UserSettingsController.SetValue(System.String,API.Models.UserSettingValueDto)">
             <summary>
             Сохранение пользовательской настройки
+            </summary>
+            <param name="key">Ключ для настроек</param>
+            <param name="value">Новое значение</param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Controllers.UserSettingsController.SetDefaultValue(System.String,API.Models.UserSettingValueDto)">
+            <summary>
+            Сохранение настройки по умолчанию
             </summary>
             <param name="key">Ключ для настроек</param>
             <param name="value">Новое значение</param>

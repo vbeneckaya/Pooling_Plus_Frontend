@@ -8,10 +8,10 @@
         /// <summary>
         /// Доставка
         /// </summary>
-        Delivery,
+        Delivery = 0,
         /// <summary>
         /// Самовывоз
         /// </summary>
-        SelfDelivery
+        SelfDelivery = 1
     }
 }

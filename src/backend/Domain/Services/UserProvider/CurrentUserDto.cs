@@ -1,4 +1,5 @@
 ﻿using System;
+using Domain.Enums;
 
 namespace Domain.Services.UserProvider
 {
@@ -17,5 +18,7 @@ namespace Domain.Services.UserProvider
         public Guid? ClientId { get; set; }
         
         public Guid? ProviderId { get; set; }
+
+        public RoleTypes RoleType { get; set; }
     }
 }

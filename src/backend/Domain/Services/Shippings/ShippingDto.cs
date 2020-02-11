@@ -27,6 +27,9 @@ namespace Domain.Services.Shippings
 
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
         public LookUpDto CarrierId { get; set; }
+        
+        [FieldType(FieldType.Select, source: nameof(Provider)), IsDefault, OrderNumber(3)]
+        public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), IsDefault, OrderNumber(7)]
         public LookUpDto VehicleTypeId { get; set; }
@@ -150,7 +153,10 @@ namespace Domain.Services.Shippings
         public string Driver { get; set; }
 
         [FieldType(FieldType.Text), IsDefault, OrderNumber(16)]
-        public string VehicleNumber { get; set; }
+        public string VehicleNumber { get; set; }        
+        
+        [FieldType(FieldType.Text)]
+        public string Route { get; set; }
 
     }
 }

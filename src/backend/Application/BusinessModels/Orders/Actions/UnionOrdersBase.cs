@@ -1,4 +1,3 @@
-using Application.Services.Shippings;
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
@@ -12,16 +11,19 @@ namespace Application.BusinessModels.Orders.Actions
     {
         protected readonly ICommonDataService _dataService;
         protected readonly IShippingCalculationService _shippingCalculationService;
+        protected readonly IShippingGetRouteService _shippingGetRouteService;
 
-        public UnionOrdersBase(ICommonDataService dataService, IShippingCalculationService shippingCalculationService)
+        public UnionOrdersBase(ICommonDataService dataService, IShippingCalculationService shippingCalculationService, IShippingGetRouteService shippingGetRouteService)
         {
             _dataService = dataService;
             _shippingCalculationService = shippingCalculationService;
+            _shippingGetRouteService = shippingGetRouteService;
         }
 
         protected void UnionOrderInShipping(IEnumerable<Order> allOrders, IEnumerable<Order> newOrders, Shipping shipping, IHistoryService historyService)
         {
             _shippingCalculationService.RecalculateShipping(shipping, allOrders);
+            _shippingGetRouteService.UpdateRoute(shipping, allOrders);
 
             foreach (var order in allOrders)
             {
@@ -41,6 +43,7 @@ namespace Application.BusinessModels.Orders.Actions
                 historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
                 historyService.Save(shipping.Id, "shippingAddOrder", order.OrderNumber, shipping.ShippingNumber);
             }
+            
         }
     }
 }

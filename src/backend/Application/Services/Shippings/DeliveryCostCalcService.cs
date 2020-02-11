@@ -25,6 +25,7 @@ namespace Application.Services.Shippings
         public void UpdateDeliveryCost(Shipping shipping)
         {
             var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
+           
             if (shipping.Status == null
                 || !validState.Contains(shipping.Status.Value)
                 || shipping.CarrierId == null
@@ -42,10 +43,11 @@ namespace Application.Services.Shippings
 
             Log.Information("Расчет стоимости перевозки запущен для {ShippingNumber}", shipping.ShippingNumber);
 
+            decimal? totalDeliveryCost = 0;
+            
             foreach (var group in orders.GroupBy(x => new { x.ShippingWarehouseId, x.DeliveryWarehouseId, x.ClientId }))
             {
-                var hasIncompleteOrders = group.Any(x => x.DeliveryType != DeliveryType.Delivery
-                                                         || x.PalletsCount == null
+                var hasIncompleteOrders = group.Any(x =>  x.PalletsCount == null
                                                          || x.PalletsCount <= 0
                                                          || x.ShippingDate == null
                                                          || x.DeliveryDate == null);
@@ -65,6 +67,10 @@ namespace Application.Services.Shippings
                         order.DeliveryCost = deliveryCost;
                     }
                 }
+
+                totalDeliveryCost += deliveryCost ?? 0;
+                
+                shipping.TotalDeliveryCost = totalDeliveryCost;
             }
         }
 
@@ -73,9 +79,10 @@ namespace Application.Services.Shippings
             DateTime shippingDate = orders.Min(x => x.ShippingDate.Value);
 
             var tariff = _commonDataService.GetDbSet<Tariff>()
-                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                .FirstOrDefault(x => x.CarrierId == shipping.CarrierId 
+                                     && x.ProviderId == shipping.ProviderId 
                                      && x.VehicleTypeId == shipping.VehicleTypeId
-                                     && x.BodyTypeId == shipping.BodyTypeId
+//                                     && x.BodyTypeId == shipping.BodyTypeId
                                      && x.TarifficationType == shipping.TarifficationType
                                      && x.ShippingWarehouseId == shippingWarehouseId
                                      && x.DeliveryWarehouseId == deliveryWarehouseId
@@ -85,8 +92,9 @@ namespace Application.Services.Shippings
             {
                 tariff = _commonDataService.GetDbSet<Tariff>()
                         .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
+                                             && x.ProviderId == shipping.ProviderId 
                                              && x.VehicleTypeId == null
-                                             && x.BodyTypeId == null
+//                                             && x.BodyTypeId == null
                                              && x.TarifficationType == shipping.TarifficationType
                                              && x.ShippingWarehouseId == shippingWarehouseId
                                              && x.DeliveryWarehouseId == deliveryWarehouseId
@@ -107,18 +115,8 @@ namespace Application.Services.Shippings
             }
             else
             {
-                int totalPallets = orders.Sum(x => x.PalletsCount ?? 0);
-                cost = GetLtlRate(tariff, totalPallets) ?? 0M;
-            }
-
-            bool needWinterCoeff = tariff.StartWinterPeriod != null
-                                && tariff.EndWinterPeriod != null
-                                && shippingDate >= tariff.StartWinterPeriod
-                                && shippingDate <= tariff.EndWinterPeriod
-                                && tariff.WinterAllowance != null;
-            if (needWinterCoeff)
-            {
-                cost *= 1 + tariff.WinterAllowance.Value / 100;
+                int totalPallets = orders.Sum(x => x.ConfirmedPalletsCount ?? x.ActualPalletsCount ?? x.PalletsCount ?? 0);
+                cost = GetLtlRate(tariff, totalPallets)*totalPallets ?? 0M;
             }
 
             return cost;

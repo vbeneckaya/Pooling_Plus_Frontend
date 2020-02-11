@@ -303,7 +303,6 @@ class SuperGrid extends Component {
 
     resizeColumn = (size, index) => {
         const { columns } = this.state;
-
         clearTimeout(this.timer);
         this.setState(prevState => {
             const nextColumns = [...prevState.columns];
@@ -321,7 +320,6 @@ class SuperGrid extends Component {
         columns.forEach(item => {
             sum = sum + item.width + columns.length + 50;
         });
-
         this.timer = setTimeout(() => {
             const { editRepresentation, representationName, name, getRepresentations } = this.props;
 
@@ -337,6 +335,7 @@ class SuperGrid extends Component {
                 });
             }
         }, 2000);
+        
     };
 
     handleGoToCard = (isEdit, id, name) => {
@@ -398,9 +397,7 @@ class SuperGrid extends Component {
                 />
                 <div
                     className={`scroll-grid-container${extGrid ? ' grid_small' : ''}`}
-                    ref={instance => {
-                        this.container = instance;
-                    }}
+                    ref={instance => {this.container = instance;}}
                 >
                     <InfiniteScrollTable
                         className="grid-table"
@@ -486,6 +483,7 @@ SuperGrid.defaultProps = {
     getLookupList: () => {},
     getAllIds: () => {},
     disabledCheck: () => {},
-};
+}
+;
 
 export default withTranslation()(withRouter(SuperGrid));

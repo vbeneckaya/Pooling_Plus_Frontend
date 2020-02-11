@@ -8,12 +8,16 @@ const GET_REPRESENTATIONS_REQUEST = 'GET_REPRESENTATIONS_REQUEST';
 const GET_REPRESENTATIONS_SUCCESS = 'GET_REPRESENTATIONS_SUCCESS';
 const GET_REPRESENTATIONS_ERROR = 'GET_REPRESENTATIONS_ERROR';
 
+const GET_DEFAULT_REPRESENTATION_REQUEST = 'GET_DEFAULT_REPRESENTATION_REQUEST';
+const GET_DEFAULT_REPRESENTATION_SUCCESS = 'GET_DEFAULT_REPRESENTATION_SUCCESS';
+
 const SAVE_REPRESENTATION_REQUEST = 'SAVE_REPRESENTATION_REQUEST';
 const SAVE_REPRESENTATION_SUCCESS = 'SAVE_REPRESENTATION_SUCCESS';
 const SAVE_REPRESENTATION_ERROR = 'SAVE_REPRESENTATION_ERROR';
 
 const EDIT_REPRESENTATION_REQUEST = 'EDIT_REPRESENTATION_REQUEST';
 const EDIT_REPRESENTATION_SUCCESS = 'EDIT_REPRESENTATION_SUCCESS';
+const EDIT_DEFAULT_REPRESENTATION_SUCCESS = 'EDIT_DeFAULT_REPRESENTATION_SUCCESS';
 const EDIT_REPRESENTATION_ERROR = 'EDIT_REPRESENTATION_ERROR';
 
 const DELETE_REPRESENTATION_REQUEST = 'DELETE_REPRESENTATION_REQUEST';
@@ -21,6 +25,7 @@ const DELETE_REPRESENTATION_SUCCESS = 'DELETE_REPRESENTATION_SUCCESS';
 const DELETE_REPRESENTATION_ERROR = 'DELETE_REPRESENTATION_REQUEST';
 
 const SET_REPRESENTATION = 'SET_REPRESENTATION';
+const SET_DEFAULT_REPRESENTATION = 'SET_DEFAULT_REPRESENTATION';
 
 const REPRESENTATIONS_KEY = 'representations';
 const REPRESENTATION_KEY = 'representation';
@@ -28,8 +33,9 @@ const REPRESENTATION_KEY = 'representation';
 //*  INITIAL STATE  *//
 
 const initial = {
-    list: {},
-    representation: JSON.parse(localStorage.getItem(REPRESENTATION_KEY)) || {},
+    list: [],
+    representation: JSON.parse(localStorage.getItem(REPRESENTATION_KEY)) || [],
+    defaultRepresentation: []
 };
 
 //*  REDUCER  *//
@@ -43,6 +49,11 @@ export default (state = initial, { type, payload = {} }) => {
                 ...state,
                 list: payload,
             };
+        case GET_DEFAULT_REPRESENTATION_SUCCESS:
+            return {
+                ...state,
+                defaultRepresentation: payload,
+            };    
         case SET_REPRESENTATION:
             return {
                 ...state,
@@ -51,6 +62,14 @@ export default (state = initial, { type, payload = {} }) => {
                     [gridName]: value,
                 },
             };
+        case SET_DEFAULT_REPRESENTATION:
+            return {
+                ...state,
+                representation: {
+                    ...state.defaultRepresentation,
+                    [gridName]: value,
+                },
+            };    
         default:
             return state;
     }
@@ -61,6 +80,13 @@ export default (state = initial, { type, payload = {} }) => {
 export const getRepresentationsRequest = payload => {
     return {
         type: GET_REPRESENTATIONS_REQUEST,
+        payload,
+    };
+};
+
+export const getDefaultRepresentationRequest = payload => {
+    return {
+        type: GET_DEFAULT_REPRESENTATION_REQUEST,
         payload,
     };
 };
@@ -112,10 +138,11 @@ export const representationSelector = createSelector(
     [stateSelector, (state, name) => name, (state, name) => columnsGridSelector(state, name)],
     (state, gridName, columnList) => {
         const representationName = state.representation && state.representation[gridName];
-        const representation = representationName ? state.list[representationName] : [];
+        const representation = !!representationName ? state.list[representationName] : (!!state.defaultRepresentation ? state.defaultRepresentation[null] : []);
+        
         const actualRepresentation = [];
 
-        representation &&
+        representation &&   columnList &&
             representation.forEach(item => {
                 const actualItem = columnList.find(column => column.name === item.name);
                 if (actualItem) {
@@ -142,7 +169,9 @@ export const representationFromGridSelector = createSelector(
         if (representation && representation.length) {
             return representation;
         }
-        return list.filter(item => item.isDefault);
+        let r = list.filter(item => item);
+        return r;
+        //return list;
     },
 );
 
@@ -151,15 +180,29 @@ export const representationFromGridSelector = createSelector(
 function* getRepresentationsSaga({ payload }) {
     try {
         const { key, callBackFunc } = payload;
+        const resultForDefault = yield postman.get(`/userSettings/default/${key}`);
+
+        yield put({
+            type: GET_DEFAULT_REPRESENTATION_SUCCESS,
+            payload: resultForDefault.value ? JSON.parse(resultForDefault.value) : {},
+        });
+        
         const result = yield postman.get(`/userSettings/${key}`);
 
         yield put({
             type: GET_REPRESENTATIONS_SUCCESS,
             payload: result.value ? JSON.parse(result.value) : {},
         });
-        const columns = yield select(state => representationFromGridSelector(state, key));
 
-        callBackFunc && callBackFunc(columns);
+        
+        
+       // const columns = yield select(state => representationFromGridSelector(state, key));
+        const state = yield select(state => state.representations.defaultRepresentation[null]);
+        localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
+
+        callBackFunc && callBackFunc(state);
+
+       // getDefaultRepresentationSaga(payload);
     } catch (e) {
         yield put({
             type: GET_REPRESENTATIONS_ERROR,
@@ -170,7 +213,7 @@ function* getRepresentationsSaga({ payload }) {
 
 function* saveRepresentationSaga({ payload }) {
     try {
-        const { callbackSuccess, key, name, value } = payload;
+        const { callbackSuccess, key, name, isDefault, value } = payload;
         const list = yield select(representationsSelector);
 
         const params = {
@@ -180,14 +223,13 @@ function* saveRepresentationSaga({ payload }) {
             })),
         };
 
-        const result = yield postman.post(`/userSettings/${key}`, {
+        const result = yield postman.post(`/userSettings/${isDefault?'default/':''}${key}`, {
             value: JSON.stringify(params),
         });
 
         yield put({
             type: SAVE_REPRESENTATION_SUCCESS,
         });
-
         callbackSuccess && callbackSuccess();
     } catch (e) {
         yield put({
@@ -199,7 +241,7 @@ function* saveRepresentationSaga({ payload }) {
 
 function* editRepresentationSaga({ payload }) {
     try {
-        const { callbackSuccess, key, name, value, oldName } = payload;
+        const { callbackSuccess, key, name, isDefault, value, oldName } = payload;
         const list = yield select(representationsSelector);
 
         let params = {};
@@ -218,15 +260,20 @@ function* editRepresentationSaga({ payload }) {
             [name]: value,
         };
 
-        const result = yield postman.post(`/userSettings/${key}`, {
+        const result = yield postman.post(`/userSettings/${isDefault?'default/':''}${key}`, {
             value: JSON.stringify(params),
         });
 
-        yield put({
-            type: EDIT_REPRESENTATION_SUCCESS,
+        if (!isDefault )
+            yield put({
+                type: EDIT_REPRESENTATION_SUCCESS,
         });
-
+        else
+            yield put({
+                type: EDIT_DEFAULT_REPRESENTATION_SUCCESS,});
+        
         callbackSuccess && callbackSuccess();
+        
     } catch (e) {
         yield put({
             type: EDIT_REPRESENTATION_ERROR,
@@ -270,15 +317,27 @@ function* deleteRepresentationSaga({ payload }) {
 
 function* setRepresentationSaga({ payload }) {
     try {
-        yield put(
-            getRepresentationsRequest({
-                key: payload.gridName,
-            }),
-        );
-        const { callbackSuccess } = payload;
-        const state = yield select(state => state.representations.representation);
-        localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
+        const {gridName, value} = payload;
+        if (!value) {
+            yield put(
+                getRepresentationsRequest({
+                    key: gridName,
+                }),
+            );
+            const state = yield select(state => state.representations.representation);
+            localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
 
+        }else{
+            yield put(
+                getDefaultRepresentationRequest({
+                    key: gridName,
+                }),
+            );
+            const state = yield select(state => state.representations.defaultRepresentation);
+            localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state)); 
+        }
+
+        const { callbackSuccess } = payload;
         setTimeout(() => {
             callbackSuccess && callbackSuccess();
         }, 500);

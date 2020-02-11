@@ -1,16 +1,12 @@
-﻿using System;
-using Application.BusinessModels.Shared.Triggers;
+﻿using Application.BusinessModels.Shared.Triggers;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
-using Application.Services.Shippings;
 using DAL.Queries;
-using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.History;
 using Domain.Services.Shippings;
-using Integrations.Pooling;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {
@@ -27,23 +23,33 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService = calcService;
         }
 
-        public void Execute(Shipping shipping)
+        public void Execute(Shipping entity)
         {
-            if (shipping.CarrierId != null && shipping.VehicleTypeId != null)
-            {
-                var creator = _dataService.GetById<User>(shipping.UserCreatorId);
-                
-                using (var poolingIntegration = new PoolingIntegration(creator, _dataService))
-                {
-                    var poolingInfo = poolingIntegration.GetInfoFor(shipping);
-                    
-                    if (poolingInfo.IsAvailable)
-                        shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
-                    else
-                        shipping.PoolingState = null;
+            var orders = _dataService.GetDbSet<Order>()
+                .Where(x => x.ShippingId == entity.Id);
 
-                    shipping.PoolingInfo = poolingInfo.MessageField;
+            var transportCompanies = _dataService.GetDbSet<TransportCompany>();
+            
+            foreach (var orderInShipping in orders)
+            {
+                if (orderInShipping.CarrierId != entity.CarrierId)
+                {
+                    TransportCompany oldCarrier = null;
+                    TransportCompany newCarrier = null;
+
+                    if (orderInShipping.CarrierId.HasValue)
+                        oldCarrier = transportCompanies.GetById(orderInShipping.VehicleTypeId.Value);
+
+                    if (entity.VehicleTypeId.HasValue)
+                        newCarrier = transportCompanies.GetById(entity.VehicleTypeId.Value);
+
+                    orderInShipping.CarrierId = entity.CarrierId;
+
+                    _historyService.Save(orderInShipping.Id, "fieldChangedBy",
+                        nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
+                        oldCarrier, newCarrier, "onChangeInShipping");
                 }
+                _calcService.UpdateDeliveryCost(entity);
             }
         }
 
@@ -52,9 +58,6 @@ namespace Application.BusinessModels.Shippings.Triggers
             var watchProperties = new[]
             {
                 nameof(Shipping.CarrierId),
-                nameof(Shipping.VehicleTypeId),
-                nameof(Shipping.BodyTypeId),
-                nameof(Shipping.TarifficationType)
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }

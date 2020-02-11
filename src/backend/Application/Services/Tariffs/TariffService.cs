@@ -30,6 +30,17 @@ namespace Application.Services.Tariffs
         {
         }
 
+        public override  DetailedValidationResult SaveOrCreate(TariffDto entityFrom)
+        {
+            var user = _userProvider.GetCurrentUser();
+            
+            if (user.ProviderId.HasValue && entityFrom.ProviderId == null)
+                
+                entityFrom.ProviderId = new LookUpDto(user.ProviderId.ToString());
+            
+            return SaveOrCreateInner(entityFrom, false);
+        }
+        
         public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
             if (!string.IsNullOrEmpty(dto.Id))

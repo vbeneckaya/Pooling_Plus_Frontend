@@ -13,7 +13,17 @@ namespace Application.Services.UserSettings
         public UserSettingDto GetValue(string key)
         {
             var userId = _userProvider.GetCurrentUserId();
-            var entity = _db.UserSettings.Where(x => x.UserId == userId && x.Key == key).FirstOrDefault();
+            var entity = _db.UserSettings.FirstOrDefault(x => x.UserId == userId && x.Key == key);
+            return new UserSettingDto
+            {
+                Key = key,
+                Value = entity?.Value
+            };
+        }
+        
+        public UserSettingDto GetDefaultValue(string key)
+        {
+            var entity = _db.UserSettings.FirstOrDefault(x => x.UserId == null && x.Key == key);
             return new UserSettingDto
             {
                 Key = key,
@@ -34,7 +44,7 @@ namespace Application.Services.UserSettings
                 throw new UnauthorizedAccessException();
             }
 
-            var entity = _db.UserSettings.Where(x => x.UserId == userId && x.Key == key).FirstOrDefault();
+            var entity = _db.UserSettings.FirstOrDefault(x => x.UserId == userId && x.Key == key);
 
             if (entity != null)
             {
@@ -46,6 +56,36 @@ namespace Application.Services.UserSettings
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId.Value,
+                    Key = key,
+                    Value = value
+                };
+                _db.UserSettings.Add(entity);
+            }
+
+            _db.SaveChanges();
+
+            return new ValidateResult(null, entity.Id.ToString());
+        }
+        
+        public ValidateResult SetDefaultValue(string key, string value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return new ValidateResult("notFound");
+            }
+
+            var entity = _db.UserSettings.FirstOrDefault(x => x.UserId == null &&x.Key == key);
+
+            if (entity != null)
+            {
+                entity.Value = value;
+            }
+            else
+            {
+                entity = new UserSetting
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = null,
                     Key = key,
                     Value = value
                 };

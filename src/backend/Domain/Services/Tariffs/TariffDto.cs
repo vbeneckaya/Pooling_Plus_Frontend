@@ -8,20 +8,24 @@ namespace Domain.Services.Tariffs
     {
         public string Id { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), OrderNumber(1), IsFixedPosition, IsRequired]
+        [IgnoreOnRoleType(RoleTypes.Provider)]
+        [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(0), IsFixedPosition, IsRequired]
+        public LookUpDto ProviderId { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(1), IsFixedPosition, IsRequired]
+        public LookUpDto CarrierId { get; set; }
+        
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), OrderNumber(2), IsFixedPosition, IsRequired]
         public LookUpDto ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Warehouses)), OrderNumber(2), IsFixedPosition, IsRequired]
+        [FieldType(FieldType.Select, source: nameof(Warehouses)), OrderNumber(3), IsFixedPosition, IsRequired]
         public LookUpDto DeliveryWarehouseId { get; set; }
+
+        [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(4)]
+        public LookUpDto VehicleTypeId { get; set; }
 
         [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
         public LookUpDto TarifficationType { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(TransportCompanies)), OrderNumber(0), IsFixedPosition, IsRequired]
-        public LookUpDto CarrierId { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(3)]
-        public LookUpDto VehicleTypeId { get; set; }
 
         public LookUpDto BodyTypeId { get; set; }
 
@@ -138,9 +142,6 @@ namespace Domain.Services.Tariffs
 
         [FieldType(FieldType.Number), OrderNumber(44)]
         public decimal? LtlRate33 { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(45)]
-        public LookUpDto ProviderId { get; set; }
 
         public bool IsEditable { get; set; }
     }

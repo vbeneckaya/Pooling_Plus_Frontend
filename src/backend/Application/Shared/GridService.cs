@@ -212,7 +212,7 @@ namespace Application.Shared
             return _validationService.Validate(dto);
         }
 
-        public ValidateResult SaveOrCreate(TFormDto entityFrom)
+        public virtual ValidateResult SaveOrCreate(TFormDto entityFrom)
         {
             var validateResult = ValidateDto(entityFrom);
             if (validateResult.IsError)
@@ -223,7 +223,7 @@ namespace Application.Shared
             return SaveOrCreateInner(entityFrom);
         }
 
-        private ValidateResult SaveOrCreateInner(TFormDto entityFrom)
+        public ValidateResult SaveOrCreateInner(TFormDto entityFrom)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();

@@ -40,6 +40,7 @@ namespace Application.Services.UserProvider
             }
 
             CurrentUserDto dto = mapper.Map<CurrentUserDto>(user);
+            dto.RoleType = db.Roles.GetById(user.RoleId).RoleType;
             dto.Language = GetCurrentUserLanguage();
 
             return dto;

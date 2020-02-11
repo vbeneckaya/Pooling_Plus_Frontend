@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services.Shippings;
-using Integrations.Pooling;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -23,20 +22,20 @@ namespace Application.BusinessModels.Orders.Actions
     public class UnionOrders : UnionOrdersBase, IGroupAppAction<Order>
     {
         private readonly IHistoryService _historyService;
-        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+        private readonly IShippingGetRouteService _shippingGetRouteService;
 
         public UnionOrders(ICommonDataService dataService, 
-                           IHistoryService historyService, 
-                           IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, 
+                           IHistoryService historyService,
                            IShippingCalculationService shippingCalculationService,
-                           IChangeTrackerFactory changeTrackerFactory
+                           IChangeTrackerFactory changeTrackerFactory,
+                           IShippingGetRouteService shippingGetRouteService
                            )
-            : base(dataService, shippingCalculationService)
+            : base(dataService, shippingCalculationService, shippingGetRouteService)
         {
             _historyService = historyService;
-            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
             _changeTrackerFactory = changeTrackerFactory;
+            _shippingGetRouteService = shippingGetRouteService;
             Color = AppColor.Orange;
             Description = "Объеденить накладные в одну перевозку";
         }
@@ -48,41 +47,29 @@ namespace Application.BusinessModels.Orders.Actions
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
 
+            var poolingInfo = "Эту перевозку можно отправить в Pooling";
+            
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
+                PoolingState = ShippingPoolingState.PoolingAvailable,
+                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
+                ProviderId = user.ProviderId,
                 ShippingCreationDate = DateTime.UtcNow,
                 UserCreatorId = user.Id.Value
+                
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
             
             shipping.DeliveryType = DeliveryType.Delivery;
-            shipping.TarifficationType = _shippingTarifficationTypeDeterminer.GetTarifficationTypeForOrders(orders);
 
             shippingDbSet.Add(shipping);
-
-            var currentUser = _dataService.GetById<User>(user.Id.Value);
-
-            if (currentUser.IsPoolingIntegrated() && shipping.CarrierId != null)
-            {
-                using (var poolingIntegration = new PoolingIntegration(currentUser, _dataService))
-                {
-                    var poolingInfo = poolingIntegration.GetInfoFor(shipping);
-                    
-                    if (poolingInfo.IsAvailable)
-                        shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
-                    else
-                        shipping.PoolingState = null;
-
-                    shipping.PoolingInfo = poolingInfo.MessageField;
-                }
-            }
             
             UnionOrderInShipping(orders, orders, shipping, _historyService);
-
+            
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
             var changeTracker = _changeTrackerFactory.CreateChangeTracker()
                                                      .TrackAll<Shipping>()

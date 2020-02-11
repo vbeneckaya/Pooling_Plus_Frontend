@@ -1,11 +1,8 @@
-﻿using System;
-using Application.BusinessModels.Shared.Triggers;
+﻿using Application.BusinessModels.Shared.Triggers;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Shared;
 using System.Linq;
-using Application.Services.Shippings;
-using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.History;
 using Domain.Services.Shippings;
@@ -25,12 +22,9 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService = calcService;            
         }
 
-        public void Execute(Shipping shipping)
+        public void Execute(Shipping entity)
         {
-
-            shipping.TotalDeliveryCost = new Random().Next(1000,15000);
-            
-            /*var orders = _dataService.GetDbSet<Order>()
+            var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);
 
             foreach (var orderInShipping in orders)
@@ -44,12 +38,7 @@ namespace Application.BusinessModels.Shippings.Triggers
                     orderInShipping.TarifficationType = entity.TarifficationType;
                 }
             }
-
-            if (!entity.ManualTarifficationType)
-                _calcService.UpdateDeliveryCost(entity);
-            
-            
-            entity.ManualTarifficationType = true;*/
+            _calcService.UpdateDeliveryCost(entity);
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)
