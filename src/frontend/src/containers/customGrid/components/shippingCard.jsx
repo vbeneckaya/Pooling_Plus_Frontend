@@ -42,13 +42,6 @@ const Content = ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
-    useEffect(() => {
-        onChange(null, {
-            name: 'deliveryWarehouseId',
-            value: null
-        })
-    }, [form['clientId']]);
-
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
 
     return (
@@ -244,8 +237,6 @@ const ShippingCard = (props) => {
         let [orderCard, setOrderCard] = useState([]);
         let [selectedOrders, setSelectedOrders] = useState([]);
         let [isNewOrder, setIsNewOrder] = useState(true);
-        // let [indexRow, setIndexRow] = useState();
-
 
         let [notChangeOrderForm, setNotChangeOrderForm] = useState(true);
         let [confirmation, setConfirmation] = useState({open: false});
@@ -271,15 +262,7 @@ const ShippingCard = (props) => {
             [orderForm],
         );
 
-    useEffect(
-        (...state) => {
-            
-        },
-        [orderForm['clientId']],
-    );
-        
         const handleCreateOrder = () => {
-            // setIndexRow(null);
             let defaultOrderForm = {};
             orderColumns.forEach(column => {
                 defaultOrderForm[column.name] = undefined
@@ -413,6 +396,13 @@ const ShippingCard = (props) => {
                         [name]: {value: value, name: null}
                     }));
                     break;
+                case 'clientId':
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: value,
+                        ['deliveryWarehouseId']: null
+                    }));
+                    break;
                 default:
                     setOrderForm(prevState => ({
                         ...prevState,
@@ -423,7 +413,7 @@ const ShippingCard = (props) => {
         }, []);
 
         const getOrderActionsFooter = useCallback(
-            () => {
+            (isNew) => {
                 return (
                     <>
                         <Button color="grey" onClick={handleClose}>
@@ -434,7 +424,7 @@ const ShippingCard = (props) => {
                             disabled={notChangeOrderForm}
                             onClick={handleSave}
                         >
-                            {t('AddButton')}
+                            {isNew ? t('AddButton') : t('SaveButton')}
                         </Button>
                     </>
                 );
@@ -477,7 +467,6 @@ const ShippingCard = (props) => {
         };
 
         const handleSelect = (ids) => {
-            // idss = Array.from(ids);
             setSelectedOrders(Array.from(ids));
         };
 
@@ -521,11 +510,6 @@ const ShippingCard = (props) => {
             });
         };
 
-
-        const loadInnerCard = () => {
-
-        }
-
         const invokeAction = (actionName, orderId) => {
             if (actionName == 'insertNewOrder') {
                 dispatch(editInnerCardRequest({
@@ -543,6 +527,7 @@ const ShippingCard = (props) => {
                             ids: [result.id],
                             callbackSuccess: () => {
                                 load();
+                                onCloseModal();
                             }
                         }));
                     }
@@ -550,18 +535,16 @@ const ShippingCard = (props) => {
             }
 
             if (actionName == 'insertExistedOrder') {
-                debugger;
                 let orderAction = 'unionOrdersInExisted';
                 dispatch(invokeActionRequest({
                     name: ORDERS_GRID,
                     actionName: orderAction,
                     ids: selectedOrders,
                     callbackSuccess: () => {
-                        debugger;
                         load();
+                        onCloseModal();
                     }
                 }));
-
             }
 
             if (actionName == 'delete') {
@@ -577,14 +560,13 @@ const ShippingCard = (props) => {
             }
 
             if (actionName == 'updateOrder') {
-                debugger;
                 dispatch(editInnerCardRequest({
                     name: ORDERS_GRID, params: orderForm, callbackSuccess: () => {
                         load();
+                        onCloseModal();
                     }
                 }));
             }
-            onCloseModal();
         };
 
         return (
@@ -613,13 +595,12 @@ const ShippingCard = (props) => {
                         <Content
                             error={errorInner}
                             t={t}
-                            isNew={isNewOrder}
                             form={orderForm}
                             onChange={onChangeOrderForm}
                             uniquenessNumberInnerCheck={handleUniquenessInnerCheck}
                         />
                     </Modal.Description>
-                    <Modal.Actions>{getOrderActionsFooter()}</Modal.Actions>
+                    <Modal.Actions>{getOrderActionsFooter(isNewOrder)}</Modal.Actions>
                 </Modal>
 
                 <Modal

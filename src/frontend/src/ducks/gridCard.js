@@ -337,13 +337,14 @@ function* editCardSaga({payload}) {
                 type: EDIT_GRID_CARD_ERROR,
                 payload: result.errors,
             });
+            
         } else {
             yield put({
                 type: EDIT_GRID_CARD_SUCCESS,
                 payload: result,
             });
 
-            callbackSuccess && callbackSuccess();
+            callbackSuccess && callbackSuccess(result);
         }
     } catch (error) {
         yield put({

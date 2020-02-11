@@ -47,7 +47,7 @@ class Result extends Component {
 
         return (
             <Table.Body>
-                {progress === null ? null : rows && rows.length ? (
+                {progress === null ? null : rows && !!rows.length ? (
                     rows.map((row, indexRow) => (
                         <Table.Row
                             key={row.id}
@@ -152,7 +152,7 @@ class Result extends Component {
                     />
                 ) : null}
                 <div className="table-bottom-loader">
-                    <Loader active={progress && rows.length} />
+                    <Loader active={progress && !!rows.length} />
                 </div>
             </Table.Body>
         );

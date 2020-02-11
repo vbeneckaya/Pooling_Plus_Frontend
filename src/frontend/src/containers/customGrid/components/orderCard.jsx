@@ -121,7 +121,7 @@ const OrderCard = ({
                     <CreateOrder
                         form={form}
                         error={error}
-                        isNotUniqueNumber={isNotUniqueNumber}
+                       // isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}

@@ -38,8 +38,8 @@ const Card = props => {
     const {name, id} = params;
 
     let [form, setForm] = useState({});
-    let [notChangeForm, setNotChangeForm] = useState(true);
-    let [confirmation, setConfirmation] = useState({open: false});
+    let [allowToSend, setAllowToSend] = useState(false);
+    // let [confirmation, setConfirmation] = useState({open: false});
 
 
     const card = useSelector(state => cardSelector(state));
@@ -70,28 +70,8 @@ const Card = props => {
 
     useEffect(
         () => {
-            if (notChangeForm) {
-                let hasDifferences = false;
-                Object.keys(form).forEach(key => {
-                    if (form[key] !== card[key]) {
-                        if (key == 'routePints') {
-                        }
-                        else {
-                            let column = columns.filter(_ => _.name == key)[0];
-                            let columnType = column && column.type;
-                            if (!!columnType && columnType != TEXT_TYPE && columnType != BIG_TEXT_TYPE && columnType != NUMBER_TYPE && key != 'orderNumber' && key != 'shippingNumber') {
-                                hasDifferences = true;
-                            }
-                        }
-                    }
-
-                });
-                if (hasDifferences) {
-                    debugger;
-                    setNotChangeForm(true);
-                    handleSave();
-                }
-            }
+            if (allowToSend) {
+                handleSave();}
         },
         [form],
     );
@@ -104,7 +84,6 @@ const Card = props => {
                 id,
                 callbackSuccess: card => {
                     setForm(card);
-                    setNotChangeForm(true);
                 },
             }),
         );
@@ -133,22 +112,9 @@ const Card = props => {
         }
     };
 
-    const handleClose = isConfirm => {
-        if (!isConfirm || notChangeForm) {
-            dispatch(clearGridCard());
-            onClose();
-        } else {
-            showConfirmation(
-                t('confirm_close_dictionary'),
-                () => {
-                    closeConfirmation();
-                    onClose();
-                },
-                () => {
-                    closeConfirmation();
-                },
-            );
-        }
+    const handleClose = () => {
+        dispatch(clearGridCard());
+        onClose();
     };
 
     const onChangeForm = useCallback((e, {name, value}) => {
@@ -156,7 +122,7 @@ const Card = props => {
             case 'clientId':
                 setForm(prevState => ({
                     ...prevState,
-                    [name]: (name == 'orderNumber' || name == 'shippingNumber') ? {value: value, name: null} : value,
+                    [name]: value,
                     ['deliveryWarehouseId']: null
                 }));
                 break;
@@ -173,6 +139,19 @@ const Card = props => {
                     [name]: value,
                 }));
         }
+
+        let column = columns.filter(_ => _.name == name)[0];
+        let columnType = name == 'orderNumber' || name == 'shippingNumber' ? TEXT_TYPE : column && column.type;
+
+        switch (columnType) {
+            case TEXT_TYPE:
+            case BIG_TEXT_TYPE:
+            case NUMBER_TYPE:
+                setAllowToSend(false);
+                break;
+            default:
+                setAllowToSend(true);
+        }
     }, []);
 
     const onBlurForm = () => {
@@ -185,16 +164,15 @@ const Card = props => {
             editCardRequest({
                 name,
                 params: form,
-                callbackSuccess: () => {
-
-                    //loadCard();
+                callbackSuccess: (result) => {
+                    setAllowToSend(false);
                     if (form.id) {
                         loadCard();
-                    } else {
-
-                        //handleClose();
                     }
-                },
+                    else {
+                        goToCardFromNewCard(name, result.id);
+                    }
+                 }
             }),
         );
     };
@@ -207,20 +185,20 @@ const Card = props => {
         }
     };
 
-    const closeConfirmation = () => {
-        setConfirmation({
-            open: false,
-        });
-    };
+    // const closeConfirmation = () => {
+    //     setConfirmation({
+    //         open: false,
+    //     });
+    // };
 
-    const showConfirmation = (content, onConfirm, onCancel) => {
-        setConfirmation({
-            open: true,
-            content,
-            onConfirm,
-            onCancel,
-        });
-    };
+    // const showConfirmation = (content, onConfirm, onCancel) => {
+    //     setConfirmation({
+    //         open: true,
+    //         content,
+    //         onConfirm,
+    //         onCancel,
+    //     });
+    // };
 
     const invokeAction = actionName => {
         // showConfirmation(
@@ -255,7 +233,7 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        if (form.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)){
+        if (form.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
             dispatch(
                 isUniqueNumberRequest({
                     number: !!form.orderNumber ? form.orderNumber.value : null,
@@ -304,6 +282,12 @@ const Card = props => {
                 pathname: history.location.pathname,
                 gridLocation: state.gridLocation ? state.gridLocation : state.pathname,
             },
+        });
+    };
+
+    const goToCardFromNewCard = (gridName, cardId) => {
+        history.replace({
+            pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
         });
     };
 

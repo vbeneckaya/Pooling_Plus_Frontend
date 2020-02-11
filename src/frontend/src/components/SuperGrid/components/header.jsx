@@ -19,6 +19,7 @@ import {
     setRepresentationRequest,
 } from '../../../ducks/representations';
 import Icon from '../../CustomIcon';
+import {GRID_CARD_LINK} from "../../../router/links";
 
 const Header = ({
                     isCreateBtn,
@@ -31,7 +32,7 @@ const Header = ({
     name,
     setSelected,
                     representationName,
-    filter,
+    filter, 
                     goToCard,
 }) => {
     const { t } = useTranslation();
@@ -93,8 +94,6 @@ const Header = ({
     const handleGoToCard = () => {
         goToCard(false, null, name);
     };
-
-   // console.log('filter', filter);
 
     return (
         <Grid className="grid-header-panel">
