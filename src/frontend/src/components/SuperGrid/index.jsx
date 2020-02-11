@@ -348,7 +348,9 @@ class SuperGrid extends Component {
 
     handleGoToCard = (isEdit, id, name) => {
         const {history, cardLink, newLink, editCard, autoUpdateStop} = this.props;
-        autoUpdateStop();
+        autoUpdateStop({
+            isClear: true,
+        });
         if (name == SHIPPINGS_GRID) {
             if (!isEdit) {
                 editCard({

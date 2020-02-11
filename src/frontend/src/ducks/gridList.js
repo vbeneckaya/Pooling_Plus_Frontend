@@ -246,6 +246,7 @@ export function* autoUpdateStartSaga({ payload }) {
 
 export function* autoUpdateStopSaga({ payload = {} }) {
     if (!!task) {
+        debugger;
         const { isClear } = payload;
         if (isClear) yield put(clearGridInfo());
         yield cancel(task);

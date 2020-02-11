@@ -96,6 +96,8 @@ const Card = props => {
             }),
         );
         id && dispatch(getHistoryRequest(id));
+  
+
     };
 
     const onClose = () => {
