@@ -75,17 +75,6 @@ const Card = props => {
                 Object.keys(form).forEach(key => {
                     if (form[key] !== card[key]) {
                         if (key == 'routePints') {
-                            // for (let i = 0; i < form[key].length; i++) {
-                            //     Object.keys(form[key][i]).forEach(innerKey => {
-                            //         if (form[key][i][innerKey] !== card[key][i][innerKey]) {
-                            //             {
-                            //                 if (innerKey != 'address' && innerKey != 'trucksDowntime' && innerKey != 'deviationReasonsComments') {
-                            //                     hasDifferences = true;
-                            //                 }
-                            //             }
-                            //         }
-                            //     })
-                            // }
                         }
                         else {
                             let column = columns.filter(_ => _.name == key)[0];
@@ -98,6 +87,7 @@ const Card = props => {
 
                 });
                 if (hasDifferences) {
+                    debugger;
                     setNotChangeForm(true);
                     handleSave();
                 }
@@ -162,7 +152,6 @@ const Card = props => {
     };
 
     const onChangeForm = useCallback((e, {name, value}) => {
-        debugger;
         switch (name) {
             case 'clientId':
                 setForm(prevState => ({
@@ -266,7 +255,7 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        if ((form.orderNumber) && (!id || form.orderNumber.value !== card.orderNumber.value))
+        if (form.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)){
             dispatch(
                 isUniqueNumberRequest({
                     number: !!form.orderNumber ? form.orderNumber.value : null,
@@ -275,6 +264,7 @@ const Card = props => {
                     callbackSuccess: callbackFunc,
                 }),
             );
+        }
         else callbackFunc();
     };
 

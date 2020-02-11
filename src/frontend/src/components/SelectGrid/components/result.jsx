@@ -32,7 +32,8 @@ class Result extends Component {
             rows = [],
             goToCard,
             actions,
-            isShowActions,
+            action,
+            isShowActions = true,
             selectedRows,
             loadList,
             disabledCheck,
@@ -107,40 +108,40 @@ class Result extends Component {
                                     />
                                 ))}
                             <Table.Cell />
-                            {/*{isShowActions ? (*/}
-                                {/*<Table.HeaderCell*/}
-                                    {/*className="actions-column"*/}
-                                    {/*onClick={e => {*/}
-                                        {/*e.stopPropagation();*/}
-                                    {/*}}*/}
-                                {/*>*/}
+                            {isShowActions ? (
+                                <Table.HeaderCell
+                                    className="actions-column"
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                    }}
+                                >
                                     {/*{actions &&*/}
                                         {/*actions(row).map(action => (*/}
-                                            {/*<Button*/}
-                                                {/*key={row.id + action.name}*/}
-                                                {/*actionname={action.name}*/}
-                                                {/*actionbuttonname={action.buttonName}*/}
-                                                {/*rowid={row.id}*/}
-                                                {/*disabled={action.disabled}*/}
-                                                {/*className="grid-action-btn"*/}
-                                                {/*loading={*/}
-                                                    {/*action.loadingId &&*/}
-                                                    {/*action.loadingId.includes(row.id)*/}
-                                                {/*}*/}
-                                                {/*onClick={e =>*/}
-                                                    {/*action.action(e, {*/}
-                                                        {/*action,*/}
-                                                        {/*row,*/}
-                                                        {/*loadList,*/}
-                                                    {/*})*/}
-                                                {/*}*/}
-                                                {/*size="mini"*/}
-                                            {/*>*/}
-                                                {/*{action.buttonName}*/}
-                                            {/*</Button>*/}
+                                            <Button
+                                                key={row.id + action.name}
+                                                actionname={action.name}
+                                                actionbuttonname={action.buttonName}
+                                                rowid={row.id}
+                                                //disabled={action.disabled}
+                                                className="grid-action-btn"
+                                                // loading={
+                                                //     action.loadingId &&
+                                                //     action.loadingId.includes(row.id)
+                                                // }
+                                                onClick={e =>
+                                                    action.action(e, {
+                                                        action,
+                                                        row,
+                                                        loadList,
+                                                    })
+                                                }
+                                                size="mini"
+                                            >
+                                                {action.buttonName}
+                                            </Button>
                                         {/*))}*/}
-                                {/*</Table.HeaderCell>*/}
-                            {/*) : null}*/}
+                                </Table.HeaderCell>
+                            ) : null}
                         </Table.Row>
                     ))
                 ) : !progress ? (

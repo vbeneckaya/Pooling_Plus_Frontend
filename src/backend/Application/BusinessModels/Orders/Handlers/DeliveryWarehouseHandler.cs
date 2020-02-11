@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
+         //   order.ShippingDate = order.DeliveryDate?.AddDays(0 - order.TransitDays ?? 0);
             order.OrderChangeDate = DateTime.UtcNow;
         }
 

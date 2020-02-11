@@ -9,7 +9,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
 import {actionsCardSelector, invokeActionRequest} from '../../../ducks/gridActions';
 import {cardSelector, editCardRequest, errorSelector, getCardRequest} from '../../../ducks/gridCard';
-import {editInnerCardRequest, errorInnerSelector} from '../../../ducks/gridInnerCard';
+import {
+    editInnerCardRequest,
+    errorInnerSelector,
+    getInerCardRequest,
+    innerCardSelector
+} from '../../../ducks/gridInnerCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
@@ -36,6 +41,13 @@ const Content = ({
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
+
+    useEffect(() => {
+        onChange(null, {
+            name: 'deliveryWarehouseId',
+            value: null
+        })
+    }, [form['clientId']]);
 
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
 
@@ -215,6 +227,7 @@ const ShippingCard = (props) => {
         const dispatch = useDispatch();
 
         const orderColumns = ordersMiniColumns;
+        const actionAddToShipping = {name: 'unionOrdersInExisted', buttonName: 'AddButton', shippingId: form.id};
 
         const userPermissions = useSelector(state => userPermissionsSelector(state));
         const userActions = useSelector(state => userActionsSelector(state));
@@ -230,7 +243,8 @@ const ShippingCard = (props) => {
         let [orderForm, setOrderForm] = useState([]);
         let [orderCard, setOrderCard] = useState([]);
         let [selectedOrders, setSelectedOrders] = useState([]);
-        let [indexRow, setIndexRow] = useState();
+        let [isNewOrder, setIsNewOrder] = useState(true);
+        // let [indexRow, setIndexRow] = useState();
 
 
         let [notChangeOrderForm, setNotChangeOrderForm] = useState(true);
@@ -257,8 +271,15 @@ const ShippingCard = (props) => {
             [orderForm],
         );
 
+    useEffect(
+        (...state) => {
+            
+        },
+        [orderForm['clientId']],
+    );
+        
         const handleCreateOrder = () => {
-            setIndexRow(null);
+            // setIndexRow(null);
             let defaultOrderForm = {};
             orderColumns.forEach(column => {
                 defaultOrderForm[column.name] = undefined
@@ -268,6 +289,7 @@ const ShippingCard = (props) => {
             setOrderForm(defaultOrderForm);
             setNotChangeOrderForm(true);
             setShowModal(true);
+            setIsNewOrder(true);
         };
 
         const handleSelectOrder = () => {
@@ -355,11 +377,15 @@ const ShippingCard = (props) => {
         };
 
         const openOrderModal = (index) => {
-            setIndexRow(index);
-            setOrderCard(form.orders[index]);
-            setOrderForm(form.orders[index]);
-            setNotChangeOrderForm(true);
-            setShowModal(true);
+            dispatch(getInerCardRequest({
+                name: ORDERS_GRID, id: form.orders[index].id, callbackSuccess: (result) => {
+                    setOrderCard(result);
+                    setOrderForm(result);
+                    setNotChangeOrderForm(true);
+                    setIsNewOrder(false);
+                    setShowModal(true);
+                }
+            }))
         }
 
         const onCloseModal = () => {
@@ -437,16 +463,21 @@ const ShippingCard = (props) => {
         );
 
         const handleSave = () => {
-            if (orderForm.orderNumber != orderCard.orderNumber)
-                handleUniquenessInnerCheck(() => {
-                    invokeAction('insertNewOrder')
-                });
-            else
-                invokeAction('insertNewOrder');
+            if (isNewOrder) {
+                if (orderForm.orderNumber != orderCard.orderNumber)
+                    handleUniquenessInnerCheck(() => {
+                        invokeAction('insertNewOrder')
+                    });
+                else
+                    invokeAction('insertNewOrder');
+            }
+            else {
+                invokeAction('updateOrder');
+            }
         };
 
         const handleSelect = (ids) => {
-           // idss = Array.from(ids);
+            // idss = Array.from(ids);
             setSelectedOrders(Array.from(ids));
         };
 
@@ -544,6 +575,15 @@ const ShippingCard = (props) => {
                     }
                 }));
             }
+
+            if (actionName == 'updateOrder') {
+                debugger;
+                dispatch(editInnerCardRequest({
+                    name: ORDERS_GRID, params: orderForm, callbackSuccess: () => {
+                        load();
+                    }
+                }));
+            }
             onCloseModal();
         };
 
@@ -573,6 +613,7 @@ const ShippingCard = (props) => {
                         <Content
                             error={errorInner}
                             t={t}
+                            isNew={isNewOrder}
                             form={orderForm}
                             onChange={onChangeOrderForm}
                             uniquenessNumberInnerCheck={handleUniquenessInnerCheck}
@@ -595,6 +636,7 @@ const ShippingCard = (props) => {
                         <List
                             props={propsForSelect}
                             selectCallback={handleSelect}
+                            action={actionAddToShipping}
                         >
                         </List>
                     </Modal.Description>

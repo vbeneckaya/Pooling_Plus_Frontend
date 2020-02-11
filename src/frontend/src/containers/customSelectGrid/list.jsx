@@ -112,6 +112,7 @@ class List extends Component {
            // isCreateBtn,
           //  getActions,
             getAllIds,
+            action,
             selectCallback,
             editRepresentation,
             representationName,
@@ -139,6 +140,7 @@ class List extends Component {
                     storageFilterItem={`${name}Filters`}
                     storageRepresentationItems={`${name}Representation`}
                  //   getActions={getActions}
+                    action={action}
                  //   groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
                     selectCallback={selectCallback}

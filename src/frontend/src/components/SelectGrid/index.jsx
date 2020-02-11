@@ -367,6 +367,7 @@ class SelectGrid extends Component {
             //groupActions,
        //     isCreateBtn,
             extGrid,
+            action,
             onlyOneCheck,
             checkAllDisabled,
             selectCallback,
@@ -433,6 +434,7 @@ class SelectGrid extends Component {
                             name={name}
                         //    goToCard={this.handleGoToCard}
                             //actions={actions}
+                            action={action}
                             onlyOneCheck={onlyOneCheck}
                             loadList={this.loadList}
                             disabledCheck={disabledCheck}
