@@ -25,10 +25,10 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService = calcService;            
         }
 
-        public void Execute(Shipping entity)
+        public void Execute(Shipping shipping)
         {
 
-            entity.TotalDeliveryCost = new Random().Next(1000,15000);
+            shipping.TotalDeliveryCost = new Random().Next(1000,15000);
             
             /*var orders = _dataService.GetDbSet<Order>()
                 .Where(x => x.ShippingId == entity.Id);

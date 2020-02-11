@@ -61,5 +61,14 @@ namespace Domain.Persistables
         {
             return Name;
         }
+
+        public bool IsPoolingIntegrated()
+        {
+            return !string.IsNullOrEmpty(PoolingLogin) && !string.IsNullOrEmpty(PoolingPassword);
+        }
+        public bool IsFMCPIntegrated()
+        {
+            return !string.IsNullOrEmpty(FmCPLogin) && !string.IsNullOrEmpty(FmCPPassword);
+        }
     }
 }

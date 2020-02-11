@@ -13,24 +13,39 @@ namespace Integrations.FMCP
             user.PoolingPassword, 
             dataService)
         {
-            _accessToken = Post("user/login", new {email = user.FmCPLogin, user.FmCPPassword})
+            _accessToken = Post("user/login", new
+                {
+                    email = user.FmCPLogin, 
+                    password = user.FmCPPassword
+                })
                 .Get("$.data.token");
         }
 
         public string CreateWaybill(Shipping shipping)
         {
-            return Post("waybill/create").Get("$.id");
+            var id = Post("waybill/create").Get("$.id");
+            return id;
         }
 
-        public IEnumerable<string> Waybills(Shipping shipping)
+        public IEnumerable<string> Update(Shipping shipping)
         {
-            Get<dynamic>("waybills");//.data.Where(x=>x.id == shipping.Id);
+            GetArr("waybills").Get("$.data.");//.data.Where(x=>x.id == shipping.Id);
             return null;
         }
 
-        public byte[] DownloadFile(Shipping shipping)
+        public byte[] GetSticker(Shipping shipping)
         {
-            return null;
+            var downloadFileUrl = Get($"waybills/{shipping.FmcpWaybillId}/stickers")
+                .Get("data.url");
+            return DownloadFile(downloadFileUrl);
         }
+
+        public void Sinhronize()
+        {
+            GetArr("waybills").Get("$.data.");//.data.Where(x=>x.id == shipping.Id);
+        }
+
+
+        
     }
 }

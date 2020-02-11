@@ -24,51 +24,51 @@ namespace Application.BusinessModels.Warehouses.Triggers
             _cleanAddressService = cleanAddressService;
         }
 
-        public void Execute(Warehouse entity)
+        public void Execute(Warehouse shipping)
         {
-            string rawAddress = $"{entity.City} {entity.Address}";
+            string rawAddress = $"{shipping.City} {shipping.Address}";
             var cleanAddress = string.IsNullOrEmpty(rawAddress) ? null : _cleanAddressService.CleanAddress(rawAddress);
 
-            entity.ValidAddress = cleanAddress?.ResultAddress;
-            entity.PostalCode = cleanAddress?.PostalCode;
-            entity.Region = cleanAddress?.Region;
-            entity.City = cleanAddress?.City;
-            entity.Area = cleanAddress?.Area;
-            entity.Street = cleanAddress?.Street;
-            entity.House = cleanAddress?.House;
-            entity.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;
+            shipping.ValidAddress = cleanAddress?.ResultAddress;
+            shipping.PostalCode = cleanAddress?.PostalCode;
+            shipping.Region = cleanAddress?.Region;
+            shipping.City = cleanAddress?.City;
+            shipping.Area = cleanAddress?.Area;
+            shipping.Street = cleanAddress?.Street;
+            shipping.House = cleanAddress?.House;
+            shipping.UnparsedAddressParts = cleanAddress?.UnparsedAddressParts;
 
             var validStatuses = new[] { OrderState.Created, OrderState.InShipping };
             var orders = _dataService.GetDbSet<Order>()
-                                     .Where(x => x.DeliveryWarehouseId == entity.Id
+                                     .Where(x => x.DeliveryWarehouseId == shipping.Id
                                                 && validStatuses.Contains(x.Status)
                                                 && (x.ShippingId == null || x.OrderShippingStatus == ShippingState.ShippingCreated))
                                      .ToList();
 
             foreach (var order in orders)
             {
-                if (order.DeliveryAddress != entity.Address)
+                if (order.DeliveryAddress != shipping.Address)
                 {
                     _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
                                                      nameof(order.DeliveryAddress).ToLowerFirstLetter(),
-                                                     order.DeliveryAddress, entity.Address);
-                    order.DeliveryAddress = entity.Address;
+                                                     order.DeliveryAddress, shipping.Address);
+                    order.DeliveryAddress = shipping.Address;
                 }
 
-                if (order.DeliveryRegion != entity.Region)
+                if (order.DeliveryRegion != shipping.Region)
                 {
                     _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
                                                      nameof(order.DeliveryRegion).ToLowerFirstLetter(),
-                                                     order.DeliveryRegion, entity.Region);
-                    order.DeliveryRegion = entity.Region;
+                                                     order.DeliveryRegion, shipping.Region);
+                    order.DeliveryRegion = shipping.Region;
                 }
 
-                if (order.DeliveryCity != entity.City)
+                if (order.DeliveryCity != shipping.City)
                 {
                     _historyService.SaveImpersonated(null, order.Id, "fieldChanged",
                                                      nameof(order.DeliveryCity).ToLowerFirstLetter(),
-                                                     order.DeliveryCity, entity.City);
-                    order.DeliveryCity = entity.City;
+                                                     order.DeliveryCity, shipping.City);
+                    order.DeliveryCity = shipping.City;
                 }
             }
         }

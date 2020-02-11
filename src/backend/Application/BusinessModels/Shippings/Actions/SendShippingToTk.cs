@@ -42,12 +42,13 @@ namespace Application.BusinessModels.Shippings.Actions
             var transportCompany = _dataService.GetById<TransportCompany>(shipping.CarrierId.Value);
             var currentUser = _dataService.GetById<User>(user.Id.Value);
             
-            if (transportCompany.Title == "FM Logistic")
+            if (transportCompany.Title == "FM Logistic" && currentUser.IsFMCPIntegrated())
             {
                 using (var fmcp = new FMCPIntegration(currentUser, _dataService))
                 {
-                    fmcp.CreateWaybill(shipping);
+                    var fmcpWaybillId = fmcp.CreateWaybill(shipping);
                     _historyService.Save(shipping.Id, "shippingSetRequestSent", shipping.ShippingNumber);
+                    shipping.FmcpWaybillId = fmcpWaybillId;
                 }
             }
 

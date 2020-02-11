@@ -28,6 +28,11 @@ namespace Integrations
             _dataService = dataService;
         }
 
+        protected byte[] DownloadFile(string url)
+        {
+            return new byte[5];
+        }
+
         protected T Get<T>(string url, object model = null)
         {
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
@@ -64,6 +69,22 @@ namespace Integrations
             }*/
         }        
         
+        protected IntegrationAnswer Delete(string url)
+        {
+            var httpClient = new HttpClient();
+            
+            if(_accessToken != null)
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
+            
+            var response = httpClient.DeleteAsync(_baseUrl + url).GetAwaiter().GetResult();
+
+            var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            var jObject = JObject.Parse(responseString);
+
+            return  new IntegrationAnswer(jObject);
+        }
+
         protected IntegrationAnswer Put(string url, object model = null)
         {
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");

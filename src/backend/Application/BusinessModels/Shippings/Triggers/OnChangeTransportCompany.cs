@@ -6,9 +6,11 @@ using Domain.Shared;
 using System.Linq;
 using Application.Services.Shippings;
 using DAL.Queries;
+using Domain.Enums;
 using Domain.Extensions;
 using Domain.Services.History;
 using Domain.Services.Shippings;
+using Integrations.Pooling;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {
@@ -25,38 +27,24 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService = calcService;
         }
 
-        public void Execute(Shipping entity)
+        public void Execute(Shipping shipping)
         {
-            entity.TotalDeliveryCost = new Random().Next(1000,15000);
-            /*
-            var orders = _dataService.GetDbSet<Order>()
-                .Where(x => x.ShippingId == entity.Id);
-
-            var vehicleTypes = _dataService.GetDbSet<VehicleType>();
-            
-            foreach (var orderInShipping in orders)
+            if (shipping.CarrierId != null && shipping.VehicleTypeId != null)
             {
-                if (orderInShipping.VehicleTypeId != entity.VehicleTypeId)
+                var creator = _dataService.GetById<User>(shipping.UserCreatorId);
+                
+                using (var poolingIntegration = new PoolingIntegration(creator, _dataService))
                 {
-                    VehicleType oldVehicleType = null;
-                    VehicleType newVehicleType = null;
+                    var poolingInfo = poolingIntegration.GetInfoFor(shipping);
+                    
+                    if (poolingInfo.IsAvailable)
+                        shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
+                    else
+                        shipping.PoolingState = null;
 
-                    if (orderInShipping.VehicleTypeId.HasValue)
-                        oldVehicleType = vehicleTypes.GetById(orderInShipping.VehicleTypeId.Value);
-
-                    if (entity.VehicleTypeId.HasValue)
-                        newVehicleType = vehicleTypes.GetById(entity.VehicleTypeId.Value);
-
-                    orderInShipping.VehicleTypeId = entity.VehicleTypeId;
-
-                    _historyService.Save(orderInShipping.Id, "fieldChangedBy",
-                        nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
-                        oldVehicleType, newVehicleType, "onChangeInShipping");
+                    shipping.PoolingInfo = poolingInfo.MessageField;
                 }
-                if(!entity.ManualTarifficationType)
-                    _calcService.UpdateDeliveryCost(entity);
-
-            }*/
+            }
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)
@@ -64,6 +52,9 @@ namespace Application.BusinessModels.Shippings.Triggers
             var watchProperties = new[]
             {
                 nameof(Shipping.CarrierId),
+                nameof(Shipping.VehicleTypeId),
+                nameof(Shipping.BodyTypeId),
+                nameof(Shipping.TarifficationType)
             };
             return changes?.FieldChanges?.Count(x => watchProperties.Contains(x.FieldName)) > 0;
         }

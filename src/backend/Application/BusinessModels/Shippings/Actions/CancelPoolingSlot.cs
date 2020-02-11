@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
 using Domain.Enums;
@@ -7,15 +7,11 @@ using Domain.Services;
 using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
-using System.Linq;
-using Integrations;
-using Integrations.Dtos;
 using Integrations.Pooling;
-using Integrations.Pooling.Dtos;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
-    public class SendToPooling : IAppAction<Shipping>
+    public class CancelPoolingSlot : IAppAction<Shipping>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
@@ -23,12 +19,12 @@ namespace Application.BusinessModels.Shippings.Actions
         public AppColor Color { get; set; }
         public string Description { get; set; }
 
-        public SendToPooling(ICommonDataService dataService, IHistoryService historyService)
+        public CancelPoolingSlot(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;
-            Color = AppColor.Teal;
-            Description = "Забронировать слот на пулинге";
+            Color = AppColor.Red;
+            Description = "Отменить бронь на пулинге";
         }
 
         public AppActionResult Run(CurrentUserDto userDto, Shipping shipping)
@@ -44,34 +40,21 @@ namespace Application.BusinessModels.Shippings.Actions
             
             using (var pooling = new PoolingIntegration(user, _dataService))
             {
-                var poolingInfo = pooling.GetInfoFor(shipping);
-                if (poolingInfo.IsAvailable)
-                {
-                    var reservationResult = pooling.CreateReservation(shipping);
-                    shipping.PoolingInfo = $"Номер брони на Pooling: {reservationResult.ReservationNumber}";
-                    shipping.PoolingSlotId = poolingInfo.SlotId;
-                    shipping.PoolingReservationId = reservationResult.ReservationId;
-                }
-                else
-                {
-                    shipping.PoolingState = null;
-                    return new AppActionResult
-                    {
-                        IsError = true,
-                        Message = "Бронирование не доступно"
-                    };
-                }
+                pooling.CancelReservation(shipping);
+                shipping.PoolingInfo = $"";
+                shipping.PoolingSlotId = null;
+                shipping.PoolingReservationId = null;
             }
 
-            shipping.Status = ShippingState.ShippingConfirmed;
-            shipping.PoolingState = ShippingPoolingState.PoolingBooked;
+            shipping.Status = ShippingState.ShippingCreated;
+            shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
 
             foreach (var order in _dataService.GetDbSet<Order>().Where(o => o.ShippingId == shipping.Id))
             {
                 order.OrderShippingStatus = shipping.Status;
             }
 
-            _historyService.Save(shipping.Id, "shippingSetPooling", shipping.ShippingNumber);
+            _historyService.Save(shipping.Id, "shippingDeletePoolingSlot", shipping.ShippingNumber);
 
             return new AppActionResult
             {
@@ -82,7 +65,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return shipping.PoolingState == ShippingPoolingState.PoolingAvailable;
+            return shipping.PoolingState == ShippingPoolingState.PoolingBooked;
         }
     }
 }
