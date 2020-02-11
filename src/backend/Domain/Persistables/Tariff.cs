@@ -25,11 +25,6 @@ namespace Domain.Persistables
         /// </summary>
         public Guid DeliveryWarehouseId { get; set; }
         /// <summary>
-        /// Способ тарификации
-        /// </summary>
-        public TarifficationType? TarifficationType { get; set; }
-
-        /// <summary>
         /// Транспортная компания
         /// </summary>
         public Guid? CarrierId { get; set; }

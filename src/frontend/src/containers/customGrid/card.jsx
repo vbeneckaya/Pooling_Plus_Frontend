@@ -282,7 +282,7 @@ const Card = props => {
             state: {
                 ...state,
                 pathname: history.location.pathname,
-                gridLocation: state.gridLocation ? state.gridLocation : state.pathname,
+                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname,
             },
         });
     };
