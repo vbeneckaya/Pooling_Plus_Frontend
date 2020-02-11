@@ -1,3 +1,4 @@
+using System;
 using Application.BusinessModels.Shared.Actions;
 using DAL.Queries;
 using DAL.Services;
@@ -10,6 +11,7 @@ using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Actions
@@ -112,9 +114,10 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.Count() > 1 && 
+            return // target.Count() > 1 && 
                    target.Count(x => x.Status == OrderState.InShipping) == 1 &&
-                   target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created && (!x.DeliveryType.HasValue || x.DeliveryType.Value == DeliveryType.Delivery));
+            target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
+//            return target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
         }
     }
 }

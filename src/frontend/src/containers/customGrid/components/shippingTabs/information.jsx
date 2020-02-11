@@ -4,7 +4,7 @@ import { Form, Grid, Segment } from 'semantic-ui-react';
 import FormField from '../../../../components/BaseComponents';
 import { NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE } from '../../../../constants/columnTypes';
 
-const Information = ({ form = {}, onChange, settings }) => {
+const Information = ({ form = {}, onChange, onBlur, settings }) => {
     const { t } = useTranslation();
 
     return (
@@ -61,7 +61,8 @@ const Information = ({ form = {}, onChange, settings }) => {
                                     value={form['temperatureMin']}
                                     type={NUMBER_TYPE}
                                     settings={settings['temperatureMin']}
-                                    onChange={onChange}
+                                   onChange={onChange}
+                                    onBlur={onBlur}
                                 />
                                 <label>{t('to')}</label>
                                 <FormField
@@ -71,6 +72,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                     type={NUMBER_TYPE}
                                     settings={settings['temperatureMax']}
                                     onChange={onChange}
+                                    onBlur={onBlur}
                                 />
                             </div>
                         </Form.Field>
@@ -82,6 +84,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                             type={NUMBER_TYPE}
                             settings={settings['totalDeliveryCost']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -104,7 +107,8 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 value={form['palletsCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['palletsCount']}
-                                                onChange={onChange}
+                                             //   onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -115,6 +119,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={NUMBER_TYPE}
                                                 settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -125,6 +130,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={NUMBER_TYPE}
                                                 settings={settings['confirmedPalletsCount']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -148,6 +154,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={NUMBER_TYPE}
                                                 settings={settings['weightKg']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -158,6 +165,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={NUMBER_TYPE}
                                                 settings={settings['actualWeightKg']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -181,6 +189,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={TEXT_TYPE}
                                                 settings={settings['driver']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -191,6 +200,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={TEXT_TYPE}
                                                 settings={settings['vehicleNumber']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -214,6 +224,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                                 type={TEXT_TYPE}
                                                 settings={settings['poolingInfo']}
                                                 onChange={onChange}
+                                                onBlur={onBlur}
                                             />
                                         </Grid.Column>
                                     </Grid.Row>

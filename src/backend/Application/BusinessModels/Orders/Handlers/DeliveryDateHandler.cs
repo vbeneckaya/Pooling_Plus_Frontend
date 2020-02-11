@@ -36,14 +36,14 @@ namespace Application.BusinessModels.Orders.Handlers
                 }
             }
 
-            if (_isInjection)
+            /*if (_isInjection)
             {
                 order.ShippingDate = newValue?.AddDays(0 - order.TransitDays ?? 0);
             }
             else
             {
                 order.ManualDeliveryDate = true;
-            }
+            }*/
 
             order.OrderChangeDate = DateTime.UtcNow;
         }

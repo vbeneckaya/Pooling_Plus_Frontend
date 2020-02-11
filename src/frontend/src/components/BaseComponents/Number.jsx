@@ -6,6 +6,7 @@ const Number = ({
     value,
     name,
     onChange,
+    onBlur,
     isDisabled,
     noLabel,
     className,
@@ -32,6 +33,7 @@ const Number = ({
                 name={name}
                 value={value}
                 onChange={onChange}
+                onBlur={onBlur}
                 autoComplete="off"
             />
             {error && typeof error === 'string' ? (

@@ -16,7 +16,8 @@ const Route = ({
                    name,
                    form = {},
                    point = {},
-                   onChange,
+                  // onChange,
+                   onBlur,
                    pointChange,
                    index,
                    settings: baseSettings,
@@ -91,6 +92,7 @@ const Route = ({
                             settings={settings['address']}
                             type={BIG_TEXT_TYPE}
                             onChange={handleChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -101,7 +103,8 @@ const Route = ({
                             type={BIG_TEXT_TYPE}
                             value={form['deviationReasonsComments']}
                             settings={baseSettings['deviationReasonsComments']}
-                            onChange={onChange}
+                            onChange={handleChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>
@@ -113,6 +116,7 @@ const Route = ({
                             settings={settings['trucksDowntime']}
                             type={NUMBER_TYPE}
                             onChange={handleChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>

@@ -10,14 +10,10 @@ import {
     totalCountSelector,
 } from '../../ducks/gridList';
 import { withRouter } from 'react-router-dom';
-import Card from './card';
-// import { Button } from 'semantic-ui-react';
 import { withTranslation } from 'react-i18next';
 import {
     actionsSelector,
-    getActionsRequest,
     getAllIdsRequest,
-    invokeActionRequest,
 } from '../../ducks/gridActions';
 import {
     editRepresentationRequest,
@@ -26,21 +22,11 @@ import {
     representationNameSelector,
 } from '../../ducks/representations';
 import {
-    DICTIONARY_CARD_LINK,
-    DICTIONARY_NEW_LINK,
     GRID_CARD_LINK,
     GRID_NEW_LINK,
 } from '../../router/links';
 import {ordersMiniColumns} from "../../constants/ordersMiniColumns";
 import {ORDERS_GRID} from "../../constants/grids";
-
-// const CreateButton = ({ t, ...res }) => {
-//     return (
-//         <Card {...res}>
-//             <Button icon="add" />
-//         </Card>
-//     );
-// };
 
 class List extends Component {
     constructor(props) {
@@ -113,13 +99,6 @@ class List extends Component {
         this.setState({ confirmation: { open: false } });
     };
 
-    // modalCard = () => {
-    //     const { stopUpdate, match = {} } = this.props;
-    //     const { params = {} } = match;
-    //     const { name = '' } = params;
-    //     return <Card stopUpdate={stopUpdate} name={name} />;
-    // };
-
     render() {
         const {
             columns = [],
@@ -130,9 +109,11 @@ class List extends Component {
             progress,
             match = {},
             t,
-            isCreateBtn,
-            getActions,
+           // isCreateBtn,
+          //  getActions,
             getAllIds,
+            action,
+            selectCallback,
             editRepresentation,
             representationName,
             getRepresentations,
@@ -158,15 +139,17 @@ class List extends Component {
                     storageSortItem={`${name}Sort`}
                     storageFilterItem={`${name}Filters`}
                     storageRepresentationItems={`${name}Representation`}
-                    getActions={getActions}
-                    groupActions={this.getGroupActions}
+                 //   getActions={getActions}
+                    action={action}
+                 //   groupActions={this.getGroupActions}
                     getAllIds={getAllIds}
-                    modalCard={this.modalCard}
-                    isCreateBtn={isCreateBtn}
-                    confirmation={confirmation}
-                    closeConfirmation={this.closeConfirmation}
-                    newLink={isCreateBtn ? GRID_NEW_LINK : null}
-                    cardLink={GRID_CARD_LINK}
+                    selectCallback={selectCallback}
+                 //   modalCard={this.modalCard}
+                 //   isCreateBtn={isCreateBtn}
+                  //  confirmation={confirmation}
+                  //  closeConfirmation={this.closeConfirmation}
+                  //  newLink={isCreateBtn ? GRID_NEW_LINK : null}
+                    //cardLink={GRID_CARD_LINK}
                 />
             </div>
         );
@@ -176,21 +159,11 @@ class List extends Component {
 const mapDispatchToProps = dispatch => {
     return {
         autoUpdate: params => {
-            // params.name = ORDERS_GRID;
             dispatch(autoUpdateStart(params));
         },
         stopUpdate: params => {
-            // params.name = ORDERS_GRID;
             dispatch(autoUpdateStop(params));
         },
-        // getActions: params => {
-        //     params.name = ORDERS_GRID;
-        //     dispatch(getActionsRequest(params));
-        // },
-        // invokeAction: params => {
-        //     params.name = ORDERS_GRID;
-        //     dispatch(invokeActionRequest(params));
-        // },
         getAllIds: params => {
             params.name = ORDERS_GRID;
             dispatch(getAllIdsRequest(params));
@@ -216,8 +189,8 @@ const mapStateToProps = (state, ownProps) => {
         list: listSelector(state),
         totalCount: totalCountSelector(state),
         progress: progressSelector(state),
-        isCreateBtn: canCreateByFormSelector(state, name),
-        actions: actionsSelector(state),
+       // isCreateBtn: canCreateByFormSelector(state, name),
+      //  actions: actionsSelector(state),
         representationName: representationNameSelector(state, name),
     };
 };

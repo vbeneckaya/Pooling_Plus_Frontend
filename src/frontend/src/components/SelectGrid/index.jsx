@@ -15,6 +15,7 @@ import { PAGE_SIZE } from '../../constants/settings';
 import { Confirm, Loader } from 'semantic-ui-react';
 import Footer from './components/footer';
 import { withRouter } from 'react-router-dom';
+import {autoUpdateStop} from "../../ducks/gridList";
 
 const initState = () => ({
     page: 1,
@@ -54,23 +55,24 @@ class SelectGrid extends Component {
     };
 
     componentDidMount() {
-        this.timer = null;
-        const {location, history, getRepresentations, name} = this.props;
-        const { state } = location;
+        // this.timer = null;
+        // const {location, history, getRepresentations, name} = this.props;
+        // const { state } = location;
 
-        if (state) {
-            this.setState(
-                {
-                    fullText: state.filter.search,
-                },
-                () => {
-                    history.replace(location.pathname, null);
-                    this.pageLoading();
-                },
-            );
-        } else {
-            this.pageLoading();
-        }
+        // if (state) {
+        //     this.setState(
+        //         {
+        //             fullText: state.filter.search,
+        //         },
+        //         () => {
+        //             history.replace(location.pathname, null);
+        //             this.pageLoading();
+        //         },
+        //     );
+        // } else {
+        //     this.pageLoading();
+        // }
+        this.pageLoading();
     }
 
     componentDidUpdate(prevProps) {
@@ -152,14 +154,14 @@ class SelectGrid extends Component {
 
     loadList = (isConcat, isReload) => {
         const { autoUpdateStop, autoUpdateStart } = this.props;
-        const { selectedRows } = this.state;
+    //    const { selectedRows } = this.state;
 
         autoUpdateStop();
         autoUpdateStart(this.mapData(isConcat, isReload));
 
-        if (selectedRows.size) {
-            this.props.getActions({ name: this.props.name, ids: Array.from(selectedRows) });
-        }
+        // if (selectedRows.size) {
+        //     this.props.getActions({ name: this.props.name, ids: Array.from(selectedRows) });
+        // }
     };
 
     nextPage = () => {
@@ -220,12 +222,12 @@ class SelectGrid extends Component {
             {
                 selectedRows: item,
             },
-            () => {
-                this.props.getActions({ name: this.props.name, ids: Array.from(item) });
-            },
+             () => {
+                 this.props.selectCallback(item);
+             },
         );
     };
-
+    
     setSelectedAll = () => {
         const {selectedRows} = this.state;
         const {allIds = [], getAllIds, name} = this.props;
@@ -275,10 +277,10 @@ class SelectGrid extends Component {
             {
                 selectedRows: new Set(),
             },
-            () => this.loadList(false, true),
+            () => this.loadList(false, true)
         );
     };
-
+    
     setFilterApiAndLoadList = () => {
         const {editRepresentation, representationName, name} = this.props;
         const {columns} = this.state;
@@ -338,19 +340,19 @@ class SelectGrid extends Component {
         
     };
 
-    handleGoToCard = (isEdit, id, name) => {
-        const { history, cardLink, newLink} = this.props;
-
-        history.push({
-            pathname: isEdit
-                ? cardLink.replace(':name', name).replace(':id', id)
-                : newLink.replace(':name', name),
-            state: {
-                ...this.mapData().filter,
-                pathname: history.location.pathname,
-            },
-        });
-    };
+    // handleGoToCard = (isEdit, id, name) => {
+    //     const { history, cardLink, newLink} = this.props;
+    //
+    //     history.push({
+    //         pathname: isEdit
+    //             ? cardLink.replace(':name', name).replace(':id', id)
+    //             : newLink.replace(':name', name),
+    //         state: {
+    //             ...this.mapData().filter,
+    //             pathname: history.location.pathname,
+    //         },
+    //     });
+    // };
 
     render() {
         const {fullText, selectedRows, columns} = this.state;
@@ -358,16 +360,18 @@ class SelectGrid extends Component {
             totalCount: count = 0,
             rows = [],
             progress,
-            catalogsFromGrid,
-            actions,
-            isShowActions,
-            confirmation = {},
-            closeConfirmation = () => {},
-            groupActions,
-            isCreateBtn,
+    //        catalogsFromGrid,
+            //actions,
+   //         isShowActions,
+     //       confirmation = {},
+     //       closeConfirmation = () => {},
+            //groupActions,
+       //     isCreateBtn,
             extGrid,
+            action,
             onlyOneCheck,
             checkAllDisabled,
+            selectCallback,
             disabledCheck,
             storageRepresentationItems,
             name,
@@ -377,12 +381,12 @@ class SelectGrid extends Component {
 
         return (
             <>
-                <Loader active={progress && !rows.length} size="huge" className="table-loader">
-                    Loading
-                </Loader>
+                {/*<Loader active={progress && !rows.length} size="huge" className="table-loader">*/}
+                    {/*Loading*/}
+                {/*</Loader>*/}
                 <HeaderSearchGrid
-                    isCreateBtn={isCreateBtn}
-                    goToCard={this.handleGoToCard}
+                  //  isCreateBtn={isCreateBtn}
+                  //  goToCard={this.handleGoToCard}
                     name={name}
                     loadList={this.loadList}
                     searchValue={fullText}
@@ -396,7 +400,7 @@ class SelectGrid extends Component {
                     setSelected={this.setSelected}
                 />
                 <div
-                    className={`scroll-grid-container${extGrid ? ' grid_small' : ''}`}
+                    className={`scroll-grid-select-container${extGrid ? ' grid_small' : ''}`}
                     ref={instance => {this.container = instance;}}
                 >
                     <InfiniteScrollTable
@@ -411,8 +415,8 @@ class SelectGrid extends Component {
                                 columns={columns}
                                 indeterminate={!!(selectedRows.size && selectedRows.size !== count)}
                                 all={!!(selectedRows.size && selectedRows.size === count)}
-                                catalogs={catalogsFromGrid}
-                                isShowActions={isShowActions}
+                            //    catalogs={catalogsFromGrid}
+                            //    isShowActions={isShowActions}
                                 gridName={name}
                                 checkAllDisabled={checkAllDisabled || onlyOneCheck}
                                 setFilter={this.setFilter}
@@ -429,36 +433,37 @@ class SelectGrid extends Component {
                             rows={rows}
                             progress={progress}
                             name={name}
-                            goToCard={this.handleGoToCard}
-                            actions={actions}
+                        //    goToCard={this.handleGoToCard}
+                            //actions={actions}
+                            action={action}
                             onlyOneCheck={onlyOneCheck}
                             loadList={this.loadList}
                             disabledCheck={disabledCheck}
                             selectedRows={selectedRows}
                             setSelected={this.setSelected}
-                            isShowActions={isShowActions}
+                           // isShowActions={isShowActions}
                             isSetFilters={columns.find(column => column.filter)}
-                            isCreateBtn={isCreateBtn}
+                         //   isCreateBtn={isCreateBtn}
                         />
                     </InfiniteScrollTable>
-                    {selectedRows.size ? (
-                        <Footer
-                            gridName={name}
-                            groupActions={groupActions}
-                            selectedRows={selectedRows}
-                            clearSelectedRows={this.clearSelectedRows}
-                            load={this.loadList}
-                        />
-                    ) : null}
+                    {/*{selectedRows.size ? (*/}
+                        {/*<Footer*/}
+                            {/*gridName={name}*/}
+                            {/*groupActions={groupActions}*/}
+                            {/*selectedRows={selectedRows}*/}
+                            {/*clearSelectedRows={this.clearSelectedRows}*/}
+                            {/*load={this.loadList}*/}
+                        {/*/>*/}
+                    {/*) : null}*/}
                 </div>
-                <Confirm
-                    dimmer="blurring"
-                    open={confirmation.open}
-                    onCancel={closeConfirmation}
-                    onConfirm={confirmation.onConfirm}
-                    cancelButton={t('cancelConfirm')}
-                    content={confirmation.content}
-                />
+                {/*<Confirm*/}
+                    {/*dimmer="blurring"*/}
+                    {/*open={confirmation.open}*/}
+                    {/*onCancel={closeConfirmation}*/}
+                    {/*onConfirm={confirmation.onConfirm}*/}
+                    {/*cancelButton={t('cancelConfirm')}*/}
+                    {/*content={confirmation.content}*/}
+                {/*/>*/}
             </>
         );
     }
@@ -472,17 +477,19 @@ SelectGrid.propTypes = {
     loadList: PropTypes.func,
     autoUpdateStart: PropTypes.func,
     autoUpdateStop: PropTypes.func,
+    selectCallback: PropTypes.func,
 };
 SelectGrid.defaultProps = {
     loadList: () => {},
     autoUpdateStart: () => {},
     autoUpdateStop: () => {},
-    confirmation: {},
-    closeConfirmation: () => {},
+ //   confirmation: {},
+   // closeConfirmation: () => {},
     clearStore: () => {},
     getLookupList: () => {},
     getAllIds: () => {},
     disabledCheck: () => {},
+    selectCallback:() => {}
 }
 ;
 

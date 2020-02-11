@@ -7,6 +7,14 @@ import History from './shared/history';
 import Accounts from './shippingTabs/accounts';
 import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
+import {actionsCardSelector, invokeActionRequest} from '../../../ducks/gridActions';
+import {cardSelector, editCardRequest, errorSelector, getCardRequest} from '../../../ducks/gridCard';
+import {
+    editInnerCardRequest,
+    errorInnerSelector,
+    getInerCardRequest,
+    innerCardSelector
+} from '../../../ducks/gridInnerCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
@@ -16,19 +24,26 @@ import {DATE_TYPE, NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE} from "../../../constants
 import List from '../../../containers/customSelectGrid/list';
 //import List from '../../../containers/customGrid/list';
 import {
-    editCardRequest,
-    isUniqueNumberRequest,
+    // editCardRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
+import {isUniqueNumberInnerRequest} from "../../../ducks/gridInnerCard";
 import {ORDERS_GRID} from "../../../constants/grids";
+import {autoUpdateStop} from "../../../ducks/gridList";
 
-const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
+const Content = ({
+                     t,
+                     error,
+                     form,
+                     onChange,
+                     onBlur,
+                     uniquenessNumberInnerCheck,
+                 }) => {
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
-    console.log(settings);
 
     return (
         <Form className="tabs-card">
@@ -51,10 +66,10 @@ const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNu
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            value={form['orderNumber'] ? form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber'] : form['orderNumber']}
+                            value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                             settings={settings['orderNumber']}
-                            error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
-                            onBlur={uniquenessNumberCheck}
+                            error={error['orderNumber']}
+                            onBlur={uniquenessNumberInnerCheck}
                             onChange={onChange}
                         />
                     </Grid.Column>
@@ -180,6 +195,7 @@ const ShippingCard = (props) => {
         const {
             form,
             onChangeForm,
+            onBlurForm,
             name,
             id,
             onClose,
@@ -193,38 +209,35 @@ const ShippingCard = (props) => {
             history,
         } = props;
 
-        let propsForSelect =  {
+        let propsForSelect = {
             history: history,
             location: props.location,
             match: props.match,
-            name: props.name,
+            name: ORDERS_GRID,
         }
-        
 
 
         const {t} = useTranslation();
         const dispatch = useDispatch();
 
         const orderColumns = ordersMiniColumns;
+        const actionAddToShipping = {name: 'unionOrdersInExisted', buttonName: 'AddButton', shippingId: form.id};
 
         const userPermissions = useSelector(state => userPermissionsSelector(state));
         const userActions = useSelector(state => userActionsSelector(state));
+        const errorInner = useSelector(state => errorInnerSelector(state));
 
         const canOnionOrders = !!userActions.find(_ => _ == 'unionOrders');
         const canOnionOrdersInExisted = !!userActions.find(_ => _ == 'unionOrdersInExisted');
         const canEditOrders = !!userActions.find(_ => _ == 'unionOrdersInExisted');
-
-        console.log(canOnionOrders);
-        console.log(canOnionOrdersInExisted);
-        console.log(canEditOrders);
-        console.log(form);
+        // const orderActions = useSelector(state => actionsCardSelector(state))
 
         let [routeActiveIndex, setRouteActiveIndex] = useState(0);
 
         let [orderForm, setOrderForm] = useState([]);
         let [orderCard, setOrderCard] = useState([]);
-        let [indexRow, setIndexRow] = useState();
-
+        let [selectedOrders, setSelectedOrders] = useState([]);
+        let [isNewOrder, setIsNewOrder] = useState(true);
 
         let [notChangeOrderForm, setNotChangeOrderForm] = useState(true);
         let [confirmation, setConfirmation] = useState({open: false});
@@ -251,16 +264,16 @@ const ShippingCard = (props) => {
         );
 
         const handleCreateOrder = () => {
-            setIndexRow(null);
             let defaultOrderForm = {};
-            defaultOrderForm['id'] = undefined;
             orderColumns.forEach(column => {
                 defaultOrderForm[column.name] = undefined
             });
+            defaultOrderForm['id'] = undefined;
             setOrderCard(defaultOrderForm);
             setOrderForm(defaultOrderForm);
             setNotChangeOrderForm(true);
             setShowModal(true);
+            setIsNewOrder(true);
         };
 
         const handleSelectOrder = () => {
@@ -269,15 +282,16 @@ const ShippingCard = (props) => {
             setShowSelectModal(true);
         };
 
-        const handleUniquenessCheck = callbackFunc => {
+        const handleUniquenessInnerCheck = callbackFunc => {
             (!id || orderForm.orderNumber !== orderCard.orderNumber) && dispatch(
-                isUniqueNumberRequest({
-                    number: orderForm.orderNumber,
+                isUniqueNumberInnerRequest({
+                    number: orderForm.orderNumber && orderForm.orderNumber.value,
                     fieldName: 'orderNumber',
                     errorText: t('number_already_exists'),
                     callbackSuccess: callbackFunc,
                 }),
             );
+
         };
 
         const getPanes = () => {
@@ -285,13 +299,13 @@ const ShippingCard = (props) => {
                 {
                     menuItem: t('information'),
                     render: () => (
-                        <Information form={form} onChange={onChangeForm} settings={settings}/>
+                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings}/>
                     ),
                 },
                 {
                     menuItem: t('orders'),
                     isCreateBtn: (!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders) && userPermissions.includes(2),
-                    isSelectBtn: !!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders,
+                    isSelectBtn: false, //!!(form && form.id) ? canOnionOrdersInExisted : canOnionOrders,
                     createAction: handleCreateOrder,
                     selectAction: handleSelectOrder,
                     render: () => <Orders
@@ -311,13 +325,14 @@ const ShippingCard = (props) => {
                             settings={settings}
                             tabChange={handleTabChange}
                             onChange={onChangeForm}
+                            onBlur={onBlurForm}
                         />
                     ),
                 },
 
                 {
                     menuItem: t('accounts'),
-                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm}/>,
+                    render: () => <Accounts form={form} settings={settings} onChange={onChangeForm} onBlur={onBlurForm}/>,
                 },
             ];
 
@@ -346,11 +361,15 @@ const ShippingCard = (props) => {
         };
 
         const openOrderModal = (index) => {
-            setIndexRow(index);
-            setOrderCard(form.orders[index]);
-            setOrderForm(form.orders[index]);
-            setNotChangeOrderForm(true);
-            setShowModal(true);
+            dispatch(getInerCardRequest({
+                name: ORDERS_GRID, id: form.orders[index].id, callbackSuccess: (result) => {
+                    setOrderCard(result);
+                    setOrderForm(result);
+                    setNotChangeOrderForm(true);
+                    setIsNewOrder(false);
+                    setShowModal(true);
+                }
+            }))
         }
 
         const onCloseModal = () => {
@@ -360,7 +379,6 @@ const ShippingCard = (props) => {
 
         const onCloseSelectModal = () => {
             setShowSelectModal(false);
-            closeConfirmation();
         };
 
 
@@ -371,14 +389,31 @@ const ShippingCard = (props) => {
         };
 
         const onChangeOrderForm = useCallback((e, {name, value}) => {
-            setOrderForm(prevState => ({
-                ...prevState,
-                [name]: value,
-            }));
+            switch (name) {
+                case 'orderNumber':
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: {value: value, name: null}
+                    }));
+                    break;
+                case 'clientId':
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: value,
+                        ['deliveryWarehouseId']: null
+                    }));
+                    break;
+                default:
+                    setOrderForm(prevState => ({
+                        ...prevState,
+                        [name]: value,
+                    }));
+            }
+
         }, []);
 
         const getOrderActionsFooter = useCallback(
-            () => {
+            (isNew) => {
                 return (
                     <>
                         <Button color="grey" onClick={handleClose}>
@@ -389,7 +424,7 @@ const ShippingCard = (props) => {
                             disabled={notChangeOrderForm}
                             onClick={handleSave}
                         >
-                            {t('SaveButton')}
+                            {isNew ? t('AddButton') : t('SaveButton')}
                         </Button>
                     </>
                 );
@@ -409,7 +444,7 @@ const ShippingCard = (props) => {
                             //disabled={notChangeOrderForm}
                             onClick={handleSelectModalSave}
                         >
-                            {t('SaveButton')}
+                            {t('AddButton')}
                         </Button>
                     </>
                 );
@@ -418,15 +453,29 @@ const ShippingCard = (props) => {
         );
 
         const handleSave = () => {
-            invokeAction('insert');
+            if (isNewOrder) {
+                if (orderForm.orderNumber != orderCard.orderNumber)
+                    handleUniquenessInnerCheck(() => {
+                        invokeAction('insertNewOrder')
+                    });
+                else
+                    invokeAction('insertNewOrder');
+            }
+            else {
+                invokeAction('updateOrder');
+            }
+        };
+
+        const handleSelect = (ids) => {
+            setSelectedOrders(Array.from(ids));
         };
 
         const handleSelectModalSave = () => {
-            //invokeAction('insert');
-        };
+            invokeAction('insertExistedOrder');
+        }
 
-        const handleDelete = (index) => {
-            invokeAction('delete', index);
+        const handleDelete = (id) => {
+            invokeAction('delete', id);
         };
 
         const handleClose = () => {
@@ -443,16 +492,17 @@ const ShippingCard = (props) => {
         };
 
         const handleSelectModalClose = () => {
-            if (notChangeOrderForm) {
-                onCloseSelectModal();
-            } else {
-                setConfirmation({
-                    open: true,
-                    content: t('confirm_close_dictionary'),
-                    onCancel: closeConfirmation(),
-                    onConfirm: onCloseModal,
-                });
-            }
+            onCloseSelectModal();
+            // if (notChangeOrderForm) {
+            //     onCloseSelectModal();
+            // } else {
+            //     setConfirmation({
+            //         open: true,
+            //         content: t('confirm_close_dictionary'),
+            //         onCancel: closeConfirmation(),
+            //         onConfirm: onCloseModal,
+            //     });
+            // }
         };
 
         const closeConfirmation = () => {
@@ -461,35 +511,70 @@ const ShippingCard = (props) => {
             });
         };
 
+        const invokeAction = (actionName, orderId) => {
+            if (actionName == 'insertNewOrder') {
+                dispatch(editInnerCardRequest({
+                    name: ORDERS_GRID,
+                    params: {
+                        ...orderForm,
+                        orderNumber: {value: orderForm.orderNumber && orderForm.orderNumber.value},
+                        shippingId: id
+                    },
+                    callbackSuccess: (result) => {
+                        let orderAction = 'unionOrdersInExisted';
+                        dispatch(invokeActionRequest({
+                            name: ORDERS_GRID,
+                            actionName: orderAction,
+                            ids: [result.id],
+                            callbackSuccess: () => {
+                                load();
+                                onCloseModal();
+                            }
+                        }));
+                    }
+                }));
+            }
 
-        const invokeAction = (actionName, index) => {
-            if (actionName == 'insert') {
-
-                form.orders = !!form.orders ? form.orders : [];
-                let orders = form.orders;
-
-                if (indexRow == null)
-                    orders.push(orderForm);
-                else
-                    orders[indexRow] = orderForm;
-                onChangeForm(null, {name: 'orders', value: orders});
+            if (actionName == 'insertExistedOrder') {
+                let orderAction = 'unionOrdersInExisted';
+                dispatch(invokeActionRequest({
+                    name: ORDERS_GRID,
+                    actionName: orderAction,
+                    ids: selectedOrders,
+                    callbackSuccess: () => {
+                        load();
+                        onCloseModal();
+                    }
+                }));
             }
 
             if (actionName == 'delete') {
-                let orders = form.orders;
-                orders.splice(index, 1);
-
-                onChangeForm(null, {name: 'orders', value: orders});
-                console.log(form);
+                let orderAction = 'removeFromShipping';
+                dispatch(invokeActionRequest({
+                    name: ORDERS_GRID,
+                    actionName: orderAction,
+                    ids: [orderId],
+                    callbackSuccess: () => {
+                        load();
+                    }
+                }));
             }
-            onCloseModal();
+
+            if (actionName == 'updateOrder') {
+                dispatch(editInnerCardRequest({
+                    name: ORDERS_GRID, params: orderForm, callbackSuccess: () => {
+                        load();
+                        onCloseModal();
+                    }
+                }));
+            }
         };
 
         return (
             <>
                 <CardLayout
                     title={title}
-                    actionsFooter={actionsFooter}
+                    // actionsFooter={actionsFooter}
                     actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}
@@ -509,14 +594,14 @@ const ShippingCard = (props) => {
                             Loading
                         </Loader>*/}
                         <Content
-                            error={error}
+                            error={errorInner}
                             t={t}
                             form={orderForm}
                             onChange={onChangeOrderForm}
-                            uniquenessNumberCheck={handleUniquenessCheck}
+                            uniquenessNumberInnerCheck={handleUniquenessInnerCheck}
                         />
                     </Modal.Description>
-                    <Modal.Actions>{getOrderActionsFooter()}</Modal.Actions>
+                    <Modal.Actions>{getOrderActionsFooter(isNewOrder)}</Modal.Actions>
                 </Modal>
 
                 <Modal
@@ -525,12 +610,15 @@ const ShippingCard = (props) => {
                     closeOnDimmerClick={false}
                     onOpen={onOpenSelectModal}
                     onClose={onCloseSelectModal}
+                    size='fullscreen'
                     closeIcon
                 >
                     <Modal.Header>{t('select_order')}</Modal.Header>
                     <Modal.Description>
                         <List
                             props={propsForSelect}
+                            selectCallback={handleSelect}
+                            action={actionAddToShipping}
                         >
                         </List>
                     </Modal.Description>

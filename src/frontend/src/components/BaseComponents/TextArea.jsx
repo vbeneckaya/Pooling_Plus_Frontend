@@ -6,6 +6,7 @@ const BigText = ({
                      value,
                      name,
                      onChange,
+                     onBlur,
                      isDisabled,
                      noLabel,
                      className,
@@ -45,6 +46,7 @@ const BigText = ({
                 rows={rows}
                 value={value || ''}
                 onChange={onChange}
+                //onChange={onBlur}
             />
             {error && typeof error === 'string' ? (
                 <span className="label-error">{error}</span>
