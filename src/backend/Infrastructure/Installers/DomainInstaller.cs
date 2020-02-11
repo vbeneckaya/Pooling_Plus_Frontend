@@ -110,7 +110,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
-            services.AddScoped<IShippingTarifficationTypeDeterminer, ShippingTarifficationTypeDeterminer>();
             services.AddScoped<IShippingCalculationService, ShippingCalculationService>();
 
             services.AddScoped<ITriggersService, TriggersService>();
@@ -217,7 +216,6 @@ namespace Infrastructure.Installers
             
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
-            services.AddScoped<ITrigger<Order>, OnChangePalletsCountOrDeliveryRegion>();
             services.AddScoped<ITrigger<Order>, OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Order>, OnChangeVehicleTypeId>();
             services.AddScoped<ITrigger<Order>, UpdateShippingRoute>();

@@ -49,8 +49,8 @@ namespace Application.BusinessModels.Shippings.Triggers
                         nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
                         oldVehicleType, newVehicleType, "onChangeInShipping");
                 }
-                if(!entity.ManualTarifficationType)
-                    _calcService.UpdateDeliveryCost(entity);
+                
+                _calcService.UpdateDeliveryCost(entity);
 
             }
         }

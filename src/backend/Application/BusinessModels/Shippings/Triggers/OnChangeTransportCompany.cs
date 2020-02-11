@@ -49,8 +49,7 @@ namespace Application.BusinessModels.Shippings.Triggers
                         nameof(orderInShipping.VehicleTypeId).ToLowerFirstLetter(),
                         oldCarrier, newCarrier, "onChangeInShipping");
                 }
-                if(!entity.ManualTarifficationType)
-                    _calcService.UpdateDeliveryCost(entity);
+                _calcService.UpdateDeliveryCost(entity);
             }
         }
 
