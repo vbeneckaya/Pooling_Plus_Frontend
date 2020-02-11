@@ -36,7 +36,6 @@ const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniqueness
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                           // value={form['orderNumber'] ? form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']: form['orderNumber']}
                             value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                             error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
                             onBlur={uniquenessNumberCheck}
@@ -117,7 +116,7 @@ const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniqueness
                                                 isDisabled={!form['clientId']}
                                                 isRequired
                                                 extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source="warehouses/byClientId"
+                                                source='warehouses/byClientId'
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}

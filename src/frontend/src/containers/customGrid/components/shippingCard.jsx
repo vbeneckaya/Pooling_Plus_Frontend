@@ -29,7 +29,6 @@ import {
 } from "../../../ducks/gridCard";
 import {isUniqueNumberInnerRequest} from "../../../ducks/gridInnerCard";
 import {ORDERS_GRID} from "../../../constants/grids";
-import {autoUpdateStop} from "../../../ducks/gridList";
 
 const Content = ({
                      t,
