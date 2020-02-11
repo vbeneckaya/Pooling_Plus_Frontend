@@ -14,18 +14,10 @@ namespace Application.BusinessModels.Orders.Triggers
     public class OnChangeDeliveryDate : ITrigger<Order>
     {
         private readonly ICommonDataService _dataService;
-        private readonly IShippingTarifficationTypeDeterminer _shippingTarifficationTypeDeterminer;
-        private readonly IHistoryService _historyService;
-        private readonly IDeliveryCostCalcService _calcService;    
 
-        public OnChangeDeliveryDate(ICommonDataService dataService, 
-            IShippingTarifficationTypeDeterminer shippingTarifficationTypeDeterminer, IHistoryService historyService, 
-            IDeliveryCostCalcService calcService)
+        public OnChangeDeliveryDate(ICommonDataService dataService)
         {
             _dataService = dataService;
-            _shippingTarifficationTypeDeterminer = shippingTarifficationTypeDeterminer;
-            _historyService = historyService;
-            _calcService = calcService;
         }
 
         public void Execute(Order entity)

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Form, Modal, Segment, Tab } from 'semantic-ui-react';
+import { Button, Form, Modal, Segment, Tab, Label } from 'semantic-ui-react';
 import FormField from '../../components/BaseComponents';
 import { PASSWORD_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
 import {
@@ -170,38 +170,45 @@ const Profile = ({ children, open: modalOpen, onOpen, onClose }) => {
 						  
 						  </Tab.Pane> },
 						  { menuItem: 'Доступ к личным кабинетам', render: () => <Tab.Pane>
-							<FormField
-								name="poolingLogin"
-								type={TEXT_TYPE}
-								value={form['poolingLogin']}
-								isRequired
-								error={error['poolingLogin']}
-								onChange={handleChange}
-							/>						  
-							<FormField
-								name="poolingPassword"
-								type={TEXT_TYPE}
-								value={form['poolingPassword']}
-								isRequired
-								error={error['poolingPassword']}
-								onChange={handleChange}
-							/>						  
-							<FormField
-								name="fmCPLogin"
-								type={TEXT_TYPE}
-								value={form['fmCPLogin']}
-								isRequired
-								error={error['fmCPLogin']}
-								onChange={handleChange}
-							/>						  
-							<FormField
-								name="fmCPPassword"
-								type={TEXT_TYPE}
-								value={form['fmCPPassword']}
-								isRequired
-								error={error['fmCPPassword']}
-								onChange={handleChange}
-							/>						  
+                                  
+                            <Segment>
+                                <Label attached='top'>pooling.me</Label>
+                                <FormField
+                                    name="poolingLogin"
+                                    type={TEXT_TYPE}
+                                    value={form['poolingLogin']}
+                                    isRequired
+                                    error={error['poolingLogin']}
+                                    onChange={handleChange}
+                                />						  
+                                <FormField
+                                    name="poolingPassword"
+                                    type={PASSWORD_TYPE}
+                                    value={form['poolingPassword']}
+                                    isRequired
+                                    error={error['poolingPassword']}
+                                    onChange={handleChange}
+                                />
+                            </Segment>
+                            <Segment>
+                                <Label attached='top'>lk.fmlogistic.com</Label>
+                                <FormField
+                                    name="fmCPLogin"
+                                    type={TEXT_TYPE}
+                                    value={form['fmCPLogin']}
+                                    isRequired
+                                    error={error['fmCPLogin']}
+                                    onChange={handleChange}
+                                />						  
+                                <FormField
+                                    name="fmCPPassword"
+                                    type={PASSWORD_TYPE}
+                                    value={form['fmCPPassword']}
+                                    isRequired
+                                    error={error['fmCPPassword']}
+                                    onChange={handleChange}
+                                />
+                            </Segment>
 						  </Tab.Pane> }
 						]
 						} />
