@@ -48,7 +48,6 @@ namespace Application.Services.Tariffs
 
             entity.ShippingWarehouseId = Guid.Parse(dto.ShippingWarehouseId?.Value);
             entity.DeliveryWarehouseId = Guid.Parse(dto.DeliveryWarehouseId?.Value);
-            entity.TarifficationType = string.IsNullOrEmpty(dto.TarifficationType?.Value) ? (TarifficationType?)null : MapFromStateDto<TarifficationType>(dto.TarifficationType.Value);
             entity.VehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
             entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
             entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
@@ -263,7 +262,6 @@ namespace Application.Services.Tariffs
                 ShippingWarehouseId = Guid.Empty == entity.ShippingWarehouseId ? null : new LookUpDto(entity.ShippingWarehouseId.ToString()),
                 DeliveryWarehouseId = Guid.Empty == entity.DeliveryWarehouseId ? null : new LookUpDto(entity.DeliveryWarehouseId.ToString()),
                 ProviderId = Guid.Empty == entity.ProviderId ? null : new LookUpDto(entity.ProviderId.ToString()),
-                TarifficationType = entity.TarifficationType == null ? null : entity.TarifficationType.GetEnumLookup(lang),
                 CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
                 VehicleTypeId = entity.VehicleTypeId == null ? null : new LookUpDto(entity.VehicleTypeId.ToString()),
                 BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
@@ -316,7 +314,6 @@ namespace Application.Services.Tariffs
         {
             string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<TariffDto>(_dataService, _userProvider, _fieldDispatcherService)
-                .MapColumn(w => w.TarifficationType, new EnumExcelColumn<TarifficationType>(lang))
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(w => w.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
@@ -354,11 +351,11 @@ namespace Application.Services.Tariffs
             return entry?.Id;
         }
 
-        private Guid? GetBodyTypeIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
+//        private Guid? GetBodyTypeIdByName(string name)
+//        {
+//            var entry = _dataService.GetDbSet<BodyType>().Where(t => t.Name == name).FirstOrDefault();
+//            return entry?.Id;
+//        }
 
         protected override IQueryable<Tariff> ApplySearch(IQueryable<Tariff> query, SearchFormDto form)
         {
@@ -399,10 +396,8 @@ namespace Application.Services.Tariffs
             return query.Where(i =>
                    transportCompanies.Any(t => t == i.CarrierId)
                 || vehicleTypes.Any(t => t == i.VehicleTypeId)
-                || tarifficationTypes.Contains(i.TarifficationType)
                 || i.StartWinterPeriod.HasValue && i.StartWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
                 || i.EndWinterPeriod.HasValue && i.EndWinterPeriod.Value.ToString(searchDateFormat).Contains(search)
-                || tarifficationTypes.Contains(i.TarifficationType)
                 || providers.Contains(i.ProviderId.Value)
                 || shippingWarehouses.Contains(i.ShippingWarehouseId)
                 || deliveryWarehouses.Contains(i.DeliveryWarehouseId)
@@ -439,17 +434,15 @@ namespace Application.Services.Tariffs
         {
             Guid? carrierId = dto.CarrierId?.Value?.ToGuid();
             Guid? vehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
-            Guid? bodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
+           // Guid? bodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             string shipmentWarehouse = dto.ShippingWarehouseId?.Value;
             string deliveryWarehouse = dto.DeliveryWarehouseId?.Value;
             string provider = dto.ProviderId?.Value;
-            TarifficationType? tarifficationType = dto.TarifficationType?.Value?.Parse<TarifficationType>();
             return _dataService.GetDbSet<Tariff>()
                     .Where(i =>
                         i.CarrierId == carrierId
                         && i.VehicleTypeId == vehicleTypeId
-                        && i.BodyTypeId == bodyTypeId
-                        && i.TarifficationType == tarifficationType
+                      //  && i.BodyTypeId == bodyTypeId
                         && Guid.Empty != i.ShippingWarehouseId && i.ShippingWarehouseId == Guid.Parse(shipmentWarehouse)
                         && Guid.Empty != i.DeliveryWarehouseId && i.DeliveryWarehouseId == Guid.Parse(deliveryWarehouse)
                         && Guid.Empty != i.ProviderId && i.ProviderId == Guid.Parse(provider)

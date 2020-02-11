@@ -56,7 +56,7 @@ namespace Application.BusinessModels.Orders.Actions
                 PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
-                ProviderId = user.ProviderId,
+                ProviderId = orders.FirstOrDefault()?.ProviderId ?? user.ProviderId,
                 ShippingCreationDate = DateTime.UtcNow
             };
 
@@ -83,8 +83,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(order => order.Status == OrderState.Created && 
-                                       (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery));
+            return target.All(order => order.Status == OrderState.Created);
         }
     }
 }
