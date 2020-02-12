@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services.Shippings;
+using Integrations.Pooling;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -51,7 +52,6 @@ namespace Application.BusinessModels.Orders.Actions
             {
                 Status = ShippingState.ShippingCreated,
                 PoolingState = ShippingPoolingState.PoolingAvailable,
-                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ProviderId = orders.FirstOrDefault()?.ProviderId ?? user.ProviderId,
