@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services.Shippings;
+using Integrations.Pooling;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -46,14 +47,12 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
-
-            var poolingInfo = "Эту перевозку можно отправить в Pooling";
+            
             
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
                 PoolingState = ShippingPoolingState.PoolingAvailable,
-                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
                 ProviderId = user.ProviderId,
@@ -67,7 +66,16 @@ namespace Application.BusinessModels.Orders.Actions
             shipping.DeliveryType = DeliveryType.Delivery;
 
             shippingDbSet.Add(shipping);
-            
+            var currentUser = _dataService.GetById<User>(user.Id.Value);
+            if (currentUser.IsPoolingIntegrated())
+            {
+                using (var pooling = new PoolingIntegration(currentUser, _dataService))
+                {
+                    var poolingInfo = pooling.GetInfoFor(shipping);
+                    shipping.PoolingInfo = poolingInfo.MessageField;
+                }
+            }
+
             UnionOrderInShipping(orders, orders, shipping, _historyService);
             
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);

@@ -80,6 +80,10 @@ namespace Integrations
 
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
+            if (string.IsNullOrEmpty(responseString))
+            {
+                return new IntegrationAnswer(JObject.Parse("{}"));
+            }
             var jObject = JObject.Parse(responseString);
 
             return  new IntegrationAnswer(jObject);
@@ -116,12 +120,46 @@ namespace Integrations
 
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-            var jObject = JObject.Parse(responseString);
+            JObject jObject;
+            try
+            {
+                jObject = JObject.Parse(responseString);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"ResponseParseError: url: {url}, responseString: {responseString}");
+            }
 
             return  new IntegrationAnswer(jObject);
         }
+        
+        protected IntegrationAnswerArr PostArr(string url, object model = null)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-        protected IntegrationAnswer Get(string url, object model = null)
+            var httpClient = new HttpClient();
+            
+            if(_accessToken != null)
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
+            
+            var response = httpClient.PostAsync(_baseUrl + url, content).GetAwaiter().GetResult();
+
+            var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            JArray jObject;
+            try
+            {
+                jObject = JArray.Parse(responseString);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"ResponseParseError: url: {url}, responseString: {responseString}");
+            }
+
+            return  new IntegrationAnswerArr(jObject, responseString);
+        }
+
+        protected IIntegrationAnswer<string> Get(string url, object model = null)
         {
             var httpClient = new HttpClient();
             
@@ -136,7 +174,7 @@ namespace Integrations
 
             return  new IntegrationAnswer(jObject);
         }
-        protected IntegrationAnswerArr GetArr(string url, object model = null)
+        protected IIntegrationAnswer<IEnumerable<JToken>> GetArr(string url, object model = null)
         {
             var httpClient = new HttpClient();
             
@@ -148,7 +186,7 @@ namespace Integrations
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
             var jArray = JArray.Parse(responseString);
-            return  new IntegrationAnswerArr(jArray);
+            return  new IntegrationAnswerArr(jArray, responseString);
         }
         
         protected T Post<T>(string url, object model)
@@ -171,7 +209,7 @@ namespace Integrations
         }
     }
 
-    public class IntegrationAnswer
+    public class IntegrationAnswer : IIntegrationAnswer<string>
     {
         private readonly JObject _jObject;
 
@@ -190,18 +228,25 @@ namespace Integrations
         }
     }
 
-    public class IntegrationAnswerArr
+    public class IntegrationAnswerArr : IIntegrationAnswer<IEnumerable<JToken>>
     {
         private readonly JArray _jArray;
+        public readonly string ResponseString;
 
-        public IntegrationAnswerArr(JArray jArray)
+        public IntegrationAnswerArr(JArray jArray, string responseString)
         {
             _jArray = jArray;
+            ResponseString = responseString;
         }
 
         public IEnumerable<JToken> Get(string path)
         {
             return _jArray.SelectTokens(path);
         }
+    }
+
+    public interface IIntegrationAnswer<T>
+    {
+        T Get(string path);
     }
 }

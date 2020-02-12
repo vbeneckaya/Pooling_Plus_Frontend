@@ -59,7 +59,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetPooling".Translate(userDto.Language, shipping.ShippingNumber)
+                Message = "shippingDeletePoolingSlot".Translate(userDto.Language, shipping.ShippingNumber)
             };
         }
 

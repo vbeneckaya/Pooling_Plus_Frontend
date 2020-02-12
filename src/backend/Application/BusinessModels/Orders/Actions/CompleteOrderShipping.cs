@@ -46,7 +46,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return _shippingAction.IsAvailable(order.OrderShippingStatus);
+            return order.OrderShippingStatus == ShippingState.ShippingConfirmed;
         }
     }
 }

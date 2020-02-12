@@ -4,5 +4,6 @@ namespace Integrations.Pooling.Dtos
     {
         public string ReservationNumber { get; set; }
         public string ReservationId { get; set; }
+        public string Error { get; set; }
     }
 }

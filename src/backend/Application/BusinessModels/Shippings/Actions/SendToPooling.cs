@@ -48,6 +48,15 @@ namespace Application.BusinessModels.Shippings.Actions
                 if (poolingInfo.IsAvailable)
                 {
                     var reservationResult = pooling.CreateReservation(shipping);
+                    if (!string.IsNullOrEmpty(reservationResult.Error))
+                    {
+                        return new AppActionResult
+                        {
+                            IsError = true,
+                            Message = $"Pooling: {reservationResult.Error}"
+                        };
+                    }
+
                     shipping.PoolingInfo = $"Номер брони на Pooling: {reservationResult.ReservationNumber}";
                     shipping.PoolingSlotId = poolingInfo.SlotId;
                     shipping.PoolingReservationId = reservationResult.ReservationId;

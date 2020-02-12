@@ -8,11 +8,13 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Domain.Persistables;
 
 namespace Domain.Extensions
 {
     public static class Extensions
     {
+
         public static string ToUpperFirstLetter(this string input)
         {
             return Char.ToUpperInvariant(input[0]) + input.Substring(1);
