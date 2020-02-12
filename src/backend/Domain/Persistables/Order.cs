@@ -89,19 +89,19 @@ namespace Domain.Persistables
         /// </summary>
         public int? ArticlesCount { get; set; }
         /// <summary>
-        /// Предварительное Кол-во коробок
+        /// Плановое Кол-во коробок
         /// </summary>
         public decimal? BoxesCount { get; set; }
         /// <summary>
-        /// Подтвержденное количество коробок
+        /// Подтвежденное количество коробок
         /// </summary>
         public decimal? ConfirmedBoxesCount { get; set; }
         /// <summary>
-        /// Предварительное кол-во паллет
+        /// Плановое кол-во паллет
         /// </summary>
         public int? PalletsCount { get; set; }
         /// <summary>
-        /// Предварительное кол-во паллет введено вручную
+        /// Плановое кол-во паллет введено вручную
         /// </summary>
         [IgnoreHistory]
         public bool ManualPalletsCount { get; set; }
@@ -110,17 +110,13 @@ namespace Domain.Persistables
         /// </summary>
         public int? ConfirmedPalletsCount { get; set; }
         /// <summary>
-        /// Фактическое кол-во паллет
-        /// </summary>
-        public int? ActualPalletsCount { get; set; }
-        /// <summary>
         /// Плановый вес, кг
         /// </summary>
         public decimal? WeightKg { get; set; }
         /// <summary>
-        /// Фактический вес, кг
+        /// Подтвержденныей вес, кг
         /// </summary>
-        public decimal? ActualWeightKg { get; set; }
+        public decimal? ConfirmedWeightKg { get; set; }
         /// <summary>
         /// Сумма заказа, без НДС
         /// </summary>

@@ -125,11 +125,11 @@
         /// Pallets Count
         /// </summary>
         public string PalletsCount { get; set; }
-
+        
         /// <summary>
-        /// Actual Pallets Count
+        /// Confirmed Pallets Count
         /// </summary>
-        public string ActualPalletsCount { get; set; }
+        public string ConfirmedPalletsCount { get; set; }
 
         /// <summary>
         /// Weight Kg
@@ -137,9 +137,9 @@
         public string WeightKg { get; set; }
 
         /// <summary>
-        /// Actual Weight Kg
+        /// Confirmed Weight Kg
         /// </summary>
-        public string ActualWeightKg { get; set; }
+        public string ConfirmedWeightKg { get; set; }
 
         /// <summary>
         /// OrderAmountExcludingVAT
@@ -260,11 +260,6 @@
         /// Shipping Status
         /// </summary>
         public string ShippingStatus { get; set; }
-
-        /// <summary>
-        /// Confirmed Pallets Count
-        /// </summary>
-        public string ConfirmedPalletsCount { get; set; }
 
         /// <summary>
         /// Invoice

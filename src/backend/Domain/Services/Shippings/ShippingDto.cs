@@ -41,16 +41,13 @@ namespace Domain.Services.Shippings
         public int? PalletsCount { get; set; }
 
         [FieldType(FieldType.Number)]
-        public int? ActualPalletsCount { get; set; }
-
-        [FieldType(FieldType.Number)]
         public int? ConfirmedPalletsCount { get; set; }
 
         [FieldType(FieldType.Number), IsDefault, OrderNumber(5)]
         public decimal? WeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
-        public decimal? ActualWeightKg { get; set; }
+        public decimal? ConfirmedWeightKg { get; set; }
 
         public string PlannedArrivalTimeSlotBDFWarehouse { get; set; }
 

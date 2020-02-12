@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect } from 'react';
-import { Icon, Tab } from 'semantic-ui-react';
+import React, {useCallback, useEffect} from 'react';
+import {Icon, Tab} from 'semantic-ui-react';
 import Route from './route';
-import { useDispatch, useSelector } from 'react-redux';
-import { getLookupRequest, valuesListSelector } from '../../../../ducks/lookup';
-import FormField from "../../../../components/BaseComponents";
+import {useDispatch, useSelector} from 'react-redux';
+import {getLookupRequest, valuesListSelector} from '../../../../ducks/lookup';
+import {useTranslation} from "react-i18next";
 
-const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings }) => {
+const Routes = ({form, onChange, onBlur, routeActiveIndex, tabChange, settings}) => {
+    const {t} = useTranslation();
     const dispatch = useDispatch();
-    const { routePoints: points = [] } = form;
+    const {routePoints: points = []} = form;
     const stateColors = useSelector(state => valuesListSelector(state, 'vehicleState')) || [];
 
     useEffect(() => {
@@ -36,7 +37,7 @@ const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings 
 
     const pointsTabs = [];
 
-  //  console.log('form from routes.jsx', form);
+    //  console.log('form from routes.jsx', form);
 
     points.forEach((point, i) => {
         const state = stateColors.find(x => x.name === point.vehicleStatus);
@@ -46,7 +47,7 @@ const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings 
                 key: i,
                 content: (
                     <label>
-                        <Icon color={color} name="circle" />
+                        <Icon color={color} name="circle"/>
                         {point.warehouseName}
                     </label>
                 ),
@@ -59,7 +60,7 @@ const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings 
                         point={point}
                         settings={settings}
                         pointChange={handleChange}
-                       // onChange={onChange}
+                        // onChange={onChange}
                         onBlur={onBlur}
                     />
                 );
@@ -69,14 +70,18 @@ const Routes = ({ form, onChange, onBlur, routeActiveIndex, tabChange, settings 
 
     return (
         <div className="tabs-card">
-            <Tab
-                className="all-tabs"
-                panes={pointsTabs}
-                activeIndex={routeActiveIndex}
-                menu={{ vertical: true }}
-                menuPosition="left"
-                onTabChange={tabChange}
-            />
+            {pointsTabs.length > 0 ?
+                <Tab
+                    className="all-tabs"
+                    panes={pointsTabs}
+                    activeIndex={routeActiveIndex}
+                    menu={{vertical: true}}
+                    menuPosition="left"
+                    onTabChange={tabChange}
+                />
+                : <label>
+                    {t(`notification_emptyRoutPoints`)}
+                </label>}
         </div>
     );
 };

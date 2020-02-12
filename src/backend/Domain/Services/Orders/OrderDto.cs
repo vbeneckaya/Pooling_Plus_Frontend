@@ -69,14 +69,11 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? ConfirmedPalletsCount { get; set; }
 
-        [FieldType(FieldType.Number)]
-        public int? ActualPalletsCount { get; set; }
-
         [FieldType(FieldType.Number), IsDefault, OrderNumber(12)]
         public decimal? WeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
-        public decimal? ActualWeightKg { get; set; }
+        public decimal? ConfirmedWeightKg { get; set; }
 
         [FieldType(FieldType.Number)]
         public decimal? OrderAmountExcludingVAT { get; set; }

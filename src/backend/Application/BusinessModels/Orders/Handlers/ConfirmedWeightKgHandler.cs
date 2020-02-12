@@ -1,16 +1,13 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
-using Application.Shared;
-using DAL;
-using DAL.Queries;
 using DAL.Services;
 using Domain.Persistables;
-using Domain.Services;
 using Domain.Services.History;
+using System;
 using System.Linq;
 
 namespace Application.BusinessModels.Orders.Handlers
 {
-    public class ActualWeightKgHandler : IFieldHandler<Order, decimal?>
+    public class ConfirmedWeightKgHandler : IFieldHandler<Order, decimal?>
     {
         private readonly ICommonDataService _dataService;
 
@@ -21,17 +18,19 @@ namespace Application.BusinessModels.Orders.Handlers
             if (order.ShippingId.HasValue)
             {
                 var shipping = _dataService.GetById<Shipping>(order.ShippingId.Value);
-                if (shipping != null && !shipping.ManualActualWeightKg)
+                if (shipping != null && !shipping.ManualConfirmedWeightKg)
                 {
-                    var actualWeights = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
-                                                  .Select(o => o.ActualWeightKg)
-                                                  .ToList();
-                    actualWeights.Add(newValue);
+                    var weights = _dataService.GetDbSet<Order>().Where(o => o.ShippingId == order.ShippingId && o.Id != order.Id)
+                                            .Select(o => o.ConfirmedWeightKg)
+                                            .ToList();
+                    weights.Add(newValue);
 
-                    var shippingActualWeight = actualWeights.Any(x => x.HasValue) ? actualWeights.Sum(x => x ?? 0) : (decimal?)null;
-                    shipping.ActualWeightKg = shippingActualWeight;
+                    var shippingConfirmedWeight = weights.Any(x => x.HasValue) ? weights.Sum(x => x ?? 0) : (decimal?)null;
+                    shipping.ConfirmedWeightKg = shippingConfirmedWeight;
                 }
             }
+
+            order.OrderChangeDate = DateTime.UtcNow;
         }
 
         public string ValidateChange(Order order, decimal? oldValue, decimal? newValue)
@@ -39,7 +38,7 @@ namespace Application.BusinessModels.Orders.Handlers
             return null;
         }
 
-        public ActualWeightKgHandler(ICommonDataService dataService, IHistoryService historyService)
+        public ConfirmedWeightKgHandler(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
             _historyService = historyService;

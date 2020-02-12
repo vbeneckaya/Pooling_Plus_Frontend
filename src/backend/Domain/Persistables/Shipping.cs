@@ -62,23 +62,14 @@ namespace Domain.Persistables
         public Guid? BodyTypeId { get; set; }
 
         /// <summary>
-        /// Предварительное кол-во паллет
+        /// Плановое кол-во паллет
         /// </summary>
         public int? PalletsCount { get; set; }
         /// <summary>
-        /// Предварительное кол-во паллет введено вручную
+        /// Плановое кол-во паллет введено вручную
         /// </summary>
         [IgnoreHistory]
         public bool ManualPalletsCount { get; set; }
-        /// <summary>
-        /// Фактическое кол-во паллет
-        /// </summary>
-        public int? ActualPalletsCount { get; set; }
-        /// <summary>
-        /// Фактическое кол-во паллет введено вручную
-        /// </summary>
-        [IgnoreHistory]
-        public bool ManualActualPalletsCount { get; set; }
         /// <summary>
         /// Подтвержденное кол-во паллет
         /// </summary>
@@ -98,14 +89,14 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public bool ManualWeightKg { get; set; }
         /// <summary>
-        /// Фактический вес, кг
+        /// Подтвержденный вес, кг
         /// </summary>
-        public decimal? ActualWeightKg { get; set; }
+        public decimal? ConfirmedWeightKg { get; set; }
         /// <summary>
-        /// Фактический вес введен вручную
+        /// Подтвержденный вес введен вручную
         /// </summary>
         [IgnoreHistory]
-        public bool ManualActualWeightKg { get; set; }
+        public bool ManualConfirmedWeightKg { get; set; }
         /// <summary>
         /// Плановое прибытие/тайм-слот (склад БДФ)
         /// </summary>
