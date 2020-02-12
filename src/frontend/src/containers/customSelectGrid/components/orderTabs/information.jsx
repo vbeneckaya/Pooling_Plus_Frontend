@@ -323,13 +323,13 @@ const Information = ({
                                                         <Grid.Row>
                                                             <Grid.Column>
                                                                 <FormField
-                                                                    name="factWeight"
+                                                                    name="confirmedWeightKg"
                                                                     text="factWeight"
-                                                                    value={form['factWeight']}
-                                                                    error={error['factWeight']}
+                                                                    value={form['confirmedWeightKg']}
+                                                                    error={error['confirmedWeightKg']}
                                                                     type={NUMBER_TYPE}
                                                                     settings={
-                                                                        settings['factWeight']
+                                                                        settings['confirmedWeightKg']
                                                                     }
                                                                     onChange={onChange}
                                                                 />
