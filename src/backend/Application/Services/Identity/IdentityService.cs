@@ -21,12 +21,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.Identity
 {
-    
     public class IdentityService : IIdentityService
     {
-            
         private readonly IUserProvider _userIdProvider;
-        
+
         private readonly ICommonDataService _dataService;
 
         public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService)
@@ -37,15 +35,18 @@ namespace Application.Services.Identity
 
         public VerificationResultWith<TokenModel> GetToken(IdentityModel model)
         {
+            prepareIdentityModelBeforeLogin(model);
+            
             var user = this._dataService.GetDbSet<User>().GetByLogin(model.Login);
 
             if (user != null && !user.IsActive)
-                return new VerificationResultWith<TokenModel> { Result = VerificationResult.Forbidden, Data = null };
+                return new VerificationResultWith<TokenModel> {Result = VerificationResult.Forbidden, Data = null};
 
             var identity = GetIdentity(model.Login, model.Password, model.Language);
 
             if (identity == null)
-                return new VerificationResultWith<TokenModel> { Result = VerificationResult.WrongCredentials, Data = null };
+                return new VerificationResultWith<TokenModel>
+                    {Result = VerificationResult.WrongCredentials, Data = null};
 
             var now = DateTime.Now;
 
@@ -56,9 +57,9 @@ namespace Application.Services.Identity
             if (role?.Permissions != null)
             {
                 var userPermissions = role
-                .Permissions
-                .Cast<RolePermissions>()
-                .Select(i => new Claim("Permission", i.GetPermissionName()));
+                    .Permissions
+                    .Cast<RolePermissions>()
+                    .Select(i => new Claim("Permission", i.GetPermissionName()));
 
                 claims = claims.Union(userPermissions);
             }
@@ -70,10 +71,13 @@ namespace Application.Services.Identity
                 notBefore: now,
                 claims: claims,
                 expires: now.AddDays(7),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningOptions.SignKey)), SecurityAlgorithms.HmacSha256));
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningOptions.SignKey)),
+                    SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            return new VerificationResultWith<TokenModel>{Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
+            return new VerificationResultWith<TokenModel>
+                {Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
         }
 
         public UserInfo GetUserInfo()
@@ -83,22 +87,24 @@ namespace Application.Services.Identity
 
             //TODO Получать имя пользователя и роль
             return new UserInfo
-            {   
+            {
                 UserName = user.Name,
                 UserRole = role?.Name,
-                Role = role != null ? new RoleDto
-                {
-                    Id = role.Id.ToString(),
-                    Name = role.Name,
-                    IsActive = role.IsActive,
-                    Actions = role.Actions,
-                    Permissions = role?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
+                Role = role != null
+                    ? new RoleDto
                     {
-                        Code = i,
-                        Name = i.GetPermissionName()
-                    }),
-                    UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
-                } : null
+                        Id = role.Id.ToString(),
+                        Name = role.Name,
+                        IsActive = role.IsActive,
+                        Actions = role.Actions,
+                        Permissions = role?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
+                        {
+                            Code = i,
+                            Name = i.GetPermissionName()
+                        }),
+                        UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
+                    }
+                    : null
             };
         }
 
@@ -124,16 +130,16 @@ namespace Application.Services.Identity
                 new Claim("lang", language)
             };
 
-            return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            return new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                ClaimsIdentity.DefaultRoleClaimType);
         }
 
         public bool HasPermissions(User user, RolePermissions permission)
         {
             return user?.Role?.Permissions
-                ?.Cast<RolePermissions>()
-                ?.Any(i => i == permission) ?? false;
+                       ?.Cast<RolePermissions>()
+                       ?.Any(i => i == permission) ?? false;
         }
-
 
         public bool HasPermissions(RolePermissions permission)
         {
@@ -147,6 +153,11 @@ namespace Application.Services.Identity
                 .First(i => i.Id == userId);
 
             return HasPermissions(user, permission);
+        }
+
+        private void prepareIdentityModelBeforeLogin(IdentityModel model)
+        {
+            model.Login = model.Login.ToLower();
         }
     }
 }
