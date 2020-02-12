@@ -27,24 +27,20 @@ namespace Application.Services.Shippings
             int? palletsCount = orders.Any(o => o.PalletsCount.HasValue)
                 ? orders.Sum(o => o.PalletsCount ?? 0)
                 : (int?) null;
-            int? actualPalletsCount = orders.Any(o => o.ActualPalletsCount.HasValue)
-                ? orders.Sum(o => o.ActualPalletsCount ?? 0)
-                : (int?) null;
-            int? confirmedPalletsCount = orders.Any(o => o.ConfirmedPalletsCount.HasValue)
+           int? confirmedPalletsCount = orders.Any(o => o.ConfirmedPalletsCount.HasValue)
                 ? orders.Sum(o => o.ConfirmedPalletsCount ?? 0)
                 : (int?) null;
             decimal? weight = orders.Any(o => o.WeightKg.HasValue) ? orders.Sum(o => o.WeightKg ?? 0) : (decimal?) null;
-            decimal? actualWeight = orders.Any(o => o.ActualWeightKg.HasValue)
-                ? orders.Sum(o => o.ActualWeightKg ?? 0)
+            decimal? confirmedWeight = orders.Any(o => o.ConfirmedWeightKg.HasValue)
+                ? orders.Sum(o => o.ConfirmedWeightKg ?? 0)
                 : (decimal?) null;
 
             shipping.TemperatureMin = tempRange?.Key;
             shipping.TemperatureMax = tempRange?.Value;
             shipping.PalletsCount = palletsCount;
-            shipping.ActualPalletsCount = actualPalletsCount;
             shipping.ConfirmedPalletsCount = confirmedPalletsCount;
             shipping.WeightKg = weight;
-            shipping.ActualWeightKg = actualWeight;
+            shipping.ConfirmedWeightKg = confirmedWeight;
             shipping.TrucksDowntime = downtime;
 
             var loadingArrivalTime = orders.Select(i => i.LoadingArrivalTime).Where(i => i != null).Min();

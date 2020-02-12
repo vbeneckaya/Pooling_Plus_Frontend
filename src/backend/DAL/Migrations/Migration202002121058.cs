@@ -7,7 +7,9 @@ namespace DAL.Migrations
     {
         public override void Apply()
         {
-            Database.RenameColumn("Shippings", "TarifficationType", );
+            Database.RenameColumn("Orders", "ActualWeightKg", "ConfirmedWeightKg" );
+            Database.RenameColumn("Shippings", "ActualWeightKg", "ConfirmedWeightKg" );
+            Database.RenameColumn("Shippings", "ManualActualWeightKg", "ManualConfirmedWeightKg" );
         }
     }
 }

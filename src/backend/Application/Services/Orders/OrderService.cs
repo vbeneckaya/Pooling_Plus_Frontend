@@ -25,6 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ConfirmedPalletsCountHandler = Application.BusinessModels.Orders.Handlers.ConfirmedPalletsCountHandler;
+using LoadingArrivalTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingArrivalTimeHandler;
+using LoadingDepartureTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingDepartureTimeHandler;
+using PalletsCountHandler = Application.BusinessModels.Orders.Handlers.PalletsCountHandler;
+using TrucksDowntimeHandler = Application.BusinessModels.Orders.Handlers.TrucksDowntimeHandler;
+using WeightKgHandler = Application.BusinessModels.Orders.Handlers.WeightKgHandler;
 
 namespace Application.Services.Orders
 {
@@ -159,11 +165,9 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.BoxesCount, new BoxesCountHandler())
                 .AddHandler(e => e.ConfirmedBoxesCount, new ConfirmedBoxesCountHandler())
                 .AddHandler(e => e.PalletsCount, new PalletsCountHandler(_dataService, _historyService, !isInjection))
-                .AddHandler(e => e.ConfirmedPalletsCount,
-                    new ConfirmedPalletsCountHandler(_dataService, _historyService))
-                .AddHandler(e => e.ActualPalletsCount, new ActualPalletsCountHandler(_dataService, _historyService))
+                .AddHandler(e => e.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler(_dataService, _historyService))
                 .AddHandler(e => e.WeightKg, new WeightKgHandler(_dataService, _historyService))
-                .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler(_dataService, _historyService))
+                .AddHandler(e => e.ConfirmedWeightKg, new ConfirmedWeightKgHandler(_dataService, _historyService))
                 .AddHandler(e => e.OrderAmountExcludingVAT, new OrderAmountExcludingVATHandler())
                 .AddHandler(e => e.ClientAvisationTime, new ClientAvisationTimeHandler(!isInjection))
                 .AddHandler(e => e.PickingTypeId, new PickingTypeHandler(!isInjection))
@@ -619,9 +623,9 @@ namespace Application.Services.Orders
             string where = string.Empty;
 
             // OrderNumber Filter
-            where = where.WhereAnd(searchForm.Filter.ActualPalletsCount.ApplyNumericFilter<Order>(i => i.ActualPalletsCount, ref parameters))
+            where = where
                          .WhereAnd(searchForm.Filter.ActualReturnDate.ApplyDateRangeFilter<Order>(i => i.ActualReturnDate, ref parameters))
-                         .WhereAnd(searchForm.Filter.ActualWeightKg.ApplyNumericFilter<Order>(i => i.ActualWeightKg, ref parameters))
+                         .WhereAnd(searchForm.Filter.ConfirmedWeightKg.ApplyNumericFilter<Order>(i => i.ConfirmedWeightKg, ref parameters))
                          .WhereAnd(searchForm.Filter.ArticlesCount.ApplyNumericFilter<Order>(i => i.ArticlesCount, ref parameters))
                          .WhereAnd(searchForm.Filter.ClientOrderNumber.ApplyStringFilter<Order>(i => i.ClientOrderNumber, ref parameters))
                          .WhereAnd(searchForm.Filter.BoxesCount.ApplyNumericFilter<Order>(i => i.BoxesCount, ref parameters))
@@ -787,7 +791,6 @@ namespace Application.Services.Orders
                 || columns.Contains("transitDays") && isInt && i.TransitDays == searchInt
                 || columns.Contains("articlesCount") && isInt && i.ArticlesCount == searchInt
                 || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
-                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
 
                 || columns.Contains("orderDate") && i.OrderDate.Value.SqlFormat(searchDateFormat).Contains(search)
                 || columns.Contains("shippingDate") && i.ShippingDate.Value.SqlFormat(searchDateFormat).Contains(search)
@@ -809,7 +812,7 @@ namespace Application.Services.Orders
                 || columns.Contains("confirmedBoxesCount") && isDecimal && i.ConfirmedBoxesCount >= searchDecimal - precision && i.ConfirmedBoxesCount <= searchDecimal + precision
                 || columns.Contains("confirmedPalletsCount") && isDecimal && i.ConfirmedPalletsCount >= searchDecimal - precision && i.ConfirmedPalletsCount <= searchDecimal + precision
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision && i.WeightKg <= searchDecimal + precision
-                || columns.Contains("actualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision && i.ActualWeightKg <= searchDecimal + precision
+                || columns.Contains("confirmedWeightKg") && isDecimal && i.ConfirmedWeightKg >= searchDecimal - precision && i.ConfirmedWeightKg <= searchDecimal + precision
                 || columns.Contains("orderAmountExcludingVAT") && isDecimal && i.OrderAmountExcludingVAT >= searchDecimal - precision && i.OrderAmountExcludingVAT <= searchDecimal + precision
                 || columns.Contains("trucksDowntime") && isDecimal && i.TrucksDowntime >= searchDecimal - precision && i.TrucksDowntime <= searchDecimal + precision
                 || columns.Contains("deliveryCost") && isDecimal && i.DeliveryCost >= searchDecimal - precision && i.DeliveryCost <= searchDecimal + precision

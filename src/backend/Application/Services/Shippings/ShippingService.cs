@@ -246,10 +246,9 @@ namespace Application.Services.Shippings
             return setter
                 .AddHandler(e => e.CarrierId, new CarrierIdHandler(_dataService, _historyService))
                 .AddHandler(e => e.PalletsCount, new PalletsCountHandler())
-                .AddHandler(e => e.ActualPalletsCount, new ActualPalletsCountHandler())
                 .AddHandler(e => e.ConfirmedPalletsCount, new ConfirmedPalletsCountHandler())
                 .AddHandler(e => e.WeightKg, new WeightKgHandler())
-                .AddHandler(e => e.ActualWeightKg, new ActualWeightKgHandler())
+                .AddHandler(e => e.ConfirmedWeightKg, new ConfirmedWeightKgHandler())
                 .AddHandler(e => e.LoadingArrivalTime, new LoadingArrivalTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.LoadingDepartureTime, new LoadingDepartureTimeHandler(_dataService, _historyService))
                 .AddHandler(e => e.TotalDeliveryCost, new TotalDeliveryCostHandler())
@@ -276,8 +275,7 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.Id, e => e.Ignore())
                     .ForMember(t => t.ShippingNumber, e => e.MapFrom(s => s.ShippingNumber.Value))
                     .ForMember(t => t.Status, e => e.Ignore())
-                    .ForMember(t => t.ManualActualPalletsCount, e => e.Ignore())
-                    .ForMember(t => t.ManualActualWeightKg, e => e.Ignore())
+                    .ForMember(t => t.ManualConfirmedWeightKg, e => e.Ignore())
                     .ForMember(t => t.ManualConfirmedPalletsCount, e => e.Ignore())
                     .ForMember(t => t.ManualPalletsCount, e => e.Ignore())
                     .ForMember(t => t.ManualTotalDeliveryCost, e => e.Ignore())
@@ -577,9 +575,7 @@ namespace Application.Services.Shippings
             where = where
                 .WhereAnd(searchForm.Filter.ActualDocumentsReturnDate.ApplyDateRangeFilter<Shipping>(
                     i => i.ActualDocumentsReturnDate, ref parameters))
-                .WhereAnd(searchForm.Filter.ActualPalletsCount.ApplyNumericFilter<Shipping>(i => i.ActualPalletsCount,
-                    ref parameters))
-                .WhereAnd(searchForm.Filter.ActualWeightKg.ApplyNumericFilter<Shipping>(i => i.ActualWeightKg,
+                .WhereAnd(searchForm.Filter.ConfirmedWeightKg.ApplyNumericFilter<Shipping>(i => i.ConfirmedWeightKg,
                     ref parameters))
                 .WhereAnd(searchForm.Filter.AdditionalCostsComments.ApplyStringFilter<Shipping>(
                     i => i.AdditionalCostsComments, ref parameters))
@@ -733,12 +729,11 @@ namespace Application.Services.Shippings
                 || columns.Contains("temperatureMin") && isInt && i.TemperatureMin == searchInt
                 || columns.Contains("temperatureMax") && isInt && i.TemperatureMax == searchInt
                 || columns.Contains("palletsCount") && isInt && i.PalletsCount == searchInt
-                || columns.Contains("actualPalletsCount") && isInt && i.ActualPalletsCount == searchInt
                 || columns.Contains("confirmedPalletsCount") && isInt && i.ConfirmedPalletsCount == searchInt
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision &&
                 i.WeightKg <= searchDecimal + precision
-                || columns.Contains("actualWeightKg") && isDecimal && i.ActualWeightKg >= searchDecimal - precision &&
-                i.ActualWeightKg <= searchDecimal + precision
+                || columns.Contains("confirmedWeightKg") && isDecimal && i.ConfirmedWeightKg >= searchDecimal - precision &&
+                i.ConfirmedWeightKg <= searchDecimal + precision
                 || columns.Contains("totalDeliveryCost") && isDecimal &&
                 i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
                 || columns.Contains("otherCosts") && isDecimal && i.OtherCosts >= searchDecimal - precision &&

@@ -125,6 +125,11 @@
         /// Pallets Count
         /// </summary>
         public string PalletsCount { get; set; }
+        
+        /// <summary>
+        /// Confirmed Pallets Count
+        /// </summary>
+        public string ConfirmedPalletsCount { get; set; }
 
         /// <summary>
         /// Weight Kg
@@ -255,11 +260,6 @@
         /// Shipping Status
         /// </summary>
         public string ShippingStatus { get; set; }
-
-        /// <summary>
-        /// Confirmed Pallets Count
-        /// </summary>
-        public string ConfirmedPalletsCount { get; set; }
 
         /// <summary>
         /// Invoice
