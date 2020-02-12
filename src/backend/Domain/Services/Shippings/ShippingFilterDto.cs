@@ -31,13 +31,11 @@ namespace Domain.Services.Shippings
 
         public string PalletsCount { get; set; }
 
-        public string ActualPalletsCount { get; set; }
-
         public string ConfirmedPalletsCount { get; set; }
 
         public string WeightKg { get; set; }
 
-        public string ActualWeightKg { get; set; }
+        public string ConfirmedWeightKg { get; set; }
 
         public string LoadingArrivalTime { get; set; }
 

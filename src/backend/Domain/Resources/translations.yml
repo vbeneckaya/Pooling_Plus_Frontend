@@ -611,7 +611,7 @@ en:
   actualDocumentsReturnDate: "Actual documents return date"
   actualPalletsCount: "Actual no. of pallets"
   actualReturnDate: "Actual return days"
-  actualWeightKg: "Actual weight, kg"
+  confirmedWeightKg: "Confirmed weight, kg"
   Add document: "Add document"
   Add to the catalog Delivery warehouses: "Add to the catalog Delivery warehouses"
   add value: "Add value"

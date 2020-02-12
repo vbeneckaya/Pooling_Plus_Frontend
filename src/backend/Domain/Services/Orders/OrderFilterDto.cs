@@ -127,19 +127,14 @@
         public string PalletsCount { get; set; }
 
         /// <summary>
-        /// Actual Pallets Count
-        /// </summary>
-        public string ActualPalletsCount { get; set; }
-
-        /// <summary>
         /// Weight Kg
         /// </summary>
         public string WeightKg { get; set; }
 
         /// <summary>
-        /// Actual Weight Kg
+        /// Confirmed Weight Kg
         /// </summary>
-        public string ActualWeightKg { get; set; }
+        public string ConfirmedWeightKg { get; set; }
 
         /// <summary>
         /// OrderAmountExcludingVAT
