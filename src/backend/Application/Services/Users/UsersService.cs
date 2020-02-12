@@ -20,11 +20,14 @@ namespace Application.Services.Users
 {
     public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                            IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
-                            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
-        { }
+        public UsersService(ICommonDataService dataService, IUserProvider userProvider,
+            ITriggersService triggersService,
+            IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
+                fieldSetterFactory, configurationService)
+        {
+        }
 
         public ValidateResult SetActive(Guid id, bool active)
         {
@@ -63,27 +66,27 @@ namespace Application.Services.Users
         protected override IEnumerable<UserDto> FillLookupNames(IEnumerable<UserDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
-                                 .Select(x => x.CarrierId.Value.ToGuid())
-                                 .ToList();
+                .Select(x => x.CarrierId.Value.ToGuid())
+                .ToList();
             var carriers = _dataService.GetDbSet<TransportCompany>()
-                                       .Where(x => carrierIds.Contains(x.Id))
-                                       .ToDictionary(x => x.Id.ToString());
+                .Where(x => carrierIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
             var roleIds = dtos.Where(x => !string.IsNullOrEmpty(x.RoleId?.Value))
-                              .Select(x => x.RoleId.Value.ToGuid())
-                              .ToList();
+                .Select(x => x.RoleId.Value.ToGuid())
+                .ToList();
             var roles = _dataService.GetDbSet<Role>()
-                                    .Where(x => roleIds.Contains(x.Id))
-                                    .ToDictionary(x => x.Id.ToString());
+                .Where(x => roleIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
             var clientIds = dtos.Where(x => !string.IsNullOrEmpty(x.ClientId?.Value))
-                         .Select(x => x.ClientId.Value.ToGuid())
-                         .ToList();
+                .Select(x => x.ClientId.Value.ToGuid())
+                .ToList();
 
             var clients = _dataService.GetDbSet<Client>()
-                                           .Where(x => clientIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
-            
+                .Where(x => clientIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
+
             var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
                 .Select(x => x.ProviderId.Value.ToGuid())
                 .ToList();
@@ -111,7 +114,7 @@ namespace Application.Services.Users
                 {
                     dto.ClientId.Name = client.Name;
                 }
-                
+
                 if (!string.IsNullOrEmpty(dto.ProviderId?.Value)
                     && providers.TryGetValue(dto.ProviderId.Value, out Provider provider))
                 {
@@ -142,7 +145,7 @@ namespace Application.Services.Users
 
         public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id)) 
+            if (!string.IsNullOrEmpty(dto.Id))
                 entity.Id = Guid.Parse(dto.Id);
 
             var oldRoleId = entity.RoleId;
@@ -156,15 +159,44 @@ namespace Application.Services.Users
             entity.ClientId = dto.ClientId?.Value?.ToGuid();
             entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
 
-            var transportCompanyRole = _dataService.GetDbSet<Role>().First(i => i.Name == "TransportCompanyEmployee");
-
-            if (oldRoleId != entity.RoleId && entity.RoleId != transportCompanyRole.Id)
+            if (oldRoleId != entity.RoleId)
             {
-                entity.CarrierId = null;
+                var transportCompanyRoleIds = _dataService.GetDbSet<Role>()
+                    .Where(i => i.RoleType == Domain.Enums.RoleTypes.TransportCompany)
+                    .Select(_ => _.Id)
+                    .ToArray();
+
+                var clientRoleIds = _dataService.GetDbSet<Role>()
+                    .Where(i => i.RoleType == Domain.Enums.RoleTypes.Client)
+                    .Select(_ => _.Id)
+                    .ToArray();
+
+                var providerRoleIds = _dataService.GetDbSet<Role>()
+                    .Where(i => i.RoleType == Domain.Enums.RoleTypes.Provider)
+                    .Select(_ => _.Id)
+                    .ToArray();
+
+                if (transportCompanyRoleIds.Contains(entity.RoleId))
+                {
+                    entity.ProviderId = null;
+                    entity.ClientId = null;
+                }
+                
+                if (clientRoleIds.Contains(entity.RoleId))
+                {
+                    entity.ProviderId = null;
+                    entity.CarrierId = null;
+                }
+                
+                if (providerRoleIds.Contains(entity.RoleId))
+                {
+                    entity.CarrierId = null;
+                    entity.ClientId = null;
+                }
             }
 
-            
-            if (!string.IsNullOrEmpty(dto.Password)) 
+
+            if (!string.IsNullOrEmpty(dto.Password))
                 entity.PasswordHash = dto.Password.GetHash();
 
             return null;
@@ -178,7 +210,8 @@ namespace Application.Services.Users
 
             if (string.IsNullOrEmpty(dto.Id) && string.IsNullOrEmpty(dto.Password))
             {
-                result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang), ValidationErrorType.ValueIsRequired);
+                result.AddError(nameof(dto.Password), "User.Password.ValueIsRequired".Translate(lang),
+                    ValidationErrorType.ValueIsRequired);
             }
 
             var hasDuplicates = this._dataService.GetDbSet<User>()
@@ -188,7 +221,8 @@ namespace Application.Services.Users
 
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.Email), "User.DuplicatedRecord".Translate(lang),
+                    ValidationErrorType.DuplicatedRecord);
             }
 
             return result;
@@ -200,6 +234,7 @@ namespace Application.Services.Users
                 .OrderBy(i => i.Email)
                 .ThenBy(i => i.Id);
         }
+
         public override IQueryable<User> ApplyRestrictions(IQueryable<User> query)
         {
             var currentUserId = _userProvider.GetCurrentUserId();
@@ -211,12 +246,12 @@ namespace Application.Services.Users
             {
                 query = query.Where(i => i.ClientId == user.ClientId);
             }
-            
+
             if (user?.ProviderId != null)
             {
                 query = query.Where(i => i.ProviderId == user.ProviderId);
             }
-            
+
             if (user?.CarrierId != null)
             {
                 query = query.Where(i => i.CarrierId == user.CarrierId);
