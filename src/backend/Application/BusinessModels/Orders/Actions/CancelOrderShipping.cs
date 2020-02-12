@@ -49,7 +49,10 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return _shippingAction.IsAvailable(order.OrderShippingStatus);
+            return (order.OrderShippingStatus == ShippingState.ShippingCreated
+                    || order.OrderShippingStatus == ShippingState.ShippingRequestSent
+                    || order.OrderShippingStatus == ShippingState.ShippingConfirmed) ;
+            
         }
     }
 }

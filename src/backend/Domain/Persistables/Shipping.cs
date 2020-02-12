@@ -15,6 +15,11 @@ namespace Domain.Persistables
         [IgnoreHistory]
         public Guid Id { get; set; }
         /// <summary>
+        /// Пользователь создавший перевозку
+        /// </summary>    
+        [IgnoreHistory]
+        public Guid UserCreatorId { get; set; }
+        /// <summary>
         /// Номер перевозки
         /// </summary>
         public string ShippingNumber { get; set; }
@@ -217,6 +222,14 @@ namespace Domain.Persistables
         /// </summary>
         public string PoolingInfo { get; set; }
         /// <summary>
+        /// id слота на Pooling
+        /// </summary>
+        public string PoolingSlotId { get; set; }
+        /// <summary>
+        /// id брони на Pooling
+        /// </summary>
+        public string PoolingReservationId { get; set; }
+        /// <summary>
         /// Расходы подтверждена грузоотправителем
         /// </summary>
         public bool CostsConfirmedByShipper { get; set; }
@@ -247,6 +260,11 @@ namespace Domain.Persistables
         /// Маршрут
         /// </summary>
         public string Route { get; set; }
+
+        /// <summary>
+        /// Id заявки на портале
+        /// </summary>
+        public string FmcpWaybillId { get; set; }
 
         public override string ToString()
         {

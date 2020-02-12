@@ -128,7 +128,7 @@ namespace Domain.Services.Shippings
         public string Status { get; set; }
 
         [DisplayNameKey("Pooling.State")]
-        [FieldType(FieldType.State, source: nameof(ShippingPoolingState)), IsDefault, OrderNumber(3), IsReadOnly]
+        [FieldType(FieldType.State, source: nameof(ShippingPoolingState)), IsDefault, OrderNumber(3)]
         public string PoolingStatus { get; set; }
 
         [DisplayNameKey("Pooling.Info")]

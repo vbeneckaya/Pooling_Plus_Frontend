@@ -216,6 +216,7 @@ namespace Infrastructure.Installers
             
 
             services.AddScoped<ITrigger<Order>, UpdateOrderDeliveryCost>();
+            services.AddScoped<ITrigger<Order>, OnChangeDeliveryDate>();
             services.AddScoped<ITrigger<Order>, OnChangeTarifficationType>();
             services.AddScoped<ITrigger<Order>, OnChangeVehicleTypeId>();
             services.AddScoped<ITrigger<Order>, UpdateShippingRoute>();
@@ -234,10 +235,10 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Shipping>, ArchiveShipping>();
             services.AddScoped<IAppAction<Shipping>, RollbackShipping>();
             services.AddScoped<IAppAction<Shipping>, SendToPooling>();
+            services.AddScoped<IAppAction<Shipping>, CancelPoolingSlot>();
 
             services.AddScoped<ITrigger<Shipping>, UpdateShippingDeliveryCost>();
             services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeTarifficationType>();
-            services.AddScoped<ITrigger<Shipping>, Application.BusinessModels.Shippings.Triggers.OnChangeVehicleTypeId>();
             services.AddScoped<ITrigger<Shipping>, OnChangeTransportCompany>();
         }
 

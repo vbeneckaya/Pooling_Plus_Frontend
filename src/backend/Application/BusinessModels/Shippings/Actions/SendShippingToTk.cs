@@ -7,6 +7,7 @@ using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Linq;
+using Integrations.FMCP;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -38,6 +39,19 @@ namespace Application.BusinessModels.Shippings.Actions
                     Message = "shippingDontSetRequestSentDontSetTk".Translate(user.Language, shipping.ShippingNumber)
                 };
             
+            var transportCompany = _dataService.GetById<TransportCompany>(shipping.CarrierId.Value);
+            var currentUser = _dataService.GetById<User>(user.Id.Value);
+            
+            if (transportCompany.Title == "FM Logistic" && currentUser.IsFMCPIntegrated())
+            {
+                using (var fmcp = new FMCPIntegration(currentUser, _dataService))
+                {
+                    var fmcpWaybillId = fmcp.CreateWaybill(shipping);
+                    _historyService.Save(shipping.Id, "shippingSetRequestSent", shipping.ShippingNumber);
+                    shipping.FmcpWaybillId = fmcpWaybillId;
+                }
+            }
+
             shipping.Status = ShippingState.ShippingRequestSent;
 
             foreach (var order in _dataService.GetDbSet<Order>().Where(o => o.ShippingId == shipping.Id))
@@ -46,6 +60,7 @@ namespace Application.BusinessModels.Shippings.Actions
             }
 
             _historyService.Save(shipping.Id, "shippingSetRequestSent", shipping.ShippingNumber);
+
 
             return new AppActionResult
             {

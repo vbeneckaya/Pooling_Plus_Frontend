@@ -16,9 +16,9 @@ namespace Application.BusinessModels.Shippings.Triggers
             _calcService = calcService;
         }
 
-        public void Execute(Shipping entity)
+        public void Execute(Shipping shipping)
         {
-            _calcService.UpdateDeliveryCost(entity);
+            _calcService.UpdateDeliveryCost(shipping);
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)

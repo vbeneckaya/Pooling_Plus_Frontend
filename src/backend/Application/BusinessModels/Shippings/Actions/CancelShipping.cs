@@ -55,14 +55,9 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return IsAvailable(shipping.Status);
-        }
-
-        public bool IsAvailable(ShippingState? shippingStatus)
-        {
-            return shippingStatus == ShippingState.ShippingCreated 
-                || shippingStatus == ShippingState.ShippingRequestSent 
-                || shippingStatus == ShippingState.ShippingConfirmed;
+            return (shipping.Status == ShippingState.ShippingCreated
+                    || shipping.Status == ShippingState.ShippingRequestSent
+                    || shipping.Status == ShippingState.ShippingConfirmed) && shipping.PoolingState == null;
         }
     }
 }

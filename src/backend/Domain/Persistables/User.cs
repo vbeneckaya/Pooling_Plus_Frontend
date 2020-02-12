@@ -29,9 +29,46 @@ namespace Domain.Persistables
         /// </summary>
         public Guid? ProviderId { get; set; }
 
+        /// <summary>
+        /// Логин на пулинге
+        /// </summary>
+        public string PoolingLogin { get; set; }
+
+        /// <summary>
+        /// Пароль на пулинге
+        /// </summary>
+        public string PoolingPassword { get; set; }
+        
+        public string PoolingAccessToken { get; set; }
+        public string PoolingRefreshToken { get; set; }
+
+
+        /// <summary>
+        /// Логин на FmCP
+        /// </summary>
+        public string FmCPLogin { get; set; }
+
+        /// <summary>
+        /// Пароль на FmCP
+        /// </summary>
+        public string FmCPPassword { get; set; }
+        
+        public string FmCPAccessToken { get; set; }
+        public string FmCPRefreshToken { get; set; }
+
+
         public override string ToString()
         {
             return Name;
+        }
+
+        public bool IsPoolingIntegrated()
+        {
+            return !string.IsNullOrEmpty(PoolingLogin) && !string.IsNullOrEmpty(PoolingPassword);
+        }
+        public bool IsFMCPIntegrated()
+        {
+            return !string.IsNullOrEmpty(FmCPLogin) && !string.IsNullOrEmpty(FmCPPassword);
         }
     }
 }
