@@ -22,7 +22,7 @@ namespace Domain.Services.Users
         [FieldType(FieldType.Password)]
         public string Password { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public string FieldsConfig { get; set; }
         
