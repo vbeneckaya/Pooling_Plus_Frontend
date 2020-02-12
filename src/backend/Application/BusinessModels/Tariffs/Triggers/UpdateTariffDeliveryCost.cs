@@ -20,7 +20,7 @@ namespace Application.BusinessModels.Tariffs.Triggers
             _calcService = calcService;
         }
 
-        public void Execute(Tariff entity)
+        public void Execute(Tariff tariff)
         {
             var shippings = _dataService.GetDbSet<Shipping>()
                                 .Where(x => x.Status == ShippingState.ShippingCreated 

@@ -151,7 +151,6 @@ namespace Application.Services.Orders
                 .AddHandler(e => e.DeliveryWarehouseId, new DeliveryWarehouseHandler(_dataService, _historyService))
                 .AddHandler(e => e.ShippingStatus, new ShippingStatusHandler(_dataService, _historyService))
                 .AddHandler(e => e.DeliveryStatus, new DeliveryStatusHandler(_dataService, _historyService))
-                .AddHandler(e => e.ClientOrderNumber, new ClientOrderNumberHandler(_historyService))
                 .AddHandler(e => e.ShippingDate, new ShippingDateHandler(_dataService, _historyService, !isInjection))
                 .AddHandler(e => e.DeliveryDate, new DeliveryDateHandler(_dataService, _historyService, isInjection))
                 .AddHandler(e => e.OrderNumber, new OrderNumberHandler(_userIdProvider, _dataService))

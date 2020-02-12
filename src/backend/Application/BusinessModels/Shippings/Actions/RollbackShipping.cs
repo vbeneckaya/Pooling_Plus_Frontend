@@ -70,7 +70,7 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return IsAvailable(shipping.Status);
+            return IsAvailable(shipping.Status) && shipping.PoolingState == null;
         }
 
         public bool IsAvailable(ShippingState? shippingStatus)

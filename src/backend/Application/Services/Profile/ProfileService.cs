@@ -20,9 +20,9 @@ namespace Application.Services.Profile
 
         public ProfileService(IUserProvider userProvider, ICommonDataService dataService, IValidationService validationService)
         {
-            this._userProvider = userProvider;
-            this._dataService = dataService;
-            this._validationService = validationService;
+            _userProvider = userProvider;
+            _dataService = dataService;
+            _validationService = validationService;
         }
         public ProfileDto GetProfile()
         {
@@ -40,6 +40,10 @@ namespace Application.Services.Profile
                 Email = user.Email,
                 UserName = user.Name,
                 RoleName = role.Name,
+                PoolingLogin = user.PoolingLogin,
+                PoolingPassword = user.PoolingPassword,
+                FmCPLogin = user.FmCPLogin,
+                FmCPPassword = user.FmCPPassword,
             };
         }
 
@@ -50,7 +54,7 @@ namespace Application.Services.Profile
             
             var lang = _userProvider.GetCurrentUser().Language;
 
-            var result = this._validationService.Validate(dto);
+            var result = _validationService.Validate(dto);
             
             if (string.IsNullOrEmpty(dto.Email))
                 result.AddError(nameof(dto.Email), "userEmailIsEmpty".Translate(lang), ValidationErrorType.ValueIsRequired); 
@@ -68,6 +72,12 @@ namespace Application.Services.Profile
             {
                 user.Email = dto.Email;
                 user.Name = dto.UserName;
+                
+                user.PoolingLogin = dto.PoolingLogin;
+                user.PoolingPassword = dto.PoolingPassword;
+
+                user.FmCPLogin = dto.FmCPLogin;
+                user.FmCPPassword = dto.FmCPPassword;
             
                 _dataService.SaveChanges();
             }
@@ -81,7 +91,7 @@ namespace Application.Services.Profile
             var user = _dataService.GetDbSet<User>().GetById(currentUserId.Value);
             var lang = _userProvider.GetCurrentUser().Language;
             
-            var result = this._validationService.Validate(dto);
+            var result = _validationService.Validate(dto);
 
             if (!string.IsNullOrEmpty(dto.OldPassword) && user.PasswordHash != dto.OldPassword.GetHash())
             {

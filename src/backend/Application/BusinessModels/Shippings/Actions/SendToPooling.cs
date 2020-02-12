@@ -1,3 +1,4 @@
+using System;
 using Application.BusinessModels.Shared.Actions;
 using DAL.Services;
 using Domain.Enums;
@@ -7,6 +8,10 @@ using Domain.Services.History;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using System.Linq;
+using Integrations;
+using Integrations.Dtos;
+using Integrations.Pooling;
+using Integrations.Pooling.Dtos;
 
 namespace Application.BusinessModels.Shippings.Actions
 {
@@ -26,8 +31,47 @@ namespace Application.BusinessModels.Shippings.Actions
             Description = "Забронировать слот на пулинге";
         }
 
-        public AppActionResult Run(CurrentUserDto user, Shipping shipping)
+        public AppActionResult Run(CurrentUserDto userDto, Shipping shipping)
         {
+            var user = _dataService.GetById<User>(userDto.Id.Value);
+
+            if (!user.IsPoolingIntegrated())
+                return new AppActionResult
+                {
+                    IsError = true,
+                    Message = "Укажите данные для доступа к pooling.me в настройках профиля"
+                };
+            
+            using (var pooling = new PoolingIntegration(user, _dataService))
+            {
+                var poolingInfo = pooling.GetInfoFor(shipping);
+                if (poolingInfo.IsAvailable)
+                {
+                    var reservationResult = pooling.CreateReservation(shipping);
+                    if (!string.IsNullOrEmpty(reservationResult.Error))
+                    {
+                        return new AppActionResult
+                        {
+                            IsError = true,
+                            Message = $"Pooling: {reservationResult.Error}"
+                        };
+                    }
+
+                    shipping.PoolingInfo = $"Номер брони на Pooling: {reservationResult.ReservationNumber}";
+                    shipping.PoolingSlotId = poolingInfo.SlotId;
+                    shipping.PoolingReservationId = reservationResult.ReservationId;
+                }
+                else
+                {
+                    shipping.PoolingState = null;
+                    return new AppActionResult
+                    {
+                        IsError = true,
+                        Message = "Бронирование не доступно"
+                    };
+                }
+            }
+
             shipping.Status = ShippingState.ShippingConfirmed;
             shipping.PoolingState = ShippingPoolingState.PoolingBooked;
 
@@ -41,7 +85,7 @@ namespace Application.BusinessModels.Shippings.Actions
             return new AppActionResult
             {
                 IsError = false,
-                Message = "shippingSetPooling".Translate(user.Language, shipping.ShippingNumber)
+                Message = "shippingSetPooling".Translate(userDto.Language, shipping.ShippingNumber)
             };
         }
 

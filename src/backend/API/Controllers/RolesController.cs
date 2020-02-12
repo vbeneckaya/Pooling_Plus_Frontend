@@ -17,7 +17,7 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Получение данных для выпадающего списка в 
+        /// РџРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РІС‹РїР°РґР°СЋС‰РµРіРѕ СЃРїРёСЃРєР° РІ 
         /// </summary>
         [HttpPost("setActive/{id}/{active}")]
         public IActionResult SetActive(Guid id, bool active)
@@ -41,7 +41,7 @@ namespace API.Controllers
 
        
         /// <summary>
-        /// Получение списка всех доступных разрешений
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… СЂР°Р·СЂРµС€РµРЅРёР№
         /// </summary>
         [HttpGet("allPermissions")]
         public IActionResult GetAllPermissions()
@@ -64,7 +64,7 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Получение списка всех доступных действий
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… РґРµР№СЃС‚РІРёР№
         /// </summary>
         [HttpGet("allActions")]
         public IActionResult GetAllActions()
@@ -88,7 +88,7 @@ namespace API.Controllers
         
         
         /// <summary>
-        /// Получение списка всех доступных видов компаний для роли
+        /// РџРѕР»СѓС‡РµРЅРёРµ СЃРїРёСЃРєР° РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… РІРёРґРѕРІ РєРѕРјРїР°РЅРёР№ РґР»СЏ СЂРѕР»Рё
         /// </summary>
         [HttpGet("getCompanyTypeByRole/{id}")]
         public IActionResult GetCompanyTypeByRole([FromRoute] Guid id)
