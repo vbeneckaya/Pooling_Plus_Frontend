@@ -15,31 +15,31 @@ import {ORDERS_GRID, SHIPPINGS_GRID} from "../constants/grids";
 
 //*  TYPES  *//
 
-const OPEN_GRID_CARD_REQUEST = 'OPEN_GRID_CARD_REQUEST';
-const OPEN_GRID_CARD_SUCCESS = 'OPEN_GRID_CARD_SUCCESS';
-const OPEN_GRID_CARD_ERROR = 'OPEN_GRID_CARD_ERROR';
+// const OPEN_GRID_INNER_CARD_REQUEST = 'OPEN_GRID_INNER_CARD_REQUEST';
+// const OPEN_GRID_INNER_CARD_SUCCESS = 'OPEN_GRID_INNER_CARD_SUCCESS';
+// const OPEN_GRID_INNER_CARD_ERROR = 'OPEN_GRID_INNER_CARD_ERROR';
+//
+// const CREATE_DRAFT_REQUEST = 'CREATE_DRAFT_REQUEST';
+// const CREATE_DRAFT_SUCCESS = 'CREATE_DRAFT_SUCCESS';
+// const CREATE_DRAFT_ERROR = 'CREATE_DRAFT_ERROR';
+//
+const GET_INNER_CARD_CONFIG_REQUEST = 'GET_INNER_CARD_CONFIG_REQUEST';
+const GET_INNER_CARD_CONFIG_SUCCESS = 'GET_INNER_CARD_CONFIG_SUCCESS';
+const GET_INNER_CARD_CONFIG_ERROR = 'GET_INNER_CARD_CONFIG_ERROR';
 
-const CREATE_DRAFT_REQUEST = 'CREATE_DRAFT_REQUEST';
-const CREATE_DRAFT_SUCCESS = 'CREATE_DRAFT_SUCCESS';
-const CREATE_DRAFT_ERROR = 'CREATE_DRAFT_ERROR';
+const GET_GRID_INNER_CARD_REQUEST = 'GET_GRID_INNER_CARD_REQUEST';
+const GET_GRID_INNER_CARD_SUCCESS = 'GET_GRID_INNER_CARD_SUCCESS';
+const GET_GRID_INNER_CARD_ERROR = 'GET_GRID_INNER_CARD_ERROR';
 
-const GET_CARD_CONFIG_REQUEST = 'GET_CARD_CONFIG_REQUEST';
-const GET_CARD_CONFIG_SUCCESS = 'GET_CARD_CONFIG_SUCCESS';
-const GET_CARD_CONFIG_ERROR = 'GET_CARD_CONFIG_ERROR';
+const EDIT_GRID_INNER_CARD_REQUEST = 'EDIT_GRID_INNER_CARD_REQUEST';
+const EDIT_GRID_INNER_CARD_SUCCESS = 'EDIT_GRID_INNER_CARD_SUCCESS';
+const EDIT_GRID_INNER_CARD_ERROR = 'EDIT_GRID_INNER_CARD_ERROR';
 
-const GET_GRID_CARD_REQUEST = 'GET_GRID_CARD_REQUEST';
-const GET_GRID_CARD_SUCCESS = 'GET_GRID_CARD_SUCCESS';
-const GET_GRID_CARD_ERROR = 'GET_GRID_CARD_ERROR';
+const IS_UNIQUE_NUMBER_INNER_REQUEST = 'IS_UNIQUE_NUMBER_INNER_REQUEST';
+const IS_UNIQUE_NUMBER_INNER_SUCCESS = 'IS_UNIQUE_NUMBER_INNER_SUCCESS';
+const IS_UNIQUE_NUMBER_INNER_ERROR = 'IS_UNIQUE_NUMBER_INNER_ERROR';
 
-const EDI_GRID_CARD_REQUEST = 'EDI_GRID_CARD_REQUEST';
-const EDIT_GRID_CARD_SUCCESS = 'EDIT_GRID_CARD_SUCCESS';
-const EDIT_GRID_CARD_ERROR = 'EDIT_GRID_CARD_ERROR';
-
-const IS_UNIQUE_NUMBER_REQUEST = 'IS_UNIQUE_NUMBER_REQUEST';
-const IS_UNIQUE_NUMBER_SUCCESS = 'IS_UNIQUE_NUMBER_SUCCESS';
-const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
-
-const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
+const CLEAR_GRID_INNER_CARD = 'CLEAR_GRID_INNER_CARD';
 
 const ADD_ERROR = 'ADD_ERROR';
 const CLEAR_ERROR = 'CLEAR_ERROR';
@@ -58,73 +58,73 @@ const initial = {
 
 export default (state = initial, {type, payload}) => {
     switch (type) {
-        case GET_GRID_CARD_REQUEST:
-        case CREATE_DRAFT_REQUEST:
-        case GET_CARD_CONFIG_REQUEST:
+        case GET_GRID_INNER_CARD_REQUEST:
+      //  case CREATE_DRAFT_REQUEST:
+        case GET_INNER_CARD_CONFIG_REQUEST:
             return {
                 ...state,
                 progress: true,
             };
-        case GET_GRID_CARD_SUCCESS:
+        case GET_GRID_INNER_CARD_SUCCESS:
             return {
                 ...state,
                 progress: false,
                 data: payload,
             };
-        case CREATE_DRAFT_SUCCESS:
-            return {
-                ...state,
-                progress: false,
-                data: {id: payload.id},
-            };
-        case GET_CARD_CONFIG_SUCCESS:
+        // case CREATE_DRAFT_SUCCESS:
+        //     return {
+        //         ...state,
+        //         progress: false,
+        //         data: {id: payload.id},
+        //     };
+        case GET_INNER_CARD_CONFIG_SUCCESS:
             return {
                 ...state,
                 progress: false,
                 config: payload,
             };
-        case GET_GRID_CARD_ERROR:
-        case CREATE_DRAFT_ERROR:
-        case GET_CARD_CONFIG_ERROR:
+        case GET_GRID_INNER_CARD_ERROR:
+    //    case CREATE_DRAFT_ERROR:
+        case GET_INNER_CARD_CONFIG_ERROR:
             return {
                 ...state,
                 data: {},
                 progress: false,
             };
-        case OPEN_GRID_CARD_REQUEST:
-            return {
-                ...state,
-                progress: true,
-                data: {
-                    id: payload.id,
-                },
-            };
-        case OPEN_GRID_CARD_SUCCESS:
-        case OPEN_GRID_CARD_ERROR:
-            return {
-                ...state,
-                progress: false,
-            };
-        case EDI_GRID_CARD_REQUEST:
+        // case OPEN_INNER_GRID_CARD_REQUEST:
+        //     return {
+        //         ...state,
+        //         progress: true,
+        //         data: {
+        //             id: payload.id,
+        //         },
+        //     };
+        // case OPEN_GRID_CARD_SUCCESS:
+        // case OPEN_GRID_CARD_ERROR:
+        //     return {
+        //         ...state,
+        //         progress: false,
+        //     };
+        case EDIT_GRID_INNER_CARD_REQUEST:
             return {
                 ...state,
                 editProgress: true,
             };
-        case EDIT_GRID_CARD_SUCCESS:
-            
+        case EDIT_GRID_INNER_CARD_SUCCESS:
+
             return {
                 ...state,
                 error: [],
                 editProgress: false,
                 data: {...state.data, id: payload.id},
             };
-        case EDIT_GRID_CARD_ERROR:
+        case EDIT_GRID_INNER_CARD_ERROR:
             return {
                 ...state,
                 error: payload,
                 editProgress: false,
             };
-        case IS_UNIQUE_NUMBER_SUCCESS:
+        case IS_UNIQUE_NUMBER_INNER_SUCCESS:
             return {
                 ...state,
                 error: [
@@ -135,7 +135,7 @@ export default (state = initial, {type, payload}) => {
                     },
                 ],
             };
-        case CLEAR_GRID_CARD:
+        case CLEAR_GRID_INNER_CARD:
             return {
                 ...state,
                 error: [],
@@ -158,62 +158,62 @@ export default (state = initial, {type, payload}) => {
 
 //*  ACTION CREATORS  *//
 
-export const openGridCardRequest = payload => {
+// export const openGridInnerCardRequest = payload => {
+//     return {
+//         type: OPEN_GRID_INNER_CARD_REQUEST,
+//         payload,
+//     };
+// };
+
+// export const createDraftRequest = payload => {
+//     return {
+//         type: CREATE_DRAFT_REQUEST,
+//         payload,
+//     };
+// };
+
+export const getInerCardRequest = payload => {
     return {
-        type: OPEN_GRID_CARD_REQUEST,
+        type: GET_GRID_INNER_CARD_REQUEST,
         payload,
     };
 };
 
-export const createDraftRequest = payload => {
+export const getInnerCardConfigRequest = payload => {
     return {
-        type: CREATE_DRAFT_REQUEST,
+        type: GET_INNER_CARD_CONFIG_REQUEST,
         payload,
     };
 };
 
-export const getCardRequest = payload => {
+export const editInnerCardRequest = payload => {
     return {
-        type: GET_GRID_CARD_REQUEST,
+        type: EDIT_GRID_INNER_CARD_REQUEST,
         payload,
     };
 };
 
-export const getCardConfigRequest = payload => {
+export const isUniqueNumberInnerRequest = payload => {
     return {
-        type: GET_CARD_CONFIG_REQUEST,
+        type: IS_UNIQUE_NUMBER_INNER_REQUEST,
         payload,
     };
 };
 
-export const editCardRequest = payload => {
+export const clearGridInnerCard = () => {
     return {
-        type: EDI_GRID_CARD_REQUEST,
-        payload,
+        type: CLEAR_GRID_INNER_CARD,
     };
 };
 
-export const isUniqueNumberRequest = payload => {
-    return {
-        type: IS_UNIQUE_NUMBER_REQUEST,
-        payload,
-    };
-};
-
-export const clearGridCard = () => {
-    return {
-        type: CLEAR_GRID_CARD,
-    };
-};
-
-export const clearError = payload => {
+export const clearInnerCardError = payload => {
     return {
         type: CLEAR_ERROR,
         payload,
     };
 };
 
-export const addError = payload => {
+export const addInnerCardError = payload => {
     return {
         type: ADD_ERROR,
         payload,
@@ -222,18 +222,16 @@ export const addError = payload => {
 
 //*  SELECTORS *//
 
-const stateSelector = state => state.gridCard;
-
-const gridName = (state, name) => name;
+const stateSelector = state => state.gridInnerCard;
 
 const idSelector = createSelector(stateSelector, state => state.data.id);
 
-export const progressSelector = createSelector(stateSelector, state => state.progress);
-export const editProgressSelector = createSelector(stateSelector, state => state.editProgress);
+export const progressInnerSelector = createSelector(stateSelector, state => state.progress);
+export const editProgressInnerSelector = createSelector(stateSelector, state => state.editProgress);
 
-export const cardSelector = createSelector(stateSelector, state => state.data);
+export const innerCardSelector = createSelector(stateSelector, state => state.data);
 
-export const settingsFormSelector = createSelector(
+export const settingsFormInnerSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
         let settings = {};
@@ -249,7 +247,7 @@ export const settingsFormSelector = createSelector(
     },
 );
 
-export const settingsFormExtSelector = createSelector(
+export const settingsFormExtInnerSelector = createSelector(
     [fieldsExtSettingSelector, (state, status) => status],
     (state, status) => {
         let settings = {};
@@ -265,7 +263,7 @@ export const settingsFormExtSelector = createSelector(
     },
 );
 
-export const settingsExtSelector = createSelector(
+export const settingsExtInnerSelector = createSelector(
     [fieldsSettingSelector, (state, status) => status],
     (state, status) => {
         let settings = {};
@@ -280,53 +278,53 @@ export const settingsExtSelector = createSelector(
     },
 );
 
-export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
+export const errorInnerSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 //*  SAGA  *//
 
-function* openGridCardSaga({payload}) {
-    try {
-        const {name, id: idRow, callbackSuccess} = payload;
+// function* openGridInnerCardSaga({payload}) {
+//     try {
+//         const {name, id: idRow, callbackSuccess} = payload;
+//
+//         if (!idRow) {
+//             yield call(createDraftSaga, {payload: {name}});
+//         }
+//
+//         const id = yield select(idSelector);
+//
+//         // yield call(getCardConfigSaga, { payload: { name, id } });
+//
+//         yield call(getCardSaga, {payload: {name, id}});
+//
+//         const card = yield select(innerCardSelector);
+//
+//         callbackSuccess(card);
+//     } catch (error) {
+//         yield put({
+//             type: OPEN_GRID_INNER_CARD_ERROR,
+//             payload: error,
+//         });
+//     }
+// }
 
-        if (!idRow) {
-            yield call(createDraftSaga, {payload: {name}});
-        }
+// function* createDraftSaga({payload}) {
+//     try {
+//         const {name} = payload;
+//         const result = yield postman.post(`/${name}/saveOrCreate`, {});
+//
+//         yield put({
+//             type: CREATE_DRAFT_SUCCESS,
+//             payload: result,
+//         });
+//     } catch (error) {
+//         yield put({
+//             type: CREATE_DRAFT_ERROR,
+//             payload: error,
+//         });
+//     }
+// }
 
-        const id = yield select(idSelector);
-
-        // yield call(getCardConfigSaga, { payload: { name, id } });
-
-        yield call(getCardSaga, {payload: {name, id}});
-
-        const card = yield select(cardSelector);
-
-        callbackSuccess(card);
-    } catch (error) {
-        yield put({
-            type: OPEN_GRID_CARD_ERROR,
-            payload: error,
-        });
-    }
-}
-
-function* createDraftSaga({payload}) {
-    try {
-        const {name} = payload;
-        const result = yield postman.post(`/${name}/saveOrCreate`, {});
-
-        yield put({
-            type: CREATE_DRAFT_SUCCESS,
-            payload: result,
-        });
-    } catch (error) {
-        yield put({
-            type: CREATE_DRAFT_ERROR,
-            payload: error,
-        });
-    }
-}
-
-function* editCardSaga({payload}) {
+function* editInnerCardSaga({payload}) {
     try {
         const {name, params, callbackSuccess} = payload;
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
@@ -334,13 +332,12 @@ function* editCardSaga({payload}) {
         if (result.isError) {
             toast.error(result.error);
             yield put({
-                type: EDIT_GRID_CARD_ERROR,
+                type: EDIT_GRID_INNER_CARD_ERROR,
                 payload: result.errors,
             });
-            
         } else {
             yield put({
-                type: EDIT_GRID_CARD_SUCCESS,
+                type: EDIT_GRID_INNER_CARD_SUCCESS,
                 payload: result,
             });
 
@@ -348,29 +345,29 @@ function* editCardSaga({payload}) {
         }
     } catch (error) {
         yield put({
-            type: EDIT_GRID_CARD_ERROR,
+            type: EDIT_GRID_INNER_CARD_ERROR,
         });
     }
 }
 
-function* getCardConfigSaga({payload}) {
+function* getInnerCardConfigSaga({payload}) {
     try {
         const {name, id} = payload;
         const result = yield postman.get(`/getFormFor/${name}/${id}`);
 
         yield put({
-            type: GET_CARD_CONFIG_SUCCESS,
+            type: GET_INNER_CARD_CONFIG_SUCCESS,
             payload: result,
         });
     } catch (error) {
         yield put({
-            type: GET_CARD_CONFIG_ERROR,
+            type: GET_INNER_CARD_CONFIG_ERROR,
             payload: error,
         });
     }
 }
 
-function* getCardSaga({payload}) {
+function* getInnerCardSaga({payload}) {
     try {
         const {name, id, callbackSuccess} = payload;
         const roleId = yield select(state => roleIdSelector(state));
@@ -389,21 +386,21 @@ function* getCardSaga({payload}) {
                 },
             });
         const result = yield postman.get(`${name}/getById/${id}`);
-        yield put({type: GET_GRID_CARD_SUCCESS, payload: result});
+        yield put({type: GET_GRID_INNER_CARD_SUCCESS, payload: result});
         callbackSuccess && callbackSuccess(result);
     } catch (error) {
-        yield put({type: GET_GRID_CARD_ERROR});
+        yield put({type: GET_GRID_INNER_CARD_ERROR});
     }
 }
 
-function* isUniqueNumberSaga({payload}) {
+function* isUniqueNumberInnerSaga({payload}) {
     try {
         const {number, fieldName, errorText, callbackSuccess} = payload;
         const result = yield postman.post('/orders/findNumber', {number, isPartial: false});
 
         if (result.length && result[0].name) {
             yield put({
-                type: IS_UNIQUE_NUMBER_SUCCESS,
+                type: IS_UNIQUE_NUMBER_INNER_SUCCESS,
                 payload: {
                     fieldName,
                     errorText,
@@ -414,18 +411,18 @@ function* isUniqueNumberSaga({payload}) {
         }
     } catch (e) {
         yield put({
-            type: IS_UNIQUE_NUMBER_ERROR,
+            type: IS_UNIQUE_NUMBER_INNER_ERROR,
         });
     }
 }
 
 export function* saga() {
     yield all([
-        takeEvery(OPEN_GRID_CARD_REQUEST, openGridCardSaga),
-        takeEvery(CREATE_DRAFT_REQUEST, createDraftSaga),
-        takeEvery(GET_CARD_CONFIG_REQUEST, getCardConfigSaga),
-        takeEvery(GET_GRID_CARD_REQUEST, getCardSaga),
-        takeEvery(EDI_GRID_CARD_REQUEST, editCardSaga),
-        takeEvery(IS_UNIQUE_NUMBER_REQUEST, isUniqueNumberSaga),
+        //takeEvery(OPEN_GRID_INNER_CARD_REQUEST, openGridInnerCardSaga),
+        // takeEvery(CREATE_DRAFT_REQUEST, createDraftSaga),
+        takeEvery(GET_INNER_CARD_CONFIG_REQUEST, getInnerCardConfigSaga),
+        takeEvery(GET_GRID_INNER_CARD_REQUEST, getInnerCardSaga),
+        takeEvery(EDIT_GRID_INNER_CARD_REQUEST, editInnerCardSaga),
+        takeEvery(IS_UNIQUE_NUMBER_INNER_REQUEST, isUniqueNumberInnerSaga),
     ]);
 }

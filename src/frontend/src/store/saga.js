@@ -6,6 +6,7 @@ import { saga as gridListSaga } from '../ducks/gridList';
 import { saga as dictionaryViewSaga } from '../ducks/dictionaryView';
 import { saga as gridActionsSaga } from '../ducks/gridActions';
 import { saga as gridCardSaga } from '../ducks/gridCard';
+import { saga as gridInnerCardSaga } from '../ducks/gridInnerCard';
 import { saga as lookupSaga } from '../ducks/lookup';
 import { saga as documentsSaga } from '../ducks/documents';
 import { saga as representationsSaga } from '../ducks/representations';
@@ -26,6 +27,7 @@ export default function* rootSaga() {
         documentsSaga(),
         lookupSaga(),
         gridCardSaga(),
+        gridInnerCardSaga(),
         gridActionsSaga(),
         dictionaryViewSaga(),
         gridListSaga(),

@@ -204,7 +204,7 @@ namespace Application.Services.Orders
                     .ForMember(t => t.ManualPalletsCount, e => e.Ignore())
                     .ForMember(t => t.ManualPickingTypeId, e => e.Ignore())
                     .ForMember(t => t.ManualShippingDate, e => e.Ignore())
-                    .ForMember(t => t.ShippingId, e => e.Ignore())
+                    .ForMember(t => t.ShippingId, e => e.MapFrom(s=>s.ShippingId.ToGuid()))
                     .ForMember(t => t.ShippingNumber, e => e.Ignore())
                     .ForMember(t => t.OrderShippingStatus, e => e.Ignore())
                     .ForMember(t => t.DeliveryCity, e => e.Condition((s) => s.DeliveryCity != null))
@@ -517,7 +517,7 @@ namespace Application.Services.Orders
         private void InitializeNewOrder(Order order, bool isInjection)
         {
             order.IsActive = true;
-            order.Status = OrderState.Created;
+            order.Status = order.ShippingId.HasValue ? OrderState.InShipping : OrderState.Created;
             order.OrderCreationDate = DateTime.UtcNow;
             order.OrderChangeDate = DateTime.UtcNow;
             order.ShippingStatus = VehicleState.VehicleEmpty;

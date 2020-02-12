@@ -28,8 +28,7 @@ namespace Application.Services.Shippings
            
             if (shipping.Status == null
                 || !validState.Contains(shipping.Status.Value)
-                || shipping.CarrierId == null
-                || shipping.TarifficationType == null)
+                || shipping.CarrierId == null)
             {
                 return;
             }
@@ -82,8 +81,6 @@ namespace Application.Services.Shippings
                 .FirstOrDefault(x => x.CarrierId == shipping.CarrierId 
                                      && x.ProviderId == shipping.ProviderId 
                                      && x.VehicleTypeId == shipping.VehicleTypeId
-//                                     && x.BodyTypeId == shipping.BodyTypeId
-                                     && x.TarifficationType == shipping.TarifficationType
                                      && x.ShippingWarehouseId == shippingWarehouseId
                                      && x.DeliveryWarehouseId == deliveryWarehouseId
                                      && x.EffectiveDate <= shippingDate
@@ -94,8 +91,6 @@ namespace Application.Services.Shippings
                         .FirstOrDefault(x => x.CarrierId == shipping.CarrierId
                                              && x.ProviderId == shipping.ProviderId 
                                              && x.VehicleTypeId == null
-//                                             && x.BodyTypeId == null
-                                             && x.TarifficationType == shipping.TarifficationType
                                              && x.ShippingWarehouseId == shippingWarehouseId
                                              && x.DeliveryWarehouseId == deliveryWarehouseId
                                              && x.EffectiveDate <= shippingDate
@@ -124,16 +119,11 @@ namespace Application.Services.Shippings
 
         private decimal? GetLtlRate(Tariff tariff, int palletsCount)
         {
-            if (palletsCount < 33)
-            {
-                string propertyName = nameof(tariff.LtlRate33).Replace("33", palletsCount.ToString());
-                var property = tariff.GetType().GetProperty(propertyName);
-                return (decimal?)property.GetValue(tariff);
-            }
-            else
-            {
-                return tariff.LtlRate33;
-            }
+            if (palletsCount >= 33) return tariff.LtlRate33;
+            
+            string propertyName = nameof(tariff.LtlRate33).Replace("33", palletsCount.ToString());
+            var property = tariff.GetType().GetProperty(propertyName);
+            return (decimal?)property.GetValue(tariff);
         }
     }
 }

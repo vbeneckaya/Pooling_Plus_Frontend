@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Services.Shippings;
-using Integrations.Pooling;
 
 namespace Application.BusinessModels.Orders.Actions
 {
@@ -47,18 +46,17 @@ namespace Application.BusinessModels.Orders.Actions
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
             var shippingDbSet = _dataService.GetDbSet<Shipping>();
-            
-            
+
             var shipping = new Shipping
             {
                 Status = ShippingState.ShippingCreated,
                 PoolingState = ShippingPoolingState.PoolingAvailable,
+                PoolingInfo = poolingInfo,
                 Id = Guid.NewGuid(),
                 ShippingNumber = ShippingNumberProvider.GetNextShippingNumber(),
-                ProviderId = user.ProviderId,
+                ProviderId = orders.FirstOrDefault()?.ProviderId ?? user.ProviderId,
                 ShippingCreationDate = DateTime.UtcNow,
                 UserCreatorId = user.Id.Value
-                
             };
 
             _historyService.Save(shipping.Id, "shippingSetCreated", shipping.ShippingNumber);
@@ -66,6 +64,7 @@ namespace Application.BusinessModels.Orders.Actions
             shipping.DeliveryType = DeliveryType.Delivery;
 
             shippingDbSet.Add(shipping);
+
             var currentUser = _dataService.GetById<User>(user.Id.Value);
             if (currentUser.IsPoolingIntegrated())
             {
@@ -75,7 +74,7 @@ namespace Application.BusinessModels.Orders.Actions
                     shipping.PoolingInfo = poolingInfo.MessageField;
                 }
             }
-
+            
             UnionOrderInShipping(orders, orders, shipping, _historyService);
             
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
@@ -93,8 +92,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return target.All(order => order.Status == OrderState.Created && 
-                                       (!order.DeliveryType.HasValue || order.DeliveryType.Value == DeliveryType.Delivery));
+            return target.All(order => order.Status == OrderState.Created);
         }
     }
 }

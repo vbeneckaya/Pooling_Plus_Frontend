@@ -8,6 +8,7 @@ import { default as gridList } from '../ducks/gridList';
 import { default as dictionaryView } from '../ducks/dictionaryView';
 import { default as gridActions } from '../ducks/gridActions';
 import { default as gridCard } from '../ducks/gridCard';
+import { default as gridInnerCard } from '../ducks/gridInnerCard';
 import { default as lookup } from '../ducks/lookup';
 import { default as documents } from '../ducks/documents';
 import { default as representations } from '../ducks/representations';
@@ -27,6 +28,7 @@ export default history =>
         dictionaryView,
         gridActions,
         gridCard,
+        gridInnerCard,
         lookup,
         documents,
         representations,

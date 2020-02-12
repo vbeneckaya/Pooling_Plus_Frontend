@@ -14,6 +14,7 @@ import {columnsGridSelector} from "../../../ducks/gridList";
 const OrderCard = ({
     form,
     onChangeForm,
+    onBlurForm,
     name,
     id,
     load,
@@ -44,6 +45,7 @@ const OrderCard = ({
                         isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
+                        onBlur={onBlurForm}
                     />
                 ),
             },
@@ -102,7 +104,7 @@ const OrderCard = ({
             {id ? (
                 <CardLayout
                     title={title}
-                    actionsFooter={actionsFooter}
+               //     actionsFooter={actionsFooter}
                     actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}
@@ -111,16 +113,18 @@ const OrderCard = ({
             ) : (
                 <CardLayout
                     title={title}
-                    actionsFooter={actionsFooter}
+                    actionsHeader={actionsHeader}
+                    // actionsFooter={actionsFooter}
                     onClose={onClose}
                     loading={loading}
                 >
                     <CreateOrder
                         form={form}
                         error={error}
-                        isNotUniqueNumber={isNotUniqueNumber}
+                       // isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
+                        onBlur={onBlurForm}
                     />
                 </CardLayout>
             )}

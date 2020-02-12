@@ -9,19 +9,12 @@ import {
     NUMBER_TYPE,
 } from '../../../../constants/columnTypes';
 
-const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
+const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
 
     const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
         clientId: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
-
-    useEffect(() => {
-        onChange(null, {
-            name: 'deliveryWarehouseId',
-            value: null
-        })
-    }, [form['clientId']]);
 
     return (
         <Form className="tabs-card">
@@ -43,7 +36,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             name="orderNumber"
                             type={TEXT_TYPE}
                             isRequired
-                            value={form['orderNumber'] ? form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']: form['orderNumber']}
+                            value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                             error={(isNotUniqueNumber && t('number_already_exists')) || error['orderNumber']}
                             onBlur={uniquenessNumberCheck}
                             onChange={onChange}
@@ -56,6 +49,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             error={error["clientOrderNumber"]}
                             value={form['clientOrderNumber']}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />                        
                     </Grid.Column>
                 </Grid.Row>
@@ -69,6 +63,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             error={error['palletsCount']}
                             rows={2}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                     <Grid.Column>
@@ -79,6 +74,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             error={error['orderAmountExcludingVAT']}
                             rows={2}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                     <Grid.Column>
@@ -90,6 +86,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                             error={error['weightKg']}
                             rows={2}
                             onChange={onChange}
+                            onBlur={onBlur}
                         />
                     </Grid.Column>
                 </Grid.Row>                  
@@ -119,7 +116,7 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                                                 isDisabled={!form['clientId']}
                                                 isRequired
                                                 extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source="warehouses/byClientId"
+                                                source='warehouses/byClientId'
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}
@@ -132,7 +129,6 @@ const CreateOrder = ({form = {}, onChange, isNotUniqueNumber, uniquenessNumberCh
                                             <FormField
                                                     name="shippingDate"
                                                     type={DATE_TYPE}
-                                                    isRequired
                                                     value={form['shippingDate']}
                                                     error={error['shippingDate']}
                                                     onChange={onChange}

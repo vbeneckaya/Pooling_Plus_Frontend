@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, {useEffect, useCallback, useRef, useMemo} from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Grid, Segment } from 'semantic-ui-react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,7 @@ import TextArea from "../../../../components/BaseComponents/Text";
 const Information = ({
     form,
     onChange,
+    onBlur,
     isNotUniqueNumber,
     uniquenessNumberCheck,
     settings,
@@ -30,6 +31,10 @@ const Information = ({
         const column = columns.find(item => item.name === key);
         return column ? column : {};
     };
+
+    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
+        clientId: form['clientId'] ? form['clientId'].value : undefined,
+    }), [form['clientId']]);
 
     return (
         <Form className="tabs-card">
@@ -44,9 +49,9 @@ const Information = ({
                                         <Grid.Column>
                                             <FormField
                                                 name="orderNumber"
-                                                type={getColumn('orderNumber').type}
+                                                type={TEXT_TYPE}
                                                 source={getColumn('orderNumber').source}
-                                                value={!!form['orderNumber'] ? (!!form['orderNumber'].value ? form['orderNumber'].value : form['orderNumber']) : ''}
+                                                value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
                                                 error={
                                                     (isNotUniqueNumber &&
                                                         t('number_already_exists')) ||
@@ -64,6 +69,7 @@ const Information = ({
                                                 settings={settings['clientOrderNumber']}
                                                 value={form['clientOrderNumber']}
                                                 error={error['clientOrderNumber']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
@@ -132,7 +138,8 @@ const Information = ({
                                                 error={error['deliveryWarehouseId']}
                                                 subTitle={form['deliveryAddress']}
                                                 type={getColumn('deliveryWarehouseId').type}
-                                                source={getColumn('deliveryWarehouseId').source}
+                                                source={'warehouses/byClientId'}
+                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
                                                 settings={settings['deliveryWarehouseId']}
                                                 onChange={onChange}
                                             />
@@ -159,6 +166,7 @@ const Information = ({
                                                 source={getColumn('deliveryDate').source}
                                                 settings={settings['deliveryDate']}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                     </Grid.Row>
@@ -181,7 +189,9 @@ const Information = ({
                                                 error={error['articlesCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['articlesCount']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -191,7 +201,9 @@ const Information = ({
                                                 error={error['orderAmountExcludingVAT']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['orderAmountExcludingVAT']}
+                                                onBlur={onBlur}
                                                 onChange={onChange}
+
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
@@ -224,6 +236,7 @@ const Information = ({
                                                                     settings={
                                                                         settings['boxesCount']
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -245,6 +258,7 @@ const Information = ({
                                                                             'confirmedBoxesCount'
                                                                         ]
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -269,6 +283,7 @@ const Information = ({
                                                                     settings={
                                                                         settings['palletsCount']
                                                                     }
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -294,6 +309,7 @@ const Information = ({
                                                                             'confirmedPalletsCount'
                                                                         ]
                                                                     }
+                                                                    onBlur={onBlur}                                                                    
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -316,6 +332,7 @@ const Information = ({
                                                                     error={error['weightKg']}
                                                                     type={NUMBER_TYPE}
                                                                     settings={settings['weightKg']}
+                                                                    onBlur={onBlur}
                                                                     onChange={onChange}
                                                                 />
                                                             </Grid.Column>
@@ -332,6 +349,7 @@ const Information = ({
                                                                         settings['factWeigth']
                                                                     }
                                                                     onChange={onChange}
+                                                                    onBlur={onBlur}
                                                                 />
                                                             </Grid.Column>
                                                         </Grid.Row>

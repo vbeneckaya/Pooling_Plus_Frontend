@@ -24,9 +24,6 @@ namespace Domain.Services.Tariffs
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), OrderNumber(4)]
         public LookUpDto VehicleTypeId { get; set; }
 
-        [FieldType(FieldType.Enum, source: nameof(Enums.TarifficationType)), OrderNumber(5)]
-        public LookUpDto TarifficationType { get; set; }
-
         public LookUpDto BodyTypeId { get; set; }
 
         public string StartWinterPeriod { get; set; }

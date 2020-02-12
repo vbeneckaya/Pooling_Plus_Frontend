@@ -1,7 +1,7 @@
-.scroll-grid-container {
+.scroll-grid-select-container {
     display: grid;
     overflow: auto;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 400px);
     width: 100%;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;

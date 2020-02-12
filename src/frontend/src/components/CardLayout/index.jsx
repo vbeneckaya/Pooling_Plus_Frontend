@@ -85,7 +85,7 @@ const CardLayout = ({
                     </div>
                 )}
             </div>
-            <div className="card-actions-panel">
+            {actionsFooter && <div className="card-actions-panel">
                 <div
                     style={{
                         width:
@@ -94,7 +94,7 @@ const CardLayout = ({
                 >
                     {actionsFooter()}
                 </div>
-            </div>
+            </div>}
             <style>
                 {
                     '\
