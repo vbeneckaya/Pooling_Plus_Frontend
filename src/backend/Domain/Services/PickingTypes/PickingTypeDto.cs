@@ -12,7 +12,7 @@ namespace Domain.Services.PickingTypes
         public string Name { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(3)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }
