@@ -870,13 +870,13 @@ namespace Application.Services.Orders
 
         private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.Address == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
             return entry?.Id;
         }
 
         private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Warehouse>().Where(t => t.Address == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<Warehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
             return entry?.Id;
         }
 

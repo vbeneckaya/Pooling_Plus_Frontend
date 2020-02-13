@@ -282,14 +282,20 @@ const Card = props => {
             state: {
                 ...state,
                 pathname: history.location.pathname,
-                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname,
+                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
             },
         });
     };
 
     const goToCardFromNewCard = (gridName, cardId) => {
+        const {state} = location;
         history.replace({
             pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
+            state: {
+                ...state,
+                pathname: history.location.pathname,
+                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
+            },
         });
     };
 
