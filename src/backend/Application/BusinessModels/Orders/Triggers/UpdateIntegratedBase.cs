@@ -18,7 +18,7 @@ namespace Application.BusinessModels.Orders.Triggers
         {
             if (shipping.Status == ShippingState.ShippingCreated)
             {
-                var creator = _dataService.GetById<User>(shipping.UserCreatorId);
+                var creator = _dataService.GetByIdOrNull<User>(shipping.UserCreatorId);
                 if (creator.IsPoolingIntegrated())
                 {
                     using (var poolingIntegration = new PoolingIntegration(creator, _dataService))
@@ -38,7 +38,7 @@ namespace Application.BusinessModels.Orders.Triggers
             if (order.ShippingId.HasValue)
             {
                 UpdateShippingFromIntegrations(
-                    _dataService.GetById<Shipping>(order.ShippingId));
+                    _dataService.GetByIdOrNull<Shipping>(order.ShippingId));
             }
         }
     }
