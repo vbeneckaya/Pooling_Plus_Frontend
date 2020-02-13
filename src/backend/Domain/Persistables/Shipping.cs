@@ -18,7 +18,7 @@ namespace Domain.Persistables
         /// Пользователь создавший перевозку
         /// </summary>    
         [IgnoreHistory]
-        public Guid UserCreatorId { get; set; }
+        public Guid? UserCreatorId { get; set; }
         /// <summary>
         /// Номер перевозки
         /// </summary>
