@@ -22,7 +22,7 @@ namespace DAL.Services
             return GetDbSet<TEntity>().Find(id);
         }
 
-        public TEntity GetById<TEntity>(Guid? id) where TEntity : class, IPersistable
+        public TEntity GetByIdOrNull<TEntity>(Guid? id) where TEntity : class, IPersistable
         {
             return id != null ? GetById<TEntity>(id.Value) : null;
         }
