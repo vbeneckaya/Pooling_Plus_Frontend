@@ -48,7 +48,7 @@ namespace Domain.Services.Warehouses
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(13)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public string AdditionalInfo { get; set; }
 

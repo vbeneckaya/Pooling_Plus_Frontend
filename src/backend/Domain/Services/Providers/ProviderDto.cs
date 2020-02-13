@@ -33,7 +33,7 @@ namespace Domain.Services.Providers
         public string Email { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(9)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }
