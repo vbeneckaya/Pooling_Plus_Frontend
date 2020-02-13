@@ -272,11 +272,12 @@ namespace Domain.Persistables
         [IgnoreHistory]
         [ReferenceType(typeof(Warehouse))]
         public Guid? DeliveryWarehouseId { get; set; }
+
         /// <summary>
         /// Активный?
         /// </summary>
         [IgnoreHistory]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         /*end of fields*/
 
         public override string ToString()
