@@ -317,14 +317,14 @@ const Information = ({
                                         </Grid.Column>
                                         <Grid.Column>
                                             <Form.Field>
-                                                <label>{t('weigth')}</label>
+                                                <label>{t('weight')}</label>
                                                 <Segment>
                                                     <Grid>
                                                         <Grid.Row>
                                                             <Grid.Column>
                                                                 <FormField
                                                                     name="weightKg"
-                                                                    text="planWeigth"
+                                                                    text="planWeight"
                                                                     value={form['weightKg']}
                                                                     error={error['weightKg']}
                                                                     type={NUMBER_TYPE}
@@ -337,13 +337,13 @@ const Information = ({
                                                         <Grid.Row>
                                                             <Grid.Column>
                                                                 <FormField
-                                                                    name="factWeigth"
-                                                                    text="factWeigth"
-                                                                    value={form['factWeigth']}
-                                                                    error={error['factWeigth']}
+                                                                    name="factWeight"
+                                                                    text="factWeight"
+                                                                    value={form['factWeight']}
+                                                                    error={error['factWeight']}
                                                                     type={NUMBER_TYPE}
                                                                     settings={
-                                                                        settings['factWeigth']
+                                                                        settings['factWeight']
                                                                     }
                                                                     onChange={onChange}
                                                                     onBlur={onBlur}
@@ -441,7 +441,7 @@ const Information = ({
                     </Grid.Column>
                     <Grid.Column>
                         <Form.Field>
-                            <label>{t('weigth')}</label>
+                            <label>{t('weight')}</label>
                             <Segment
                                 style={{height: 'calc(100% - 22px)'}}
                                 className="mini-column"
@@ -451,7 +451,7 @@ const Information = ({
                                         <Grid.Column>
                                             <FormField
                                                 name="weightKg"
-                                                text="planWeigth"
+                                                text="planWeight"
                                                 value={form['weightKg']}
                                                 error={error['weightKg']}
                                                 type={NUMBER_TYPE}
@@ -462,7 +462,7 @@ const Information = ({
                                         <Grid.Column>
                                             <FormField
                                                 name="actualWeightKg"
-                                                text="factWeigth"
+                                                text="factWeight"
                                                 value={form['actualWeightKg']}
                                                 error={error['actualWeightKg']}
                                                 type={NUMBER_TYPE}

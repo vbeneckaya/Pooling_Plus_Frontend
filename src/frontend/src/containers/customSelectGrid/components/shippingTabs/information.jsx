@@ -136,14 +136,14 @@ const Information = ({ form = {}, onChange, settings }) => {
                 <Grid.Row>
                     <Grid.Column>
                         <Form.Field>
-                            <label>{t('weigth')}</label>
+                            <label>{t('weight')}</label>
                             <Segment className="mini-column">
                                 <Grid>
                                     <Grid.Row columns={3}>
                                         <Grid.Column>
                                             <FormField
                                                 name="weightKg"
-                                                text="planWeigth"
+                                                text="planWeight"
                                                 value={form['weightKg']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['weightKg']}
@@ -153,7 +153,7 @@ const Information = ({ form = {}, onChange, settings }) => {
                                         <Grid.Column>
                                             <FormField
                                                 name="actualWeightKg"
-                                                text="factWeigth"
+                                                text="factWeight"
                                                 value={form['actualWeightKg']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['actualWeightKg']}

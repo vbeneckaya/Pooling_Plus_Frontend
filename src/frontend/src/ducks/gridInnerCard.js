@@ -39,6 +39,10 @@ const IS_UNIQUE_NUMBER_INNER_REQUEST = 'IS_UNIQUE_NUMBER_INNER_REQUEST';
 const IS_UNIQUE_NUMBER_INNER_SUCCESS = 'IS_UNIQUE_NUMBER_INNER_SUCCESS';
 const IS_UNIQUE_NUMBER_INNER_ERROR = 'IS_UNIQUE_NUMBER_INNER_ERROR';
 
+const SET_FORM_INTO_INNER_CARD = 'SET_FORM_INTO_INNER_CARD';
+const SET_FORM_INTO_INNER_CARD_SUCCESS = 'SET_FORM_INTO_INNER_CARD_SUCCESS';
+const SET_FORM_INTO_INNER_CARD_ERROR = 'SET_FORM_INTO_INNER_CARD_ERROR';
+
 const CLEAR_GRID_INNER_CARD = 'CLEAR_GRID_INNER_CARD';
 
 const ADD_ERROR = 'ADD_ERROR';
@@ -61,11 +65,14 @@ export default (state = initial, {type, payload}) => {
         case GET_GRID_INNER_CARD_REQUEST:
       //  case CREATE_DRAFT_REQUEST:
         case GET_INNER_CARD_CONFIG_REQUEST:
+        case SET_FORM_INTO_INNER_CARD:
+
             return {
                 ...state,
                 progress: true,
             };
         case GET_GRID_INNER_CARD_SUCCESS:
+        case SET_FORM_INTO_INNER_CARD_SUCCESS:
             return {
                 ...state,
                 progress: false,
@@ -86,6 +93,7 @@ export default (state = initial, {type, payload}) => {
         case GET_GRID_INNER_CARD_ERROR:
     //    case CREATE_DRAFT_ERROR:
         case GET_INNER_CARD_CONFIG_ERROR:
+        case SET_FORM_INTO_INNER_CARD_ERROR:
             return {
                 ...state,
                 data: {},
@@ -158,20 +166,6 @@ export default (state = initial, {type, payload}) => {
 
 //*  ACTION CREATORS  *//
 
-// export const openGridInnerCardRequest = payload => {
-//     return {
-//         type: OPEN_GRID_INNER_CARD_REQUEST,
-//         payload,
-//     };
-// };
-
-// export const createDraftRequest = payload => {
-//     return {
-//         type: CREATE_DRAFT_REQUEST,
-//         payload,
-//     };
-// };
-
 export const getInerCardRequest = payload => {
     return {
         type: GET_GRID_INNER_CARD_REQUEST,
@@ -219,6 +213,13 @@ export const addInnerCardError = payload => {
         payload,
     };
 };
+
+export const setFormIntoInnerCard = payload => {
+    return {
+        type: SET_FORM_INTO_INNER_CARD,
+        payload
+    }
+}
 
 //*  SELECTORS *//
 
@@ -416,6 +417,23 @@ function* isUniqueNumberInnerSaga({payload}) {
     }
 }
 
+function* setFormIntoInnerCardSaga({payload}) {
+    try {
+        const {form, callbackSuccess} = payload;
+        yield put({
+            type: SET_FORM_INTO_INNER_CARD_SUCCESS,
+            payload: form,
+        });
+
+        callbackSuccess && callbackSuccess();
+    }
+    catch (e) {
+        yield put({
+            type: SET_FORM_INTO_INNER_CARD_ERROR,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         //takeEvery(OPEN_GRID_INNER_CARD_REQUEST, openGridInnerCardSaga),
@@ -424,5 +442,7 @@ export function* saga() {
         takeEvery(GET_GRID_INNER_CARD_REQUEST, getInnerCardSaga),
         takeEvery(EDIT_GRID_INNER_CARD_REQUEST, editInnerCardSaga),
         takeEvery(IS_UNIQUE_NUMBER_INNER_REQUEST, isUniqueNumberInnerSaga),
+        takeEvery(SET_FORM_INTO_INNER_CARD, setFormIntoInnerCardSaga),
+
     ]);
 }
