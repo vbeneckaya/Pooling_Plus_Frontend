@@ -234,6 +234,7 @@ const Card = props => {
         const {state} = location;
         if (!!parentName) {
             clearActions();
+            debugger;
             history.replace({
                 pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
                 state: {
