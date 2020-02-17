@@ -67,10 +67,11 @@ namespace Domain.Persistables
         /// ID клиента
         /// </summary>
         public Guid ProviderId { get; set; }
+
         /// <summary>
         /// Активный
         /// </summary>
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public override string ToString()
         {

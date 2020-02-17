@@ -10,8 +10,8 @@ namespace Domain.Persistables
         public RoleTypes RoleType { get; set; }
 
         public string Name { get; set; }
-        
-        public bool IsActive { get; set; }
+
+        public bool IsActive { get; set; } = true;
 
         public int[] Permissions { get; set; }
         

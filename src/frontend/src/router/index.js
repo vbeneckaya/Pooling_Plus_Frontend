@@ -8,6 +8,7 @@ import {
     DICTIONARY_NEW_LINK,
     FIELDS_SETTING_LINK,
     GRID_CARD_LINK,
+    GRID_GRID_CARD_LINK,
     GRID_LIST_LINK,
     GRID_NEW_LINK,
     LOGIN_LINK,
@@ -51,6 +52,7 @@ const MainRoute = withRouter(props => {
             <PrivateRoute exact path="/" component={() => <Redirect to={homePage}/>}/>
             <PrivateRoute exact path={GRID_NEW_LINK} component={CustomGridCard}/>
             <PrivateRoute exact path={GRID_CARD_LINK} component={props => CustomGridCard(props)}/>
+            <PrivateRoute exact path={GRID_GRID_CARD_LINK} component={props => CustomGridCard(props)}/>
             <PrivateRoute exact path={GRID_LIST_LINK} component={CustomGrid}/>
             <PrivateRoute exact path={DICTIONARY_NEW_LINK} component={CustomDictionaryCard}/>
             <PrivateRoute exact path={DICTIONARY_CARD_LINK} component={CustomDictionaryCard}/>

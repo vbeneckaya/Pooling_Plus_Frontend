@@ -7,6 +7,7 @@ export const USER_LINK = '/users/:id';
 export const NEW_USER_LINK = '/users/new';
 export const GRID_LIST_LINK = '/grid/:name';
 export const GRID_CARD_LINK = '/grid/:name/:id';
+export const GRID_GRID_CARD_LINK = '/grid/:parentName/:name/:id';
 export const GRID_NEW_LINK = '/grid/:name/new';
 export const DICTIONARY_LIST_LINK = '/dictionary/:name';
 export const DICTIONARY_CARD_LINK = '/dictionary/:name/:id';

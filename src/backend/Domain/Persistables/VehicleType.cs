@@ -14,7 +14,7 @@ namespace Domain.Persistables
 
         public int? PalletsCount { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public override string ToString()
         {

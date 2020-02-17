@@ -1,6 +1,5 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
-using Domain.Shared;
 
 namespace Domain.Services.ProductTypes
 {
@@ -14,7 +13,7 @@ namespace Domain.Services.ProductTypes
         public string PoolingId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(3)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }
