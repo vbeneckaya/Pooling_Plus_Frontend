@@ -43,7 +43,7 @@ const OrderCard = (props) => {
                         settings={settings}
                         error={error}
                         load={load}
-                        isNotUniqueNumber={isNotUniqueNumber}
+                        //isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}
@@ -123,7 +123,7 @@ const OrderCard = (props) => {
                     <CreateOrder
                         form={form}
                         error={error}
-                       // isNotUniqueNumber={isNotUniqueNumber}
+                        //isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}

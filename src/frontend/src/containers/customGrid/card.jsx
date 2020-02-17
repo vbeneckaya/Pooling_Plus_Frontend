@@ -169,11 +169,11 @@ const Card = props => {
                 params: form,
                 callbackSuccess: (result) => {
                     setAllowToSend(false);
-                     if (!!form.id) {
+                    if (!!form.id) {
                         loadCard();
                     }
-                    else if (parentName == SHIPPINGS_GRID){
-                         invokeAction('unionOrders', result.id);
+                    else if (parentName == SHIPPINGS_GRID) {
+                        invokeAction('unionOrders', result.id);
                     }
                 }
             }),
@@ -199,11 +199,11 @@ const Card = props => {
                     if (actionName.toLowerCase().includes('delete')) {
                         onClose();
                     }
-                    
+
                     if ((actionName.toLowerCase().includes('union') && !!parentName)) {
                         goToCard(name, itemId, parentName, true);
                     }
-                     if (id != 'new' && !actionName.toLowerCase().includes('delete')){
+                    if (id != 'new' && !actionName.toLowerCase().includes('delete')) {
                         loadCard();
                     }
                 },
@@ -212,15 +212,19 @@ const Card = props => {
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        if (form.orderNumber && card.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
-            dispatch(
-                isUniqueNumberRequest({
-                    number: !!form.orderNumber ? form.orderNumber.value : null,
-                    fieldName: 'orderNumber',
-                    errorText: t('number_already_exists'),
-                    callbackSuccess: callbackFunc,
-                }),
-            );
+        if (form.orderNumber) {
+            if (!card.orderNumber || form.orderNumber.value !== card.orderNumber.value) {
+                dispatch(
+                    isUniqueNumberRequest({
+                        number: !!form.orderNumber ? form.orderNumber.value : null,
+                        fieldName: 'orderNumber',
+                        errorText: t('number_already_exists'),
+                        callbackSuccess: callbackFunc,
+                    }),
+                );
+            }
+            else
+                callbackFunc();
         }
         else callbackFunc();
     };
@@ -243,7 +247,7 @@ const Card = props => {
                 },
             });
         }
-        else{
+        else {
             history.replace({
                 pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
                 state: {

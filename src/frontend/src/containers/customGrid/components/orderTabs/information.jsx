@@ -19,7 +19,7 @@ const Information = ({
     form,
     onChange,
     onBlur,
-    isNotUniqueNumber,
+    //isNotUniqueNumber,
     uniquenessNumberCheck,
     settings,
     error,
@@ -52,11 +52,7 @@ const Information = ({
                                                 type={TEXT_TYPE}
                                                 source={getColumn('orderNumber').source}
                                                 value={!!form['orderNumber'] ? form['orderNumber'].value : form['orderNumber']}
-                                                error={
-                                                    (isNotUniqueNumber &&
-                                                        t('number_already_exists')) ||
-                                                    error['orderNumber']
-                                                }
+                                                error={(t('number_already_exists')) && error['orderNumber']}
                                                 onBlur={uniquenessNumberCheck}
                                                 onChange={onChange}
                                             />
