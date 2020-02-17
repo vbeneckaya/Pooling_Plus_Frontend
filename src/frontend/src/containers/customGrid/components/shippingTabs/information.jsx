@@ -103,10 +103,21 @@ const Information = ({ form = {}, onChange, onBlur, settings }) => {
                                         <Grid.Column>
                                             <FormField
                                                 name="palletsCount"
-                                                text="plan"
+                                                text="prepare"
                                                 value={form['palletsCount']}
                                                 type={NUMBER_TYPE}
                                                 settings={settings['palletsCount']}
+                                             //   onChange={onChange}
+                                                onBlur={onBlur}
+                                            />
+                                        </Grid.Column>
+                                        <Grid.Column>
+                                            <FormField
+                                                name="actualPalletsCount"
+                                                text="plan"
+                                                value={form['actualPalletsCount']}
+                                                type={NUMBER_TYPE}
+                                                settings={settings['actualPalletsCount']}
                                                 onChange={onChange}
                                                 onBlur={onBlur}
                                             />
@@ -148,11 +159,11 @@ const Information = ({ form = {}, onChange, onBlur, settings }) => {
                                         </Grid.Column>
                                         <Grid.Column>
                                             <FormField
-                                                name="confirmedWeightKg"
+                                                name="actualWeightKg"
                                                 text="factWeight"
-                                                value={form['confirmedWeightKg']}
+                                                value={form['actualWeightKg']}
                                                 type={NUMBER_TYPE}
-                                                settings={settings['confirmedWeightKg']}
+                                                settings={settings['actualWeightKg']}
                                                 onChange={onChange}
                                                 onBlur={onBlur}
                                             />

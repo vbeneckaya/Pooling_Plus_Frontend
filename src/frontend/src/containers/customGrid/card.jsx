@@ -25,7 +25,7 @@ import {
 import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
-import {GRID_CARD_LINK} from '../../router/links';
+import {GRID_CARD_LINK, GRID_GRID_CARD_LINK} from '../../router/links';
 import {clearHistory, getHistoryRequest} from '../../ducks/history';
 import {columnsGridSelector} from "../../ducks/gridList";
 import {BIG_TEXT_TYPE, NUMBER_TYPE, TEXT_TYPE} from "../../constants/columnTypes";
@@ -35,11 +35,10 @@ const Card = props => {
     const dispatch = useDispatch();
     const {match, history, location} = props;
     const {params = {}} = match;
-    const {name, id} = params;
+    const {name, id, parentName} = params;
 
     let [form, setForm] = useState({});
     let [allowToSend, setAllowToSend] = useState(false);
-    // let [confirmation, setConfirmation] = useState({open: false});
 
 
     const card = useSelector(state => cardSelector(state));
@@ -71,13 +70,14 @@ const Card = props => {
     useEffect(
         () => {
             if (allowToSend) {
-                handleSave();}
+                handleSave();
+            }
         },
         [form],
     );
 
     const loadCard = () => {
-        id &&
+        id && id != 'new' &&
         dispatch(
             getCardRequest({
                 name,
@@ -87,7 +87,8 @@ const Card = props => {
                 },
             }),
         );
-        id &&
+
+        id && id != 'new' &&
         dispatch(
             getActionsRequest({
                 name,
@@ -95,9 +96,9 @@ const Card = props => {
                 isCard: true,
             }),
         );
-        id && dispatch(getHistoryRequest(id));
-  
+        id && id != 'new' && dispatch(getHistoryRequest(id));
 
+        id && id == 'new' && setForm(card);
     };
 
     const onClose = () => {
@@ -168,13 +169,13 @@ const Card = props => {
                 params: form,
                 callbackSuccess: (result) => {
                     setAllowToSend(false);
-                    if (form.id) {
+                    if (!!form.id) {
                         loadCard();
                     }
-                    else {
-                        goToCardFromNewCard(name, result.id);
+                    else if (parentName == SHIPPINGS_GRID) {
+                        invokeAction('unionOrders', result.id);
                     }
-                 }
+                }
             }),
         );
     };
@@ -187,63 +188,43 @@ const Card = props => {
         }
     };
 
-    // const closeConfirmation = () => {
-    //     setConfirmation({
-    //         open: false,
-    //     });
-    // };
 
-    // const showConfirmation = (content, onConfirm, onCancel) => {
-    //     setConfirmation({
-    //         open: true,
-    //         content,
-    //         onConfirm,
-    //         onCancel,
-    //     });
-    // };
-
-    const invokeAction = actionName => {
-        // showConfirmation(
-        //     `${t('Are you sure to complete')} "${t(actionName)}"?`,
-        //     () => {
-        //         closeConfirmation();
+    const invokeAction = (actionName, itemId) => {
         dispatch(
-            editCardRequest({
+            invokeActionRequest({
+                ids: [!!itemId ? itemId : id],
                 name,
-                params: form,
+                actionName,
                 callbackSuccess: () => {
-                    dispatch(
-                        invokeActionRequest({
-                            ids: [id],
-                            name,
-                            actionName,
-                            callbackSuccess: () => {
-                                if (actionName.toLowerCase().includes('delete')) {
-                                    onClose();
-                                } else {
-                                    loadCard();
-                                }
-                            },
-                        }),
-                    );
+                    if (actionName.toLowerCase().includes('delete')) {
+                        onClose();
+                    }
+
+                    if ((actionName.toLowerCase().includes('union') && !!parentName)) {
+                        goToCard(name, itemId, parentName, true);
+                    }
+                    if (id != 'new' && !actionName.toLowerCase().includes('delete')) {
+                        loadCard();
+                    }
                 },
             }),
         );
-        // },
-        //     closeConfirmation,
-        // );
     };
 
     const handleUniquenessCheck = callbackFunc => {
-        if (form.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
-            dispatch(
-                isUniqueNumberRequest({
-                    number: !!form.orderNumber ? form.orderNumber.value : null,
-                    fieldName: 'orderNumber',
-                    errorText: t('number_already_exists'),
-                    callbackSuccess: callbackFunc,
-                }),
-            );
+        if (form.orderNumber) {
+            if (!card.orderNumber || form.orderNumber.value !== card.orderNumber.value) {
+                dispatch(
+                    isUniqueNumberRequest({
+                        number: !!form.orderNumber ? form.orderNumber.value : null,
+                        fieldName: 'orderNumber',
+                        errorText: t('number_already_exists'),
+                        callbackSuccess: callbackFunc,
+                    }),
+                );
+            }
+            else
+                callbackFunc();
         }
         else callbackFunc();
     };
@@ -252,51 +233,30 @@ const Card = props => {
     const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
     const progressActionName = useSelector(state => progressActionNameSelector(state));
-    //  const disableSave = progressActionName || notChangeForm;
 
-    // const getActionsFooter = useCallback(
-    //     () => {
-    //         return (
-    //             <>
-    //                 <Button color="grey" onClick={handleClose}>
-    //                     {t('CancelButton')}
-    //                 </Button>
-    //                 <Button
-    //                     color="blue"
-    //                     disabled={disableSave}
-    //                     loading={editLoading}
-    //                     onClick={handleSave}
-    //                 >
-    //                     {id ? t('SaveButton') : t('create_btn')}
-    //                 </Button>
-    //             </>
-    //         );
-    //     },
-    //     [form, disableSave, editLoading, name],
-    // );
-
-    const goToCard = (gridName, cardId) => {
+    const goToCard = (gridName, cardId, parentName, isAfterCreating = false) => {
         const {state} = location;
-        history.replace({
-            pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
-            state: {
-                ...state,
-                pathname: history.location.pathname,
-                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
-            },
-        });
-    };
-
-    const goToCardFromNewCard = (gridName, cardId) => {
-        const {state} = location;
-        history.replace({
-            pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
-            state: {
-                ...state,
-                pathname: history.location.pathname,
-                gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
-            },
-        });
+        if (!!parentName) {
+            clearActions();
+            history.replace({
+                pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
+                state: {
+                    ...state,
+                    pathname: isAfterCreating ? state && state.pathname ? state.pathname : state && state.gridLocation : history.location.pathname,
+                    gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
+                },
+            });
+        }
+        else {
+            history.replace({
+                pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
+                state: {
+                    ...state,
+                    pathname: history.location.pathname,
+                    gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
+                },
+            });
+        }
     };
 
     const getActionsHeader = useCallback(
@@ -311,52 +271,6 @@ const Card = props => {
                             {t('open_shipping', {number: form.shippingNumber.value})}
                         </div>
                     ) : null}
-                    {/*{name === SHIPPINGS_GRID && form.orders && form.orders.length ? (*/}
-                    {/*<Dropdown*/}
-                    {/*text={t('orders')}*/}
-                    {/*pointing="top right"*/}
-                    {/*className="dropdown-blue"*/}
-                    {/*scrolling*/}
-                    {/*>*/}
-                    {/*<Dropdown.Menu>*/}
-                    {/*{form.orders.map(order => (*/}
-                    {/*<Dropdown.Item*/}
-                    {/*className="link-cell"*/}
-                    {/*key={order.id}*/}
-                    {/*text={order.orderNumber}*/}
-                    {/*onClick={() => {*/}
-                    {/*goToCard(ORDERS_GRID, order.id);*/}
-                    {/*}}*/}
-                    {/*/>*/}
-                    {/*))}*/}
-                    {/*</Dropdown.Menu>*/}
-                    {/*</Dropdown>*/}
-                    {/*) : null}*/}
-
-                    {/* <Dropdown
-                        icon="ellipsis horizontal"
-                        floating
-                        button
-                        pointing="top right"
-                        className="icon"
-                        scrolling
-                    >
-                        <Dropdown.Menu>
-                            {actions &&
-                            actions.filter(item => item.allowedFromForm).map(action => (
-                                <Dropdown.Item
-                                    key={action.name}
-                                    text={t(action.name)}
-                                    label={{
-                                        color: action.color,
-                                        empty: true,
-                                        circular: true,
-                                    }}
-                                    onClick={() => invokeAction(action.name)}
-                                />
-                            ))}
-                        </Dropdown.Menu>
-                    </Dropdown>*/}
                     {actions &&
                     actions.filter(item => item.allowedFromForm).map(action => (
                         <Popup
@@ -392,6 +306,7 @@ const Card = props => {
                     id={id}
                     load={loadCard}
                     name={name}
+                    parentName={parentName}
                     form={form}
                     title={title}
                     settings={settings}
@@ -401,8 +316,7 @@ const Card = props => {
                     onClose={handleClose}
                     onChangeForm={onChangeForm}
                     onBlurForm={onBlurForm}
-                    //  actionsFooter={getActionsFooter}
-                    actionsHeader={getActionsHeader}
+                    actionsHeader={(!!id && id != 'new') ? getActionsHeader : null}
                 />
             ) : (
                 <ShippingCard
@@ -412,6 +326,7 @@ const Card = props => {
                     name={name}
                     form={form}
                     load={loadCard}
+                    goToCard={goToCard}
                     loading={loading}
                     settings={settings}
                     error={error}
@@ -422,15 +337,6 @@ const Card = props => {
                     actionsHeader={getActionsHeader}
                 />
             )}
-            {/*<Confirm*/}
-            {/*dimmer="blurring"*/}
-            {/*open={confirmation.open}*/}
-            {/*onCancel={confirmation.onCancel || closeConfirmation}*/}
-            {/*cancelButton={t('cancelConfirm')}*/}
-            {/*confirmButton={t('Yes')}*/}
-            {/*onConfirm={confirmation.onConfirm}*/}
-            {/*content={confirmation.content}*/}
-            {/*/>*/}
         </React.Fragment>
     );
 };

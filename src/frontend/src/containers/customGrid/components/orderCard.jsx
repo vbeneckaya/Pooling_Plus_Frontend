@@ -11,26 +11,27 @@ import { userPermissionsSelector } from '../../../ducks/profile';
 import {ORDERS_GRID} from "../../../constants/grids";
 import {columnsGridSelector} from "../../../ducks/gridList";
 
-const OrderCard = ({
-    form,
-    onChangeForm,
-    onBlurForm,
-    name,
-    id,
-    load,
-    isNotUniqueNumber,
-    uniquenessNumberCheck,
-    settings,
-    error,
-    title,
-    onClose,
-    actionsFooter,
-    actionsHeader,
-    loading,
-}) => {
+const OrderCard = (props) => {
+    const {
+        form,
+        onChangeForm,
+        onBlurForm,
+        name,
+        id,
+        load,
+        isNotUniqueNumber,
+        uniquenessNumberCheck,
+        settings,
+        error,
+        title,
+        onClose,
+        actionsFooter,
+        actionsHeader,
+        loading,
+    } = props;
     const userPermissions = useSelector(state => userPermissionsSelector(state));
     const columns = useSelector(state => columnsGridSelector(state, ORDERS_GRID));
-
+    
     const getPanes = () => {
         let obj = [
             {
@@ -42,7 +43,7 @@ const OrderCard = ({
                         settings={settings}
                         error={error}
                         load={load}
-                        isNotUniqueNumber={isNotUniqueNumber}
+                        //isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}
@@ -104,7 +105,7 @@ const OrderCard = ({
             {id ? (
                 <CardLayout
                     title={title}
-               //     actionsFooter={actionsFooter}
+                    //     actionsFooter={actionsFooter}
                     actionsHeader={actionsHeader}
                     content={getPanes}
                     onClose={onClose}
@@ -117,11 +118,12 @@ const OrderCard = ({
                     // actionsFooter={actionsFooter}
                     onClose={onClose}
                     loading={loading}
+                    connectToShipping={false}
                 >
                     <CreateOrder
                         form={form}
                         error={error}
-                       // isNotUniqueNumber={isNotUniqueNumber}
+                        //isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}

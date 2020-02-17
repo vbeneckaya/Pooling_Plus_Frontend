@@ -170,7 +170,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.State, source: nameof(OrderShippingStatus)), IsDefault, OrderNumber(10), IsReadOnly]
         public string OrderShippingStatus { get; set; }
 
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public string AdditionalInfo { get; set; }
 
@@ -225,6 +225,9 @@ namespace Domain.Services.Orders
         public string DeliveryWarehouseGln { get; set; }
 
         public string ShippingRegion { get; set; }
+        
+        [FieldType(FieldType.Text)]
+        public string Depositor { get; set; }
 
         public bool IsEditable { get; set; }
     }
