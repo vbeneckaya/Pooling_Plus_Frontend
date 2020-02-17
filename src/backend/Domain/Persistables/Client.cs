@@ -24,7 +24,7 @@ namespace Domain.Persistables
         
         public string Email { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public override string ToString()
         {

@@ -35,7 +35,7 @@ namespace DAL.Services
         public Guid? CreateIfNotExisted<TEntity>(string fieldName, string value) where TEntity : class, IPersistable
         {
             var eType = typeof(TEntity);
-            var entity = eType.Assembly.CreateInstance(eType.Name);
+            var entity = (TEntity)eType.Assembly.CreateInstance(eType.FullName);
             if (entity == null) return null;
             
             var newId = Guid.NewGuid();
@@ -44,6 +44,7 @@ namespace DAL.Services
                 
             var propName = eType.GetProperty(fieldName);
             propName.SetValue(entity, value);
+            _context.Set<TEntity>().Add(entity);
             _context.SaveChanges();
             return newId;
         }
