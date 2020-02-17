@@ -12,7 +12,7 @@ namespace Domain.Services.Roles
         [FieldType(FieldType.Text), IsRequired]
         public string Name { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         
         public RoleTypeInfo RoleType { get; set; }
 

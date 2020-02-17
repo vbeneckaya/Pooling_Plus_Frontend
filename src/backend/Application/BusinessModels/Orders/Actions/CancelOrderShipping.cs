@@ -18,7 +18,7 @@ namespace Application.BusinessModels.Orders.Actions
     public class CancelOrderShipping : IAppAction<Order>
     {
         private readonly ICommonDataService _dataService;
-        private readonly CancelShipping _shippingAction;
+        private readonly DeleteShipping _shippingAction;
 
         public AppColor Color { get; set; }
         public string Description { get; set; }
@@ -26,7 +26,7 @@ namespace Application.BusinessModels.Orders.Actions
         public CancelOrderShipping(ICommonDataService dataService, IHistoryService historyService)
         {
             _dataService = dataService;
-            _shippingAction = new CancelShipping(dataService, historyService);
+            _shippingAction = new DeleteShipping(dataService, historyService);
             Color = _shippingAction.Color;
             Description = "Отменить перевозку и убрать её из накладных";
         }
