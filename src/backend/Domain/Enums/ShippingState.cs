@@ -13,11 +13,11 @@ namespace Domain.Enums
         [StateColor(AppColor.Blue), OrderNumber(0)]
         ShippingCreated = 0,
 
-        /// <summary>
-        /// Отменена
-        /// </summary>
-        [StateColor(AppColor.Red), OrderNumber(1)]
-        ShippingCanceled = 1,
+//        /// <summary>
+//        /// Отменена
+//        /// </summary>
+//        [StateColor(AppColor.Red), OrderNumber(1)]
+//        ShippingCanceled = 1,
 
         /// <summary>
         /// Заявка отправлена

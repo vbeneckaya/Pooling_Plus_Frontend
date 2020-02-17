@@ -12,7 +12,7 @@ namespace Tasks.Common
             NextRun = DateTime.MaxValue;
         }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public IScheduledTask Task { get; set; }
         public CrontabSchedule Schedule { get; set; }
         public string Parameters { get; set; }

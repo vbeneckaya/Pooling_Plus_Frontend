@@ -10,6 +10,6 @@ namespace Domain.Persistables
 
         public string PoolingId { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

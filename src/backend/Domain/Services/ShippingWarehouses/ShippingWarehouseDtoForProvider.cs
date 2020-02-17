@@ -42,7 +42,7 @@ namespace Domain.Services.ShippingWarehouses
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(7)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }

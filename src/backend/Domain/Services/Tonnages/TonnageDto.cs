@@ -12,7 +12,7 @@ namespace Domain.Services.Tonnages
         public string Name { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(2)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }
