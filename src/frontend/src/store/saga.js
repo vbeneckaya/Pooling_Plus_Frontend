@@ -27,7 +27,7 @@ export default function* rootSaga() {
         documentsSaga(),
         lookupSaga(),
         gridCardSaga(),
-        gridInnerCardSaga(),
+    //    gridInnerCardSaga(),
         gridActionsSaga(),
         dictionaryViewSaga(),
         gridListSaga(),
