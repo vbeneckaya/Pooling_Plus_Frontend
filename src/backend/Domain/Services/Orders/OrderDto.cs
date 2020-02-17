@@ -228,6 +228,9 @@ namespace Domain.Services.Orders
         public string DeliveryWarehouseGln { get; set; }
 
         public string ShippingRegion { get; set; }
+        
+        [FieldType(FieldType.Text)]
+        public string Depositor { get; set; }
 
         public bool IsEditable { get; set; }
     }

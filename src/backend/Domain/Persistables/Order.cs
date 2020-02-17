@@ -381,6 +381,11 @@ namespace Domain.Persistables
         /// <summary>
         /// ID РЦ
         /// </summary>
-        public string DistributionCenterId { get; set; } 
+        public string DistributionCenterId { get; set; }
+        
+        /// <summary>
+        /// Поклажедатель
+        /// </summary>
+        public string Depositor { get; set; } 
     }
 }
