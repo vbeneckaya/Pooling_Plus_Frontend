@@ -864,38 +864,51 @@ namespace Application.Services.Orders
 
         private Guid? GetPickingTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<PickingType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(t => t.WarehouseName == name);
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<ShippingWarehouse>("WarehouseName", name);
+            }
+            return entry.Id;
         }
 
         private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Warehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<Warehouse>("WarehouseName", name);
+            }
+            return entry.Id;
         }
 
         private Guid? GetCarrierIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
         }
         
         private Guid? GetProviderIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Provider>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetClientIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Client>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<Client>().FirstOrDefault(t => t.Name == name);
+            
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<Client>("Name", name);
+            }
+            return entry.Id;
         }
 
         private string GetCarrierNameById(Guid? id)
@@ -905,7 +918,7 @@ namespace Application.Services.Orders
 
         private Guid? GetVehicleTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
     }
