@@ -25,7 +25,6 @@ const OrderCard = (props) => {
         error,
         title,
         onClose,
-        actionsFooter,
         actionsHeader,
         loading,
     } = props;

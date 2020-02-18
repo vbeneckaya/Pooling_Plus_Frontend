@@ -38,6 +38,7 @@ const Card = props => {
     const {name, id, parentName} = params;
 
     let [form, setForm] = useState({});
+    let [justOpen, setJustOpen] = useState(true)
     let [allowToSend, setAllowToSend] = useState(false);
 
 
@@ -61,6 +62,7 @@ const Card = props => {
     useEffect(() => {
         dispatch(clearActions());
         id && loadCard();
+        setJustOpen(true);
 
         return () => {
             dispatch(clearHistory());
@@ -72,6 +74,7 @@ const Card = props => {
             if (allowToSend) {
                 handleSave();
             }
+            setJustOpen(false);
         },
         [form],
     );
@@ -227,9 +230,9 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
-    const editLoading = useSelector(state => editProgressSelector(state));
+  //  const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
-    const progressActionName = useSelector(state => progressActionNameSelector(state));
+  //  const progressActionName = useSelector(state => progressActionNameSelector(state));
 
     const goToCard = (gridName, cardId, parentName, isAfterCreating = false) => {
         const {state} = location;
@@ -307,7 +310,7 @@ const Card = props => {
                     form={form}
                     title={title}
                     settings={settings}
-                    loading={loading}
+                    loading={loading && justOpen}
                     uniquenessNumberCheck={handleSave} //{handleUniquenessCheck}
                     error={error}
                     onClose={handleClose}
@@ -324,7 +327,7 @@ const Card = props => {
                     form={form}
                     load={loadCard}
                     goToCard={goToCard}
-                    loading={loading}
+                    loading={loading && justOpen}
                     settings={settings}
                     error={error}
                     onClose={handleClose}
