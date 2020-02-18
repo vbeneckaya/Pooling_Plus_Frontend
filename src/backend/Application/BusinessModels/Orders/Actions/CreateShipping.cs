@@ -1,3 +1,4 @@
+using System;
 using Application.BusinessModels.Shared.Actions;
 using Application.Services.Shippings;
 using DAL.Services;
@@ -49,7 +50,14 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(Order order)
         {
-            return order.Status == OrderState.Created;
+            return order.Status == OrderState.Created && order.OrderNumber != null
+                                                      && order.DeliveryWarehouseId.HasValue && order.DeliveryWarehouseId.Value != Guid.Empty
+                                                      && order.ShippingWarehouseId.HasValue && order.ShippingWarehouseId.Value != Guid.Empty
+                                                      && order.ShippingDate.HasValue
+                                                      && order.DeliveryDate.HasValue
+                                                      && (order.BoxesCount.HasValue && order.BoxesCount.Value >0 || order.PalletsCount.HasValue && order.PalletsCount.Value >0)
+                                                      && order.WeightKg.HasValue && order.WeightKg.Value >0
+                ;
         }
     }
 }
