@@ -450,7 +450,7 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.form input:focus,
+/*.ui.form input:focus,
 .ui.form textarea:focus {
     box-shadow: inset 0 0 0 1px #29abcc, 0 0 0 2px rgba(41, 171, 204, 0.2) !important;
     border: none !important;
@@ -461,7 +461,7 @@ input::-webkit-calendar-picker-indicator {
 .react-datepicker__input-container {
     border: none !important;
     border-radius: 4px !important;
-    /* box-shadow: inset 0 0 0 1px #b3b3b3 !important;*/
+    !* box-shadow: inset 0 0 0 1px #b3b3b3 !important;*!
 }
 
 .ui.input.focus > input,
@@ -474,7 +474,7 @@ input::-webkit-calendar-picker-indicator {
 .ui.selection.active.dropdown .menu {
     box-shadow: inset 0 0 0 1px #b3b3b3, 0 2px 4px rgba(0, 0, 0, 0.2) !important;
     border: none !important;
-}
+}*/
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected,
