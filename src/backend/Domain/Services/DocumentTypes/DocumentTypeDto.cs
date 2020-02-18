@@ -1,6 +1,5 @@
 ﻿using Domain.Enums;
 using Domain.Extensions;
-using Domain.Shared;
 
 namespace Domain.Services.DocumentTypes
 {
@@ -12,7 +11,7 @@ namespace Domain.Services.DocumentTypes
         public string Name { get; set; }
 
         [FieldType(FieldType.Boolean), OrderNumber(4)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }

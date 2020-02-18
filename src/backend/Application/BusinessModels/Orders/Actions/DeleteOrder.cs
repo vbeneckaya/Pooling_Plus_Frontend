@@ -19,7 +19,7 @@ namespace Application.BusinessModels.Orders.Actions
         {
             _dataService = dataService;
             Color = AppColor.Red;
-            Description = "Удалить перевозку";
+            Description = "Удалить накладную";
         }
 
         public AppColor Color { get; set; }

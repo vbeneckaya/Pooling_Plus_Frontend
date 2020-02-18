@@ -70,10 +70,11 @@ namespace Domain.Persistables
         /// Способ доставки
         /// </summary>
         public DeliveryType? DeliveryType { get; set; }
+
         /// <summary>
         /// Активный
         /// </summary>
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// Время авизации

@@ -32,6 +32,23 @@ namespace DAL.Services
             return _context.Set<TEntity>();
         }
 
+        public Guid? CreateIfNotExisted<TEntity>(string fieldName, string value) where TEntity : class, IPersistable
+        {
+            var eType = typeof(TEntity);
+            var entity = (TEntity)eType.Assembly.CreateInstance(eType.FullName);
+            if (entity == null) return null;
+            
+            var newId = Guid.NewGuid();
+            var propId = eType.GetProperty("Id");
+            propId.SetValue(entity, newId);
+                
+            var propName = eType.GetProperty(fieldName);
+            propName.SetValue(entity, value);
+            _context.Set<TEntity>().Add(entity);
+            _context.SaveChanges();
+            return newId;
+        }
+
         public IEnumerable<EntityChanges<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable
         {
             var entries = _context.ChangeTracker.Entries<TEntity>().ToList();

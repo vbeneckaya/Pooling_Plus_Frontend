@@ -39,6 +39,10 @@ const IS_UNIQUE_NUMBER_REQUEST = 'IS_UNIQUE_NUMBER_REQUEST';
 const IS_UNIQUE_NUMBER_SUCCESS = 'IS_UNIQUE_NUMBER_SUCCESS';
 const IS_UNIQUE_NUMBER_ERROR = 'IS_UNIQUE_NUMBER_ERROR';
 
+const SET_FORM_INTO_CARD = 'SET_FORM_INTO_CARD';
+const SET_FORM_INTO_CARD_SUCCESS = 'SET_FORM_INTO_CARD_SUCCESS';
+const SET_FORM_INTO_CARD_ERROR = 'SET_FORM_INTO_CARD_ERROR';
+
 const CLEAR_GRID_CARD = 'CLEAR_GRID_CARD';
 
 const ADD_ERROR = 'ADD_ERROR';
@@ -61,11 +65,13 @@ export default (state = initial, {type, payload}) => {
         case GET_GRID_CARD_REQUEST:
         case CREATE_DRAFT_REQUEST:
         case GET_CARD_CONFIG_REQUEST:
+        case SET_FORM_INTO_CARD:
             return {
                 ...state,
                 progress: true,
             };
         case GET_GRID_CARD_SUCCESS:
+        case SET_FORM_INTO_CARD_SUCCESS:
             return {
                 ...state,
                 progress: false,
@@ -86,6 +92,7 @@ export default (state = initial, {type, payload}) => {
         case GET_GRID_CARD_ERROR:
         case CREATE_DRAFT_ERROR:
         case GET_CARD_CONFIG_ERROR:
+        case SET_FORM_INTO_CARD_ERROR:
             return {
                 ...state,
                 data: {},
@@ -199,6 +206,13 @@ export const isUniqueNumberRequest = payload => {
         payload,
     };
 };
+
+export const setFormIntoCard = payload => {
+    return {
+        type: SET_FORM_INTO_CARD,
+        payload
+    }
+}
 
 export const clearGridCard = () => {
     return {
@@ -419,6 +433,23 @@ function* isUniqueNumberSaga({payload}) {
     }
 }
 
+function* setFormIntoCardSaga({payload}) {
+    try {
+        const {form, callbackSuccess} = payload;
+        yield put({
+            type: SET_FORM_INTO_CARD_SUCCESS,
+            payload: form,
+        });
+        
+        callbackSuccess && callbackSuccess();
+    }
+    catch (e) {
+        yield put({
+            type: SET_FORM_INTO_CARD_ERROR,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(OPEN_GRID_CARD_REQUEST, openGridCardSaga),
@@ -427,5 +458,6 @@ export function* saga() {
         takeEvery(GET_GRID_CARD_REQUEST, getCardSaga),
         takeEvery(EDI_GRID_CARD_REQUEST, editCardSaga),
         takeEvery(IS_UNIQUE_NUMBER_REQUEST, isUniqueNumberSaga),
+        takeEvery(SET_FORM_INTO_CARD, setFormIntoCardSaga),
     ]);
 }

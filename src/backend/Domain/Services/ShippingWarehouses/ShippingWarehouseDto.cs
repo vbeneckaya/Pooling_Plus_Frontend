@@ -41,9 +41,9 @@ namespace Domain.Services.ShippingWarehouses
         public string UnparsedParts { get; set; }
 
         public string RegionId { get; set; }
-        
+
         [FieldType(FieldType.Boolean), OrderNumber(7)]
-        public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }
