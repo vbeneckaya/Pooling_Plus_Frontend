@@ -95,17 +95,17 @@ namespace Application.Services.Orders
             rules.Add(nameof(Order.ShippingAvisationTime), avisationTimeRule);
         }
 
-        public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
+        public IEnumerable<LookUpDto> FindByNumberAndProvider(NumberSearchFormDto dto)
         {
             var dbSet = _dataService.GetDbSet<Order>();
             List<Order> entities;
             if (dto.IsPartial)
             {
-                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase) && x.ProviderId.Equals(dto.ProviderId)).ToList();
             }
             else
             {
-                entities = dbSet.Where(x => x.OrderNumber == dto.Number).ToList();
+                entities = dbSet.Where(x => x.OrderNumber == dto.Number && x.ProviderId.Equals(dto.ProviderId)).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;

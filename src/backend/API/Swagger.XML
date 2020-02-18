@@ -111,7 +111,7 @@
         </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.GetAll">

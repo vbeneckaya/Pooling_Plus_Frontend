@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
-import {Button, Confirm, Dropdown, Icon, Popup} from 'semantic-ui-react';
+import {Button, Icon, Popup} from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -215,7 +215,8 @@ const Card = props => {
         if (form.orderNumber && card.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
             dispatch(
                 isUniqueNumberRequest({
-                    number: !!form.orderNumber ? form.orderNumber.value : null,
+                    number: form.orderNumber ? form.orderNumber.value : null,
+                    providerId: form.providerId ? form.providerId.value : null,
                     fieldName: 'orderNumber',
                     errorText: t('number_already_exists'),
                     callbackSuccess: callbackFunc,
@@ -234,7 +235,6 @@ const Card = props => {
         const {state} = location;
         if (!!parentName) {
             clearActions();
-            debugger;
             history.replace({
                 pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
                 state: {
@@ -330,7 +330,6 @@ const Card = props => {
                     onClose={handleClose}
                     onBlurForm={onBlurForm}
                     onChangeForm={onChangeForm}
-                    //  actionsFooter={getActionsFooter}
                     actionsHeader={getActionsHeader}
                 />
             )}

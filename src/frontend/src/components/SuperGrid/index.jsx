@@ -351,7 +351,7 @@ class SuperGrid extends Component {
         autoUpdateStop({
             isClear: true,
         });
-        if (name == SHIPPINGS_GRID) {
+        // if (name == SHIPPINGS_GRID) {
             if (!isEdit) {
                 editCard({
                     name,
@@ -376,17 +376,17 @@ class SuperGrid extends Component {
                         pathname: history.location.pathname,
                     },
                 });
-        }
-        else {
-            history.push({
-                pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
-                state: {
-                    ...this.mapData().filter,
-                    pathname: history.location.pathname,
-                },
-            });
-
-        }
+        // }
+        // else {
+        //     history.push({
+        //         pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
+        //         state: {
+        //             ...this.mapData().filter,
+        //             pathname: history.location.pathname,
+        //         },
+        //     });
+        //
+        // }
     };
 
     render() {
