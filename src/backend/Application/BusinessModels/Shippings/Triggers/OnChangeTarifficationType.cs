@@ -9,13 +9,14 @@ using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Shippings.Triggers
 {
-    public class OnChangeTarifficationType : ITrigger<Shipping>
+    public class OnChangeTarifficationType : UpdateIntegratedBase, ITrigger<Shipping>
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
         private readonly IDeliveryCostCalcService _calcService;        
 
         public OnChangeTarifficationType(ICommonDataService dataService, IHistoryService historyService, IDeliveryCostCalcService calcService)
+            :base(dataService)
         {
             _dataService = dataService;
             _historyService = historyService;
@@ -39,6 +40,7 @@ namespace Application.BusinessModels.Shippings.Triggers
                 }
             }
             _calcService.UpdateDeliveryCost(entity);
+            UpdateShippingFromIntegrations(entity);
         }
 
         public bool IsTriggered(EntityChanges<Shipping> changes)

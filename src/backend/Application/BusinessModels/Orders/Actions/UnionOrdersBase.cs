@@ -3,17 +3,19 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services.History;
 using System.Collections.Generic;
+using Application.BusinessModels.Shared.Triggers;
 using Domain.Services.Shippings;
 
 namespace Application.BusinessModels.Orders.Actions
 {
-    public abstract class UnionOrdersBase
+    public abstract class UnionOrdersBase : UpdateIntegratedBase
     {
         protected readonly ICommonDataService _dataService;
         protected readonly IShippingCalculationService _shippingCalculationService;
         protected readonly IShippingGetRouteService _shippingGetRouteService;
 
         public UnionOrdersBase(ICommonDataService dataService, IShippingCalculationService shippingCalculationService, IShippingGetRouteService shippingGetRouteService)
+        :base(dataService)
         {
             _dataService = dataService;
             _shippingCalculationService = shippingCalculationService;

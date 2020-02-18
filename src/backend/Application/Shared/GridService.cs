@@ -27,7 +27,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 namespace Application.Shared
 {
     public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
-        where TEntity : class, IPersistable, new() 
+        where TEntity : class, IPersistableWithCreator, new() 
         where TDto : IDto, new() 
         where TFormDto : TDto, new()
     {
@@ -299,7 +299,8 @@ namespace Application.Shared
             {
                 var entity = new TEntity
                 {
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    UserCreatorId = _userIdProvider.GetCurrentUserId()
                 };
 
                 // Mapping

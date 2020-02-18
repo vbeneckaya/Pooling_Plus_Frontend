@@ -8,6 +8,7 @@ using Domain.Services.Profile;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
+using Integrations.Pooling;
 
 namespace Application.Services.Profile
 {
@@ -72,10 +73,15 @@ namespace Application.Services.Profile
             {
                 user.Email = dto.Email;
                 user.Name = dto.UserName;
-                
-                user.PoolingLogin = dto.PoolingLogin;
-                user.PoolingPassword = dto.PoolingPassword;
+                if (user.PoolingLogin != dto.PoolingLogin || user.PoolingPassword != dto.PoolingPassword)
+                {
+                    user.PoolingLogin = dto.PoolingLogin;
+                    user.PoolingPassword = dto.PoolingPassword;
 
+                    using (var pooling = new PoolingIntegration(user, _dataService)) 
+                        pooling.Init();
+                }
+                
                 user.FmCPLogin = dto.FmCPLogin;
                 user.FmCPPassword = dto.FmCPPassword;
             

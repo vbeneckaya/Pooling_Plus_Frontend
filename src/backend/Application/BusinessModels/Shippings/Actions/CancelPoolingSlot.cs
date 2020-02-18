@@ -24,7 +24,6 @@ namespace Application.BusinessModels.Shippings.Actions
             _dataService = dataService;
             _historyService = historyService;
             Color = AppColor.Red;
-            Description = "Отменить бронь на пулинге";
         }
 
         public AppActionResult Run(CurrentUserDto userDto, Shipping shipping)
@@ -41,11 +40,12 @@ namespace Application.BusinessModels.Shippings.Actions
             using (var pooling = new PoolingIntegration(user, _dataService))
             {
                 pooling.CancelReservation(shipping);
-                shipping.PoolingInfo = $"";
-                shipping.PoolingSlotId = null;
-                shipping.PoolingReservationId = null;
+                var poolingInfoDto = pooling.GetInfoFor(shipping);
+                shipping.PoolingInfo = poolingInfoDto.MessageField;
             }
 
+            shipping.PoolingSlotId = null;
+            shipping.PoolingReservationId = null;
             shipping.Status = ShippingState.ShippingCreated;
             shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
 

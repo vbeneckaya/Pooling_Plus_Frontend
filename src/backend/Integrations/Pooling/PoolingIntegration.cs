@@ -14,6 +14,7 @@ namespace Integrations.Pooling
 {
     public class PoolingIntegration : ConnectorBase
     {
+        public static readonly string NeedLoginPasswordMessage = "Укажите доступ к pooling.me в настройках профиля";
         private string _companyId;
         private PoolingInfoDto _poolingInfoDto;
 
@@ -183,8 +184,13 @@ namespace Integrations.Pooling
         {
             Get($"reservations/{shipping.PoolingReservationId}")
                 .Get("$.slot.palletLeft");
-            shipping.PoolingInfo = "";
+            //shipping.PoolingInfo = "";
             return "";
+        }
+
+        public void Init()
+        {
+            
         }
     }
 }

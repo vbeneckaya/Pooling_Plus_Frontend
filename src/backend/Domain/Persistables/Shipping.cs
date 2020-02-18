@@ -7,7 +7,7 @@ namespace Domain.Persistables
     /// <summary>
     /// Перевозка
     /// </summary>
-    public class Shipping : IPersistable, IWithDocumentsPersistable
+    public class Shipping : IPersistableWithCreator, IWithDocumentsPersistable
     {
         /// <summary>
         /// Db primary key

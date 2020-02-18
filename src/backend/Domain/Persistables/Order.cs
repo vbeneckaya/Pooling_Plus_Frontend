@@ -7,13 +7,18 @@ namespace Domain.Persistables
     /// <summary>
     /// Заказ
     /// </summary>
-    public class Order : IWithDocumentsPersistable, IPersistable
+    public class Order : IPersistableWithCreator, IWithDocumentsPersistable
     {
         /// <summary>
         /// Db primary key
         /// </summary>    
         [IgnoreHistory]
         public Guid Id { get; set; }
+        /// <summary>
+        /// Пользователь создавший перевозку
+        /// </summary>    
+        [IgnoreHistory]
+        public Guid? UserCreatorId { get; set; }        
         /// <summary>
         /// Статус
         /// </summary>
