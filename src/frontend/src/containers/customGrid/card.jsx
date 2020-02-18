@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
-import {Button, Confirm, Dropdown, Icon, Popup} from 'semantic-ui-react';
+import {Button, Icon, Popup} from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -38,6 +38,7 @@ const Card = props => {
     const {name, id, parentName} = params;
 
     let [form, setForm] = useState({});
+    let [justOpen, setJustOpen] = useState(true)
     let [allowToSend, setAllowToSend] = useState(false);
 
 
@@ -61,6 +62,7 @@ const Card = props => {
     useEffect(() => {
         dispatch(clearActions());
         id && loadCard();
+        setJustOpen(true);
 
         return () => {
             dispatch(clearHistory());
@@ -72,6 +74,7 @@ const Card = props => {
             if (allowToSend) {
                 handleSave();
             }
+            setJustOpen(false);
         },
         [form],
     );
@@ -215,7 +218,8 @@ const Card = props => {
         if (form.orderNumber && card.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
             dispatch(
                 isUniqueNumberRequest({
-                    number: !!form.orderNumber ? form.orderNumber.value : null,
+                    number: form.orderNumber ? form.orderNumber.value : null,
+                    providerId: form.providerId ? form.providerId.value : null,
                     fieldName: 'orderNumber',
                     errorText: t('number_already_exists'),
                     callbackSuccess: callbackFunc,
@@ -226,15 +230,14 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
-    const editLoading = useSelector(state => editProgressSelector(state));
+  //  const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
-    const progressActionName = useSelector(state => progressActionNameSelector(state));
+  //  const progressActionName = useSelector(state => progressActionNameSelector(state));
 
     const goToCard = (gridName, cardId, parentName, isAfterCreating = false) => {
         const {state} = location;
         if (!!parentName) {
             clearActions();
-            debugger;
             history.replace({
                 pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
                 state: {
@@ -307,7 +310,7 @@ const Card = props => {
                     form={form}
                     title={title}
                     settings={settings}
-                    loading={loading}
+                    loading={loading && justOpen}
                     uniquenessNumberCheck={handleSave} //{handleUniquenessCheck}
                     error={error}
                     onClose={handleClose}
@@ -324,13 +327,12 @@ const Card = props => {
                     form={form}
                     load={loadCard}
                     goToCard={goToCard}
-                    loading={loading}
+                    loading={loading && justOpen}
                     settings={settings}
                     error={error}
                     onClose={handleClose}
                     onBlurForm={onBlurForm}
                     onChangeForm={onChangeForm}
-                    //  actionsFooter={getActionsFooter}
                     actionsHeader={getActionsHeader}
                 />
             )}
