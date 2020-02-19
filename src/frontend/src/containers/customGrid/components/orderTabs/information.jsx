@@ -45,7 +45,7 @@ const Information = ({
                             <label>{t('general info')}</label>
                             <Segment>
                                 <Grid>
-                                    <Grid.Row columns={3}>
+                                    <Grid.Row columns={2}>
                                         <Grid.Column>
                                             <FormField
                                                 name="orderNumber"
@@ -60,8 +60,6 @@ const Information = ({
                                                 onBlur={uniquenessNumberCheck}
                                                 onChange={onChange}
                                             />
-                                        </Grid.Column>
-                                        <Grid.Column>
                                             <FormField
                                                 name="clientOrderNumber"
                                                 type={getColumn('clientOrderNumber').type}
@@ -74,15 +72,6 @@ const Information = ({
                                             />
                                         </Grid.Column>
                                         <Grid.Column>
-                                          {/*  <FormField
-                                                name="orderDate"
-                                                value={form['orderDate']}
-                                                type={getColumn('orderDate').type}
-                                                source={getColumn('orderDate').source}
-                                                settings={settings['orderDate']}
-                                                error={error['orderDate']}
-                                                onChange={onChange}
-                                            />*/}
                                             <FormField
                                                 name="clientId"
                                                 type={getColumn('clientId').type}
@@ -90,6 +79,16 @@ const Information = ({
                                                 settings={settings['clientId']}
                                                 value={form['clientId']}
                                                 error={error['clientId']}
+                                                onChange={onChange}
+                                            />
+                                           
+                                            <FormField
+                                                name="orderDate"
+                                                value={form['orderDate']}
+                                                type={getColumn('orderDate').type}
+                                                source={getColumn('orderDate').source}
+                                                settings={settings['orderDate']}
+                                                error={error['orderDate']}
                                                 onChange={onChange}
                                             />
                                         </Grid.Column>
