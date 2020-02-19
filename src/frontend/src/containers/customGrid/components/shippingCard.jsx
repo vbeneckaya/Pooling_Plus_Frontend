@@ -8,7 +8,7 @@ import Accounts from './shippingTabs/accounts';
 import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
 import {invokeActionRequest} from '../../../ducks/gridActions';
-import {getCardRequest, setFormIntoCard} from '../../../ducks/gridCard';
+import {editCardRequest, getCardRequest, setFormIntoCard} from '../../../ducks/gridCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Modal} from "semantic-ui-react";
@@ -74,13 +74,23 @@ const ShippingCard = (props) => {
             });
             defaultOrderForm['id'] = null;
             defaultOrderForm['shippingId'] = id;
-
-            dispatch(setFormIntoCard({
-                form: defaultOrderForm,
-                callbackSuccess: () => {
-                    goToCard(ORDERS_GRID, 'new', SHIPPINGS_GRID_AS_PARENT);
-                }
-            }));
+            dispatch(editCardRequest({
+                    name: ORDERS_GRID,
+                    params: defaultOrderForm,
+                    callbackSuccess: (result) => {
+                        let orderAction = 'unionOrders';
+                        dispatch(invokeActionRequest({
+                            name: ORDERS_GRID,
+                            actionName: orderAction,
+                            ids: [result.id],
+                            callbackSuccess: () => {
+                                goToCard(ORDERS_GRID, result.id);
+                                // onCloseModal();
+                            }
+                        }));
+                    }
+                })
+            );
         };
 
         const handleSelectOrder = () => {
@@ -94,7 +104,7 @@ const ShippingCard = (props) => {
                 {
                     menuItem: t('information'),
                     render: () => (
-                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings} />
+                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings}/>
                     ),
                 },
                 {
@@ -232,10 +242,10 @@ const ShippingCard = (props) => {
             }
 
             if (actionName == 'delete') {
-                
+
                 let orderAction1 = 'removeFromShipping';
                 let orderAction2 = 'deleteOrder';
-                
+
                 dispatch(invokeActionRequest({
                     name: ORDERS_GRID,
                     actionName: orderAction1,
@@ -287,13 +297,13 @@ const ShippingCard = (props) => {
                 </Modal>
 
                 {/*<Confirm*/}
-                    {/*dimmer="blurring"*/}
-                    {/*open={confirmation.open}*/}
-                    {/*onCancel={confirmation.onCancel || closeConfirmation}*/}
-                    {/*cancelButton={t('cancelConfirm')}*/}
-                    {/*confirmButton={t('Yes')}*/}
-                    {/*onConfirm={confirmation.onConfirm}*/}
-                    {/*content={confirmation.content}*/}
+                {/*dimmer="blurring"*/}
+                {/*open={confirmation.open}*/}
+                {/*onCancel={confirmation.onCancel || closeConfirmation}*/}
+                {/*cancelButton={t('cancelConfirm')}*/}
+                {/*confirmButton={t('Yes')}*/}
+                {/*onConfirm={confirmation.onConfirm}*/}
+                {/*content={confirmation.content}*/}
                 {/*/>*/}
             </>
         );

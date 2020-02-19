@@ -343,6 +343,7 @@ function* createDraftSaga({payload}) {
 function* editCardSaga({payload}) {
     try {
         const {name, params, callbackSuccess} = payload;
+        debugger;
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
 
         if (result.isError) {

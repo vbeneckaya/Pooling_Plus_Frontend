@@ -238,18 +238,18 @@ const Card = props => {
 
     const goToCard = (gridName, cardId, parentName, isAfterCreating = false) => {
         const {state} = location;
-        if (!!parentName) {
-            clearActions();
-            history.replace({
-                pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
-                state: {
-                    ...state,
-                    pathname: isAfterCreating ? state && state.pathname ? state.pathname : state && state.gridLocation : history.location.pathname,
-                    gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
-                },
-            });
-        }
-        else{
+        // if (!!parentName) {
+        //     clearActions();
+        //     history.replace({
+        //         pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
+        //         state: {
+        //             ...state,
+        //             pathname: isAfterCreating ? state && state.pathname ? state.pathname : state && state.gridLocation : history.location.pathname,
+        //             gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
+        //         },
+        //     });
+        // }
+        // else{
             history.replace({
                 pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
                 state: {
@@ -258,7 +258,7 @@ const Card = props => {
                     gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
                 },
             });
-        }
+        // }
     };
 
     const getActionsHeader = useCallback(
