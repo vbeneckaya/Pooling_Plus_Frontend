@@ -101,11 +101,11 @@ namespace Application.Services.Orders
             List<Order> entities;
             if (dto.IsPartial)
             {
-                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase) && x.ProviderId.Equals(dto.ProviderId)).ToList();
+                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase) && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             else
             {
-                entities = dbSet.Where(x => x.OrderNumber == dto.Number && x.ProviderId.Equals(dto.ProviderId)).ToList();
+                entities = dbSet.Where(x => x.OrderNumber == dto.Number && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
