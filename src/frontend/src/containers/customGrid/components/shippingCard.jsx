@@ -14,7 +14,8 @@ import Orders from "./shippingTabs/orders";
 import {Button, Modal} from "semantic-ui-react";
 import {ordersMiniColumns} from "../../../constants/ordersMiniColumns";
 import List from '../../../containers/customSelectGrid/list';
-import {ORDERS_GRID, SHIPPINGS_GRID} from "../../../constants/grids";
+import {ORDERS_GRID} from "../../../constants/grids";
+import {SHIPPINGS_GRID_AS_PARENT} from "../../../constants/parentGrids";
 
 const ShippingCard = (props) => {
         const {
@@ -77,7 +78,7 @@ const ShippingCard = (props) => {
             dispatch(setFormIntoCard({
                 form: defaultOrderForm,
                 callbackSuccess: () => {
-                    goToCard(ORDERS_GRID, 'new', SHIPPINGS_GRID);
+                    goToCard(ORDERS_GRID, 'new', SHIPPINGS_GRID_AS_PARENT);
                 }
             }));
         };
@@ -93,7 +94,7 @@ const ShippingCard = (props) => {
                 {
                     menuItem: t('information'),
                     render: () => (
-                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings}/>
+                        <Information form={form} onChange={onChangeForm} onBlur={onBlurForm} settings={settings} />
                     ),
                 },
                 {
