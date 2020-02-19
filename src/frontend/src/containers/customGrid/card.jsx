@@ -23,6 +23,7 @@ import {
     progressActionNameSelector,
 } from '../../ducks/gridActions';
 import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
+import {SHIPPINGS_GRID_AS_PARENT} from '../../constants/parentGrids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
 import {GRID_CARD_LINK, GRID_GRID_CARD_LINK} from '../../router/links';
@@ -60,9 +61,9 @@ const Card = props => {
     );
 
     useEffect(() => {
+        setJustOpen(true);
         dispatch(clearActions());
         id && loadCard();
-        setJustOpen(true);
 
         return () => {
             dispatch(clearHistory());
@@ -74,7 +75,6 @@ const Card = props => {
             if (allowToSend) {
                 handleSave();
             }
-            setJustOpen(false);
         },
         [form],
     );
@@ -102,6 +102,7 @@ const Card = props => {
         id && id != 'new' && dispatch(getHistoryRequest(id));
 
         id && id == 'new' && setForm(card);
+      //  setJustOpen(false);
     };
 
     const onClose = () => {
@@ -166,6 +167,7 @@ const Card = props => {
 
 
     const saveOrEditForm = () => {
+        setJustOpen(false);
         dispatch(
             editCardRequest({
                 name,
@@ -175,7 +177,7 @@ const Card = props => {
                      if (!!form.id) {
                         loadCard();
                     }
-                    else if (parentName == SHIPPINGS_GRID){
+                    else if (parentName == SHIPPINGS_GRID_AS_PARENT){
                          invokeAction('unionOrders', result.id);
                     }
                 }
