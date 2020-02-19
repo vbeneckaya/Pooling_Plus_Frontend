@@ -5,38 +5,37 @@ export const ordersMiniColumns = [
         "name": "clientId",
         "displayNameKey": "clientId",
         "type": "Select",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": true,
         "isReadOnly": false
     },
-    {
+       {
         "source": "orders",
         "showRawValue": false,
         "name": "orderNumber",
         "displayNameKey": "orderNumber",
         "type": "Link",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": true,
-        "isReadOnly": true
+        "isReadOnly": false
+    },
+    {
+        "name": "clientOrderNumber",
+        "displayNameKey": "clientOrderNumber",
+        "type": "Text",
+        "isFixedPosition": false,
+        "isReadOnly": false
     },
     {
         "name": "palletsCount",
         "displayNameKey": "palletsCount",
         "type": "Number",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": false,
         "isReadOnly": false
     },
     {
         "name": "weightKg",
         "displayNameKey": "weightKg",
         "type": "Number",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": false,
         "isReadOnly": false
     },
     {
@@ -45,9 +44,7 @@ export const ordersMiniColumns = [
         "name": "shippingWarehouseId",
         "displayNameKey": "shippingWarehouseId",
         "type": "Select",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": true,
         "isReadOnly": false
     },
     {
@@ -56,9 +53,7 @@ export const ordersMiniColumns = [
         "name": "deliveryWarehouseId",
         "displayNameKey": "deliveryWarehouseId",
         "type": "Select",
-        "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": true,
         "isReadOnly": false
     },
     {
@@ -67,7 +62,6 @@ export const ordersMiniColumns = [
         "type": "Date",
         "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": false,
         "isReadOnly": false
     },
     {
@@ -76,7 +70,6 @@ export const ordersMiniColumns = [
         "type": "Date",
         "isDefault": true,
         "isFixedPosition": false,
-        "isRequired": true,
         "isReadOnly": false
     }
 ];

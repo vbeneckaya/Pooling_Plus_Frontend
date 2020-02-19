@@ -13,7 +13,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(4), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link, source: nameof(Orders)), IsDefault, OrderNumber(2), IsReadOnly]
+        [FieldType(FieldType.Link, source: nameof(Orders)), IsDefault, OrderNumber(2)]
         public LookUpDto OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
