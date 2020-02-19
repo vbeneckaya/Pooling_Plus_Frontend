@@ -7,7 +7,7 @@ import {ORDERS_GRID} from "../../../../constants/grids";
 
 const Orders = (props) => {
     
-    const {form , columns, isDeleteBtn, removeFromShipping, openOrderModal} = props;
+    const {form , columns, isDeleteBtn, removeFromShipping, openOrderModal, loadCard} = props;
     const {name = ''} = ORDERS_GRID;
 
     return (
@@ -15,7 +15,8 @@ const Orders = (props) => {
                 key={name}
                 rows={form && form.orders}
                 columns={columns}
-                name={name}
+                name={ORDERS_GRID}
+                loadCard={loadCard}
                 // getActions={getActions}
                 // modalCard={this.modalCard}
                 removeFromShipping={removeFromShipping}

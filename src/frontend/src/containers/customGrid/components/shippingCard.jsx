@@ -31,6 +31,7 @@ const ShippingCard = (props) => {
             loading,
             goToCard,
             load,
+            update,
             history,
         } = props;
 
@@ -115,6 +116,7 @@ const ShippingCard = (props) => {
                     render: () => <Orders
                         form={form}
                         columns={orderColumns}
+                        loadCard={update}
                         isDeleteBtn={!!(form && form.id) ? canUnionOrdersInExisted : canUnionOrders}
                         removeFromShipping={handleDelete}
                         openOrderModal={openOrderModal}

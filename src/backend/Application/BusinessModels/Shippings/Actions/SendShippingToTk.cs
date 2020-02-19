@@ -71,12 +71,19 @@ namespace Application.BusinessModels.Shippings.Actions
 
         public bool IsAvailable(Shipping shipping)
         {
-            return IsAvailable(shipping.Status) && shipping.CarrierId.HasValue;
+            return IsAvailable(shipping.Status)
+                   && shipping.CarrierId.HasValue
+                   && IsShippingHasOrders(shipping);
         }
 
         public bool IsAvailable(ShippingState? shippingStatus)
         {
             return shippingStatus == ShippingState.ShippingCreated || shippingStatus == ShippingState.ShippingRejectedByTc;
+        }
+
+        private bool IsShippingHasOrders(Shipping shipping)
+        {
+            return _dataService.GetDbSet<Order>().Any(_ => _.IsActive && _.ShippingId == shipping.Id);
         }
     }
 }

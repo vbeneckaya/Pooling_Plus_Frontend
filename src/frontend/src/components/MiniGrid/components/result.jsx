@@ -4,10 +4,28 @@ import { Button, Loader, Table } from 'semantic-ui-react';
 import BodyCell from './body_cell';
 import { connect } from 'react-redux';
 import NotFoundMessage from './notFoundMessage';
+import { checkForEditingRequest } from '../../../ducks/gridColumnEdit';
 import {ORDERS_GRID} from "../../../constants/grids";
+import {invokeMassUpdateRequest} from "../../../ducks/gridActions";
 
 class Result extends Component {
-
+    // handleCheck = row => {
+    //     const { selectedRows, setSelected, onlyOneCheck } = this.props;
+    //     let newSelectedRows;
+    //     if (onlyOneCheck) {
+    //         newSelectedRows = new Set();
+    //         if (!selectedRows.has(row.id)) {
+    //             newSelectedRows.add(row.id);
+    //         }
+    //         setSelected(newSelectedRows);
+    //     } else {
+    //         newSelectedRows = new Set(selectedRows);
+    //         newSelectedRows[!selectedRows.has(row.id) ? 'add' : 'delete'](row.id);
+    //         setSelected(newSelectedRows);
+    //     }
+    // };
+    
+    
     render() {
         const {
             columns = [],
@@ -21,7 +39,9 @@ class Result extends Component {
             progress,
             openOrderModal,
             t,
-        //    checkForEditing,
+            checkForEditing,
+            invokeMassUpdate,
+            loadCard,
         } = this.props;
         
         const  handleDeleteClick = (id) => {
@@ -65,9 +85,11 @@ class Result extends Component {
                                     indexColumn={indexColumn}
                                     gridName={name}
                                     goToCard={null}
+                                    loadCard={loadCard}
                                     openOrderModal={openOrderModal}
                                     t={t}
-                                    checkForEditing={()=>{}}
+                                    checkForEditing={checkForEditing}
+                                    invokeMassUpdate={invokeMassUpdate}
                                 />
                             ))}
                             <Table.Cell/>
@@ -112,16 +134,21 @@ class Result extends Component {
     }
 }
 
-// const mapDispatchToProps = dispatch => {
-//     return {
-//         checkForEditing: params => {
-//             dispatch(checkForEditingRequest(params));
-//         },
-// };
+const mapDispatchToProps = dispatch => {
+    return {
+        checkForEditing: params => {
+            dispatch(checkForEditingRequest(params));
+        },
+        invokeMassUpdate: params => {
+           dispatch(invokeMassUpdateRequest(params));
+            
+        },
+    }
+};
 
 export default withTranslation()(
     connect(
         null,
-        null,
+        mapDispatchToProps,
     )(Result),
 );

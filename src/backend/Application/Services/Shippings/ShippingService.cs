@@ -355,11 +355,11 @@ namespace Application.Services.Shippings
             bool isNew = string.IsNullOrEmpty(dto.Id);
 
             _mapper.Map(dto, entity);
-            
+
             IEnumerable<string> readOnlyFields = null;
+            var userId = _userIdProvider.GetCurrentUserId();
             if (!isNew)
             {
-                var userId = _userIdProvider.GetCurrentUserId();
                 if (userId != null)
                 {
                     string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
@@ -369,28 +369,30 @@ namespace Application.Services.Shippings
             }
             else
             {
-                InitializeNewShipping(entity);
+                InitializeNewShipping(entity, userId);
             }
         }
 
-        private void InitializeNewShipping(Shipping shipping)
+        private void InitializeNewShipping(Shipping shipping, Guid? currentUserId)
         {
             shipping.Status = ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = DateTime.UtcNow;
             shipping.ShippingNumber = ShippingNumberProvider.GetNextShippingNumber();
             shipping.DeliveryType = DeliveryType.Delivery;
+            shipping.UserCreatorId = currentUserId;
 
             var user = _userIdProvider.GetCurrentUser();
             if (user?.CarrierId != null)
             {
                 shipping.CarrierId = user.CarrierId;
             }
+
             if (user?.ProviderId != null)
             {
                 shipping.ProviderId = user.ProviderId;
             }
         }
-        
+
         public override void MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
             MapFromDtoToEntity(entity, dto);
@@ -496,6 +498,7 @@ namespace Application.Services.Shippings
 
                 result.Add(dto);
             }
+
             result = FillLookupOrdersNames(result).ToList();
             return result;
         }
@@ -732,7 +735,8 @@ namespace Application.Services.Shippings
                 || columns.Contains("confirmedPalletsCount") && isInt && i.ConfirmedPalletsCount == searchInt
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision &&
                 i.WeightKg <= searchDecimal + precision
-                || columns.Contains("confirmedWeightKg") && isDecimal && i.ConfirmedWeightKg >= searchDecimal - precision &&
+                || columns.Contains("confirmedWeightKg") && isDecimal &&
+                i.ConfirmedWeightKg >= searchDecimal - precision &&
                 i.ConfirmedWeightKg <= searchDecimal + precision
                 || columns.Contains("totalDeliveryCost") && isDecimal &&
                 i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
@@ -795,7 +799,7 @@ namespace Application.Services.Shippings
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
 
-       private Guid? GetCarrierIdByName(string name)
+        private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
