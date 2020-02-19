@@ -78,6 +78,11 @@ const Card = props => {
         [form],
     );
 
+    const updateCard =() => {
+        setJustOpen(false);
+        loadCard();
+    }
+    
     const loadCard = () => {
         id && id != 'new' &&
         dispatch(
@@ -286,6 +291,7 @@ const Card = props => {
                     {...props}
                     id={id}
                     load={loadCard}
+                    update={updateCard}
                     name={name}
                     form={form}
                     title={title}
@@ -306,6 +312,7 @@ const Card = props => {
                     name={name}
                     form={form}
                     load={loadCard}
+                    update={updateCard}
                     goToCard={goToCard}
                     loading={loading && justOpen}
                     settings={settings}

@@ -19,6 +19,7 @@ const OrderCard = (props) => {
         name,
         id,
         load,
+        update,
         isNotUniqueNumber,
         uniquenessNumberCheck,
         settings,
