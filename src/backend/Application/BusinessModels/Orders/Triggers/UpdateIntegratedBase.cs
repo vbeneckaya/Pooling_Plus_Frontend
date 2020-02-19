@@ -16,7 +16,7 @@ namespace Application.BusinessModels.Orders.Triggers
 
         protected void UpdateShippingFromIntegrations(Shipping shipping)
         {
-            if (shipping.Status == ShippingState.ShippingCreated)
+            if (shipping.Status == ShippingState.ShippingCreated && shipping.UserCreatorId.HasValue)
             {
                 var creator = _dataService.GetByIdOrNull<User>(shipping.UserCreatorId);
                 if (creator.IsPoolingIntegrated())
