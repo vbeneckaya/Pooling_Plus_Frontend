@@ -8,14 +8,13 @@ import Accounts from './shippingTabs/accounts';
 import {useDispatch, useSelector} from 'react-redux';
 import {userPermissionsSelector, userActionsSelector} from '../../../ducks/profile';
 import {invokeActionRequest} from '../../../ducks/gridActions';
-import {editCardRequest, getCardRequest, setFormIntoCard} from '../../../ducks/gridCard';
+import {editCardRequest, getCardRequest} from '../../../ducks/gridCard';
 import CardLayout from '../../../components/CardLayout';
 import Orders from "./shippingTabs/orders";
 import {Button, Modal} from "semantic-ui-react";
 import {ordersMiniColumns} from "../../../constants/ordersMiniColumns";
 import List from '../../../containers/customSelectGrid/list';
 import {ORDERS_GRID} from "../../../constants/grids";
-import {SHIPPINGS_GRID_AS_PARENT} from "../../../constants/parentGrids";
 
 const ShippingCard = (props) => {
         const {
