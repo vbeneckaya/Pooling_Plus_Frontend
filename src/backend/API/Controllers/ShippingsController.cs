@@ -7,6 +7,9 @@ using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System;
+using System.IO;
+using System.Linq;
+using Domain.Extensions;
 
 namespace API.Controllers
 {
@@ -38,6 +41,31 @@ namespace API.Controllers
                 Log.Error(ex, $"Failed to Find Shipping number");
                 return StatusCode(500, ex.Message);
             }
+        }
+        
+        /// <summary>
+        /// »мпортировать список форм из excel
+        /// </summary>
+        [HttpPost("importFormsFromExcel")]
+        public ImportResultDto ImportFormsFromExcel()
+        {
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+            {
+                file.CopyTo(stream);
+                return service.ImportFormsFromExcel(stream);
+            }
+        }
+        
+        
+        /// <summary>
+        /// Ёкспортировать список форм в excel
+        /// </summary>
+        [HttpPost("exportFormsToExcel"), DisableRequestSizeLimit]
+        public IActionResult ExportFormsToExcel([FromBody]ExportExcelFormDto<ShippingFilterDto> dto) {
+            
+            var memoryStream = service.ExportFormsToExcel(dto);
+            return File(memoryStream, "application/vnd.ms-excel", $"Export {typeof(Shipping).Name.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
     }
 }

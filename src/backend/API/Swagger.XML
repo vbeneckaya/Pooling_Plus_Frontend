@@ -356,6 +356,16 @@
             Поиск по номеру
             </summary>
         </member>
+        <member name="M:API.Controllers.ShippingsController.ImportFormsFromExcel">
+            <summary>
+            Импортировать список форм из excel
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.ExportFormsToExcel(Domain.Shared.ExportExcelFormDto{Domain.Services.Shippings.ShippingFilterDto})">
+            <summary>
+            Экспортировать список форм в excel
+            </summary>
+        </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
             <summary>
             Получение данных для выпадающего списка

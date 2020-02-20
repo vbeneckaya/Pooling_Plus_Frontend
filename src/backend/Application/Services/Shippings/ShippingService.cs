@@ -21,9 +21,17 @@ using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using AutoMapper.QueryableExtensions;
+using Domain.Services.Orders;
+using Domain.Services.Translations;
+using Microsoft.EntityFrameworkCore.Internal;
+using OfficeOpenXml;
+using Serilog;
 
 namespace Application.Services.Shippings
 {
@@ -788,7 +796,8 @@ namespace Application.Services.Shippings
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
-            return base.CreateExportExcelMapper()
+            var  mapper = base.CreateExportExcelMapper();
+            return mapper
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
@@ -797,6 +806,97 @@ namespace Application.Services.Shippings
                 .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
+        }
+
+        public Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var excel = new ExcelPackage();
+
+            var user = _userIdProvider.GetCurrentUser();
+
+            string entityName = typeof(Shipping).Name.Pluralize().ToLowerFirstLetter();
+            string entityDisplayName = entityName.Translate(user.Language);
+            var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
+
+            var dbSet = _dataService.GetDbSet<Shipping>();
+            var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
+
+            query = ApplyRestrictions(query);
+
+            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var entities = query.ToList();
+            var dtos = entities.Select(MapFromEntityToFormDto);
+            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+//            dtos = FillLookupNames(dtos).ToList();
+//            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName,
+//                sw.ElapsedMilliseconds);
+//            sw.Restart();
+
+            var excelMapper = CreateExcelMapper(); //new ExcelMapper<TDto>(_dataService, _userIdProvider);
+            excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
+            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+
+            return new MemoryStream(excel.GetAsByteArray());
+        }
+        
+        public ImportResultDto ImportFormsFromExcel(Stream fileStream)
+        {
+            string entityName = typeof(Shipping).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
+
+            var excelMapper = CreateExcelMapper();
+            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var importResult = Import(dtos.Select(x => x.Data));
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+
+            var user = _userIdProvider.GetCurrentUser();
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var validateResult in importResult.Where(x => x.IsError))
+            {
+                sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
+            }
+
+            if (!importResult.Any(x => x.IsError))
+                return new ImportResultDto
+                {
+                    Message = $"{importResult.Count()} загружено"
+                };
+
+            return new ImportResultDto
+            {
+                Message = sb.ToString()
+            };
+        }
+        
+        private void ExpandExportExcelMapperByOrders(ExcelMapper<ShippingFormDto> mapper, string lang)
+        {
+            Type type = typeof(OrderDto);
+
+            _fieldDispatcherService.GetDtoFields<OrderDto>()
+                .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
+                .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
+                .ToList()
+                .ForEach(mapper.AddColumn);
         }
 
         private Guid? GetCarrierIdByName(string name)
