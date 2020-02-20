@@ -28,7 +28,7 @@ export default history =>
         dictionaryView,
         gridActions,
         gridCard,
-      //  gridInnerCard,
+        gridInnerCard,
         lookup,
         documents,
         representations,
