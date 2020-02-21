@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Application.Shared.Excel
 {
-    public class ExcelMapper<TDto> where TDto: new()
+    public class ExcelDoubleMapper<TDto, TInnerDto> where TDto: new()
     {
         public void AddColumn(IExcelColumn column)
         {
@@ -21,7 +21,13 @@ namespace Application.Shared.Excel
             _columns[columnKey] = column;
         }
         
-      
+        public void AddInnerColumn(IExcelColumn column)
+        {
+            string columnKey = GetColumnKey(column);
+            column.Field = _fieldDispatcherService.GetDtoFields<TInnerDto>().FirstOrDefault(x => x.Name == column.Property.Name);
+            _columns[columnKey] = column;
+        }
+        
         public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang, List<string> columns = null)
         {
             FillDefaultColumnOrder(columns);
@@ -37,11 +43,32 @@ namespace Application.Shared.Excel
             foreach (var entry in entries)
             {
                 ++rowIndex;
+               
                 foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
                 {
                     var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                    column.FillValue(entry, cell);
-                };
+                    if (column.Property.ReflectedType == typeof(TDto))
+                    {
+                        column.FillValue(entry, cell);
+                    }
+                    
+                   
+                }
+
+                var innerEntries = new List<TInnerDto>();
+                
+                foreach (var innerEntry in innerEntries)
+                {
+                    
+                    foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
+                    {
+                        var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
+                        if (column.Property.ReflectedType == typeof(TInnerDto))
+                        {
+                            column.FillValue(innerEntry, cell);
+                        }
+                    }
+                }
             }
         }
 
@@ -112,7 +139,7 @@ namespace Application.Shared.Excel
             foreach (var column in _columns.Where(c => c.Value.ColumnIndex >= 0))
             {
                 Translation local = _translations.FirstOrDefault(t => t.Name == column.Value.Field.DisplayNameKey);
-                column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key;
+                column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key.Split('_')[1];
             }
         }
 
@@ -189,7 +216,7 @@ namespace Application.Shared.Excel
 
         private string GetColumnKey(IExcelColumn column)
         {
-            var res = column.Property.Name.ToLower();
+            var res = column.Property.ReflectedType.Name.ToLower()+ "_" + column.Property.Name.ToLower();
             return res;
         }
 
@@ -222,7 +249,7 @@ namespace Application.Shared.Excel
                     .ForEach(column => AddColumn(column));
         }
 
-        public ExcelMapper(ICommonDataService dataService, IUserProvider userProvider, IFieldDispatcherService fieldDispatcherService)
+        public ExcelDoubleMapper(ICommonDataService dataService, IUserProvider userProvider, IFieldDispatcherService fieldDispatcherService)
         {
             _userProvider = userProvider;
             _fieldDispatcherService = fieldDispatcherService;

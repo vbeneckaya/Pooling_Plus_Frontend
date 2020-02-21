@@ -841,8 +841,19 @@ namespace Application.Services.Shippings
 //                sw.ElapsedMilliseconds);
 //            sw.Restart();
 
-            var excelMapper = CreateExcelMapper(); //new ExcelMapper<TDto>(_dataService, _userIdProvider);
-            excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
+            var excelMapper = new ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
+
+            excelMapper = ExpandExportExcelMapperByOrders(excelMapper, user.Language);
+
+          //  var columnsFromFront = dto.Columns.Concat(dto.InnerColumns).ToList();
+
+            var columns =
+                dto.Columns.Select(c => typeof(ShippingFormDto).Name.ToLower() + "_" + c.ToString().ToLower());
+            
+            var innerColumns =
+                dto.InnerColumns.Select(c => typeof(ShippingOrderDto).Name.ToLower() + "_" + c.ToString().ToLower());
+            
+            excelMapper.FillSheet(workSheet, dtos, user.Language, columns.Concat(innerColumns).ToList());
             Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
 
@@ -888,15 +899,16 @@ namespace Application.Services.Shippings
             };
         }
         
-        private void ExpandExportExcelMapperByOrders(ExcelMapper<ShippingFormDto> mapper, string lang)
+        private ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto> mapper, string lang)
         {
-            Type type = typeof(OrderDto);
+            Type type = typeof(ShippingOrderDto);
 
-            _fieldDispatcherService.GetDtoFields<OrderDto>()
+            _fieldDispatcherService.GetDtoFields<ShippingOrderDto>()
                 .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
                 .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
                 .ToList()
-                .ForEach(mapper.AddColumn);
+                .ForEach(mapper.AddInnerColumn);
+            return mapper;
         }
 
         private Guid? GetCarrierIdByName(string name)

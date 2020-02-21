@@ -291,7 +291,6 @@ const ShippingCard = (props) => {
                 callbackSuccess: (result) => {
                     setAllowOrderToSend(false);
                     setOrderForm(result);
-                   // setShowCreateModal(true);
                     callbackFunc && callbackFunc();
                 }
             }));

@@ -36,7 +36,7 @@ namespace Application.Shared.Excel.Columns
             }
             else if (Property.PropertyType == typeof(LookUpDto))
             {
-                LookUpDto value = (LookUpDto)Property.GetValue(entity);
+                var value = (LookUpDto)Property.GetValue(entity);
                 if (value != null)
                 {
                     cell.Value = value.Value;
