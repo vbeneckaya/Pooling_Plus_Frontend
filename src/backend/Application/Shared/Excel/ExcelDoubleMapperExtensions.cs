@@ -7,8 +7,9 @@ namespace Application.Shared.Excel
 {
     public static class ExcelDoubleMapperExtensions
     {
-        public static ExcelDoubleMapper<TDto, TInnerDto> MapColumn<TDto, TInnerDto, TField>(this ExcelDoubleMapper<TDto, TInnerDto> excelDoubleMapper, Expression<Func<TDto, TField>> property, IExcelColumn column)
+        public static ExcelDoubleMapper<TDto, TFormDto, TInnerDto> MapColumn<TDto, TFormDto, TInnerDto, TField>(this ExcelDoubleMapper<TDto, TFormDto, TInnerDto> excelDoubleMapper, Expression<Func<TDto, TField>> property, IExcelColumn column)
             where TDto : new()
+            where TFormDto : new()
             where TInnerDto : new()
         {
             var propertyBody = property.Body as MemberExpression;
@@ -24,8 +25,9 @@ namespace Application.Shared.Excel
             return excelDoubleMapper;
         }
         
-        public static ExcelDoubleMapper<TDto, TInnerDto> MapInnerColumn<TDto, TInnerDto, TField>(this ExcelDoubleMapper<TDto, TInnerDto> excelDoubleMapper, Expression<Func<TInnerDto, TField>> property, IExcelColumn column)
+        public static ExcelDoubleMapper<TDto, TFormDto, TInnerDto> MapInnerColumn<TDto, TFormDto, TInnerDto, TField>(this ExcelDoubleMapper<TDto, TFormDto, TInnerDto> excelDoubleMapper, Expression<Func<TInnerDto, TField>> property, IExcelColumn column)
             where TDto : new()
+            where TFormDto : new()
             where TInnerDto : new()
         {
             var propertyBody = property.Body as MemberExpression;

@@ -13,8 +13,9 @@ using Domain.Services.Shippings;
 
 namespace Application.Shared.Excel
 {
-    public class ExcelDoubleMapper<TDto, TInnerDto>
+    public class ExcelDoubleMapper<TDto,TFormDto, TInnerDto>
         where TDto : new()
+        where TFormDto : new()
         where TInnerDto : new()
     {
         public void AddColumn(IExcelColumn column)
@@ -33,7 +34,7 @@ namespace Application.Shared.Excel
             _columns[columnKey] = column;
         }
 
-        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang,
+        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TFormDto> entries, string lang,
             List<string> columns = null)
         {
             FillDefaultColumnOrder(columns);
@@ -54,13 +55,13 @@ namespace Application.Shared.Excel
                     c.ColumnIndex >= 0 && c.Property.ReflectedType == typeof(TDto)))
                 {
                     var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                    column.FillValue( (TDto)entry , cell);
+                    column.FillValue( entry , cell);
                 }
 
                 var innerEntries = new List<TInnerDto>();
                 
                 ///todo: убратиь инлайн
-                innerEntries = (List<TInnerDto>) typeof(ShippingFormDto).GetProperty("Orders").GetValue(entry);
+                innerEntries = (List<TInnerDto>) typeof(TFormDto).GetProperty("Orders").GetValue(entry);
 
                 foreach (var innerEntry in innerEntries)
                 {

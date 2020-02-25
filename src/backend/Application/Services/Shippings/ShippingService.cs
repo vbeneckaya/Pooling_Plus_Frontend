@@ -323,7 +323,8 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.CostsConfirmedByCarrier,
                         e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
 
-                cfg.CreateMap<ShippingDto, ShippingFormDto>();
+                cfg.CreateMap<ShippingDto, ShippingFormDto>()
+                    ;
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
@@ -414,7 +415,7 @@ namespace Application.Services.Shippings
                 return null;
             }
 
-            return _mapper.Map<ShippingDto>(entity);
+            return FillLookupNames(_mapper.Map<ShippingDto>(entity));
         }
 
         public override ShippingFormDto MapFromEntityToFormDto(Shipping entity)
@@ -809,10 +810,10 @@ namespace Application.Services.Shippings
         }
         
         
-        protected  ExcelDoubleMapper<ShippingDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
+        protected  ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
-            var  mapper = new ExcelDoubleMapper<ShippingDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
+            var  mapper = new ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
             mapper = ExpandExportExcelMapperByOrders(mapper, lang);
             
             mapper
@@ -927,7 +928,7 @@ namespace Application.Services.Shippings
             };
         }
         
-        private ExcelDoubleMapper<ShippingDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingDto, ShippingOrderDto> mapper, string lang)
+        private ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> mapper, string lang)
         {
             Type type = typeof(ShippingOrderDto);
 
