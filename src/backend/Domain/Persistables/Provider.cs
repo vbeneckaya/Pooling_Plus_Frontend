@@ -5,7 +5,7 @@ namespace Domain.Persistables
     /// <summary>
     /// Поставщик
     /// </summary>
-    public class Provider : IPersistable
+    public class Provider : IPersistableWithName
     {
         public Guid Id { get; set; }
 

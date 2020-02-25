@@ -9,26 +9,32 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Services.Shippings;
 
 namespace Application.Shared.Excel
 {
-    public class ExcelDoubleMapper<TDto, TInnerDto> where TDto: new()
+    public class ExcelDoubleMapper<TDto, TInnerDto>
+        where TDto : new()
+        where TInnerDto : new()
     {
         public void AddColumn(IExcelColumn column)
         {
             string columnKey = GetColumnKey(column);
-            column.Field = _fieldDispatcherService.GetDtoFields<TDto>().FirstOrDefault(x => x.Name == column.Property.Name);
+            column.Field = _fieldDispatcherService.GetDtoFields<TDto>()
+                .FirstOrDefault(x => x.Name == column.Property.Name);
             _columns[columnKey] = column;
         }
-        
+
         public void AddInnerColumn(IExcelColumn column)
         {
             string columnKey = GetColumnKey(column);
-            column.Field = _fieldDispatcherService.GetDtoFields<TInnerDto>().FirstOrDefault(x => x.Name == column.Property.Name);
+            column.Field = _fieldDispatcherService.GetDtoFields<TInnerDto>()
+                .FirstOrDefault(x => x.Name == column.Property.Name);
             _columns[columnKey] = column;
         }
-        
-        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang, List<string> columns = null)
+
+        public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang,
+            List<string> columns = null)
         {
             FillDefaultColumnOrder(columns);
             FillColumnTitles(lang);
@@ -37,38 +43,39 @@ namespace Application.Shared.Excel
             {
                 worksheet.Cells[1, column.ColumnIndex].Value = column.Title;
                 worksheet.Cells[1, column.ColumnIndex].Style.Font.Bold = true;
-            };
+            }
 
-            int rowIndex = 1;
+            ;
+
+            int rowIndex = 2;
             foreach (var entry in entries)
             {
-                ++rowIndex;
-               
-                foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
+                foreach (var column in _columns.Values.Where(c =>
+                    c.ColumnIndex >= 0 && c.Property.ReflectedType == typeof(TDto)))
                 {
                     var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                    if (column.Property.ReflectedType == typeof(TDto))
-                    {
-                        column.FillValue(entry, cell);
-                    }
-                    
-                   
+                    column.FillValue( (TDto)entry , cell);
                 }
 
                 var innerEntries = new List<TInnerDto>();
                 
+                ///todo: убратиь инлайн
+                innerEntries = (List<TInnerDto>) typeof(ShippingFormDto).GetProperty("Orders").GetValue(entry);
+
                 foreach (var innerEntry in innerEntries)
                 {
-                    
-                    foreach (var column in _columns.Values.Where(c => c.ColumnIndex >= 0))
+                    foreach (var column in _columns.Values.Where(c =>
+                        c.ColumnIndex >= 0 && c.Property.ReflectedType == typeof(TInnerDto)))
                     {
                         var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                        if (column.Property.ReflectedType == typeof(TInnerDto))
-                        {
-                            column.FillValue(innerEntry, cell);
-                        }
+                        column.FillValue(innerEntry, cell);
                     }
+
+                    ++rowIndex;
                 }
+
+                if (!innerEntries.Any())
+                    ++rowIndex;
             }
         }
 
@@ -96,7 +103,7 @@ namespace Application.Shared.Excel
 
             FillColumnOrder(columnTitles);
 
-            foreach(int rowIndex in rows.Skip(1))
+            foreach (int rowIndex in rows.Skip(1))
             {
                 bool isEmpty = IsEmptyRow(worksheet, rowIndex);
                 if (isEmpty)
@@ -115,16 +122,19 @@ namespace Application.Shared.Excel
                         var columnResult = column.SetValue(entity, cell);
 
                         if (columnResult != null)
-                        { 
-                            validationResult.AddError(_columns.Keys.ElementAt(column.ColumnIndex), columnResult.Message, columnResult.ResultType);
+                        {
+                            validationResult.AddError(_columns.Keys.ElementAt(column.ColumnIndex), columnResult.Message,
+                                columnResult.ResultType);
                         }
-
                     }
                     catch (Exception ex)
                     {
-                        validationResult.AddError("exception", $"Строка {rowIndex}: {ex.Message}.", ValidationErrorType.Exception);
+                        validationResult.AddError("exception", $"Строка {rowIndex}: {ex.Message}.",
+                            ValidationErrorType.Exception);
                     }
-                };
+                }
+
+                ;
 
                 _errors.Add(validationResult);
 
@@ -161,6 +171,7 @@ namespace Application.Shared.Excel
                     {
                         throw new Exception($"{column.Key} not found");
                     }
+
                     column.Value.ColumnIndex = column.Value.Field.OrderNumber;
                 }
             }
@@ -201,7 +212,8 @@ namespace Application.Shared.Excel
                 }
                 else
                 {
-                    Translation local = _translations.FirstOrDefault(t => (t.Ru == title || t.En == title) && fieldNamesSet.ContainsKey(t.Name));
+                    Translation local = _translations.FirstOrDefault(t =>
+                        (t.Ru == title || t.En == title) && fieldNamesSet.ContainsKey(t.Name));
                     if (local == null)
                     {
                         yield return title?.ToLower();
@@ -216,7 +228,7 @@ namespace Application.Shared.Excel
 
         private string GetColumnKey(IExcelColumn column)
         {
-            var res = column.Property.ReflectedType.Name.ToLower()+ "_" + column.Property.Name.ToLower();
+            var res = column.Property.ReflectedType.Name.ToLower() + "_" + column.Property.Name.ToLower();
             return res;
         }
 
@@ -234,6 +246,7 @@ namespace Application.Shared.Excel
                     }
                 }
             }
+
             return true;
         }
 
@@ -243,13 +256,14 @@ namespace Application.Shared.Excel
             string lang = _userProvider.GetCurrentUser()?.Language;
 
             _fieldDispatcherService.GetDtoFields<TDto>()
-                    .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
-                    .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
-                    .ToList()
-                    .ForEach(column => AddColumn(column));
+                .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
+                .Select(f => new BaseExcelColumn {Property = type.GetProperty(f.Name), Field = f, Language = lang})
+                .ToList()
+                .ForEach(AddColumn);
         }
 
-        public ExcelDoubleMapper(ICommonDataService dataService, IUserProvider userProvider, IFieldDispatcherService fieldDispatcherService)
+        public ExcelDoubleMapper(ICommonDataService dataService, IUserProvider userProvider,
+            IFieldDispatcherService fieldDispatcherService)
         {
             _userProvider = userProvider;
             _fieldDispatcherService = fieldDispatcherService;

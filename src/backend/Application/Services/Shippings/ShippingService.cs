@@ -433,7 +433,7 @@ namespace Application.Services.Shippings
 
             return formDto;
         }
-
+        
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
@@ -799,14 +799,40 @@ namespace Application.Services.Shippings
             var  mapper = base.CreateExportExcelMapper();
             return mapper
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
-                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetIdByName<BodyType>))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetIdByName<VehicleType>))
                 .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
                 .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
+        
+        
+        protected  ExcelDoubleMapper<ShippingDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
+        {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
+            var  mapper = new ExcelDoubleMapper<ShippingDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
+            mapper = ExpandExportExcelMapperByOrders(mapper, lang);
+            
+            mapper
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetIdByName<BodyType>))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetIdByName<VehicleType>))
+                .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
+
+            mapper
+                .MapInnerColumn(o => o.ClientId, new DictionaryReferenceExcelColumn(GetIdByName<Client>))
+                .MapInnerColumn(o => o.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
+                .MapInnerColumn(o => o.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName));
+
+            return mapper;
+        }
+        
 
         public Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto)
         {
@@ -841,14 +867,16 @@ namespace Application.Services.Shippings
 //                sw.ElapsedMilliseconds);
 //            sw.Restart();
 
-            var excelMapper = new ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
+      //      var excelMapper = new ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
 
-            excelMapper = ExpandExportExcelMapperByOrders(excelMapper, user.Language);
+      //      excelMapper = ExpandExportExcelMapperByOrders(excelMapper, user.Language);
+
+           var  excelMapper = CreateExportDoubleExcelMapper();
 
           //  var columnsFromFront = dto.Columns.Concat(dto.InnerColumns).ToList();
 
             var columns =
-                dto.Columns.Select(c => typeof(ShippingFormDto).Name.ToLower() + "_" + c.ToString().ToLower());
+                dto.Columns.Select(c => typeof(ShippingDto).Name.ToLower() + "_" + c.ToString().ToLower());
             
             var innerColumns =
                 dto.InnerColumns.Select(c => typeof(ShippingOrderDto).Name.ToLower() + "_" + c.ToString().ToLower());
@@ -899,12 +927,13 @@ namespace Application.Services.Shippings
             };
         }
         
-        private ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto> mapper, string lang)
+        private ExcelDoubleMapper<ShippingDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingDto, ShippingOrderDto> mapper, string lang)
         {
             Type type = typeof(ShippingOrderDto);
 
-            _fieldDispatcherService.GetDtoFields<ShippingOrderDto>()
-                .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
+            var t = _fieldDispatcherService.GetDtoFields<ShippingOrderDto>();
+            
+            t.Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State).ToList()
                 .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
                 .ToList()
                 .ForEach(mapper.AddInnerColumn);
@@ -917,21 +946,21 @@ namespace Application.Services.Shippings
             return entry?.Id;
         }
 
-        private Guid? GetProviderIdByName(string name)
+        private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
+                var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
 
-        private Guid? GetVehicleTypeIdByName(string name)
+        private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
-
-        private Guid? GetBodyTypeIdByName(string name)
+        
+        private Guid? GetIdByName<T>(string name) where T : class, IPersistableWithName
         {
-            var entry = _dataService.GetDbSet<BodyType>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<T>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
     }
