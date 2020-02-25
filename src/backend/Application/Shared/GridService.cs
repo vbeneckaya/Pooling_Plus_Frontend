@@ -870,11 +870,13 @@ namespace Application.Shared
 
             return new MemoryStream(excel.GetAsByteArray());
         }
+        
 
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
             return new ExcelMapper<TFormDto>(_dataService, _userIdProvider, _fieldDispatcherService);
         }
+        
 
         protected virtual ExcelMapper<TDto> CreateExportExcelMapper()
         {

@@ -8,7 +8,9 @@ import {
     canImportFromExcelSelector,
     exportProgressSelector,
     exportToExcelRequest,
+    exportFormsToExcelRequest,
     importFromExcelRequest,
+    importFormsFromExcelRequest,
     importProgressSelector,
 } from '../../../ducks/gridList';
 import { canEditFieldPropertiesSelector } from '../../../ducks/profile';
@@ -20,6 +22,7 @@ import {
 } from '../../../ducks/representations';
 import Icon from '../../CustomIcon';
 import {GRID_CARD_LINK} from "../../../router/links";
+import {ORDERS_GRID, SHIPPINGS_GRID} from "../../../constants/grids";
 
 const Header = ({
                     isCreateBtn,
@@ -51,13 +54,17 @@ const Header = ({
     const isEditDefaultRepresentation = useSelector(state => canEditFieldPropertiesSelector(state))
 
     const exportExcel = () => {
-        dispatch(exportToExcelRequest({ name, filter: filter.filter }));
+        if (name == SHIPPINGS_GRID)
+            dispatch(exportFormsToExcelRequest({ name, nameInner: ORDERS_GRID, filter: filter.filter }));
+
+        else
+            dispatch(exportToExcelRequest({ name, filter: filter.filter }));
     };
 
     const importExcel = () => {
-        fileUploader && fileUploader.current.click();
+            fileUploader && fileUploader.current.click();
     };
-
+    
     const onFilePicked = e => {
         const file = e.target.files[0];
 

@@ -1,8 +1,5 @@
 import React from 'react';
-import {GRID_CARD_LINK, GRID_NEW_LINK} from "../../../../router/links";
 import MiniOrdersGrid from "../../../../components/MiniGrid";
-import {useSelector} from "react-redux";
-import {settingsFormExtSelector} from "../../../../ducks/gridCard";
 import {ORDERS_GRID} from "../../../../constants/grids";
 
 const Orders = (props) => {
