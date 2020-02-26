@@ -9,6 +9,7 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using Domain.Services.Shippings;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -50,8 +51,6 @@ namespace Application.Shared.Excel
                 worksheet.Cells[1, column.ColumnIndex].Style.Font.Bold = true;
             }
 
-            ;
-
             int rowIndex = 2;
             foreach (var entry in entries)
             {
@@ -64,23 +63,27 @@ namespace Application.Shared.Excel
 
                 var innerEntries = new List<TInnerDto>();
 
-                ///todo: убратиь инлайн
-                innerEntries = (List<TInnerDto>) typeof(TFormDto).GetProperty("Orders").GetValue(entry);
+                innerEntries = (List<TInnerDto>) typeof(TFormDto).GetProperty(_innerFieldName).GetValue(entry);
+
+                var innerColumns = _columns.Where(c =>
+                        c.Value.ColumnIndex >= 0 && c.Value.Property.ReflectedType == typeof(TInnerDto))
+                    .ToDictionary(_ => _.Key, _ => _.Value);
+
+                innerEntries = removeEmptyInnerDtos(innerEntries, innerColumns).ToList();
 
                 foreach (var innerEntry in innerEntries)
                 {
-                    foreach (var column in _columns.Values.Where(c =>
-                        c.ColumnIndex >= 0 && c.Property.ReflectedType == typeof(TInnerDto)))
-                    {
-                        var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                        column.FillValue(innerEntry, cell);
-                    }
+                        foreach (var column in innerColumns.Values)
+                        {
+                            var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
+                            column.FillValue(innerEntry, cell);
+                        }
 
-                    ++rowIndex;
+                        rowIndex++;
                 }
 
                 if (!innerEntries.Any())
-                    ++rowIndex;
+                    rowIndex++;
             }
         }
 
@@ -131,15 +134,20 @@ namespace Application.Shared.Excel
 
             FillColumnOrder(columnTitles);
 
-            var formColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name != typeof(TInnerDto).Name).ToDictionary(_=>_.Key, _=>_.Value);
+            var formColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name != typeof(TInnerDto).Name)
+                .ToDictionary(_ => _.Key, _ => _.Value);
 
-            var formInnerColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name == typeof(TInnerDto).Name).ToDictionary(_=>_.Key, _=>_.Value);
+            var formInnerColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name == typeof(TInnerDto).Name)
+                .ToDictionary(_ => _.Key, _ => _.Value);
 
             var entity = new TFormDto();
+
             var innerList = new List<TInnerDto>();
+
             var emptyFormRow = false;
+
             var validationResult = new DetailedValidationResult();
-            
+
             foreach (int rowIndex in rows.Skip(1))
             {
                 bool isEmpty = IsEmptyRow(worksheet, rowIndex, _columns);
@@ -147,44 +155,45 @@ namespace Application.Shared.Excel
                 {
                     continue;
                 }
-                
+
                 bool isEmptyForm = IsEmptyRow(worksheet, rowIndex, formColumns);
-                
+
                 if (!isEmptyForm && rowIndex != headRowIndex + 1)
                 {
                     if (innerList.Any())
                     {
-                        ///todo: убратиь инлайн
-                        typeof(TFormDto).GetProperty("Orders").SetValue(entity, innerList);
-                        
+                        typeof(TFormDto).GetProperty(_innerFieldName).SetValue(entity, innerList);
+
                         innerList = new List<TInnerDto>();
                     }
 
-                    yield return new ValidatedRecord<TFormDto>( entity, validationResult);
-                    
-                    validationResult = new DetailedValidationResult();
-                    
+                    yield return new ValidatedRecord<TFormDto>(entity, validationResult);
+
                     entity = new TFormDto();
+
+                    validationResult = new DetailedValidationResult();
                 }
-                
+
                 bool isEmptyInnerForm = IsEmptyRow(worksheet, rowIndex, formInnerColumns);
 
                 var innerEntity = new TInnerDto();
-                
-                foreach (var column in _columns.Values)
+
+                var columnsToSeek = isEmptyForm ? formInnerColumns : _columns;
+
+                foreach (var column in columnsToSeek.Values)
                 {
                     try
                     {
                         var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
                         ValidationResultItem columnResult;
 
-                        if ( column.Property.DeclaringType != typeof(TInnerDto))
+                        if (column.Property.DeclaringType != typeof(TInnerDto))
                         {
                             columnResult = column.SetValue(entity, cell);
                         }
                         else if (!isEmptyInnerForm)
                         {
-                            columnResult = column.SetValue(innerEntity, cell); 
+                            columnResult = column.SetValue(innerEntity, cell);
                         }
                         else
                         {
@@ -211,7 +220,19 @@ namespace Application.Shared.Excel
 
                 _errors.Add(validationResult);
 
-               // yield return new ValidatedRecord<TFormDto>(entity, validationResult);
+                if (rowIndex == rows.Last())
+                {
+                    if (innerList.Any())
+                    {
+                        typeof(TFormDto).GetProperty(_innerFieldName).SetValue(entity, innerList);
+
+                        innerList = new List<TInnerDto>();
+                    }
+
+                    yield return new ValidatedRecord<TFormDto>(entity, validationResult);
+
+                    entity = new TFormDto();
+                }
             }
         }
 
@@ -225,7 +246,7 @@ namespace Application.Shared.Excel
                 Translation localGrid =
                     _translations.FirstOrDefault(t => t.Name == column.Value.Property.DeclaringType.Name);
                 column.Value.Title =
-                    (lang == "en" ? localField?.En + '.' + localGrid?.En : localField?.Ru + _delimeter + localGrid?.Ru)
+                    (lang == "en" ? localField?.En + _delimeter + localGrid?.En : localField?.Ru + _delimeter + localGrid?.Ru)
                     ?? column.Key;
             }
         }
@@ -328,8 +349,43 @@ namespace Application.Shared.Excel
 
             return true;
         }
-        
-    
+
+        private IEnumerable<TInnerDto> removeEmptyInnerDtos(IEnumerable<TInnerDto> innerDtos, Dictionary<string, IExcelColumn> innerColumns)
+        {
+            foreach (var innerDto in innerDtos)
+            {
+                if (!innerEntryIsEmpty(innerDto, innerColumns))
+                    yield return innerDto;
+            }
+        }
+
+        private bool innerEntryIsEmpty(TInnerDto innerEntry, Dictionary<string, IExcelColumn> innerColumns)
+        {
+            foreach (var column in innerColumns)
+            {
+                var fieldName = column.Key.Split('_')[1];
+
+                var property = typeof(TInnerDto).GetProperties()
+                    .FirstOrDefault(_ => _.Name.ToLower().Equals(fieldName));
+
+                if (property == null) continue;
+
+                var value = property.GetValue(innerEntry);
+
+                if (value != null)
+                    
+                    if (property.PropertyType == typeof(LookUpDto))
+                    {
+                        if (!string.IsNullOrEmpty( typeof(LookUpDto).GetProperty("Name").GetValue(value)?.ToString()))
+                            return false;
+                    }
+                    else
+                        return false;
+            }
+
+            return true;
+        }
+
 
         private void InitColumns()
         {
@@ -344,11 +400,12 @@ namespace Application.Shared.Excel
         }
 
         public ExcelDoubleMapper(ICommonDataService dataService, IUserProvider userProvider,
-            IFieldDispatcherService fieldDispatcherService)
+            IFieldDispatcherService fieldDispatcherService, string innerFieldName)
         {
             _userProvider = userProvider;
             _fieldDispatcherService = fieldDispatcherService;
             _translations = dataService.GetDbSet<Translation>().ToList();
+            _innerFieldName = innerFieldName;
             InitColumns();
         }
 
@@ -357,5 +414,6 @@ namespace Application.Shared.Excel
         private readonly List<Translation> _translations;
         private readonly Dictionary<string, IExcelColumn> _columns = new Dictionary<string, IExcelColumn>();
         private readonly List<ValidateResult> _errors = new List<ValidateResult>();
+        private readonly string _innerFieldName = "";
     }
 }

@@ -13,5 +13,7 @@ namespace Domain.Services.Orders
         IEnumerable<LookUpDto> FindByNumberAndProvider(NumberSearchFormDto dto);
 
         OrderFormDto MapFromShippingOrderDtoToFormDto(ShippingOrderDto shippingOrderDto);
+
+        void MapFromDtoToEntity(Order entity, OrderDto dto);
     }
 }

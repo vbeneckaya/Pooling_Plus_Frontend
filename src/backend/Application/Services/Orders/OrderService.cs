@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Application.BusinessModels.Shared.Actions;
 using Domain.Services.Shippings;
 using ConfirmedPalletsCountHandler = Application.BusinessModels.Orders.Handlers.ConfirmedPalletsCountHandler;
 using LoadingArrivalTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingArrivalTimeHandler;
@@ -57,6 +58,7 @@ namespace Application.Services.Orders
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -191,7 +193,7 @@ namespace Application.Services.Orders
                 cfg.CreateMap<ShippingOrderDto, OrderFormDto>();
 
                 cfg.CreateMap<OrderDto, Order>()
-                    .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.Id, e => e.MapFrom( s => string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)))
                     .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
                     .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId == null ? null : s.ClientId.Value.ToGuid()))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s) =>  s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))

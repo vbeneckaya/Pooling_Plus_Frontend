@@ -26,6 +26,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Shared.Actions;
 using AutoMapper.QueryableExtensions;
 using Domain.Services.Orders;
 using Domain.Services.Translations;
@@ -45,6 +47,8 @@ namespace Application.Services.Shippings
 
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
+        private readonly IGroupAppAction<Order> _unionOrdersAction;
+
 
         public ShippingsService(
             IHistoryService historyService,
@@ -57,7 +61,8 @@ namespace Application.Services.Shippings
             IValidationService validationService,
             IFieldSetterFactory fieldSetterFactory,
             IChangeTrackerFactory changeTrackerFactory,
-            IOrdersService ordersService
+            IOrdersService ordersService,
+            IGroupAppAction<Order> unionOrdersAction
         )
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider,
                 triggersService, validationService, fieldSetterFactory)
@@ -66,6 +71,7 @@ namespace Application.Services.Shippings
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
             _ordersService = ordersService;
+            _unionOrdersAction = unionOrdersAction;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -370,39 +376,44 @@ namespace Application.Services.Shippings
             _mapper.Map(dto, entity);
 
             IEnumerable<string> readOnlyFields = null;
-            var userId = _userIdProvider.GetCurrentUserId();
+            var currentUser = _userIdProvider.GetCurrentUser();
+            
             if (!isNew)
             {
-                if (userId != null)
+                if (currentUser != null)
                 {
                     string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
                     readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings,
-                        stateName, null, userId);
+                        stateName, null, currentUser.Id);
+                }
+
+                if (currentUser?.ProviderId != null)
+                {
+                    entity.ProviderId = entity.ProviderId ?? currentUser.ProviderId;
                 }
             }
             else
             {
-                InitializeNewShipping(entity, userId);
+                InitializeNewShipping(entity, currentUser);
             }
         }
 
-        private void InitializeNewShipping(Shipping shipping, Guid? currentUserId)
+        private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
             shipping.Status = ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = DateTime.UtcNow;
-            shipping.ShippingNumber = ShippingNumberProvider.GetNextShippingNumber();
+            shipping.ShippingNumber = shipping.ShippingNumber ?? ShippingNumberProvider.GetNextShippingNumber();
             shipping.DeliveryType = DeliveryType.Delivery;
-            shipping.UserCreatorId = currentUserId;
+            shipping.UserCreatorId = currentUser.Id;
 
-            var user = _userIdProvider.GetCurrentUser();
-            if (user?.CarrierId != null)
+            if (currentUser?.CarrierId != null)
             {
-                shipping.CarrierId = user.CarrierId;
+                shipping.CarrierId = currentUser.CarrierId;
             }
 
-            if (user?.ProviderId != null)
+            if (currentUser?.ProviderId != null)
             {
-                shipping.ProviderId = user.ProviderId;
+                shipping.ProviderId = currentUser.ProviderId;
             }
         }
 
@@ -819,7 +830,7 @@ namespace Application.Services.Shippings
             string lang = _userIdProvider.GetCurrentUser()?.Language;
             var mapper =
                 new ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider,
-                    _fieldDispatcherService);
+                    _fieldDispatcherService, "Orders");
             mapper = ExpandExportExcelMapperByOrders(mapper, lang);
 
             mapper
@@ -896,16 +907,17 @@ namespace Application.Services.Shippings
             var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
 
             var excelMapper = CreateExportDoubleExcelMapper();
-            var dtos = excelMapper.LoadEntries(workSheet).ToList();
+            var dtos = excelMapper.LoadEntries(workSheet);
             Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var importResult = ImportShippingsWidthOrders(dtos.Select(x => x.Data));
+            var user = _userIdProvider.GetCurrentUser();
+
+            var importResult = ImportShippingsWidthOrders(dtos.Select(x => x.Data), user);
             Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
 
-            var user = _userIdProvider.GetCurrentUser();
 
             StringBuilder sb = new StringBuilder();
             foreach (var validateResult in importResult.Where(x => x.IsError))
@@ -925,7 +937,8 @@ namespace Application.Services.Shippings
             };
         }
 
-        private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom)
+        private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom,
+            CurrentUserDto currentUser)
         {
             string entityName = typeof(ShippingFormDto).Name;
             Stopwatch sw = new Stopwatch();
@@ -936,21 +949,40 @@ namespace Application.Services.Shippings
             foreach (var dto in entitiesFrom)
             {
                 var validateResult = ValidateDto(dto);
+
                 if (validateResult.IsError)
                 {
                     result.Add(validateResult);
                 }
                 else
                 {
-                    result.Add(SaveOrCreateInner(dto));
+                    var shippingAddResult = SaveOrCreate(dto);
+
+                    result.Add(shippingAddResult);
+
+                    if (shippingAddResult.IsError) continue;
 
                     if (dto.Orders == null) continue;
-                    
+
+                    var shippingOrdersIds = new List<Guid>();
+
                     foreach (var innerEntry in dto.Orders)
                     {
-                        result.Add(_ordersService.SaveOrCreate(
-                            _ordersService.MapFromShippingOrderDtoToFormDto(innerEntry)));
+                        OrderFormDto shippingOrder = _ordersService.MapFromShippingOrderDtoToFormDto(innerEntry);
+
+                        shippingOrder.ShippingId = shippingAddResult.Id;
+
+                        var res = _ordersService.SaveOrCreate(shippingOrder);
+
+                        result.Add(res);
+
+                        if (res.IsError) continue;
+
+                        shippingOrdersIds.Add(Guid.Parse(res.Id));
                     }
+
+                    _ordersService.InvokeAction("unionOrdersInExisted", shippingOrdersIds);
+                    //_unionOrdersAction.Run(currentUser, shippingOrders);
                 }
             }
 
