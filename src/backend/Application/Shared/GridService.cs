@@ -265,7 +265,7 @@ namespace Application.Shared
 
             var trackConfig = this.ConfigureChangeTacker();
 
-            var findByNumber = FindOrderByNumber(entityFrom, entityName);
+            var findByNumber = FindByNumber(entityFrom, entityName);
 
             if (!string.IsNullOrEmpty(entityFrom.Id) || findByNumber != null)
             {
@@ -978,23 +978,33 @@ namespace Application.Shared
             }
         }
 
-        private Guid? FindOrderByNumber(TFormDto entityFrom, string entityName)
+        private Guid? FindByNumber(TFormDto entityFrom, string entityName)
         {
-            if (entityName == "Order")
+            if (entityName == typeof(Order).Name)
             {
                 var t = typeof(TFormDto);
                 var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom) as LookUpDto;
                 if (orderNumber == null)
                     return null;
-                var provider = t.GetProperty("ProviderId").GetValue(entityFrom);
-                if (provider == null)
+                var client = t.GetProperty("ClientId").GetValue(entityFrom);
+                if (client == null)
                 {
                     return null;
                 }
 
-                var providerId = Guid.Parse(provider.GetType().GetProperty("Value").GetValue(provider).ToString());
+                var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
                 var dbSet = _dataService.GetDbSet<Order>();
-                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber.Value && x.ProviderId == providerId)?.Id;
+                return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber.Value && x.ClientId == clientId)?.Id;
+            }
+            
+            if (entityName == typeof(Shipping).Name)
+            {
+                var t = typeof(TFormDto);
+                var shippingNumber = t.GetProperty("ShippingNumber").GetValue(entityFrom) as LookUpDto;
+                if (shippingNumber == null)
+                    return null;
+                var dbSet = _dataService.GetDbSet<Shipping>();
+                return dbSet.FirstOrDefault(x => x.ShippingNumber == shippingNumber.Value)?.Id;
             }
 
             return null;
