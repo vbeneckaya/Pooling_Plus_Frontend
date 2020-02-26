@@ -37,6 +37,7 @@ namespace Application.Services.Providers
             entity.ContactPerson = dto.ContactPerson;
             entity.ContactPhone = dto.ContactPhone;
             entity.Email = dto.Email;
+            entity.ReportId = dto.ReportId;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -55,6 +56,7 @@ namespace Application.Services.Providers
                 ContactPerson = entity.ContactPerson,
                 ContactPhone = entity.ContactPhone,
                 Email = entity.Email,
+                ReportId = entity.ReportId,
                 IsActive = entity.IsActive
             };
         }
