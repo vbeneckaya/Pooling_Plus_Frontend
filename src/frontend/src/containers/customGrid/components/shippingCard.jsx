@@ -443,7 +443,6 @@ const ShippingCard = (props) => {
         };
 
         const openOrderModal = (index) => {
-            debugger;
             dispatch(getCardRequest({
                 name: ORDERS_GRID, id: form.orders[index].id, callbackSuccess: (result) => {
                     goToCard(ORDERS_GRID, result.id);

@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React, {useRef} from 'react';
 import {Button, Grid, Popup} from 'semantic-ui-react';
 import Search from '../../../components/Search';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
 import {
     canExportToExcelSelector,
     canImportFromExcelSelector,
@@ -13,7 +13,7 @@ import {
     importFormsFromExcelRequest,
     importProgressSelector,
 } from '../../../ducks/gridList';
-import { canEditFieldPropertiesSelector } from '../../../ducks/profile';
+import {canEditFieldPropertiesSelector} from '../../../ducks/profile';
 import FieldsConfig from './representations';
 import {
     getRepresentationsRequest,
@@ -26,19 +26,19 @@ import {ORDERS_GRID, SHIPPINGS_GRID} from "../../../constants/grids";
 
 const Header = ({
                     isCreateBtn,
-    searchValue,
-    searchOnChange,
-    counter,
-    clearFilter,
-    disabledClearFilter,
-    loadList,
-    name,
-    setSelected,
+                    searchValue,
+                    searchOnChange,
+                    counter,
+                    clearFilter,
+                    disabledClearFilter,
+                    loadList,
+                    name,
+                    setSelected,
                     representationName,
-    filter, 
+                    filter,
                     goToCard,
-}) => {
-    const { t } = useTranslation();
+                }) => {
+    const {t} = useTranslation();
 
     const dispatch = useDispatch();
 
@@ -55,35 +55,43 @@ const Header = ({
 
     const exportExcel = () => {
         if (name == SHIPPINGS_GRID)
-            dispatch(exportFormsToExcelRequest({ name, nameInner: ORDERS_GRID, filter: filter.filter }));
+            dispatch(exportFormsToExcelRequest({name, nameInner: ORDERS_GRID, filter: filter.filter}));
 
         else
-            dispatch(exportToExcelRequest({ name, filter: filter.filter }));
+            dispatch(exportToExcelRequest({name, filter: filter.filter}));
     };
 
     const importExcel = () => {
-            fileUploader && fileUploader.current.click();
+        fileUploader && fileUploader.current.click();
     };
-    
+
     const onFilePicked = e => {
         const file = e.target.files[0];
 
         const data = new FormData();
         data.append('FileName', file.name);
-        data.append('FileContent', new Blob([file], { type: file.type }));
+        data.append('FileContent', new Blob([file], {type: file.type}));
         data.append('FileContentType', file.type);
-
-        dispatch(
-            importFromExcelRequest({
-                name,
-                form: data,
-                callbackSuccess: () => loadList(false, true),
-            }),
-        );
+        if (name == SHIPPINGS_GRID)
+            dispatch(
+                importFormsFromExcelRequest({
+                    name,
+                    form: data,
+                    callbackSuccess: () => loadList(false, true),
+                }),
+            );
+        else
+            dispatch(
+                importFromExcelRequest({
+                    name,
+                    form: data,
+                    callbackSuccess: () => loadList(false, true),
+                }),
+            );
     };
 
-    const getRepresentations =() => {
-        dispatch(getRepresentationsRequest({ key: name }));
+    const getRepresentations = () => {
+        dispatch(getRepresentationsRequest({key: name}));
     };
 
     const changeRepresentation = (key, isEdit) => {

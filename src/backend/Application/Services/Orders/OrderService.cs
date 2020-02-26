@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Domain.Services.Shippings;
 using ConfirmedPalletsCountHandler = Application.BusinessModels.Orders.Handlers.ConfirmedPalletsCountHandler;
 using LoadingArrivalTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingArrivalTimeHandler;
 using LoadingDepartureTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingDepartureTimeHandler;
@@ -186,6 +187,8 @@ namespace Application.Services.Orders
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
+                
+                cfg.CreateMap<ShippingOrderDto, OrderFormDto>();
 
                 cfg.CreateMap<OrderDto, Order>()
                     .ForMember(t => t.Id, e => e.Ignore())
@@ -473,6 +476,11 @@ namespace Application.Services.Orders
             MapFromDtoToEntity(entity, dto);
 
             SaveItems(entity, dto);
+        }
+        
+        public OrderFormDto MapFromShippingOrderDtoToFormDto(ShippingOrderDto shippingOrderDto)
+        {
+            return _mapper.Map<ShippingOrderDto, OrderFormDto>(shippingOrderDto);
         }
 
         public override OrderDto MapFromEntityToDto(Order entity)

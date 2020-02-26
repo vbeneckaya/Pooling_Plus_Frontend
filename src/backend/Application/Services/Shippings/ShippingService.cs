@@ -41,6 +41,8 @@ namespace Application.Services.Shippings
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
+        private readonly IOrdersService _ordersService;
+
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
 
@@ -54,7 +56,8 @@ namespace Application.Services.Shippings
             ITriggersService triggersService,
             IValidationService validationService,
             IFieldSetterFactory fieldSetterFactory,
-            IChangeTrackerFactory changeTrackerFactory
+            IChangeTrackerFactory changeTrackerFactory,
+            IOrdersService ordersService
         )
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider,
                 triggersService, validationService, fieldSetterFactory)
@@ -62,6 +65,7 @@ namespace Application.Services.Shippings
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            _ordersService = ordersService;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -434,7 +438,7 @@ namespace Application.Services.Shippings
 
             return formDto;
         }
-        
+
         private ValidateResult SaveRoutePoints(Shipping entity, ShippingFormDto dto)
         {
             if (dto.RoutePoints != null)
@@ -797,7 +801,7 @@ namespace Application.Services.Shippings
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
-            var  mapper = base.CreateExportExcelMapper();
+            var mapper = base.CreateExportExcelMapper();
             return mapper
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
@@ -808,14 +812,16 @@ namespace Application.Services.Shippings
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
-        
-        
-        protected  ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
+
+
+        protected ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
-            var  mapper = new ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
+            var mapper =
+                new ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider,
+                    _fieldDispatcherService);
             mapper = ExpandExportExcelMapperByOrders(mapper, lang);
-            
+
             mapper
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
@@ -828,12 +834,14 @@ namespace Application.Services.Shippings
 
             mapper
                 .MapInnerColumn(o => o.ClientId, new DictionaryReferenceExcelColumn(GetIdByName<Client>))
-                .MapInnerColumn(o => o.DeliveryWarehouseId, new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
-                .MapInnerColumn(o => o.ShippingWarehouseId, new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName));
+                .MapInnerColumn(o => o.DeliveryWarehouseId,
+                    new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
+                .MapInnerColumn(o => o.ShippingWarehouseId,
+                    new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName));
 
             return mapper;
         }
-        
+
 
         public Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto)
         {
@@ -863,32 +871,21 @@ namespace Application.Services.Shippings
                 sw.ElapsedMilliseconds);
             sw.Restart();
 
-//            dtos = FillLookupNames(dtos).ToList();
-//            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName,
-//                sw.ElapsedMilliseconds);
-//            sw.Restart();
-
-      //      var excelMapper = new ExcelDoubleMapper<ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider, _fieldDispatcherService);
-
-      //      excelMapper = ExpandExportExcelMapperByOrders(excelMapper, user.Language);
-
-           var  excelMapper = CreateExportDoubleExcelMapper();
-
-          //  var columnsFromFront = dto.Columns.Concat(dto.InnerColumns).ToList();
+            var excelMapper = CreateExportDoubleExcelMapper();
 
             var columns =
                 dto.Columns.Select(c => typeof(ShippingDto).Name.ToLower() + "_" + c.ToString().ToLower());
-            
+
             var innerColumns =
                 dto.InnerColumns.Select(c => typeof(ShippingOrderDto).Name.ToLower() + "_" + c.ToString().ToLower());
-            
+
             excelMapper.FillSheet(workSheet, dtos, user.Language, columns.Concat(innerColumns).ToList());
             Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
 
             return new MemoryStream(excel.GetAsByteArray());
         }
-        
+
         public ImportResultDto ImportFormsFromExcel(Stream fileStream)
         {
             string entityName = typeof(Shipping).Name;
@@ -898,13 +895,13 @@ namespace Application.Services.Shippings
             var excel = new ExcelPackage(fileStream);
             var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
 
-            var excelMapper = CreateExcelMapper();
+            var excelMapper = CreateExportDoubleExcelMapper();
             var dtos = excelMapper.LoadEntries(workSheet).ToList();
             Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var importResult = Import(dtos.Select(x => x.Data));
+            var importResult = ImportShippingsWidthOrders(dtos.Select(x => x.Data));
             Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
 
@@ -927,15 +924,50 @@ namespace Application.Services.Shippings
                 Message = sb.ToString()
             };
         }
-        
-        private ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> mapper, string lang)
+
+        private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom)
+        {
+            string entityName = typeof(ShippingFormDto).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var result = new List<ValidateResult>();
+
+            foreach (var dto in entitiesFrom)
+            {
+                var validateResult = ValidateDto(dto);
+                if (validateResult.IsError)
+                {
+                    result.Add(validateResult);
+                }
+                else
+                {
+                    result.Add(SaveOrCreateInner(dto));
+
+                    if (dto.Orders == null) continue;
+                    
+                    foreach (var innerEntry in dto.Orders)
+                    {
+                        result.Add(_ordersService.SaveOrCreate(
+                            _ordersService.MapFromShippingOrderDtoToFormDto(innerEntry)));
+                    }
+                }
+            }
+
+            Log.Information("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            return result;
+        }
+
+        private ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(
+            ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> mapper, string lang)
         {
             Type type = typeof(ShippingOrderDto);
 
             var t = _fieldDispatcherService.GetDtoFields<ShippingOrderDto>();
-            
+
             t.Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State).ToList()
-                .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
+                .Select(f => new BaseExcelColumn {Property = type.GetProperty(f.Name), Field = f, Language = lang})
                 .ToList()
                 .ForEach(mapper.AddInnerColumn);
             return mapper;
@@ -949,7 +981,7 @@ namespace Application.Services.Shippings
 
         private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-                var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
+            var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
 
@@ -958,7 +990,7 @@ namespace Application.Services.Shippings
             var entry = _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
-        
+
         private Guid? GetIdByName<T>(string name) where T : class, IPersistableWithName
         {
             var entry = _dataService.GetDbSet<T>().FirstOrDefault(t => t.Name == name);

@@ -110,7 +110,7 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = _identityService.HasPermissions(RolePermissions.ShippingsCreate),
                     CanViewAdditionSummary = true,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     Columns = columns
                 });
             }

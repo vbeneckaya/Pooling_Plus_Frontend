@@ -9,15 +9,19 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Domain.Services.Shippings;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Shared.Excel
 {
-    public class ExcelDoubleMapper<TDto,TFormDto, TInnerDto>
+    public class ExcelDoubleMapper<TDto, TFormDto, TInnerDto>
         where TDto : new()
         where TFormDto : new()
         where TInnerDto : new()
     {
+        private readonly string _delimeter = "`";
+
         public void AddColumn(IExcelColumn column)
         {
             string columnKey = GetColumnKey(column);
@@ -55,11 +59,11 @@ namespace Application.Shared.Excel
                     c.ColumnIndex >= 0 && c.Property.ReflectedType == typeof(TDto)))
                 {
                     var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                    column.FillValue( entry , cell);
+                    column.FillValue(entry, cell);
                 }
 
                 var innerEntries = new List<TInnerDto>();
-                
+
                 ///todo: убратиь инлайн
                 innerEntries = (List<TInnerDto>) typeof(TFormDto).GetProperty("Orders").GetValue(entry);
 
@@ -80,7 +84,7 @@ namespace Application.Shared.Excel
             }
         }
 
-        public IEnumerable<ValidatedRecord<TDto>> LoadEntries(ExcelWorksheet worksheet)
+        public IEnumerable<ValidatedRecord<TFormDto>> LoadEntries(ExcelWorksheet worksheet)
         {
             var rows = worksheet.Cells
                 .Select(cell => cell.Start.Row)
@@ -93,34 +97,99 @@ namespace Application.Shared.Excel
             }
 
             int headRowIndex = rows.First();
+
             int maxColumnInd = worksheet.Cells.Select(c => c.End.Column).Max();
+
             List<string> columnTitles = new List<string>();
             for (int colIndex = 1; colIndex <= maxColumnInd; colIndex++)
             {
                 columnTitles.Add(worksheet.Cells[headRowIndex, colIndex]?.Value?.ToString());
             }
 
-            columnTitles = Unlocalize(columnTitles, _columns.Values.Select(x => x.Field)).ToList();
+            var formType = typeof(TDto).Name;
+            var formTypeTranslates = _translations.Where(t => t.Name == formType).Select(_ => _.Ru);
+            formTypeTranslates =
+                formTypeTranslates.Concat(_translations.Where(t => t.Name == formType).Select(_ => _.En));
+
+            var columnFormTitles = columnTitles.Where(x => formTypeTranslates.Any(t => x.Contains(_delimeter + t)))
+                .Select(_ => _.Split(_delimeter).FirstOrDefault());
+            columnFormTitles = Unlocalize(columnFormTitles, _columns.Values.Select(x => x.Field)).ToList();
+
+
+            var formInnerType = typeof(TInnerDto).Name;
+            var formInnerTypeTranslates = _translations.Where(t => t.Name == formInnerType).Select(_ => _.Ru);
+            formInnerTypeTranslates =
+                formInnerTypeTranslates.Concat(_translations.Where(t => t.Name == formInnerType).Select(_ => _.En));
+
+            var columnInnerTitles = columnTitles
+                .Where(x => formInnerTypeTranslates.Any(t => x.Contains(_delimeter + t)))
+                .Select(_ => _.Split(_delimeter).FirstOrDefault());
+            columnInnerTitles = Unlocalize(columnInnerTitles, _columns.Values.Select(x => x.Field)).ToList();
+
+            columnTitles = columnFormTitles.Select(c => formType.ToLower() + '_' + c)
+                .Concat(columnInnerTitles.Select(ci => formInnerType.ToLower() + '_' + ci)).ToList();
 
             FillColumnOrder(columnTitles);
 
+            var formColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name != typeof(TInnerDto).Name).ToDictionary(_=>_.Key, _=>_.Value);
+
+            var formInnerColumns = _columns.Where(_ => _.Value.Property.DeclaringType.Name == typeof(TInnerDto).Name).ToDictionary(_=>_.Key, _=>_.Value);
+
+            var entity = new TFormDto();
+            var innerList = new List<TInnerDto>();
+            var emptyFormRow = false;
+            var validationResult = new DetailedValidationResult();
+            
             foreach (int rowIndex in rows.Skip(1))
             {
-                bool isEmpty = IsEmptyRow(worksheet, rowIndex);
+                bool isEmpty = IsEmptyRow(worksheet, rowIndex, _columns);
                 if (isEmpty)
                 {
                     continue;
                 }
+                
+                bool isEmptyForm = IsEmptyRow(worksheet, rowIndex, formColumns);
+                
+                if (!isEmptyForm && rowIndex != headRowIndex + 1)
+                {
+                    if (innerList.Any())
+                    {
+                        ///todo: убратиь инлайн
+                        typeof(TFormDto).GetProperty("Orders").SetValue(entity, innerList);
+                        
+                        innerList = new List<TInnerDto>();
+                    }
 
-                var entity = new TDto();
-                var validationResult = new DetailedValidationResult();
+                    yield return new ValidatedRecord<TFormDto>( entity, validationResult);
+                    
+                    validationResult = new DetailedValidationResult();
+                    
+                    entity = new TFormDto();
+                }
+                
+                bool isEmptyInnerForm = IsEmptyRow(worksheet, rowIndex, formInnerColumns);
 
+                var innerEntity = new TInnerDto();
+                
                 foreach (var column in _columns.Values)
                 {
                     try
                     {
                         var cell = worksheet.Cells[rowIndex, column.ColumnIndex];
-                        var columnResult = column.SetValue(entity, cell);
+                        ValidationResultItem columnResult;
+
+                        if ( column.Property.DeclaringType != typeof(TInnerDto))
+                        {
+                            columnResult = column.SetValue(entity, cell);
+                        }
+                        else if (!isEmptyInnerForm)
+                        {
+                            columnResult = column.SetValue(innerEntity, cell); 
+                        }
+                        else
+                        {
+                            continue;
+                        }
 
                         if (columnResult != null)
                         {
@@ -135,11 +204,14 @@ namespace Application.Shared.Excel
                     }
                 }
 
-                ;
+                if (!isEmptyInnerForm)
+                {
+                    innerList.Add(innerEntity);
+                }
 
                 _errors.Add(validationResult);
 
-                yield return new ValidatedRecord<TDto>(entity, validationResult);
+               // yield return new ValidatedRecord<TFormDto>(entity, validationResult);
             }
         }
 
@@ -149,8 +221,12 @@ namespace Application.Shared.Excel
         {
             foreach (var column in _columns.Where(c => c.Value.ColumnIndex >= 0))
             {
-                Translation local = _translations.FirstOrDefault(t => t.Name == column.Value.Field.DisplayNameKey);
-                column.Value.Title = (lang == "en" ? local?.En : local?.Ru) ?? column.Key.Split('_')[1];
+                Translation localField = _translations.FirstOrDefault(t => t.Name == column.Value.Field.DisplayNameKey);
+                Translation localGrid =
+                    _translations.FirstOrDefault(t => t.Name == column.Value.Property.DeclaringType.Name);
+                column.Value.Title =
+                    (lang == "en" ? localField?.En + '.' + localGrid?.En : localField?.Ru + _delimeter + localGrid?.Ru)
+                    ?? column.Key;
             }
         }
 
@@ -204,7 +280,9 @@ namespace Application.Shared.Excel
 
         private IEnumerable<string> Unlocalize(IEnumerable<string> titles, IEnumerable<FieldInfo> fields)
         {
-            var fieldNamesSet = fields.ToDictionary(x => x.DisplayNameKey);
+            var fieldNamesSet = fields.GroupBy(_ => _.DisplayNameKey).Select(_ => _.FirstOrDefault())
+                .ToDictionary(x => x.DisplayNameKey);
+
             foreach (string title in titles)
             {
                 if (string.IsNullOrEmpty(title))
@@ -233,9 +311,9 @@ namespace Application.Shared.Excel
             return res;
         }
 
-        private bool IsEmptyRow(ExcelWorksheet worksheet, int rowIndex)
+        private bool IsEmptyRow(ExcelWorksheet worksheet, int rowIndex, Dictionary<string, IExcelColumn> columns)
         {
-            foreach (var column in _columns.Values)
+            foreach (var column in columns.Values)
             {
                 if (column.ColumnIndex >= 0)
                 {
@@ -250,6 +328,8 @@ namespace Application.Shared.Excel
 
             return true;
         }
+        
+    
 
         private void InitColumns()
         {
