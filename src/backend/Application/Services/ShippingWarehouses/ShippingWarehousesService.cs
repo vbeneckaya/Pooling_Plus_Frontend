@@ -112,6 +112,12 @@ namespace Application.Services.ShippingWarehouses
         {
             return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Gln == code && x.IsActive);
         }
+        
+        public ShippingWarehouseDto GetByNameAndProviderId(string name, Guid providerId)
+        {
+            return MapFromEntityToDto(_dataService.GetDbSet<ShippingWarehouse>()
+                .FirstOrDefault(x => x.WarehouseName == name && x.ProviderId == providerId));
+        }
 
         public override IEnumerable<LookUpDto> ForSelect()
         {
