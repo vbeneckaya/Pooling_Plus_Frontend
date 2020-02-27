@@ -219,32 +219,31 @@ namespace Integrations.Pooling
 
         private void FetchShippingWarehouses()
         {
-            if (_user.ProviderId.HasValue)
+            if (!_user.ProviderId.HasValue) return;
+            
+            var warehousesFromPooling = GetArr($"definitions/warehouses?companyId={_companyId}").Get("$")
+                .FirstOrDefault().ToList();
+            var regionsFromPooling = Get<JObject>("slots/filters").GetValue("regions").ToList();
+
+            foreach (var warehouse in warehousesFromPooling)
             {
-                var warehousesFromPooling = GetArr($"definitions/warehouses?companyId={_companyId}").Get("$")
-                    .FirstOrDefault().ToList();
-                var regionsFromPooling = Get<JObject>("slots/filters").GetValue("regions").ToList();
+                var regionId = warehouse.Value<string>("regionId");
+                var name = warehouse.Value<string>("name");
+                var region = regionsFromPooling
+                    .FirstOrDefault(_ => _.Value<string>("id") == regionId).Value<string>("name");
+                var address = warehouse["addressInfo"].Value<string>("address");
 
-                foreach (var warehouse in warehousesFromPooling)
-                {
-                    var regionId = warehouse.Value<string>("regionId");
-                    var name = warehouse.Value<string>("name");
-                    var region = regionsFromPooling
-                        .FirstOrDefault(_ => _.Value<string>("id") == regionId).Value<string>("name");
-                    var address = warehouse["addressInfo"].Value<string>("address");
+                var existedShippingWarehouse =
+                    _shippingWarehouseService.GetByNameAndProviderId(name,
+                        _user.ProviderId.Value) ?? new ShippingWarehouseDto
+                    {
+                        WarehouseName = name
+                    };
 
-                    var existedShippingWarehouse =
-                        _shippingWarehouseService.GetByNameAndProviderId(name,
-                            _user.ProviderId.Value) ?? new ShippingWarehouseDto
-                        {
-                            WarehouseName = name
-                        };
+                existedShippingWarehouse.Region = region;
+                existedShippingWarehouse.Address = address;
 
-                    existedShippingWarehouse.Region = region;
-                    existedShippingWarehouse.Address = address;
-
-                    _shippingWarehouseService.SaveOrCreate(existedShippingWarehouse);
-                }
+                _shippingWarehouseService.SaveOrCreate(existedShippingWarehouse);
             }
         }
     }
