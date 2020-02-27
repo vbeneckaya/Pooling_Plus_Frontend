@@ -250,6 +250,8 @@ export const homePageSelector = createSelector(stateSelector, state => {
         homePage = '/roles';
     } else if (state.editUsers) {
         homePage = '/users';
+    } else if (state.viewReport) {
+        homePage = '/reports';
     }
 
     return homePage;
