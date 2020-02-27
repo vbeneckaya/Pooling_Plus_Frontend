@@ -426,6 +426,7 @@ ru:
   roles: "Роли"
   roleType: "Тип роли"
   report: "Отчёты"
+  reportId: "Id отчёта в Power BI"
   Role.DuplicatedRecord: "Роль с таким именем уже существует"
   route: "Маршрут"
   SaveButton: "Сохранить"

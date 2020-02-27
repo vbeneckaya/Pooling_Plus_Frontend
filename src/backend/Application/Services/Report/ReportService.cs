@@ -1,5 +1,8 @@
 using System;
+using DAL.Services;
+using Domain.Persistables;
 using Domain.Services.Report;
+using Domain.Services.UserProvider;
 using Microsoft.PowerBI.Api.V2;
 using Microsoft.PowerBI.Api.V2.Models;
 using Microsoft.Rest;
@@ -8,15 +11,27 @@ namespace Application.Services.Report
 {
     public class ReportService : IReportService
     {
-        
-        public ReportService()
+        private readonly ICommonDataService _dataService;
+        private readonly IUserProvider _userProvider;
+
+        public ReportService(ICommonDataService dataService, IUserProvider userProvider)
         {
+            _dataService = dataService;
+            _userProvider = userProvider;
         }
         public EmbeddedReportConfig GetConfig()
         {
+            var user = _dataService.GetById<User>(_userProvider.GetCurrentUserId().Value);
+
+            var provider = _dataService.GetById<Provider>(user.ProviderId.Value);
+
+            var reportId = Guid.Parse(provider.ReportId);
+            
             var oAuthResult = new PowerBiAuthenticator().AuthenticateAsync().GetAwaiter().GetResult();
 
-            return GenerateReport(oAuthResult.AccessToken, Guid.Parse("8ac687eb-c107-4b44-a0ec-21aab341e752"), Guid.Parse("f9896a49-c76f-44f4-92ea-441c7662bd5f"));
+            return GenerateReport(oAuthResult.AccessToken, 
+                Guid.Parse("8ac687eb-c107-4b44-a0ec-21aab341e752"), 
+                reportId);//"f9896a49-c76f-44f4-92ea-441c7662bd5f"
         }
         
         public static EmbeddedReportConfig GenerateReport(string token, Guid groupId, Guid reportId)
