@@ -1,5 +1,5 @@
 .centered-div {
-    width: 509px;
+    //width: 509px;
     height: 160px;
 
     position: absolute;
@@ -13,7 +13,7 @@
 
 .login-form-wrapper {
     padding-top: 0 !important;
-    width: 509px !important;
+    // width: 509px !important;
 }
 
 .login-form-wrapper .error {
@@ -21,29 +21,49 @@
 }
 
 .login-form-description {
-    width: 277px !important;
-    border-right: 1px solid #e0e1e2;
+    width: 100%;
+    //border-right: 1px solid #e0e1e2;
     // padding-left: 33px !important;
     // padding-top: 59px !important;
     display: flex !important;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-end;
+    align-items: flex-end;
 
     &-company {
         font-weight: bold;
         font-size: 18px;
     }
 
+    @media screen and (max-width: 990px) {
+        padding-bottom: 24px;
+        padding-right: 0 !important;
+        justify-content: center;
+        align-items: center;
+    }
+
     img {
-    	position: absolute;
-	left: 1rem;
-	top: 0;
-    	width: 200px;
+        width: 200px;
     }
 }
 
 .login-form-input-wrapper {
-    width: 232px !important;
+    width: 100% !important;
+    display: flex;
+    form {
+        width: 200px;
+    }
+
+    @media screen and (max-width: 990px) {
+        padding-right: 0 !important;
+        justify-content: center;
+        text-align: center !important;
+        form {
+            width: 100%;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+    }
 }
 
 .login-form-forgot-pass {
@@ -57,18 +77,22 @@
 .language-switcher {
     position: absolute;
     right: 82px;
-    width: 224px;
+    //width: 224px;
     top: 33px;
 }
 
 .main-logo {
     position: absolute;
-    width: 318px; 
-    left: 82px; 
-    top: 33px
+    //width: 318px;
+    left: 82px;
+    top: 33px;
 }
 
 .login-form-description-wrapper {
-    width: 100%;
-	padding-top: 37px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    /* padding-top: 37px;*/
 }

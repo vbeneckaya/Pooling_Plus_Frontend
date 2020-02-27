@@ -8,6 +8,12 @@ body {
     color: #4d4d4d !important;
 }
 
+@media screen and (max-width: 1280px) {
+    body {
+        min-width: 100%!important;
+    }
+}
+
 i.blue.icon {
     color: #18a8cc !important;
 }
