@@ -25,6 +25,7 @@ namespace Domain.Persistables
         
         public string Email { get; set; }
         public string ReportId { get; set; }		
+        public string ReportPageNameForMobile { get; set; }		
 
         public bool IsActive { get; set; } = true;
 

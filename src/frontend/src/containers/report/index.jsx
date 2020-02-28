@@ -38,7 +38,7 @@ const Report = () => {
                 embedUrl={report.embedURL}
                 embedId={report.reportID}
                 dashboardId=""
-                pageName={isMobile ? 'ReportSection3b6892f9816b68708ab6' : ''}
+                pageName={isMobile ? report.pageName : ''}
                 extraSettings={{
                     filterPaneEnabled: !isMobile,
                     navContentPaneEnabled: !isMobile,
