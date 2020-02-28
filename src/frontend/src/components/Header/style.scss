@@ -59,6 +59,20 @@
     justify-content: flex-end;
     width: 100%;
 
+    @media screen and (max-width: 990px) {
+        display: none;
+    }
+
+    &_mobile {
+        display: none;
+        @media screen and (max-width: 990px) {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+        }
+    }
+
     &_contacts {
         margin-left: 12px;
         padding-right: 12px;

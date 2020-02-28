@@ -21,9 +21,19 @@ using Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
+using Application.BusinessModels.Orders.Actions;
+using Application.BusinessModels.Shared.Actions;
 using AutoMapper.QueryableExtensions;
+using Domain.Services.Orders;
+using Domain.Services.Translations;
+using Microsoft.EntityFrameworkCore.Internal;
+using OfficeOpenXml;
+using Serilog;
 
 namespace Application.Services.Shippings
 {
@@ -33,7 +43,11 @@ namespace Application.Services.Shippings
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
 
+        private readonly IOrdersService _ordersService;
+
         private readonly IChangeTrackerFactory _changeTrackerFactory;
+
+        private readonly IGroupAppAction<Order> _unionOrdersAction;
 
 
         public ShippingsService(
@@ -46,7 +60,9 @@ namespace Application.Services.Shippings
             ITriggersService triggersService,
             IValidationService validationService,
             IFieldSetterFactory fieldSetterFactory,
-            IChangeTrackerFactory changeTrackerFactory
+            IChangeTrackerFactory changeTrackerFactory,
+            IOrdersService ordersService,
+            IGroupAppAction<Order> unionOrdersAction
         )
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider,
                 triggersService, validationService, fieldSetterFactory)
@@ -54,6 +70,8 @@ namespace Application.Services.Shippings
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            _ordersService = ordersService;
+            _unionOrdersAction = unionOrdersAction;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -315,7 +333,8 @@ namespace Application.Services.Shippings
                     .ForMember(t => t.CostsConfirmedByCarrier,
                         e => e.MapFrom((s) => s.CostsConfirmedByCarrier.GetValueOrDefault()));
 
-                cfg.CreateMap<ShippingDto, ShippingFormDto>();
+                cfg.CreateMap<ShippingDto, ShippingFormDto>()
+                    ;
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
@@ -355,42 +374,49 @@ namespace Application.Services.Shippings
             bool isNew = string.IsNullOrEmpty(dto.Id);
 
             _mapper.Map(dto, entity);
-            
+
             IEnumerable<string> readOnlyFields = null;
+            var currentUser = _userIdProvider.GetCurrentUser();
+            
             if (!isNew)
             {
-                var userId = _userIdProvider.GetCurrentUserId();
-                if (userId != null)
+                if (currentUser != null)
                 {
                     string stateName = entity.Status?.ToString()?.ToLowerFirstLetter();
                     readOnlyFields = _fieldPropertiesService.GetReadOnlyFields(FieldPropertiesForEntityType.Shippings,
-                        stateName, null, userId);
+                        stateName, null, currentUser.Id);
+                }
+
+                if (currentUser?.ProviderId != null)
+                {
+                    entity.ProviderId = entity.ProviderId ?? currentUser.ProviderId;
                 }
             }
             else
             {
-                InitializeNewShipping(entity);
+                InitializeNewShipping(entity, currentUser);
             }
         }
 
-        private void InitializeNewShipping(Shipping shipping)
+        private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
             shipping.Status = ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = DateTime.UtcNow;
-            shipping.ShippingNumber = ShippingNumberProvider.GetNextShippingNumber();
+            shipping.ShippingNumber = shipping.ShippingNumber ?? ShippingNumberProvider.GetNextShippingNumber();
             shipping.DeliveryType = DeliveryType.Delivery;
+            shipping.UserCreatorId = currentUser.Id;
 
-            var user = _userIdProvider.GetCurrentUser();
-            if (user?.CarrierId != null)
+            if (currentUser?.CarrierId != null)
             {
-                shipping.CarrierId = user.CarrierId;
+                shipping.CarrierId = currentUser.CarrierId;
             }
-            if (user?.ProviderId != null)
+
+            if (currentUser?.ProviderId != null)
             {
-                shipping.ProviderId = user.ProviderId;
+                shipping.ProviderId = currentUser.ProviderId;
             }
         }
-        
+
         public override void MapFromFormDtoToEntity(Shipping entity, ShippingFormDto dto)
         {
             MapFromDtoToEntity(entity, dto);
@@ -404,7 +430,7 @@ namespace Application.Services.Shippings
                 return null;
             }
 
-            return _mapper.Map<ShippingDto>(entity);
+            return FillLookupNames(_mapper.Map<ShippingDto>(entity));
         }
 
         public override ShippingFormDto MapFromEntityToFormDto(Shipping entity)
@@ -496,6 +522,7 @@ namespace Application.Services.Shippings
 
                 result.Add(dto);
             }
+
             result = FillLookupOrdersNames(result).ToList();
             return result;
         }
@@ -732,7 +759,8 @@ namespace Application.Services.Shippings
                 || columns.Contains("confirmedPalletsCount") && isInt && i.ConfirmedPalletsCount == searchInt
                 || columns.Contains("weightKg") && isDecimal && i.WeightKg >= searchDecimal - precision &&
                 i.WeightKg <= searchDecimal + precision
-                || columns.Contains("confirmedWeightKg") && isDecimal && i.ConfirmedWeightKg >= searchDecimal - precision &&
+                || columns.Contains("confirmedWeightKg") && isDecimal &&
+                i.ConfirmedWeightKg >= searchDecimal - precision &&
                 i.ConfirmedWeightKg <= searchDecimal + precision
                 || columns.Contains("totalDeliveryCost") && isDecimal &&
                 i.TotalDeliveryCost >= searchDecimal - precision && i.TotalDeliveryCost <= searchDecimal + precision
@@ -784,38 +812,220 @@ namespace Application.Services.Shippings
         protected override ExcelMapper<ShippingDto> CreateExportExcelMapper()
         {
             string lang = _userIdProvider.GetCurrentUser()?.Language;
-            return base.CreateExportExcelMapper()
+            var mapper = base.CreateExportExcelMapper();
+            return mapper
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
-                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
-                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetBodyTypeIdByName))
-                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetVehicleTypeIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetIdByName<BodyType>))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetIdByName<VehicleType>))
                 .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
                 .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
                 .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
         }
 
-       private Guid? GetCarrierIdByName(string name)
+
+        protected ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> CreateExportDoubleExcelMapper()
+        {
+            string lang = _userIdProvider.GetCurrentUser()?.Language;
+            var mapper =
+                new ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto>(_dataService, _userIdProvider,
+                    _fieldDispatcherService, "Orders");
+            mapper = ExpandExportExcelMapperByOrders(mapper, lang);
+
+            mapper
+                .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
+                .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetIdByName<Provider>))
+                .MapColumn(w => w.BodyTypeId, new DictionaryReferenceExcelColumn(GetIdByName<BodyType>))
+                .MapColumn(w => w.VehicleTypeId, new DictionaryReferenceExcelColumn(GetIdByName<VehicleType>))
+                .MapColumn(i => i.Status, new StateExcelColumn<ShippingState>(lang))
+                .MapColumn(i => i.PoolingStatus, new StateExcelColumn<ShippingPoolingState>(lang))
+                .MapColumn(i => i.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
+                .MapColumn(i => i.TarifficationType, new EnumExcelColumn<TarifficationType>(lang));
+
+            mapper
+                .MapInnerColumn(o => o.ClientId, new DictionaryReferenceExcelColumn(GetIdByName<Client>))
+                .MapInnerColumn(o => o.DeliveryWarehouseId,
+                    new DictionaryReferenceExcelColumn(GetDeliveryWarehouseIdByName))
+                .MapInnerColumn(o => o.ShippingWarehouseId,
+                    new DictionaryReferenceExcelColumn(GetShippingWarehouseIdByName));
+
+            return mapper;
+        }
+
+
+        public Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var excel = new ExcelPackage();
+
+            var user = _userIdProvider.GetCurrentUser();
+
+            string entityName = typeof(Shipping).Name.Pluralize().ToLowerFirstLetter();
+            string entityDisplayName = entityName.Translate(user.Language);
+            var workSheet = excel.Workbook.Worksheets.Add(entityDisplayName);
+
+            var dbSet = _dataService.GetDbSet<Shipping>();
+            var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
+
+            query = ApplyRestrictions(query);
+
+            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var entities = query.ToList();
+            var dtos = entities.Select(MapFromEntityToFormDto);
+            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var excelMapper = CreateExportDoubleExcelMapper();
+
+            var columns =
+                dto.Columns.Select(c => typeof(ShippingDto).Name.ToLower() + "_" + c.ToString().ToLower());
+
+            var innerColumns =
+                dto.InnerColumns.Select(c => typeof(ShippingOrderDto).Name.ToLower() + "_" + c.ToString().ToLower());
+
+            excelMapper.FillSheet(workSheet, dtos, user.Language, columns.Concat(innerColumns).ToList());
+            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+
+            return new MemoryStream(excel.GetAsByteArray());
+        }
+
+        public ImportResultDto ImportFormsFromExcel(Stream fileStream)
+        {
+            string entityName = typeof(Shipping).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
+
+            var excelMapper = CreateExportDoubleExcelMapper();
+            var dtos = excelMapper.LoadEntries(workSheet);
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var user = _userIdProvider.GetCurrentUser();
+
+            var importResult = ImportShippingsWidthOrders(dtos.Select(x => x.Data), user);
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var validateResult in importResult.Where(x => x.IsError))
+            {
+                sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
+            }
+
+            if (!importResult.Any(x => x.IsError))
+                return new ImportResultDto
+                {
+                    Message = $"{importResult.Count()} загружено"
+                };
+
+            return new ImportResultDto
+            {
+                Message = sb.ToString()
+            };
+        }
+
+        private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom,
+            CurrentUserDto currentUser)
+        {
+            string entityName = typeof(ShippingFormDto).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var result = new List<ValidateResult>();
+
+            foreach (var dto in entitiesFrom)
+            {
+                var validateResult = ValidateDto(dto);
+
+                if (validateResult.IsError)
+                {
+                    result.Add(validateResult);
+                }
+                else
+                {
+                    var shippingAddResult = SaveOrCreate(dto);
+
+                    result.Add(shippingAddResult);
+
+                    if (shippingAddResult.IsError) continue;
+
+                    if (dto.Orders == null) continue;
+
+                    var shippingOrdersIds = new List<Guid>();
+
+                    foreach (var innerEntry in dto.Orders)
+                    {
+                        OrderFormDto shippingOrder = _ordersService.MapFromShippingOrderDtoToFormDto(innerEntry);
+
+                        shippingOrder.ShippingId = shippingAddResult.Id;
+
+                        var res = _ordersService.SaveOrCreate(shippingOrder);
+
+                        result.Add(res);
+
+                        if (res.IsError) continue;
+
+                        shippingOrdersIds.Add(Guid.Parse(res.Id));
+                    }
+
+                    _ordersService.InvokeAction("unionOrdersInExisted", shippingOrdersIds);
+                    //_unionOrdersAction.Run(currentUser, shippingOrders);
+                }
+            }
+
+            Log.Information("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            return result;
+        }
+
+        private ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> ExpandExportExcelMapperByOrders(
+            ExcelDoubleMapper<ShippingDto, ShippingFormDto, ShippingOrderDto> mapper, string lang)
+        {
+            Type type = typeof(ShippingOrderDto);
+
+            var t = _fieldDispatcherService.GetDtoFields<ShippingOrderDto>();
+
+            t.Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State).ToList()
+                .Select(f => new BaseExcelColumn {Property = type.GetProperty(f.Name), Field = f, Language = lang})
+                .ToList()
+                .ForEach(mapper.AddInnerColumn);
+            return mapper;
+        }
+
+        private Guid? GetCarrierIdByName(string name)
         {
             var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
         }
 
-        private Guid? GetProviderIdByName(string name)
+        private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
 
-        private Guid? GetVehicleTypeIdByName(string name)
+        private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(t => t.WarehouseName == name);
             return entry?.Id;
         }
 
-        private Guid? GetBodyTypeIdByName(string name)
+        private Guid? GetIdByName<T>(string name) where T : class, IPersistableWithName
         {
-            var entry = _dataService.GetDbSet<BodyType>().FirstOrDefault(t => t.Name == name);
+            var entry = _dataService.GetDbSet<T>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
     }

@@ -19,7 +19,7 @@ namespace Application.BusinessModels.Shared.Triggers
 
         protected void UpdateShippingFromIntegrations(Shipping shipping)
         {
-            if (shipping.Status == ShippingState.ShippingCreated)
+            if (shipping.Status == ShippingState.ShippingCreated && shipping.UserCreatorId.HasValue)
             {
                 if (shipping.CarrierId == null)
                 {

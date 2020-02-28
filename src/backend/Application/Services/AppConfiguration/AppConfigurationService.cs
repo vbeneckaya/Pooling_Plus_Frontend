@@ -110,7 +110,7 @@ namespace Application.Services.AppConfiguration
                     CanCreateByForm = _identityService.HasPermissions(RolePermissions.ShippingsCreate),
                     CanViewAdditionSummary = true,
                     CanExportToExcel = true,
-                    CanImportFromExcel = false,
+                    CanImportFromExcel = true,
                     Columns = columns
                 });
             }
@@ -329,6 +329,11 @@ namespace Application.Services.AppConfiguration
                 if (!canEditProviders) return null;
 
                 var columns = ExtractColumnsFromDto<ProviderDto>(roleId);
+
+                var role = _dataService.GetById<Role>(roleId.Value);
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x => x.Name != nameof(Provider.ReportId));
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ProvidersService>(),

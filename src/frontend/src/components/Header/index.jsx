@@ -162,6 +162,24 @@ const Header = () => {
                                 </Menu.Menu>
                             ) : null}
                         </div>
+                        <div className="header-support_mobile">
+                            {userName && userRole ? (
+                                <Menu.Menu position='right'>
+                                    <Dropdown icon='user' item>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Header content={`${userName} (${userRole})`} />
+                                            <Dropdown.Divider />
+                                            <Dropdown.Item onClick={onOpen}>
+                                                {t('profile_settings')}
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={logOut}>
+                                                {t('exit')}
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </Menu.Menu>
+                            ) : null}
+                        </div>
                     </Menu>
                     <Profile open={openProfile} onOpen={onOpen} onClose={onClose} />
                 </header>

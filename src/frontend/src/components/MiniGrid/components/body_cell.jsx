@@ -17,7 +17,7 @@ const BodyCell = ({
     value,
     valueText,
     column,
-    loadList,
+    loadCard,
     indexRow,
     indexColumn,
     modalCard,
@@ -88,7 +88,7 @@ const BodyCell = ({
             field: column.name,
             value: valueForm,
             callbackSuccess: () => {
-                loadList(false, true);
+                loadCard();
             },
             callbackFunc: () => {
                 setProgress(false);
@@ -106,20 +106,20 @@ const BodyCell = ({
     };
     
 
-    const getModalCard = useCallback(() => {
-        return (
-            <ModalComponent
-                element={modalCard()}
-                props={{
-                    id: rowId,
-                    status,
-                    loadList,
-                    title: `edit_${gridName}`,
-                }}
-                key={`modal_${rowId}`}
-            />
-        );
-    }, []);
+    // const getModalCard = useCallback(() => {
+    //     return (
+    //         <ModalComponent
+    //             element={modalCard()}
+    //             props={{
+    //                 id: rowId,
+    //                 status,
+    //                 loadCard,
+    //                 title: `edit_${gridName}`,
+    //             }}
+    //             key={`modal_${rowId}`}
+    //         />
+    //     );
+    // }, []);
 
     //console.log('BodyCell');
 
@@ -169,9 +169,10 @@ const BodyCell = ({
             <Modal open={open} size="tiny" closeOnDimmerClick={false}>
                 <Modal.Header>
                     {t(`edit_${gridName}`, {
-                        number: rowNumber,
+                        number: rowNumber.value,
                         status: t(status),
-                    })}
+                    })}{
+                }
                 </Modal.Header>
                 <Modal.Content>
                     <Modal.Description>

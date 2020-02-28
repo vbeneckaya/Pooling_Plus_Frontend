@@ -111,7 +111,7 @@
         </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            ����� �� ������
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
@@ -354,6 +354,16 @@
         <member name="M:API.Controllers.ShippingsController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
             Поиск по номеру
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.ImportFormsFromExcel">
+            <summary>
+            Импортировать список форм из excel
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.ExportFormsToExcel(Domain.Shared.ExportExcelFormDto{Domain.Services.Shippings.ShippingFilterDto})">
+            <summary>
+            Экспортировать список форм в excel
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">

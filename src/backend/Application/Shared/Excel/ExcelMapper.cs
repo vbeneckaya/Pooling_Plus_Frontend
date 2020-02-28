@@ -17,10 +17,11 @@ namespace Application.Shared.Excel
         public void AddColumn(IExcelColumn column)
         {
             string columnKey = GetColumnKey(column);
-            column.Field = _fieldDispatcherService.GetDtoFields<TDto>().Where(x => x.Name == column.Property.Name).FirstOrDefault();
+            column.Field = _fieldDispatcherService.GetDtoFields<TDto>().FirstOrDefault(x => x.Name == column.Property.Name);
             _columns[columnKey] = column;
         }
-
+        
+      
         public void FillSheet(ExcelWorksheet worksheet, IEnumerable<TDto> entries, string lang, List<string> columns = null)
         {
             FillDefaultColumnOrder(columns);
@@ -188,7 +189,8 @@ namespace Application.Shared.Excel
 
         private string GetColumnKey(IExcelColumn column)
         {
-            return column.Property.Name.ToLower();
+            var res = column.Property.Name.ToLower();
+            return res;
         }
 
         private bool IsEmptyRow(ExcelWorksheet worksheet, int rowIndex)
@@ -217,7 +219,7 @@ namespace Application.Shared.Excel
                     .Where(f => f.FieldType != FieldType.Enum && f.FieldType != FieldType.State)
                     .Select(f => new BaseExcelColumn { Property = type.GetProperty(f.Name), Field = f, Language = lang })
                     .ToList()
-                    .ForEach(AddColumn);
+                    .ForEach(column => AddColumn(column));
         }
 
         public ExcelMapper(ICommonDataService dataService, IUserProvider userProvider, IFieldDispatcherService fieldDispatcherService)

@@ -39,7 +39,7 @@ namespace Application.Shared.Excel.Columns
             return null;
         }
 
-        public DictionaryReferenceExcelColumn(Func<string, Guid?> guidLookupMethod)
+        public DictionaryReferenceExcelColumn( Func<string, Guid?> guidLookupMethod)
         {
             _guidLookupMethod = guidLookupMethod;
         }

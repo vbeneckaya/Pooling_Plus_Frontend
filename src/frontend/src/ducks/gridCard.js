@@ -412,8 +412,8 @@ function* getCardSaga({payload}) {
 
 function* isUniqueNumberSaga({payload}) {
     try {
-        const {number, fieldName, errorText, callbackSuccess} = payload;
-        const result = yield postman.post('/orders/findNumber', {number, isPartial: false});
+        const {number, providerId, fieldName, errorText, callbackSuccess} = payload;
+        const result = yield postman.post('/orders/findNumber', {number, providerId, isPartial: false});
 
         if (result.length && result[0].name) {
             yield put({

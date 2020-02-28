@@ -29,6 +29,14 @@ namespace Application.BusinessModels.Orders.Actions
 
             foreach (var order in allOrders)
             {
+                if (order.Status == null || order.Status == OrderState.InShipping)
+                {
+                    order.Status = order.Status == OrderState.Created ? OrderState.InShipping : order.Status;
+                    order.ShippingStatus = VehicleState.VehicleWaiting;
+                    order.CarrierId = order.CarrierId ?? shipping.CarrierId;
+                    historyService.Save(order.Id, "orderSetInShipping", order.OrderNumber, shipping.ShippingNumber);
+                    historyService.Save(shipping.Id, "shippingAddOrder", order.OrderNumber, shipping.ShippingNumber);
+                }
                 order.ShippingNumber = shipping.ShippingNumber;
                 order.OrderShippingStatus = shipping.Status;
             }
@@ -37,6 +45,7 @@ namespace Application.BusinessModels.Orders.Actions
             {
                 order.ShippingId = shipping.Id;
                 order.Status = OrderState.InShipping;
+                order.ShippingNumber = shipping.ShippingNumber;
 
                 order.ShippingStatus = VehicleState.VehicleWaiting;
                 order.DeliveryStatus = VehicleState.VehicleEmpty;

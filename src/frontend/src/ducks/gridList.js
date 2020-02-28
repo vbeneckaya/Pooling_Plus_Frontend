@@ -23,9 +23,17 @@ const GRID_IMPORT_FROM_EXCEL_REQUEST = 'GRID_IMPORT_FROM_EXCEL_REQUEST';
 const GRID_IMPORT_FROM_EXCEL_SUCCESS = 'GRID_IMPORT_FROM_EXCEL_SUCCESS';
 const GRID_IMPORT_FROM_EXCEL_ERROR = 'GRID_IMPORT_FROM_EXCEL_ERROR';
 
+const GRID_IMPORT_FORMS_FROM_EXCEL_REQUEST = 'GRID_IMPORT_FORMS_FROM_EXCEL_REQUEST';
+const GRID_IMPORT_FORMS_FROM_EXCEL_SUCCESS = 'GRID_IMPORT_FORMS_FROM_EXCEL_SUCCESS';
+const GRID_IMPORT_FORMS_FROM_EXCEL_ERROR = 'GRID_IMPORT_FORMS_FROM_EXCEL_ERROR';
+
 const GRID_EXPORT_TO_EXCEL_REQUEST = 'GRID_EXPORT_TO_EXCEL_REQUEST';
 const GRID_EXPORT_TO_EXCEL_SUCCESS = 'GRID_EXPORT_TO_EXCEL_SUCCESS';
 const GRID_EXPORT_TO_EXCEL_ERROR = 'GRID_EXPORT_TO_EXCEL_ERROR';
+
+const GRID_EXPORT_FORMS_TO_EXCEL_REQUEST = 'GRID_EXPORT_FORMS_TO_EXCEL_REQUEST';
+const GRID_EXPORT_FORMS_TO_EXCEL_SUCCESS = 'GRID_EXPORT_FORMS_TO_EXCEL_SUCCESS';
+const GRID_EXPORT_FORMS_TO_EXCEL_ERROR = 'GRID_EXPORT_FORMS_TO_EXCEL_ERROR';
 
 const GRID_AUTO_UPDATE_START = 'GRID_AUTO_UPDATE_START';
 const GRID_AUTO_UPDATE_STOP = 'GRID_AUTO_UPDATE_STOP';
@@ -85,23 +93,29 @@ export default (state = initial, { type, payload }) => {
                 stateColorsProgress: false,
             };
         case GRID_IMPORT_FROM_EXCEL_REQUEST:
+        case GRID_IMPORT_FORMS_FROM_EXCEL_REQUEST:
             return {
                 ...state,
                 importProgress: true,
             };
         case GRID_IMPORT_FROM_EXCEL_SUCCESS:
+        case GRID_IMPORT_FORMS_FROM_EXCEL_SUCCESS:
         case GRID_IMPORT_FROM_EXCEL_ERROR:
+        case GRID_IMPORT_FORMS_FROM_EXCEL_ERROR:
             return {
                 ...state,
                 importProgress: false,
             };
         case GRID_EXPORT_TO_EXCEL_REQUEST:
+        case GRID_EXPORT_FORMS_TO_EXCEL_REQUEST:
             return {
                 ...state,
                 exportProgress: true,
             };
         case GRID_EXPORT_TO_EXCEL_SUCCESS:
+        case GRID_EXPORT_FORMS_TO_EXCEL_SUCCESS:
         case GRID_EXPORT_TO_EXCEL_ERROR:
+        case GRID_EXPORT_FORMS_TO_EXCEL_ERROR:
             return {
                 ...state,
                 exportProgress: false,
@@ -150,6 +164,20 @@ export const importFromExcelRequest = payload => {
 export const exportToExcelRequest = payload => {
     return {
         type: GRID_EXPORT_TO_EXCEL_REQUEST,
+        payload,
+    };
+};
+
+export const importFormsFromExcelRequest = payload => {
+    return {
+        type: GRID_IMPORT_FORMS_FROM_EXCEL_REQUEST,
+        payload,
+    };
+};
+
+export const exportFormsToExcelRequest = payload => {
+    return {
+        type: GRID_EXPORT_FORMS_TO_EXCEL_REQUEST,
         payload,
     };
 };
@@ -347,6 +375,63 @@ function* exportToExcelSaga({ payload }) {
     }
 }
 
+function* importFormsFromExcelSaga({ payload }) {
+    try {
+        const { form, name, callbackSuccess } = payload;
+        const result = yield postman.post(`${name}/importFormsFromExcel`, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (result.isError) {
+            toast.error(result.error);
+        } else {
+            result.message && toast.info(result.message);
+
+            yield put({
+                type: GRID_IMPORT_FORMS_FROM_EXCEL_SUCCESS,
+            });
+
+            callbackSuccess();
+        }
+    } catch (e) {
+        yield put({
+            type: GRID_IMPORT_FORMS_FROM_EXCEL_ERROR,
+        });
+    }
+}
+
+function* exportFormsToExcelSaga({ payload }) {
+    try {
+        const { name, nameInner, filter } = payload;
+        const representation = yield select(state => representationFromGridSelector(state, name));
+        const result  = yield postman.get(`/userSettings/default/${nameInner}`); 
+        const defaultInnerRepresentation = result.value ? JSON.parse(result.value)[null] : {}
+           
+        const columns = representation ? representation.map(item => item.name) : [];
+        const innerColumns = defaultInnerRepresentation ? defaultInnerRepresentation.map(item => item.name) : [];
+
+        const res = yield downloader.post(
+            `/${name}/exportFormsToExcel`,
+            { columns, innerColumns, ...filter },
+            { responseType: 'blob' },
+        );
+        const { data } = res;
+        let headerLine = res.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('filename=') + 10;
+        let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        yield put({ type: GRID_EXPORT_FORMS_TO_EXCEL_SUCCESS });
+    } catch (error) {
+        yield put({ type: GRID_EXPORT_FORMS_TO_EXCEL_ERROR });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_GRID_LIST_REQUEST, getListSaga),
@@ -354,6 +439,8 @@ export function* saga() {
         takeEvery(GRID_AUTO_UPDATE_STOP, autoUpdateStopSaga),
         takeEvery(GET_STATE_COLORS_REQUEST, getStateColorsSaga),
         takeEvery(GRID_IMPORT_FROM_EXCEL_REQUEST, importFromExcelSaga),
+        takeEvery(GRID_IMPORT_FORMS_FROM_EXCEL_REQUEST, importFormsFromExcelSaga),
         takeEvery(GRID_EXPORT_TO_EXCEL_REQUEST, exportToExcelSaga),
+        takeEvery(GRID_EXPORT_FORMS_TO_EXCEL_REQUEST, exportFormsToExcelSaga),
     ]);
 }

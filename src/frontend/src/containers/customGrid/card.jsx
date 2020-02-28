@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTranslation} from 'react-i18next';
 
-import {Button, Confirm, Dropdown, Icon, Popup} from 'semantic-ui-react';
+import {Button, Icon, Popup} from 'semantic-ui-react';
 import {
     cardSelector,
     clearGridCard,
@@ -25,7 +25,7 @@ import {
 import {ORDERS_GRID, SHIPPINGS_GRID} from '../../constants/grids';
 import OrderCard from './components/orderCard';
 import ShippingCard from './components/shippingCard';
-import {GRID_CARD_LINK, GRID_GRID_CARD_LINK} from '../../router/links';
+import {GRID_CARD_LINK} from '../../router/links';
 import {clearHistory, getHistoryRequest} from '../../ducks/history';
 import {columnsGridSelector} from "../../ducks/gridList";
 import {BIG_TEXT_TYPE, NUMBER_TYPE, TEXT_TYPE} from "../../constants/columnTypes";
@@ -35,9 +35,10 @@ const Card = props => {
     const dispatch = useDispatch();
     const {match, history, location} = props;
     const {params = {}} = match;
-    const {name, id, parentName} = params;
+    const {name, id} = params;
 
     let [form, setForm] = useState({});
+    let [justOpen, setJustOpen] = useState(true)
     let [allowToSend, setAllowToSend] = useState(false);
 
 
@@ -59,6 +60,7 @@ const Card = props => {
     );
 
     useEffect(() => {
+        setJustOpen(true);
         dispatch(clearActions());
         id && loadCard();
 
@@ -76,6 +78,11 @@ const Card = props => {
         [form],
     );
 
+    const updateCard =() => {
+        setJustOpen(false);
+        loadCard();
+    }
+    
     const loadCard = () => {
         id && id != 'new' &&
         dispatch(
@@ -98,7 +105,7 @@ const Card = props => {
         );
         id && id != 'new' && dispatch(getHistoryRequest(id));
 
-        id && id == 'new' && setForm(card);
+       // id && id == 'new' && setForm(card);
     };
 
     const onClose = () => {
@@ -163,6 +170,7 @@ const Card = props => {
 
 
     const saveOrEditForm = () => {
+        setJustOpen(false);
         dispatch(
             editCardRequest({
                 name,
@@ -171,9 +179,6 @@ const Card = props => {
                     setAllowToSend(false);
                      if (!!form.id) {
                         loadCard();
-                    }
-                    else if (parentName == SHIPPINGS_GRID){
-                         invokeAction('unionOrders', result.id);
                     }
                 }
             }),
@@ -200,9 +205,6 @@ const Card = props => {
                         onClose();
                     }
                     
-                    if ((actionName.toLowerCase().includes('union') && !!parentName)) {
-                        goToCard(name, itemId, parentName, true);
-                    }
                      if (id != 'new' && !actionName.toLowerCase().includes('delete')){
                         loadCard();
                     }
@@ -215,7 +217,8 @@ const Card = props => {
         if (form.orderNumber && card.orderNumber && (!id || form.orderNumber.value !== card.orderNumber.value)) {
             dispatch(
                 isUniqueNumberRequest({
-                    number: !!form.orderNumber ? form.orderNumber.value : null,
+                    number: form.orderNumber ? form.orderNumber.value : null,
+                    providerId: form.providerId ? form.providerId.value : null,
                     fieldName: 'orderNumber',
                     errorText: t('number_already_exists'),
                     callbackSuccess: callbackFunc,
@@ -226,25 +229,12 @@ const Card = props => {
     };
 
     const loading = useSelector(state => progressSelector(state));
-    const editLoading = useSelector(state => editProgressSelector(state));
+  //  const editLoading = useSelector(state => editProgressSelector(state));
     const actions = useSelector(state => actionsCardSelector(state));
-    const progressActionName = useSelector(state => progressActionNameSelector(state));
+  //  const progressActionName = useSelector(state => progressActionNameSelector(state));
 
-    const goToCard = (gridName, cardId, parentName, isAfterCreating = false) => {
+    const goToCard = (gridName, cardId) => {
         const {state} = location;
-        if (!!parentName) {
-            clearActions();
-            debugger;
-            history.replace({
-                pathname: GRID_GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId).replace(':parentName', parentName),
-                state: {
-                    ...state,
-                    pathname: isAfterCreating ? state && state.pathname ? state.pathname : state && state.gridLocation : history.location.pathname,
-                    gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
-                },
-            });
-        }
-        else{
             history.replace({
                 pathname: GRID_CARD_LINK.replace(':name', gridName).replace(':id', cardId),
                 state: {
@@ -253,7 +243,6 @@ const Card = props => {
                     gridLocation: state && state.gridLocation ? state.gridLocation : state && state.pathname
                 },
             });
-        }
     };
 
     const getActionsHeader = useCallback(
@@ -302,12 +291,12 @@ const Card = props => {
                     {...props}
                     id={id}
                     load={loadCard}
+                    update={updateCard}
                     name={name}
-                    parentName={parentName}
                     form={form}
                     title={title}
                     settings={settings}
-                    loading={loading}
+                    loading={loading && justOpen}
                     uniquenessNumberCheck={handleSave} //{handleUniquenessCheck}
                     error={error}
                     onClose={handleClose}
@@ -323,14 +312,14 @@ const Card = props => {
                     name={name}
                     form={form}
                     load={loadCard}
+                    update={updateCard}
                     goToCard={goToCard}
-                    loading={loading}
+                    loading={loading && justOpen}
                     settings={settings}
                     error={error}
                     onClose={handleClose}
                     onBlurForm={onBlurForm}
                     onChangeForm={onChangeForm}
-                    //  actionsFooter={getActionsFooter}
                     actionsHeader={getActionsHeader}
                 />
             )}

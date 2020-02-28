@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Application.BusinessModels.Shared.Actions;
+using Domain.Services.Shippings;
 using ConfirmedPalletsCountHandler = Application.BusinessModels.Orders.Handlers.ConfirmedPalletsCountHandler;
 using LoadingArrivalTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingArrivalTimeHandler;
 using LoadingDepartureTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingDepartureTimeHandler;
@@ -56,6 +58,7 @@ namespace Application.Services.Orders
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -95,17 +98,17 @@ namespace Application.Services.Orders
             rules.Add(nameof(Order.ShippingAvisationTime), avisationTimeRule);
         }
 
-        public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
+        public IEnumerable<LookUpDto> FindByNumberAndProvider(NumberSearchFormDto dto)
         {
             var dbSet = _dataService.GetDbSet<Order>();
             List<Order> entities;
             if (dto.IsPartial)
             {
-                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase) && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             else
             {
-                entities = dbSet.Where(x => x.OrderNumber == dto.Number).ToList();
+                entities = dbSet.Where(x => x.OrderNumber == dto.Number && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
@@ -186,16 +189,16 @@ namespace Application.Services.Orders
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
+                
+                cfg.CreateMap<ShippingOrderDto, OrderFormDto>();
 
                 cfg.CreateMap<OrderDto, Order>()
-                    .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.Id, e => e.MapFrom( s => string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)))
                     .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
-                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
-                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
-                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId == null ? null : s.ClientId.Value.ToGuid()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) =>  s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
                     .ForMember(t => t.ProviderId, e => e.Condition((s) => s.ProviderId != null))
-                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId == null ? null : s.ProviderId.Value.ToGuid()))
                     .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
                     .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
                     .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
@@ -215,10 +218,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity.Value))
                     .ForMember(t => t.ShippingCity, e => e.Condition((s) => s.ShippingCity != null))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity.Value))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
-                    .ForMember(t => t.DeliveryWarehouseId, e => e.Condition((s) => s.DeliveryWarehouseId != null))
-                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId == null ? null : s.ShippingWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId == null ? null : s.DeliveryWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus,e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
@@ -477,6 +478,11 @@ namespace Application.Services.Orders
             MapFromDtoToEntity(entity, dto);
 
             SaveItems(entity, dto);
+        }
+        
+        public OrderFormDto MapFromShippingOrderDtoToFormDto(ShippingOrderDto shippingOrderDto)
+        {
+            return _mapper.Map<ShippingOrderDto, OrderFormDto>(shippingOrderDto);
         }
 
         public override OrderDto MapFromEntityToDto(Order entity)
