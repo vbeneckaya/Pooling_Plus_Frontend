@@ -18,6 +18,7 @@ using Application.Services.Warehouses;
 using Application.Services.Providers;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.AppConfiguration;
 using Domain.Services.BodyTypes;
@@ -332,7 +333,7 @@ namespace Application.Services.AppConfiguration
 
                 var role = _dataService.GetById<Role>(roleId.Value);
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                    columns = columns.Where(x => x.Name != nameof(Provider.ReportId));
+                    columns = columns.Where(x => x.Name != nameof(Provider.ReportId).ToLowerFirstLetter());
 
                 return new UserConfigurationDictionaryItem
                 {
