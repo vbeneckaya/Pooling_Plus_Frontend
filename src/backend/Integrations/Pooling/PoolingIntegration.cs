@@ -208,10 +208,24 @@ namespace Integrations.Pooling
 
         public void Init()
         {
-            FetchShippingWarehouses();
+            LoadShippingWarehouses();
+            LoadReports();
         }
 
-        private void FetchShippingWarehouses()
+
+        private void LoadReports()
+        {
+            if (!_user.ProviderId.HasValue) return;
+
+            var startDate = DateTime.Today.AddMonths(-3);
+
+            var endDate = DateTime.Today.AddDays(14);
+            
+            var reportsFromPooling = GetArr($"consignorReport?startDate={startDate}&endDate={endDate}&showAll=false").Get("$")
+                .FirstOrDefault()?.ToHashSet();
+        }
+
+        private void LoadShippingWarehouses()
         {
             if (!_user.ProviderId.HasValue) return;
             
