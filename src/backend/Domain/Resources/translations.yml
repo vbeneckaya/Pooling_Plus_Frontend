@@ -427,6 +427,7 @@ ru:
   roleType: "Тип роли"
   report: "Отчёты"
   reportId: "Id отчёта в Power BI"
+  reportPageNameForMobile: "Название страницы отчёта для мобильной версии"
   Role.DuplicatedRecord: "Роль с таким именем уже существует"
   route: "Маршрут"
   SaveButton: "Сохранить"

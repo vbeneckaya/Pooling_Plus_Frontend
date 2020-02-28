@@ -6,6 +6,7 @@ namespace Domain.Services.Report
     {
         public string EmbedURL { get; set; }
         public string ReportID { get; set; }
+        public string PageName { get; set; }
         public string GroupID { get; set; }
         public string Token { get; set; }
         public string TokenID { get; set; }
