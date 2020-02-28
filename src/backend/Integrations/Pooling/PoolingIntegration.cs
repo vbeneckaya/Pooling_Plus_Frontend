@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services.ShippingWarehouses;
-using Domain.Services.Warehouses;
-using Integrations.Dtos;
 using Integrations.Pooling.Dtos;
-using Integrations.Pooling.Enums;
-using Microsoft.EntityFrameworkCore.Internal;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Integrations.Pooling
@@ -222,7 +216,7 @@ namespace Integrations.Pooling
             if (!_user.ProviderId.HasValue) return;
             
             var warehousesFromPooling = GetArr($"definitions/warehouses?companyId={_companyId}").Get("$")
-                .FirstOrDefault().ToList();
+                .FirstOrDefault()?.ToList();
             var regionsFromPooling = Get<JObject>("slots/filters").GetValue("regions").ToList();
 
             foreach (var warehouse in warehousesFromPooling)
@@ -230,7 +224,7 @@ namespace Integrations.Pooling
                 var regionId = warehouse.Value<string>("regionId");
                 var name = warehouse.Value<string>("name");
                 var region = regionsFromPooling
-                    .FirstOrDefault(_ => _.Value<string>("id") == regionId).Value<string>("name");
+                    .FirstOrDefault(_ => _.Value<string>("id") == regionId)?.Value<string>("name");
                 var address = warehouse["addressInfo"].Value<string>("address");
 
                 var existedShippingWarehouse =
