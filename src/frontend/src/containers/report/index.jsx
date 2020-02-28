@@ -42,7 +42,7 @@ const Report = () => {
                 extraSettings={{
                     filterPaneEnabled: !isMobile,
                     navContentPaneEnabled: !isMobile,
-                    layoutType: 2,
+                    layoutType: isMobile ? 2 : 0,
                 }}
                 permissions="All"
                 style={{
