@@ -31,10 +31,10 @@ namespace Application.Services.Report
 
             return GenerateReport(oAuthResult.AccessToken, 
                 Guid.Parse("8ac687eb-c107-4b44-a0ec-21aab341e752"), 
-                reportId);//"f9896a49-c76f-44f4-92ea-441c7662bd5f"
+                reportId, provider.ReportPageNameForMobile);//"f9896a49-c76f-44f4-92ea-441c7662bd5f"
         }
         
-        public static EmbeddedReportConfig GenerateReport(string token, Guid groupId, Guid reportId)
+        public static EmbeddedReportConfig GenerateReport(string token, Guid groupId, Guid reportId, string reportPageNameForMobile)
         {
             EmbeddedReportConfig config = null;
             var tokenCredentials = new TokenCredentials(token, "Bearer");
@@ -62,6 +62,7 @@ namespace Application.Services.Report
                     config.Token = embedtoken?.Token;
                     config.TokenID = embedtoken?.TokenId.ToString();
                     config.Expiration = embedtoken?.Expiration;
+                    config.PageName = reportPageNameForMobile;
                 }
 
             }

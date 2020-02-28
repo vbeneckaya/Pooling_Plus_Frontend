@@ -38,6 +38,7 @@ namespace Application.Services.Providers
             entity.ContactPhone = dto.ContactPhone;
             entity.Email = dto.Email;
             entity.ReportId = dto.ReportId;
+            entity.ReportPageNameForMobile = dto.ReportPageNameForMobile;
             entity.IsActive = dto.IsActive.GetValueOrDefault(true);
 
             return null;
@@ -57,6 +58,7 @@ namespace Application.Services.Providers
                 ContactPhone = entity.ContactPhone,
                 Email = entity.Email,
                 ReportId = entity.ReportId,
+                ReportPageNameForMobile = entity.ReportPageNameForMobile,
                 IsActive = entity.IsActive
             };
         }
