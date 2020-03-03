@@ -1,6 +1,4 @@
-﻿using Domain.Services.Permissions;
-using Domain.Services.Roles;
-using System.Collections.Generic;
+﻿using Domain.Services.Roles;
 
 namespace Domain.Services.Identity
 {

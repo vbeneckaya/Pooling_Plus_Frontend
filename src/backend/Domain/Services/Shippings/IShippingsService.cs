@@ -8,6 +8,7 @@ namespace Domain.Services.Shippings
     public interface IShippingsService : IGridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>
     {
         IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto);
+        IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto);
         Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto);
         ImportResultDto ImportFormsFromExcel(Stream fileStream);
     }

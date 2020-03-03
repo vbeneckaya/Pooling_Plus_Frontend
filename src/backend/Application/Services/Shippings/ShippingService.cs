@@ -106,6 +106,25 @@ namespace Application.Services.Shippings
             return result;
         }
 
+        public IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto)
+        {
+            var dbSet = _dataService.GetDbSet<Shipping>();
+            List<Shipping> entities;
+            if (dto.IsPartial)
+            {
+                entities = dbSet.Where(x =>
+                    x.PoolingReservationId.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            }
+            else
+            {
+                entities = dbSet.Where(x => x.PoolingReservationId == dto.Number).ToList();
+            }
+
+            var result = entities.Select(MapFromEntityToFormDto);
+            return result;
+        }
+
+
         public override IQueryable<Shipping> ApplyRestrictions(IQueryable<Shipping> query)
         {
             var currentUserId = _userIdProvider.GetCurrentUserId();
@@ -338,6 +357,7 @@ namespace Application.Services.Shippings
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.PoolingReservationId, e => e.MapFrom((s, t) => s.PoolingReservationId.ToString()))
                     .ForMember(t => t.ShippingNumber,
                         e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber, s.Id.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
@@ -400,7 +420,7 @@ namespace Application.Services.Shippings
 
         private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
-            shipping.Status = ShippingState.ShippingCreated;
+            shipping.Status = shipping.Status ?? ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = DateTime.UtcNow;
             shipping.ShippingNumber = shipping.ShippingNumber ?? ShippingNumberProvider.GetNextShippingNumber();
             shipping.DeliveryType = DeliveryType.Delivery;

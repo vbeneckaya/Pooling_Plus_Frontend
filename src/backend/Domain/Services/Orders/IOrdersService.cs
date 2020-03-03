@@ -15,5 +15,7 @@ namespace Domain.Services.Orders
         OrderFormDto MapFromShippingOrderDtoToFormDto(ShippingOrderDto shippingOrderDto);
 
         void MapFromDtoToEntity(Order entity, OrderDto dto);
+        
+        OrderFormDto MapFromDtoToFormDto(OrderDto dto);
     }
 }

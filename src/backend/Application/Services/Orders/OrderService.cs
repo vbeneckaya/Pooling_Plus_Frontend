@@ -361,7 +361,12 @@ namespace Application.Services.Orders
             }
         }
 
-         protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
+        public OrderFormDto MapFromDtoToFormDto(OrderDto dto)
+        {
+            return _mapper.Map<OrderDto,OrderFormDto>(dto);
+        }
+
+        protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -534,6 +539,7 @@ namespace Application.Services.Orders
             order.DeliveryStatus = VehicleState.VehicleEmpty;
 
             var user = _userIdProvider.GetCurrentUser();
+            order.UserCreatorId = user.Id;
             if (user?.CarrierId != null)
             {
                 order.CarrierId = user.CarrierId;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Domain.Shared;
 
 namespace Domain.Services.ShippingWarehouses
 {
@@ -7,5 +9,8 @@ namespace Domain.Services.ShippingWarehouses
         Persistables.ShippingWarehouse GetByCode(string code);
         
         ShippingWarehouseDto GetByNameAndProviderId(string name, Guid providerId);
+        
+        IEnumerable<LookUpDto> ForSelect(Guid providerId);
+        
     }
 }

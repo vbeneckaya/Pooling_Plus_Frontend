@@ -18,6 +18,7 @@ using Application.Services.Warehouses;
 using Application.Services.Providers;
 using DAL.Services;
 using Domain.Enums;
+using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services.AppConfiguration;
 using Domain.Services.BodyTypes;
@@ -146,8 +147,6 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
-            if (user == null || user != null && !user.ProviderId.HasValue)
-            {
                 _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
                 {
                     var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
@@ -156,6 +155,10 @@ namespace Application.Services.AppConfiguration
                     if (!canViewTariffs && !canEditTariffs) return null;
 
                     var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+                    
+                    var role = _dataService.GetById<Role>(roleId.Value);
+                    if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                        columns = columns.Where(x => x.Name != nameof(Tariff.ProviderId).ToLowerFirstLetter());
 
                     return new UserConfigurationDictionaryItem
                     {
@@ -177,6 +180,9 @@ namespace Application.Services.AppConfiguration
 
                     if (!canEditShippingWarehouses) return null;
                     var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                    var role = _dataService.GetById<Role>(roleId.Value);
+                    if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                        columns = columns.Where(x => x.Name != nameof(ShippingWarehouseDto.ProviderId).ToLowerFirstLetter());
 
                     return new UserConfigurationDictionaryItem
                     {
@@ -188,50 +194,7 @@ namespace Application.Services.AppConfiguration
                         Columns = columns
                     };
                 });
-            }
-            else
-            {
-                _dictionaryConfigurations.Add(typeof(TariffDtoForProvider), (roleId) =>
-                {
-                    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-                    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
 
-                    if (!canViewTariffs && !canEditTariffs) return null;
-
-                    var columns = ExtractColumnsFromDto<TariffDtoForProvider>(roleId);
-
-                    return new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<TariffsService>(),
-                        CanCreateByForm = canEditTariffs,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = canEditTariffs,
-                        CanDelete = true,
-                        ShowOnHeader = true,
-                        Columns = columns
-                    };
-                });
-                
-                _dictionaryConfigurations.Add(typeof(ShippingWarehouseDtoForProvider), (roleId) =>
-                {
-                    var canEditShippingWarehouses =
-                        _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
-                    var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
-
-                    if (!canEditShippingWarehouses) return null;
-                    var columns = ExtractColumnsFromDto<ShippingWarehouseDtoForProvider>(roleId);
-
-                    return new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<ShippingWarehousesService>(),
-                        CanCreateByForm = canEditWarehouses,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = columns
-                    };
-                });
-            }
             //_dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
             //{
             //    var canEditArticles = _identityService.HasPermissions(RolePermissions.ArticlesEdit);

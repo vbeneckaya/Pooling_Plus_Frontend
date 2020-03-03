@@ -134,6 +134,8 @@ namespace Domain.Services.Shippings
         [DisplayNameKey("Pooling.Info")]
         [FieldType(FieldType.BigText), IsReadOnly]
         public string PoolingInfo { get; set; }
+        
+        public string PoolingReservationId { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByShipper { get; set; }

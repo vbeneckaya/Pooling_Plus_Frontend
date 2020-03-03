@@ -4,10 +4,15 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
+using Domain.Services.Clients;
+using Domain.Services.Orders;
 using Domain.Services.Profile;
+using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
+using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
+using Domain.Services.Warehouses;
 using Domain.Shared;
 using Integrations.Pooling;
 
@@ -22,14 +27,38 @@ namespace Application.Services.Profile
         private readonly IValidationService _validationService;
 
         private readonly IShippingWarehousesService _shippingWarehousesService;
+        
+        private readonly IWarehousesService _warehousesService;
+        
+        private readonly IShippingsService _shippingsService;
+        
+        private readonly IOrdersService _ordersService;
+        
+        private readonly IClientsService _clientsService;
 
-        public ProfileService(IUserProvider userProvider, ICommonDataService dataService,
-            IValidationService validationService, IShippingWarehousesService shippingWarehousesService)
+        private readonly ITransportCompaniesService _transportCompaniesService;
+
+        public ProfileService(
+            IUserProvider userProvider, 
+            ICommonDataService dataService,
+            IValidationService validationService, 
+            IShippingWarehousesService shippingWarehousesService,
+            IWarehousesService warehousesService,
+            IShippingsService shippingsService,
+            IOrdersService ordersService,
+            IClientsService clientsService,
+            ITransportCompaniesService transportCompaniesService
+            )
         {
             _userProvider = userProvider;
             _dataService = dataService;
             _validationService = validationService;
             _shippingWarehousesService = shippingWarehousesService;
+            _warehousesService = warehousesService;
+            _ordersService = ordersService;
+            _shippingsService = shippingsService;
+            _clientsService = clientsService;
+            _transportCompaniesService = transportCompaniesService;
         }
 
         public ProfileDto GetProfile()
@@ -92,7 +121,15 @@ namespace Application.Services.Profile
 
                 if (!string.IsNullOrEmpty(dto.PoolingLogin) && !string.IsNullOrEmpty(dto.PoolingPassword))
                 {
-                    using (var pooling = new PoolingIntegration(user, _dataService, _shippingWarehousesService))
+                    using (var pooling = new PoolingIntegration(user, 
+                        _dataService, 
+                        _shippingWarehousesService, 
+                        _shippingsService, 
+                        _ordersService,
+                        _warehousesService,
+                        _clientsService,
+                        _transportCompaniesService
+                        ))
                         pooling.Init();
                 }
             }

@@ -47,7 +47,7 @@ namespace Application.BusinessModels.Orders.Actions
 
         public AppActionResult Run(CurrentUserDto user, IEnumerable<Order> orders)
         {
-            var shippingId = orders.Single(x => x.Status == OrderState.InShipping).ShippingId;
+            var shippingId = orders.FirstOrDefault(x => x.Status == OrderState.InShipping)?.ShippingId;
 
             orders = orders.Where(x => x.Status == OrderState.Created).ToList();
 
@@ -114,9 +114,16 @@ namespace Application.BusinessModels.Orders.Actions
 
         public bool IsAvailable(IEnumerable<Order> target)
         {
-            return // target.Count() > 1 && 
-                   target.Count(x => x.Status == OrderState.InShipping) == 1 &&
-            target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
+
+            var cond1 = target.Count(x => x.Status == OrderState.InShipping) >= 1;
+            var cond2 = target.Select(x => x.ShippingId).Distinct();
+            var cond3 =target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
+
+            return  cond2.Count() == 1  && cond3;
+//            return // target.Count() > 1 && 
+//                   target.Count(x => x.Status == OrderState.InShipping) >= 1 && 
+//                   target.Select(x => x.ShippingId).Distinct().Count() == 1 &&
+//            target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
 //            return target.All(x => x.Status == OrderState.InShipping || x.Status == OrderState.Created);
         }
     }
