@@ -295,7 +295,10 @@ namespace Application.Services.AppConfiguration
 
                 var role = _dataService.GetById<Role>(roleId.Value);
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                    columns = columns.Where(x => x.Name != nameof(Provider.ReportId));
+                    columns = columns.Where(x => 
+                        x.Name != nameof(Provider.ReportId) &&
+                        x.Name != nameof(Provider.ReportPageNameForMobile)
+                        );
 
                 return new UserConfigurationDictionaryItem
                 {

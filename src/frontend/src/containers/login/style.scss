@@ -9,6 +9,10 @@
     right: 0;
 
     margin: auto;
+
+    .ui.grid {
+        margin: 0!important;
+    }
 }
 
 .login-form-wrapper {
