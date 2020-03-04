@@ -90,8 +90,9 @@ const Header = ({
             );
     };
 
-    const getRepresentations = () => {
-        dispatch(getRepresentationsRequest({key: name}));
+    const getRepresentations = (payload) => {
+        const {representationToSetName} = payload;
+        dispatch(getRepresentationsRequest({key: name, representationToSetName: representationToSetName}));
     };
 
     const changeRepresentation = (key, isEdit) => {

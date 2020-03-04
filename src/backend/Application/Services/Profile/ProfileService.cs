@@ -26,39 +26,15 @@ namespace Application.Services.Profile
 
         private readonly IValidationService _validationService;
 
-        private readonly IShippingWarehousesService _shippingWarehousesService;
-        
-        private readonly IWarehousesService _warehousesService;
-        
-        private readonly IShippingsService _shippingsService;
-        
-        private readonly IOrdersService _ordersService;
-        
-        private readonly IClientsService _clientsService;
-
-        private readonly ITransportCompaniesService _transportCompaniesService;
-
         public ProfileService(
             IUserProvider userProvider, 
             ICommonDataService dataService,
-            IValidationService validationService, 
-            IShippingWarehousesService shippingWarehousesService,
-            IWarehousesService warehousesService,
-            IShippingsService shippingsService,
-            IOrdersService ordersService,
-            IClientsService clientsService,
-            ITransportCompaniesService transportCompaniesService
+            IValidationService validationService
             )
         {
             _userProvider = userProvider;
             _dataService = dataService;
             _validationService = validationService;
-            _shippingWarehousesService = shippingWarehousesService;
-            _warehousesService = warehousesService;
-            _ordersService = ordersService;
-            _shippingsService = shippingsService;
-            _clientsService = clientsService;
-            _transportCompaniesService = transportCompaniesService;
         }
 
         public ProfileDto GetProfile()
@@ -80,7 +56,7 @@ namespace Application.Services.Profile
                 PoolingLogin = user.PoolingLogin,
                 PoolingPassword = user.PoolingPassword,
                 FmCPLogin = user.FmCPLogin,
-                FmCPPassword = user.FmCPPassword,
+                FmCPPassword = user.FmCPPassword
             };
         }
 
@@ -122,14 +98,7 @@ namespace Application.Services.Profile
                 if (!string.IsNullOrEmpty(dto.PoolingLogin) && !string.IsNullOrEmpty(dto.PoolingPassword))
                 {
                     using (var pooling = new PoolingIntegration(user, 
-                        _dataService, 
-                        _shippingWarehousesService, 
-                        _shippingsService, 
-                        _ordersService,
-                        _warehousesService,
-                        _clientsService,
-                        _transportCompaniesService
-                        ))
+                        _dataService))
                         pooling.Init();
                 }
             }

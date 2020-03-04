@@ -53,11 +53,15 @@ namespace Integrations.Pooling
                 password = user.PoolingPassword
             });
 
-            _accessToken = identityData
-                .Get("accessToken");
+            if (identityData != null)
+            {
 
-            _companyId = identityData
-                .Get("$.userData.companyId");
+                _accessToken = identityData
+                    .Get("accessToken");
+
+                _companyId = identityData
+                    .Get("$.userData.companyId");
+            }
 
             _shippingWarehouseService = shippingWarehousesService;
 
@@ -239,14 +243,11 @@ namespace Integrations.Pooling
         public void Init()
         {
             LoadShippingWarehouses();
-            LoadShippingsAndOrdersFromReports();
         }
 
 
-        private void LoadShippingsAndOrdersFromReports()
+        public void LoadShippingsAndOrdersFromReports()
         {
-            if (!_user.ProviderId.HasValue) return;
-
             var startDate = DateTime.Today.AddMonths(-3);
 
             var endDate = DateTime.Today.AddDays(14);
