@@ -1,7 +1,7 @@
-import { createSelector } from 'reselect';
-import { all, put, select, takeEvery } from 'redux-saga/effects';
-import { columnsGridSelector } from './gridList';
-import { postman } from '../utils/postman';
+import {createSelector} from 'reselect';
+import {all, put, select, takeEvery} from 'redux-saga/effects';
+import {columnsGridSelector} from './gridList';
+import {postman} from '../utils/postman';
 
 //*  TYPES  *//
 const GET_REPRESENTATIONS_REQUEST = 'GET_REPRESENTATIONS_REQUEST';
@@ -40,28 +40,40 @@ const initial = {
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload = {} }) => {
-    const { gridName, name, value, oldName } = payload;
+export default (state = initial, {type, payload = {}}) => {
+    const {gridName, name, value, oldName, list} = payload;
 
     switch (type) {
         case GET_REPRESENTATIONS_SUCCESS:
-            return {
+            if (gridName && name) {
+                let res = {
+                    ...state,
+                    list: list,
+                    representation: {
+                        ...state.list[name],
+                        [gridName]: name,
+                    },
+                };
+                return res;
+            }
+            else return {
                 ...state,
-                list: payload,
+                list: list
             };
         case GET_DEFAULT_REPRESENTATION_SUCCESS:
             return {
                 ...state,
                 defaultRepresentation: payload,
-            };    
+            };
         case SET_REPRESENTATION:
-            return {
+            let res = {
                 ...state,
                 representation: {
                     ...state.representation,
                     [gridName]: value,
                 },
             };
+            return res;
         case SET_DEFAULT_REPRESENTATION:
             return {
                 ...state,
@@ -69,7 +81,7 @@ export default (state = initial, { type, payload = {} }) => {
                     ...state.defaultRepresentation,
                     [gridName]: value,
                 },
-            };    
+            };
         default:
             return state;
     }
@@ -139,21 +151,21 @@ export const representationSelector = createSelector(
     (state, gridName, columnList) => {
         const representationName = state.representation && state.representation[gridName];
         const representation = !!representationName ? state.list[representationName] : (!!state.defaultRepresentation ? state.defaultRepresentation[null] : []);
-        
+
         const actualRepresentation = [];
 
-        representation &&   columnList &&
-            representation.forEach(item => {
-                const actualItem = columnList.find(column => column.name === item.name);
-                if (actualItem) {
-                    actualRepresentation.push({
-                        ...actualItem,
-                        width: item.width,
-                        filter: item.filter,
-                        sort: item.sort,
-                    });
-                }
-            });
+        representation && columnList &&
+        representation.forEach(item => {
+            const actualItem = columnList.find(column => column.name === item.name);
+            if (actualItem) {
+                actualRepresentation.push({
+                    ...actualItem,
+                    width: item.width,
+                    filter: item.filter,
+                    sort: item.sort,
+                });
+            }
+        });
         return actualRepresentation;
     },
 );
@@ -177,32 +189,35 @@ export const representationFromGridSelector = createSelector(
 
 //*  SAGA  *//
 
-function* getRepresentationsSaga({ payload }) {
+function* getRepresentationsSaga({payload}) {
     try {
-        const { key, callBackFunc } = payload;
+        const {key, representationToSetName, callBackFunc} = payload;
         const resultForDefault = yield postman.get(`/userSettings/default/${key}`);
 
         yield put({
             type: GET_DEFAULT_REPRESENTATION_SUCCESS,
             payload: resultForDefault.value ? JSON.parse(resultForDefault.value) : {},
         });
-        
-        const result = yield postman.get(`/userSettings/${key}`);
 
+        const result = yield postman.get(`/userSettings/${key}`);
         yield put({
             type: GET_REPRESENTATIONS_SUCCESS,
-            payload: result.value ? JSON.parse(result.value) : {},
+            payload: {
+                list:
+                    result.value ? JSON.parse(result.value) : {},
+                gridName: key,
+                name: representationToSetName
+            },
         });
 
-        
-        
-       // const columns = yield select(state => representationFromGridSelector(state, key));
+
+        // const columns = yield select(state => representationFromGridSelector(state, key));
         const state = yield select(state => state.representations.defaultRepresentation[null]);
         localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
 
         callBackFunc && callBackFunc(state);
 
-       // getDefaultRepresentationSaga(payload);
+        // getDefaultRepresentationSaga(payload);
     } catch (e) {
         yield put({
             type: GET_REPRESENTATIONS_ERROR,
@@ -211,9 +226,9 @@ function* getRepresentationsSaga({ payload }) {
     }
 }
 
-function* saveRepresentationSaga({ payload }) {
+function* saveRepresentationSaga({payload}) {
     try {
-        const { callbackSuccess, key, name, isDefault, value } = payload;
+        const {callbackSuccess, key, name, isDefault, value} = payload;
         const list = yield select(representationsSelector);
 
         const params = {
@@ -223,7 +238,7 @@ function* saveRepresentationSaga({ payload }) {
             })),
         };
 
-        const result = yield postman.post(`/userSettings/${isDefault?'default/':''}${key}`, {
+        const result = yield postman.post(`/userSettings/${isDefault ? 'default/' : ''}${key}`, {
             value: JSON.stringify(params),
         });
 
@@ -239,9 +254,9 @@ function* saveRepresentationSaga({ payload }) {
     }
 }
 
-function* editRepresentationSaga({ payload }) {
+function* editRepresentationSaga({payload}) {
     try {
-        const { callbackSuccess, key, name, isDefault, value, oldName } = payload;
+        const {callbackSuccess, key, name, isDefault, value, oldName} = payload;
         const list = yield select(representationsSelector);
 
         let params = {};
@@ -260,20 +275,25 @@ function* editRepresentationSaga({ payload }) {
             [name]: value,
         };
 
-        const result = yield postman.post(`/userSettings/${isDefault?'default/':''}${key}`, {
+        const result = yield postman.post(`/userSettings/${isDefault ? 'default/' : ''}${key}`, {
             value: JSON.stringify(params),
         });
 
-        if (!isDefault )
-            yield put({
-                type: EDIT_REPRESENTATION_SUCCESS,
-        });
-        else
-            yield put({
-                type: EDIT_DEFAULT_REPRESENTATION_SUCCESS,});
-        
+        // if (!isDefault) {
+        //     if (name != oldName)
+        //
+        //         yield put({
+        //             type: EDIT_REPRESENTATION_SUCCESS,
+        //             payload: {gridName: key, value: name}
+        //         });
+        // }
+        // else
+        //     yield put({
+        //         type: EDIT_DEFAULT_REPRESENTATION_SUCCESS,
+        //     });
+
         callbackSuccess && callbackSuccess();
-        
+
     } catch (e) {
         yield put({
             type: EDIT_REPRESENTATION_ERROR,
@@ -282,9 +302,9 @@ function* editRepresentationSaga({ payload }) {
     }
 }
 
-function* deleteRepresentationSaga({ payload }) {
+function* deleteRepresentationSaga({payload}) {
     try {
-        const { callbackSuccess, key, name } = payload;
+        const {callbackSuccess, key, name} = payload;
         const list = yield select(representationsSelector);
 
         let params = {};
@@ -315,7 +335,7 @@ function* deleteRepresentationSaga({ payload }) {
     }
 }
 
-function* setRepresentationSaga({ payload }) {
+function* setRepresentationSaga({payload}) {
     try {
         const {gridName, value} = payload;
         if (!value) {
@@ -327,17 +347,17 @@ function* setRepresentationSaga({ payload }) {
             const state = yield select(state => state.representations.representation);
             localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
 
-        }else{
+        } else {
             yield put(
                 getDefaultRepresentationRequest({
                     key: gridName,
                 }),
             );
             const state = yield select(state => state.representations.defaultRepresentation);
-            localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state)); 
+            localStorage.setItem(REPRESENTATION_KEY, JSON.stringify(state));
         }
 
-        const { callbackSuccess } = payload;
+        const {callbackSuccess} = payload;
         setTimeout(() => {
             callbackSuccess && callbackSuccess();
         }, 500);
