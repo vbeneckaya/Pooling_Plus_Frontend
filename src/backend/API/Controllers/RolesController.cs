@@ -10,6 +10,7 @@ using System.Collections.Generic;
 namespace API.Controllers
 {
     [Route("api/roles")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class RolesController : DictionaryController<IRolesService, Role, RoleDto>
     {
         public RolesController(IRolesService rolesService) : base(rolesService)
