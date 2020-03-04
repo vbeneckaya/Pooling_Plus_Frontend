@@ -142,11 +142,11 @@ const Header = () => {
                             </Menu.Menu>
                         ) : null}
                         <div className="header-support">
-                            <Icon name="question circle" />
+                           {/* <Icon name="question circle" />
                             <div className="header-support_contacts">
                                 <a href="mailto:support@artlogics.ru">support@artlogics.ru</a>
                                 <div>{t('support_work_time')}</div>
-                            </div>
+                            </div>*/}
                             {userName && userRole ? (
                                 <Menu.Menu>
                                     <Dropdown text={`${userName} (${userRole})`} item>
