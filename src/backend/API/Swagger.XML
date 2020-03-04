@@ -111,7 +111,7 @@
         </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            ����� �� ������
+            Найти по номеру
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
@@ -207,6 +207,7 @@
             <summary>
             Экспортировать в excel
             </summary>
+            <response code="200">Returns the requested file</response>
         </member>
         <member name="M:API.Controllers.Shared.DictionaryController`3.SaveOrCreate(`2)">
             <summary>

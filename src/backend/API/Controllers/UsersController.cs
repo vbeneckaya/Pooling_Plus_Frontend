@@ -8,6 +8,7 @@ using System;
 namespace API.Controllers
 {
     [Route("api/users")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class UsersController : DictionaryController<IUsersService, User, UserDto>
     {
         /// <summary>

@@ -14,6 +14,7 @@ namespace API.Controllers
     /// Настройка полей
     /// </summary>    
     [Route("api/fieldProperties")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class FieldPropertiesController : Controller
     {
         private readonly IFieldPropertiesService fieldPropertiesService;

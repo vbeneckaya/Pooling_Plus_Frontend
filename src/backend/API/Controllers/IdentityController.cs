@@ -19,6 +19,7 @@ namespace API.Controllers
         /// Получение информации о пользователе
         /// </summary>
         [HttpGet("userInfo")] 
+        [ProducesResponseType(typeof(UserInfo), 200)]
         public IActionResult UserInfo()
         {
             try
@@ -41,6 +42,7 @@ namespace API.Controllers
         /// Авторизация, получение токена для логина и пароля
         /// </summary>
         [HttpPost("login")]
+        [ProducesResponseType(typeof(TokenModel), 200)]
         public IActionResult Login([FromBody]IdentityModel model)
         {
             try

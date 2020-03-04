@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/report")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     //[HasPermission(RolePermissions.Report)]
     public class ReportController : Controller
     {

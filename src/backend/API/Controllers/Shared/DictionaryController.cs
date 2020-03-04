@@ -94,6 +94,7 @@ namespace API.Controllers.Shared
         /// <summary>
         /// Экспортировать в excel
         /// </summary>
+        /// <response code="200">Returns the requested file</response>
         [HttpPost("exportToExcel"), DisableRequestSizeLimit]
         public IActionResult ExportToExcel([FromBody]SearchFormDto form)
         {
