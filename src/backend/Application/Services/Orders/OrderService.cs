@@ -254,7 +254,7 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber,s.Id.ToString())))
+                    .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber ?? "", s.Id.ToString())))
                     .ForMember(t => t.ShippingNumber, e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber,s.ShippingId.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
