@@ -113,12 +113,12 @@ namespace API
                     template: "api/{controller}/{action}");
             });
 
-            app.UseSwagger();
+            app.UseSwagger(config => { config.RouteTemplate = "api/swagger/{documentName}/swagger.json"; });
             app.UseSwaggerUI(c =>
             {
                 string version = GetMajorVersion();
-                c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
-                c.RoutePrefix = "swagger";
+                c.SwaggerEndpoint($"/api/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
+                c.RoutePrefix = "api/swagger";
             });
 
             lifetime.ApplicationStopped.Register(OnAppStopped);
