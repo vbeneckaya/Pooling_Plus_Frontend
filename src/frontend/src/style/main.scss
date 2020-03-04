@@ -39,6 +39,10 @@ i.blue.icon {
 .report-container {
     padding: 40px 0 0 0;
     position: relative;
+
+    iframe {
+        border: none!important;
+    }
 }
 
 .Toastify__toast {
