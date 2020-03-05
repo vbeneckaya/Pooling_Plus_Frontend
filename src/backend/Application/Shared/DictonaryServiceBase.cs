@@ -25,6 +25,7 @@ namespace Application.Shared
     public abstract class DictionaryServiceBase<TEntity, TListDto> where TEntity : class, IPersistable, new() where TListDto: IDto, new()
     {
         public abstract DetailedValidationResult MapFromDtoToEntity(TEntity entity, TListDto dto);
+        
         public abstract TListDto MapFromEntityToDto(TEntity entity);
 
 
