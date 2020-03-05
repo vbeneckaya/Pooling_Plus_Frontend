@@ -56,6 +56,11 @@ namespace Domain.Persistables
         /// Email
         /// </summary>
         public string Email { get; set; }
+        
+        /// <summary>
+        /// Id отчета Power BI
+        /// </summary>
+        public string ReportId { get; set; }	
 
         /// <summary>
         /// Активен
