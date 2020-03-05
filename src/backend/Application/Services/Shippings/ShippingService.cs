@@ -353,7 +353,6 @@ namespace Application.Services.Shippings
 
                 cfg.CreateMap<Shipping, ShippingDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.PoolingReservationId, e => e.MapFrom((s, t) => s.PoolingReservationId.ToString()))
                     .ForMember(t => t.ShippingNumber,
                         e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber, s.Id.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status?.ToString()?.ToLowerFirstLetter()))
