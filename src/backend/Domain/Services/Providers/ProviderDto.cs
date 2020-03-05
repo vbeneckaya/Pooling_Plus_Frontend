@@ -40,6 +40,9 @@ namespace Domain.Services.Providers
 
         [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; } = true;
+        
+        [FieldType(FieldType.Boolean), OrderNumber(12)]
+        public bool IsPoolingIntegrated { get; set; }
 
         public bool IsEditable { get; set; }
     }

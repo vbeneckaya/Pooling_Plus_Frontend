@@ -41,14 +41,12 @@ namespace Application.Services.Shippings
         GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IMapper _mapper;
+        
         private readonly IHistoryService _historyService;
 
         private readonly IOrdersService _ordersService;
 
         private readonly IChangeTrackerFactory _changeTrackerFactory;
-
-        private readonly IGroupAppAction<Order> _unionOrdersAction;
-
 
         public ShippingsService(
             IHistoryService historyService,
@@ -61,8 +59,7 @@ namespace Application.Services.Shippings
             IValidationService validationService,
             IFieldSetterFactory fieldSetterFactory,
             IChangeTrackerFactory changeTrackerFactory,
-            IOrdersService ordersService,
-            IGroupAppAction<Order> unionOrdersAction
+            IOrdersService ordersService
         )
             : base(dataService, userIdProvider, fieldDispatcherService, fieldPropertiesService, serviceProvider,
                 triggersService, validationService, fieldSetterFactory)
@@ -71,7 +68,6 @@ namespace Application.Services.Shippings
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
             _ordersService = ordersService;
-            _unionOrdersAction = unionOrdersAction;
         }
 
         public override LookUpDto MapFromEntityToLookupDto(Shipping entity)
@@ -396,8 +392,15 @@ namespace Application.Services.Shippings
             _mapper.Map(dto, entity);
 
             IEnumerable<string> readOnlyFields = null;
-            var currentUser = _userIdProvider.GetCurrentUser();
             
+            var currentUser = _userIdProvider.GetCurrentUser();
+            if (currentUser.Id == null)
+            {
+                currentUser.Id = _dataService.GetDbSet<User>().FirstOrDefault(_ =>
+                    _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
+            }
+            
+
             if (!isNew)
             {
                 if (currentUser != null)
@@ -421,10 +424,10 @@ namespace Application.Services.Shippings
         private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
             shipping.Status = shipping.Status ?? ShippingState.ShippingCreated;
-            shipping.ShippingCreationDate = DateTime.UtcNow;
+            shipping.ShippingCreationDate = shipping.ShippingCreationDate ?? DateTime.UtcNow;
             shipping.ShippingNumber = shipping.ShippingNumber ?? ShippingNumberProvider.GetNextShippingNumber();
             shipping.DeliveryType = DeliveryType.Delivery;
-            shipping.UserCreatorId = currentUser.Id;
+            shipping.UserCreatorId = currentUser?.Id;
 
             if (currentUser?.CarrierId != null)
             {
