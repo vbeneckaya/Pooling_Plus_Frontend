@@ -256,6 +256,12 @@ namespace Application.Services.AppConfiguration
                 if (!canEditTransportCompanies) return null;
 
                 var columns = ExtractColumnsFromDto<TransportCompanyDto>(roleId);
+                
+                var role = _dataService.GetById<Role>(roleId.Value);
+                
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x => x.Name != nameof(TransportCompany.ReportId).ToLowerFirstLetter() );
+                
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TransportCompaniesService>(),
@@ -274,6 +280,12 @@ namespace Application.Services.AppConfiguration
                 if (!canEditClients) return null;
 
                 var columns = ExtractColumnsFromDto<ClientDto>(roleId);
+                
+                var role = _dataService.GetById<Role>(roleId.Value);
+                
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x => x.Name != nameof(Client.ReportId).ToLowerFirstLetter() );
+                
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ClientsService>(),
@@ -294,10 +306,11 @@ namespace Application.Services.AppConfiguration
                 var columns = ExtractColumnsFromDto<ProviderDto>(roleId);
 
                 var role = _dataService.GetById<Role>(roleId.Value);
+                
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
                     columns = columns.Where(x => 
-                        x.Name != nameof(Provider.ReportId) &&
-                        x.Name != nameof(Provider.ReportPageNameForMobile)
+                        x.Name != nameof(Provider.ReportId).ToLowerFirstLetter() &&
+                        x.Name != nameof(Provider.ReportPageNameForMobile).ToLowerFirstLetter()
                         );
 
                 return new UserConfigurationDictionaryItem
