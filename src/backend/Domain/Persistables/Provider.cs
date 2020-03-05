@@ -24,10 +24,14 @@ namespace Domain.Persistables
         public string ContactPhone { get; set; }
         
         public string Email { get; set; }
+        
         public string ReportId { get; set; }		
+
         public string ReportPageNameForMobile { get; set; }		
 
         public bool IsActive { get; set; } = true;
+        
+        public bool IsPoolingIntegrated { get; set; }
 
         public override string ToString()
         {

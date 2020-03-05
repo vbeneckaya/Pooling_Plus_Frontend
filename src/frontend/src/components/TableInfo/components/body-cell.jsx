@@ -1,6 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
 import CellValue from '../../ColumnsValue';
-import TextCropping from '../../ColumnsValue/TextCropping';
 
 const BodyCellComponent = ({
                                column,

@@ -533,24 +533,31 @@ namespace Application.Services.Orders
         {
             order.IsActive = true;
             order.Status = order.ShippingId.HasValue ? OrderState.InShipping : OrderState.Created;
-            order.OrderCreationDate = DateTime.UtcNow;
+            order.OrderCreationDate = order.OrderCreationDate ?? DateTime.UtcNow;
             order.OrderChangeDate = DateTime.UtcNow;
             order.ShippingStatus = VehicleState.VehicleEmpty;
             order.DeliveryStatus = VehicleState.VehicleEmpty;
 
-            var user = _userIdProvider.GetCurrentUser();
-            order.UserCreatorId = user.Id;
-            if (user?.CarrierId != null)
+            var currentUser = _userIdProvider.GetCurrentUser();
+            if (currentUser.Id == null)
             {
-                order.CarrierId = user.CarrierId;
+                currentUser.Id = _dataService.GetDbSet<User>().FirstOrDefault(_ =>
+                    _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
             }
-            if (user?.ProviderId != null)
+            
+            
+            order.UserCreatorId = currentUser.Id;
+            if (currentUser?.CarrierId != null)
             {
-                order.ProviderId = user.ProviderId;
+                order.CarrierId = currentUser.CarrierId;
             }
-            if (user?.ClientId != null)
+            if (currentUser?.ProviderId != null)
             {
-                order.ClientId = user.ClientId;
+                order.ProviderId = currentUser.ProviderId;
+            }
+            if (currentUser?.ClientId != null)
+            {
+                order.ClientId = currentUser.ClientId;
             }
         }
 

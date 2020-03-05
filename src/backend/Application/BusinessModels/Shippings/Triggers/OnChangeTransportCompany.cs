@@ -38,10 +38,10 @@ namespace Application.BusinessModels.Shippings.Triggers
                     TransportCompany newCarrier = null;
 
                     if (orderInShipping.CarrierId.HasValue)
-                        oldCarrier = transportCompanies.GetById(orderInShipping.VehicleTypeId.Value);
+                        oldCarrier = transportCompanies.GetById(orderInShipping.VehicleTypeId.GetValueOrDefault());
 
                     if (entity.VehicleTypeId.HasValue)
-                        newCarrier = transportCompanies.GetById(entity.VehicleTypeId.Value);
+                        newCarrier = transportCompanies.GetById(entity.VehicleTypeId.GetValueOrDefault());
 
                     orderInShipping.CarrierId = entity.CarrierId;
 
