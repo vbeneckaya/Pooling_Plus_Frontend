@@ -529,7 +529,7 @@ namespace Application.Services.Orders
             };
         }
 
-        private void InitializeNewOrder(Order order, bool isInjection)
+        public void InitializeNewOrder(Order order, bool isInjection = false)
         {
             order.IsActive = true;
             order.Status = order.ShippingId.HasValue ? OrderState.InShipping : OrderState.Created;
@@ -545,8 +545,8 @@ namespace Application.Services.Orders
                     _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
             }
             
-            
             order.UserCreatorId = currentUser.Id;
+            
             if (currentUser?.CarrierId != null)
             {
                 order.CarrierId = currentUser.CarrierId;

@@ -76,7 +76,7 @@ namespace Domain.Services.Shippings
         public decimal? ReturnCostWithoutVAT { get; set; }
 
         [FieldType(FieldType.Number)]
-        public decimal? InvoiceAmountWithoutVAT { get; set; }
+        public decimal? InvoiceAmount { get; set; }
 
         [FieldType(FieldType.Number)]
         public decimal? AdditionalCostsWithoutVAT { get; set; }

@@ -17,5 +17,7 @@ namespace Domain.Services.Orders
         void MapFromDtoToEntity(Order entity, OrderDto dto);
         
         OrderFormDto MapFromDtoToFormDto(OrderDto dto);
+
+        void InitializeNewOrder(Order order, bool isInjection = false);
     }
 }

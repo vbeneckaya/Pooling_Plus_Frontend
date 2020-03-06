@@ -4,15 +4,10 @@ using DAL.Services;
 using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
-using Domain.Services.Clients;
-using Domain.Services.Orders;
 using Domain.Services.Profile;
-using Domain.Services.Shippings;
 using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
-using Domain.Services.TransportCompanies;
 using Domain.Services.UserProvider;
-using Domain.Services.Warehouses;
 using Domain.Shared;
 using Integrations.Pooling;
 
@@ -25,16 +20,20 @@ namespace Application.Services.Profile
         private readonly ICommonDataService _dataService;
 
         private readonly IValidationService _validationService;
-
+        
+        private readonly IShippingWarehousesService _shippingWarehousesService;
+        
         public ProfileService(
             IUserProvider userProvider, 
             ICommonDataService dataService,
-            IValidationService validationService
+            IValidationService validationService,
+            IShippingWarehousesService shippingWarehousesService
             )
         {
             _userProvider = userProvider;
             _dataService = dataService;
             _validationService = validationService;
+            _shippingWarehousesService = shippingWarehousesService;
         }
 
         public ProfileDto GetProfile()
@@ -98,7 +97,7 @@ namespace Application.Services.Profile
                 if (!string.IsNullOrEmpty(dto.PoolingLogin) && !string.IsNullOrEmpty(dto.PoolingPassword))
                 {
                     using (var pooling = new PoolingIntegration(user, 
-                        _dataService))
+                        _dataService, _shippingWarehousesService))
                         pooling.Init();
                 }
             }

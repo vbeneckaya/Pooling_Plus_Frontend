@@ -139,9 +139,9 @@ namespace Domain.Persistables
         /// </summary>
         public decimal? ReturnCostWithoutVAT { get; set; }
         /// <summary>
-        /// Сумма по ТТН, без НДС
+        /// Сумма по ТТН
         /// </summary>
-        public decimal? InvoiceAmountWithoutVAT { get; set; }
+        public decimal? InvoiceAmount { get; set; }
         /// <summary>
         /// Дополнительные расходы на доставку, без НДС
         /// </summary>

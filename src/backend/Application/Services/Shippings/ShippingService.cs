@@ -102,23 +102,23 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        public IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto)
-        {
-            var dbSet = _dataService.GetDbSet<Shipping>();
-            List<Shipping> entities;
-            if (dto.IsPartial)
-            {
-                entities = dbSet.Where(x =>
-                    x.PoolingReservationId.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            }
-            else
-            {
-                entities = dbSet.Where(x => x.PoolingReservationId == dto.Number).ToList();
-            }
-
-            var result = entities.Select(MapFromEntityToFormDto);
-            return result;
-        }
+//        public IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto)
+//        {
+//            var dbSet = _dataService.GetDbSet<Shipping>();
+//            List<Shipping> entities;
+//            if (dto.IsPartial)
+//            {
+//                entities = dbSet.Where(x =>
+//                    x.PoolingReservationId.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+//            }
+//            else
+//            {
+//                entities = dbSet.Where(x => x.PoolingReservationId == dto.Number).ToList();
+//            }
+//
+//            var result = entities.Select(MapFromEntityToFormDto);
+//            return result;
+//        }
 
 
         public override IQueryable<Shipping> ApplyRestrictions(IQueryable<Shipping> query)
@@ -420,7 +420,7 @@ namespace Application.Services.Shippings
             }
         }
 
-        private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
+        public void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
             shipping.Status = shipping.Status ?? ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = shipping.ShippingCreationDate ?? DateTime.UtcNow;
@@ -659,8 +659,8 @@ namespace Application.Services.Shippings
                 .WhereAnd(searchForm.Filter.DowntimeRate.ApplyNumericFilter<Shipping>(i => i.DowntimeRate,
                     ref parameters))
                 .WhereAnd(searchForm.Filter.Invoice.ApplyBooleanFilter<Shipping>(i => i.Invoice, ref parameters))
-                .WhereAnd(searchForm.Filter.InvoiceAmountWithoutVAT.ApplyNumericFilter<Shipping>(
-                    i => i.InvoiceAmountWithoutVAT, ref parameters))
+                .WhereAnd(searchForm.Filter.invoiceAmount.ApplyNumericFilter<Shipping>(
+                    i => i.InvoiceAmount, ref parameters))
                 .WhereAnd(searchForm.Filter.InvoiceNumber.ApplyStringFilter<Shipping>(i => i.InvoiceNumber,
                     ref parameters))
                 .WhereAnd(searchForm.Filter.LoadingArrivalTime.ApplyDateRangeFilter<Shipping>(i => i.LoadingArrivalTime,
@@ -794,9 +794,9 @@ namespace Application.Services.Shippings
                 || columns.Contains("returnCostWithoutVAT") && isDecimal &&
                 i.ReturnCostWithoutVAT >= searchDecimal - precision &&
                 i.ReturnCostWithoutVAT <= searchDecimal + precision
-                || columns.Contains("invoiceAmountWithoutVAT") && isDecimal &&
-                i.InvoiceAmountWithoutVAT >= searchDecimal - precision &&
-                i.InvoiceAmountWithoutVAT <= searchDecimal + precision
+                || columns.Contains("invoiceAmount") && isDecimal &&
+                i.InvoiceAmount >= searchDecimal - precision &&
+                i.InvoiceAmount <= searchDecimal + precision
                 || columns.Contains("additionalCostsWithoutVAT") && isDecimal &&
                 i.AdditionalCostsWithoutVAT >= searchDecimal - precision &&
                 i.AdditionalCostsWithoutVAT <= searchDecimal + precision

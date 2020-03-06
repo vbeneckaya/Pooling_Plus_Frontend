@@ -96,6 +96,7 @@ namespace Infrastructure.Installers
             services.AddSingleton(configuration);
 
             services.AddScoped<AppDbContext, AppDbContext>();
+            services.AddTransient<AppDbContext, AppDbContext>();
             services.AddScoped<IAppConfigurationService, AppConfigurationService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IUsersService, UsersService>();
@@ -107,6 +108,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IUserSettingsService, UserSettingsService>();
 
             services.AddScoped<ICommonDataService, CommonDataService>();
+            services.AddTransient<ICommonDataService, CommonDataService>();
             services.AddScoped<IAuditDataService, AuditDataService>();
             services.AddScoped<IDocumentService, DocumentService>();
             services.AddScoped<IDeliveryCostCalcService, DeliveryCostCalcService>();
@@ -119,6 +121,7 @@ namespace Infrastructure.Installers
             services.AddScoped<IShippingsService, ShippingsService>();
             services.AddScoped<ITariffsService, TariffsService>();
             services.AddScoped<IShippingWarehousesService, ShippingWarehousesService>();
+            services.AddTransient<IShippingWarehousesService, ShippingWarehousesService>();
             services.AddScoped<IShippingAddressService, ShippingAddressService>();
             services.AddScoped<IShippingGetRouteService, ShippingGetRouteService>();
             services.AddScoped<IDeliveryAddressService, DeliveryAddressService>();
@@ -246,6 +249,8 @@ namespace Infrastructure.Installers
             services.AddScoped<ITrigger<Tariff>, UpdateTariffDeliveryCost>();
 
             services.AddScoped<ITrigger<Warehouse>, ValidateDeliveryAddress>();
+            
+            services.AddScoped<ITrigger<Provider>, EnablePoolingAccount>();
         }
     }
 }
