@@ -8,11 +8,8 @@ namespace DAL.Migrations
     {
         public override void Apply()
         {
-            Database.AddColumn("Warehouses", new Column("Longitude", DbType.Double));
+            Database.AddColumn("Warehouses", new Column("Longitude", DbType.String));
             Database.AddColumn("Warehouses", new Column("Latitude", DbType.String));
-            
-            Database.AddColumn("ShippingWarehouses", new Column("Longitude", DbType.Double));
-            Database.AddColumn("ShippingWarehouses", new Column("Latitude", DbType.String));
         }
     }
 }

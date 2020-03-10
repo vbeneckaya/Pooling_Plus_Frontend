@@ -8,6 +8,9 @@ namespace Domain.Services.Warehouses
     {
         public string Id { get; set; }
 
+        [FieldType(FieldType.Select, source: nameof(Clients)), OrderNumber(1)]
+        public LookUpDto ClientId { get; set; }
+
         [DisplayNameKey("Warehouse.WarehouseName")]
         [FieldType(FieldType.Text), OrderNumber(2), IsRequired]
         public string WarehouseName { get; set; }
@@ -47,16 +50,19 @@ namespace Domain.Services.Warehouses
         [FieldType(FieldType.Select, source: nameof(Providers)), OrderNumber(11)]
         public LookUpDto ProviderId { get; set; }
 
-        [FieldType(FieldType.Boolean), OrderNumber(13)]
-        public bool? IsActive { get; set; } = true;
-
         public string AdditionalInfo { get; set; }
-
-        [FieldType(FieldType.Select, source: nameof(Clients)), OrderNumber(1)]
-        public LookUpDto ClientId { get; set; }
 
         [FieldType(FieldType.Text), OrderNumber(12)]
         public string Gln { get; set; }
+        
+        [FieldType(FieldType.Text), OrderNumber(13)]
+        public string Longitude { get; set; }
+        
+        [FieldType(FieldType.Text), OrderNumber(14)]
+        public string Latitude { get; set; }
+        
+        [FieldType(FieldType.Boolean), OrderNumber(15)]
+        public bool? IsActive { get; set; } = true;
 
         public bool IsEditable { get; set; }
     }

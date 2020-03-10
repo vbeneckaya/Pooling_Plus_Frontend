@@ -386,7 +386,7 @@ namespace Integrations.Pooling
                             {
                                 loop++;
 
-                                var ordersSearch = ordersService.FindByNumberAndProvider(new NumberSearchFormDto()
+                                var ordersSearch = ordersService.FindByNumberAndProvider(new NumberSearchFormDto
                                 {
                                     ProviderId = provider.Id.ToString(),
                                     Number = orderNumber

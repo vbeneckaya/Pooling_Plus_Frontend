@@ -96,6 +96,16 @@ namespace Domain.Persistables
         /// </summary>
         public string Gln { get; set; }
 
+        /// <summary>
+        /// Долгота
+        /// </summary>
+        public string Longitude { get; set; }
+        
+        /// <summary>
+        /// Широта
+        /// </summary>
+        public string Latitude { get; set; }
+
         public override string ToString()
         {
             return Address;
