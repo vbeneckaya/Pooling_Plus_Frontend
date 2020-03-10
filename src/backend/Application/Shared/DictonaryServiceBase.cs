@@ -283,10 +283,12 @@ namespace Application.Shared
                 sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var entities = ApplySort(query, form).ToList();
+            var entities = ApplySort(query, form);
             Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName,
                 sw.ElapsedMilliseconds);
             sw.Restart();
+            
+            entities = ApplyRestrictions(entities);
 
             var dtos = entities.Select(MapFromEntityToDto);
             Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName,

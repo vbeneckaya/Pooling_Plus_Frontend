@@ -1,8 +1,10 @@
-import { createSelector } from 'reselect';
-import { downloader, postman } from '../utils/postman';
-import { all, delay, put, takeEvery } from 'redux-saga/effects';
-import { toast } from 'react-toastify';
-import { errorMapping } from '../utils/errorMapping';
+import {createSelector} from 'reselect';
+import {downloader, postman} from '../utils/postman';
+import {all, delay, put, takeEvery} from 'redux-saga/effects';
+import {toast} from 'react-toastify';
+import {errorMapping} from '../utils/errorMapping';
+import {PROVIDERS_DICTIONARIE} from "../constants/dictionaries";
+import {SHIPPINGS_GRID} from "../constants/grids";
 
 //*  TYPES  *//
 
@@ -49,7 +51,7 @@ const initial = {
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload }) => {
+export default (state = initial, {type, payload}) => {
     switch (type) {
         case GET_DICTIONARY_LIST_REQUEST:
         case SAVE_DICTIONARY_CARD_REQUEST:
@@ -268,31 +270,31 @@ export const exportProgressSelector = createSelector(stateSelector, state => {
 
 //*  SAGA  *//
 
-export function* getListSaga({ payload }) {
+export function* getListSaga({payload}) {
     try {
-        const { filter = {}, name, isConcat } = payload;
+        const {filter = {}, name, isConcat} = payload;
 
         const result = yield postman.post(`/${name}/search`, filter);
 
-        yield put({ type: GET_DICTIONARY_LIST_SUCCESS, payload: { ...result, isConcat } });
+        yield put({type: GET_DICTIONARY_LIST_SUCCESS, payload: {...result, isConcat}});
     } catch (error) {
-        yield put({ type: GET_DICTIONARY_LIST_ERROR });
+        yield put({type: GET_DICTIONARY_LIST_ERROR});
     }
 }
 
-function* getCardSaga({ payload }) {
+function* getCardSaga({payload}) {
     try {
-        const { name, id } = payload;
+        const {name, id} = payload;
         const result = yield postman.get(`${name}/getById/${id}`);
-        yield put({ type: GET_DICTIONARY_CARD_SUCCESS, payload: result });
+        yield put({type: GET_DICTIONARY_CARD_SUCCESS, payload: result});
     } catch (error) {
-        yield put({ type: GET_DICTIONARY_CARD_ERROR });
+        yield put({type: GET_DICTIONARY_CARD_ERROR});
     }
 }
 
-function* saveDictionaryCardSaga({ payload }) {
+function* saveDictionaryCardSaga({payload}) {
     try {
-        const { params, name, callbackSuccess } = payload;
+        const {params, name, callbackSuccess} = payload;
         const result = yield postman.post(`/${name}/saveOrCreate`, params);
 
         if (result.isError) {
@@ -302,11 +304,15 @@ function* saveDictionaryCardSaga({ payload }) {
                 payload: result.errors,
             });
         } else {
+            
             yield put({
                 type: SAVE_DICTIONARY_CARD_SUCCESS,
             });
 
             callbackSuccess && callbackSuccess();
+
+            if (name == PROVIDERS_DICTIONARIE && params['isPoolingIntegrated'] == true)
+                yield postman.get(`/${SHIPPINGS_GRID}/importFormsFromPooling?providerId=${params['id']}`);
         }
     } catch (e) {
         yield put({
@@ -315,11 +321,11 @@ function* saveDictionaryCardSaga({ payload }) {
     }
 }
 
-function* importFromExcelSaga({ payload }) {
+function* importFromExcelSaga({payload}) {
     try {
-        const { form, name, callbackSuccess } = payload;
+        const {form, name, callbackSuccess} = payload;
         const result = yield postman.post(`${name}/importFromExcel`, form, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {'Content-Type': 'multipart/form-data'},
         });
 
         if (result.isError) {
@@ -340,9 +346,9 @@ function* importFromExcelSaga({ payload }) {
     }
 }
 
-function* exportToExcelSaga({ payload }) {
+function* exportToExcelSaga({payload}) {
     try {
-        const { name, filter } = payload;
+        const {name, filter} = payload;
         /*const fileName = `${name}_${formatDate(new Date(), 'YYYY-MM-dd_HH_mm_ss')}.xlsx`;
         const result = yield postman.post(`/${name}/exportToExcel`, {}, { responseType: 'blob' });
         const link = document.createElement('a');
@@ -353,18 +359,18 @@ function* exportToExcelSaga({ payload }) {
         const res = yield downloader.post(`/${name}/exportToExcel`, filter.filter, {
             responseType: 'blob',
         });
-        const { data } = res;
+        const {data} = res;
         let headerLine = res.headers['content-disposition'];
         let startFileNameIndex = headerLine.indexOf('filename=') + 10;
         let endFileNameIndex = headerLine.lastIndexOf(';') - 1;
         let filename = headerLine.substring(startFileNameIndex, endFileNameIndex);
 
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([data], { type: data.type }));
+        link.href = URL.createObjectURL(new Blob([data], {type: data.type}));
         link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
-        yield put({ type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS });
+        yield put({type: DICTIONARY_EXPORT_TO_EXCEL_SUCCESS});
     } catch (e) {
         yield put({
             type: DICTIONARY_EXPORT_TO_EXCEL_ERROR,
@@ -372,10 +378,10 @@ function* exportToExcelSaga({ payload }) {
     }
 }
 
-function* deleteDictionaryEntrySaga({ payload }) {
+function* deleteDictionaryEntrySaga({payload}) {
     try {
-        const { name, id, callbackSuccess } = payload;
-        const result = yield postman.delete(`/${name}/delete`, { params: { id } });
+        const {name, id, callbackSuccess} = payload;
+        const result = yield postman.delete(`/${name}/delete`, {params: {id}});
 
         yield put({
             type: DELETE_DICTIONARY_ENTRY_SUCCESS,

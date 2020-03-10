@@ -31,6 +31,7 @@ using Application.BusinessModels.Shared.Actions;
 using AutoMapper.QueryableExtensions;
 using Domain.Services.Orders;
 using Domain.Services.Translations;
+using Integrations.Pooling;
 using Microsoft.EntityFrameworkCore.Internal;
 using OfficeOpenXml;
 using Serilog;
@@ -41,7 +42,7 @@ namespace Application.Services.Shippings
         GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IMapper _mapper;
-        
+
         private readonly IHistoryService _historyService;
 
         private readonly IOrdersService _ordersService;
@@ -391,14 +392,14 @@ namespace Application.Services.Shippings
             _mapper.Map(dto, entity);
 
             IEnumerable<string> readOnlyFields = null;
-            
+
             var currentUser = _userIdProvider.GetCurrentUser();
             if (currentUser.Id == null)
             {
                 currentUser.Id = _dataService.GetDbSet<User>().FirstOrDefault(_ =>
                     _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
             }
-            
+
 
             if (!isNew)
             {
@@ -957,6 +958,22 @@ namespace Application.Services.Shippings
             {
                 Message = sb.ToString()
             };
+        }
+
+        public void ImportFormsFromPooling(string providerId)
+        {
+            var poolingIntegration = new PoolingIntegration(
+                new User
+                {
+                    PoolingLogin = "k.skvortsov@artlogics.ru",
+                    PoolingPassword = "VCuds3v"
+                },
+                _dataService,
+                _serviceProvider);
+            var endDate = DateTime.Now.AddDays(14);
+            var startDate = endDate.AddMonths(-3);
+            
+            poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate, providerId);
         }
 
         private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom,

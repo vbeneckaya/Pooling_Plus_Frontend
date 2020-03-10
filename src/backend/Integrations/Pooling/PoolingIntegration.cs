@@ -30,23 +30,12 @@ namespace Integrations.Pooling
         private string _companyId;
         private User _user;
         private PoolingInfoDto _poolingInfoDto;
-
-        private IShippingWarehousesService _shippingWarehousesService;
-
-//        private IWarehousesService _warehousesService;
-//        private IShippingsService _shippingsService;
-//        private IOrdersService _ordersService;
-//        private IClientsService _clientsService;
-//        private ITransportCompaniesService _transportCompaniesService;
         private IServiceProvider _serviceProvider;
-//        private IServiceCollection _serviceCollection;
 
         public PoolingIntegration(
             User user,
             ICommonDataService dataService,
-            IShippingWarehousesService shippingWarehousesService = null,
             IServiceProvider serviceProvider = null
-//                IServiceCollection serviceCollection = null
         ) :
             base("https://stage.pooling.artlogics.ru/api/", //"https://staging.k8s.devlogics.ru/api/", 
                 user.PoolingLogin,
@@ -68,13 +57,9 @@ namespace Integrations.Pooling
                     .Get("$.userData.companyId");
             }
 
-            _shippingWarehousesService = shippingWarehousesService;
-
             _user = user;
 
             _serviceProvider = serviceProvider;
-
-//            _serviceCollection = serviceCollection;
         }
 
         public PoolingInfoDto GetInfoFor(Shipping shipping)
@@ -245,255 +230,257 @@ namespace Integrations.Pooling
         }
 
 
-        public void LoadShippingsAndOrdersFromReports(DateTime startDate, DateTime endDate, Guid? providerId = null)
+        public void LoadShippingsAndOrdersFromReports(DateTime startDate, DateTime endDate, string providerId = null)
         {
-                var shippingWarehousesService = _serviceProvider.GetRequiredService<IShippingWarehousesService>();
-                var warehousesService = _serviceProvider.GetService<IWarehousesService>();
-                var shippingsService = _serviceProvider.GetService<IShippingsService>();
-                var ordersService = _serviceProvider.GetService<IOrdersService>();
-                var clientsService = _serviceProvider.GetService<IClientsService>();
-                var transportCompaniesService = _serviceProvider.GetService<ITransportCompaniesService>();
-                var calcService = _serviceProvider.GetService<IDeliveryCostCalcService>();
-                var dataService = _serviceProvider.GetService<ICommonDataService>();
+            var shippingWarehousesService = _serviceProvider.GetRequiredService<IShippingWarehousesService>();
+            var warehousesService = _serviceProvider.GetService<IWarehousesService>();
+            var shippingsService = _serviceProvider.GetService<IShippingsService>();
+            var ordersService = _serviceProvider.GetService<IOrdersService>();
+            var clientsService = _serviceProvider.GetService<IClientsService>();
+            var transportCompaniesService = _serviceProvider.GetService<ITransportCompaniesService>();
+            var calcService = _serviceProvider.GetService<IDeliveryCostCalcService>();
+            var dataService = _serviceProvider.GetService<ICommonDataService>();
 
-                var firstAdministrator = new CurrentUserDto
-                {
-                    Id = dataService.GetDbSet<User>()
-                        .FirstOrDefault(_ => _.IsActive && _.Role.RoleType == RoleTypes.Administrator)?.Id
-                };
+            var firstAdministrator = new CurrentUserDto
+            {
+                Id = dataService.GetDbSet<User>()
+                    .FirstOrDefault(_ => _.IsActive && _.Role.RoleType == RoleTypes.Administrator)?.Id
+            };
 
-                try
-                {
-                    var consignors = GetArr($"definitions/consignors");
+            try
+            {
+                var consignors = GetArr($"definitions/consignors");
 
-                    var providersIntegratedWithPooling = dataService.GetDbSet<Provider>()
-                        .Where(_ => _.IsActive && _.IsPoolingIntegrated &&
-                                    providerId == null || _.Id == providerId).Select(_ =>
-                            new
-                            {
-                                _.Id,
-                                _.Name
-                            })
-                        .AsQueryable();
-
-                    foreach (var provider in providersIntegratedWithPooling)
-                    {
-                        var consignorId = consignors.Get($"$[?(@.name=='{provider.Name}')].id").FirstOrDefault();
-
-                        if (consignorId == null) continue;
-
-                        var reservationsFromPooling =
-                            Get<JObject>(
-                                    $"generalReport?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&consignorId={consignorId}&showAll=true")
-                                .GetValue("reservations");
-
-                        foreach (var reservation in reservationsFromPooling)
+                var providersIntegratedWithPooling = dataService.GetDbSet<Provider>()
+                    .Where(_ => _.IsActive && _.IsPoolingIntegrated &&
+                                providerId == null || _.Id == Guid.Parse(providerId)).Select(_ =>
+                        new
                         {
-                            var ordersIds = new List<Guid>();
-                            var shippingId = Guid.Empty;
-                            try
+                            _.Id,
+                            _.Name
+                        })
+                    .AsQueryable();
+
+                foreach (var provider in providersIntegratedWithPooling)
+                {
+                    var consignorId = consignors.Get($"$[?(@.name=='{provider.Name}')].id").FirstOrDefault();
+
+                    if (consignorId == null) continue;
+
+                    var reservationsFromPooling =
+                        Get<JObject>(
+                                $"generalReport?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&consignorId={consignorId}&showAll=true")
+                            .GetValue("reservations");
+
+                    foreach (var reservation in reservationsFromPooling)
+                    {
+                        var ordersIds = new List<Guid>();
+                        var shippingId = Guid.Empty;
+                        try
+                        {
+                            var number = reservation.Value<string>("number"); //PoolingReservationId
+
+                            var ordersNumbers = reservation.Value<string>("packingLists").Replace(" ", "")
+                                .Split(",");
+
+                            var orderClientNumbers =
+                                reservation.Value<string>("orderNumbers").Replace(" ", "").Split(",");
+
+                            var shippingWarehouse = reservation.Value<string>("loadingPlace");
+
+                            Guid.TryParse(shippingWarehousesService
+                                    ?.ForSelect(provider.Id)
+                                    .FirstOrDefault(_ => _.Name == shippingWarehouse)?.Value,
+                                out var shippingWarehouseId);
+
+                            var deliveryWarehouse = reservation.Value<string>("distributionCenter");
+
+                            Int32.TryParse(reservation.Value<string>("palletCount"), out var palletsCount);
+
+                            Int32.TryParse(reservation.Value<string>("weight"), out var weight);
+
+                            DateTime.TryParseExact(
+                                reservation.Value<string>("deliveryToTheWarehouseDateTime").Split(" ")[0],
+                                "dd.MM.yyyy",
+                                CultureInfo.InvariantCulture, DateTimeStyles.None, out var shippingDate);
+
+                            DateTime.TryParseExact(reservation.Value<string>("createAt"), "dd.MM.yyyy",
+                                CultureInfo.InvariantCulture, DateTimeStyles.None, out var createDate);
+
+                            DateTime.TryParseExact(reservation.Value<string>("dateOfAcceptanceByTheConsignee"),
+                                "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                                out var deliveryDate);
+
+                            var carrierCompanyName = reservation.Value<string>("carrierCompany");
+                            Guid.TryParse(transportCompaniesService?.ForSelect()
+                                .FirstOrDefault(_ => _.Name == carrierCompanyName)
+                                .Value, out var carrierId);
+
+
+                            var clientName = reservation.Value<string>("client");
+                            Guid.TryParse(clientsService?.ForSelect()
+                                .FirstOrDefault(_ => _.Name == clientName)?.Value, out var clientId);
+
+                            var deliveryWarehouseId = Guid.Empty;
+                            if (clientId != null)
+                                Guid.TryParse(warehousesService?.ForSelect(clientId)
+                                        .FirstOrDefault(_ => _.Name == deliveryWarehouse)?.Value,
+                                    out deliveryWarehouseId);
+
+                            var deliveryType = reservation.Value<string>("deliveryType");
+
+                            decimal.TryParse(reservation.Value<string>("totalPrice"), out var deliveryCost);
+
+                            decimal.TryParse(reservation.Value<string>("cost"), out var invoiceCost);
+
+                            var shipping = _dataService.GetDbSet<Shipping>()
+                                               .FirstOrDefault(_ => _.PoolingReservationId == number) ??
+                                           new Shipping {PoolingReservationId = number};
+
+                            shipping.ShippingCreationDate = createDate;
+
+                            shipping.ProviderId = provider.Id;
+
+                            shipping.CarrierId = carrierId;
+
+                            shipping.TarifficationType = deliveryType.Equals("Pooling")
+                                ? (TarifficationType?) null
+                                : TarifficationType.Ltl;
+
+                            shipping.InvoiceAmount = invoiceCost;
+
+                            shipping.PalletsCount = palletsCount;
+
+                            shipping.WeightKg = weight;
+
+                            var isNewShipping = shipping.Id == Guid.Empty;
+
+                            if (isNewShipping)
                             {
-                                var number = reservation.Value<string>("number"); //PoolingReservationId
+                                shipping.Id = Guid.NewGuid();
 
-                                var ordersNumbers = reservation.Value<string>("packingLists").Replace(" ", "")
-                                    .Split(",");
+                                shipping.UserCreatorId = _user.Id;
 
-                                var orderClientNumbers =
-                                    reservation.Value<string>("orderNumbers").Replace(" ", "").Split(",");
+                                shippingsService.InitializeNewShipping(shipping, firstAdministrator);
 
-                                var shippingWarehouse = reservation.Value<string>("loadingPlace");
+                                _dataService.GetDbSet<Shipping>().Add(shipping);
+                            }
+                            else
+                            {
+                                _dataService.GetDbSet<Shipping>().Update(shipping);
+                            }
 
-                                Guid.TryParse(shippingWarehousesService
-                                        ?.ForSelect(provider.Id)
-                                        .FirstOrDefault(_ => _.Name == shippingWarehouse)?.Value,
-                                    out var shippingWarehouseId);
+                            _dataService.SaveChanges();
 
-                                var deliveryWarehouse = reservation.Value<string>("distributionCenter");
+                            shippingId = shipping.Id;
 
-                                Int32.TryParse(reservation.Value<string>("palletCount"), out var palletsCount);
+                            ordersIds = new List<Guid>();
 
-                                Int32.TryParse(reservation.Value<string>("weight"), out var weight);
+                            palletsCount = palletsCount - ordersNumbers.Length;
 
-                                DateTime.TryParseExact(
-                                    reservation.Value<string>("deliveryToTheWarehouseDateTime").Split(" ")[0],
-                                    "dd.MM.yyyy",
-                                    CultureInfo.InvariantCulture, DateTimeStyles.None, out var shippingDate);
+                            decimal? distributedWeight = 0;
 
-                                DateTime.TryParseExact(reservation.Value<string>("createAt"), "dd.MM.yyyy",
-                                    CultureInfo.InvariantCulture, DateTimeStyles.None, out var createDate);
+                            var loop = 0;
 
-                                DateTime.TryParseExact(reservation.Value<string>("dateOfAcceptanceByTheConsignee"),
-                                    "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                                    out var deliveryDate);
+                            foreach (var orderNumber in ordersNumbers)
+                            {
+                                loop++;
 
-                                var carrierCompanyName = reservation.Value<string>("carrierCompany");
-                                Guid.TryParse(transportCompaniesService?.ForSelect()
-                                    .FirstOrDefault(_ => _.Name == carrierCompanyName)
-                                    .Value, out var carrierId);
-
-
-                                var clientName = reservation.Value<string>("client");
-                                Guid.TryParse(clientsService?.ForSelect()
-                                    .FirstOrDefault(_ => _.Name == clientName)?.Value, out var clientId);
-
-                                var deliveryWarehouseId = Guid.Empty;
-                                if (clientId != null)
-                                    Guid.TryParse(warehousesService?.ForSelect(clientId)
-                                            .FirstOrDefault(_ => _.Name == deliveryWarehouse)?.Value,
-                                        out deliveryWarehouseId);
-
-                                var deliveryType = reservation.Value<string>("deliveryType");
-
-                                decimal.TryParse(reservation.Value<string>("totalPrice"), out var deliveryCost);
-
-                                decimal.TryParse(reservation.Value<string>("cost"), out var invoiceCost);
-
-                                var shipping = _dataService.GetDbSet<Shipping>()
-                                                   .FirstOrDefault(_ => _.PoolingReservationId == number) ??
-                                               new Shipping {PoolingReservationId = number};
-
-                                shipping.ShippingCreationDate = createDate;
-
-                                shipping.ProviderId = provider.Id;
-
-                                shipping.CarrierId = carrierId;
-
-                                shipping.TarifficationType = deliveryType.Equals("Pooling")
-                                    ? (TarifficationType?) null
-                                    : TarifficationType.Ltl;
-
-                                shipping.InvoiceAmount = invoiceCost;
-
-                                shipping.PalletsCount = palletsCount;
-
-                                shipping.WeightKg = weight;
-
-                                var isNewShipping = shipping.Id == Guid.Empty;
-
-                                if (isNewShipping)
+                                var ordersSearch = ordersService.FindByNumberAndProvider(new NumberSearchFormDto()
                                 {
-                                    shipping.Id = Guid.NewGuid();
+                                    ProviderId = provider.Id.ToString(),
+                                    Number = orderNumber
+                                }).FirstOrDefault();
 
-                                    shippingsService.InitializeNewShipping(shipping, firstAdministrator);
+                                var order = ordersSearch == null
+                                    ? new Order {OrderNumber = orderNumber}
+                                    : _dataService.GetById<Order>(Guid.Parse(ordersSearch.Value));
 
-                                    _dataService.GetDbSet<Shipping>().Add(shipping);
+                                order.OrderCreationDate = createDate;
+
+                                order.ProviderId = shipping.ProviderId;
+
+                                order.ShippingWarehouseId = shippingWarehouseId;
+
+                                order.ClientId = clientId;
+
+                                order.DeliveryWarehouseId = order.ClientId == null
+                                    ? null
+                                    : (Guid?) deliveryWarehouseId;
+
+                                order.ClientOrderNumber = orderClientNumbers[ordersNumbers.IndexOf(orderNumber)];
+
+                                order.ShippingId = shipping.Id;
+
+                                order.DeliveryDate = deliveryDate;
+
+                                order.ShippingDate = shippingDate;
+
+                                order.PalletsCount = ++palletsCount;
+
+                                order.WeightKg = loop == ordersNumbers.Length
+                                    ? weight - distributedWeight
+                                    : weight / ordersNumbers.Length;
+
+                                distributedWeight += order.WeightKg;
+                                palletsCount = 0;
+
+                                if (order.Id == Guid.Empty)
+                                {
+                                    order.Id = Guid.NewGuid();
+
+                                    ordersService.InitializeNewOrder(order);
+
+                                    _dataService.GetDbSet<Order>().Add(order);
                                 }
                                 else
                                 {
-                                    _dataService.GetDbSet<Shipping>().Update(shipping);
+                                    _dataService.GetDbSet<Order>().Update(order);
                                 }
 
                                 _dataService.SaveChanges();
 
-                                shippingId = shipping.Id;
-
-                                ordersIds = new List<Guid>();
-
-                                palletsCount = palletsCount - ordersNumbers.Length;
-
-                                decimal? distributedWeight = 0;
-
-                                var loop = 0;
-
-                                foreach (var orderNumber in ordersNumbers)
-                                {
-                                    loop++;
-
-                                    var ordersSearch = ordersService.FindByNumberAndProvider(new NumberSearchFormDto()
-                                    {
-                                        ProviderId = provider.Id.ToString(),
-                                        Number = orderNumber
-                                    }).FirstOrDefault();
-
-                                    var order = ordersSearch == null
-                                        ? new Order {OrderNumber = orderNumber}
-                                        : _dataService.GetById<Order>(Guid.Parse(ordersSearch.Value));
-
-                                    order.OrderCreationDate = createDate;
-
-                                    order.ProviderId = shipping.ProviderId;
-
-                                    order.ShippingWarehouseId = shippingWarehouseId;
-
-                                    order.ClientId = clientId;
-
-                                    order.DeliveryWarehouseId = order.ClientId == null
-                                        ? null
-                                        : (Guid?) deliveryWarehouseId;
-
-                                    order.ClientOrderNumber = orderClientNumbers[ordersNumbers.IndexOf(orderNumber)];
-
-                                    order.ShippingId = shipping.Id;
-
-                                    order.DeliveryDate = deliveryDate;
-
-                                    order.ShippingDate = shippingDate;
-
-                                    order.PalletsCount = ++palletsCount;
-
-                                    order.WeightKg = loop == ordersNumbers.Length
-                                        ? weight - distributedWeight
-                                        : weight / ordersNumbers.Length;
-
-                                    distributedWeight += order.WeightKg;
-                                    palletsCount = 0;
-
-                                    if (order.Id == Guid.Empty)
-                                    {
-                                        order.Id = Guid.NewGuid();
-
-                                        ordersService.InitializeNewOrder(order);
-
-                                        _dataService.GetDbSet<Order>().Add(order);
-                                    }
-                                    else
-                                    {
-                                        _dataService.GetDbSet<Order>().Update(order);
-                                    }
-
-                                    _dataService.SaveChanges();
-
-                                    ordersIds.Add(order.Id);
-                                }
-
-                                if (ordersIds.Any())
-                                {
-                                    if (isNewShipping)
-                                    {
-                                        ordersService.InvokeAction("unionOrdersInExisted", ordersIds);
-
-                                        if (deliveryType.Equals("Pooling"))
-                                        {
-                                            shipping.TotalDeliveryCost = deliveryCost;
-                                            _dataService.GetDbSet<Shipping>().Update(shipping);
-                                            _dataService.SaveChanges();
-                                        }
-                                    }
-
-                                    if ((shipping.TotalDeliveryCost == null || shipping.TotalDeliveryCost == 0) &&
-                                        shipping.TarifficationType != null)
-                                    {
-                                        calcService.UpdateDeliveryCost(_dataService.GetById<Shipping>(shipping.Id));
-                                    }
-                                }
-
-                                if (deliveryDate < DateTime.Today)
-                                {
-                                    SetStatusToComplete(shipping.Id);
-                                }
+                                ordersIds.Add(order.Id);
                             }
-                            catch (Exception e)
+
+                            if (ordersIds.Any())
                             {
-                                RollBackOneRowFromReports(shippingId, ordersIds);
-                                throw;
+                                if (isNewShipping)
+                                {
+                                    ordersService.InvokeAction("unionOrdersInExisted", ordersIds);
+
+                                    if (deliveryType.Equals("Pooling"))
+                                    {
+                                        shipping.TotalDeliveryCost = deliveryCost;
+                                        _dataService.GetDbSet<Shipping>().Update(shipping);
+                                        _dataService.SaveChanges();
+                                    }
+                                }
+
+                                if ((shipping.TotalDeliveryCost == null || shipping.TotalDeliveryCost == 0) &&
+                                    shipping.TarifficationType != null)
+                                {
+                                    calcService.UpdateDeliveryCost(_dataService.GetById<Shipping>(shipping.Id));
+                                }
                             }
+
+                            if (deliveryDate < DateTime.Today)
+                            {
+                                SetStatusToComplete(shipping.Id);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            RollBackOneRowFromReports(shippingId, ordersIds);
+                            throw;
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    throw;
-                }
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
         }
 
         private void SetStatusToComplete(Guid shippingId)
@@ -526,6 +513,8 @@ namespace Integrations.Pooling
         private void LoadShippingWarehouses()
         {
             if (!_user.ProviderId.HasValue) return;
+
+            var _shippingWarehousesService = _serviceProvider.GetRequiredService<IShippingWarehousesService>();
 
             var warehousesFromPooling = GetArr($"definitions/warehouses?companyId={_companyId}").Get("$")
                 .FirstOrDefault()?.ToList();

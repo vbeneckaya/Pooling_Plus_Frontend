@@ -22,8 +22,7 @@ namespace Tasks.Pooling
     [Description("Импорт перевозок из Pooling")]
     public class ImportReservationsFromPoolingTask : TaskBase<ImportReservationsFromPoolingProperties>, IScheduledTask
     {
-//        public string Schedule => "0 0 * * Sun";
-        public string Schedule => "*/1 * * * *";
+        public string Schedule => "0 */1 * * *";
 
         protected override async Task Execute(IServiceProvider serviceProvider,
             ImportReservationsFromPoolingProperties props, CancellationToken cancellationToken)
@@ -38,7 +37,6 @@ namespace Tasks.Pooling
                         PoolingPassword = "VCuds3v"
                     },
                     dataService,
-                    null,
                     serviceProvider
                 ))
                 {

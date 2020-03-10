@@ -67,5 +67,14 @@ namespace API.Controllers
             var memoryStream = service.ExportFormsToExcel(dto);
             return File(memoryStream, "application/vnd.ms-excel", $"Export {typeof(Shipping).Name.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
+        
+        /// <summary>
+        /// Импортировать список форм из Pooling для поставщика
+        /// </summary>
+        [HttpGet("importFormsFromPooling")]
+        public IActionResult ImportFormsFromPooling([FromQuery] string providerId) {
+            service.ImportFormsFromPooling(providerId);
+            return Ok();
+        }
     }
 }
