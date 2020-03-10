@@ -24,6 +24,8 @@ namespace Application.Services.Shippings
 
         public void UpdateDeliveryCost(Shipping shipping)
         {
+            if (shipping.TarifficationType == null) return;
+            
             var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
            
             if (shipping.Status == null

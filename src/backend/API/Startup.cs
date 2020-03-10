@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using Infrastructure.Installers;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Application.Services.Identity;
@@ -92,6 +91,7 @@ namespace API
             services.SyncTranslations();
 
             services.AddScoped<IUserProvider, UserProvider>();
+
         }
 
         private static string GetXmlCommentsPath()

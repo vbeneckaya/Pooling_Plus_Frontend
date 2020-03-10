@@ -22,7 +22,7 @@ namespace Tasks.Pooling
     [Description("Импорт перевозок из Pooling")]
     public class ImportReservationsFromPoolingTask : TaskBase<ImportReservationsFromPoolingProperties>, IScheduledTask
     {
-        public string Schedule => "0 0 * * Sun";
+        public string Schedule => "0 */1 * * *";
 
         protected override async Task Execute(IServiceProvider serviceProvider,
             ImportReservationsFromPoolingProperties props, CancellationToken cancellationToken)
@@ -30,35 +30,20 @@ namespace Tasks.Pooling
             try
             {
                 ICommonDataService dataService = serviceProvider.GetService<ICommonDataService>();
-                IShippingWarehousesService shippingWarehousesService =
-                    serviceProvider.GetService<IShippingWarehousesService>();
-                IWarehousesService warehousesService = serviceProvider.GetService<IWarehousesService>();
-                IShippingsService shippingsService = serviceProvider.GetService<IShippingsService>();
-                IOrdersService ordersService = serviceProvider.GetService<IOrdersService>();
-                IClientsService clientsService = serviceProvider.GetService<IClientsService>();
-                ITransportCompaniesService transportCompaniesService =
-                    serviceProvider.GetService<ITransportCompaniesService>();
-
-                PoolingIntegration poolingIntegration = new PoolingIntegration(
+                using (PoolingIntegration poolingIntegration = new PoolingIntegration(
                     new User
                     {
                         PoolingLogin = "k.skvortsov@artlogics.ru",
                         PoolingPassword = "VCuds3v"
                     },
                     dataService,
-                    shippingWarehousesService,
-                    shippingsService,
-                    ordersService,
-                    warehousesService,
-                    clientsService,
-                    transportCompaniesService
-                );
-
-                var endDate = DateTime.Now;
-                var startDate = endDate - (CrontabSchedule.Parse(Schedule).GetNextOccurrence(endDate) - endDate);
-                Console.WriteLine($"{TaskName} загрузка за период: startDate {startDate} - endDate {endDate}");
-
-                poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate);
+                    serviceProvider
+                ))
+                {
+                    var endDate = DateTime.Now;
+                    var startDate = endDate - (CrontabSchedule.Parse(Schedule).GetNextOccurrence(endDate) - endDate);
+                    poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate);
+                }
             }
             catch (Exception ex)
             {

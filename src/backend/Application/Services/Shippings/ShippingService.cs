@@ -31,6 +31,7 @@ using Application.BusinessModels.Shared.Actions;
 using AutoMapper.QueryableExtensions;
 using Domain.Services.Orders;
 using Domain.Services.Translations;
+using Integrations.Pooling;
 using Microsoft.EntityFrameworkCore.Internal;
 using OfficeOpenXml;
 using Serilog;
@@ -41,7 +42,7 @@ namespace Application.Services.Shippings
         GridService<Shipping, ShippingDto, ShippingFormDto, ShippingSummaryDto, ShippingFilterDto>, IShippingsService
     {
         private readonly IMapper _mapper;
-        
+
         private readonly IHistoryService _historyService;
 
         private readonly IOrdersService _ordersService;
@@ -102,23 +103,23 @@ namespace Application.Services.Shippings
             return result;
         }
 
-        public IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto)
-        {
-            var dbSet = _dataService.GetDbSet<Shipping>();
-            List<Shipping> entities;
-            if (dto.IsPartial)
-            {
-                entities = dbSet.Where(x =>
-                    x.PoolingReservationId.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            }
-            else
-            {
-                entities = dbSet.Where(x => x.PoolingReservationId == dto.Number).ToList();
-            }
-
-            var result = entities.Select(MapFromEntityToFormDto);
-            return result;
-        }
+//        public IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto)
+//        {
+//            var dbSet = _dataService.GetDbSet<Shipping>();
+//            List<Shipping> entities;
+//            if (dto.IsPartial)
+//            {
+//                entities = dbSet.Where(x =>
+//                    x.PoolingReservationId.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+//            }
+//            else
+//            {
+//                entities = dbSet.Where(x => x.PoolingReservationId == dto.Number).ToList();
+//            }
+//
+//            var result = entities.Select(MapFromEntityToFormDto);
+//            return result;
+//        }
 
 
         public override IQueryable<Shipping> ApplyRestrictions(IQueryable<Shipping> query)
@@ -391,14 +392,14 @@ namespace Application.Services.Shippings
             _mapper.Map(dto, entity);
 
             IEnumerable<string> readOnlyFields = null;
-            
+
             var currentUser = _userIdProvider.GetCurrentUser();
             if (currentUser.Id == null)
             {
                 currentUser.Id = _dataService.GetDbSet<User>().FirstOrDefault(_ =>
                     _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
             }
-            
+
 
             if (!isNew)
             {
@@ -420,7 +421,7 @@ namespace Application.Services.Shippings
             }
         }
 
-        private void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
+        public void InitializeNewShipping(Shipping shipping, CurrentUserDto currentUser)
         {
             shipping.Status = shipping.Status ?? ShippingState.ShippingCreated;
             shipping.ShippingCreationDate = shipping.ShippingCreationDate ?? DateTime.UtcNow;
@@ -659,8 +660,8 @@ namespace Application.Services.Shippings
                 .WhereAnd(searchForm.Filter.DowntimeRate.ApplyNumericFilter<Shipping>(i => i.DowntimeRate,
                     ref parameters))
                 .WhereAnd(searchForm.Filter.Invoice.ApplyBooleanFilter<Shipping>(i => i.Invoice, ref parameters))
-                .WhereAnd(searchForm.Filter.InvoiceAmountWithoutVAT.ApplyNumericFilter<Shipping>(
-                    i => i.InvoiceAmountWithoutVAT, ref parameters))
+                .WhereAnd(searchForm.Filter.invoiceAmount.ApplyNumericFilter<Shipping>(
+                    i => i.InvoiceAmount, ref parameters))
                 .WhereAnd(searchForm.Filter.InvoiceNumber.ApplyStringFilter<Shipping>(i => i.InvoiceNumber,
                     ref parameters))
                 .WhereAnd(searchForm.Filter.LoadingArrivalTime.ApplyDateRangeFilter<Shipping>(i => i.LoadingArrivalTime,
@@ -794,9 +795,9 @@ namespace Application.Services.Shippings
                 || columns.Contains("returnCostWithoutVAT") && isDecimal &&
                 i.ReturnCostWithoutVAT >= searchDecimal - precision &&
                 i.ReturnCostWithoutVAT <= searchDecimal + precision
-                || columns.Contains("invoiceAmountWithoutVAT") && isDecimal &&
-                i.InvoiceAmountWithoutVAT >= searchDecimal - precision &&
-                i.InvoiceAmountWithoutVAT <= searchDecimal + precision
+                || columns.Contains("invoiceAmount") && isDecimal &&
+                i.InvoiceAmount >= searchDecimal - precision &&
+                i.InvoiceAmount <= searchDecimal + precision
                 || columns.Contains("additionalCostsWithoutVAT") && isDecimal &&
                 i.AdditionalCostsWithoutVAT >= searchDecimal - precision &&
                 i.AdditionalCostsWithoutVAT <= searchDecimal + precision
@@ -957,6 +958,22 @@ namespace Application.Services.Shippings
             {
                 Message = sb.ToString()
             };
+        }
+
+        public void ImportFormsFromPooling(string providerId)
+        {
+            var poolingIntegration = new PoolingIntegration(
+                new User
+                {
+                    PoolingLogin = "k.skvortsov@artlogics.ru",
+                    PoolingPassword = "VCuds3v"
+                },
+                _dataService,
+                _serviceProvider);
+            var endDate = DateTime.Now.AddDays(14);
+            var startDate = endDate.AddMonths(-3);
+            
+            poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate, providerId);
         }
 
         private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom,

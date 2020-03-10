@@ -1,7 +1,6 @@
 using DAL.Services;
 using Domain.Enums;
 using Domain.Persistables;
-using Domain.Services.ShippingWarehouses;
 using Integrations.Pooling;
 
 namespace Application.BusinessModels.Shared.Triggers
@@ -9,12 +8,10 @@ namespace Application.BusinessModels.Shared.Triggers
     public abstract class UpdateIntegratedBase
     {
         private readonly ICommonDataService _dataService;
-        private readonly IShippingWarehousesService _shippingWarehousesService;
 
-        protected UpdateIntegratedBase(ICommonDataService dataService, IShippingWarehousesService shippingWarehousesService = null)
+        protected UpdateIntegratedBase(ICommonDataService dataService)
         {
             _dataService = dataService;
-           _shippingWarehousesService = shippingWarehousesService;
         }
 
         protected void UpdateShippingFromIntegrations(Shipping shipping)
@@ -34,7 +31,7 @@ namespace Application.BusinessModels.Shared.Triggers
                 var creator = _dataService.GetByIdOrNull<User>(shipping.UserCreatorId);
                 if (creator.IsPoolingIntegrated())
                 {
-                    using (var poolingIntegration = new PoolingIntegration(creator, _dataService, _shippingWarehousesService))
+                    using (var poolingIntegration = new PoolingIntegration(creator, _dataService))
                     {
                         var poolingInfo = poolingIntegration.GetInfoFor(shipping);
                         shipping.PoolingState = poolingInfo.IsAvailable

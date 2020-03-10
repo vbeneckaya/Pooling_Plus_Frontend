@@ -133,8 +133,11 @@ namespace Application.Services.AppConfiguration
 
                 var columns = ExtractColumnsFromDto<WarehouseDto>(roleId);
 
-//                if (_identityService.HasPermissions(RolePermissions.UsersEdit))
-//                    columns = columns.Where(x => x.Name != "CompanyId");
+                var role = _dataService.GetById<Role>(roleId.Value);
+
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x => x.Name != nameof(Warehouse.Latitude).ToLowerFirstLetter()
+                                                 && x.Name != nameof(Warehouse.Longitude).ToLowerFirstLetter());
 
                 return new UserConfigurationDictionaryItem
                 {
@@ -147,53 +150,54 @@ namespace Application.Services.AppConfiguration
                 };
             });
 
-                _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
+            _dictionaryConfigurations.Add(typeof(TariffDto), (roleId) =>
+            {
+                var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
+                var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+
+                if (!canViewTariffs && !canEditTariffs) return null;
+
+                var columns = ExtractColumnsFromDto<TariffDto>(roleId);
+
+                var role = _dataService.GetById<Role>(roleId.Value);
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x => x.Name != nameof(Tariff.ProviderId).ToLowerFirstLetter());
+
+                return new UserConfigurationDictionaryItem
                 {
-                    var canEditTariffs = _identityService.HasPermissions(RolePermissions.TariffsEdit);
-                    var canViewTariffs = _identityService.HasPermissions(RolePermissions.TariffsView);
+                    Name = GetName<TariffsService>(),
+                    CanCreateByForm = canEditTariffs,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = canEditTariffs,
+                    CanDelete = true,
+                    ShowOnHeader = true,
+                    Columns = columns
+                };
+            });
 
-                    if (!canViewTariffs && !canEditTariffs) return null;
+            _dictionaryConfigurations.Add(typeof(ShippingWarehouseDto), (roleId) =>
+            {
+                var canEditShippingWarehouses =
+                    _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
+                var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
 
-                    var columns = ExtractColumnsFromDto<TariffDto>(roleId);
-                    
-                    var role = _dataService.GetById<Role>(roleId.Value);
-                    if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                        columns = columns.Where(x => x.Name != nameof(Tariff.ProviderId).ToLowerFirstLetter());
+                if (!canEditShippingWarehouses) return null;
+                var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
+                var role = _dataService.GetById<Role>(roleId.Value);
+                if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
+                    columns = columns.Where(x =>
+                        x.Name != nameof(ShippingWarehouseDto.ProviderId).ToLowerFirstLetter());
 
-                    return new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<TariffsService>(),
-                        CanCreateByForm = canEditTariffs,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = canEditTariffs,
-                        CanDelete = true,
-                        ShowOnHeader = true,
-                        Columns = columns
-                    };
-                });
-                
-                _dictionaryConfigurations.Add(typeof(ShippingWarehouseDto), (roleId) =>
+                return new UserConfigurationDictionaryItem
                 {
-                    var canEditShippingWarehouses =
-                        _identityService.HasPermissions(RolePermissions.ShippingWarehousesEdit);
-                    var canEditWarehouses = _identityService.HasPermissions(RolePermissions.WarehousesEdit);
-
-                    if (!canEditShippingWarehouses) return null;
-                    var columns = ExtractColumnsFromDto<ShippingWarehouseDto>(roleId);
-                    var role = _dataService.GetById<Role>(roleId.Value);
-                    if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                        columns = columns.Where(x => x.Name != nameof(ShippingWarehouseDto.ProviderId).ToLowerFirstLetter());
-
-                    return new UserConfigurationDictionaryItem
-                    {
-                        Name = GetName<ShippingWarehousesService>(),
-                        CanCreateByForm = canEditWarehouses,
-                        CanExportToExcel = true,
-                        CanImportFromExcel = true,
-                        ShowOnHeader = false,
-                        Columns = columns
-                    };
-                });
+                    Name = GetName<ShippingWarehousesService>(),
+                    CanCreateByForm = canEditWarehouses,
+                    CanExportToExcel = true,
+                    CanImportFromExcel = true,
+                    ShowOnHeader = false,
+                    Columns = columns
+                };
+            });
 
             //_dictionaryConfigurations.Add(typeof(ArticleDto), (roleId) =>
             //{
@@ -256,12 +260,12 @@ namespace Application.Services.AppConfiguration
                 if (!canEditTransportCompanies) return null;
 
                 var columns = ExtractColumnsFromDto<TransportCompanyDto>(roleId);
-                
+
                 var role = _dataService.GetById<Role>(roleId.Value);
-                
+
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                    columns = columns.Where(x => x.Name != nameof(TransportCompany.ReportId).ToLowerFirstLetter() );
-                
+                    columns = columns.Where(x => x.Name != nameof(TransportCompany.ReportId).ToLowerFirstLetter());
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<TransportCompaniesService>(),
@@ -280,12 +284,12 @@ namespace Application.Services.AppConfiguration
                 if (!canEditClients) return null;
 
                 var columns = ExtractColumnsFromDto<ClientDto>(roleId);
-                
+
                 var role = _dataService.GetById<Role>(roleId.Value);
-                
+
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                    columns = columns.Where(x => x.Name != nameof(Client.ReportId).ToLowerFirstLetter() );
-                
+                    columns = columns.Where(x => x.Name != nameof(Client.ReportId).ToLowerFirstLetter());
+
                 return new UserConfigurationDictionaryItem
                 {
                     Name = GetName<ClientsService>(),
@@ -306,12 +310,12 @@ namespace Application.Services.AppConfiguration
                 var columns = ExtractColumnsFromDto<ProviderDto>(roleId);
 
                 var role = _dataService.GetById<Role>(roleId.Value);
-                
+
                 if (role.RoleType != Domain.Enums.RoleTypes.Administrator)
-                    columns = columns.Where(x => 
+                    columns = columns.Where(x =>
                         x.Name != nameof(Provider.ReportId).ToLowerFirstLetter() &&
                         x.Name != nameof(Provider.ReportPageNameForMobile).ToLowerFirstLetter()
-                        );
+                    );
 
                 return new UserConfigurationDictionaryItem
                 {

@@ -241,7 +241,7 @@ namespace Application.Services.Warehouses
             var search = form.Search.ToLower();
 
             var isInt = int.TryParse(search, out int searchInt);
-
+            
             var pickingTypes = _dataService.GetDbSet<PickingType>()
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id).ToList();
@@ -259,6 +259,8 @@ namespace Application.Services.Warehouses
                 || i.Region.ToLower().Contains(search)
                 || i.City.ToLower().Contains(search)
                 || i.Address.ToLower().Contains(search)
+                || i.Latitude.Contains(search)
+                || i.Longitude.Contains(search)
                 //|| i.PickingTypeId != null && pickingTypes.Any(t => t == i.PickingTypeId)
                 //|| i.DeliveryType != null && deliveryTypes.Contains(i.DeliveryType)
                 || isInt && i.LeadtimeDays == searchInt

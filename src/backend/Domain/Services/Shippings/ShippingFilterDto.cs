@@ -53,7 +53,7 @@ namespace Domain.Services.Shippings
 
         public string ReturnCostWithoutVAT { get; set; }
 
-        public string InvoiceAmountWithoutVAT { get; set; }
+        public string invoiceAmount { get; set; }
         
         public string AdditionalCostsWithoutVAT { get; set; }
 

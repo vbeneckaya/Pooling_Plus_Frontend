@@ -367,6 +367,11 @@
             Экспортировать список форм в excel
             </summary>
         </member>
+        <member name="M:API.Controllers.ShippingsController.ImportFormsFromPooling(System.String)">
+            <summary>
+            Импортировать список форм из Pooling для поставщика
+            </summary>
+        </member>
         <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
