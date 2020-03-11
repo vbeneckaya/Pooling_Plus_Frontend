@@ -10,7 +10,6 @@ namespace Domain.Persistables
         public bool IsActive { get; set; } = true;
         public string FieldsConfig { get; set; }
         public string PasswordHash { get; set; }
-        public string PasswordToken { get; set; }
         public string Name { get; set; }
 
         public Role Role { get; set; }
