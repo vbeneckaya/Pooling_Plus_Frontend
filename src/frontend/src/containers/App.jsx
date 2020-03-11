@@ -27,7 +27,12 @@ const App = () => {
         }
     };
 
-    useEffect(getProfile, []);
+    useEffect(
+        () => {
+            getProfile();
+        },
+        [],
+    );
 
     return (
         <>

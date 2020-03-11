@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Switch, Redirect, Route } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import { useSelector } from 'react-redux';
+import React, {useEffect} from 'react';
+import {Switch, Redirect, Route} from 'react-router-dom';
+import {withRouter} from 'react-router';
+import {useSelector} from 'react-redux';
 import {
     DICTIONARY_CARD_LINK,
     DICTIONARY_LIST_LINK,
@@ -11,6 +11,7 @@ import {
     GRID_LIST_LINK,
     GRID_NEW_LINK,
     LOGIN_LINK,
+    SIGN_WITHOUT_LOGIN,
     NEW_ROLE_LINK,
     NEW_USER_LINK, REPORTS_LINK,
     ROLE_LINK,
@@ -27,12 +28,14 @@ import Login from '../containers/login';
 import RolesList from '../containers/roles/roles_list';
 import RoleCard from '../containers/roles/role_card_new';
 import UsersList from '../containers/users/users_list';
-import UserCard from '../containers/users/user_card_new';
+import UserCard from '../containers/users/user_card';
 import FieldsSetting from '../containers/fieldsSetting/list';
-import { homePageSelector } from '../ducks/profile';
+import {homePageSelector} from '../ducks/profile';
 import Report from "../containers/report";
+import SignWithoutLogin from "../containers/signWithoutLogin";
 
 const MainRoute = withRouter(props => {
+
     const homePage = useSelector(state => homePageSelector(state));
 
     useEffect(
@@ -45,7 +48,7 @@ const MainRoute = withRouter(props => {
         },
         [homePage],
     );
-
+    
     return (
         <Switch>
             <PrivateRoute exact path="/" component={() => <Redirect to={homePage}/>}/>
@@ -63,7 +66,8 @@ const MainRoute = withRouter(props => {
             <PrivateRoute exact path={USERS_LINK} permission="editUsers" component={UsersList}/>
             <PrivateRoute exact path={FIELDS_SETTING_LINK} permission="editFieldProperties" component={FieldsSetting}/>
             <PrivateRoute exact path={REPORTS_LINK} component={Report}/>
-            <Route exact path={LOGIN_LINK} component={Login} />
+            <Route exact path={LOGIN_LINK} component={Login}/>
+            <Route exact path={SIGN_WITHOUT_LOGIN} component={SignWithoutLogin}/>
             <PrivateRoute exact path="*" component={() => <Redirect to={homePage}/>}/>
 
         </Switch>

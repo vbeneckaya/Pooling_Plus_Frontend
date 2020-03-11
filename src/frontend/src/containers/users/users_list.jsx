@@ -11,7 +11,7 @@ import {
     usersListSelector,
 } from '../../ducks/users';
 import { withTranslation } from 'react-i18next';
-import UserCard from './user_card';
+//import UserCard from './user_card_edit';
 import { Button, Icon } from 'semantic-ui-react';
 import {
     DICTIONARY_CARD_LINK,
@@ -38,27 +38,27 @@ export class UsersList extends Component {
         });
     };
 
-    getActions = (row, load, t , user) => {
-        return [
-            <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={load} role={user.role}>
-                <Button size="mini" className="grid-action-btn">
-                    <Icon name="edit" /> {t('edit_btn')}
-                </Button>
-            </UserCard>,
-        ];
-    };
+    // getActions = (row, load, t , user) => {
+    //     return [
+    //         <UserCard id={row.id} title={t('edit_user', { name: row.userName })} loadList={load} role={user.role}>
+    //             <Button size="mini" className="grid-action-btn">
+    //                 <Icon name="edit" /> {t('edit_btn')}
+    //             </Button>
+    //         </UserCard>,
+    //     ];
+    // };
     
-    getCard = ({row, loadList, name}) => {
-        const { t } = this.props;
-
-        return (
-            <UserCard
-                id={row.id}
-                title={t('edit_user', {name: row.userName})}
-                loadList={loadList}
-            />
-        );
-    };
+    // getCard = ({row, loadList, name}) => {
+    //     const { t } = this.props;
+    //
+    //     return (
+    //         <UserCard
+    //             id={row.id}
+    //             title={t('edit_user', {name: row.userName})}
+    //             loadList={loadList}
+    //         />
+    //     );
+    // };
 
     render() {
         const { list, loadList, totalCount, loading, t} = this.props;

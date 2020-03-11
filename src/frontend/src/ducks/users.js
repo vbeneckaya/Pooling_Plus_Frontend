@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 import users from '../mocks/users';
 import {toast} from 'react-toastify';
 import {errorMapping} from '../utils/errorMapping';
+import {SIGN_WITHOUT_LOGIN_COMPONENT_NAME} from "../router/links";
 
 const TYPE_API = 'users';
 
@@ -168,6 +169,7 @@ export const progressSelector = createSelector(stateSelector, state => state.loa
 export const saveProgressSelector = createSelector(stateSelector, state => state.progress);
 export const totalCountSelector = createSelector(stateSelector, state => state.totalCount);
 export const userCardSelector = createSelector(stateSelector, state => state.card);
+
 export const errorSelector = createSelector(stateSelector, state => errorMapping(state.error));
 
 //*  SAGA  *//

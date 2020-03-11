@@ -39,6 +39,8 @@ namespace Application.Services.Orders
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
+        
+        private readonly IMapper _mapper;
 
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
@@ -626,8 +628,7 @@ namespace Application.Services.Orders
                 entity.IsManualEdited = true;
             }
         }
-
-        private readonly IMapper _mapper;
+      
 
         /// <summary>
         /// Apply search form filter to query

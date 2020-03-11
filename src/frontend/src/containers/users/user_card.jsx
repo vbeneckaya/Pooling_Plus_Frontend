@@ -1,137 +1,97 @@
-import React, { Component } from 'react';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import { withTranslation } from 'react-i18next';
-import { Button, Confirm, Dimmer, Form, Grid, Loader, Modal } from 'semantic-ui-react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Confirm, Form, Button} from 'semantic-ui-react';
+import FormField from '../../components/BaseComponents';
+import CardLayout from '../../components/CardLayout';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
+import {SELECT_TYPE, TEXT_TYPE} from '../../constants/columnTypes';
 import {
     clearUserCard,
-    createUserRequest,
-    errorSelector,
     getUserCardRequest,
     progressSelector,
     userCardSelector,
+    errorSelector,
+    createUserRequest,
+    saveProgressSelector,
 } from '../../ducks/users';
-import {
-    getRoleCardRequest,
-    getRolesRequest,
-    progressSelector as rolesProgressSelector, roleCardSelector,
-    rolesFromUserSelector,
-} from '../../ducks/roles';
-import { SELECT_TYPE, TEXT_TYPE } from '../../constants/columnTypes';
-import FormField from '../../components/BaseComponents';
+import {getCompanyTypeByRoleRequest, getRoleCardRequest, clearCompanyType} from "../../ducks/roles";
+import {companyTypeSelector} from "../../ducks/roles";
 
-const initialState = {
-    modalOpen: false,
-    form: {},
-    confirmation: {open: false},
-    notChangeForm: true,
-};
+const UserCard = props => {
+    const {t} = useTranslation();
+    const dispatch = useDispatch();
+    const {match, history, location} = props;
+    const {params = {}} = match;
+    const {id} = params;
 
-class UserCard extends Component {
-    constructor(props) {
-        super(props);
+    let [form, setForm] = useState({});
+    let [company, setFormCompany] = useState({});
+    let [confirmation, setConfirmation] = useState({open: false});
+    let [notChangeForm, setNotChangeForm] = useState(true);
 
-        this.state = {
-            ...initialState,
-            form: {
-                login: null,
-                userName: null,
-                roleId: null,
-                email: null,
-                carrierId: null,
-                providerId: null,
-                clientId: null,
-                isActive: true,
-            },
+    const loading = useSelector(state => progressSelector(state));
+    const progress = useSelector(state => saveProgressSelector(state));
+    const user = useSelector(state => userCardSelector(state));
+    const error = useSelector(state => errorSelector(state)) || {};
+    const companyType = useSelector(state => companyTypeSelector(state)) || {};
+
+    useEffect(() => {
+        id && dispatch(getUserCardRequest(id));
+        return () => {
+            dispatch(clearUserCard());
+            dispatch(clearCompanyType());
         };
-    }
-    
-    
-    
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.user !== this.props.user) {
-            const { user = {} } = this.props;
+    }, []);
 
-            this.setState({
-                form: {
-                    login: user.login,
-                    userName: user.userName,
-                    roleId: user.roleId,
-                    carrierId: user.carrierId,
-                    providerId: user.providerId,
-                    clientId: user.clientId,
-                    email: user.email,
-                    password: user.password,
-                    isActive: user.isActive,
-                },
-            });
-        }
-    }
+    useEffect(() => {
+            setForm(form => ({
+                ...form,
+                ...user,
+            }));
+            user.roleId && dispatch(getCompanyTypeByRoleRequest(user.roleId.value));
+        },
+        [user],
+    );
 
-    handleOpen = () => {
-        const { getUser, id, getRoles } = this.props;
-
-        id && getUser(id);
-        getRoles({
-            filter: {
-                skip: 0,
-                take: 20,
-            },
-        });
+    useEffect(
+        () => {
+            setFormCompany(company => ({
+                ...company,
+                ...companyType,
+            }));
+        },
+        [companyType],
         
-        this.setState({ modalOpen: true });
-    };
+    );
 
-    handleClose = () => {
-        const {notChangeForm} = this.state;
-        const {t} = this.props;
+    const title = useMemo(
+        () => (id ? t('edit_user', {name: user.userName}) : `${t('create_user_title')}`),
+        [id, user],
+    );
 
-        if (notChangeForm) {
-            this.confirmClose();
-        } else {
-            this.setState({
-                confirmation: {
-                    open: true,
-                    content: t('confirm_close_dictionary'),
-                    onCancel: () => {
-                        this.setState({
-                            confirmation: {open: false},
-                        });
-                    },
-                    onConfirm: this.confirmClose,
-                },
-            });
-        }
-    };
+    const getActionsFooter = useCallback(
+        () => {
+            return (
+                <>
+                    <Button color="grey" onClick={handleClose}>
+                        {t('CancelButton')}
+                    </Button>
+                    <Button
+                        color="blue"
+                        disabled={notChangeForm}
+                        loading={progress}
+                        onClick={handleSave}
+                    >
+                        {t('SaveButton')}
+                    </Button>
+                </>
+            );
+        },
+        [form, notChangeForm, progress],
+    );
 
-    confirmClose = () => {
-        const { loadList, clear } = this.props;
-        this.setState({...initialState});
-        clear();
-        loadList(false, true);
-    };
-
-    handleChange = (event, { name, value }) => {
-        this.setState(prevState => ({
-            notChangeForm: false,
-            form: {
-                ...prevState.form,
-                [name]: value,
-            },
-        }));
-    };
-
-    handleRoleChange = (event, { name, value }) => {
-        this.handleChange(event, {name, value});
-        this.handleChange(event, {name: 'carrierId', value: null});
-        this.handleChange(event, {name: 'providerId', value: null});
-        this.handleChange(event, {name: 'clientId', value: null});
-    };
-
-    mapProps = () => {
-        const { form } = this.state;
-        const { id } = this.props;
-
-        let params = { ...form };
+    const handleSave = () => {
+        let params = {...form};
 
         if (id) {
             params = {
@@ -140,182 +100,151 @@ class UserCard extends Component {
             };
         }
 
-        return params;
+        dispatch(
+            createUserRequest({
+                params,
+                callbackFunc: onClose,
+            }),
+        );
     };
 
-    handleCreate = () => {
-        const { createUser } = this.props;
+    const handleChange = useCallback(
+        (event, {name, value}) => {
+            if (notChangeForm) {
+                setNotChangeForm(false);
+            }
+            setForm(form => ({
+                ...form,
+                [name]: value,
+            }));
+        },
+        [notChangeForm],
+    );
 
-        createUser({params: this.mapProps(), callbackFunc: this.confirmClose});
+    const handleRoleChange = useCallback((event, {name, value}) => {
+        dispatch(getRoleCardRequest(value.value));
+        dispatch(getCompanyTypeByRoleRequest(value.value));
+        handleChange(event, {name, value});
+        handleChange(event, {name: 'carrierId', value: null});
+        handleChange(event, {name: 'providerId', value: null});
+        handleChange(event, {name: 'clientId', value: null});
+    }, []);
+
+    const confirmClose = () => {
+        setConfirmation({open: false});
     };
 
-    render() {
-        const { modalOpen, form, confirmation } = this.state;
-        const { login, userName, roleId, email, isActive, password, carrierId ,providerId, clientId  } = form;
-        const { children, title, loading, t, error, user } = this.props;
+    const onClose = () => {
+        history.push({
+            pathname: location.state.pathname,
+            state: {...location.state},
+        });
+    };
 
-        return (
-            <Modal
-                trigger={children}
-                open={modalOpen}
-                dimmer="blurring"
-                closeIcon
-                onOpen={this.handleOpen}
-                onClose={this.handleClose}
-            >
-                <Modal.Header>{title}</Modal.Header>
-                <Modal.Content>
-                    <Dimmer active={loading} inverted className="table-loader">
-                        <Loader size="huge">Loading</Loader>
-                    </Dimmer>
-                    <Form>
-                        <Grid columns="equal">
-                            <Grid.Row columns="equal">
-                                <Grid.Column>
-                                    <FormField
-                                        type={TEXT_TYPE}
-                                        name="email"
-                                        value={email}
-                                        isRequired
-                                        error={error['email']}
-                                        onChange={this.handleChange}
-                                    />
-                                    <FormField
-                                        name="userName"
-                                        value={userName}
-                                        type={TEXT_TYPE}
-                                        isRequired
-                                        error={error['userName']}
-                                        onChange={this.handleChange}
-                                    />
-                                    <FormField
-                                        typeValue="password"
-                                        name="password"
-                                        isRequired={!user.id}
-                                        value={password}
-                                        type={TEXT_TYPE}
-                                        error={error['password']}
-                                        autoComplete="new-password"
-                                        onChange={this.handleChange}
-                                    />
-                                    <FormField
-                                        fluid
-                                        search
-                                        selection
-                                        text="role"
-                                        name="roleId"
-                                        value={form['roleId']}
-                                        source="roles"
-                                        isRequired
-                                        error={error['roleId']}
-                                        type={SELECT_TYPE}
-                                        onChange={this.handleRoleChange}
-                                    />
-                                                            
+    const handleClose = () => {
+        if (notChangeForm) {
+            onClose();
+        } else {
+            setConfirmation({
+                open: true,
+                content: t('confirm_close_dictionary'),
+                onCancel: confirmClose,
+                onConfirm: onClose,
+            });
+        }
+    };
 
-                                    <FormField
-                                        fluid
-                                        search
-                                        selection
-                                        name="carrierId"
-                                        value={carrierId}
-                                        source="transportCompanies"
-                                        error={error['carrierId']}
-                                        type={SELECT_TYPE}
-                                        onChange={this.handleChange}
-                                    />
-                                    <FormField
-                                        fluid
-                                        search
-                                        selection
-                                        name="providerId"
-                                        value={providerId}
-                                        source="providers"
-                                        error={error['providerId']}
-                                        type={SELECT_TYPE}
-                                        onChange={this.handleChange}
-                                    />
-                                    <FormField
-                                        fluid
-                                        search
-                                        selection
-                                        name="clientId"
-                                        value={clientId}
-                                        source="clients"
-                                        error={error['clientId']}
-                                        type={SELECT_TYPE}
-                                        onChange={this.handleChange}
-                                    />
-                                    
-                                    {/*{id ? (
+    return (
+        <CardLayout
+            title={title}
+            actionsFooter={getActionsFooter}
+            onClose={handleClose}
+            loading={loading}
+        >
+            <Form className="user-form">
+                <FormField
+                    type={TEXT_TYPE}
+                    name="email"
+                    value={form['email']}
+                    isRequired
+                    error={error['email']}
+                    onChange={handleChange}
+                />
+                <FormField
+                    name="userName"
+                    value={form['userName']}
+                    type={TEXT_TYPE}
+                    isRequired
+                    error={error['userName']}
+                    onChange={handleChange}
+                />
+                <FormField
+                    typeValue="password"
+                    name="password"
+                    isRequired={!user.id}
+                    value={form['password']}
+                    type={TEXT_TYPE}
+                    error={error['password']}
+                    autoComplete="new-password"
+                    onChange={handleChange}
+                />
+                <FormField
+                    name="signWithoutLoginLink"
+                    value={form['signWithoutLoginLink']}
+                    type={TEXT_TYPE}
+                />
+                <FormField
+                    fluid
+                    search
+                    selection
+                    text="role"
+                    name="roleId"
+                    value={form['roleId']}
+                    source="roles"
+                    isRequired
+                    error={error['roleId']}
+                    type={SELECT_TYPE}
+                    onChange={handleRoleChange}
+                />
+                {company && company.field &&
+                <FormField
+                    fluid
+                    search
+                    selection
+                    name={company.field}
+                    value={form[company.field]}
+                    source={company.source}
+                    error={error[company.field]}
+                    type={SELECT_TYPE}
+                    onChange={handleChange}
+                />}
+                {/*{id ? (
                                             <Label pointing>
                                                 Оставьте поле пустым, если не хотите менять пароль
                                             </Label>
                                         ) : null}*/}
-                                    <Form.Field>
-                                        <Form.Checkbox
-                                            label={t('isActive')}
-                                            name="isActive"
-                                            checked={isActive}
-                                            onChange={(e, { name, checked }) =>
-                                                this.handleChange(e, { name, value: checked })
-                                            }
-                                        />
-                                    </Form.Field>
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
-                    </Form>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button onClick={this.handleClose}>{t('CancelButton')}</Button>
-                    <Button color="blue" onClick={this.handleCreate}>
-                        {t('SaveButton')}
-                    </Button>
-                </Modal.Actions>
-                <Confirm
-                    dimmer="blurring"
-                    open={confirmation.open}
-                    onCancel={confirmation.onCancel}
-                    cancelButton={t('cancelConfirm')}
-                    onConfirm={confirmation.onConfirm}
-                    content={confirmation.content}
-                />
-            </Modal>
-        );
-    }
-}
-
-const mapStateToProps = state => {
-    return {
-        user: userCardSelector(state),
-        loading: progressSelector(state),
-        roles: rolesFromUserSelector(state),
-        rolesLoading: rolesProgressSelector(state),
-        error: errorSelector(state),
-    };
+                {/*<Form.Field>*/}
+                    {/*<Form.Checkbox*/}
+                        {/*label={t('isActive')}*/}
+                        {/*name="isActive"*/}
+                        {/*checked={form['isActive']}*/}
+                        {/*onChange={(e, {name, checked}) =>*/}
+                            {/*handleChange(e, {name, value: checked})*/}
+                        {/*}*/}
+                    {/*/>*/}
+                {/*</Form.Field>*/}
+            </Form>
+            <Confirm
+                dimmer="blurring"
+                open={confirmation.open}
+                onCancel={confirmation.onCancel}
+                cancelButton={t('cancelConfirm')}
+                confirmButton={t('Yes')}
+                onConfirm={confirmation.onConfirm}
+                content={confirmation.content}
+            />
+        </CardLayout>
+    );
 };
 
-const mapDispatchToProps = dispatch => {
-    return {
-        getUser: params => {
-            dispatch(getUserCardRequest(params));
-        },
-        getRoles: params => {
-            dispatch(getRolesRequest(params));
-        },
-        createUser: params => {
-            dispatch(createUserRequest(params));
-        },
-        clear: () => {
-            dispatch(clearUserCard());
-        },
-    };
-};
-
-export default withTranslation()(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps,
-    )(UserCard),
-);
+export default UserCard;

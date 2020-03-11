@@ -9,12 +9,10 @@ import {
     changePasswordRequest,
     editProfileSettingsRequest,
     errorSelector,
-    getProfileSettingsRequest,
     profileSettingsSelector,
     progressChangePasswordSelector,
     progressEditSelector,
 } from '../../ducks/profile';
-import PasswordField from '../../components/BaseComponents/Password';
 
 const Profile = ({ children, open: modalOpen, onOpen, onClose }) => {
     const { t } = useTranslation();

@@ -109,6 +109,11 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.IdentityController.LoginByToken(Domain.Services.Identity.IdentityByTokenModel)">
+            <summary>
+            Авторизация, получение токена для логина и пароля
+            </summary>
+        </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
             Найти по номеру

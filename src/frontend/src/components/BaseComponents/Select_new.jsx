@@ -6,16 +6,11 @@ import { Dropdown, Form, Visibility } from 'semantic-ui-react';
 
 import './style.scss';
 import {
-    clearFormLookup,
     getLookupRequest,
     listFromSelectSelector,
-    listSelector,
-    progressSelector,
     totalCounterSelector,
-    valuesListSelector,
 } from '../../ducks/lookup';
 import { PAGE_SIZE } from '../../constants/settings';
-import { debounce } from 'throttle-debounce';
 
 const Select = ({
                     value = {},
