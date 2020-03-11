@@ -92,9 +92,8 @@ const FieldsConfig = ({
         setModalOpen(true);
     };
 
-    const onClose = (newName, callback) => {
-        debugger;
-        getRepresentations && newName && getRepresentations({representationToSetName: newName});
+    const onClose = (newName) => {
+        getRepresentations && typeof(newName) == 'string' && getRepresentations({representationToSetName: newName});
         setModalOpen(false);
         setError(null);
         setEmpty(false);
@@ -144,7 +143,7 @@ const FieldsConfig = ({
                         isDefault: false,
                         value: selectedFields,
                         callbackSuccess: () => {
-                            onClose(null, name);
+                            onClose(name);
                         },
                     }),
                 );
@@ -189,7 +188,7 @@ const FieldsConfig = ({
                         value: selectedFields,
 
                         callbackSuccess: () => {
-                            onClose(null, name);
+                            onClose(name);
                         },
                     }),
                 );
