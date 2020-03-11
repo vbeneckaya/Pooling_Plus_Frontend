@@ -286,7 +286,7 @@ namespace Application.Services.Users
                     .ForMember(t => t.Role, e=>e.MapFrom((s) =>  roles.FirstOrDefault(role => role.Id == s.RoleId).Name))
                     
                     .ForMember(t => t.SignWithoutLoginLink, e => e.MapFrom((s) => 
-                        $"https://plus.pooling.me/signWithoutLoginLink/{s.Id.ToString()}/{Uri.EscapeDataString(s.PasswordHash.GetHash())}"
+                        $"https://plus.pooling.me/signwithoutlogin/{s.Id.ToString()}/{Uri.EscapeDataString(s.PasswordHash.GetHash())}"
                         ))
                     
                     .ForMember(t => t.CarrierId, e => e.MapFrom( s => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
