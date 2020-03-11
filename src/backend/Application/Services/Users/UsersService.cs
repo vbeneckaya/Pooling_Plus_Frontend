@@ -273,9 +273,6 @@ namespace Application.Services.Users
                     
                     .ForMember(t => t.PasswordHash,  e => e.Condition((s) => !string.IsNullOrEmpty(s.Password)))
                     .ForMember(t => t.PasswordHash, e => e.MapFrom((s) => s.Password.GetHash()))
-                    
-                    .ForMember(t => t.PasswordToken,  e => e.Condition((s) => !string.IsNullOrEmpty(s.Password)))
-                    .ForMember(t => t.PasswordToken, e => e.MapFrom(s=> s.Password.GetHash().GetHash()))
                     ;
 
                 var roles = _dataService.GetDbSet<Role>().ToList();
