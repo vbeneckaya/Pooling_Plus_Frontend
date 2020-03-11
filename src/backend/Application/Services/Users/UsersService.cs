@@ -261,6 +261,8 @@ namespace Application.Services.Users
                         e => e.MapFrom(s => string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)))
                     .ForMember(t => t.Name, e => e.MapFrom(s => s.UserName))
                     .ForMember(t => t.RoleId, e => e.MapFrom(s => Guid.Parse(s.RoleId.Value)))
+                    .ForMember(t => t.Role, e => e.Ignore())
+                    
                     
                     .ForMember(t => t.CarrierId, e => e.Condition((s)=> s.CarrierId?.Value != null))
                     .ForMember(t => t.CarrierId, e => e.MapFrom((s)=> Guid.Parse(s.CarrierId.Value)))

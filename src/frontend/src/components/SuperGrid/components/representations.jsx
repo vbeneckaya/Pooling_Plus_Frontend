@@ -92,8 +92,9 @@ const FieldsConfig = ({
         setModalOpen(true);
     };
 
-    const onClose = (newName, callback) => {
-        getRepresentations && getRepresentations({representationToSetName: newName});
+    const onClose = (newName) => {
+        let updateView = typeof(newName) == "string" || newName == null;
+        getRepresentations && updateView && getRepresentations({representationToSetName: newName});
         setModalOpen(false);
         setError(null);
         setEmpty(false);
