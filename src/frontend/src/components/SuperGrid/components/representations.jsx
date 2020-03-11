@@ -93,7 +93,8 @@ const FieldsConfig = ({
     };
 
     const onClose = (newName, callback) => {
-        getRepresentations && getRepresentations({representationToSetName: newName});
+        debugger;
+        getRepresentations && newName && getRepresentations({representationToSetName: newName});
         setModalOpen(false);
         setError(null);
         setEmpty(false);
@@ -143,7 +144,7 @@ const FieldsConfig = ({
                         isDefault: false,
                         value: selectedFields,
                         callbackSuccess: () => {
-                            onClose(name);
+                            onClose(null, name);
                         },
                     }),
                 );
@@ -188,7 +189,7 @@ const FieldsConfig = ({
                         value: selectedFields,
 
                         callbackSuccess: () => {
-                            onClose(name);
+                            onClose(null, name);
                         },
                     }),
                 );
