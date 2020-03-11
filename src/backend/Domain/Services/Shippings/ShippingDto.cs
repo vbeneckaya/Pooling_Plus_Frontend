@@ -28,7 +28,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
         public LookUpDto CarrierId { get; set; }
         
-        [FieldType(FieldType.Select, source: nameof(Provider)), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Select, source: nameof(Providers)), IsDefault, OrderNumber(3)]
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), IsDefault, OrderNumber(7)]
