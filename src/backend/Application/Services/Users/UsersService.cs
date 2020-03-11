@@ -15,11 +15,15 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using AutoMapper;
 
 namespace Application.Services.Users
 {
     public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
+        private readonly IMapper _mapper;
+
         public UsersService(ICommonDataService dataService, IUserProvider userProvider,
             ITriggersService triggersService,
             IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
@@ -27,6 +31,7 @@ namespace Application.Services.Users
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
                 fieldSetterFactory, configurationService)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -127,38 +132,17 @@ namespace Application.Services.Users
 
         public override UserDto MapFromEntityToDto(User entity)
         {
-            var roles = _dataService.GetDbSet<Role>().ToList();
-            return new UserDto
-            {
-                Email = entity.Email,
-                Id = entity.Id.ToString(),
-                UserName = entity.Name,
-                Role = roles.FirstOrDefault(role => role.Id == entity.RoleId).Name,
-                RoleId = new LookUpDto(entity.RoleId.ToString()),
-                FieldsConfig = entity.FieldsConfig,
-                IsActive = entity.IsActive,
-                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
-                ClientId = entity.ClientId == null ? null : new LookUpDto(entity.ClientId.ToString()),
-                ProviderId = entity.ProviderId == null ? null : new LookUpDto(entity.ProviderId.ToString()),
-            };
+            var userDto = new UserDto();
+            _mapper.Map(entity, userDto);
+            
+            return userDto;
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(User entity, UserDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-
+            _mapper.Map(dto, entity);
+            
             var oldRoleId = entity.RoleId;
-
-            entity.Email = dto.Email;
-            entity.Name = dto.UserName;
-            entity.RoleId = Guid.Parse(dto.RoleId?.Value);
-            entity.FieldsConfig = dto.FieldsConfig;
-            entity.IsActive = dto.IsActive;
-            entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
-            entity.ClientId = dto.ClientId?.Value?.ToGuid();
-            entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
-
             if (oldRoleId != entity.RoleId)
             {
                 var transportCompanyRoleIds = _dataService.GetDbSet<Role>()
@@ -181,13 +165,13 @@ namespace Application.Services.Users
                     entity.ProviderId = null;
                     entity.ClientId = null;
                 }
-                
+
                 if (clientRoleIds.Contains(entity.RoleId))
                 {
                     entity.ProviderId = null;
                     entity.CarrierId = null;
                 }
-                
+
                 if (providerRoleIds.Contains(entity.RoleId))
                 {
                     entity.CarrierId = null;
@@ -197,7 +181,9 @@ namespace Application.Services.Users
 
 
             if (!string.IsNullOrEmpty(dto.Password))
+            {
                 entity.PasswordHash = dto.Password.GetHash();
+            }
 
             return null;
         }
@@ -264,6 +250,51 @@ namespace Application.Services.Users
         {
             return _dataService.GetDbSet<User>()
                 .FirstOrDefault(i => i.Email == dto.Email);
+        }
+
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<UserDto, User>()
+                    .ForMember(t => t.Id,
+                        e => e.MapFrom(s => string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)))
+                    .ForMember(t => t.Name, e => e.MapFrom(s => s.UserName))
+                    .ForMember(t => t.RoleId, e => e.MapFrom(s => Guid.Parse(s.RoleId.Value)))
+                    
+                    .ForMember(t => t.CarrierId, e => e.Condition((s)=> s.CarrierId?.Value != null))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s)=> Guid.Parse(s.CarrierId.Value)))
+                    
+                    .ForMember(t => t.ProviderId, e => e.Condition((s)=> s.ProviderId?.Value != null))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s)=> Guid.Parse(s.ProviderId.Value)))
+                    
+                    .ForMember(t => t.ClientId, e => e.Condition((s)=> s.ClientId?.Value != null))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s)=> Guid.Parse(s.ClientId.Value)))
+                    
+                    .ForMember(t => t.PasswordHash,  e => e.Condition((s) => !string.IsNullOrEmpty(s.Password)))
+                    .ForMember(t => t.PasswordHash, e => e.MapFrom((s) => s.Password.GetHash()))
+                    
+                    .ForMember(t => t.PasswordToken,  e => e.Condition((s) => !string.IsNullOrEmpty(s.Password)))
+                    .ForMember(t => t.PasswordToken, e => e.MapFrom(s=> s.Password.GetHash().GetHash()))
+                    ;
+
+                var roles = _dataService.GetDbSet<Role>().ToList();
+                cfg.CreateMap<User, UserDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    .ForMember(t => t.UserName, e => e.MapFrom((s) => s.Name))
+                    .ForMember(t => t.RoleId, e => e.MapFrom((s) => new LookUpDto(s.RoleId.ToString())))
+                    .ForMember(t => t.Role, e=>e.MapFrom((s) =>  roles.FirstOrDefault(role => role.Id == s.RoleId).Name))
+                    
+                    .ForMember(t => t.SignWithoutLoginLink, e => e.MapFrom((s) => 
+                        $"https://plus.pooling.me/signWithoutLoginLink/{s.Id.ToString()}/{Uri.EscapeDataString(s.PasswordHash.GetHash())}"
+                        ))
+                    
+                    .ForMember(t => t.CarrierId, e => e.MapFrom( s => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId == null ? null : new LookUpDto(s.ClientId.ToString())))
+                    ;
+            });
+            return result;
         }
     }
 }

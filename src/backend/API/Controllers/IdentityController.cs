@@ -15,10 +15,11 @@ namespace API.Controllers
         {
             this.identityService = identityService;
         }
+
         /// <summary>
         /// Получение информации о пользователе
         /// </summary>
-        [HttpGet("userInfo")] 
+        [HttpGet("userInfo")]
         [ProducesResponseType(typeof(UserInfo), 200)]
         public IActionResult UserInfo()
         {
@@ -37,13 +38,13 @@ namespace API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        
+
         /// <summary>
         /// Авторизация, получение токена для логина и пароля
         /// </summary>
         [HttpPost("login")]
         [ProducesResponseType(typeof(TokenModel), 200)]
-        public IActionResult Login([FromBody]IdentityModel model)
+        public IActionResult Login([FromBody] IdentityModel model)
         {
             try
             {
@@ -70,6 +71,38 @@ namespace API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        
+
+        /// <summary>
+        /// Авторизация, получение токена для логина и пароля
+        /// </summary>
+        [HttpPost("loginByToken")]
+        [ProducesResponseType(typeof(TokenModel), 200)]
+        public IActionResult LoginByToken([FromBody] IdentityByTokenModel model)
+        {
+            try
+            {
+                var identity = identityService.GetToken(model);
+
+                switch (identity.Result)
+                {
+                    case VerificationResult.Ok:
+                        return Ok(identity.Data);
+
+                    case VerificationResult.Forbidden:
+                        return BadRequest("UserNotFound");
+
+                    case VerificationResult.WrongCredentials:
+                        return BadRequest("UserIncorrectData");
+
+                    default:
+                        return StatusCode(500);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to Login");
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

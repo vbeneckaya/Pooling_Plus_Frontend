@@ -1,0 +1,102 @@
+.centered-div {
+    //width: 509px;
+    height: 160px;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+
+    .ui.grid {
+        margin: 0!important;
+    }
+}
+
+.login-form-wrapper {
+    padding-top: 0 !important;
+    // width: 509px !important;
+}
+
+.login-form-wrapper .error {
+    color: red;
+}
+
+.login-form-description {
+    width: 100%;
+    //border-right: 1px solid #e0e1e2;
+    // padding-left: 33px !important;
+    // padding-top: 59px !important;
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: flex-end;
+
+    &-company {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    @media screen and (max-width: 990px) {
+        padding-bottom: 24px;
+        padding-right: 0 !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    img {
+        width: 200px;
+    }
+}
+
+.login-form-input-wrapper {
+    width: 100% !important;
+    display: flex;
+    form {
+        width: 200px;
+    }
+
+    @media screen and (max-width: 990px) {
+        padding-right: 0 !important;
+        justify-content: center;
+        text-align: center !important;
+        form {
+            width: 100%;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
+
+.login-form-forgot-pass {
+    cursor: pointer;
+    font-size: 10.3pt;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    display: inline-block;
+}
+
+.language-switcher {
+    position: absolute;
+    right: 82px;
+    //width: 224px;
+    top: 33px;
+}
+
+.main-logo {
+    position: absolute;
+    //width: 318px;
+    left: 82px;
+    top: 33px;
+}
+
+.login-form-description-wrapper {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    /* padding-top: 37px;*/
+}

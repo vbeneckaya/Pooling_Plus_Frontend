@@ -15,6 +15,10 @@ const LOGIN_REQUEST = 'LOGIN_REQUEST';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_ERROR = 'LOGIN_ERROR';
 
+const LOGIN_BY_TOKEN_REQUEST = 'LOGIN_BY_TOKEN_REQUEST';
+const LOGIN_BY_TOKEN_SUCCESS = 'LOGIN_BY_TOKEN_SUCCESS';
+const LOGIN_BY_TOKEN_ERROR = 'LOGIN_BY_TOKEN_ERROR';
+
 const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 
 export const ACCESS_TOKEN = 'accessToken';
@@ -51,6 +55,7 @@ export default (state = initial, { type, payload }) => {
                 page_progress: false,
             };
         case LOGIN_REQUEST:
+        case LOGIN_BY_TOKEN_REQUEST:
             return {
                 ...state,
                 login_progress: true,
@@ -58,6 +63,7 @@ export default (state = initial, { type, payload }) => {
                 error: '',
             };
         case LOGIN_SUCCESS:
+        case LOGIN_BY_TOKEN_SUCCESS:
             return {
                 ...state,
                 login_progress: false,
@@ -65,6 +71,7 @@ export default (state = initial, { type, payload }) => {
                 error: '',
             };
         case LOGIN_ERROR:
+        case LOGIN_BY_TOKEN_ERROR:
             return {
                 ...state,
                 login_progress: false,
@@ -93,6 +100,13 @@ export const getLoginPageRequest = payload => {
 export const loginRequest = payload => {
     return {
         type: LOGIN_REQUEST,
+        payload,
+    };
+};
+
+export const loginByTokenRequest = payload => {
+    return {
+        type: LOGIN_BY_TOKEN_REQUEST,
         payload,
     };
 };
@@ -153,9 +167,31 @@ function* loginSaga({ payload }) {
     }
 }
 
+function* loginByTokenSaga({ payload }) {
+    try {
+        const {userId, token } = payload;
+        const result = yield postman.post(`/identity/loginByToken/`, payload);
+        localStorage.setItem(ACCESS_TOKEN, result.accessToken);
+        setAccessToken(result.accessToken);
+        yield put({
+            type: LOGIN_BY_TOKEN_SUCCESS,
+        });
+        yield put({
+            type: GET_USER_PROFILE_REQUEST,
+            payload: { url: '/' },
+        });
+    } catch ({ response }) {
+        yield put({
+            type: LOGIN_BY_TOKEN_ERROR,
+            payload: response.data,
+        });
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_LOGIN_PAGE_REQUEST, getLoginPageSaga),
         takeEvery(LOGIN_REQUEST, loginSaga),
+        takeEvery(LOGIN_BY_TOKEN_REQUEST, loginByTokenSaga),
     ]);
 }
