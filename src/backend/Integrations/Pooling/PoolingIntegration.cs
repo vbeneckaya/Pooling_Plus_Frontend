@@ -278,7 +278,7 @@ namespace Integrations.Pooling
                         var shippingId = Guid.Empty;
                         try
                         {
-                            var number = reservation.Value<string>("number"); //PoolingReservationId
+                            var poolingReservationId = reservation.Value<string>("id"); 
 
                             var ordersNumbers = reservation.Value<string>("packingLists").Replace(" ", "")
                                 .Split(",");
@@ -336,8 +336,8 @@ namespace Integrations.Pooling
                             decimal.TryParse(reservation.Value<string>("cost"), out var invoiceCost);
 
                             var shipping = _dataService.GetDbSet<Shipping>()
-                                               .FirstOrDefault(_ => _.PoolingReservationId == number) ??
-                                           new Shipping {PoolingReservationId = number};
+                                               .FirstOrDefault(_ => _.PoolingReservationId == poolingReservationId) ??
+                                           new Shipping {PoolingReservationId = poolingReservationId};
 
                             shipping.ShippingCreationDate = createDate;
 
