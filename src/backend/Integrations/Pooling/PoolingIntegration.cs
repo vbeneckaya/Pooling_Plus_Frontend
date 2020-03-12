@@ -286,14 +286,11 @@ namespace Integrations.Pooling
                             var orderClientNumbers =
                                 reservation.Value<string>("orderNumbers").Replace(" ", "").Split(",");
 
-                            var shippingWarehouse = reservation.Value<string>("loadingPlace");
-
-                            Guid.TryParse(shippingWarehousesService
-                                    ?.ForSelect(provider.Id)
-                                    .FirstOrDefault(_ => _.Name == shippingWarehouse)?.Value,
-                                out var shippingWarehouseId);
-
-                            var deliveryWarehouse = reservation.Value<string>("distributionCenter");
+                            var shippingWarehouse = shippingWarehousesService
+                                ?.ForSelect(provider.Id)
+                                .FirstOrDefault(_ => _.Name == reservation.Value<string>("loadingPlace"));
+                           
+                            var deliveryWarehouseName = reservation.Value<string>("distributionCenter");
 
                             Int32.TryParse(reservation.Value<string>("palletCount"), out var palletsCount);
 
@@ -321,11 +318,16 @@ namespace Integrations.Pooling
                             Guid.TryParse(clientsService?.ForSelect()
                                 .FirstOrDefault(_ => _.Name == clientName)?.Value, out var clientId);
 
-                            var deliveryWarehouseId = Guid.Empty;
+                            Guid? deliveryWarehouseId = null;
                             if (clientId != null)
-                                Guid.TryParse(warehousesService?.ForSelect(clientId)
-                                        .FirstOrDefault(_ => _.Name == deliveryWarehouse)?.Value,
-                                    out deliveryWarehouseId);
+                            {
+                                var deliveryWarehouse = warehousesService?.ForSelect(clientId)
+                                    .FirstOrDefault(_ => _.Name == deliveryWarehouseName);
+                                deliveryWarehouseId = deliveryWarehouse == null ? (Guid?) null : Guid.Parse(deliveryWarehouse.Value);
+                            }
+
+                            var shippingWarehouseId =
+                                shippingWarehouse == null ? null : (Guid?)Guid.Parse(shippingWarehouse.Value);
 
                             var deliveryType = reservation.Value<string>("deliveryType");
 
@@ -406,7 +408,7 @@ namespace Integrations.Pooling
 
                                 order.DeliveryWarehouseId = order.ClientId == null
                                     ? null
-                                    : (Guid?) deliveryWarehouseId;
+                                    : deliveryWarehouseId;
 
                                 order.ClientOrderNumber = orderClientNumbers[ordersNumbers.IndexOf(orderNumber)];
 
