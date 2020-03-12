@@ -26,7 +26,6 @@ namespace Application.Services.Triggers
             var shippingChanges = _dataService.GetChanges<Shipping>().ToList();
             var tariffChanges = _dataService.GetChanges<Tariff>().ToList();
             var warehouseChanges = _dataService.GetChanges<Warehouse>().ToList();
-            var providerChanges = _dataService.GetChanges<Provider>().ToList();
 
             _dataService.SaveChanges();
 
@@ -34,7 +33,6 @@ namespace Application.Services.Triggers
             RunTriggers(shippingChanges);
             RunTriggers(tariffChanges);
             RunTriggers(warehouseChanges);
-            RunTriggers(providerChanges);
         }
 
         private void RunTriggers<TEntity>(IEnumerable<EntityChanges<TEntity>> changes) where TEntity : class, IPersistable

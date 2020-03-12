@@ -279,6 +279,8 @@ namespace Integrations.Pooling
                         try
                         {
                             var poolingReservationId = reservation.Value<string>("id");
+                            
+                            var carType = reservation.Value<string>("carType");
 
                             var ordersNumbers = reservation.Value<string>("packingLists").Replace(" ", "")
                                 .Split(",");
@@ -286,9 +288,21 @@ namespace Integrations.Pooling
                             var orderClientNumbers =
                                 reservation.Value<string>("orderNumbers").Replace(" ", "").Split(",");
 
-                            var shippingWarehouse = shippingWarehousesService
-                                ?.ForSelect(provider.Id)
-                                .FirstOrDefault(_ => _.Name == reservation.Value<string>("loadingPlace"));
+                            var shippingWarehouseId = _dataService.GetDbSet<ShippingWarehouse>()
+                                .FirstOrDefault(_ => _.ProviderId == Guid.Parse(providerId)
+                                                     && _.WarehouseName == reservation.Value<string>("loadingPlace"))
+                                ?.Id ;
+
+                            if (shippingWarehouseId == null)
+                            {
+                                var newShippingWarehouse = new ShippingWarehouse
+                                {
+                                    Id = Guid.NewGuid(),
+                                    WarehouseName = reservation.Value<string>("loadingPlace")
+                                };
+                                _dataService.GetDbSet<ShippingWarehouse>().Add(newShippingWarehouse);
+                                shippingWarehouseId = newShippingWarehouse.Id;
+                            }
 
                             var deliveryWarehouseName = reservation.Value<string>("distributionCenter");
 
@@ -328,9 +342,6 @@ namespace Integrations.Pooling
                                     : Guid.Parse(deliveryWarehouse.Value);
                             }
 
-                            var shippingWarehouseId =
-                                shippingWarehouse == null ? null : (Guid?) Guid.Parse(shippingWarehouse.Value);
-
                             var deliveryType = reservation.Value<string>("deliveryType");
 
                             decimal.TryParse(reservation.Value<string>("totalPrice"), out var deliveryCost);
@@ -357,7 +368,11 @@ namespace Integrations.Pooling
                                     break;
                             }
 
+                            shipping.VehicleTypeId = _dataService.GetDbSet<VehicleType>()
+                                .FirstOrDefault(_ => string.Equals(_.Name, carType, StringComparison.CurrentCultureIgnoreCase))?.Id;
+                            
                             shipping.InvoiceAmount = invoiceCost;
+                            
 
                             shipping.PalletsCount = palletsCount;
 
@@ -379,7 +394,7 @@ namespace Integrations.Pooling
                             {
                                 _dataService.GetDbSet<Shipping>().Update(shipping);
                             }
-
+                            
                             _dataService.SaveChanges();
 
                             shippingId = shipping.Id;
@@ -470,7 +485,7 @@ namespace Integrations.Pooling
                                 if ((shipping.TotalDeliveryCost == null || shipping.TotalDeliveryCost == 0) &&
                                     shipping.TarifficationType != null)
                                 {
-                                    calcService.UpdateDeliveryCost(_dataService.GetById<Shipping>(shipping.Id));
+                                    calcService.UpdateDeliveryCost(_dataService.GetById<Shipping>(shipping.Id), true);
                                 }
                             }
 
@@ -478,6 +493,9 @@ namespace Integrations.Pooling
                             {
                                 SetStatusToComplete(shipping.Id);
                             }
+                            
+                            
+
                         }
                         catch (Exception e)
                         {

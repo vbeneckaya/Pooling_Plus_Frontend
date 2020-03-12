@@ -393,6 +393,7 @@ namespace Application.Shared
                 sw.ElapsedMilliseconds);
             sw.Restart();
 
+            result.Id = entity.Id.ToString();
             if (isNew)
             {
                 result.ResultType = ValidateResultType.Created;

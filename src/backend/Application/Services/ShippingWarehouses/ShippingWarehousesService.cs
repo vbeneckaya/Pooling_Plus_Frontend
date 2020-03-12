@@ -144,6 +144,29 @@ namespace Application.Services.ShippingWarehouses
             }
         }
 
+        public Guid? AddColedinoShippingWarehouseToProvider(Guid providerId)
+        {
+            var isColedinoAllreadyAdded = _dataService.GetDbSet<ShippingWarehouse>()
+                .FirstOrDefault(_ => _.ProviderId == providerId && _.WarehouseName.ToLower().Equals("коледино"));
+            if (isColedinoAllreadyAdded != null) return null;
+            
+            var warehouseColedino = new ShippingWarehouse
+            {
+                Id = Guid.NewGuid(),
+                ProviderId = providerId,
+                WarehouseName = "Коледино",
+                Address = "Московская обл., Подольский р-он с/п Лаговское, вблизи д. Коледино 142181",
+                PostalCode = "142181",
+                Region = "Московская обл.",
+                Area = "Подольский р-он",
+                IsActive = true,
+                Settlement = "с/п Лаговское, вблизи д. Коледино"
+            };
+            _dataService.GetDbSet<ShippingWarehouse>().Add(warehouseColedino);
+            _dataService.SaveChanges();
+            return warehouseColedino.Id;
+        }
+
         public override IEnumerable<LookUpDto> ForSelect()
         {
             var entities = _dataService.GetDbSet<ShippingWarehouse>().OrderBy(x => x.WarehouseName).ToList();
@@ -160,8 +183,7 @@ namespace Application.Services.ShippingWarehouses
 
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.WarehouseName == dto.WarehouseName)
-                .FirstOrDefault();
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.WarehouseName == dto.WarehouseName);
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
