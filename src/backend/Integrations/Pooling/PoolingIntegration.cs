@@ -278,7 +278,7 @@ namespace Integrations.Pooling
                         var shippingId = Guid.Empty;
                         try
                         {
-                            var number = reservation.Value<string>("number"); //PoolingReservationId
+                            var poolingReservationId = reservation.Value<string>("id");
 
                             var ordersNumbers = reservation.Value<string>("packingLists").Replace(" ", "")
                                 .Split(",");
@@ -289,7 +289,7 @@ namespace Integrations.Pooling
                             var shippingWarehouse = shippingWarehousesService
                                 ?.ForSelect(provider.Id)
                                 .FirstOrDefault(_ => _.Name == reservation.Value<string>("loadingPlace"));
-                           
+
                             var deliveryWarehouseName = reservation.Value<string>("distributionCenter");
 
                             Int32.TryParse(reservation.Value<string>("palletCount"), out var palletsCount);
@@ -323,11 +323,13 @@ namespace Integrations.Pooling
                             {
                                 var deliveryWarehouse = warehousesService?.ForSelect(clientId)
                                     .FirstOrDefault(_ => _.Name == deliveryWarehouseName);
-                                deliveryWarehouseId = deliveryWarehouse == null ? (Guid?) null : Guid.Parse(deliveryWarehouse.Value);
+                                deliveryWarehouseId = deliveryWarehouse == null
+                                    ? (Guid?) null
+                                    : Guid.Parse(deliveryWarehouse.Value);
                             }
 
                             var shippingWarehouseId =
-                                shippingWarehouse == null ? null : (Guid?)Guid.Parse(shippingWarehouse.Value);
+                                shippingWarehouse == null ? null : (Guid?) Guid.Parse(shippingWarehouse.Value);
 
                             var deliveryType = reservation.Value<string>("deliveryType");
 
@@ -336,8 +338,8 @@ namespace Integrations.Pooling
                             decimal.TryParse(reservation.Value<string>("cost"), out var invoiceCost);
 
                             var shipping = _dataService.GetDbSet<Shipping>()
-                                               .FirstOrDefault(_ => _.PoolingReservationId == number) ??
-                                           new Shipping {PoolingReservationId = number};
+                                               .FirstOrDefault(_ => _.PoolingReservationId == poolingReservationId) ??
+                                           new Shipping {PoolingReservationId = poolingReservationId};
 
                             shipping.ShippingCreationDate = createDate;
 
@@ -345,9 +347,15 @@ namespace Integrations.Pooling
 
                             shipping.CarrierId = carrierId;
 
-                            shipping.TarifficationType = deliveryType.Equals("Pooling")
-                                ? (TarifficationType?) null
-                                : TarifficationType.Ltl;
+                            switch (deliveryType)
+                            {
+                                case "LTL":
+                                    shipping.TarifficationType = TarifficationType.Ltl;
+                                    break;
+                                default:
+                                    shipping.TarifficationType = null;
+                                    break;
+                            }
 
                             shipping.InvoiceAmount = invoiceCost;
 
