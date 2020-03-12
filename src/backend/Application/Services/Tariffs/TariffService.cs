@@ -16,8 +16,13 @@ using Domain.Services.UserProvider;
 using Domain.Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using OfficeOpenXml;
+using Serilog;
 
 namespace Application.Services.Tariffs
 {
@@ -28,6 +33,45 @@ namespace Application.Services.Tariffs
                               IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
+        }
+        
+        public virtual ImportResultDto ImportFromExcel(Stream fileStream)
+        {
+            string entityName = typeof(Tariff).Name;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var excel = new ExcelPackage(fileStream);
+            var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
+
+            var excelMapper = CreateExcelMapper();
+            
+            var dtos = excelMapper.LoadEntries(workSheet);
+
+            var providers = dtos.Select(_ => Guid.Parse(_.Data.ProviderId.Value)).Distinct().ToList();
+            
+            var validShippingWarehouses =
+                _dataService.GetDbSet<ShippingWarehouse>().Where(x=>providers.Contains(x.ProviderId));
+            
+            dtos = dtos.Select(x=> CheckShippingWarehouseProvider(x, validShippingWarehouses));
+            
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+            sw.Restart();
+
+            var importResult = Import(dtos);
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
+
+            return importResult;
+        }
+
+        private ValidatedRecord<TariffDto> CheckShippingWarehouseProvider(ValidatedRecord<TariffDto> dto, IQueryable<ShippingWarehouse> validShippingWarehouses)
+        {
+            dto.Data.ShippingWarehouseId.Value = validShippingWarehouses.FirstOrDefault(_ =>
+                _.ProviderId == Guid.Parse(dto.Data.ProviderId.Value)
+                && _.WarehouseName == dto.Data.ShippingWarehouseId.Name).Id.ToString();
+            return dto;
         }
 
         public override  DetailedValidationResult SaveOrCreate(TariffDto entityFrom)
@@ -434,7 +478,6 @@ namespace Application.Services.Tariffs
         {
             Guid? carrierId = dto.CarrierId?.Value?.ToGuid();
             Guid? vehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
-           // Guid? bodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
             string shipmentWarehouse = dto.ShippingWarehouseId?.Value;
             string deliveryWarehouse = dto.DeliveryWarehouseId?.Value;
             string provider = dto.ProviderId?.Value;
@@ -442,7 +485,6 @@ namespace Application.Services.Tariffs
                     .Where(i =>
                         i.CarrierId == carrierId
                         && i.VehicleTypeId == vehicleTypeId
-                      //  && i.BodyTypeId == bodyTypeId
                         && Guid.Empty != i.ShippingWarehouseId && i.ShippingWarehouseId == Guid.Parse(shipmentWarehouse)
                         && Guid.Empty != i.DeliveryWarehouseId && i.DeliveryWarehouseId == Guid.Parse(deliveryWarehouse)
                         && Guid.Empty != i.ProviderId && i.ProviderId == Guid.Parse(provider)

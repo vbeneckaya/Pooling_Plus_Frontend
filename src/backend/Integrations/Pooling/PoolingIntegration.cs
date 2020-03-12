@@ -298,6 +298,7 @@ namespace Integrations.Pooling
                                 var newShippingWarehouse = new ShippingWarehouse
                                 {
                                     Id = Guid.NewGuid(),
+                                    ProviderId = Guid.Parse(providerId),
                                     WarehouseName = reservation.Value<string>("loadingPlace")
                                 };
                                 _dataService.GetDbSet<ShippingWarehouse>().Add(newShippingWarehouse);

@@ -203,7 +203,7 @@ namespace Application.Shared
             return Import(entitiesFrom.Select(i => new ValidatedRecord<TListDto>(i)));
         }
 
-        public ImportResultDto ImportFromExcel(Stream fileStream)
+        public virtual ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
