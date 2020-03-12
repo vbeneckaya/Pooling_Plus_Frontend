@@ -11,6 +11,7 @@ using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Providers;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -20,19 +21,23 @@ namespace Application.Services.Providers
     public class ProvidersService : DictionaryServiceBase<Provider, ProviderDto>, IProvidersService
     {
         private readonly IMapper _mapper;
+
+        private readonly IShippingWarehousesService _shippingWarehousesService;
         
         public ProvidersService(ICommonDataService dataService, IUserProvider userProvider,
             ITriggersService triggersService,
             IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
-            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
+            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService,
+            IShippingWarehousesService shippingWarehousesService)
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
                 fieldSetterFactory, configurationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
+            _shippingWarehousesService = shippingWarehousesService;
         }
         
         
-
+    
         public override DetailedValidationResult MapFromDtoToEntity(Provider entity, ProviderDto dto)
         {
             _mapper.Map(dto, entity);
@@ -56,6 +61,20 @@ namespace Application.Services.Providers
             if (hasDuplicates)
             {
                 result.AddError(nameof(dto.Name), "Provider.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+            }
+
+            return result;
+        }
+        
+        public override DetailedValidationResult SaveOrCreate(ProviderDto entityFrom)
+        {
+            var isNew = string.IsNullOrEmpty(entityFrom.Id);
+           
+            var result =  SaveOrCreateInner(entityFrom, false);
+            
+            if (isNew && !result.IsError)
+            {
+                _shippingWarehousesService.AddColedinoShippingWarehouseToProvider(Guid.Parse(result.Id));
             }
 
             return result;

@@ -12,5 +12,7 @@ namespace Domain.Services.ShippingWarehouses
         
         IEnumerable<LookUpDto> ForSelect(Guid providerId);
         
+        Guid? AddColedinoShippingWarehouseToProvider(Guid providerId);
+        
     }
 }
