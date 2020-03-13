@@ -240,6 +240,7 @@ namespace Integrations.Pooling
             var transportCompaniesService = _serviceProvider.GetService<ITransportCompaniesService>();
             var calcService = _serviceProvider.GetService<IDeliveryCostCalcService>();
             var dataService = _serviceProvider.GetService<ICommonDataService>();
+            var shippingGetRouteService = _serviceProvider.GetService<IShippingGetRouteService>();
 
             var firstAdministrator = new CurrentUserDto
             {
@@ -357,6 +358,8 @@ namespace Integrations.Pooling
 
                             shipping.ProviderId = provider.Id;
 
+                            shipping.PoolingState = ShippingPoolingState.PoolingBooked;
+                            
                             shipping.CarrierId = carrierId;
 
                             switch (deliveryType)
@@ -488,6 +491,9 @@ namespace Integrations.Pooling
                                 {
                                     calcService.UpdateDeliveryCost(_dataService.GetById<Shipping>(shipping.Id), true);
                                 }
+
+                                var orders = _dataService.GetDbSet<Order>().Where(_ => ordersIds.Contains(_.Id));
+                                shippingGetRouteService.UpdateRoute(shipping, orders);
                             }
 
                             if (deliveryDate < DateTime.Today)
