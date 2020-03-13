@@ -1,10 +1,7 @@
 using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
-using Application.Shared.Excel;
-using Application.Shared.Excel.Columns;
 using DAL.Services;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.AppConfiguration;
@@ -16,12 +13,15 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 
 namespace Application.Services.TransportCompanies
 {
     public class TransportCompaniesService : DictionaryServiceBase<TransportCompany, TransportCompanyDto>,
         ITransportCompaniesService
     {
+        private readonly IMapper _mapper;
+        
         public TransportCompaniesService(ICommonDataService dataService, IUserProvider userProvider,
             ITriggersService triggersService,
             IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
@@ -29,9 +29,10 @@ namespace Application.Services.TransportCompanies
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
                 fieldSetterFactory, configurationService)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
@@ -60,17 +61,7 @@ namespace Application.Services.TransportCompanies
 
         public override DetailedValidationResult MapFromDtoToEntity(TransportCompany entity, TransportCompanyDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-            entity.Title = dto.Title;
-            entity.Inn = dto.Inn;
-            entity.Cpp = dto.Cpp;
-            entity.LegalAddress = dto.LegalAddress;
-            entity.ActualAddress = dto.ActualAddress;
-            entity.ContactPerson = dto.ContactPerson;
-            entity.ContactPhone = dto.ContactPhone;
-            entity.Email = dto.Email;
-            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
+            _mapper.Map(dto, entity);
 
             return null;
         }
@@ -96,19 +87,7 @@ namespace Application.Services.TransportCompanies
 
         public override TransportCompanyDto MapFromEntityToDto(TransportCompany entity)
         {
-            return new TransportCompanyDto
-            {
-                Id = entity.Id.ToString(),
-                Title = entity.Title,
-                Inn = entity.Inn,
-                Cpp = entity.Cpp,
-                LegalAddress = entity.LegalAddress,
-                ActualAddress = entity.ActualAddress,
-                ContactPerson = entity.ContactPerson,
-                ContactPhone = entity.ContactPhone,
-                Email = entity.Email,
-                IsActive = entity.IsActive
-            };
+            return _mapper.Map<TransportCompany, TransportCompanyDto>(entity); 
         }
 
         protected override IQueryable<TransportCompany> ApplySort(IQueryable<TransportCompany> query,
@@ -123,6 +102,19 @@ namespace Application.Services.TransportCompanies
         {
             return _dataService.GetDbSet<TransportCompany>()
                 .FirstOrDefault(i => i.Title == dto.Title);
+        }
+        
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<TransportCompany, TransportCompanyDto>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=>s.Id.ToString()));
+                
+                cfg.CreateMap<TransportCompanyDto, TransportCompany>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=> string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)));
+            });
+            return result;
         }
 
 //        protected override ExcelMapper<TransportCompanyDto> CreateExcelMapper()

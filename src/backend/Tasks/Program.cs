@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Tasks.Common;
 using Tasks.MasterData;
 using Tasks.Orders;
+using Tasks.Pooling;
 using Tasks.Services;
 
 namespace Tasks
@@ -31,8 +32,9 @@ namespace Tasks
 
                     services.AddHostedService<ScheduleWorker>();
 
-                    services.AddScoped<IScheduledTask, ImportOrderTask>();
-                    services.AddScoped<IScheduledTask, ImportProductsTask>();
+                //    services.AddScoped<IScheduledTask, ImportOrderTask>();
+                //    services.AddScoped<IScheduledTask, ImportProductsTask>();
+                    services.AddScoped<IScheduledTask, ImportReservationsFromPoolingTask>();
                 });
 
         private static IConfiguration CreateConfiguration(string[] args)

@@ -15,13 +15,6 @@ import {PAGE_SIZE} from '../../constants/settings';
 import {Confirm, Loader} from 'semantic-ui-react';
 import Footer from './components/footer';
 import {withRouter} from 'react-router-dom';
-import {clearActions, getActionsRequest, invokeMassUpdateRequest} from "../../ducks/gridActions";
-import {clearHistory, getHistoryRequest} from "../../ducks/history";
-import {cardSelector, editCardRequest, getCardRequest} from "../../ducks/gridCard";
-import {useDispatch, useSelector} from "react-redux";
-import {checkForEditingRequest} from "../../ducks/gridColumnEdit";
-import connect from "react-redux/es/connect/connect";
-import {SHIPPINGS_GRID} from "../../constants/grids";
 
 const initState = () => ({
     page: 1,
@@ -351,7 +344,7 @@ class SuperGrid extends Component {
         autoUpdateStop({
             isClear: true,
         });
-        if (name == SHIPPINGS_GRID) {
+        // if (name == SHIPPINGS_GRID) {
             if (!isEdit) {
                 editCard({
                     name,
@@ -376,17 +369,17 @@ class SuperGrid extends Component {
                         pathname: history.location.pathname,
                     },
                 });
-        }
-        else {
-            history.push({
-                pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
-                state: {
-                    ...this.mapData().filter,
-                    pathname: history.location.pathname,
-                },
-            });
-
-        }
+        // }
+        // else {
+        //     history.push({
+        //         pathname: isEdit ? cardLink.replace(':name', name).replace(':id', id) : newLink.replace(':name', name),
+        //         state: {
+        //             ...this.mapData().filter,
+        //             pathname: history.location.pathname,
+        //         },
+        //     });
+        //
+        // }
     };
 
     render() {

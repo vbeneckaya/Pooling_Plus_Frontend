@@ -109,9 +109,14 @@
             Авторизация, получение токена для логина и пароля
             </summary>
         </member>
+        <member name="M:API.Controllers.IdentityController.LoginByToken(Domain.Services.Identity.IdentityByTokenModel)">
+            <summary>
+            Авторизация, получение токена для логина и пароля
+            </summary>
+        </member>
         <member name="M:API.Controllers.OrdersController.Search(Domain.Shared.NumberSearchFormDto)">
             <summary>
-            Поиск по номеру
+            Найти по номеру
             </summary>
         </member>
         <member name="M:API.Controllers.OrderShippingStatusController.GetAll">
@@ -183,7 +188,7 @@
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictionaryController`3.ForSelect">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ForSelect(System.Nullable{System.Guid})">
             <summary>
             Получение данных для выпадающего списка в 
             </summary>
@@ -207,6 +212,7 @@
             <summary>
             Экспортировать в excel
             </summary>
+            <response code="200">Returns the requested file</response>
         </member>
         <member name="M:API.Controllers.Shared.DictionaryController`3.SaveOrCreate(`2)">
             <summary>
@@ -356,9 +362,19 @@
             Поиск по номеру
             </summary>
         </member>
-        <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
+        <member name="M:API.Controllers.ShippingsController.ImportFormsFromExcel">
             <summary>
-            Получение данных для выпадающего списка
+            Импортировать список форм из excel
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.ExportFormsToExcel(Domain.Shared.ExportExcelFormDto{Domain.Services.Shippings.ShippingFilterDto})">
+            <summary>
+            Экспортировать список форм в excel
+            </summary>
+        </member>
+        <member name="M:API.Controllers.ShippingsController.ImportFormsFromPooling(System.String)">
+            <summary>
+            Импортировать список форм из Pooling для поставщика
             </summary>
         </member>
         <member name="M:API.Controllers.ShippingWarehousesForOrderCreationController.ForSelect">
@@ -415,16 +431,6 @@
             <param name="key">Ключ для настроек</param>
             <param name="value">Новое значение</param>
             <returns></returns>
-        </member>
-        <member name="M:API.Controllers.WarehouseCityController.ForSelect">
-            <summary>
-            Получение данных для выпадающего списка
-            </summary>
-        </member>
-        <member name="M:API.Controllers.WarehousesController.ForSelect(System.Guid)">
-            <summary>
-            Получение данных для выпадающего списка
-            </summary>
         </member>
     </members>
 </doc>

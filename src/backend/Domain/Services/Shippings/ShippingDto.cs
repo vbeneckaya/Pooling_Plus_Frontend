@@ -28,7 +28,7 @@ namespace Domain.Services.Shippings
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), IsDefault, OrderNumber(3)]
         public LookUpDto CarrierId { get; set; }
         
-        [FieldType(FieldType.Select, source: nameof(Provider)), IsDefault, OrderNumber(3)]
+        [FieldType(FieldType.Select, source: nameof(Providers)), IsDefault, OrderNumber(3)]
         public LookUpDto ProviderId { get; set; }
 
         [FieldType(FieldType.Select, source: nameof(VehicleTypes)), IsDefault, OrderNumber(7)]
@@ -76,7 +76,7 @@ namespace Domain.Services.Shippings
         public decimal? ReturnCostWithoutVAT { get; set; }
 
         [FieldType(FieldType.Number)]
-        public decimal? InvoiceAmountWithoutVAT { get; set; }
+        public decimal? InvoiceAmount { get; set; }
 
         [FieldType(FieldType.Number)]
         public decimal? AdditionalCostsWithoutVAT { get; set; }
@@ -134,6 +134,8 @@ namespace Domain.Services.Shippings
         [DisplayNameKey("Pooling.Info")]
         [FieldType(FieldType.BigText), IsReadOnly]
         public string PoolingInfo { get; set; }
+        
+        public string PoolingReservationId { get; set; }
 
         [FieldType(FieldType.Boolean)]
         public bool? CostsConfirmedByShipper { get; set; }

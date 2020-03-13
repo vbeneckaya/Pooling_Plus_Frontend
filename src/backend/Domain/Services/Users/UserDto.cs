@@ -21,6 +21,9 @@ namespace Domain.Services.Users
 
         [FieldType(FieldType.Password)]
         public string Password { get; set; }
+        
+        [FieldType(FieldType.Text)]
+        public string SignWithoutLoginLink { get; set; }
 
         public bool IsActive { get; set; } = true;
 

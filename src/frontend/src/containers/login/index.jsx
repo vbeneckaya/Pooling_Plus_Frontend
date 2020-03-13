@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
-import { Button, Dimmer, Dropdown, Flag, Form, Grid, Input, Loader, List } from 'semantic-ui-react';
+import {Button, Dimmer, Dropdown, Flag, Form, Grid, Input, Loader, List, Divider} from 'semantic-ui-react';
 
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import {useTranslation} from 'react-i18next';
+import {useDispatch, useSelector} from 'react-redux';
 import {
     errorSelector,
     getLoginPageRequest,
@@ -15,16 +15,16 @@ import {
 import languages from '../../constants/languages';
 import './style.scss';
 
-const Login = () => {
-    const { t, i18n } = useTranslation();
+const Login = (props) => {
+    const {t, i18n} = useTranslation();
     const dispatch = useDispatch();
     const page = useSelector(state => loginPageSelector(state)) || {};
     const isAuth = useSelector(state => isAuthSelector(state));
     const error = useSelector(state => errorSelector(state));
     const loginProgress = useSelector(state => progressSelector(state, 'login_progress'));
     const pageLoadingProgress = useSelector(state => progressSelector(state, 'page_progress'));
-    const { form: formElements = {} } = page;
-    const { inputs = [], login_btn = {} } = formElements;
+    const {form: formElements = {}} = page;
+    const {inputs = [], login_btn = {}} = formElements;
 
     const [form, setForm] = useState({});
 
@@ -32,7 +32,7 @@ const Login = () => {
         dispatch(getLoginPageRequest());
     }, []);
 
-    const handleChange = (e, { name, value }) => {
+    const handleChange = (e, {name, value}) => {
         const values = {
             ...form,
             [name]: value,
@@ -40,11 +40,11 @@ const Login = () => {
         setForm(values);
     };
 
-    const handleChangeLang = (e, { value }) => {
+    const handleChangeLang = (e, {value}) => {
         i18n.changeLanguage(value);
     };
 
-    const handleFormSubmit = (e, { api }) => {
+    const handleFormSubmit = (e, {api}) => {
         const params = {
             form: {
                 ...form,
@@ -64,20 +64,20 @@ const Login = () => {
                 <>
                     {/*<img src={'/main-logo.png'} alt={'LOGO'}  className="main-logo" />*/}
                     <div className="centered-div">
-                        <Grid className="login-form-wrapper">
+                        <Grid centered verticalAlign='middle' divided>
                             <Grid.Row>
-                                <Grid.Column className="login-form-description">
+                                <Grid.Column className="login-form-description" mobile={16} tablet={16} computer={4}>
                                     <div className="login-form-description-wrapper">
-										<img src={'/pooling-plus.png'} alt={'LOGO'} />
-										<List bulleted>
-											<List.Item>{t("login_feature1")}</List.Item>
-											<List.Item>{t("login_feature2")}</List.Item>
-											<List.Item>{t("login_feature3")}</List.Item>
-										</List>
+                                        <img src={'/pooling-plus.png'} alt={'LOGO'}/>
+                                        <List bulleted>
+                                            <List.Item>{t("login_feature1")}</List.Item>
+                                            <List.Item>{t("login_feature2")}</List.Item>
+                                            <List.Item>{t("login_feature3")}</List.Item>
+                                        </List>
                                         <p><a href="mailto:support@artlogics.ru">support@artlogics.ru</a></p>
                                     </div>
                                 </Grid.Column>
-                                <Grid.Column className="login-form-input-wrapper">
+                                <Grid.Column className="login-form-input-wrapper" mobile={16} tablet={16} computer={4}>
                                     <Form onSubmit={handleFormSubmit}>
                                         {inputs.map(input => (
                                             <div className="margin-bottom-10" key={input.name}>
@@ -105,6 +105,7 @@ const Login = () => {
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
+                        {/*<Divider vertical/>*/}
                     </div>
                     <div className="language-switcher">
                         <Flag

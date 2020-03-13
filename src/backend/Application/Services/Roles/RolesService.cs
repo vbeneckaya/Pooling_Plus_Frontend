@@ -65,7 +65,7 @@ namespace Application.Services.Roles
                 .ThenBy(i => i.Id);
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var user = _userProvider.GetCurrentUser();
 

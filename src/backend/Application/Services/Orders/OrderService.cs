@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Application.BusinessModels.Shared.Actions;
+using Domain.Services.Shippings;
 using ConfirmedPalletsCountHandler = Application.BusinessModels.Orders.Handlers.ConfirmedPalletsCountHandler;
 using LoadingArrivalTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingArrivalTimeHandler;
 using LoadingDepartureTimeHandler = Application.BusinessModels.Orders.Handlers.LoadingDepartureTimeHandler;
@@ -37,6 +39,8 @@ namespace Application.Services.Orders
     public class OrdersService : GridService<Order, OrderDto, OrderFormDto, OrderSummaryDto, OrderFilterDto>, IOrdersService
     {
         private readonly IHistoryService _historyService;
+        
+        private readonly IMapper _mapper;
 
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
@@ -56,6 +60,7 @@ namespace Application.Services.Orders
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
             _changeTrackerFactory = changeTrackerFactory;
+            
         }
 
         public override OrderSummaryDto GetSummary(IEnumerable<Guid> ids)
@@ -95,17 +100,17 @@ namespace Application.Services.Orders
             rules.Add(nameof(Order.ShippingAvisationTime), avisationTimeRule);
         }
 
-        public IEnumerable<LookUpDto> FindByNumber(NumberSearchFormDto dto)
+        public IEnumerable<LookUpDto> FindByNumberAndProvider(NumberSearchFormDto dto)
         {
             var dbSet = _dataService.GetDbSet<Order>();
             List<Order> entities;
             if (dto.IsPartial)
             {
-                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                entities = dbSet.Where(x => x.OrderNumber.Contains(dto.Number, StringComparison.InvariantCultureIgnoreCase) && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             else
             {
-                entities = dbSet.Where(x => x.OrderNumber == dto.Number).ToList();
+                entities = dbSet.Where(x => x.OrderNumber == dto.Number && x.ProviderId.ToString().Equals(dto.ProviderId)).ToList();
             }
             var result = entities.Select(MapFromEntityToLookupDto);
             return result;
@@ -186,16 +191,16 @@ namespace Application.Services.Orders
             var result = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderDto, OrderFormDto>();
+                
+                cfg.CreateMap<ShippingOrderDto, OrderFormDto>();
 
                 cfg.CreateMap<OrderDto, Order>()
-                    .ForMember(t => t.Id, e => e.Ignore())
+                    .ForMember(t => t.Id, e => e.MapFrom( s => string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)))
                     .ForMember(t => t.OrderNumber, e => e.MapFrom(s=>s.OrderNumber.Value))
-                    .ForMember(t => t.ClientId, e => e.Condition((s) => s.ClientId != null))
-                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId.Value.ToGuid()))
-                    .ForMember(t => t.CarrierId, e => e.Condition((s) => s.CarrierId != null))
-                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) => s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.ClientId, e => e.MapFrom((s) => s.ClientId == null ? null : s.ClientId.Value.ToGuid()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) =>  s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
                     .ForMember(t => t.ProviderId, e => e.Condition((s) => s.ProviderId != null))
-                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId.Value.ToGuid()))
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId == null ? null : s.ProviderId.Value.ToGuid()))
                     .ForMember(t => t.OrderCreationDate, e => e.Condition(s=>s.OrderCreationDate != null))
                     .ForMember(t => t.TransitDays, e => e.Condition(s=>s.TransitDays != null))
                     .ForMember(t => t.DeliveryAddress, e => e.Condition(s=>s.DeliveryAddress != null))
@@ -215,10 +220,8 @@ namespace Application.Services.Orders
                     .ForMember(t => t.DeliveryCity, e => e.MapFrom(s => s.DeliveryCity.Value))
                     .ForMember(t => t.ShippingCity, e => e.Condition((s) => s.ShippingCity != null))
                     .ForMember(t => t.ShippingCity, e => e.MapFrom(s => s.ShippingCity.Value))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.Condition((s) => s.ShippingWarehouseId != null))
-                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId.Value.ToGuid()))
-                    .ForMember(t => t.DeliveryWarehouseId, e => e.Condition((s) => s.DeliveryWarehouseId != null))
-                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) => s.ShippingWarehouseId == null ? null : s.ShippingWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId == null ? null : s.DeliveryWarehouseId.Value.ToGuid()))
                     .ForMember(t => t.ShippingStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.ShippingStatus)))
                     .ForMember(t => t.ShippingStatus,e => e.MapFrom((s) => MapFromStateDto<VehicleState>(s.ShippingStatus)))
                     .ForMember(t => t.DeliveryStatus, e => e.Condition((s) => !string.IsNullOrEmpty(s.DeliveryStatus)))
@@ -253,7 +256,7 @@ namespace Application.Services.Orders
 
                 cfg.CreateMap<Order, OrderDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber,s.Id.ToString())))
+                    .ForMember(t => t.OrderNumber, e => e.MapFrom((s, t) => new LookUpDto(s.OrderNumber ?? "", s.Id.ToString())))
                     .ForMember(t => t.ShippingNumber, e => e.MapFrom((s, t) => new LookUpDto(s.ShippingNumber,s.ShippingId.ToString())))
                     .ForMember(t => t.Status, e => e.MapFrom((s, t) => s.Status.ToString().ToLowerFirstLetter()))
                     .ForMember(t => t.OrderType, e => e.MapFrom((s, t) => s.OrderType == null ? null : s.OrderType.GetEnumLookup(lang)))
@@ -360,7 +363,12 @@ namespace Application.Services.Orders
             }
         }
 
-         protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
+        public OrderFormDto MapFromDtoToFormDto(OrderDto dto)
+        {
+            return _mapper.Map<OrderDto,OrderFormDto>(dto);
+        }
+
+        protected override IEnumerable<OrderDto> FillLookupNames(IEnumerable<OrderDto> dtos)
         {
             var carrierIds = dtos.Where(x => !string.IsNullOrEmpty(x.CarrierId?.Value))
                                  .Select(x => x.CarrierId.Value.ToGuid())
@@ -478,6 +486,11 @@ namespace Application.Services.Orders
 
             SaveItems(entity, dto);
         }
+        
+        public OrderFormDto MapFromShippingOrderDtoToFormDto(ShippingOrderDto shippingOrderDto)
+        {
+            return _mapper.Map<ShippingOrderDto, OrderFormDto>(shippingOrderDto);
+        }
 
         public override OrderDto MapFromEntityToDto(Order entity)
         {
@@ -518,27 +531,35 @@ namespace Application.Services.Orders
             };
         }
 
-        private void InitializeNewOrder(Order order, bool isInjection)
+        public void InitializeNewOrder(Order order, bool isInjection = false)
         {
             order.IsActive = true;
             order.Status = order.ShippingId.HasValue ? OrderState.InShipping : OrderState.Created;
-            order.OrderCreationDate = DateTime.UtcNow;
+            order.OrderCreationDate = order.OrderCreationDate ?? DateTime.UtcNow;
             order.OrderChangeDate = DateTime.UtcNow;
             order.ShippingStatus = VehicleState.VehicleEmpty;
             order.DeliveryStatus = VehicleState.VehicleEmpty;
 
-            var user = _userIdProvider.GetCurrentUser();
-            if (user?.CarrierId != null)
+            var currentUser = _userIdProvider.GetCurrentUser();
+            if (currentUser.Id == null)
             {
-                order.CarrierId = user.CarrierId;
+                currentUser.Id = _dataService.GetDbSet<User>().FirstOrDefault(_ =>
+                    _.IsActive && _.Role.RoleType == Domain.Enums.RoleTypes.Administrator).Id;
             }
-            if (user?.ProviderId != null)
+            
+            order.UserCreatorId = currentUser.Id;
+            
+            if (currentUser?.CarrierId != null)
             {
-                order.ProviderId = user.ProviderId;
+                order.CarrierId = currentUser.CarrierId;
             }
-            if (user?.ClientId != null)
+            if (currentUser?.ProviderId != null)
             {
-                order.ClientId = user.ClientId;
+                order.ProviderId = currentUser.ProviderId;
+            }
+            if (currentUser?.ClientId != null)
+            {
+                order.ClientId = currentUser.ClientId;
             }
         }
 
@@ -607,8 +628,7 @@ namespace Application.Services.Orders
                 entity.IsManualEdited = true;
             }
         }
-
-        private readonly IMapper _mapper;
+      
 
         /// <summary>
         /// Apply search form filter to query
@@ -864,38 +884,51 @@ namespace Application.Services.Orders
 
         private Guid? GetPickingTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<PickingType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetShippingWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<ShippingWarehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(t => t.WarehouseName == name);
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<ShippingWarehouse>("WarehouseName", name);
+            }
+            return entry.Id;
         }
 
         private Guid? GetDeliveryWarehouseIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Warehouse>().Where(t => t.WarehouseName == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<Warehouse>().FirstOrDefault(t => t.WarehouseName == name);
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<Warehouse>("WarehouseName", name);
+            }
+            return entry.Id;
         }
 
         private Guid? GetCarrierIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
         }
         
         private Guid? GetProviderIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Provider>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<Provider>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
         private Guid? GetClientIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<Client>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
+            var entry = _dataService.GetDbSet<Client>().FirstOrDefault(t => t.Name == name);
+            
+            if (entry == null)
+            {
+                return  _dataService.CreateIfNotExisted<Client>("Name", name);
+            }
+            return entry.Id;
         }
 
         private string GetCarrierNameById(Guid? id)
@@ -905,7 +938,7 @@ namespace Application.Services.Orders
 
         private Guid? GetVehicleTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
     }

@@ -102,9 +102,16 @@ namespace Integrations
 
             var responseString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-            var jObject = JObject.Parse(responseString);
+            try
+            {
+                var jObject = JObject.Parse(responseString);
+                return new IntegrationAnswer(jObject);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
 
-            return  new IntegrationAnswer(jObject);
         }
 
         protected IntegrationAnswer Post(string url, object model = null)

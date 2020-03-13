@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Domain.Services.FieldProperties;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -14,6 +12,7 @@ namespace API.Controllers
     /// Настройка полей
     /// </summary>    
     [Route("api/fieldProperties")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class FieldPropertiesController : Controller
     {
         private readonly IFieldPropertiesService fieldPropertiesService;

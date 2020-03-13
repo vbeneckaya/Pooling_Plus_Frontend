@@ -22,12 +22,14 @@ namespace Application.Services.Shippings
             _historyService = historyService;
         }
 
-        public void UpdateDeliveryCost(Shipping shipping)
+        public void UpdateDeliveryCost(Shipping shipping, bool forceUpdate = false)
         {
+            if (shipping.TarifficationType == null) return;
+            
             var validState = new[] { ShippingState.ShippingCreated, ShippingState.ShippingRequestSent, ShippingState.ShippingRejectedByTc };
            
             if (shipping.Status == null
-                || !validState.Contains(shipping.Status.Value)
+                || (!validState.Contains(shipping.Status.Value) && !forceUpdate)
                 || shipping.CarrierId == null)
             {
                 return;

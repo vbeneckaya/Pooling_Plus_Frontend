@@ -16,13 +16,13 @@ import {
 import DragAndDrop from "../../DragAndDrop";
 
 const FieldsConfig = ({
-    gridName,
-    getRepresentations,
-    changeRepresentation,
-    representations,
-    representationName, 
-    isEditDefaultRepresentation
-}) => {
+                          gridName,
+                          getRepresentations,
+                          changeRepresentation,
+                          representations,
+                          representationName,
+                          isEditDefaultRepresentation
+                      }) => {
     const representationFields =
         useSelector(state => representationSelector(state, gridName)) || [];
 
@@ -34,9 +34,9 @@ const FieldsConfig = ({
     let [error, setError] = useState(false);
     let [isEmpty, setEmpty] = useState(false);
     let [search, setSearch] = useState('');
-    let [confirmation, setConfirmation] = useState({ open: false });
+    let [confirmation, setConfirmation] = useState({open: false});
 
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const dispatch = useDispatch();
 
     const fieldsList = useSelector(state => columnsGridSelector(state, gridName)).filter(column => {
@@ -68,19 +68,19 @@ const FieldsConfig = ({
     };
 
     const editOpen = () => {
-        if (isDefault){
+        if (isDefault) {
             dispatch(
                 getDefaultRepresentationRequest({
                     key: gridName,
                 }),
             );
         }
-        else{
+        else {
             dispatch(
                 getRepresentationsRequest({
                     key: gridName,
                 }),
-            );   
+            );
         }
         setIsNew(false);
         setName(representationName);
@@ -92,12 +92,13 @@ const FieldsConfig = ({
         setModalOpen(true);
     };
 
-    const onClose = callBackFunc => {
-        getRepresentations && getRepresentations(callBackFunc);
+    const onClose = (newName) => {
+        let updateView = typeof(newName) == "string" || newName == null;
+        getRepresentations && updateView && getRepresentations({representationToSetName: newName});
         setModalOpen(false);
         setError(null);
         setEmpty(false);
-        setConfirmation({ open: false });
+        setConfirmation({open: false});
         setSearch('');
     };
 
@@ -111,26 +112,23 @@ const FieldsConfig = ({
     };
 
     const handleSave = () => {
-        if(isDefault){
-            if (!selectedFields.length){
+        if (isDefault) {
+            if (!selectedFields.length) {
                 setError(null);
                 setEmpty(true);
-            } else 
+            } else
                 dispatch(
                     saveRepresentationRequest({
                         key: gridName,
                         name,
-                        isDefault:true,
+                        isDefault: true,
                         value: selectedFields,
                         callbackSuccess: () => {
-                            onClose(() => {
-                                changeRepresentation(name);
-                            });
                         },
                     }),
                 );
         }
-        else{
+        else {
             if (!name) {
                 setError('required_field');
             } else if (isNotUniqueName()) {
@@ -138,17 +136,15 @@ const FieldsConfig = ({
             } else if (!selectedFields.length) {
                 setError(null);
                 setEmpty(true);
-            } else 
+            } else
                 dispatch(
                     saveRepresentationRequest({
                         key: gridName,
                         name,
-                        isDefault:false,
+                        isDefault: false,
                         value: selectedFields,
                         callbackSuccess: () => {
-                            onClose(() => {
-                                changeRepresentation(name);
-                            });
+                            onClose(name);
                         },
                     }),
                 );
@@ -156,8 +152,8 @@ const FieldsConfig = ({
     };
 
     const handleEdit = () => {
-        if (isDefault){
-            if (!selectedFields.length){
+        if (isDefault) {
+            if (!selectedFields.length) {
                 setError(null);
                 setEmpty(true);
             } else
@@ -170,14 +166,12 @@ const FieldsConfig = ({
                         value: selectedFields,
 
                         callbackSuccess: () => {
-                            onClose(() => {
-                                changeRepresentation(null, true);
-                            });
+                            onClose();
                         },
                     }),
                 );
         }
-        else{
+        else {
             if (!name) {
                 setError('required_field');
             } else if (isNotUniqueName() && name !== representationName) {
@@ -185,7 +179,7 @@ const FieldsConfig = ({
             } else if (!selectedFields.length) {
                 setError(null);
                 setEmpty(true);
-            } else
+            } else {
                 dispatch(
                     editRepresentationRequest({
                         key: gridName,
@@ -195,14 +189,13 @@ const FieldsConfig = ({
                         value: selectedFields,
 
                         callbackSuccess: () => {
-                            onClose(() => {
-                                changeRepresentation(name, true);
-                            });
+                            onClose(name);
                         },
                     }),
                 );
+            }
         }
-           
+
     };
 
     const handleDelete = () => {
@@ -222,7 +215,7 @@ const FieldsConfig = ({
     };
 
     const closeConfirmation = () => {
-        setConfirmation({ open: false });
+        setConfirmation({open: false});
     };
 
     const showConfirmation = (content, onConfirm) => {
@@ -246,7 +239,10 @@ const FieldsConfig = ({
                         <Dropdown.Menu>
                             <Dropdown.Item
                                 text={t('default_representation')}
-                                onClick={() => {changeRepresentation(null, true); setIsDefault(true)}}
+                                onClick={() => {
+                                    changeRepresentation(null, true);
+                                    setIsDefault(true)
+                                }}
                             />
                             {representations && Object.keys(representations).length ? (
                                 <>
@@ -255,13 +251,16 @@ const FieldsConfig = ({
                                         .map(key => (
                                             <Dropdown.Item
                                                 text={key}
-                                                onClick={() => {changeRepresentation(key, true); setIsDefault(false);}}
+                                                onClick={() => {
+                                                    changeRepresentation(key, true);
+                                                    setIsDefault(false);
+                                                }}
                                             />
                                         ))}
                                 </>
                             ) : null}
-                            <Dropdown.Divider />
-                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={newOpen} />
+                            <Dropdown.Divider/>
+                            <Dropdown.Item icon="add" text={t('create_btn')} onClick={newOpen}/>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Form.Field>
@@ -269,7 +268,8 @@ const FieldsConfig = ({
                     content={t('customize_representation')}
                     position="bottom right"
                     trigger={
-                        <Button icon="cogs" disabled={!representationName && !isEditDefaultRepresentation} onClick={editOpen} />
+                        <Button icon="cogs" disabled={!representationName && !isEditDefaultRepresentation}
+                                onClick={editOpen}/>
                     }
                 />
             </div>
@@ -283,26 +283,26 @@ const FieldsConfig = ({
             >
                 <Modal.Header>
                     {!isNew
-                        ? t('Edit representation', { name: representationName })
+                        ? t('Edit representation', {name: representationName})
                         : t('Create representation')}
                 </Modal.Header>
                 <Modal.Content scrolling>
                     <Modal.Description>
-                        <Form style={{ marginBottom: '16px' }}>
-                            
+                        <Form style={{marginBottom: '16px'}}>
+
                             <Text
                                 name="name"
                                 value={name}
                                 error={error && t(error)}
-                                isDisabled = {isDefault}
-                                onChange={(e, { value }) => setName(value)}
+                                isDisabled={isDefault}
+                                onChange={(e, {value}) => setName(value)}
                             />
                             <Input
                                 icon="search"
                                 iconPosition="left"
                                 placeholder={t('search_field')}
                                 value={search}
-                                onChange={(e, { value }) => setSearch(value)}
+                                onChange={(e, {value}) => setSearch(value)}
                             />
                         </Form>
                         <div className="flex-container-justify">

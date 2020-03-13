@@ -1,10 +1,7 @@
 ﻿using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
-using Application.Shared.Excel;
-using Application.Shared.Excel.Columns;
 using DAL.Services;
-using Domain.Extensions;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.AppConfiguration;
@@ -16,32 +13,25 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 
 namespace Application.Services.Clients
 {
     public class ClientsService : DictionaryServiceBase<Client, ClientDto>, IClientsService
     {
+        private readonly IMapper _mapper;
+        
         public ClientsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService,
                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
                               IFieldSetterFactory fieldSetterFactory, IAppConfigurationService appConfigurationService)
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, appConfigurationService)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(Client entity, ClientDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-
-            entity.Name = dto.Name;
-            entity.Inn = dto.Inn;
-            entity.Cpp = dto.Cpp;
-            entity.LegalAddress = dto.LegalAddress;
-            entity.ActualAddress = dto.ActualAddress;
-            entity.ContactPerson = dto.ContactPerson;
-            entity.ContactPhone = dto.ContactPhone;
-            entity.Email = dto.Email;
-            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
+            _mapper.Map(dto, entity);
 
             return null;
         }
@@ -72,23 +62,10 @@ namespace Application.Services.Clients
 
         public override ClientDto MapFromEntityToDto(Client entity)
         {
-            return new ClientDto
-            {
-                Id = entity.Id.ToString(),
-                Name = entity.Name,
-                PoolingId = entity.PoolingId,
-                Inn = entity.Inn,
-                Cpp = entity.Cpp,
-                LegalAddress = entity.LegalAddress,
-                ActualAddress = entity.ActualAddress,
-                ContactPerson = entity.ContactPerson,
-                ContactPhone = entity.ContactPhone,
-                Email = entity.Email,
-                IsActive = entity.IsActive
-            };
+            return _mapper.Map<Client, ClientDto>(entity); 
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
@@ -135,6 +112,19 @@ namespace Application.Services.Clients
             return query
                 .OrderBy(i => i.Name)
                 .ThenBy(i => i.Id);
+        }
+        
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Client, ClientDto>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=>s.Id.ToString()));
+                
+                cfg.CreateMap<ClientDto, Client>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=> string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)));
+            });
+            return result;
         }
 
 //        protected override ExcelMapper<ClientDto> CreateExcelMapper()

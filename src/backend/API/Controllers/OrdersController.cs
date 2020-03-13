@@ -20,14 +20,14 @@ namespace API.Controllers
         }
 
         /// <summary>
-        /// Поиск по номеру
+        /// РќР°Р№С‚Рё РїРѕ РЅРѕРјРµСЂСѓ
         /// </summary>
         [HttpPost("findNumber")]
         public IActionResult Search([FromBody]NumberSearchFormDto form)
         {
             try
             {
-                var result = service.FindByNumber(form);
+                var result = service.FindByNumberAndProvider(form);
                 return Ok(result);
             }
             catch (UnauthorizedAccessException)

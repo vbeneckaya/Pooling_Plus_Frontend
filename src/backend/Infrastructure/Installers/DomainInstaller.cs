@@ -208,7 +208,6 @@ namespace Infrastructure.Installers
             services.AddScoped<IAppAction<Order>, RejectRequestOrderShipping>();
             services.AddScoped<IAppAction<Order>, CancelRequestOrderShipping>();
             services.AddScoped<IAppAction<Order>, CompleteOrderShipping>();
-            services.AddScoped<IAppAction<Order>, CancelOrderShipping>();
             services.AddScoped<IAppAction<Order>, ProblemOrderShipping>();
             services.AddScoped<IAppAction<Order>, BillingOrderShipping>();
             services.AddScoped<IAppAction<Order>, ArchiveOrderShipping>();

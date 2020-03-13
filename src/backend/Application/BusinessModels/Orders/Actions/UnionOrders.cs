@@ -11,6 +11,7 @@ using Domain.Services.UserProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Application.BusinessModels.Shared.Triggers;
 using Domain.Services.Shippings;
 using Integrations.Pooling;
 
@@ -65,16 +66,6 @@ namespace Application.BusinessModels.Orders.Actions
 
             shippingDbSet.Add(shipping);
 
-            var currentUser = _dataService.GetById<User>(user.Id.Value);
-            if (currentUser.IsPoolingIntegrated())
-            {
-                using (var pooling = new PoolingIntegration(currentUser, _dataService))
-                {
-                    var poolingInfo = pooling.GetInfoFor(shipping);
-                    shipping.PoolingInfo = poolingInfo.MessageField;
-                }
-            }
-            
             UnionOrderInShipping(orders, orders, shipping, _historyService);
             
             var changes = _dataService.GetChanges<Shipping>().FirstOrDefault(x => x.Entity.Id == shipping.Id);
@@ -83,6 +74,7 @@ namespace Application.BusinessModels.Orders.Actions
                                                      .Remove<Shipping>(x => x.Id);
             changeTracker.LogTrackedChanges(changes);
 
+            UpdateShippingFromIntegrations(shipping);
             return new AppActionResult
             {
                 IsError = false,

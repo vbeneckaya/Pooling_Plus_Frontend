@@ -5,6 +5,7 @@ using System.Collections.Generic;
 namespace API.Controllers
 {
     [Route("api/soldTo")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class SoldToController : Controller
     {
         /// <summary>

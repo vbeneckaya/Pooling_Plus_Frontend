@@ -107,6 +107,7 @@ class MiniOrdersGrid extends Component {
             rows,
             columns,
             openOrderModal,
+            loadCard,
             isEditBtn,
             isDeleteBtn,
             removeFromShipping,
@@ -150,6 +151,7 @@ class MiniOrdersGrid extends Component {
                             progress={false}
                             name={name}
                             gridName={name}
+                            loadCard={loadCard}
                             openOrderModal={openOrderModal}
                             //goToCard={this.handleGoToCard}
                             //    actions={actions}

@@ -31,11 +31,18 @@ namespace Domain.Services.Providers
         
         [FieldType(FieldType.Text), OrderNumber(8), IsRequired, MaxLength(70)]
         public string Email { get; set; }
-        [FieldType(FieldType.Text), OrderNumber(9), MaxLength(70)]
-        public string ReportId { get; set; }        
 
-        [FieldType(FieldType.Boolean), OrderNumber(10)]
+        [FieldType(FieldType.Text), OrderNumber(9), MaxLength(70)]
+        public string ReportId { get; set; }
+
+        [FieldType(FieldType.Text), OrderNumber(10), MaxLength(70)]
+        public string ReportPageNameForMobile { get; set; }
+
+        [FieldType(FieldType.Boolean), OrderNumber(11)]
         public bool? IsActive { get; set; } = true;
+        
+        [FieldType(FieldType.Boolean), OrderNumber(12)]
+        public bool IsPoolingIntegrated { get; set; }
 
         public bool IsEditable { get; set; }
     }

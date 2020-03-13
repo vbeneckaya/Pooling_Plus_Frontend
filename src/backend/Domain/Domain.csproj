@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\ActionRunner" />
       <Folder Include="Shared\FieldSetter\" />
     </ItemGroup>
 

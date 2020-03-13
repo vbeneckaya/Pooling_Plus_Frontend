@@ -8,8 +8,14 @@ body {
     color: #4d4d4d !important;
 }
 
+@media screen and (max-width: 1280px) {
+    body {
+        min-width: 100%!important;
+    }
+}
+
 i.blue.icon {
-    color: #18a8cc !important;
+    color: #135CA9 !important;
 }
 
 .margin-bottom-10 {
@@ -33,6 +39,10 @@ i.blue.icon {
 .report-container {
     padding: 40px 0 0 0;
     position: relative;
+
+    iframe {
+        border: none!important;
+    }
 }
 
 .Toastify__toast {
@@ -450,7 +460,7 @@ input::-webkit-calendar-picker-indicator {
     }
 }
 
-.ui.form input:focus,
+/*.ui.form input:focus,
 .ui.form textarea:focus {
     box-shadow: inset 0 0 0 1px #29abcc, 0 0 0 2px rgba(41, 171, 204, 0.2) !important;
     border: none !important;
@@ -461,7 +471,7 @@ input::-webkit-calendar-picker-indicator {
 .react-datepicker__input-container {
     border: none !important;
     border-radius: 4px !important;
-    /* box-shadow: inset 0 0 0 1px #b3b3b3 !important;*/
+    !* box-shadow: inset 0 0 0 1px #b3b3b3 !important;*!
 }
 
 .ui.input.focus > input,
@@ -474,12 +484,12 @@ input::-webkit-calendar-picker-indicator {
 .ui.selection.active.dropdown .menu {
     box-shadow: inset 0 0 0 1px #b3b3b3, 0 2px 4px rgba(0, 0, 0, 0.2) !important;
     border: none !important;
-}
+}*/
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected,
 .react-datepicker__month-text--keyboard-selected {
-    background-color: #18a8cc !important;
+    background-color: #135CA9 !important;
 }
 
 /*.react-datepicker-wrapper, .react-datepicker__input-container {
@@ -501,14 +511,14 @@ input::-webkit-calendar-picker-indicator {
 .ui.button.blue,
 .ui.primary.button,
 .ui.blue.label {
-    background-color: #18a8cc !important;
+    background-color: #135CA9 !important;
 }
 
 .ui.toggle.checkbox input:checked ~ .box:before,
 .ui.toggle.checkbox input:checked ~ label:before,
 .ui.toggle.checkbox input:focus:checked ~ .box:before,
 .ui.toggle.checkbox input:focus:checked ~ label:before {
-    background-color: #18a8cc !important;
+    background-color: #135CA9 !important;
 }
 
 i.red.icon {

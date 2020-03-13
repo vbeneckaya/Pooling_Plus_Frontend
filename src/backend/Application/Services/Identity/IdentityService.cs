@@ -29,21 +29,66 @@ namespace Application.Services.Identity
 
         public IdentityService(IUserProvider userIdProvider, ICommonDataService dataService)
         {
-            this._userIdProvider = userIdProvider;
-            this._dataService = dataService;
+            _userIdProvider = userIdProvider;
+            _dataService = dataService;
         }
 
         public VerificationResultWith<TokenModel> GetToken(IdentityModel model)
         {
             prepareIdentityModelBeforeLogin(model);
-            
-            var user = this._dataService.GetDbSet<User>().GetByLogin(model.Login);
+
+            var user = _dataService.GetDbSet<User>().GetByLogin(model.Login);
 
             if (user != null && !user.IsActive)
                 return new VerificationResultWith<TokenModel> {Result = VerificationResult.Forbidden, Data = null};
 
             var identity = GetIdentity(model.Login, model.Password, model.Language);
+            
+            return GetTokenInner(user, identity);
+        }
 
+        public VerificationResultWith<TokenModel> GetToken(IdentityByTokenModel model)
+        {
+            var user = _dataService.GetById<User>(model.UserId);
+
+            if (user != null && !user.IsActive)
+                return new VerificationResultWith<TokenModel> {Result = VerificationResult.Forbidden, Data = null};
+
+            var identity = GetIdentity(user.Email, Uri.UnescapeDataString(model.Token), model.Language, true);
+
+            return GetTokenInner(user, identity);
+        }
+
+        public UserInfo GetUserInfo()
+        {
+            var user = _userIdProvider.GetCurrentUser();
+            var role = user.RoleId.HasValue ? this._dataService.GetDbSet<Role>().GetById(user.RoleId.Value) : null;
+
+            //TODO Получать имя пользователя и роль
+            return new UserInfo
+            {
+                UserName = user.Name,
+                UserRole = role?.Name,
+                Role = role != null
+                    ? new RoleDto
+                    {
+                        Id = role.Id.ToString(),
+                        Name = role.Name,
+                        IsActive = role.IsActive,
+                        Actions = role.Actions,
+                        Permissions = role?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
+                        {
+                            Code = i,
+                            Name = i.GetPermissionName()
+                        }),
+                        UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
+                    }
+                    : null
+            };
+        }
+
+        private VerificationResultWith<TokenModel> GetTokenInner(User user, ClaimsIdentity identity)
+        {
             if (identity == null)
                 return new VerificationResultWith<TokenModel>
                     {Result = VerificationResult.WrongCredentials, Data = null};
@@ -80,35 +125,7 @@ namespace Application.Services.Identity
                 {Result = VerificationResult.Ok, Data = new TokenModel(encodedJwt)};
         }
 
-        public UserInfo GetUserInfo()
-        {
-            var user = _userIdProvider.GetCurrentUser();
-            var role = user.RoleId.HasValue ? this._dataService.GetDbSet<Role>().GetById(user.RoleId.Value) : null;
-
-            //TODO Получать имя пользователя и роль
-            return new UserInfo
-            {
-                UserName = user.Name,
-                UserRole = role?.Name,
-                Role = role != null
-                    ? new RoleDto
-                    {
-                        Id = role.Id.ToString(),
-                        Name = role.Name,
-                        IsActive = role.IsActive,
-                        Actions = role.Actions,
-                        Permissions = role?.Permissions?.Cast<RolePermissions>()?.Select(i => new PermissionInfo
-                        {
-                            Code = i,
-                            Name = i.GetPermissionName()
-                        }),
-                        UsersCount = _dataService.GetDbSet<User>().Where(i => i.RoleId == role.Id).Count(),
-                    }
-                    : null
-            };
-        }
-
-        private ClaimsIdentity GetIdentity(string userName, string password, string language)
+        private ClaimsIdentity GetIdentity(string userName, string password, string language, bool byToken = false)
         {
             var user = _dataService.GetDbSet<User>().GetByLogin(userName);
             if (user == null)
@@ -118,9 +135,18 @@ namespace Application.Services.Identity
             if (role == null)
                 return null;
 
-            var passwordHash = password.GetHash();
-            if (passwordHash != user.PasswordHash)
-                return null;
+            if (byToken)
+            {
+                var token = user.PasswordHash.GetHash();
+                if (token != password)
+                    return null;
+            }
+            else
+            {
+                var passwordHash = password.GetHash();
+                if (passwordHash != user.PasswordHash)
+                    return null;
+            }
 
             var claims = new List<Claim>
             {

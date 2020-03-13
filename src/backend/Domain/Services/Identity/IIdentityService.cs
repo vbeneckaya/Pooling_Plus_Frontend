@@ -7,6 +7,9 @@ namespace Domain.Services.Identity
     public interface IIdentityService : IService
     {
         VerificationResultWith<TokenModel> GetToken(IdentityModel model);
+        
+        VerificationResultWith<TokenModel> GetToken(IdentityByTokenModel model);
+        
         UserInfo GetUserInfo();
 
         bool HasPermissions(User user, RolePermissions permission);

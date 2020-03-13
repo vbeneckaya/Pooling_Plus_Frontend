@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Information from './orderTabs/information';
-import Position from './orderTabs/position';
 import Documents from './shared/documents';
 import History from './shared/history';
 import CreateOrder from './orderTabs/createOrder';
@@ -19,13 +18,13 @@ const OrderCard = (props) => {
         name,
         id,
         load,
+        update,
         isNotUniqueNumber,
         uniquenessNumberCheck,
         settings,
         error,
         title,
         onClose,
-        actionsFooter,
         actionsHeader,
         loading,
     } = props;
@@ -43,7 +42,7 @@ const OrderCard = (props) => {
                         settings={settings}
                         error={error}
                         load={load}
-                        //isNotUniqueNumber={isNotUniqueNumber}
+                        isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}
@@ -123,7 +122,7 @@ const OrderCard = (props) => {
                     <CreateOrder
                         form={form}
                         error={error}
-                        //isNotUniqueNumber={isNotUniqueNumber}
+                       // isNotUniqueNumber={isNotUniqueNumber}
                         uniquenessNumberCheck={uniquenessNumberCheck}
                         onChange={onChangeForm}
                         onBlur={onBlurForm}

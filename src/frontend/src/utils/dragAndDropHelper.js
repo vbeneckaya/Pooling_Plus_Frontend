@@ -63,8 +63,8 @@ export const getLabelStyle = (isSelected, isGhosting, isDragging) => {
     if (isSelected) {
         style = {
             ...style,
-            background: '#18A8CC',
-            color: 'rgba(255, 255, 255, 0.8)',
+            background: '#135CA9',
+            color: '#18a8cc',
         };
     }
 

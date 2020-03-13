@@ -4,6 +4,6 @@ namespace Domain.Services.Shippings
 {
     public interface IDeliveryCostCalcService
     {
-        void UpdateDeliveryCost(Shipping shipping);
+        void UpdateDeliveryCost(Shipping shipping, bool forceUpdate = false);
     }
 }

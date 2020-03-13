@@ -19,7 +19,8 @@ namespace API.Controllers.Shared
     /// <typeparam name="TService"></typeparam>
     /// <typeparam name="TEntity"></typeparam>
     /// <typeparam name="TDto"></typeparam>
-    public abstract class DictionaryController<TService, TEntity, TDto> : Controller where TService: IDictonaryService<TEntity, TDto>
+    public abstract class DictionaryController<TService, TEntity, TDto> : Controller
+        where TService : IDictonaryService<TEntity, TDto>
     {
         protected readonly TService _service;
 
@@ -36,7 +37,7 @@ namespace API.Controllers.Shared
         /// Поиск по вхождению с пагинацией
         /// </summary>
         [HttpPost("search")]
-        public SearchResult<TDto> Search([FromBody]SearchFormDto form)
+        public SearchResult<TDto> Search([FromBody] SearchFormDto form)
         {
             return _service.Search(form);
         }
@@ -45,13 +46,14 @@ namespace API.Controllers.Shared
         /// Получение данных для выпадающего списка в 
         /// </summary>
         [HttpGet("forSelect")]
-        public IEnumerable<LookUpDto> ForSelect()
+        public IEnumerable<LookUpDto> ForSelect(Guid? filter)
         {
             string entityName = typeof(TEntity).Name;
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var result = _service.ForSelect().OrderBy(x => x.Name).ToList();
+            var result = _service.ForSelect(filter).OrderBy(x => x.Name).ToList();
+            
             Log.Information("{entityName}.ForSelect: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
@@ -66,7 +68,7 @@ namespace API.Controllers.Shared
             var user = _service.Get(id);
             return user;
         }
-        
+
         /// <summary>
         /// Импортировать
         /// </summary>
@@ -88,19 +90,20 @@ namespace API.Controllers.Shared
                 file.CopyTo(stream);
                 return _service.ImportFromExcel(stream);
             }
-
         }
 
         /// <summary>
         /// Экспортировать в excel
         /// </summary>
+        /// <response code="200">Returns the requested file</response>
         [HttpPost("exportToExcel"), DisableRequestSizeLimit]
-        public IActionResult ExportToExcel([FromBody]SearchFormDto form)
+        public IActionResult ExportToExcel([FromBody] SearchFormDto form)
         {
             var memoryStream = _service.ExportToExcel(form);
-            return File(memoryStream, "application/vnd.ms-excel", $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
+            return File(memoryStream, "application/vnd.ms-excel",
+                $"Export {EntityName.Pluralize()} {DateTime.Now.ToString("dd.MM.yy HH.mm")}.xlsx");
         }
-        
+
         /// <summary>
         /// Сохранить или изменить
         /// </summary>

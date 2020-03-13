@@ -10,6 +10,7 @@ namespace API.Controllers
     /// Пользовательские настройки
     /// </summary>
     [Route("api/userSettings")]
+    [ApiExplorerSettings(IgnoreApi=true)]
     public class UserSettingsController : Controller
     {
         private readonly IUserSettingsService _settingsService;

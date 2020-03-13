@@ -12,17 +12,17 @@ const CustomCheckbox = ({checked, onChange, disabled, indeterminate, multi}) => 
     if (!multi) {
         if (checked) {
             icon = "checkbox";
-            color = "#18a8cc";
+            color = "#135CA9";
         } else {
             icon = "checkbox-empty"
         }
     } else {
         if (checked) {
             icon = "multi-checkbox"
-            color = "#18a8cc";
+            color = "#135CA9";
         } else if (indeterminate) {
             icon = "multi-checkbox-some-outline"
-            color = "#18a8cc";
+            color = "#135CA9";
         } else {
             icon = "multi-checkbox-empty"
         }

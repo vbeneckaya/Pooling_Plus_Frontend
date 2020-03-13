@@ -26,9 +26,11 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Application.Shared
 {
-    public abstract class GridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>: IGridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter>
-        where TEntity : class, IPersistable, new() 
-        where TDto : IDto, new() 
+    public abstract class
+        GridService<TEntity, TDto, TFormDto, TSummaryDto, TFilter> : IGridService<TEntity, TDto, TFormDto, TSummaryDto,
+            TFilter>
+        where TEntity : class, IPersistable, new()
+        where TDto : IDto, new()
         where TFormDto : TDto, new()
     {
         Dictionary<string, Func<TEntity, bool>> _rules = new Dictionary<string, Func<TEntity, bool>>();
@@ -46,11 +48,17 @@ namespace Application.Shared
         public abstract string GetNumber(TFormDto dto);
 
         public abstract TSummaryDto GetSummary(IEnumerable<Guid> ids);
-        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query, FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
-        protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto) { }
+        public abstract IQueryable<TEntity> ApplySearchForm(IQueryable<TEntity> query,
+            FilterFormDto<TFilter> searchForm, List<string> columns = null);
 
-        protected virtual void ConfigureFieldAccessRules(Dictionary<string, Func<TEntity, bool>> rules) { }
+        protected virtual void ApplyAfterSaveActions(TEntity entity, TDto dto)
+        {
+        }
+
+        protected virtual void ConfigureFieldAccessRules(Dictionary<string, Func<TEntity, bool>> rules)
+        {
+        }
 
         protected readonly IUserProvider _userIdProvider;
         protected readonly ICommonDataService _dataService;
@@ -62,13 +70,13 @@ namespace Application.Shared
         protected readonly IFieldSetterFactory _fieldSetterFactory;
 
         protected GridService(
-            ICommonDataService dataService, 
+            ICommonDataService dataService,
             IUserProvider userIdProvider,
             IFieldDispatcherService fieldDispatcherService,
             IFieldPropertiesService fieldPropertiesService,
             IServiceProvider serviceProvider,
-            ITriggersService triggersService, 
-            IValidationService validationService, 
+            ITriggersService triggersService,
+            IValidationService validationService,
             IFieldSetterFactory fieldSetterFactory)
         {
             _userIdProvider = userIdProvider;
@@ -100,15 +108,18 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Information("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToDto(entity);
-            Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             result = FillLookupNames(result);
-            Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Get (Fill lookups): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -120,15 +131,18 @@ namespace Application.Shared
             sw.Start();
 
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Information("{entityName}.GetForm (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetForm (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = MapFromEntityToFormDto(entity);
-            Log.Information("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetForm (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
-            result = (TFormDto)FillLookupNames(result);
-            Log.Information("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            result = (TFormDto) FillLookupNames(result);
+            Log.Information("{entityName}.GetForm (Fill lookups): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -140,11 +154,13 @@ namespace Application.Shared
             sw.Start();
 
             var entries = _dataService.GetDbSet<TEntity>().ToList();
-            Log.Information("{entityName}.ForSelect (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ForSelect (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = entries.Select(MapFromEntityToLookupDto).ToList();
-            Log.Information("{entityName}.ForSelect (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ForSelect (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -159,8 +175,9 @@ namespace Application.Shared
 
             var query = ApplySearchForm(dbSet, form);
             query = ApplyRestrictions(query);
-            
-            Log.Information("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.Search (Apply search parameters): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (form.Take == 0)
@@ -169,7 +186,8 @@ namespace Application.Shared
             var totalCount = query.Count();
             var entities = query.Skip(form.Skip)
                 .Take(form.Take).ToList();
-            Log.Information("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var a = new SearchResult<TDto>
@@ -177,11 +195,13 @@ namespace Application.Shared
                 TotalCount = totalCount,
                 Items = entities.Select(entity => MapFromEntityToDto(entity)).ToList()
             };
-            Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             a.Items = FillLookupNames(a.Items).ToList();
-            Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.Search (Fill lookups): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return a;
         }
@@ -193,15 +213,17 @@ namespace Application.Shared
             sw.Start();
 
             var dbSet = _dataService.GetDbSet<TEntity>();
-            
+
             var query = ApplySearchForm(dbSet, form);
             query = ApplyRestrictions(query);
-            
-            Log.Information("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.SearchIds (Apply search parameters): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var ids = query.Select(e => e.Id).ToList();
-            Log.Information("{entityName}.SearchIds (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.SearchIds (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             var result = ids.Select(x => x.ToString()).ToList();
             return result;
@@ -243,7 +265,7 @@ namespace Application.Shared
 
             var trackConfig = this.ConfigureChangeTacker();
 
-            var findByNumber = FindOrderByNumber(entityFrom, entityName);
+            var findByNumber = FindByNumber(entityFrom, entityName);
 
             if (!string.IsNullOrEmpty(entityFrom.Id) || findByNumber != null)
             {
@@ -251,21 +273,23 @@ namespace Application.Shared
                     ? Guid.Parse(entityFrom.Id)
                     : findByNumber;
                 entityFrom.Id = entityId.ToString();
-        
-                
+
+
                 var entityFromDb = dbSet.GetById(entityId.Value);
 
                 if (entityFromDb == null)
                     throw new Exception($"Order not found (Id = {entityFrom.Id})");
 
-                Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Find entity by Id): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 MapFromFormDtoToEntity(entityFromDb, entityFrom);
 
                 // Change handlers
 
-                var updateChanges = this._dataService.GetChanges<TEntity>().FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
+                var updateChanges = this._dataService.GetChanges<TEntity>()
+                    .FirstOrDefault(x => x.Entity.Id == entityFromDb.Id);
 
                 var setter = this.ConfigureHandlers(this._fieldSetterFactory.Create<TEntity>(), entityFrom);
 
@@ -283,12 +307,14 @@ namespace Application.Shared
                 //dbSet.Update(entityFromDb);
 
                 _triggersService.Execute();
-                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
-               
+
 
                 _dataService.SaveChanges();
-                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
 
                 return new ValidateResult
                 {
@@ -325,11 +351,13 @@ namespace Application.Shared
                 sw.Restart();
 
                 _triggersService.Execute();
-                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Execure triggers): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
                 sw.Restart();
 
                 _dataService.SaveChanges();
-                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+                Log.Information("{entityName}.SaveOrCreate (Save changes): {ElapsedMilliseconds}ms", entityName,
+                    sw.ElapsedMilliseconds);
 
                 return new ValidateResult
                 {
@@ -344,19 +372,21 @@ namespace Application.Shared
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            if (ids == null) 
+            if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
-            
+
             var dbSet = _dataService.GetDbSet<TEntity>();
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            Log.Information("{entityName}.GetActions (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Load role): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var actionDtos = new Dictionary<string, ActionInfo>();
 
             var entities = dbSet.Where(x => ids.Contains(x.Id)).ToList();
-            Log.Information("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetActions (Load data from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
@@ -374,7 +404,9 @@ namespace Application.Shared
                     actionDtos[actionName] = ConvertActionToDto(action, actionName, ids);
                 }
             }
-            Log.Information("{entityName}.GetActions (Find single actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.GetActions (Find single actions): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (ids.Count() > 1)
@@ -383,7 +415,8 @@ namespace Application.Shared
                 foreach (var action in groupActions)
                 {
                     string actionName = action.GetType().Name.ToLowerFirstLetter();
-                    if ((role?.Actions != null && !role.Actions.Contains(actionName)) || actionDtos.ContainsKey(actionName))
+                    if ((role?.Actions != null && !role.Actions.Contains(actionName)) ||
+                        actionDtos.ContainsKey(actionName))
                     {
                         continue;
                     }
@@ -391,14 +424,16 @@ namespace Application.Shared
                     if (action.IsAvailable(entities))
                     {
                         actionDtos[actionName] = ConvertActionToDto(action, actionName, ids);
-                    }                    
+                    }
                 }
             }
-            Log.Information("{entityName}.GetActions (Find group actions): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.GetActions (Find group actions): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             var result = actionDtos.OrderBy(x => x.Value.OrderNumber)
-                                   .Select(x => x.Value.Dto)
-                                   .ToList();
+                .Select(x => x.Value.Dto)
+                .ToList();
             return result;
         }
 
@@ -448,8 +483,8 @@ namespace Application.Shared
 
             var singleActions = _serviceProvider.GetService<IEnumerable<IAppAction<TEntity>>>();
             var action = singleActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
-            
-            if(action == null)
+
+            if (action == null)
                 return new AppActionResult
                 {
                     IsError = true,
@@ -459,24 +494,28 @@ namespace Application.Shared
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
             var entity = _dataService.GetById<TEntity>(id);
-            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             string actionName = action.GetType().Name.ToLowerFirstLetter();
             bool isActionAllowed = role?.Actions == null || role.Actions.Contains(actionName);
 
             var message = "";
-            if (isActionAllowed && action.IsAvailable(entity)) 
+            if (isActionAllowed && action.IsAvailable(entity))
                 message += action.Run(currentUser, entity).Message;
-            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             _triggersService.Execute();
-            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             _dataService.SaveChanges();
-            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return new AppActionResult
             {
@@ -484,7 +523,7 @@ namespace Application.Shared
                 Message = message
             };
         }
-        
+
         public AppActionResult InvokeAction(string name, IEnumerable<Guid> ids)
         {
             string entityName = typeof(TEntity).Name;
@@ -497,7 +536,8 @@ namespace Application.Shared
             var groupActions = _serviceProvider.GetService<IEnumerable<IGroupAppAction<TEntity>>>();
             var groupAction = groupActions.FirstOrDefault(x => x.GetType().Name.ToLowerFirstLetter() == name);
 
-            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Load role): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             if (singleAction == null && groupAction == null)
@@ -550,21 +590,26 @@ namespace Application.Shared
                         }
                     }
                 }
+
                 result = new AppActionResult
                 {
                     IsError = false,
                     Message = string.Join(". ", messages)
                 };
             }
-            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.InvokeAction (Apply action): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             _triggersService.Execute();
-            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Execure triggers): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             _dataService.SaveChanges();
-            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeAction (Save changes): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -581,27 +626,31 @@ namespace Application.Shared
             var dbSet = _dataService.GetDbSet<TEntity>();
             var currentUser = _userIdProvider.GetCurrentUser();
             var role = currentUser.RoleId.HasValue ? _dataService.GetById<Role>(currentUser.RoleId.Value) : null;
-            Log.Information("{entityName}.GetBulkUpdates (Load role): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load role): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var fields = _fieldDispatcherService.GetDtoFields<TDto>();
 
-            string forEntity = typeof(TEntity) == typeof(Order) 
-                ? FieldPropertiesForEntityType.Orders.ToString() 
+            string forEntity = typeof(TEntity) == typeof(Order)
+                ? FieldPropertiesForEntityType.Orders.ToString()
                 : FieldPropertiesForEntityType.Shippings.ToString();
             var fieldsProperties = _fieldPropertiesService.GetFor(forEntity, role?.Id, null);
-            Log.Information("{entityName}.GetBulkUpdates (Load field settings): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load field settings): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var result = new List<BulkUpdateDto>();
 
             var entities = LoadStatusData(ids);
-            Log.Information("{entityName}.GetBulkUpdates (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.GetBulkUpdates (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             foreach (var field in fields.Where(x => x.IsBulkUpdateAllowed))
             {
-                var fieldProperties = fieldsProperties.FirstOrDefault(x => string.Compare(x.FieldName, field.Name, true) == 0);
+                var fieldProperties =
+                    fieldsProperties.FirstOrDefault(x => string.Compare(x.FieldName, field.Name, true) == 0);
                 var validEntities = entities.Where(e => CanEdit(e, fieldProperties));
                 if (validEntities.Any())
                 {
@@ -617,7 +666,9 @@ namespace Application.Shared
                     }
                 }
             }
-            Log.Information("{entityName}.GetBulkUpdates (Find bulk updates): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+
+            Log.Information("{entityName}.GetBulkUpdates (Find bulk updates): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return result;
         }
@@ -643,7 +694,8 @@ namespace Application.Shared
             var validEntities = entities.Where(i => !_rules.ContainsKey(propertyName) || _rules[propertyName](i));
 
             var dtos = validEntities.Select(MapFromEntityToFormDto).ToArray();
-            Log.Information("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeBulkUpdate (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             object validValue = value;
@@ -651,17 +703,20 @@ namespace Application.Shared
             {
                 validValue = ParseInt(value);
             }
+
             if (propertyType.PropertyType == typeof(decimal?))
             {
                 validValue = ParseDecimal(value);
             }
+
             if (propertyType.PropertyType == typeof(bool?))
             {
                 validValue = ParseBool(value);
             }
+
             if (propertyType.PropertyType == typeof(LookUpDto))
             {
-                validValue = value == null ? null : new LookUpDto { Value = value };
+                validValue = value == null ? null : new LookUpDto {Value = value};
             }
 
             foreach (var dto in dtos)
@@ -672,7 +727,8 @@ namespace Application.Shared
             var importResult = new List<ValidateResult>();
             foreach (var dto in dtos)
                 importResult.Add(SaveOrCreateInner(dto));
-            Log.Information("{entityName}.InvokeBulkUpdate (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.InvokeBulkUpdate (Import): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             string errors = string.Join(" ", importResult.Where(x => x.IsError).Select(x => x.Error));
             var result = new AppActionResult
@@ -699,13 +755,13 @@ namespace Application.Shared
 
         protected TDto FillLookupNames(TDto dto)
         {
-            return FillLookupNames(new[] { dto }).FirstOrDefault();
+            return FillLookupNames(new[] {dto}).FirstOrDefault();
         }
 
         protected T MapFromStateDto<T>(string dtoStatus) where T : struct
         {
             var mapFromStateDto = Enum.Parse<T>(dtoStatus.ToUpperFirstLetter());
-            
+
             return mapFromStateDto;
         }
 
@@ -729,11 +785,12 @@ namespace Application.Shared
                     result.Add(SaveOrCreateInner(dto));
                 }
             }
+
             Log.Information("{entityName}.Import: {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
 
             return result;
-        }        
-        
+        }
+
         public ImportResultDto ImportFromExcel(Stream fileStream)
         {
             string entityName = typeof(TEntity).Name;
@@ -741,35 +798,38 @@ namespace Application.Shared
             sw.Start();
 
             var excel = new ExcelPackage(fileStream);
-            var workSheet = excel.Workbook.Worksheets[0];//.ElementAt(0);
+            var workSheet = excel.Workbook.Worksheets[0]; //.ElementAt(0);
 
             var excelMapper = CreateExcelMapper();
             var dtos = excelMapper.LoadEntries(workSheet).ToList();
-            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ImportFromExcel (Load from file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var importResult = Import(dtos.Select(x=>x.Data));
-            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            var importResult = Import(dtos.Select(x => x.Data));
+            Log.Information("{entityName}.ImportFromExcel (Import): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             var user = _userIdProvider.GetCurrentUser();
 
             StringBuilder sb = new StringBuilder();
-            foreach (var validateResult in importResult.Where(x=>x.IsError))
+            foreach (var validateResult in importResult.Where(x => x.IsError))
             {
                 sb.AppendLine($"{importResult.IndexOf(validateResult) + 2} строка: {validateResult.Error}");
             }
-            if(!importResult.Any(x=>x.IsError))
+
+            if (!importResult.Any(x => x.IsError))
                 return new ImportResultDto
                 {
                     Message = $"{importResult.Count()} загружено"
                 };
-            
+
             return new ImportResultDto
             {
                 Message = sb.ToString()
             };
         }
-        
+
         public Stream ExportToExcel(ExportExcelFormDto<TFilter> dto)
         {
             Stopwatch sw = new Stopwatch();
@@ -785,32 +845,38 @@ namespace Application.Shared
 
             var dbSet = _dataService.GetDbSet<TEntity>();
             var query = this.ApplySearchForm(dbSet, dto, dto.Columns);
-            
+
             query = ApplyRestrictions(query);
 
-            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Load from DB): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             var entities = query.ToList();
             var dtos = entities.Select(MapFromEntityToDto);
-            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Convert to DTO): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
             dtos = FillLookupNames(dtos).ToList();
-            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Fill lookups): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
             sw.Restart();
 
-            var excelMapper = CreateExportExcelMapper();//new ExcelMapper<TDto>(_dataService, _userIdProvider);
+            var excelMapper = CreateExportExcelMapper(); //new ExcelMapper<TDto>(_dataService, _userIdProvider);
             excelMapper.FillSheet(workSheet, dtos, user.Language, dto?.Columns);
-            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName, sw.ElapsedMilliseconds);
+            Log.Information("{entityName}.ExportToExcel (Fill file): {ElapsedMilliseconds}ms", entityName,
+                sw.ElapsedMilliseconds);
 
             return new MemoryStream(excel.GetAsByteArray());
         }
+        
 
         protected virtual ExcelMapper<TFormDto> CreateExcelMapper()
         {
             return new ExcelMapper<TFormDto>(_dataService, _userIdProvider, _fieldDispatcherService);
         }
+        
 
         protected virtual ExcelMapper<TDto> CreateExportExcelMapper()
         {
@@ -823,33 +889,40 @@ namespace Application.Shared
             {
                 return null;
             }
-            if (TimeSpan.TryParseExact(value, new[] { @"hh\:mm\:ss", @"hh\:mm" },
-                                       CultureInfo.InvariantCulture, TimeSpanStyles.None, out TimeSpan exactResult))
+
+            if (TimeSpan.TryParseExact(value, new[] {@"hh\:mm\:ss", @"hh\:mm"},
+                CultureInfo.InvariantCulture, TimeSpanStyles.None, out TimeSpan exactResult))
             {
                 return exactResult;
             }
+
             if (TimeSpan.TryParse(value, out TimeSpan result))
             {
                 return result;
             }
+
             return null;
         }
 
         protected decimal? ParseDecimal(string value)
         {
-            if (decimal.TryParse((value ?? string.Empty).Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out decimal decValue))
+            if (decimal.TryParse((value ?? string.Empty).Replace(',', '.'), NumberStyles.Number,
+                CultureInfo.InvariantCulture, out decimal decValue))
             {
                 return decValue;
             }
+
             return null;
         }
 
         protected int? ParseInt(string value)
         {
-            if (int.TryParse(value ?? string.Empty, NumberStyles.Integer, CultureInfo.InvariantCulture, out int intValue))
+            if (int.TryParse(value ?? string.Empty, NumberStyles.Integer, CultureInfo.InvariantCulture,
+                out int intValue))
             {
                 return intValue;
             }
+
             return null;
         }
 
@@ -859,6 +932,7 @@ namespace Application.Shared
             {
                 return boolValue;
             }
+
             return null;
         }
 
@@ -868,23 +942,27 @@ namespace Application.Shared
             {
                 return null;
             }
+
             if (DateTime.TryParseExact(
-                    value, 
-                    new[] { 
-                        "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
-                        "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy",
-                        "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-dd"
-                    },
-                    CultureInfo.InvariantCulture, 
-                    DateTimeStyles.None, 
-                    out DateTime exactResult))
+                value,
+                new[]
+                {
+                    "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy",
+                    "MM/dd/yyyy HH:mm:ss", "MM/dd/yyyy HH:mm", "MM/dd/yyyy",
+                    "yyyy-MM-ddTHH:mm:ss", "yyyy-MM-dd"
+                },
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime exactResult))
             {
                 return exactResult;
             }
+
             if (DateTime.TryParse(value, out DateTime result))
             {
                 return result;
             }
+
             return null;
         }
 
@@ -900,28 +978,45 @@ namespace Application.Shared
             }
         }
 
-        private Guid? FindOrderByNumber(TFormDto entityFrom, string entityName)
+        private Guid? FindByNumber(TFormDto entityFrom, string entityName)
         {
-            if (entityName == "Order")
+            if (entityName == typeof(Order).Name)
             {
                 var t = typeof(TFormDto);
                 var orderNumber = t.GetProperty("OrderNumber").GetValue(entityFrom) as LookUpDto;
+                if (orderNumber == null)
+                    return null;
                 var client = t.GetProperty("ClientId").GetValue(entityFrom);
+                if (client == null)
+                {
+                    return null;
+                }
+
                 var clientId = Guid.Parse(client.GetType().GetProperty("Value").GetValue(client).ToString());
                 var dbSet = _dataService.GetDbSet<Order>();
                 return dbSet.FirstOrDefault(x => x.OrderNumber == orderNumber.Value && x.ClientId == clientId)?.Id;
             }
+            
+            if (entityName == typeof(Shipping).Name)
+            {
+                var t = typeof(TFormDto);
+                var shippingNumber = t.GetProperty("ShippingNumber").GetValue(entityFrom) as LookUpDto;
+                if (shippingNumber == null)
+                    return null;
+                var dbSet = _dataService.GetDbSet<Shipping>();
+                return dbSet.FirstOrDefault(x => x.ShippingNumber == shippingNumber.Value)?.Id;
+            }
 
             return null;
         }
-        
+
         private bool CanEdit(EntityStatusDto dto, FieldForFieldProperties fieldProperties)
         {
             string editValue = FieldPropertiesAccessType.Edit.ToString();
             string accessType = fieldProperties?.AccessTypes?
-                                                .Where(x => string.Compare(x.Key, dto.Status, true) == 0)
-                                                .Select(x => x.Value)
-                                                .FirstOrDefault();
+                .Where(x => string.Compare(x.Key, dto.Status, true) == 0)
+                .Select(x => x.Value)
+                .FirstOrDefault();
             return string.Compare(accessType, editValue, true) == 0;
         }
 

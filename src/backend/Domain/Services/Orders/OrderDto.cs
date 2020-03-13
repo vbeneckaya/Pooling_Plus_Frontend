@@ -13,7 +13,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.State, source: nameof(OrderState)), IsDefault, OrderNumber(4), IsReadOnly]
         public string Status { get; set; }
 
-        [FieldType(FieldType.Link, source: nameof(Orders)), IsDefault, OrderNumber(2), IsReadOnly, IsRequired]
+        [FieldType(FieldType.Link, source: nameof(Orders)), IsDefault, OrderNumber(2)]
         public LookUpDto OrderNumber { get; set; }
 
         [FieldType(FieldType.Text)]
@@ -28,7 +28,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Text)]
         public string Payer { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(13), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(Clients)), IsDefault, OrderNumber(13)]
         public LookUpDto ClientId { get; set; }
         
         [FieldType(FieldType.Select, source: nameof(TransportCompanies)), AllowBulkUpdate]
@@ -49,7 +49,7 @@ namespace Domain.Services.Orders
         [FieldType(FieldType.Number)]
         public int? TransitDays { get; set; }
 
-        [FieldType(FieldType.Date), IsDefault, OrderNumber(6), IsRequired, AllowBulkUpdate]
+        [FieldType(FieldType.Date), IsDefault, OrderNumber(6), AllowBulkUpdate]
         public string DeliveryDate { get; set; }
 
         [FieldType(FieldType.Number)]
@@ -174,10 +174,10 @@ namespace Domain.Services.Orders
 
         public string AdditionalInfo { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), IsDefault, OrderNumber(7), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(ShippingWarehouses)), IsDefault, OrderNumber(7)]
         public LookUpDto ShippingWarehouseId { get; set; }
 
-        [FieldType(FieldType.Select, source: nameof(Warehouses)), IsDefault, OrderNumber(8), IsRequired]
+        [FieldType(FieldType.Select, source: nameof(Warehouses)), IsDefault, OrderNumber(8)]
         public LookUpDto DeliveryWarehouseId { get; set; }
 
         [FieldType(FieldType.LocalDateTime), IsReadOnly]

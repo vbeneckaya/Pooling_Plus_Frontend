@@ -14,6 +14,8 @@ namespace DAL.Services
         
         TEntity GetByIdOrNull<TEntity>(Guid? id) where TEntity : class, IPersistable;
 
+        Guid? CreateIfNotExisted<TEntity>(string fieldName, string value) where TEntity : class, IPersistable;
+
         IEnumerable<EntityChanges<TEntity>> GetChanges<TEntity>() where TEntity : class, IPersistable;
 
         void Remove<TEntity>(TEntity entity) where TEntity : class, IPersistable;

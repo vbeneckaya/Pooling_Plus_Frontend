@@ -4,12 +4,14 @@ using System.Linq;
 using Application.BusinessModels.Shared.Handlers;
 using Application.Services.Triggers;
 using Application.Shared;
+using AutoMapper;
 using DAL.Services;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.AppConfiguration;
 using Domain.Services.FieldProperties;
 using Domain.Services.Providers;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Domain.Shared;
@@ -18,47 +20,33 @@ namespace Application.Services.Providers
 {
     public class ProvidersService : DictionaryServiceBase<Provider, ProviderDto>, IProvidersService
     {
-        public ProvidersService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
-                                IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
-                                IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService) 
-        { }
+        private readonly IMapper _mapper;
 
+        private readonly IShippingWarehousesService _shippingWarehousesService;
+        
+        public ProvidersService(ICommonDataService dataService, IUserProvider userProvider,
+            ITriggersService triggersService,
+            IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService,
+            IShippingWarehousesService shippingWarehousesService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
+                fieldSetterFactory, configurationService)
+        {
+            _mapper = ConfigureMapper().CreateMapper();
+            _shippingWarehousesService = shippingWarehousesService;
+        }
+        
+        
+    
         public override DetailedValidationResult MapFromDtoToEntity(Provider entity, ProviderDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-
-            entity.Name = dto.Name;
-            entity.Inn = dto.Inn;
-            entity.Cpp = dto.Cpp;
-            entity.LegalAddress = dto.LegalAddress;
-            entity.ActualAddress = dto.ActualAddress;
-            entity.ContactPerson = dto.ContactPerson;
-            entity.ContactPhone = dto.ContactPhone;
-            entity.Email = dto.Email;
-            entity.ReportId = dto.ReportId;
-            entity.IsActive = dto.IsActive.GetValueOrDefault(true);
-
+            _mapper.Map(dto, entity);
             return null;
         }
 
         public override ProviderDto MapFromEntityToDto(Provider entity)
         {
-            return new ProviderDto
-            {
-                Id = entity.Id.ToString(),
-                Name = entity.Name,
-                Cpp = entity.Cpp,
-                Inn = entity.Inn,
-                ActualAddress = entity.ActualAddress,
-                LegalAddress = entity.LegalAddress,
-                ContactPerson = entity.ContactPerson,
-                ContactPhone = entity.ContactPhone,
-                Email = entity.Email,
-                ReportId = entity.ReportId,
-                IsActive = entity.IsActive
-            };
+            return _mapper.Map<Provider, ProviderDto>(entity); 
         }
         protected override DetailedValidationResult ValidateDto(ProviderDto dto)
         {
@@ -77,8 +65,22 @@ namespace Application.Services.Providers
 
             return result;
         }
+        
+        public override DetailedValidationResult SaveOrCreate(ProviderDto entityFrom)
+        {
+            var isNew = string.IsNullOrEmpty(entityFrom.Id);
+           
+            var result =  SaveOrCreateInner(entityFrom, false);
+            
+            if (isNew && !result.IsError)
+            {
+                _shippingWarehousesService.AddColedinoShippingWarehouseToProvider(Guid.Parse(result.Id));
+            }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+            return result;
+        }
+
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<Provider>()
                 .Where(i => i.IsActive)
@@ -106,6 +108,19 @@ namespace Application.Services.Providers
         {
             return _dataService.GetDbSet<Provider>()
                 .FirstOrDefault(i => i.Name == dto.Name);
+        }
+        
+        private MapperConfiguration ConfigureMapper()
+        {
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Provider, ProviderDto>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=>s.Id.ToString()));
+                
+                cfg.CreateMap<ProviderDto, Provider>()
+                    .ForMember(t=>t.Id, e=>e.MapFrom(s=> string.IsNullOrEmpty(s.Id) ? Guid.Empty : Guid.Parse(s.Id)));
+            });
+            return result;
         }
     }
 }

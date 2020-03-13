@@ -23,7 +23,8 @@ using Application.Shared.Excel.Columns;
 
 namespace Application.Services.ShippingWarehouses
 {
-    public class ShippingWarehousesService : DictionaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>, IShippingWarehousesService
+    public class ShippingWarehousesService : DictionaryServiceBase<ShippingWarehouse, ShippingWarehouseDto>,
+        IShippingWarehousesService
     {
         private readonly IMapper _mapper;
         private readonly IHistoryService _historyService;
@@ -31,10 +32,14 @@ namespace Application.Services.ShippingWarehouses
         private readonly IChangeTrackerFactory _changeTrackerFactory;
 
 
-        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, IValidationService validationService,
-                                         IHistoryService historyService, ICleanAddressService cleanAddressService, IFieldDispatcherService fieldDispatcherService, 
-                                         IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory, IAppConfigurationService configurationService) 
-            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
+        public ShippingWarehousesService(ICommonDataService dataService, IUserProvider userProvider,
+            ITriggersService triggersService, IValidationService validationService,
+            IHistoryService historyService, ICleanAddressService cleanAddressService,
+            IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, IChangeTrackerFactory changeTrackerFactory,
+            IAppConfigurationService configurationService)
+            : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
+                fieldSetterFactory, configurationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
             _historyService = historyService;
@@ -42,14 +47,15 @@ namespace Application.Services.ShippingWarehouses
             _changeTrackerFactory = changeTrackerFactory;
         }
 
-        protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter, ShippingWarehouseDto dto)
+        protected override IFieldSetter<ShippingWarehouse> ConfigureHandlers(IFieldSetter<ShippingWarehouse> setter,
+            ShippingWarehouseDto dto)
         {
             return setter
                 .AddHandler(e => e.WarehouseName, new ShippingWarehouseNameHandler(_dataService, _historyService))
                 .AddHandler(e => e.Address, new AddressHandler(_dataService, _historyService, _cleanAddressService))
                 .AddHandler(e => e.City, new CityHandler(_dataService, _historyService));
         }
-        
+
         protected override IChangeTracker ConfigureChangeTacker()
         {
             return _changeTrackerFactory.CreateChangeTracker().TrackAll<ShippingWarehouse>();
@@ -63,8 +69,10 @@ namespace Application.Services.ShippingWarehouses
             {
                 cfg.CreateMap<ShippingWarehouse, ShippingWarehouseDto>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
-                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
-                    .ForMember(t => t.IsEditable, e => e.MapFrom((s, t) => user.ProviderId == null || s.ProviderId != null));
+                    .ForMember(t => t.ProviderId,
+                        e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
+                    .ForMember(t => t.IsEditable,
+                        e => e.MapFrom((s, t) => user.ProviderId == null || s.ProviderId != null));
 
                 cfg.CreateMap<ShippingWarehouseDto, ShippingWarehouse>()
                     .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
@@ -78,12 +86,12 @@ namespace Application.Services.ShippingWarehouses
         protected override IEnumerable<ShippingWarehouseDto> FillLookupNames(IEnumerable<ShippingWarehouseDto> dtos)
         {
             var providerIds = dtos.Where(x => !string.IsNullOrEmpty(x.ProviderId?.Value))
-                                     .Select(x => x.ProviderId.Value.ToGuid())
-                                     .ToList();
+                .Select(x => x.ProviderId.Value.ToGuid())
+                .ToList();
 
             var providers = _dataService.GetDbSet<Provider>()
-                                           .Where(x => providerIds.Contains(x.Id))
-                                           .ToDictionary(x => x.Id.ToString());
+                .Where(x => providerIds.Contains(x.Id))
+                .ToDictionary(x => x.Id.ToString());
 
             foreach (var dto in dtos)
             {
@@ -96,15 +104,15 @@ namespace Application.Services.ShippingWarehouses
                 yield return dto;
             }
         }
-        
-        public override  DetailedValidationResult SaveOrCreate(ShippingWarehouseDto entityFrom)
+
+        public override DetailedValidationResult SaveOrCreate(ShippingWarehouseDto entityFrom)
         {
             var user = _userProvider.GetCurrentUser();
-            
+
             if (user.ProviderId.HasValue && entityFrom.ProviderId == null)
-                
+
                 entityFrom.ProviderId = new LookUpDto(user.ProviderId.ToString());
-            
+
             return SaveOrCreateInner(entityFrom, false);
         }
 
@@ -113,9 +121,45 @@ namespace Application.Services.ShippingWarehouses
             return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.Gln == code && x.IsActive);
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public ShippingWarehouseDto GetByNameAndProviderId(string name, Guid providerId)
         {
-            var entities = _dataService.GetDbSet<ShippingWarehouse>().OrderBy(x => x.WarehouseName).ToList();
+            return MapFromEntityToDto(_dataService.GetDbSet<ShippingWarehouse>()
+                .FirstOrDefault(x => x.WarehouseName == name && x.ProviderId == providerId));
+        }
+
+        public Guid? AddColedinoShippingWarehouseToProvider(Guid providerId)
+        {
+            var isColedinoAllreadyAdded = _dataService.GetDbSet<ShippingWarehouse>()
+                .FirstOrDefault(_ => _.ProviderId == providerId && _.WarehouseName.ToLower().Equals("коледино"));
+            if (isColedinoAllreadyAdded != null) return null;
+            
+            var warehouseColedino = new ShippingWarehouse
+            {
+                Id = Guid.NewGuid(),
+                ProviderId = providerId,
+                WarehouseName = "Коледино",
+                Address = "Московская обл., Подольский р-он с/п Лаговское, вблизи д. Коледино 142181",
+                PostalCode = "142181",
+                Region = "Московская обл.",
+                Area = "Подольский р-он",
+                IsActive = true,
+                Settlement = "с/п Лаговское, вблизи д. Коледино"
+            };
+            _dataService.GetDbSet<ShippingWarehouse>().Add(warehouseColedino);
+            _dataService.SaveChanges();
+            return warehouseColedino.Id;
+        }
+
+       public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
+       {
+           var currentUser = _userProvider.GetCurrentUser();
+           if (currentUser.RoleType == Domain.Enums.RoleTypes.Provider)
+               filter = currentUser.ProviderId.Value;
+           
+            var entities = _dataService.GetDbSet<ShippingWarehouse>()
+                .Where(x => x.IsActive && (filter == null || x.ProviderId == filter))
+                .OrderBy(x => x.WarehouseName)
+                .ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto
@@ -126,10 +170,10 @@ namespace Application.Services.ShippingWarehouses
                 };
             }
         }
-        
+
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().Where(x => x.WarehouseName == dto.WarehouseName).FirstOrDefault();
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.WarehouseName == dto.WarehouseName);
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
@@ -145,6 +189,7 @@ namespace Application.Services.ShippingWarehouses
             {
                 return null;
             }
+
             return _mapper.Map<ShippingWarehouseDto>(entity);
         }
 
@@ -160,7 +205,8 @@ namespace Application.Services.ShippingWarehouses
             return entry?.Id;
         }
 
-        protected override IQueryable<ShippingWarehouse> ApplySort(IQueryable<ShippingWarehouse> query, SearchFormDto form)
+        protected override IQueryable<ShippingWarehouse> ApplySort(IQueryable<ShippingWarehouse> query,
+            SearchFormDto form)
         {
             return query
                 .OrderBy(i => i.WarehouseName)
@@ -178,7 +224,7 @@ namespace Application.Services.ShippingWarehouses
             {
                 query = query.Where(i => i.ProviderId == user.ProviderId);
             }
-            
+
             return query;
         }
 
@@ -189,11 +235,12 @@ namespace Application.Services.ShippingWarehouses
             DetailedValidationResult result = base.ValidateDto(dto);
 
             var hasDuplicates = !result.IsError && _dataService.GetDbSet<ShippingWarehouse>()
-                                            .Where(x => x.WarehouseName == dto.WarehouseName && x.Id.ToString() != dto.Id)
-                                            .Any();
+                                    .Where(x => x.WarehouseName == dto.WarehouseName && x.Id.ToString() != dto.Id)
+                                    .Any();
             if (hasDuplicates)
             {
-                result.AddError(nameof(dto.WarehouseName), "ShippingWarehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
+                result.AddError(nameof(dto.WarehouseName), "ShippingWarehouse.DuplicatedRecord".Translate(lang),
+                    ValidationErrorType.DuplicatedRecord);
             }
 
             return result;

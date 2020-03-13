@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using Infrastructure.Installers;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Application.Services.Identity;
@@ -92,6 +91,7 @@ namespace API
             services.SyncTranslations();
 
             services.AddScoped<IUserProvider, UserProvider>();
+
         }
 
         private static string GetXmlCommentsPath()
@@ -102,7 +102,7 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
-            if (env.IsDevelopment()) 
+            //if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
 
             app.UseAuthentication();
@@ -113,12 +113,12 @@ namespace API
                     template: "api/{controller}/{action}");
             });
 
-            app.UseSwagger();
+            app.UseSwagger(config => { config.RouteTemplate = "api/swagger/{documentName}/swagger.json"; });
             app.UseSwaggerUI(c =>
             {
                 string version = GetMajorVersion();
-                c.SwaggerEndpoint($"/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
-                c.RoutePrefix = "swagger";
+                c.SwaggerEndpoint($"/api/swagger/v{version}/swagger.json", $"Pooling Plus API v{version}");
+                c.RoutePrefix = "api/swagger";
             });
 
             lifetime.ApplicationStopped.Register(OnAppStopped);

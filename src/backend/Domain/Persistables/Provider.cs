@@ -5,7 +5,7 @@ namespace Domain.Persistables
     /// <summary>
     /// Поставщик
     /// </summary>
-    public class Provider : IPersistable
+    public class Provider : IPersistableWithName
     {
         public Guid Id { get; set; }
 
@@ -24,9 +24,14 @@ namespace Domain.Persistables
         public string ContactPhone { get; set; }
         
         public string Email { get; set; }
+        
         public string ReportId { get; set; }		
 
+        public string ReportPageNameForMobile { get; set; }		
+
         public bool IsActive { get; set; } = true;
+        
+        public bool IsPoolingIntegrated { get; set; }
 
         public override string ToString()
         {

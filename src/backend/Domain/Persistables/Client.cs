@@ -23,6 +23,8 @@ namespace Domain.Persistables
         public string ContactPhone { get; set; }
         
         public string Email { get; set; }
+        
+        public string ReportId { get; set; }	
 
         public bool IsActive { get; set; } = true;
 

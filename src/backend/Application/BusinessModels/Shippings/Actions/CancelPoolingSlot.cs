@@ -5,6 +5,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Domain.Services;
 using Domain.Services.History;
+using Domain.Services.ShippingWarehouses;
 using Domain.Services.Translations;
 using Domain.Services.UserProvider;
 using Integrations.Pooling;
@@ -15,16 +16,17 @@ namespace Application.BusinessModels.Shippings.Actions
     {
         private readonly ICommonDataService _dataService;
         private readonly IHistoryService _historyService;
+        private readonly IShippingWarehousesService _shippingWarehousesService;
 
         public AppColor Color { get; set; }
         public string Description { get; set; }
 
-        public CancelPoolingSlot(ICommonDataService dataService, IHistoryService historyService)
+        public CancelPoolingSlot(ICommonDataService dataService, IHistoryService historyService, IShippingWarehousesService shippingWarehousesService)
         {
             _dataService = dataService;
             _historyService = historyService;
+            _shippingWarehousesService = shippingWarehousesService;
             Color = AppColor.Red;
-            Description = "Отменить бронь на пулинге";
         }
 
         public AppActionResult Run(CurrentUserDto userDto, Shipping shipping)
@@ -41,11 +43,12 @@ namespace Application.BusinessModels.Shippings.Actions
             using (var pooling = new PoolingIntegration(user, _dataService))
             {
                 pooling.CancelReservation(shipping);
-                shipping.PoolingInfo = $"";
-                shipping.PoolingSlotId = null;
-                shipping.PoolingReservationId = null;
+                var poolingInfoDto = pooling.GetInfoFor(shipping);
+                shipping.PoolingInfo = poolingInfoDto.MessageField;
             }
 
+            shipping.PoolingSlotId = null;
+            shipping.PoolingReservationId = null;
             shipping.Status = ShippingState.ShippingCreated;
             shipping.PoolingState = ShippingPoolingState.PoolingAvailable;
 

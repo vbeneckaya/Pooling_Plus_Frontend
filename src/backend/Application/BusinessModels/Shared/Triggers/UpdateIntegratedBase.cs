@@ -3,7 +3,7 @@ using Domain.Enums;
 using Domain.Persistables;
 using Integrations.Pooling;
 
-namespace Application.BusinessModels.Orders.Triggers
+namespace Application.BusinessModels.Shared.Triggers
 {
     public abstract class UpdateIntegratedBase
     {
@@ -16,8 +16,18 @@ namespace Application.BusinessModels.Orders.Triggers
 
         protected void UpdateShippingFromIntegrations(Shipping shipping)
         {
-            if (shipping.Status == ShippingState.ShippingCreated)
+            if (shipping.Status == ShippingState.ShippingCreated && shipping.UserCreatorId.HasValue)
             {
+                if (shipping.CarrierId == null)
+                {
+                    shipping.PoolingInfo = "Укажите Транспортную компанию";
+                    return;
+                }
+                if (shipping.TarifficationType == null)
+                {
+                    shipping.PoolingInfo = "Укажите Способ тарификации";
+                    return;
+                }
                 var creator = _dataService.GetByIdOrNull<User>(shipping.UserCreatorId);
                 if (creator.IsPoolingIntegrated())
                 {
@@ -28,6 +38,10 @@ namespace Application.BusinessModels.Orders.Triggers
                             ? ShippingPoolingState.PoolingAvailable : (ShippingPoolingState?)null;
                         shipping.PoolingInfo = poolingInfo.MessageField;
                     }
+                }
+                else
+                {
+                    shipping.PoolingInfo = PoolingIntegration.NeedLoginPasswordMessage;
                 }
 
             }            

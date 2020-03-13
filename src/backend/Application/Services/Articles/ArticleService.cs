@@ -122,7 +122,7 @@ namespace Application.Services.Articles
 //            return entry?.Id;
 //        }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<Article>().OrderBy(x => x.Nart).ToList();
             foreach (var entity in entities)
