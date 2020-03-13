@@ -91,11 +91,11 @@ namespace Application.Shared
             return result;
         }
 
-        public virtual IEnumerable<LookUpDto> ForSelect()
+        public virtual IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             return new List<LookUpDto>();
         }
-
+        
         public virtual TEntity FindByKey(TListDto dto)
         {
             return FindById(dto);
