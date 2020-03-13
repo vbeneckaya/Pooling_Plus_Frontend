@@ -971,7 +971,7 @@ namespace Application.Services.Shippings
                 _dataService,
                 _serviceProvider);
             var endDate = DateTime.Now.AddDays(14);
-            var startDate = DateTime.Now.AddMonths(-3);
+            var startDate = DateTime.Now.AddYears(-1);
             
             poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate, providerId);
         }
