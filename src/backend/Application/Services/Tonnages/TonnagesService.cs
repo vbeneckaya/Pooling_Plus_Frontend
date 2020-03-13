@@ -62,7 +62,7 @@ namespace Application.Services.Tonnages
             return result;
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<Tonnage>()
                 .Where(i => i.IsActive)

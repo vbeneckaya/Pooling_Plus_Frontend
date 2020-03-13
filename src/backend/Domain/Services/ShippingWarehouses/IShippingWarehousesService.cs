@@ -10,8 +10,6 @@ namespace Domain.Services.ShippingWarehouses
         
         ShippingWarehouseDto GetByNameAndProviderId(string name, Guid providerId);
         
-        IEnumerable<LookUpDto> ForSelect(Guid providerId);
-        
         Guid? AddColedinoShippingWarehouseToProvider(Guid providerId);
         
     }

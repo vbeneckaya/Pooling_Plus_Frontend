@@ -66,7 +66,7 @@ namespace Application.Services.ProductTypes
             };
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var productTypes = _dataService.GetDbSet<ProductType>()
                 .Where(i => i.IsActive)

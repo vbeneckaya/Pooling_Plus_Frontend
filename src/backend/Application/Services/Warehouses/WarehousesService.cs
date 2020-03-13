@@ -87,10 +87,10 @@ namespace Application.Services.Warehouses
             return result;
         }
 
-        public IEnumerable<LookUpDto> ForSelect(Guid clientId)
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<Warehouse>()
-                                       .Where(x => x.IsActive && x.ClientId == clientId)
+                                       .Where(x => x.IsActive && (filter == null || x.ClientId == filter))
                                        .OrderBy(x => x.WarehouseName)
                                        .ToList();
             foreach (var entity in entities)
@@ -104,24 +104,7 @@ namespace Application.Services.Warehouses
             }
         }
         
-        public override IEnumerable<LookUpDto> ForSelect()
-        {
-            var entities = _dataService.GetDbSet<Warehouse>()
-                .Where(x => x.IsActive)
-                .OrderBy(x => x.WarehouseName)
-                .ToList();
-            foreach (var entity in entities)
-            {
-                yield return new LookUpDto
-                {
-                    Value = entity.Id.ToString(),
-                    Name = entity.WarehouseName,
-                    Address = entity.Address
-                };
-            }
-        }
-
-        public override Warehouse FindByKey(WarehouseDto dto)
+      public override Warehouse FindByKey(WarehouseDto dto)
         {
             var clientId = dto.ClientId?.Value.ToGuid();
             var providerId = dto.ProviderId?.Value.ToGuid();

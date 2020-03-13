@@ -32,7 +32,7 @@ namespace Application.Services.TransportCompanies
             _mapper = ConfigureMapper().CreateMapper();
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 
