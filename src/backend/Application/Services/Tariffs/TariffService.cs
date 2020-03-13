@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using OfficeOpenXml;
 using Serilog;
@@ -28,11 +29,14 @@ namespace Application.Services.Tariffs
 {
     public class TariffsService : DictionaryServiceBase<Tariff, TariffDto>, ITariffsService
     {
+        private readonly IMapper _mapper;
+        
         public TariffsService(ICommonDataService dataService, IUserProvider userProvider, ITriggersService triggersService, 
                               IValidationService validationService, IFieldDispatcherService fieldDispatcherService, 
                               IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService) 
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService, fieldSetterFactory, configurationService)
         {
+            _mapper = ConfigureMapper().CreateMapper();
         }
         
         public virtual ImportResultDto ImportFromExcel(Stream fileStream)
@@ -489,6 +493,19 @@ namespace Application.Services.Tariffs
                         && Guid.Empty != i.DeliveryWarehouseId && i.DeliveryWarehouseId == Guid.Parse(deliveryWarehouse)
                         && Guid.Empty != i.ProviderId && i.ProviderId == Guid.Parse(provider)
                     );
+        }
+        
+         private MapperConfiguration ConfigureMapper()
+        {
+           // var lang = _userIdProvider.GetCurrentUser()?.Language;
+
+            var result = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<TariffDto, Tariff>();
+                   
+                cfg.CreateMap<Tariff, TariffDto>();
+            });
+            return result;
         }
     }
 }
