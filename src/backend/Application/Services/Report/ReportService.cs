@@ -22,16 +22,28 @@ namespace Application.Services.Report
         public EmbeddedReportConfig GetConfig()
         {
             var user = _dataService.GetById<User>(_userProvider.GetCurrentUserId().Value);
-
-            var provider = _dataService.GetById<Provider>(user.ProviderId.Value);
-
-            var reportId = Guid.Parse(provider.ReportId);
+            var role = _dataService.GetById<Role>(user.RoleId);
+            Guid reportId;
+            string reportPageNameForMobile;
+            
+            if (role.RoleType == Domain.Enums.RoleTypes.Administrator)
+            {
+                reportId = Guid.Parse("05ddf2c3-a2f4-4bdc-be06-e089b0aaa0c6");
+                reportPageNameForMobile = "ReportSection";
+            }
+            else
+            {
+                var provider = _dataService.GetById<Provider>(user.ProviderId.Value);
+                
+                reportId = Guid.Parse(provider.ReportId);
+                reportPageNameForMobile = provider.ReportPageNameForMobile;
+            }
             
             var oAuthResult = new PowerBiAuthenticator().AuthenticateAsync().GetAwaiter().GetResult();
 
             return GenerateReport(oAuthResult.AccessToken, 
                 Guid.Parse("8ac687eb-c107-4b44-a0ec-21aab341e752"), 
-                reportId, provider.ReportPageNameForMobile);//"f9896a49-c76f-44f4-92ea-441c7662bd5f"
+                reportId, reportPageNameForMobile);//"f9896a49-c76f-44f4-92ea-441c7662bd5f"
         }
         
         public static EmbeddedReportConfig GenerateReport(string token, Guid groupId, Guid reportId, string reportPageNameForMobile)
