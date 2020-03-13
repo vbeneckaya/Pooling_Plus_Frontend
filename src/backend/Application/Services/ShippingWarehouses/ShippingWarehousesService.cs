@@ -151,7 +151,11 @@ namespace Application.Services.ShippingWarehouses
         }
 
        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
-        {
+       {
+           var currentUser = _userProvider.GetCurrentUser();
+           if (currentUser.RoleType == Domain.Enums.RoleTypes.Provider)
+               filter = currentUser.ProviderId.Value;
+           
             var entities = _dataService.GetDbSet<ShippingWarehouse>()
                 .Where(x => x.IsActive && (filter == null || x.ProviderId == filter))
                 .OrderBy(x => x.WarehouseName)
