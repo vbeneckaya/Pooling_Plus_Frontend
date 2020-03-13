@@ -178,12 +178,9 @@ namespace Application.Services.Warehouses
 
         protected override ExcelMapper<WarehouseDto> CreateExcelMapper()
         {
-            string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<WarehouseDto>(_dataService, _userProvider, _fieldDispatcherService)
-                //.MapColumn(w => w.PickingTypeId, new DictionaryReferenceExcelColumn(GetPickingTypeIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
                 .MapColumn(w => w.ClientId, new DictionaryReferenceExcelColumn(GetClientIdByName))
-                //.MapColumn(w => w.DeliveryType, new EnumExcelColumn<DeliveryType>(lang))
                 ;
         }
         private Guid? GetProviderIdByName(string name)
@@ -196,18 +193,6 @@ namespace Application.Services.Warehouses
         {
             var entry = _dataService.GetDbSet<Client>().Where(t => t.Name == name).FirstOrDefault();
             return entry?.Id;
-        }
-
-        private Guid? GetPickingTypeIdByName(string name)
-        {
-            var entry = _dataService.GetDbSet<PickingType>().Where(t => t.Name == name).FirstOrDefault();
-            return entry?.Id;
-        }
-
-        private string GetPickingTypeNameById(Guid? id)
-        {
-            var entry = _dataService.GetDbSet<PickingType>().FirstOrDefault(x => x.Id == id);
-            return entry?.Name;
         }
 
         protected override IQueryable<Warehouse> ApplySort(IQueryable<Warehouse> query, SearchFormDto form)
@@ -225,18 +210,6 @@ namespace Application.Services.Warehouses
 
             var isInt = int.TryParse(search, out int searchInt);
             
-            var pickingTypes = _dataService.GetDbSet<PickingType>()
-                .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                .Select(i => i.Id).ToList();
-
-            var deliveryTypeNames = Enum.GetNames(typeof(DeliveryType)).Select(i => i.ToLower());
-
-            var deliveryTypes = _dataService.GetDbSet<Translation>()
-                .Where(i => deliveryTypeNames.Contains(i.Name.ToLower()))
-                .WhereTranslation(search)
-                .Select(i => (DeliveryType?)Enum.Parse<DeliveryType>(i.Name, true))
-                .ToList();
-
             return query.Where(i =>
                    i.WarehouseName.ToLower().Contains(search)
                 || i.Region.ToLower().Contains(search)
@@ -244,8 +217,6 @@ namespace Application.Services.Warehouses
                 || i.Address.ToLower().Contains(search)
                 || i.Latitude.Contains(search)
                 || i.Longitude.Contains(search)
-                //|| i.PickingTypeId != null && pickingTypes.Any(t => t == i.PickingTypeId)
-                //|| i.DeliveryType != null && deliveryTypes.Contains(i.DeliveryType)
                 || isInt && i.LeadtimeDays == searchInt
                 );
         }
@@ -272,16 +243,7 @@ namespace Application.Services.Warehouses
 
         protected override DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
-            var lang = _userProvider.GetCurrentUser()?.Language;
-
             DetailedValidationResult result = base.ValidateDto(dto);
-
-            var hasDuplicates = !result.IsError && FindByKey(dto) != null;
-
-            if (hasDuplicates)
-            {
-                result.AddError(nameof(dto.Address), "Warehouse.DuplicatedRecord".Translate(lang), ValidationErrorType.DuplicatedRecord);
-            }
 
             return result;
         }

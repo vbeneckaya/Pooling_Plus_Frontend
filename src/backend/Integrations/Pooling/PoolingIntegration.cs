@@ -332,10 +332,10 @@ namespace Integrations.Pooling
 
                             var clientName = reservation.Value<string>("client");
 
-                            Guid? clientId;
                             var findClient = clientsService?.ForSelect()
                                 .FirstOrDefault(_ => _.Name == clientName);
-                            clientId = findClient == null ? (Guid?)null : Guid.Parse(findClient.Value); 
+                            
+                            var clientId = findClient == null ? (Guid?)null : Guid.Parse(findClient.Value); 
 
                             Guid? deliveryWarehouseId = null;
                             if (clientId != null)
