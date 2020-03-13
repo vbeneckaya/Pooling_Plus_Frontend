@@ -188,7 +188,7 @@
             Поиск по вхождению с пагинацией
             </summary>
         </member>
-        <member name="M:API.Controllers.Shared.DictionaryController`3.ForSelect">
+        <member name="M:API.Controllers.Shared.DictionaryController`3.ForSelect(System.Nullable{System.Guid})">
             <summary>
             Получение данных для выпадающего списка в 
             </summary>
@@ -377,11 +377,6 @@
             Импортировать список форм из Pooling для поставщика
             </summary>
         </member>
-        <member name="M:API.Controllers.ShippingWarehouseCityController.ForSelect">
-            <summary>
-            Получение данных для выпадающего списка
-            </summary>
-        </member>
         <member name="M:API.Controllers.ShippingWarehousesForOrderCreationController.ForSelect">
             <summary>
             Получение данных для выпадающего списка
@@ -436,16 +431,6 @@
             <param name="key">Ключ для настроек</param>
             <param name="value">Новое значение</param>
             <returns></returns>
-        </member>
-        <member name="M:API.Controllers.WarehouseCityController.ForSelect">
-            <summary>
-            Получение данных для выпадающего списка
-            </summary>
-        </member>
-        <member name="M:API.Controllers.WarehousesController.ForSelect(System.Guid)">
-            <summary>
-            Получение данных для выпадающего списка
-            </summary>
         </member>
     </members>
 </doc>

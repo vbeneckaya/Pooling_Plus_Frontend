@@ -65,7 +65,7 @@ namespace Application.Services.Clients
             return _mapper.Map<Client, ClientDto>(entity); 
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 

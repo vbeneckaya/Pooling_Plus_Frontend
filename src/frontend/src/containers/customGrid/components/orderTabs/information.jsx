@@ -32,8 +32,8 @@ const Information = ({
         return column ? column : {};
     };
 
-    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
-        clientId: form['clientId'] ? form['clientId'].value : undefined,
+    const extSearchParams = useMemo(() => ({
+        filter: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     return (
@@ -137,8 +137,8 @@ const Information = ({
                                                 error={error['deliveryWarehouseId']}
                                                 subTitle={form['deliveryAddress']}
                                                 type={getColumn('deliveryWarehouseId').type}
-                                                source={'warehouses/byClientId'}
-                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
+                                                source={getColumn('deliveryWarehouseId').source}
+                                                extSearchParams={extSearchParams}
                                                 settings={settings['deliveryWarehouseId']}
                                                 onChange={onChange}
                                             />

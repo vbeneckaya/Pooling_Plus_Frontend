@@ -127,23 +127,6 @@ namespace Application.Services.ShippingWarehouses
                 .FirstOrDefault(x => x.WarehouseName == name && x.ProviderId == providerId));
         }
 
-        public IEnumerable<LookUpDto> ForSelect(Guid providerId)
-        {
-            var entities = _dataService.GetDbSet<ShippingWarehouse>()
-                .Where(x => x.IsActive && x.ProviderId == providerId)
-                .OrderBy(x => x.WarehouseName)
-                .ToList();
-            foreach (var entity in entities)
-            {
-                yield return new LookUpDto
-                {
-                    Value = entity.Id.ToString(),
-                    Name = entity.WarehouseName,
-                    Address = entity.Address
-                };
-            }
-        }
-
         public Guid? AddColedinoShippingWarehouseToProvider(Guid providerId)
         {
             var isColedinoAllreadyAdded = _dataService.GetDbSet<ShippingWarehouse>()
@@ -167,9 +150,12 @@ namespace Application.Services.ShippingWarehouses
             return warehouseColedino.Id;
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+       public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
-            var entities = _dataService.GetDbSet<ShippingWarehouse>().OrderBy(x => x.WarehouseName).ToList();
+            var entities = _dataService.GetDbSet<ShippingWarehouse>()
+                .Where(x => x.IsActive && (filter == null || x.ProviderId == filter))
+                .OrderBy(x => x.WarehouseName)
+                .ToList();
             foreach (var entity in entities)
             {
                 yield return new LookUpDto

@@ -67,7 +67,7 @@ namespace Application.Services.BodyTypes
             return result;
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<BodyType>()
                 .Where(i => i.IsActive)

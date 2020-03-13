@@ -115,7 +115,7 @@ namespace Application.Services.VehicleTypes
             };
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
 

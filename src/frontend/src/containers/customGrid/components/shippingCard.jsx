@@ -34,8 +34,8 @@ const Content = ({
                      onBlur,
                      uniquenessNumberInnerCheck,
                  }) => {
-    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
-        clientId: form['clientId'] ? form['clientId'].value : undefined,
+    const extSearchParams = useMemo(() => ({
+        filter: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
@@ -143,8 +143,7 @@ const Content = ({
                                                 type={SELECT_TYPE}
                                                 settings={settings['deliveryWarehouseId']}
                                                 isDisabled={!form['clientId']}
-                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source="warehouses/byClientId"
+                                                extSearchParams={extSearchParams}
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}

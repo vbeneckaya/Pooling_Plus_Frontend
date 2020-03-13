@@ -13,17 +13,16 @@ import {Button, Confirm, Form, Grid, Modal, Segment} from "semantic-ui-react";
 import FormField from "../../../components/BaseComponents";
 import {ordersMiniColumns} from "../../../constants/ordersMiniColumns";
 import {DATE_TYPE, NUMBER_TYPE, SELECT_TYPE, TEXT_TYPE} from "../../../constants/columnTypes";
-import SelectList from '../../../containers/customSelectGrid/list';
 import List from '../../../containers/customGrid/list';
 import {
-    editCardRequest,
+    
     isUniqueNumberRequest,
     settingsFormExtSelector,
 } from "../../../ducks/gridCard";
 
 const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNumber}) => {
-    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
-        clientId: form['clientId'] ? form['clientId'].value : undefined,
+    const extSearchParams = useMemo(() => ({
+        filter: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     const settings = useSelector(state => settingsFormExtSelector(state, form.status));
@@ -132,8 +131,8 @@ const Content = ({t, error, form, onChange, uniquenessNumberCheck, isNotUniqueNu
                                                 settings={settings['deliveryWarehouseId']}
                                                 isDisabled={!form['clientId']}
                                                 isRequired
-                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source="warehouses/byClientId"
+                                                extSearchParams={extSearchParams}
+                                                source="warehouses"
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}

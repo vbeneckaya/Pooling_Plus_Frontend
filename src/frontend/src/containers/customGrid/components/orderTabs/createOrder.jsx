@@ -1,4 +1,4 @@
-import React, {useMemo, useEffect} from 'react';
+import React, {useMemo} from 'react';
 import {Form, Grid, Segment} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import FormField from '../../../../components/BaseComponents';
@@ -12,8 +12,8 @@ import {
 const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniquenessNumberCheck, error}) => {
     const {t} = useTranslation();
 
-    const extSearchParamsFromDeliveryWarehouse = useMemo(() => ({
-        clientId: form['clientId'] ? form['clientId'].value : undefined,
+    const extSearchParams = useMemo(() => ({
+        filter: form['clientId'] ? form['clientId'].value : undefined,
     }), [form['clientId']]);
 
     return (
@@ -115,8 +115,8 @@ const CreateOrder = ({form = {}, onChange, onBlur, isNotUniqueNumber, uniqueness
                                                 type={SELECT_TYPE}
                                                 isDisabled={!form['clientId']}
                                                 isRequired
-                                                extSearchParams={extSearchParamsFromDeliveryWarehouse}
-                                                source='warehouses/byClientId'
+                                                extSearchParams={extSearchParams}
+                                                source="warehouses"
                                                 value={form['deliveryWarehouseId']}
                                                 error={error['deliveryWarehouseId']}
                                                 rows={2}

@@ -53,7 +53,7 @@ namespace Application.Services.DocumentTypes
             return result;
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<DocumentType>()
                 .Where(i => i.IsActive)

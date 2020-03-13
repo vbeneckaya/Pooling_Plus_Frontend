@@ -9,7 +9,6 @@ namespace API.Controllers
     public class ShippingWarehousesController : DictionaryController<IShippingWarehousesService, ShippingWarehouse, ShippingWarehouseDto> 
     {
         public ShippingWarehousesController(IShippingWarehousesService warehousesService) : base(warehousesService)
-        {
-        }
+        {}
     }
 }

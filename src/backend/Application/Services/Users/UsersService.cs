@@ -51,7 +51,7 @@ namespace Application.Services.Users
             }
         }
 
-        public override IEnumerable<LookUpDto> ForSelect()
+        public override IEnumerable<LookUpDto> ForSelect(Guid? filter = null)
         {
             var entities = _dataService.GetDbSet<User>()
                 .Where(x => x.IsActive)
