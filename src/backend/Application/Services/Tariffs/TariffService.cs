@@ -91,8 +91,7 @@ namespace Application.Services.Tariffs
         
         public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
-            entity = _mapper.Map<Tariff>(dto);
-
+            _mapper.Map(dto, entity);
             return null;
         }
         
@@ -390,6 +389,7 @@ namespace Application.Services.Tariffs
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
                     .ForMember(t => t.EffectiveDate, e => e.MapFrom((s, t) => s.EffectiveDate?.ToString("dd.MM.yyyy")))
                     .ForMember(t => t.ExpirationDate, e => e.MapFrom((s, t) => s.ExpirationDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.FtlRate, e => e.MapFrom((s) => s.FtlRate.Value))
                     ;
 
                 cfg.CreateMap<TariffDto, Tariff>()
@@ -403,6 +403,7 @@ namespace Application.Services.Tariffs
                     .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId == null ? null : s.BodyTypeId.Value.ToGuid()))
                     .ForMember(t => t.EffectiveDate, e => e.MapFrom((s) => s.EffectiveDate.ToDate()))
                     .ForMember(t => t.ExpirationDate, e => e.MapFrom((s) => s.ExpirationDate.ToDate()))
+                    .ForMember(t => t.FtlRate, e => e.MapFrom((s) => s.FtlRate.Value))
                     ;
             });
             return result;
