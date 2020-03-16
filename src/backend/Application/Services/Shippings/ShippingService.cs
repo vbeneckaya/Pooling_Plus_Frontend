@@ -960,22 +960,6 @@ namespace Application.Services.Shippings
             };
         }
 
-        public void ImportFormsFromPooling(string providerId)
-        {
-            var poolingIntegration = new PoolingIntegration(
-                new User
-                {
-                    PoolingLogin = "k.skvortsov@artlogics.ru",
-                    PoolingPassword = "VCuds3v"
-                },
-                _dataService,
-                _serviceProvider);
-            var endDate = DateTime.Now.AddDays(14);
-            var startDate = DateTime.Now.AddYears(-1);
-            
-            poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate, providerId);
-        }
-
         private IEnumerable<ValidateResult> ImportShippingsWidthOrders(IEnumerable<ShippingFormDto> entitiesFrom,
             CurrentUserDto currentUser)
         {

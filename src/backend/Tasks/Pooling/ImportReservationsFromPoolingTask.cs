@@ -1,20 +1,12 @@
 ﻿using Domain.Persistables;
-using Domain.Services.Orders;
-using Domain.Services.ShippingWarehouses;
-using Domain.Services.Warehouses;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DAL.Services;
-using Domain.Services.Clients;
-using Domain.Services.Shippings;
-using Domain.Services.TransportCompanies;
 using Integrations.Pooling;
-using NCrontab;
 using Tasks.Common;
 
 namespace Tasks.Pooling
@@ -22,7 +14,7 @@ namespace Tasks.Pooling
     [Description("Импорт перевозок из Pooling")]
     public class ImportReservationsFromPoolingTask : TaskBase<ImportReservationsFromPoolingProperties>, IScheduledTask
     {
-        public string Schedule => "0 */1 * * *";
+        public string Schedule => "* */3 * * *";
 
         protected override async Task Execute(IServiceProvider serviceProvider,
             ImportReservationsFromPoolingProperties props, CancellationToken cancellationToken)
@@ -40,8 +32,9 @@ namespace Tasks.Pooling
                     serviceProvider
                 ))
                 {
-                    var endDate = DateTime.Now;
-                    var startDate = endDate - (CrontabSchedule.Parse(Schedule).GetNextOccurrence(endDate) - endDate);
+                    var startDate = DateTime.Now.AddDays(-14);
+                    var endDate = DateTime.Now.AddDays(14);
+//                    var startDate = endDate - (CrontabSchedule.Parse(Schedule).GetNextOccurrence(endDate) - endDate);
                     poolingIntegration.LoadShippingsAndOrdersFromReports(startDate, endDate);
                 }
             }

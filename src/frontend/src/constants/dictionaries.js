@@ -1,1 +1,0 @@
-export const PROVIDERS_DICTIONARY = 'providers';
