@@ -3,8 +3,6 @@ import {downloader, postman} from '../utils/postman';
 import {all, put, takeEvery} from 'redux-saga/effects';
 import {toast} from 'react-toastify';
 import {errorMapping} from '../utils/errorMapping';
-import {PROVIDERS_DICTIONARY} from "../constants/dictionaries";
-import {SHIPPINGS_GRID} from "../constants/grids";
 
 //*  TYPES  *//
 
@@ -310,9 +308,6 @@ function* saveDictionaryCardSaga({payload}) {
             });
 
             callbackSuccess && callbackSuccess();
-
-            if (name == PROVIDERS_DICTIONARY && params['isPoolingIntegrated'] == true)
-                yield postman.get(`/${SHIPPINGS_GRID}/importFormsFromPooling?providerId=${params['id']}`);
         }
     } catch (e) {
         yield put({

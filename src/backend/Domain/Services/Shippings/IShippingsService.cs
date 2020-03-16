@@ -14,6 +14,5 @@ namespace Domain.Services.Shippings
        // IEnumerable<ShippingFormDto> FindByPoolingReservationId(NumberSearchFormDto dto);
         Stream ExportFormsToExcel(ExportExcelFormDto<ShippingFilterDto> dto);
         ImportResultDto ImportFormsFromExcel(Stream fileStream);
-        void ImportFormsFromPooling(string providerId);
     }
 }
