@@ -173,7 +173,10 @@ namespace Application.Services.ShippingWarehouses
 
         public override ShippingWarehouse FindByKey(ShippingWarehouseDto dto)
         {
-            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => x.WarehouseName == dto.WarehouseName);
+            return _dataService.GetDbSet<ShippingWarehouse>().FirstOrDefault(x => 
+                x.WarehouseName == dto.WarehouseName 
+              
+               );
         }
 
         public override DetailedValidationResult MapFromDtoToEntity(ShippingWarehouse entity, ShippingWarehouseDto dto)
@@ -235,8 +238,9 @@ namespace Application.Services.ShippingWarehouses
             DetailedValidationResult result = base.ValidateDto(dto);
 
             var hasDuplicates = !result.IsError && _dataService.GetDbSet<ShippingWarehouse>()
-                                    .Where(x => x.WarehouseName == dto.WarehouseName && x.Id.ToString() != dto.Id)
-                                    .Any();
+                                    .Any(x => x.WarehouseName == dto.WarehouseName
+                                              && x.ProviderId.ToString() == dto.ProviderId.Value
+                                              && x.Id.ToString() != dto.Id);
             if (hasDuplicates)
             {
                 result.AddError(nameof(dto.WarehouseName), "ShippingWarehouse.DuplicatedRecord".Translate(lang),

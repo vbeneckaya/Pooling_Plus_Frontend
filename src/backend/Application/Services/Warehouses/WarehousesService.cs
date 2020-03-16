@@ -243,7 +243,19 @@ namespace Application.Services.Warehouses
 
         protected override DetailedValidationResult ValidateDto(WarehouseDto dto)
         {
+            var lang = _userProvider.GetCurrentUser()?.Language;
+
             DetailedValidationResult result = base.ValidateDto(dto);
+
+            var hasDuplicates = !result.IsError && _dataService.GetDbSet<Warehouse>()
+                                    .Any(x => x.WarehouseName == dto.WarehouseName
+                                              && x.ClientId.ToString() == dto.ClientId.Value
+                                              && x.Id.ToString() != dto.Id);
+            if (hasDuplicates)
+            {
+                result.AddError(nameof(dto.WarehouseName), "Warehouse.DuplicatedRecord".Translate(lang),
+                    ValidationErrorType.DuplicatedRecord);
+            }
 
             return result;
         }
