@@ -23,24 +23,24 @@ const Block = ({item, loading}) => {
             <Loader active={loading} size="huge">
                 Loading
             </Loader>
-            <div className="card-content-block_header">
-                <div>{t(item.menuItem)}</div>
-                <div className="card-content-block_header_accordion">
-                        {isSelectBtn && (
-                        <Popup
-                            content={t('select_record')}
-                            position="bottom right"
-                            trigger={<Button icon="search" onClick={selectAction}/>}
-                        />)}
-                    {isCreateBtn && (
-                        <Popup
-                            content={t('add_record')}
-                            position="bottom right"
-                            trigger={<Button icon="add" onClick={createAction}/>}
-                        />)}
-                    <Icon name={open ? 'angle down' : 'angle up'} onClick={toggleOpen}/>
-                </div>
-            </div>
+            {/*<div className="card-content-block_header">*/}
+                {/*<div>{t(item.menuItem)}</div>*/}
+                {/*<div className="card-content-block_header_accordion">*/}
+                        {/*{isSelectBtn && (*/}
+                        {/*<Popup*/}
+                            {/*content={t('select_record')}*/}
+                            {/*position="bottom right"*/}
+                            {/*trigger={<Button icon="search" onClick={selectAction}/>}*/}
+                        {/*/>)}*/}
+                    {/*{isCreateBtn && (*/}
+                        {/*<Popup*/}
+                            {/*content={t('add_record')}*/}
+                            {/*position="bottom right"*/}
+                            {/*trigger={<Button icon="add" onClick={createAction}/>}*/}
+                        {/*/>)}*/}
+                    {/*<Icon name={open ? 'angle down' : 'angle up'} onClick={toggleOpen}/>*/}
+                {/*</div>*/}
+            {/*</div>*/}
             <div className={`card-content-block_${open ? 'open' : 'close'}`}>{item.render()}</div>
         </Scroll.Element>
     );

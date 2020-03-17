@@ -16,28 +16,40 @@ const CardLayout = ({
                     }) => {
     const {t} = useTranslation();
 
-    const contentRef = useRef(null);
+   // const contentRef = useRef(null);
 
     let [activeItem, setActiveItem] = useState();
+    let [activeItemContent, setActiveItemContent] = useState();
 
     const handleItemClick = (e, {item}) => {
         setActiveItem(item);
-        Scroll &&
-        Scroll.scroller &&
-        Scroll.scroller.scrollTo &&
-        Scroll.scroller.scrollTo(item, {
-            duration: 1500,
-            delay: 100,
-            offset: -120,
-        });
+        // Scroll &&
+        // Scroll.scroller &&
+        // Scroll.scroller.scrollTo &&
+        // Scroll.scroller.scrollTo(item, {
+        //     duration: 1500,
+        //     delay: 100,
+        //     offset: -120,
+        // });
     };
 
     useEffect(
         () => {
+            content && content() && content().length && setActiveItemContent(content()[0]);
             content && content() && content().length && setActiveItem(content()[0].menuItem);
         },
         [content],
     );
+    
+    useEffect(()=>{
+        if(activeItem && content && content() && content().length ){
+            
+            setActiveItemContent(content().find(_=>_.menuItem == activeItem))
+        }
+        if(!activeItem && content && !content())
+            setActiveItemContent(content)
+        
+    },[activeItem])
 
     return (
         <div>
@@ -52,10 +64,10 @@ const CardLayout = ({
                     <div className="card-header-panel_actions">{actionsHeader()}</div>
                 )}
             </div>
-            <div className="card-content">
+            <div className={!!content && !!content() ? "grid-card-content" :"card-content"}>
                 {content ? (
-                    <div ref={contentRef}>
-                        <Menu pointing secondary vertical>
+                    <div>
+                        <Menu pointing className="grid-card-content_menu">
                             {content().map(item => (
                                 <Menu.Item
                                     key={`menu-item-${item.menuItem}`}
@@ -67,13 +79,11 @@ const CardLayout = ({
                                 />
                             ))}
                         </Menu>
-                        <div className="card-content-block_menu">
-                            {content().map(item => (
-                                <Block 
-                                    item={item} 
+                        <div className={!!content &&!!content() ? "grid-card-content_block" : "card-content-block_menu"}>
+                            {activeItemContent && <Block 
+                                    item={activeItemContent} 
                                     loading={loading}
-                                />
-                            ))}
+                                />}
                         </div>
                     </div>
                 ) : (
@@ -87,10 +97,10 @@ const CardLayout = ({
             </div>
             {actionsFooter && <div className="card-actions-panel">
                 <div
-                    style={{
-                        width:
-                            contentRef && contentRef.current && contentRef.current.offsetWidth - 64,
-                    }}
+                    // style={{
+                    //     width:
+                    //         contentRef && contentRef.current && contentRef.current.offsetWidth - 64,
+                    // }}
                 >
                     {actionsFooter()}
                 </div>
