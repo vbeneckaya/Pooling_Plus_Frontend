@@ -1,10 +1,6 @@
 import React from "react";
-// import {useTranslation} from "react-i18next";
-// import {ORDERS_GRID, SHIPPINGS_GRID} from "../../constants/grids";
-
 
 const InstructionContent = (pathName) => {
-    // const {t} = useTranslation();
     const content = new Object();
 
     content['/grid/orders'] = {
@@ -16,7 +12,7 @@ const InstructionContent = (pathName) => {
     content['/grid/shippings'] = {
         title: "Перевозки",
         content:
-            <label>instruction for /grid/shippings</label>
+            <label>instruction  for /grid/shippings</label>
     };
 
     const res = content[pathName]
