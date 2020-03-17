@@ -91,75 +91,10 @@ namespace Application.Services.Tariffs
         
         public override DetailedValidationResult MapFromDtoToEntity(Tariff entity, TariffDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Id))
-                entity.Id = Guid.Parse(dto.Id);
-
-            entity.ShippingWarehouseId = Guid.Parse(dto.ShippingWarehouseId?.Value);
-            entity.DeliveryWarehouseId = Guid.Parse(dto.DeliveryWarehouseId?.Value);
-            entity.VehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
-            entity.ProviderId = dto.ProviderId?.Value?.ToGuid();
-            entity.CarrierId = dto.CarrierId?.Value?.ToGuid();
-            entity.BodyTypeId = dto.BodyTypeId?.Value?.ToGuid();
-            entity.WinterAllowance = dto.WinterAllowance.ToDecimal();
-            entity.EffectiveDate = dto.EffectiveDate.ToDate();
-            entity.ExpirationDate = dto.ExpirationDate.ToDate();
-
-            if (dto.StartWinterPeriod.TryParseDate(out DateTime swPeriod))
-            {
-                entity.StartWinterPeriod = swPeriod;
-            }
-            else
-            {
-                entity.StartWinterPeriod = null;
-            }
-
-            if (dto.EndWinterPeriod.TryParseDate(out DateTime ewPeriod))
-            {
-                entity.EndWinterPeriod = ewPeriod;
-            }
-            else
-            {
-                entity.EndWinterPeriod = null;
-            }
-
-            entity.FtlRate = dto.FtlRate;
-            entity.LtlRate1 = dto.LtlRate1;
-            entity.LtlRate2 = dto.LtlRate2;
-            entity.LtlRate3 = dto.LtlRate3;
-            entity.LtlRate4 = dto.LtlRate4;
-            entity.LtlRate5 = dto.LtlRate5;
-            entity.LtlRate6 = dto.LtlRate6;
-            entity.LtlRate7 = dto.LtlRate7;
-            entity.LtlRate8 = dto.LtlRate8;
-            entity.LtlRate9 = dto.LtlRate9;
-            entity.LtlRate10 = dto.LtlRate10;
-            entity.LtlRate11 = dto.LtlRate11;
-            entity.LtlRate12 = dto.LtlRate12;
-            entity.LtlRate13 = dto.LtlRate13;
-            entity.LtlRate14 = dto.LtlRate14;
-            entity.LtlRate15 = dto.LtlRate15;
-            entity.LtlRate16 = dto.LtlRate16;
-            entity.LtlRate17 = dto.LtlRate17;
-            entity.LtlRate18 = dto.LtlRate18;
-            entity.LtlRate19 = dto.LtlRate19;
-            entity.LtlRate20 = dto.LtlRate20;
-            entity.LtlRate21 = dto.LtlRate21;
-            entity.LtlRate22 = dto.LtlRate22;
-            entity.LtlRate23 = dto.LtlRate23;
-            entity.LtlRate24 = dto.LtlRate24;
-            entity.LtlRate25 = dto.LtlRate25;
-            entity.LtlRate26 = dto.LtlRate26;
-            entity.LtlRate27 = dto.LtlRate27;
-            entity.LtlRate28 = dto.LtlRate28;
-            entity.LtlRate29 = dto.LtlRate29;
-            entity.LtlRate30 = dto.LtlRate30;
-            entity.LtlRate31 = dto.LtlRate31;
-            entity.LtlRate32 = dto.LtlRate32;
-            entity.LtlRate33 = dto.LtlRate33;
-
+            _mapper.Map(dto, entity);
             return null;
         }
-
+        
         protected override DetailedValidationResult ValidateDto(TariffDto dto)
         {
             var lang = _userProvider.GetCurrentUser()?.Language;
@@ -301,66 +236,11 @@ namespace Application.Services.Tariffs
 
         public override TariffDto MapFromEntityToDto(Tariff entity)
         {
-            var user = _userProvider.GetCurrentUser();
-            var lang = user?.Language;
-
-            return new TariffDto
-            {
-                Id = entity.Id.ToString(),
-                ShippingWarehouseId = Guid.Empty == entity.ShippingWarehouseId ? null : new LookUpDto(entity.ShippingWarehouseId.ToString()),
-                DeliveryWarehouseId = Guid.Empty == entity.DeliveryWarehouseId ? null : new LookUpDto(entity.DeliveryWarehouseId.ToString()),
-                ProviderId = Guid.Empty == entity.ProviderId ? null : new LookUpDto(entity.ProviderId.ToString()),
-                CarrierId = entity.CarrierId == null ? null : new LookUpDto(entity.CarrierId.ToString()),
-                VehicleTypeId = entity.VehicleTypeId == null ? null : new LookUpDto(entity.VehicleTypeId.ToString()),
-                BodyTypeId = entity.BodyTypeId == null ? null : new LookUpDto(entity.BodyTypeId.ToString()),
-                StartWinterPeriod = entity.StartWinterPeriod?.ToString("dd.MM.yyyy"),
-                EndWinterPeriod = entity.EndWinterPeriod?.ToString("dd.MM.yyyy"),
-                WinterAllowance = entity.WinterAllowance.HasValue ? 
-                    entity.WinterAllowance.Value.ToString("F3", CultureInfo.InvariantCulture) : null,
-                EffectiveDate = entity.EffectiveDate?.ToString("dd.MM.yyyy"),
-                ExpirationDate = entity.ExpirationDate?.ToString("dd.MM.yyyy"),
-                IsEditable = user.ProviderId == null || entity.ProviderId != null,
-                FtlRate = entity.FtlRate,
-                LtlRate1 = entity.LtlRate1,
-                LtlRate2 = entity.LtlRate2,
-                LtlRate3 = entity.LtlRate3,
-                LtlRate4 = entity.LtlRate4,
-                LtlRate5 = entity.LtlRate5,
-                LtlRate6 = entity.LtlRate6,
-                LtlRate7 = entity.LtlRate7,
-                LtlRate8 = entity.LtlRate8,
-                LtlRate9 = entity.LtlRate9,
-                LtlRate10 = entity.LtlRate10,
-                LtlRate11 = entity.LtlRate11,
-                LtlRate12 = entity.LtlRate12,
-                LtlRate13 = entity.LtlRate13,
-                LtlRate14 = entity.LtlRate14,
-                LtlRate15 = entity.LtlRate15,
-                LtlRate16 = entity.LtlRate16,
-                LtlRate17 = entity.LtlRate17,
-                LtlRate18 = entity.LtlRate18,
-                LtlRate19 = entity.LtlRate19,
-                LtlRate20 = entity.LtlRate20,
-                LtlRate21 = entity.LtlRate21,
-                LtlRate22 = entity.LtlRate22,
-                LtlRate23 = entity.LtlRate23,
-                LtlRate24 = entity.LtlRate24,
-                LtlRate25 = entity.LtlRate25,
-                LtlRate26 = entity.LtlRate26,
-                LtlRate27 = entity.LtlRate27,
-                LtlRate28 = entity.LtlRate28,
-                LtlRate29 = entity.LtlRate29,
-                LtlRate30 = entity.LtlRate30,
-                LtlRate31 = entity.LtlRate31,
-                LtlRate32 = entity.LtlRate32,
-                LtlRate33 = entity.LtlRate33,
-                /*end of map entity to dto fields*/
-            };
+            return _mapper.Map<TariffDto>(entity);
         }
 
         protected override ExcelMapper<TariffDto> CreateExcelMapper()
         {
-            string lang = _userProvider.GetCurrentUser()?.Language;
             return new ExcelMapper<TariffDto>(_dataService, _userProvider, _fieldDispatcherService)
                 .MapColumn(w => w.CarrierId, new DictionaryReferenceExcelColumn(GetCarrierIdByName))
                 .MapColumn(w => w.ProviderId, new DictionaryReferenceExcelColumn(GetProviderIdByName))
@@ -371,7 +251,7 @@ namespace Application.Services.Tariffs
 
         private Guid? GetCarrierIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<TransportCompany>().Where(t => t.Title == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<TransportCompany>().FirstOrDefault(t => t.Title == name);
             return entry?.Id;
         }
 
@@ -395,7 +275,7 @@ namespace Application.Services.Tariffs
 
         private Guid? GetVehicleTypeIdByName(string name)
         {
-            var entry = _dataService.GetDbSet<VehicleType>().Where(t => t.Name == name).FirstOrDefault();
+            var entry = _dataService.GetDbSet<VehicleType>().FirstOrDefault(t => t.Name == name);
             return entry?.Id;
         }
 
@@ -431,13 +311,13 @@ namespace Application.Services.Tariffs
                 .Where(i => i.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase))
                 .Select(i => i.Id).ToList();
 
-            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
+//            var tarifficationTypeNames = Enum.GetNames(typeof(TarifficationType)).Select(i => i.ToLower());
 
-            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
-                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
-                .WhereTranslation(search)
-                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
-                .ToList();
+//            var tarifficationTypes = this._dataService.GetDbSet<Translation>()
+//                .Where(i => tarifficationTypeNames.Contains(i.Name.ToLower()))
+//                .WhereTranslation(search)
+//                .Select(i => (TarifficationType?)Enum.Parse<TarifficationType>(i.Name, true))
+//                .ToList();
 
             var searchDateFormat = "dd.MM.yyyy HH:mm";
 
@@ -472,19 +352,18 @@ namespace Application.Services.Tariffs
             var effectiveDate = dto.EffectiveDate.ToDate();
             var expirationDate = dto.ExpirationDate.ToDate();
 
-            return this.GetByKey(dto)
-                .Where(i => i.EffectiveDate == effectiveDate)
-                .Where(i => i.ExpirationDate == expirationDate)
-                .FirstOrDefault();
+            return GetByKey(dto)
+                .FirstOrDefault(i => i.EffectiveDate == effectiveDate &&
+                                     i.ExpirationDate == expirationDate);
         }
 
         private IQueryable<Tariff> GetByKey(TariffDto dto)
         {
-            Guid? carrierId = dto.CarrierId?.Value?.ToGuid();
-            Guid? vehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
-            string shipmentWarehouse = dto.ShippingWarehouseId?.Value;
-            string deliveryWarehouse = dto.DeliveryWarehouseId?.Value;
-            string provider = dto.ProviderId?.Value;
+            var carrierId = dto.CarrierId?.Value?.ToGuid();
+            var vehicleTypeId = dto.VehicleTypeId?.Value?.ToGuid();
+            var shipmentWarehouse = dto.ShippingWarehouseId?.Value;
+            var deliveryWarehouse = dto.DeliveryWarehouseId?.Value;
+            var provider = dto.ProviderId?.Value;
             return _dataService.GetDbSet<Tariff>()
                     .Where(i =>
                         i.CarrierId == carrierId
@@ -497,15 +376,35 @@ namespace Application.Services.Tariffs
         
          private MapperConfiguration ConfigureMapper()
         {
-           // var lang = _userIdProvider.GetCurrentUser()?.Language;
-
             var result = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<TariffDto, Tariff>();
-                   
-                cfg.CreateMap<Tariff, TariffDto>();
+                cfg.CreateMap<Tariff, TariffDto>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToString()))
+                    
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s, t) => s.ProviderId == null ? null : new LookUpDto(s.ProviderId.ToString())))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s, t) => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s, t) => s.ShippingWarehouseId == null ? null : new LookUpDto(s.ShippingWarehouseId.ToString())))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s, t) => s.DeliveryWarehouseId == null ? null : new LookUpDto(s.DeliveryWarehouseId.ToString())))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s, t) => s.VehicleTypeId == null ? null : new LookUpDto(s.VehicleTypeId.ToString())))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s, t) => s.BodyTypeId == null ? null : new LookUpDto(s.BodyTypeId.ToString())))
+                    .ForMember(t => t.EffectiveDate, e => e.MapFrom((s, t) => s.EffectiveDate?.ToString("dd.MM.yyyy")))
+                    .ForMember(t => t.ExpirationDate, e => e.MapFrom((s, t) => s.ExpirationDate?.ToString("dd.MM.yyyy")))
+                    ;
+
+                cfg.CreateMap<TariffDto, Tariff>()
+                    .ForMember(t => t.Id, e => e.MapFrom((s, t) => s.Id.ToGuid()))
+
+                    .ForMember(t => t.ProviderId, e => e.MapFrom((s) => s.ProviderId == null ? null : s.ProviderId.Value.ToGuid()))
+                    .ForMember(t => t.CarrierId, e => e.MapFrom((s) =>  s.CarrierId == null ? null : s.CarrierId.Value.ToGuid()))
+                    .ForMember(t => t.ShippingWarehouseId, e => e.MapFrom((s) =>  s.ShippingWarehouseId == null ? null : s.ShippingWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.DeliveryWarehouseId, e => e.MapFrom((s) => s.DeliveryWarehouseId == null ? null : s.DeliveryWarehouseId.Value.ToGuid()))
+                    .ForMember(t => t.VehicleTypeId, e => e.MapFrom((s) => s.VehicleTypeId == null ? null : s.VehicleTypeId.Value.ToGuid()))
+                    .ForMember(t => t.BodyTypeId, e => e.MapFrom((s) => s.BodyTypeId == null ? null : s.BodyTypeId.Value.ToGuid()))
+                    .ForMember(t => t.EffectiveDate, e => e.MapFrom((s) => s.EffectiveDate.ToDate()))
+                    .ForMember(t => t.ExpirationDate, e => e.MapFrom((s) => s.ExpirationDate.ToDate()))
+                    ;
             });
             return result;
         }
-    }
+   }
 }
