@@ -4,7 +4,6 @@ import { createSelector } from 'reselect';
 import users from '../mocks/users';
 import {toast} from 'react-toastify';
 import {errorMapping} from '../utils/errorMapping';
-import {SIGN_WITHOUT_LOGIN_COMPONENT_NAME} from "../router/links";
 
 const TYPE_API = 'users';
 
