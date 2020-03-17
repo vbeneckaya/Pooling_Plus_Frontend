@@ -3,7 +3,7 @@ import {createSelector} from 'reselect';
 import {clearDictionaryInfo} from './dictionaryView';
 import {autoUpdateStop} from './gridList';
 import React from "react";
-import InstructionContent from "../components/InstructionModal/instructions";
+import InstructionContent from "../components/InstructionModal/instructionContent";
 
 const SHOW_INSTRUCTION_SUCCESS = 'SHOW_INSTRUCTION_SUCCESS';
 
