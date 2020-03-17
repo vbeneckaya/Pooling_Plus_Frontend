@@ -16,7 +16,10 @@ const InstructionModal = () => {
     };
 
     return (
-        <Modal open={!!content} size="small" dimmer="blurring" closeIcon>
+        <Modal open={!!content} size="small" dimmer="blurring"  closeIcon
+               onClose={handleYesClick}
+               closeOnDimmerClick={handleYesClick}
+        >
             <Header  content={!!content && content.title} />
             <Modal.Content>
                 <p>{!!content && content.content}</p>
