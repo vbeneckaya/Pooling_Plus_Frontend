@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import 'react-resizable/css/styles.css';
 import '../style/main.scss';
 import ToastPortalContainer from '../components/ToastContainer';
-import InstructionModal from '../components/InstructionModal';
+import InstructionModal from '../components/InstructionModal/index.jsx';
 import { getUserProfile, userNameSelector } from '../ducks/profile';
 import { isAuthSelector } from '../ducks/login';
 import { Dimmer, Loader } from 'semantic-ui-react';

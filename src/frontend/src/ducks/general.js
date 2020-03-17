@@ -3,7 +3,7 @@ import {createSelector} from 'reselect';
 import {clearDictionaryInfo} from './dictionaryView';
 import {autoUpdateStop} from './gridList';
 import React from "react";
-import {inctructionContent} from "../constants/instructions";
+import InstructionContent from "../components/InstructionModal/instructions";
 
 const SHOW_INSTRUCTION_SUCCESS = 'SHOW_INSTRUCTION_SUCCESS';
 
@@ -46,7 +46,7 @@ function* changeLocation() {
         const {location} = payload;
         const {pathname} = location;
 
-        const content = inctructionContent(pathname)
+        const content = InstructionContent(pathname)
         if (!content) {
             yield put({
                 type: SHOW_INSTRUCTION_SUCCESS,
@@ -80,14 +80,19 @@ function* changeLocation() {
 }
 
 export const hideInstruction = payload => {
-    debugger;
     return {
-        type: HIDE_INSTRUCTION
+        type: HIDE_INSTRUCTION,
+        payload,
     };
 };
 
+function* hideInstructionSaga() {
+    yield put({
+        type: HIDE_INSTRUCTION
+    });
+}
 
 export function* saga() {
     yield spawn(changeLocation);
-    yield all(takeEvery(HIDE_INSTRUCTION, hideInstruction));
+    yield all(takeEvery(HIDE_INSTRUCTION, hideInstructionSaga));
 }
