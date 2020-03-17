@@ -18,7 +18,7 @@ const InstructionModal = () => {
     return (
         <Modal open={!!content} size="small" dimmer="blurring"  closeIcon
                onClose={handleYesClick}
-               closeOnDimmerClick={handleYesClick}
+               closeOnDimmerClick={true}
         >
             <Header  content={!!content && content.title} />
             <Modal.Content>
