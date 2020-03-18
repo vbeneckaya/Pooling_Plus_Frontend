@@ -45,7 +45,7 @@ const MainRoute = withRouter(props => {
     const {history, location} = props;
 
     const {pathname} = location;
-    
+
     useEffect(
         () => {
             const {history, location} = props;
@@ -56,12 +56,15 @@ const MainRoute = withRouter(props => {
         },
         [homePage],
     );
-    
-    useEffect(()=>{
-        const t = showInstruction(pathname);
-        dispatch(t);
-    },[pathname])
-    
+
+    useEffect(() => {
+        const alreadyInLocalStorage = localStorage.getItem(pathname);
+        if (!alreadyInLocalStorage) {
+            const t = showInstruction(pathname);
+            dispatch(t);
+        }
+    }, [pathname])
+
     return (
         <Switch>
             <PrivateRoute exact path="/" component={() => <Redirect to={homePage}/>}/>

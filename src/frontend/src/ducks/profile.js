@@ -403,9 +403,9 @@ export const hideInstruction = () => {
 function* showInstructionSaga({payload}) {
     try {
         const pathname = payload;
-        const alreadyInLocalStorage = localStorage.getItem(pathname);
+     //   const alreadyInLocalStorage = localStorage.getItem(pathname);
 
-        if (!alreadyInLocalStorage) {
+    //    if (!alreadyInLocalStorage) {
             const content = InstructionContent(pathname);
 
             if (!content) {
@@ -422,8 +422,7 @@ function* showInstructionSaga({payload}) {
                     payload: content,
                 });
             }
-        }
-        ;
+   //     }
     } catch (e) {
     }
 }
