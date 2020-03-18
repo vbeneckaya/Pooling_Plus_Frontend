@@ -15,23 +15,31 @@ using Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Encodings.Web;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services.Users
 {
     public class UsersService : DictionaryServiceBase<User, UserDto>, IUsersService
     {
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public UsersService(ICommonDataService dataService, IUserProvider userProvider,
+        public UsersService(
+            ICommonDataService dataService, 
+            IUserProvider userProvider,
             ITriggersService triggersService,
-            IValidationService validationService, IFieldDispatcherService fieldDispatcherService,
-            IFieldSetterFactory fieldSetterFactory, IAppConfigurationService configurationService)
+            IValidationService validationService, 
+            IFieldDispatcherService fieldDispatcherService,
+            IFieldSetterFactory fieldSetterFactory, 
+            IAppConfigurationService configurationService,
+            IConfiguration configuration
+            )
             : base(dataService, userProvider, triggersService, validationService, fieldDispatcherService,
                 fieldSetterFactory, configurationService)
         {
             _mapper = ConfigureMapper().CreateMapper();
+            _configuration = configuration;
         }
 
         public ValidateResult SetActive(Guid id, bool active)
@@ -285,7 +293,7 @@ namespace Application.Services.Users
                     .ForMember(t => t.Role, e=>e.MapFrom((s) =>  roles.FirstOrDefault(role => role.Id == s.RoleId).Name))
                     
                     .ForMember(t => t.SignWithoutLoginLink, e => e.MapFrom((s) => 
-                        $"https://plus.pooling.me/signwithoutlogin/{s.Id.ToString()}/{Uri.EscapeDataString(s.PasswordHash.GetHash())}"
+                        $"{_configuration.GetSection("PoolingUrl").Value}{s.Id.ToString()}/{Uri.EscapeDataString(s.PasswordHash.GetHash())}"
                         ))
                     
                     .ForMember(t => t.CarrierId, e => e.MapFrom( s => s.CarrierId == null ? null : new LookUpDto(s.CarrierId.ToString())))

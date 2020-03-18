@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace API
     {
         public Startup(IConfiguration configuration)
         {
+          
             Configuration = configuration;
             Log.Logger = LoggerFactory.CreateLogger(Configuration, "API");
         }
