@@ -42,7 +42,6 @@ const initial = {
 
 export default (state = initial, {type, payload = {}}) => {
     const {gridName, name, value, oldName, list} = payload;
-
     switch (type) {
         case GET_REPRESENTATIONS_SUCCESS:
             if (gridName && name) {

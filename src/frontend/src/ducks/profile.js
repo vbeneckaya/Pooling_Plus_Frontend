@@ -116,7 +116,7 @@ export default (state = initial, {type, payload}) => {
         case SET_INSTRUCTION:
             return {
                 ...state,
-                instruction: payload,
+                instruction: !payload ? null : payload,
             };
         default:
             return state;
@@ -395,10 +395,8 @@ export const showInstruction = payload => {
 };
 
 export const hideInstruction = () => {
-    debugger;
     return {
         type: HIDE_INSTRUCTION_REQUEST,
-        payload: null
     };
 };
 
@@ -432,7 +430,6 @@ function* showInstructionSaga({payload}) {
 
 function* hideInstructionSaga({payload}) {
     try {
-        debugger;
         yield put({
             type: SET_INSTRUCTION,
             payload: payload,

@@ -11,14 +11,14 @@ const InstructionModal = () => {
 
     const content = useSelector(state => showInstructionSelector(state));
 
-    const handleYesClick = () => {
-        debugger;
-        //dispatch(hideInstruction());
+    const handleClick = () => {
+        const t = hideInstruction();
+        dispatch(t);
     };
 
     return (
         <Modal open={!!content} size="small" dimmer="blurring"  closeIcon
-               onClose={handleYesClick}
+               onClose={handleClick}
                closeOnDimmerClick={true}
         >
             <Header  content={!!content && content.title} />
@@ -27,7 +27,7 @@ const InstructionModal = () => {
             </Modal.Content>
             <Modal.Actions className="confirm-dialog-actions">
                 <div>
-                    <Button color="blue" onClick={handleYesClick}>
+                    <Button color="blue" onClick={handleClick}>
                         <Icon name="checkmark"/> {t('Understand')}
                     </Button>
                 </div>
