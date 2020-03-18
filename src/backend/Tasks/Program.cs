@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Integrations.Pooling;
 using Tasks.Common;
 using Tasks.Pooling;
 using Tasks.Services;
@@ -26,12 +27,13 @@ namespace Tasks
                     var configuration = CreateConfiguration(args);
 
                     services.AddDomain(configuration, false);
+
+                    PoolingConfiguration.Url = configuration.GetSection("PoolingUrl").Value;
+
                     services.AddScoped<IUserProvider, TasksUserProvider>();
 
                     services.AddHostedService<ScheduleWorker>();
 
-                //    services.AddScoped<IScheduledTask, ImportOrderTask>();
-                //    services.AddScoped<IScheduledTask, ImportProductsTask>();
                     services.AddScoped<IScheduledTask, ImportReservationsFromPoolingTask>();
                 });
 

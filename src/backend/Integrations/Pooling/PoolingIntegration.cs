@@ -14,6 +14,7 @@ using Domain.Services.Warehouses;
 using Domain.Shared;
 using Integrations.Pooling.Dtos;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
@@ -32,7 +33,7 @@ namespace Integrations.Pooling
             ICommonDataService dataService,
             IServiceProvider serviceProvider = null
         ) :
-            base("https://stage.pooling.artlogics.ru/api/", //"https://staging.k8s.devlogics.ru/api/", 
+            base(PoolingConfiguration.Url, //"https://staging.k8s.devlogics.ru/api/", 
                 user.PoolingLogin,
                 user.PoolingPassword,
                 dataService)

@@ -22,6 +22,7 @@ using Infrastructure.Translations;
 using Domain.Enums;
 using System.Linq;
 using Domain.Extensions;
+using Integrations.Pooling;
 
 namespace API
 {
@@ -29,7 +30,6 @@ namespace API
     {
         public Startup(IConfiguration configuration)
         {
-          
             Configuration = configuration;
             Log.Logger = LoggerFactory.CreateLogger(Configuration, "API");
         }
@@ -55,23 +55,21 @@ namespace API
                     };
                 });
 
-            var permissions = (RolePermissions[])Enum.GetValues(typeof(RolePermissions));
+            var permissions = (RolePermissions[]) Enum.GetValues(typeof(RolePermissions));
 
             services.AddAuthorization(options =>
             {
                 permissions.ToList().ForEach(permission =>
                 {
                     options.AddPolicy(permission.GetPermissionName(),
-                        policy => policy.RequireClaim(RolePermissionExtension.ClaimType, permission.GetPermissionName()));
+                        policy => policy.RequireClaim(RolePermissionExtension.ClaimType,
+                            permission.GetPermissionName()));
                 });
             });
 
             string version = GetMajorVersion();
 
-            services.AddMvc(options => 
-            {
-                options.Conventions.Add(new AuthorizeByDefaultConvention());
-            })
+            services.AddMvc(options => { options.Conventions.Add(new AuthorizeByDefaultConvention()); })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddSwaggerGen(c =>
@@ -85,7 +83,7 @@ namespace API
 
                 c.IncludeXmlComments(GetXmlCommentsPath());
             });
-            
+
             services.AddHttpContextAccessor();
 
             services.AddDomain(Configuration, true);
@@ -94,6 +92,7 @@ namespace API
 
             services.AddScoped<IUserProvider, UserProvider>();
 
+            PoolingConfiguration.Url = Configuration.GetSection("PoolingUrl").Value;
         }
 
         private static string GetXmlCommentsPath()
@@ -105,7 +104,7 @@ namespace API
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
         {
             //if (env.IsDevelopment()) 
-                app.UseDeveloperExceptionPage();
+            app.UseDeveloperExceptionPage();
 
             app.UseAuthentication();
             app.UseMvc((routes) =>
