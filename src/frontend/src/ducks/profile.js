@@ -1,16 +1,19 @@
-import { all, put, takeEvery, take, spawn } from 'redux-saga/effects';
-import { createSelector } from 'reselect';
-import { postman } from '../utils/postman';
-import { push as historyPush } from 'connected-react-router';
+import {all, put, takeEvery, take, spawn} from 'redux-saga/effects';
+import {createSelector} from 'reselect';
+import {postman} from '../utils/postman';
+import {push as historyPush} from 'connected-react-router';
 import {FIELDS_SETTING_LINK, REPORTS_LINK, ROLES_LINK, USERS_LINK} from '../router/links';
-import { logoutRequest } from './login';
-import { clearDictionaryInfo } from './dictionaryView';
-import result from '../components/SuperGrid/components/result';
-import { toast } from 'react-toastify';
-import { errorMapping } from '../utils/errorMapping';
-import { autoUpdateStop } from './gridList';
+import {logoutRequest} from './login';
+import {toast} from 'react-toastify';
+import {errorMapping} from '../utils/errorMapping';
+import InstructionContent from "../components/InstructionModal/instructionContent";
+
 
 //*  TYPES  *//
+const SET_INSTRUCTION = 'SET_INSTRUCTION';
+const SHOW_INSTRUCTION_REQUEST = 'SHOW_INSTRUCTION_REQUEST';
+const HIDE_INSTRUCTION_REQUEST = 'HIDE_INSTRUCTION_REQUEST';
+
 export const GET_USER_PROFILE_REQUEST = 'GET_USER_PROFILE_REQUEST';
 const GET_USER_PROFILE_SUCCESS = 'GET_USER_PROFILE_SUCCESS';
 const GET_USER_PROFILE_ERROR = 'GET_USER_PROFILE_ERROR';
@@ -38,11 +41,12 @@ const initial = {
     error: [],
     progressEdit: false,
     progressChangePassword: false,
+    instruction: null
 };
 
 //*  REDUCER  *//
 
-export default (state = initial, { type, payload }) => {
+export default (state = initial, {type, payload}) => {
     switch (type) {
         case GET_USER_PROFILE_REQUEST:
             return {
@@ -109,6 +113,11 @@ export default (state = initial, { type, payload }) => {
                 error: payload,
                 progressChangePassword: false,
             };
+        case SET_INSTRUCTION:
+            return {
+                ...state,
+                instruction: payload,
+            };
         default:
             return state;
     }
@@ -161,6 +170,8 @@ export const addError = payload => {
 //*  SELECTORS *//
 
 const stateSelector = state => state.profile;
+export const showInstructionSelector = createSelector(stateSelector, state => state.instruction);
+
 export const gridsMenuSelector = createSelector(
     stateSelector,
     state => state.grids && state.grids.map(grid => grid.name),
@@ -278,15 +289,15 @@ export const errorSelector = createSelector(stateSelector, state => errorMapping
 
 //*  SAGA  *//
 
-function* getUserProfileSaga({ payload = {} }) {
+function* getUserProfileSaga({payload = {}}) {
     try {
-        const { url, isNotCofigUpdate } = payload;
+        const {url, isNotCofigUpdate} = payload;
         const userInfo = yield postman.get('/identity/userInfo');
         const config = isNotCofigUpdate ? {} : yield postman.get('/appConfiguration');
 
         yield put({
             type: GET_USER_PROFILE_SUCCESS,
-            payload: { ...userInfo, ...config },
+            payload: {...userInfo, ...config},
         });
         if (url) {
             yield put(historyPush(url));
@@ -316,9 +327,9 @@ function* getProfileSettingsSaga() {
     }
 }
 
-function* editProfileSettingsSaga({ payload }) {
+function* editProfileSettingsSaga({payload}) {
     try {
-        const { form, callbackSuccess } = payload;
+        const {form, callbackSuccess} = payload;
         const result = yield postman.post('/profile/save', form);
 
         if (result.isError) {
@@ -335,7 +346,7 @@ function* editProfileSettingsSaga({ payload }) {
 
             yield put({
                 type: GET_USER_PROFILE_SUCCESS,
-                payload: { userName: form.userName },
+                payload: {userName: form.userName},
             });
 
             callbackSuccess && callbackSuccess();
@@ -347,9 +358,9 @@ function* editProfileSettingsSaga({ payload }) {
     }
 }
 
-function* changePasswordSaga({ payload }) {
+function* changePasswordSaga({payload}) {
     try {
-        const { form, callbackSuccess, t } = payload;
+        const {form, callbackSuccess, t} = payload;
         const result = yield postman.post('/profile/setNewPassword', form);
 
         if (result.isError) {
@@ -376,11 +387,68 @@ function* changePasswordSaga({ payload }) {
     }
 }
 
+export const showInstruction = payload => {
+    return {
+        type: SHOW_INSTRUCTION_REQUEST,
+        payload,
+    };
+};
+
+export const hideInstruction = () => {
+    debugger;
+    return {
+        type: HIDE_INSTRUCTION_REQUEST,
+        payload: null
+    };
+};
+
+function* showInstructionSaga({payload}) {
+    try {
+        const pathname = payload;
+        const alreadyInLocalStorage = localStorage.getItem(pathname);
+
+        if (!alreadyInLocalStorage) {
+            const content = InstructionContent(pathname);
+
+            if (!content) {
+                yield put({
+                    type: SET_INSTRUCTION,
+                    payload: null,
+                });
+            }
+
+            else {
+                localStorage.setItem(pathname, '1');
+                yield put({
+                    type: SET_INSTRUCTION,
+                    payload: content,
+                });
+            }
+        }
+        ;
+    } catch (e) {
+    }
+}
+
+function* hideInstructionSaga({payload}) {
+    try {
+        debugger;
+        yield put({
+            type: SET_INSTRUCTION,
+            payload: payload,
+        });
+    } catch (e) {
+    }
+}
+
 export function* saga() {
     yield all([
         takeEvery(GET_USER_PROFILE_REQUEST, getUserProfileSaga),
         takeEvery(GET_PROFILE_SETTINGS_REQUEST, getProfileSettingsSaga),
         takeEvery(EDIT_PROFILE_SETTINGS_REQUEST, editProfileSettingsSaga),
         takeEvery(CHANGE_PASSWORD_REQUEST, changePasswordSaga),
+        takeEvery(SHOW_INSTRUCTION_REQUEST, showInstructionSaga),
+        takeEvery(HIDE_INSTRUCTION_REQUEST, hideInstructionSaga)
+
     ]);
 }

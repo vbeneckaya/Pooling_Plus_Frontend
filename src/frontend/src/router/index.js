@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Switch, Redirect, Route} from 'react-router-dom';
 import {withRouter} from 'react-router';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
     DICTIONARY_CARD_LINK,
     DICTIONARY_LIST_LINK,
@@ -34,11 +34,18 @@ import FieldsSetting from '../containers/fieldsSetting/list';
 import {homePageSelector} from '../ducks/profile';
 import Report from "../containers/report";
 import SignWithoutLogin from "../containers/signWithoutLogin";
+import {showInstruction} from "../ducks/profile";
 
 const MainRoute = withRouter(props => {
 
+    const dispatch = useDispatch();
+
     const homePage = useSelector(state => homePageSelector(state));
 
+    const {history, location} = props;
+
+    const {pathname} = location;
+    
     useEffect(
         () => {
             const {history, location} = props;
@@ -49,6 +56,11 @@ const MainRoute = withRouter(props => {
         },
         [homePage],
     );
+    
+    useEffect(()=>{
+        const t = showInstruction(pathname);
+        dispatch(t);
+    },[pathname])
     
     return (
         <Switch>

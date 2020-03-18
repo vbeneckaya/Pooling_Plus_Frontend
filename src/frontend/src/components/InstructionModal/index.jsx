@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Icon, Modal, Header} from 'semantic-ui-react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from "react-redux";
-import {showInstructionSelector, hideInstruction} from "../../ducks/general";
+import {showInstructionSelector, hideInstruction} from "../../ducks/profile";
 
 const InstructionModal = () => {
     const {t} = useTranslation();
@@ -12,7 +12,8 @@ const InstructionModal = () => {
     const content = useSelector(state => showInstructionSelector(state));
 
     const handleYesClick = () => {
-        dispatch(hideInstruction());
+        debugger;
+        //dispatch(hideInstruction());
     };
 
     return (

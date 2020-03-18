@@ -17,7 +17,6 @@ import { default as fieldsSetting } from '../ducks/fieldsSetting';
 import { default as gridColumnEdit } from '../ducks/gridColumnEdit';
 import { default as reports } from '../ducks/reports';
 import { default as users } from '../ducks/users';
-import { default as instructions } from '../ducks/general';
 
 export default history =>
     combineReducers({
@@ -38,5 +37,4 @@ export default history =>
         gridColumnEdit,
         reports,
         router: connectRouter(history),
-        instructions
     });
