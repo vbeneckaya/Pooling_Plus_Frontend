@@ -22,7 +22,8 @@ namespace Tasks.Pooling
             try
             {
                 ICommonDataService dataService = serviceProvider.GetService<ICommonDataService>();
-                using (PoolingIntegration poolingIntegration = new PoolingIntegration(
+                using (PoolingIntegration poolingIntegration = new PoolingIntegration( 
+                    
                     new User
                     {
                         PoolingLogin = "k.skvortsov@artlogics.ru",

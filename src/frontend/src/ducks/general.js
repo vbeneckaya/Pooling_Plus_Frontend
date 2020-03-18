@@ -46,30 +46,31 @@ function* changeLocation() {
         const {location} = payload;
         const {pathname} = location;
 
-        if(pathname !== currentLocation) {
-            
-            const alreadyInLocalStorage = localStorage.getItem(pathname);
-
-            if (!alreadyInLocalStorage) {
-
-                const content = InstructionContent(pathname);
-
-                if (!content) {
-                    yield put({
-                        type: SHOW_INSTRUCTION,
-                        payload: null,
-                    });
-                }
-
-                else {
-                    localStorage.setItem(pathname, '1');
-                    yield put({
-                        type: SHOW_INSTRUCTION,
-                        payload: content,
-                    });
-                }
-            }
-        }
+        // if(pathname !== currentLocation) {
+        //
+        //     const alreadyInLocalStorage = localStorage.getItem(pathname);
+        //
+        //     if (!alreadyInLocalStorage) {
+        //
+        //         const content = InstructionContent(pathname);
+        //
+        //         if (!content) {
+        //             yield put({
+        //                 type: SHOW_INSTRUCTION,
+        //                 payload: null,
+        //             });
+        //         }
+        //
+        //         else {
+        //             localStorage.setItem(pathname, '1');
+        //             yield put({
+        //                 type: SHOW_INSTRUCTION,
+        //                 payload: content,
+        //             });
+        //         }
+        //     }
+        // }
+        
         if (pathname.includes('dictionary') && pathname !== currentLocation) {
             yield put(clearDictionaryInfo());
         }
