@@ -5,7 +5,7 @@ import {autoUpdateStop} from './gridList';
 import React from "react";
 import InstructionContent from "../components/InstructionModal/instructionContent";
 
-const SHOW_INSTRUCTION_SUCCESS = 'SHOW_INSTRUCTION_SUCCESS';
+const SHOW_INSTRUCTION = 'SHOW_INSTRUCTION';
 
 const HIDE_INSTRUCTION = 'HIDE_INSTRUCTION';
 
@@ -17,7 +17,7 @@ const initial = {
 
 export default (state = initial, {type, payload}) => {
     switch (type) {
-        case SHOW_INSTRUCTION_SUCCESS:
+        case SHOW_INSTRUCTION:
             return {
                 ...state,
                 card: payload,
@@ -46,20 +46,23 @@ function* changeLocation() {
         const {location} = payload;
         const {pathname} = location;
 
-        const content = InstructionContent(pathname)
-        if (!content) {
-            yield put({
-                type: SHOW_INSTRUCTION_SUCCESS,
-                payload: null,
-            });
-        }
-        else {
-            const alreadyInLocalStorage = localStorage.getItem(pathname);
+        const alreadyInLocalStorage = localStorage.getItem(pathname);
 
-            if (content && !alreadyInLocalStorage) {
+        if (!alreadyInLocalStorage) {
+
+            const content = InstructionContent(pathname);
+
+            if (!content) {
+                yield put({
+                    type: SHOW_INSTRUCTION,
+                    payload: null,
+                });
+            }
+
+            else {
                 localStorage.setItem(pathname, '1');
                 yield put({
-                    type: SHOW_INSTRUCTION_SUCCESS,
+                    type: SHOW_INSTRUCTION,
                     payload: content,
                 });
             }
