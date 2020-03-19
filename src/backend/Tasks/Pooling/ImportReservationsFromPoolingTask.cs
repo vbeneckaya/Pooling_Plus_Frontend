@@ -14,7 +14,7 @@ namespace Tasks.Pooling
     [Description("Импорт перевозок из Pooling")]
     public class ImportReservationsFromPoolingTask : TaskBase<ImportReservationsFromPoolingProperties>, IScheduledTask
     {
-        public string Schedule => "* */3 * * *";
+        public string Schedule => "0 */12 * * *";
 
         protected override async Task Execute(IServiceProvider serviceProvider,
             ImportReservationsFromPoolingProperties props, CancellationToken cancellationToken)
